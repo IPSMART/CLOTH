@@ -1,0 +1,65 @@
+﻿@model string
+<script>
+    $("#wrapper").draggable({ cursor: "move" });
+    function CloseHelp() {
+        $('#helpDIV').html("");        
+    }
+</script>
+<style type="text/css">
+    #textarea {
+        border: none;
+        overflow: auto;
+        width: 100%;
+        background-color: cornsilk;
+        max-height: 450px;
+    }
+
+    #wrapper {
+        background-color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        float: left;
+        border: 1px #D3D3D3 solid;
+        box-shadow: 0 0 5px rgba(255, 231, 43, 0.00);
+        overflow: hidden;
+        min-width: 350px;
+        width: max-content;
+    }
+
+    #helpDIV {
+        /*text box with border*/
+        /*position: fixed;
+    top: 8%;
+    left: 20%;
+    max-width:80%;*/
+        /*Textbox without border with center position helpdiv*/
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        /*end*/
+        z-index: 1100;
+    }
+
+    #helpmnu thead tr {
+        background-color: #0a898c;
+    }
+
+        #helpmnu thead tr th {
+            height: 10px;
+        }
+
+    #helpmnu tbody tr td {
+        padding: 1px;
+    }
+</style>
+<div id="wrapper">
+    <div style="text-align: center;width:100%;background-color:#467c7d;vertical-align:middle; font-weight:bold">
+        <span id="helpDIV_Header" style="color:white">Park Entries</span>
+        <span title="Close [ESC]" onclick="CloseHelp();" class="glyphicon glyphicon-remove" style="color:maroon;vertical-align:middle;cursor:pointer;float:right;margin-right: 5px;">
+        </span>
+    </div>
+    <div id="textarea" style="padding:5px; font-size:11px">
+        @(new HtmlString(Model))
+    </div>
+</div>

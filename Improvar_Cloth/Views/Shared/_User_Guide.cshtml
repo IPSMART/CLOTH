@@ -1,0 +1,72 @@
+﻿@model Improvar.ViewModels.UserGuideImprovar
+@Html.ValidationSummary(true)
+<style>
+    td {
+        padding: 0px;
+    }
+</style>
+<table class="table table-striped table-bordered" style="max-width:815px">
+    <thead>
+        <tr>
+            <th colspan="5">
+                <button class="btn-success" type="button" id="plus" onclick="addRowUsr();">+</button>
+                <button class="btn-danger" type="button" id="minus" onclick="deleteRowUsr();">-</button>
+                <span class="text-right" style="float:right;color:darkslateblue;">Requirement Specifiation</span>
+            </th>
+            <th colspan="2" class="text-right"> <button class="btn-info text-right right" id="save_question" onclick="saveQues()">Save/Update Data</button></th>
+        </tr>
+        <tr><th></th><th>SL. No.</th><th>Question By</th><th>Answer By</th><th>Question</th><th>Answer</th>@*<th>Image</th>*@</tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i <= Model.USERGUIDE.Count - 1; i++)
+        {
+            <tr>
+                <td>
+                    @Html.CheckBoxFor(model => model.USERGUIDE[i].Checked)
+                    @Html.HiddenFor(model => model.USERGUIDE[i].QUESTIONID)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.USERGUIDE[i].SLNO)
+                    @Html.HiddenFor(model => model.USERGUIDE[i].SLNO)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.USERGUIDE[i].QUESTIONBY)
+                    @Html.HiddenFor(model => model.USERGUIDE[i].QUESTIONBY)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.USERGUIDE[i].ANSWERBY)
+                    @Html.HiddenFor(model => model.USERGUIDE[i].ANSWERBY)
+                </td>
+                <td>
+                    @if (Model.USERGUIDE[i].QUESTION != null)
+                    {
+                        @Html.DisplayFor(model => model.USERGUIDE[i].QUESTION)
+                        @Html.HiddenFor(model => model.USERGUIDE[i].QUESTION)
+
+                    }
+                    else
+                    {
+                        @Html.TextAreaFor(model => Model.USERGUIDE[i].QUESTION, new { id = "QUESTION_" + i })
+                    }
+                </td>
+                <td>
+                    @if (Model.USERGUIDE[i].ANSWER != null)
+                {
+                        @Html.DisplayFor(model => model.USERGUIDE[i].ANSWER)
+                        @Html.HiddenFor(model => model.USERGUIDE[i].ANSWER)
+
+                    }
+                    else
+                    {
+                        @Html.TextAreaFor(model => Model.USERGUIDE[i].ANSWER, new { id = "ANSWER_" + i })
+                    }
+                </td>
+                @*<td>
+                        <img src="" alt="" id="ee" name="hook" />
+                    </td>*@
+            </tr>
+
+        }
+    </tbody>
+
+</table>

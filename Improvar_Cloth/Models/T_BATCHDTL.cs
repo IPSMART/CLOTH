@@ -1,0 +1,65 @@
+namespace Improvar.Models
+{
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
+    [Table("T_BATCHDTL")]
+    public partial class T_BATCHDTL
+    {
+        public int? EMD_NO { get; set; }
+
+        [Required]
+        [StringLength(4)]
+        public string CLCD { get; set; }
+
+        [StringLength(1)]
+        public string DTAG { get; set; }
+
+        [StringLength(1)]
+        public string TTAG { get; set; }
+
+        [Key]
+        [Column(Order = 0)]
+        [StringLength(30)]
+        public string AUTONO { get; set; }
+
+        [Key]
+        [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int SLNO { get; set; }
+
+        [Required]
+        [StringLength(30)]
+        public string BATCHAUTONO { get; set; }
+
+        public int BATCHSLNO { get; set; }
+
+        [Required]
+        [StringLength(5)]
+        public string DOCCD { get; set; }
+
+        [Required]
+        [StringLength(6)]
+        public string DOCNO { get; set; }
+
+        public DateTime? DOCDT { get; set; }
+
+        [StringLength(40)]
+        public string BATCHNO { get; set; }
+
+        [Required]
+        [StringLength(1)]
+        public string STKDRCR { get; set; }
+
+        public double? NOS { get; set; }
+
+        public double? QNTY { get; set; }
+
+        public double? STKQNTY { get; set; }
+
+        public double? RATE { get; set; }
+        [StringLength(1)]
+        public string SKIPSTK { get; set; }
+    }
+}

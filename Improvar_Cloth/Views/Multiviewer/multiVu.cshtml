@@ -1,0 +1,543 @@
+﻿@model Improvar.Models.Menu
+@{
+    ViewBag.Title = "";
+    Layout = null;
+    string displaycount = ViewBag.DeshbordDisplayPermission;
+    if (displaycount == null)
+    {
+        displaycount = "0";
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@Module.Module_Name</title>
+    <link rel="stylesheet" media="all" href="~/Content/bootstrap.min.css" />
+    <link rel="intcut icon" type="image/x-icon" href="~/favicon.ico">
+    <link rel="stylesheet" media="all" href="~/Content/treeview.css" />
+    <link rel="stylesheet" media="all" href="~/Content/main_layout.css?Ver=@Module.ContentVersion" />
+    <link rel="stylesheet" href="~/Content/font-awesome.min.css" />
+    <link href="~/Content/MyTree.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/datatables.min.css" />
+    <script src="~/Scripts/jquery-3.3.1.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/datatables.min.js"></script>
+    @Scripts.Render("~/Scripts/Custom.js?Ver=" + Module.ContentVersion)
+    @Styles.Render("~/Content/MyStyle.css?Ver=" + Module.ContentVersion)
+    @Styles.Render("~/Content/themes/base/core.css")
+    @Styles.Render("~/Content/themes/base/accordion.css")
+    @Styles.Render("~/Content/themes/base/autocomplete.css")
+    @Styles.Render("~/Content/themes/base/button.css")
+    @Styles.Render("~/Content/themes/base/datepicker.css")
+    @Styles.Render("~/Content/themes/base/dialog.css")
+    @Styles.Render("~/Content/themes/base/draggable.css")
+    @Styles.Render("~/Content/themes/base/menu.css")
+    @Styles.Render("~/Content/themes/base/progressbar.css")
+    @Styles.Render("~/Content/themes/base/resizable.css")
+    @Styles.Render("~/Content/themes/base/selectable.css")
+    @Styles.Render("~/Content/themes/base/selectmenu.css")
+    @Styles.Render("~/Content/themes/base/sortable.css")
+    @Styles.Render("~/Content/themes/base/slider.css")
+    @Styles.Render("~/Content/themes/base/spinner.css")
+    @Styles.Render("~/Content/themes/base/tabs.css")
+    @Styles.Render("~/Content/themes/base/tooltip.css")
+    @Styles.Render("~/Content/themes/base/theme.css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryui")
+    <style>
+        /*Dashboard data*/
+        .centered_imageDIV {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .container_imageDIV {
+            position: relative;
+            text-align: center;
+            color: white;
+        }
+
+        .tabtitle {
+            height: 30px;
+            background: linear-gradient(#86abd8,#244976);
+            font-size: 11px;
+            font-weight: bold;
+            vertical-align: central;
+            text-align: center;
+            border-bottom-right-radius: 15px;
+        }
+
+        .motherdiv {
+            width: 40%;
+            margin-top: 20px;
+        }
+
+        .tabletd {
+            padding-left: 5px;
+            width: 70%;
+            font-size: 12px;
+        }
+
+        .tabletd1 {
+            padding-left: 5px;
+            width: 30%;
+            border-right: 1px solid white;
+            font-size: 12px;
+        }
+
+        .tabletr {
+            height: 30px;
+        }
+
+        @@media (max-width: 775px) {
+            .motherdiv {
+                width: 98%;
+                padding-left: 10px;
+            }
+
+            .tabletd {
+                padding-left: 5px;
+                width: 70%;
+                font-size: 10px;
+                margin-top: 6px;
+            }
+
+            .tabletd1 {
+                padding-left: 5px;
+                width: 30%;
+                border-right: 1px solid white;
+                font-size: 10px;
+                margin-top: 6px;
+            }
+
+            .tabletr {
+                height: 30px;
+            }
+
+            #deshboard {
+                float: left;
+            }
+        }
+    </style>
+
+    <style>
+        /*hook style*/
+        .Com_confirm_msg_box {
+            z-index: 1033;
+            padding: 12px;
+            color: #fff !important;
+            background-color: #17a2b8 !important;
+            background: rgba(2,2,f,0.9);
+            position: fixed;
+            top: 34%;
+            left: 20%;
+            bottom: 34%;
+            right: 20%;
+            overflow-y: auto;
+            border-color: #D8000C;
+            border: 5px double;
+        }
+
+            .Com_confirm_msg_box i:before {
+                font-family: 'FontAwesome';
+                content: "\f14a";
+                margin-right: 10px;
+            }
+    </style>
+    <script>
+        $(document).ready(function () {
+            if ('@TempData["NewVersionMsg"]' != '') {
+                msgInfo("New Version Found");
+            }
+            //UpdateDashboard();
+        });
+    </script>
+    <script>
+        //hook Open And Close Menu 27/03/18
+        var MenuArray = new Array();
+        var MenuOpen = 0;
+        var message_value;
+        function CompanyChange() {
+            debugger;
+            var closein = 0;
+            MenuArray.forEach(function (element) {
+                MenuArray[closein].close();
+                closein++;
+            });
+            window.open("../Home/CompanySelection", "_self");
+        }
+        function getallclose() {
+            var gh = ChangCompConfirm();
+            return false;
+        }
+        function ThirdPartyCall(urlresult) {
+            window.open("../" + urlresult);
+        }
+        function winopen(Controller, MENU_PERMISSION, DC, MP) {
+            var usno = '@Model.UNQSNO';
+            var MyURL = "../" + Controller + "/" + Controller + "?op=V" + "&MNUDET=" + MENU_PERMISSION + "&US=" + usno + "&DC=" + DC + "&MP=" + MP;
+            MenuArray[MenuOpen] = window.open(MyURL);
+            MenuOpen++;
+            $.ajax({//
+                type: 'get',
+                url: "@Url.Action("UserActivity_OpenForm", "Home")",
+                data: {
+                    MNUDET: MENU_PERMISSION,
+                    US: usno
+                },
+                success: function (result) {
+                    var res1 = String(result);
+                    if (res1 == "OK") {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            });
+        }
+        function openNav() {
+            var wid = document.getElementById("mySidenav").style.width;
+            if (wid == "0px") {
+                if ($(window).width() > 780) {
+                    document.getElementById("mySidenav").style.width = "400px";
+                }
+                else {
+                    document.getElementById("mySidenav").style.width = "250px";
+                }
+            }
+            else {
+                document.getElementById("mySidenav").style.width = "0";
+            }
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+        $(document).ready(function () {
+            $('.toggle').click(function () {
+                openNav();
+            });
+        });
+
+
+        $(window).resize(function () {
+            if ($(window).width() > 780) {
+                document.getElementById("mySidenav").style.width = "400px";
+            }
+            else {
+                document.getElementById("mySidenav").style.width = "250px";
+            }
+        });
+        function gotoMenu() {
+            var add = $("#urlmenu").val();
+            var cod = $("#mnuser").val();
+            if (cod.length <= 0) {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msgbody_info").html("Menu id must be enter to go !");
+                message_value = "mnuser";
+                return false;
+            }
+            $.ajax({
+                type: 'GET',
+                url: add,
+                data: {
+                    code: cod
+                },
+                success: function (result) {
+                    if (result != "0") {
+                        window.open(result, '_blank');
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msgbody_info").html("Menu id may not define or call admin to set permission");
+                        message_value = "mnuser";
+                    }
+                }
+            });
+        }
+        function closeDiv(id, flag) {
+            $(id).hide();
+            var will_go = 'warning2';
+            $("#" + will_go).focus();
+
+            if (flag == 1) {
+                location.reload();
+            }
+            else if (flag == 2) {
+                location.href = $("#message_stay").val();
+            }
+        }
+        function close_box(id) {
+            $(id).hide();
+            var will_go = 'warning2';
+            $("#" + will_go).focus();
+        }
+    </script>
+    <script>
+        function UpdateDashboard(BoardCodeValue) {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("UpdateDeshBoard", "Multiviewer")",
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    BoardCode: BoardCodeValue
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (BoardCodeValue == "ALL") {
+                        $('#deshboard').html(result);
+                    } else {
+                        $('#' + BoardCodeValue).html(result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    </script>
+    <script>
+        $(function () {
+            $('#mnuser').on('keyup', function () {
+                var val = $(this).val().toLowerCase()
+                if (val) {
+                    $('ul li span a').each(function (idx, obj) {
+                        if ($(obj).text().toLowerCase().indexOf(val) !== -1) {
+                            $(obj).addClass('highlight')
+                            Texpand();
+                        }
+                        else {
+                            $(obj).removeClass('highlight')
+                        }
+                    })
+                }
+                else
+                    $('ul li span a').removeClass('highlight')
+            })
+        });
+        function Texpand() {
+            $(".tree").find("li").each
+            (
+                function () {
+                    $(this).parent().find('li input[type=checkbox]').prop('checked', true);
+                    $(this).parent().prev().prop('checked', true);
+                }
+            )
+        }
+    </script>
+</head>
+
+<body style="background: linear-gradient(-135deg,#c850c0,#4158d0); background-repeat: no-repeat;background-size: cover;">
+    <input type="hidden" id="urlmenu" value="@Url.Action("MenuCall", "Multiviewer")" />
+    <div id="WaitingMode" style="display:none; margin: 0px; padding: 0px; position: fixed; right: 0px; top: 0px; width: 100%; height: 100%; background-color: rgb(16, 134, 16); z-index: 30001; opacity: 0.4;">
+        <p style="position: absolute; color: White; top: 46%; left: 47%;">
+            Loading, please wait...<br />
+            <span> <img src="~/Image/ajax_loader.gif" width="60px" height="60px"></span>
+        </p>
+    </div>
+    @Html.HiddenFor(model => model.UNQSNO)
+    <nav style="background-color: rgb(111, 163, 208);">
+        <div class="icon">
+            <span class="toggle">☰</span>
+        </div>
+        <div>
+            <img class="logo" src="~/Image/IPSMART-LOGO.png" width="38px" height="38px" style="margin-top:0px;margin-right:15px;margin-left:15px" />
+            @*<img class="logo" src="~/Image/IPSMART-LOGO.png" />*@
+        </div>
+
+        <ul class="list-item">
+            @{
+                string hh = "";
+                hh = " IP Smart " + Module.Module_Name + "  - Version" + @Session["publishversion"];
+            }
+            @hh
+        </ul>
+
+        <ul class="list-item1">
+            <li class="liclass">
+                <a href="~/User_Guide/User_Guide" target="_blank"><span class="glyphicon glyphicon-question-sign" style="color:chartreuse">?</span> </a>
+            </li>
+            @{
+                if (Session["USER_TYPE"].ToString().Trim() == "A")
+                {
+                    <li class="liclass">
+                        <img title="Data Lock" src="~/Image/datalock.png" class="imgicon" onclick="window.open('@Url.Action("datalock","Datalock",new { US=Model.UNQSNO})','_blank')" />
+                    </li>
+                    <li class="liclass">
+                        <img title="User Rights" src="~/Image/user_right.png" class="imgicon" onclick="window.open('@Url.Action("user_rights","UserRights",new { US=Model.UNQSNO})','_blank')" />
+                    </li>
+                }
+            }
+            <li class="liclass">
+                <img title="Change Password" src="~/Image/change_password.png" class="imgicon" onclick="location.href='@Url.Action("ChangePassword","Login",new { US=Model.UNQSNO})'" />
+            </li>
+            <li class="liclass">
+                <img title="Change Company" src="~/Image/change_company.png" class="imgicon" onclick="getallclose();" />
+            </li>
+
+            <li class="liclass">@Html.ActionLink("Logout", "Logout", "Home", new { area = "" }, new { style = "color:#dc0624f2;font-weight:bold" })</li>
+            <li>Welcome  @Session["UR_ID"]</li>
+        </ul>
+    </nav>
+
+
+
+    <script>
+        function addFavorite(MENU_ID, MENU_INDEX) {
+            //24-04-18 hook
+            $.ajax({
+                type: 'post',
+                url: "addFavorite",
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    MENU_ID: MENU_ID,
+                    MENU_INDEX: MENU_INDEX
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#msgbody_info1").html(result + " ! ");
+                    $("#btnok_info").focus();
+                    $("#Msgdiv1").show();
+                    $("#info").show();
+                    $('#Msgdiv1').delay(100).fadeIn('normal', function () {
+                        $(this).delay(500).fadeOut();
+                    });
+                    $('#Fadeinfo').delay(200).fadeIn('normal', function () {
+                        $(this).delay(1500).fadeOut();
+                    });
+                    $("#Msgdiv1").hide();
+                    $("#info").hide();
+                    return false;
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+
+    </script>
+
+
+    <div id="mySidenav" class="div-tree" style="float:left">
+        <div style="margin:2px;height:97%; overflow-y:auto;">
+            <div style="background-color:rgba(6, 81, 128, 0.50);padding:9px 9px 9px 9px;border-radius:6px">
+                <input type="text" id="mnuser" placeholder="Menu Name/ID" title="Search for menu Name" class="searchtext" />
+                <input type="button" title="Type menu short Name and click Go" value="Go" style="height:22px;width:30px;background-color:#06a421;color:white;border-radius:4px;border:1px solid;cursor:pointer" onclick="gotoMenu();" />
+            </div>
+            <ul class="tree">
+                @if (Model.ManuDetails != null)
+                {
+                    @(new HtmlString(Model.ManuDetails))
+                }
+            </ul>
+            <div style="background-color:rgba(6, 81, 128, 0.50);padding:9px 9px 9px 9px;border-radius:6px">
+                Favourite's Menu
+            </div>
+            <ul class="tree">
+                <li>
+                    <input type='checkbox' id="aus" /><label class='tree_label' for="aus"><img src='../Image/folder.png' class='folderimg' />&nbsp;My Favourites</label>
+                    <ul>
+                        @if (Model.FavoriteManuDetails != null)
+                        {
+                            @(new HtmlString(Model.FavoriteManuDetails))
+                        }
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="float:right;cursor:pointer" onclick="UpdateDashboard('ALL')" title="Refresh All Dashboard">Refresh</div>
+    <div id="deshboard">
+        @using (Html.BeginForm())
+        {
+            <div class="row">
+                @Html.Partial("_Dashboard")
+            </div>}
+    </div>
+    <div style="width:100%; background-color:rgb(111, 163, 208); float:left; bottom:0px; margin-bottom:0; position:fixed; right:0; left:0px">
+        <div class="abc sec1">
+            @Session["CompanyName" + ViewBag.UNIQUESESSION]
+        </div>
+        <div class="abc sec2">
+            @Session["CompanyLocation" + ViewBag.UNIQUESESSION]
+        </div>
+        <div class="abc sec3">
+            Period- @Session["CompanyFinancial" + ViewBag.UNIQUESESSION]
+        </div>
+        <div class="abc sec3_1">
+            @{
+                string hh1 = " IP Smart  " + Module.Module_Name + " - Version" + @Session["publishversion"];
+            }
+            @hh1
+        </div>
+        <div class="abc sec4">
+            Developed by IP-Smart Team
+        </div>
+    </div>
+
+
+    <div id="Fadeinfo" class="info_msg_box" style="display:none;">
+        <strong style="font-size: large;">
+            <a id="close" href="#" class="close_msg_button" onclick="closeDiv('#Msgdiv1',0); close_box('#info_msg_box')">&times;</a>
+            <i style="margin-right:10px;" id="info_i" class="fa"></i>
+        </strong>
+        <div id="msgbody_info1" style="text-align:center; font-weight:bold; font-size:12px"> </div>
+        <div align="center" style="width:100%">
+            <br />
+            <input id="btnok" type="button" value="OK" style="width:50px;height:25px;background-color:#00529B;color:#BDE5F8;" autofocus onclick="closeDiv('#Msgdiv1',0); close_box('#info_msg_box')" />
+        </div>
+    </div>
+    <script>
+        function ConfirmInDiv(message, okcallback, cancelcallback) {
+            $('#Msgdiv1').show();
+            $('#confirm').show();
+            $("#msgbody_confirm").text(message);
+            $('#Confirmation_Ok').unbind('click');
+            $('#Confirmation_Ok').click(okcallback);
+            $('#Confirmation_Ok').unbind('keypress');
+            $('#Confirmation_Ok').keypress(okcallback);
+            $('#Confirmation_Cancel').unbind('click');
+            $('#Confirmation_Cancel').click(cancelcallback);
+            $('input').blur();
+            $('#Confirmation_Ok').focus();
+        }
+        function HideConfirmOk() {
+            $('#Msgdiv1').hide();
+            $('#confirm').hide();
+            CompanyChange();
+            return false;
+        }
+        function HideConfirmCancel() {
+            $('#Msgdiv1').hide();
+            $('#confirm').hide();
+            return false;
+        }
+
+        function ChangCompConfirm() {
+            function ok() {
+                console.log('change ok');
+                HideConfirmOk();
+            }
+            function cancel() {
+                console.log('delete cancelled');
+                HideConfirmCancel();
+            }
+            ConfirmInDiv(' Are you sure to Change Company? ', ok, cancel);
+        }
+    </script>
+    <div id="Msgdiv1" style="display:none">
+        <div id="back_cover">
+            @Html.Partial("_MessageBox")
+        </div>
+    </div>
+</body>
+</html>

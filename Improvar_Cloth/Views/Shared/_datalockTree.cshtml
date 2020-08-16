@@ -1,0 +1,9 @@
+﻿@model Improvar.ViewModels.dataLock
+<ul class="tree">
+
+    @if (Model.ManuDetails != null)
+    {
+        @(new HtmlString(Model.ManuDetails))
+    }
+</ul>
+@Html.HiddenFor(_ => _.serializeString)

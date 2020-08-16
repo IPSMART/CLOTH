@@ -1,0 +1,75 @@
+﻿@model Improvar.ViewModels.SubLedgerEntry
+
+<div style="height:auto; overflow-y:auto;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Plus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnAdd" title="Add Row" onclick="AddRowBank()" />
+                <img src="~/Image/Minus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnDelete" title="Delete Row" onclick="DeleteRowBank()" />
+
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event,'examplebank');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bank Details</b></center>
+            </div>
+            <table id="examplebank" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+                <thead>
+                    <tr style="height:30px;">
+                        <th class="grid_th"></th>
+                        <th class="grid_th" style="width:27px;">SL. No.</th>
+                        <th class="grid_th" style="width: 130px;">IFSC <b style="color:darkred">*</b></th>
+                        <th class="grid_th" style="width:300px;">Bank Name <b style="color:darkred">*</b></th>
+                        <th class="grid_th" style="width:170px;">Branch <b style="color:darkred">*</b></th>
+                        <th class="grid_th" style="width:300px;">Address <b style="color:darkred">*</b></th>
+                        <th class="grid_th" style="min-width:200px;">A/C Number <b style="color:darkred">*</b></th>
+                        <th class="grid_th" style="width:125px;">A/C Type</th>
+                        <th class="grid_th" style="width:40px;" title="Default Bank">Dflt Bank</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i <= Model.MSUBLEGIFSC.Count - 1; i++)
+                    {
+                        <tr style="font-size:12px; font-weight:bold;">
+                            <td class="grid_td">
+                                @Html.CheckBoxFor(model => model.MSUBLEGIFSC[i].Checked, new { htmlAttributes = new { id = "chkid" } })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].SLNO, new { id = "SLNO_" + i, maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].IFSCCODE, new { id = "IFSCCODE_" + i, maxlength = 15, @class = " atextBoxFor textbox_image" })
+                            </td>
+                            <td class="grid_td" style="width: 250px;">
+                                @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].BANKNAME, new { id = "BANKNAME_" + i, @class = " atextBoxFor ", maxlength = 50, @list = "bnknm" })
+                                <datalist id="bnknm">
+                                    @foreach (var jg in Model.Database_Combo3)
+                                    {
+                                        <option value="@jg.FIELD_VALUE" />
+                                    }
+                                </datalist>
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].BRANCH, new { id = "BRANCH_" + i, @class = " atextBoxFor ", maxlength = 25 })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].ADDRESS, new { id = "ADDRESS_" + i, @class = " atextBoxFor ", maxlength = 100 })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].BANKACTNO, new { id = "BANKACTNO_" + i, maxlength = 20, @class = " atextBoxFor " })
+                            </td>
+                            <td class="grid_td">
+                                @Html.DropDownListFor(model => Model.MSUBLEGIFSC[i].BANKACTTYPE, new SelectList(Model.DropDown_list1, "Value", "Text", Model.MSUBLEGIFSC[i].BANKACTTYPE), "", new { @class = "atextBoxFor select_3d " })
+                            </td>
+                            <td class="grid_td">
+                                @Html.CheckBoxFor(model => model.MSUBLEGIFSC[i].DFLTBNK, new {id = "DFLTBNK_"+i })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

@@ -1,0 +1,64 @@
+﻿@model Improvar.ViewModels.ItemMasterEntry
+
+
+<div style="width: 600px;" overflow-y:auto;">
+    <div class="table-responsive">
+
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                    <img src="~/Image/Plus.png" class="Help_image_buttonAddRemove" id="btnAdd" title="Add Row" onclick="AddRowBOX()" />
+                    <img src="~/Image/Minus.png" class="Help_image_buttonAddRemove" id="btnDelete" title="Delete Row" onclick="DeleteRowBOX()" />
+
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleItemBox');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Item Size Details</b></center>
+            </div>
+            <table id="exampleItemBox" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+                <thead>
+                    <tr style="height:30px;">
+                        <th class="grid_th" style="width:27px;"></th>
+                        <th class="grid_th" style="width:27px;">SlNo.</th>
+                        <th class="grid_th" style="width:27px;">SizeGrp</th>
+                        <th class="grid_th" style="width:75px;">Size Code</th>
+                        <th class="grid_th" style="width:100px;">Size Name</th>
+                        <th class="grid_th" style="width:100px">Pcs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i <= Model.MSITEMBOX.Count - 1; i++)
+                    {
+                        <tr style="font-size:12px; font-weight:bold;">
+                            <td class="grid_td" style="padding-left:7px;padding-right:7px;">
+                                @Html.CheckBoxFor(model => model.MSITEMBOX[i].Checked, new { htmlAttributes = new { id = "chkid" } })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMBOX[i].SRLNO, new { id = "SRLNO", maxlength = 2, @title = "Only Numeric", @class = " atextBoxFor ",  @readonly = "readonly" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMBOX[i].SIZEGRP, new { id = "SIZEGRP", maxlength = 1, @title = "if Multiple", @class = " atextBoxFor "})
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMBOX[i].SIZECDBOX, new { id = "SIZECDBOX_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetSizeDetails", "M_FinProduct") + "','" + "SIZECDBOX_" + i + "/" + "SIZENMBOX_" + i + "','1/0','Size Details','" + "SIZECDBOX_" + i + "')", onblur = "SelectSIZEBOXCODE(this.value," + "SIZECDBOX_" + i + "," + "SIZENMBOX_" + i + ");", @class = " atextBoxFor textbox_image" })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetSizeDetails", "M_FinProduct")','SIZECDBOX_@i/SIZENMBOX_@i','1/0','Size Details','SIZECDBOX_@i')" />
+                                @*@Html.TextBoxFor(model => Model.MSITEMBOX[i].SIZECDBOX, new { id = "SIZECDBOX_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetSizeDetails", "M_FinProduct") + "','" + "SIZECDBOX_" + i + "/" + "SIZENMBOX_" + i + "','1/0','Color Details','" + "SIZECDBOX_" + i + "')", onblur = "SelectSIZEBOXCODE(this.value," + "SIZECDBOX_" + i + "," + "SIZENMBOX_" + i + ");", @class = " atextBoxFor textbox_image" })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetSizeDetails", "M_FinProduct")','SIZECDBOX_@i/SIZENMBOX_@i','1/0','Size Details')" />*@
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMBOX[i].SIZENMBOX, new { id = "SIZENMBOX_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor " })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMBOX[i].PCSQTY, new { id = "PCSQTY", maxlength = 4, @title = "Only Numeric", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @class = " atextBoxFor " })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+</div>
+

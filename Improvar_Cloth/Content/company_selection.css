@@ -1,0 +1,291 @@
+﻿
+
+/*My work hook*/
+body {
+    padding-top: 1%;
+    padding-bottom: 0%;
+}
+
+div.flt {
+    float: left;
+    width: 100%;
+}
+
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: white;
+}
+
+input[type=checkbox] {
+    font-family: 'Colonna MT';
+    padding-top: 20%;
+    padding-bottom: 20%;
+    cursor: grab;
+}
+
+select {
+    max-width: 95%;
+    min-width: 95%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: #2f042e;/*ccc*/
+    border-radius: 5px;
+}
+
+h4 {
+    margin-top: 45px;
+    margin-bottom: 10px;
+    margin-left: 20%;
+}
+
+button {
+    background-color: #003b64;
+    color: white;
+    padding: 14px 60px;
+    /*margin: 8px 0;*/
+    /*margin-left:100px;
+    margin-right:100px;*/
+    border: none;
+    cursor: pointer;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+    button:hover {
+        opacity: 0.8;
+        background-color: #932462;
+    }
+
+.pass {
+    float: right;
+    /*padding-top: 16px;*/
+}
+
+.modal-content {
+    /*width:20%;*/
+    background-color: #fefefe;
+    background: rgba(53, 145, 203, 0.5);
+    color: #fff;
+    padding: 20px;
+    margin-top: 1%;
+    margin-left: 25%;
+    margin-right: 25%;
+}
+
+.bodyclass {
+    background-image: url(../Image/log_back1.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+@media (max-width:775px) {
+
+    button {
+        padding: 14px 40px;
+        margin-top: 5px;
+        margin-bottom: 8px;
+    }
+
+    div {
+        float: unset;
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        background: rgba(53, 145, 203, 0.5);
+        color: #fff;
+        padding: 20px;
+        margin-top: 5vh;
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+
+    .imglogo {
+        height: 40px;
+        width: 120px;
+    }
+
+    .bodyclass {
+        background-image: url(../Image/log_back1.jpg);
+        background-repeat: no-repeat;
+        background-size: auto;
+    }
+
+    
+@media (min-width:1600px) {
+    
+    .modal-content {
+        margin-top: 9vh;
+    }
+
+
+
+
+
+
+    /*@media (min-width:250px) 
+    {
+
+    div.flt
+{
+float:unset;
+width:99%;
+}
+
+  .modal-content
+    {
+   margin: 5% 5% 5% 5%;  
+    }
+  .imglogo
+  {
+      height:40px;
+      width:150px;
+  }
+}
+
+
+@media (min-width:350px) 
+    {
+
+  .modal-content
+    {
+    margin: 5% 5% 5% 5%; 
+    } .imglogo
+  {
+      height:40px;
+      width:150px;
+  }
+}*/
+    /*@media (min-width:500px) 
+    {
+  .modal-content
+    {
+   margin: 5% 10% 5% 10%; 
+    } 
+  .imglogo
+  {
+      height:50px;
+      width:160px;
+  }
+}
+
+
+@media (min-width:600px) 
+    {
+     .modal-content
+    {
+   margin: 5% 20% 5% 20%; 
+    } 
+  .imglogo
+  {
+     height:50px;
+      width:160px;
+  }
+}
+
+
+@media (min-width:750px) 
+    {
+     div.flt
+      {
+float:left;
+width:100%;
+      }
+  .modal-content
+    {
+   margin: 5% 9% 5% 9%; 
+    } 
+  .imglogo
+  {
+     height:50px;
+      width:170px;
+  }
+}
+
+
+@media (min-width:900px) 
+    {
+     div.flt {
+float:left;
+width:100%;
+}
+  .modal-content
+    {
+   margin: 5% 9% 0% 9%; 
+    } 
+  .imglogo
+  {
+      height:65px;
+      width:230px;
+  }
+}*/
+
+
+
+
+
+
+    /*@media (min-width:1000px) 
+    {
+     div.flt {
+float:left;
+width:100%;
+}
+  .modal-content
+    {
+    margin: 5% 20% 0% 20%; 
+    }
+}
+@media (min-width:1098px ) 
+    {
+     div.flt {
+float:left;
+width:100%;
+}
+  .modal-content
+    {
+    margin: 5% 20% 0% 20%; 
+    }
+}
+
+
+
+@media (min-width:1100px) 
+    {
+   div.flt {
+float:left;
+width:100%;
+}
+  .modal-content
+    {
+   margin: 5% 20% 0% 20%; 
+    }
+}
+
+
+
+@media (min-width:1200px) 
+    {
+    div.flt
+{
+float:left;
+width:100%;
+}
+
+  .modal-content
+    {
+  margin: 5% 25% 0% 25%;   
+    }
+}*/

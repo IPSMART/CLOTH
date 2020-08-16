@@ -1,0 +1,1454 @@
+﻿@model Improvar.ViewModels.ItemMasterEntry
+
+@{
+    ViewBag.Title = "Finished Product Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#ITCD").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+@{
+    string PageControllerName = "M_FinProduct";
+}
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Item Group Code", "ITGRPCD")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter Brand Code", "BRANDCD")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter  Quality Description", "QUALITY")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter Style", "STYLENO")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter UOM", "UOMCD")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+
+        var comtype = $("#protyp").val();
+        if (comtype == "0") {
+            msgInfo("Select Product Type");
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            message_value = "protyp";
+            return false;
+        }
+        var comtype = $("#gender").val();
+        if (comtype == "0") {
+            msgInfo("Select Gender");
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            message_value = "gender";
+            return false;
+        }
+        if (!emptyFieldCheck("Enter Pcs. Per Box ", "PCSPERBOX")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_SITEM != null)
+        {
+            mldauto = Model.M_SITEM.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function input12(id, id1, id2, id3) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+        $("#" + id2.id).val(str[2].toString());
+        $("#" + id3.id).val(str[3].toString());
+    }
+    function SelectItemGroupCode(id, ITGRPCD, ITGRPNM, BRANDCD, BRANDNM) {
+        if (id == "") {
+            $("#ITGRPCD").val("");
+            $("#ITGRPNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlname").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#ITGRPCD").val("");
+                        $("#ITGRPNM").val("");
+                        $("#msgbody_info").html("Invalid Item Group Code! Please Enter a Valid Item Group Code !! ");
+                        message_value = "ITGRPCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input12(ITGRPCD, ITGRPNM, BRANDCD, BRANDNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function input3(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectSubBrandCode(id, SBRANDCD, SBRANDNM) {
+        if (id == "") {
+            $("#SBRANDCD").val("");
+            $("#SBRANDNM").val("");
+        }
+        else {
+            var BRAND = document.getElementById("BRANDCD").value;
+            if (BRAND != "") {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlname2").val(),
+                    data:
+                        {
+                            val: id,
+                            BRAND: BRAND
+                        },
+                    success: function (result) {
+                        if (result == "0") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msg_ok_info").focus();
+                            $("#SBRANDCD").val("");
+                            $("#SBRANDNM").val("");
+                            $("#msgbody_info").html("Invalid Sub Brand Code ! Please Enter a Valid Sub Brand Code !! ");
+                            message_value = "SBRANDCD";
+                        }
+                        else {
+                            $("#tempHDD").val(result);
+                            input3(SBRANDCD, SBRANDNM);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+            else {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#SBRANDCD").val("");
+                $("#btnok").focus();
+                $("#msgbody_info").html("Please Select / Enter Group Code & Brand Code !! ");
+                message_value = "ITGRPCD";
+            }
+        }
+    }
+</script>
+<script>
+    function input4(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectColorCode(id, COLRCD, COLRNM) {
+        if (id == "") {
+            $("#COLRCD").val("");
+            $("#COLRNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetColorDetails", PageControllerName)",
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#COLRCD").val("");
+                        $("#COLRNM").val("");
+                        $("#msg_ok_info").focus();
+                        $("#msgbody_info").html(" Invalid Color Code !! ");
+                        message_value = "COLRCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input4(COLRCD, COLRNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function inputcolor(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+
+    function SelectCOLORCODEGRID(id, COLRCD_, COLRNM_) {
+        if (id == "") {
+            $("#" + COLRNM_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameCOLOR").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + COLRCD_.id).val("");
+                        $("#" + COLRNM_.id).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Color Code !! ");
+                        message_value = "COLRCD_";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputcolor(COLRCD_, COLRNM_);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    //end
+
+</script>
+<script>
+    function input6(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectPARTCODEGRID(id, PARTCD_, PARTNM_) {
+        if (id == "") {
+            $("#" + PARTCD_.id).val("");
+            $("#" + PARTNM_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnamePART").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + PARTCD_.id).val("");
+                        $("#" + PARTNM_.id).val("");
+                        $("#msgbody_info").html("Invalid Part Code !! ");
+                        message_value = "PARTCD_";
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input6(PARTCD_, PARTNM_);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function input5(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectCollectionCode(id, COLLCD, COLLNM) {
+        if (id == "") {
+            $("#COLLNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetCollectionDetails", PageControllerName)",
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#COLLCD").val("");
+                        $("#COLLNM").val("");
+                        $("#msgbody_info").html(" Invalid Collection Code !! ");
+                        message_value = "COLLCD";
+
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input5(COLLCD, COLLNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function AddRowSIZE(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddSIZE").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivSIZE").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivSIZE").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+</script>
+<script>
+    function DeleteRowSIZE(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteSIZE").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivSIZE").animate({ marginTop: '0px' }, 50);
+                $("#partialdivSIZE").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+</script>
+<script>
+    function AddRowBOX(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddBOX").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivBOX").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivBOX").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function DeleteRowBOX(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteBOX").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivBOX").animate({ marginTop: '0px' }, 50);
+                $("#partialdivBOX").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddRowPARTS(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddPART").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivPART").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivPART").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowPARTS(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeletePART").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivPART").animate({ marginTop: '0px' }, 50);
+                $("#partialdivPART").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddRowCOLOR(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddCOLOR").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivCOLOR").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivCOLOR").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowCOLOR(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteCOLOR").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivCOLOR").animate({ marginTop: '0px' }, 50);
+                $("#partialdivCOLOR").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+</script>
+<script>
+    function AddRowINVCD(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddINVCD").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivINVCD").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivINVCD").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowINVCD(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteINVCD").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivINVCD").animate({ marginTop: '0px' }, 50);
+                $("#partialdivINVCD").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddRowMEASURE(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowMEASURE", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivMeasurement").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivMeasurement").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function DeleteRowMEASURE(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRowMEASURE", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivMeasurement").animate({ marginTop: '0px' }, 50);
+                $("#partialdivMeasurement").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function input6(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectSIZECODE(id, SIZECD_, SIZENM_) {
+        if (id == "") {
+            $("#" + SIZENM_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetSizeDetails",PageControllerName)",
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + SIZECD_.id).val("");
+                        $("#" + SIZENM_.id).val("");
+                        $("#msgbody_info").html("Invalid Size Code !! ");
+                        message_value = "SIZECD_";
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input6(SIZECD_, SIZENM_);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function input7(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectSIZEBOXCODE(id, SIZECDBOX_, SIZENMBOX_) {
+        if (id == "") {
+            $("#" + SIZENMBOX_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetSizeDetails",PageControllerName)",
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + SIZECDBOX_.id).val("");
+                        $("#" + SIZENMBOX_.id).val("");
+                        $("#msgbody_info").html("Invalid Size Code !! ");
+                        message_value = "SIZECDBOX_";
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input7(SIZECDBOX_, SIZENMBOX_);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function inputUOM(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectUOMCode(id, UOMCD, UOMNM) {
+        if (id == "") {
+            $("#UOMCD").val("");
+            $("#UOMNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetUOMDetails", PageControllerName)",
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msgbody_info").html(" Invalid  UOM Code !! ");
+                        $("#UOMCD").val("");
+                        $("#UOMNM").val("");
+                        $("#btnok").focus();
+                        message_value = "UOM";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputUOM(UOMCD, UOMNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function CheckItemCode(id) {
+        var valu = document.getElementById(id).value;
+        if (valu == "") {
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameCIC").val(),
+                data: {
+                    val: valu
+                },
+                success: function (result) {
+                    if (result == "1") {
+
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#ITCD").val("");
+                        $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                        message_value = "ITCD";
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function fileCheck(id, index) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            var fname = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE_NAME");
+            fname.value = fileToLoad.name;
+            var fileReader = new FileReader();
+
+            fileReader.onload = function (fileLoadedEvent) {
+                var textAreaFileContents = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE");
+
+                textAreaFileContents.value = fileLoadedEvent.target.result;
+                $("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
+            };
+
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    var specialKeys = new Array();
+    specialKeys.push(8); //Backspace
+    function numericOnly(elementRef, position) {
+        var keyCodeEntered = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        if ((keyCodeEntered >= 48) && (keyCodeEntered <= 57)) {
+            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
+                var aa = elementRef.value;
+                var ab = aa.indexOf('.');
+                var ac = aa.toString().substring(ab);
+                if (ac.length <= position) {
+                    return true; n
+                }
+                else {
+                    return false;
+                }
+            }
+            return true;
+        }
+            // '.' decimal point...
+        else if (keyCodeEntered == 46) {
+            // Allow only 1 decimal point ('.')...
+            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
+    }
+</script>
+<script>
+    function show_name() {
+        var des = document.getElementById("QUALITY").value;
+        $("#ITNM").val(des);
+    }
+
+</script>
+<script>
+
+    function pageprinting() {
+        $("#btnprint").click();
+    }
+</script>
+
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="btnAddSIZE" value="@Url.Action("AddRowSIZE", PageControllerName)" />
+            <input type="hidden" id="btnDeleteSIZE" value="@Url.Action("DeleteRowSIZE", PageControllerName)" />
+            <input type="hidden" id="btnAddBOX" value="@Url.Action("AddRowBOX", PageControllerName)" />
+            <input type="hidden" id="btnDeleteBOX" value="@Url.Action("DeleteRowBOX", PageControllerName)" />
+            <input type="hidden" id="btnAddCOLOR" value="@Url.Action("AddRowCOLOR", PageControllerName)" />
+            <input type="hidden" id="btnDeleteCOLOR" value="@Url.Action("DeleteRowCOLOR", PageControllerName)" />
+            <input type="hidden" id="btnAddPART" value="@Url.Action("AddRowPARTS", PageControllerName)" />
+            <input type="hidden" id="btnDeletePART" value="@Url.Action("DeleteRowPARTS", PageControllerName)" />
+            <input type="hidden" id="btnAddINVCD" value="@Url.Action("AddRowINVCD", PageControllerName)" />
+            <input type="hidden" id="btnDeleteINVCD" value="@Url.Action("DeleteRowINVCD", PageControllerName)" />
+            <input type="hidden" id="urlname" value="@Url.Action("ItemGroupCode", PageControllerName)" />
+            <input type="hidden" id="urlname2" value="@Url.Action("SubBrandCode", PageControllerName)" />
+            <input type="hidden" id="urlnameCIC" value="@Url.Action("CheckItemCode", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="urlnameBOXSize" value="@Url.Action("SizeCode", PageControllerName)" />
+            <input type="hidden" id="urlnameCOLOR" value="@Url.Action("ColorCode", PageControllerName)" />
+            <input type="hidden" id="urlnameINV" value="@Url.Action("INVCode", PageControllerName)" />
+            <input type="hidden" id="urlnamePART" value="@Url.Action("PARTCode", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
+                <li><a data-toggle="tab" href="#Size">Size</a></li>
+                <li><a data-toggle="tab" href="#AssortedSize">Assorted Size</a></li>
+                <li><a data-toggle="tab" href="#Color">Color</a></li>
+                <li><a data-toggle="tab" href="#Parts">Parts</a></li>
+                <li><a data-toggle="tab" href="#InventoryCodesBarCode">Inventory Codes / Bar Code</a></li>
+                <li><a data-toggle="tab" href="#Measurement">Measurement</a></li>
+                <li><a data-toggle="tab" href="#Documents">Documents</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Standard" class="tab-pane fade in active" style="margin-top: 10px;">
+                    <div class="col-lg-9">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Item Code")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field" style="">
+
+                                    @Html.EditorFor(model => model.M_SITEM.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @style = "text-transform:uppercase;", maxlength = 10, @placeholder = "Code", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Style")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @style = "", maxlength = 12, @onkeyup = "toUpper(this);", @placeholder = "Style" } })
+
+
+                                    @*@Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @style = "text-transform:uppercase;color:orangered;font-weight:800", maxlength = 12, @onkeyup = "toUpper(this);", @placeholder = "Style" } })*@
+                                </div>
+                            </div>
+                            @*<div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Style Display")
+                                    <b style="color:Red;"></b>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.STYLENODISP, new { htmlAttributes = new { @class = "form-control", id = "STYLENODISP", maxlength = 12, @onkeyup = "toUpper(this);", @placeholder = "Style Display" } })
+                                </div>
+                            </div>*@
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Group Code")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Name")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-11">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60 } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Brand")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_BRAND.BRANDCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BRANDCD", maxlength = 4, @placeholder = "Code", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_BRAND.BRANDNM, new { htmlAttributes = new { @class = "form-control", id = "BRANDNM", maxlength = 15, @placeholder = "Brand Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Sub Brand")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.SBRANDCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SBRANDCD", maxlength = 4, onkeyup = "GetHelp_WithId('" + @Url.Action("GetSubBrandDetails", PageControllerName) + "','SBRANDCD/SBRANDNM','1/0','Select Sub Brand Details','SBRANDCD','BRANDCD');", onblur = "SelectSubBrandCode(this.value,SBRANDCD,SBRANDNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetSubBrandDetails", PageControllerName)','SBRANDCD/SBRANDNM','1/0','Select Sub Brand Details','SBRANDCD','BRANDCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBBRAND.SBRANDNM, new { htmlAttributes = new { @class = "form-control", id = "SBRANDNM", maxlength = 15, @placeholder = "Sub Brand Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Description")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.QUALITY, new { htmlAttributes = new { @class = "form-control", id = "QUALITY", @placeholder = "Item Description", maxlength = 35, @onkeyup = "show_name();" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "UOM")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.UOMCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "UOMCD", onkeyup = "GetHelp('" + @Url.Action("GetUOMDetails", PageControllerName) + "','UOMCD/UOMNM','1/0','Select UOM Details','UOMCD');toUpper(this);", onblur = "SelectUOMCode(this.value,UOMCD,UOMNM);", @placeholder = "Code", maxlength = 4, required = "required" } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetUOMDetails", PageControllerName)','UOMCD/UOMNM','1/0','Select UOM Details','UOMCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_UOM.UOMNM, new { htmlAttributes = new { @class = "form-control", id = "UOMNM", maxlength = 10, @TabIndex = -1, @title = "Only for View", @placeholder = "UOM Description", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-labelemp" style="margin-top:0px;margin-bottom: -5px;">
+                                    @Html.Label("", "HSN Code")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", @placeholder = "HSNSACCD", maxlength = 5, @list = "hsncode" } })
+                                    <datalist id="hsncode">
+                                        @foreach (var jg in Model.Database_Combo1)
+                                        {
+                                            <option value="@jg.FIELD_VALUE" />
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Color")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetColorDetails", PageControllerName) + "','COLRCD/COLRNM','1/0','Select Color Details','COLRCD');", onblur = "SelectColorCode(this.value,COLRCD,COLRNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetColorDetails", PageControllerName)','COLRCD/COLRNM','1/0','Select Color Details','COLRCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_COLOR.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", maxlength = 20, @TabIndex = -1, @placeholder = "Color Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Product Type")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    <select id="protyp" name="protyp" class="form-control">
+                                        <option value="0" selected="selected">====Select====</option>
+                                        @foreach (var i in Model.ProductType)
+                                        {
+                                            if (Model.DefaultAction == "A")
+                                            {
+                                                <option value="@i.value">@i.text</option>
+                                            }
+                                            else
+                                            {
+                                                if (Model.M_SITEM.PRODUCTTYPE == i.value)
+                                                {
+                                                    <option value="@i.value" selected="selected">@i.text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@i.value">@i.text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3" style="margin-right:-21px;">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Gender")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    <select id="gender" name="gender" class="form-control">
+                                        <option value="0" selected="selected">====Select====</option>
+                                        @foreach (var i in Model.Gender)
+                                        {
+                                            if (Model.DefaultAction == "A")
+                                            {
+                                                <option value="@i.value">@i.text</option>
+                                            }
+                                            else
+                                            {
+                                                if (Model.M_SITEM.GENDER == i.value)
+                                                {
+                                                    <option value="@i.value" selected="selected">@i.text</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@i.value">@i.text</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Collection Name")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.COLLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLLCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetCollectionDetails", PageControllerName) + "','COLLCD/COLLNM','1/0','Select Collection Details','COLLCD');", onblur = "SelectCollectionCode(this.value,COLLCD,COLLNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetCollectionDetails", PageControllerName)','COLLCD/COLLNM','1/0','Select Collection Details','COLLCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_COLLECTION.COLLNM, new { htmlAttributes = new { @class = "form-control", id = "COLLNM", maxlength = 20, @TabIndex = -1, @placeholder = "Collection Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Pcs. Per Box")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.PCSPERBOX, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERBOX", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Pcs. Per Set")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.PCSPERSET, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERSET", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Colors Per Set")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.COLRPERSET, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "COLRPERSET", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
+                                </div>
+                            </div>
+                            @*<div class="col-md-9">
+                                @if (Model.DefaultAction == "A")
+                                {
+                                    <label class="radio-inline">
+                                        @Html.RadioButtonFor(g => g.M_SITEM.MIXSIZE, "M", new { @checked = "checked" })  @Html.Label("Mix Size")
+                                    </label>
+                                    <label class="radio-inline">
+                                        @Html.RadioButtonFor(g => g.M_SITEM.MIXSIZE, "S")  @Html.Label("Same Size")
+                                    </label>
+                                }
+                                @if (Model.DefaultAction == "V" || Model.DefaultAction == "E")
+                                {
+                                    <label class="radio-inline">
+                                        @if (Model.M_SITEM.MIXSIZE == "M")
+                                        {      <label class="radio-inline">
+                                            @Html.RadioButtonFor(g => g.M_SITEM.MIXSIZE, "M", new { @checked = "checked" })  @Html.Label("Mix Size")
+                                        </label>
+                                        <label class="radio-inline">
+                                            @Html.RadioButtonFor(g => g.M_SITEM.MIXSIZE, "S")  @Html.Label("Same Size")
+                                        </label>
+                                        }
+                                        else
+                                        {
+                                            <label class="radio-inline">
+                                                @Html.RadioButtonFor(g => g.M_SITEM.MIXSIZE, "M")  @Html.Label("Mix Size")
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButtonFor(g => g.M_SITEM.MIXSIZE, "S", new { @checked = "checked" })  @Html.Label("Same Size")
+                                            </label>
+                                        }
+                                    </label>
+                                }
+                            </div>*@
+                        </div>
+                        @*<div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Standard Rate")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.STD_RATE, new { htmlAttributes = new { @class = "form-control", id = "STD_RATE", @placeholder = "Rate", maxlength = 10 } })
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Std Av. Mnts P/Pc (SAM)")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.SAMPPC, new { htmlAttributes = new { @class = "form-control", id = "SAMPPC", @placeholder = "P/Pc (SAM)", @title = "numeric", maxlength = 10, @onkeypress = "return numericOnly(this,3);" } })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Merging of Pcs")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.MERGEPCS, new { htmlAttributes = new { @class = "form-control", id = "MERGEPCS", @placeholder = "from Stiching only", @title = "numeric", maxlength = 6, @onkeypress = "return numericOnly(this,3);" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Std. Lot Qty")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.STDLOTQTY, new { htmlAttributes = new { @class = "form-control", id = "STDLOTQTY", @placeholder = "Std. Lot Qty", @title = "numeric", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Std.Time to Complete Lot")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.STDLOTCOMPLTDAYS, new { htmlAttributes = new { @class = "form-control", id = "STDLOTCOMPLTDAYS", @placeholder = "Comp Lot", type = "text", @title = "Numeric", maxlength = 3, @onkeypress = "return numericOnly(this,2);" } })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Std. Batch Qty")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.STDBATCHQTY, new { htmlAttributes = new { @class = "form-control", id = "STDBATCHQTY", @placeholder = "Batch Qty", @title = "numeric", maxlength = 5, @onkeypress = "return numericOnly(this,2);" } })
+                                </div>
+                            </div>
+                        </div>*@
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "De - Active")
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field" style="margin-top:6px;">
+                                    @Html.CheckBoxFor(model => model.Checked)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-lg-3">
+                        @if (Model.DefaultAction == "V" || Model.DefaultAction == "E" || Model.DefaultAction == "D")
+                        {
+                            <div class="row">
+                                <div class="editor-label" style="margin-top: 6px;text-align:center;color:#428bca;">
+                                    @Html.Label("", "Product Image")
+                                </div>
+                            </div>
+
+                            <div class="row" style="text-align:-webkit-center">
+                                @if (Model.UploadDOC.Count != 0)
+                                {
+                                    if (Model.UploadDOC[0].DOC_FILE != null)
+                                    {
+                                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                                            <!-- Indicators -->
+                                            <ol class="carousel-indicators" style="bottom:0px;">
+                                                @if (Model.UploadDOC.Count != 0)
+                                                {
+                                                    for (int k = 0; k < Model.UploadDOC.Count; k++)
+                                                    {
+                                                        if (k == 0)
+                                                        {
+                                                            <li data-target="#myCarousel" data-slide-to="@k" class="active"></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li data-target="#myCarousel" data-slide-to="@k"></li>
+                                                        }
+                                                    }
+                                                }
+                                            </ol>
+
+                                            <!-- Wrapper for slides -->
+                                            <div class="carousel-inner">
+                                                @if (Model.UploadDOC.Count != 0)
+                                                {
+                                                    for (int k = 0; k < Model.UploadDOC.Count; k++)
+                                                    {
+                                                        if (k == 0)
+                                                        {
+                                                            <div class="item active " style="height:225px">
+                                                                <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
+                                                                <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
+                                                                    <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="item" style="height:225px">
+                                                                <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
+                                                                <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
+                                                                    <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                                </div>
+                                                            </div>
+                                                        }
+
+                                                    }
+                                                }
+                                            </div>
+                                            <!-- Left and right controls -->
+                                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                                <span class="glyphicon glyphicon-chevron-left"></span>
+                                                <span class="sr-only">Previous</span>
+                                            </a>
+                                            <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                                <span class="glyphicon glyphicon-chevron-right"></span>
+                                                <span class="sr-only">Next</span>
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <img src="~/Image/NoImage.jpg" id="emppic" width="190px" height="111px" style="margin-bottom: 2px;text-align:-webkit-center;" alt="No Image Found" />
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div id="Size" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:601px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivSIZE">
+                            @Html.Partial("_M_FinProduct_SIZE")
+                        </div>
+                    </div>
+                </div>
+                <div id="AssortedSize" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:601px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivBOX">
+                            @*@Html.Partial("_M_FinProduct_ASSORTEDSIZE")*@
+                        </div>
+                    </div>
+                </div>
+                <div id="Color" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:251px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivCOLOR">
+                            @Html.Partial("_M_FinProduct_COLOR")
+                        </div>
+                    </div>
+                </div>
+                <div id="Parts" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:251px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivPART">
+                            @Html.Partial("_M_FinProduct_PART")
+                        </div>
+                    </div>
+                </div>
+                <div id="InventoryCodesBarCode" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:626px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivINVCD">
+                            @*@Html.Partial("_M_FinProduct_INVCD")*@
+                        </div>
+                    </div>
+                </div>
+                <div id="Measurement" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:601px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivMeasurement">
+                            @Html.Partial("_M_FinProduct_Measurement")
+                        </div>
+                    </div>
+                </div>
+                <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivDocument">
+                            @Html.Partial("_UPLOADDOCUMENTS")
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

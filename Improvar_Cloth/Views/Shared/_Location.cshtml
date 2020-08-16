@@ -1,0 +1,22 @@
+﻿@model Improvar.ViewModels.CompanySelection
+
+<div class="editor-field">
+    <select name="LComid" id="LComid"  onchange="getCompanyFinancial()"  class="form-control ttext">
+        <option value="0">-- Select --</option>
+        @foreach (var item in Model.Location)
+        {
+            if (item.unitdest == Model.LocationName)
+            {
+                <option value="@item.add1" selected="selected">@item.unitdest</option>               
+            }
+            else
+            {
+                <option value="@item.add1">@item.unitdest</option>
+            }
+        }
+    </select>
+    <script>
+        getCompanyFinancial()
+    </script>
+    @Html.ValidationMessageFor(model => model.Loca)
+</div>

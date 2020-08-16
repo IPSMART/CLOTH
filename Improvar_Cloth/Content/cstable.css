@@ -1,0 +1,38 @@
+﻿ .cstable {
+        width: 100%;
+    }
+
+        .cstable tbody tr td {
+            cursor: pointer;
+        }
+
+        .cstable tbody tr:hover td {
+            background-color: #f8f59f;
+        }
+
+        .cstable tbody tr {
+            background-color: #ffffff;
+        }
+
+        .cstable thead tr {
+            background-color: #ffffff;
+            height: 24px;
+        }
+
+            .cstable thead tr th {
+                color: #767777;
+            }
+
+        .cstable tbody tr td span {
+            color: #0720e8;
+        }
+
+        .cstable tbody tr td {
+            white-space: nowrap;
+        }
+
+        .cstable tbody tr:focus {
+            /*background-color: #fcf9b1;*/
+            outline: none;
+        }
+        

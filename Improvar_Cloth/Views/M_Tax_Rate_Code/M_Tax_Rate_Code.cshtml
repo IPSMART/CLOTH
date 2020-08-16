@@ -1,0 +1,117 @@
+﻿@model Improvar.ViewModels.TaxGroupEntry
+@{
+    ViewBag.Title = "Tax Code Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Tax Group Name ", "TAXGRPNM")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_TAXGRP != null)
+        {
+            mldauto = Model.M_TAXGRP.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+
+@{
+    string PageControllerName = "M_Tax_Rate_Code";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_TAXGRP.M_AUTONO)
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Tax Group Code")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_TAXGRP.TAXGRPCD, new { htmlAttributes = new { @class = "form-control ", id = "TAXGRPCD", @placeholder = "Code", maxlength = 4, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Tax Group Name")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_TAXGRP.TAXGRPNM, new { htmlAttributes = new { @class = "form-control ", id = "TAXGRPNM", @placeholder = "Tax Group Name", maxlength = 30 } })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                        @Html.Label("", "De - Activate")
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field" style="display: inline-block;">
+                        @Html.CheckBoxFor(model => model.Checked)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+

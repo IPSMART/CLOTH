@@ -1,0 +1,75 @@
+﻿@model Improvar.Models.Permission
+<div>
+    <script>
+        $(function () {
+            if ("@Model.DefaultAction" == "V") {
+                $("#SRC_FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+                $("#SRC_TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+            }
+        });
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode != 46 && charCode > 31
+              && (charCode < 48 || charCode > 57))
+                return false;
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+                $("#SRC_SLCD").attr("readonly", false);
+                $("#SRC_DOCNO").attr("readonly", false);
+                $("#SRC_FDT").attr("readonly", false);
+                $("#SRC_TDT").attr("readonly", false);
+                $("#SRC_FLAG").attr("readonly", false);
+            }
+        });
+    </script>
+    <div class="row" style="border: 2px groove;background-color:#bddbf5;margin-top: 5px;">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Party")
+                </div>
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="SRC_SLCD" class="form-control" placeholder="Party Code" maxlength=40 />
+            </div>
+            @if (Model.MENU_TYPE == "E")
+            {
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document No.")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="SRC_DOCNO" class="form-control" placeholder="DOCNO" maxlength=16 />
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "From Date")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="SRC_FDT" class="form-control" placeholder="dd/mm/yyyy" maxlength=10 onblur="DocumentDateCHK(this,true);" />
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "To Date")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="SRC_TDT" class="form-control" placeholder="dd/mm/yyyy" maxlength=10 onblur="DocumentDateCHK(this,true);" />
+                </div>
+            }
+            <div class="col-md-4">
+                <div class="editor-label" style="margin-top: 6px;">
+                    <label for="SrcFlagCaption">@Html.DisplayFor(model => model.SrcFlagCaption) </label>  
+                </div>
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="SRC_FLAG" class="form-control" placeholder="Flag" maxlength=20 />
+            </div>
+        </div>
+    </div>
+</div>

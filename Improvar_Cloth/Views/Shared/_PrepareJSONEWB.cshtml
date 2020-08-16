@@ -1,0 +1,252 @@
+﻿@model Improvar.ViewModels.Prepare_JSONvalidation
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) {
+            var titlee = $(this).find("input").val();
+            $(this).attr('title', titlee);
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('PrepareJSON'));
+    });
+</script>
+
+<div id="GRN_MAIN" @*style="width: 2550px;height:50%; overflow-y:auto;" *@>
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_button_grid" onclick="DeleteRow()" />
+                @*<img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_button_grid" onclick="Addrow()" />*@
+                <div class="col-md-5">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'PrepareJSON');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color:darkmagenta; border: 1px inset;text-align:center;"><b style="padding-left:350px;">PREPARE JSON</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;max-height:410px;color:darkmagenta; background-color:#a0a91a;">
+                    <table id="PrepareJSON" class="resizable grid_table" cellpadding="0px" cellspacing="0px" style="width:5510px; height:100px">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="grid_th" style="width:15px;"></th>
+                                <th class="grid_th" style="width:5px;">Slno.</th>
+                                <th class="grid_th" style="width:225px;">Supply Type.</th>
+                                <th class="grid_th" style="width:225px;"> Sub. Type</th>
+                                <th class="grid_th" style="width:350px;">Doc. Type</th>
+                                <th class="grid_th" style="width:180px;">Doc. Number</th>
+                                <th class="grid_th" style="width:150px;">Doc Date</th>
+                                <th class="grid_th" style="width:150px;">Transaction Type</th>
+                                <th class="grid_th" style="width:225px;">Form_OtherPartyName</th>
+                                <th class="grid_th" style="width:325px;">From_GSTN</th>
+                                <th class="grid_th" style="width:525px;">From Address1.</th>
+                                <th class="grid_th" style="width:325px;">From Address2</th>
+                                <th class="grid_th" style="width:325px;">From Place</th>
+                                <th class="grid_th" style="width:120px;">Dispatch_Pin_Code</th>
+                                <th class="grid_th" style="width:350px;">Bill From State</th>
+                                <th class="grid_th" style="width:350px;">Dispatch From Sate</th>
+                                <th class="grid_th" style="width:500px;">To Other Party Name</th>
+                                <th class="grid_th" style="width:325px;">To_GStn</th>
+                                <th class="grid_th" style="width:725px;">To Address1</th>
+                                <th class="grid_th" style="width:325px;">To_Address2</th>
+                                <th class="grid_th" style="width:325px;">To Place</th>
+                                <th class="grid_th" style="width:120px;">Ship To Pin Code</th>
+                                <th class="grid_th" style="width:325px;">Bill To State</th>
+                                <th class="grid_th" style="width:325px;">Ship to state</th>
+                                <th class="grid_th" style="width:525px;">Product</th>
+                                <th class="grid_th" style="width:700px;">Description</th>
+                                <th class="grid_th" style="width:150px;">HSN</th>
+                                <th class="grid_th" style="width:150px;">Unit</th>
+                                <th class="grid_th" style="width:150px;">Qty</th>
+                                <th class="grid_th" style="width:120px;">Assessable value</th>
+                                <th class="grid_th" style="width:100px;">Tax Rate<br>(S+C+I+Cess+Cess Non Advol) </th>
+                                <th class="grid_th" style="width:150px;">CGST per</th>
+                                <th class="grid_th" style="width:150px;">SGST per</th>
+                                <th class="grid_th" style="width:150px;">IGST per</th>
+                                <th class="grid_th" style="width:150px;">CGST Amt</th>
+                                <th class="grid_th" style="width:150px;">SGST Amt</th>
+                                <th class="grid_th" style="width:150px;">IGST Amt</th>
+                                <th class="grid_th" style="width:150px;">Cess Amt</th>
+                                <th class="grid_th" style="width:150px;">Cess Non Advol<br>Amount</th>
+                                <th class="grid_th" style="width:150px;">Total invoice value</th>
+                                <th class="grid_th" style="width:150px;">Others</th>
+                                <th class="grid_th" style="width:100px;">Trans Mode</th>
+                                <th class="grid_th" style="width:20px;">Distance (km)</th>
+                                <th class="grid_th" style="width:320px;">Trsns Name</th>
+                                <th class="grid_th" style="width:220px;">Trans Id</th>
+                                <th class="grid_th" style="width:120px;">Trans Docno</th>
+                                <th class="grid_th" style="width:150px;">Trsns Date</th>
+                                <th class="grid_th" style="width:160px;">Vehicle No</th>
+                                <th class="grid_th" style="width:160px;">Vehicle Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Prepare_JSON != null)
+                            {
+                                for (int i = 0; i <= Model.Prepare_JSON.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.Prepare_JSON[i].Checked, new { id = "Checked_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].SLNO, new { id = "SLNO_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].Supply_Type, new SelectList(Model.EWB_SUPPLY_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].Supply_Type), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].SubSupply_Type, new SelectList(Model.EWB_SUB_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].SubSupply_Type), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].Doctype, new SelectList(Model.EWB_DOC_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].Doctype), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].blno, new { htmlAttributes = new { id = "blno_" + i, @style = "text-align: left;", @tabindex = -1, @class = "atextBoxFor" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].bldt, new { htmlAttributes = new { id = "bldt_" + i, @style = "text-align: left;", @tabindex = -1, @class = "atextBoxFor" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].Transaction_Type, new SelectList(Model.EWB_TRANSACTION_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].Transaction_Type), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].compnm, new { id = "compnm_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].frmgstno, new { id = "frm_gstno_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].frmadd1, new { htmlAttributes = new { id = "frmadd1_" + i, @style = "text-align:left;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].frmadd2, new { htmlAttributes = new { id = "frmadd2_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => model.Prepare_JSON[i].frmdistrict, new { id = "frmdistrict_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].frmpin, new { id = "dsptchpin_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].frmstatecd, new SelectList(Model.EWB_BlFrmSt_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].frmstatecd), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].disptchfrmstatecd, new SelectList(Model.EWB_DisFrmSt_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].disptchfrmstatecd), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].slnm, new { htmlAttributes = new { id = "slnm_" + i, @class = "atextBoxFor text-left", maxlength = 300 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].togstno, new { htmlAttributes = new { id = "togstno_" + i, @style = "text-align: left;", @tabindex = -1, @class = "atextBoxFor", maxlength = 10 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].toadd1, new { htmlAttributes = new { id = "toadd1_" + i, @style = "text-align: left;", @tabindex = -1, @class = "atextBoxFor", maxlength = 10 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].toadd2, new { id = "toadd2_" + i, @style = "text-align: left;", @tabindex = -1, @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].todistrict, new { id = "todistrict_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].shiptopin, new { id = "shiptopin_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].billtostcd, new SelectList(Model.EWB_BlTo_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].billtostcd), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].shiptostcd, new SelectList(Model.EWB_ShipTo_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].shiptostcd), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].itnm, new { htmlAttributes = new { id = "itnm_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].itdscp, new { htmlAttributes = new { id = "itdscp_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].hsncode, new { htmlAttributes = new { id = "hsncode_" + i, @style = "text-align: left;", @tabindex = -1, @class = "atextBoxFor" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].guomcd, new SelectList(Model.EWB_Unit_Ddown, "Value", "Text", Model.Prepare_JSON[i].guomcd), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].qnty, new { id = "qnty_" + i, @style = "text-align: right;", @tabindex = -1, @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].amt, new { id = "amt_" + i, @style = "text-align: right;", maxlength = 5, @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].TtlTax, new { id = "TtlTax_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].cgstper, new { htmlAttributes = new { id = "cgstper_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].sgstper, new { htmlAttributes = new { id = "sgstper_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].igstper, new { htmlAttributes = new { id = "igstper_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].cgstamt, new { htmlAttributes = new { id = "cgstamt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].sgstamt, new { htmlAttributes = new { id = "sgstamt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].igstamt, new { htmlAttributes = new { id = "igstamt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].cessamt, new { htmlAttributes = new { id = "cessamt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].cess_non_advol, new { htmlAttributes = new { id = "cess_non_advol_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].invamt, new { htmlAttributes = new { id = "invamt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].othramt, new { htmlAttributes = new { id = "othramt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].transMode, new SelectList(Model.EWB_Transmode_Ddown, "Value", "Text", Model.Prepare_JSON[i].transMode), new { @class = "atextBoxFor" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].distance, new { id = "distance_" + i, onblur = "UpdateDistance(blno_" + i + ".value, this.value);", @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].trslnm, new { id = "trslnm_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.Prepare_JSON[i].trgst, new { id = "trgst_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].lrno, new { htmlAttributes = new { id = "lrno_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].lrdt, new { htmlAttributes = new { id = "lrdt_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].Vehicle_No, new { htmlAttributes = new { id = "Vehicle_No_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => model.Prepare_JSON[i].Vehile_Type, new SelectList(Model.EWB_Vehicle_TYPE_Ddown, "Value", "Text", Model.Prepare_JSON[i].Vehile_Type), new { @class = "atextBoxFor" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>

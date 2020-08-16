@@ -1,0 +1,289 @@
+﻿@model Improvar.ViewModels.SubBrandEntry
+
+@{
+    ViewBag.Title = "Sub Brand Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#SBRANDCD").attr("readonly", "readonly");
+
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Sub Brand Code", "SBRANDCD")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+       if (!emptyFieldCheck("Enter Sub Brand Name ", "SBRANDNM")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+       if (!emptyFieldCheck("Enter Brand Code", "BRANDCD")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_SUBBRAND != null)
+        {
+            mldauto = Model.M_SUBBRAND.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+</script>
+<script>
+    function input(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectBrandCode(id, BRANDCD, BRANDNM) {
+        if (id == "") {
+            $("#BRANDNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlname1").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#BRANDCD").val("");
+                        $("#BRANDNM").val("");
+                        $("#msgbody_info").html("Invalid Brand Code !! ");
+                        message_value = "BRANDCD";
+
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input(BRANDCD, BRANDNM);
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CheckSubBrandCode(id) {
+        var valu = document.getElementById(id).value;
+        if (valu == "") {
+        }
+        else {
+            if ("@Model.DefaultAction" == "A") {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlname2").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msg_ok_info").focus();
+                            $("#SBRANDCD").val("")
+                            $("#msgbody_info").html(" Code Already Exists : Please Enter a Valid Code!! ");
+                            //  $("#BHDESCN").focus();
+                            message_value = "SBRANDCD";
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function fileCheck(id, index) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            var fname = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE_NAME");
+            fname.value = fileToLoad.name;
+            var fileReader = new FileReader();
+
+            fileReader.onload = function (fileLoadedEvent) {
+                var textAreaFileContents = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE");
+
+                textAreaFileContents.value = fileLoadedEvent.target.result;
+                $("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
+            };
+
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
+
+</script>
+@{
+    string PageControllerName = "M_SubBrand";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlname1" value="@Url.Action("BrandCode",PageControllerName)" />
+            <input type="hidden" id="urlname2" value="@Url.Action("CheckSubBrandCode", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+                        @Html.HiddenFor(s => s.DefaultAction)
+                                    @Html.HiddenFor(a => a.M_SUBBRAND.M_AUTONO)
+                                    @Html.HiddenFor(a => a.M_CNTRL_HDR.M_AUTONO)
+            @Html.HiddenFor(e => e.M_SUBBRAND.CLCD)
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
+                <li><a data-toggle="tab" href="#Documents">Documents</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Standard" class="tab-pane fade in active" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 2px;">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Sub Brand Code")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SUBBRAND.SBRANDCD, new { htmlAttributes = new { @class = "form-control", id = "SBRANDCD", onblur = "CheckSubBrandCode('SBRANDCD');", @placeholder = "Code", @onkeyup = "toUpper(this);", maxlength = 4 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 2px;">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Sub Brand Name")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SUBBRAND.SBRANDNM, new { htmlAttributes = new { @class = "form-control", id = "SBRANDNM", @placeholder = "Sub Brand Name", maxlength = 15 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 2px;">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Brand Code")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SUBBRAND.MBRANDCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BRANDCD", onblur = "SelectBrandCode(this.value,BRANDCD,BRANDNM);", @placeholder = "Code", onkeyup = "GetHelp('" + @Url.Action("GetBrandDetails", PageControllerName) + "','BRANDCD/BRANDNM','1/0','Brand Details','BRANDCD');toUpper(this);", maxlength = 4 } })
+                                <img src="~/Image/search.png" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBrandDetails", PageControllerName )','BRANDCD/BRANDNM','1/0','Brand Details','BRANDCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_BRAND.BRANDNM, new { htmlAttributes = new { @class = "form-control", id = "BRANDNM", maxlength = 30, @title = "Only for View", @placeholder = "Brand Name", @TabIndex=-1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 2px;">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "De - Active")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.CheckBoxFor(model => model.Checked)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivDocument">
+                            @Html.Partial("_UPLOADDOCUMENTS")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

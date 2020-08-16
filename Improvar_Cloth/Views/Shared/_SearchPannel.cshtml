@@ -1,0 +1,123 @@
+﻿@model string
+
+<script>
+    $("#searchDIV").ready(function () {
+        $('#serhpnl').dataTable({ "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]] });
+    });
+    $("#wrapper").draggable({ cursor: "move" });
+
+
+    document.onkeyup = CloseHelp;
+    function CloseHelp()
+    {
+        var KeyID = (window.event) ? event.keyCode : e.keyCode;
+        if (KeyID == 27)
+        {
+            $('#searchDIV').html("");
+        }
+        else if(KeyID==undefined)
+        {
+            $('#searchDIV').html("");
+        }
+        else
+        {
+
+        }
+    }
+ 
+    function SearchPnlRowClick(rowid) {
+        var row = document.getElementById(rowid);
+        var srhValue = document.getElementById("serhpnl").rows[row.rowIndex].cells[0].innerHTML;
+        var url = window.location.href;
+        var key = "searchValue";
+        url = updateQueryStringParameter(url, key, srhValue);
+        window.location = url;
+        $('#searchDIV').html("");
+    }
+
+</script>
+<script>
+    function imgpreview(id)
+    {
+        var w = 500;
+        var h = 200;
+        var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+        var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+        width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+        height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+        if (screen.width <= 768)
+        {
+            w = 10;
+            h = 10;
+        }
+        var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+        var top = ((height / 2) - (h / 2)) + dualScreenTop;
+
+        var ctrlimg = document.getElementById(id).src;
+        txtCode = "<HTML><HEAD>"
+        + "</HEAD><BODY TOPMARGIN=0 LEFTMARGIN=0 MARGINHEIGHT=0 MARGINWIDTH=0 style='background-color:rgba(0, 0, 0, 0.56)'><CENTER>"
+        + "<IMG src='" + ctrlimg + "' BORDER=0 NAME=FullImage  "
+        + "onload='window.resizeTo(document.FullImage.width,document.FullImage.height)'>"
+        + "</CENTER>"
+        + "</BODY></HTML>";
+        mywindow = window.open('', 'image', 'toolbar=0,location=0,menuBar=0,scrollbars=0,resizable=0, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+        mywindow.document.open();
+        mywindow.document.write(txtCode);
+    }
+</script>
+<style type="text/css">
+    #textarea {
+        border: none;
+        overflow: auto;
+        height: 400px;
+        width: 100%;
+        background-color: cornsilk;
+    }
+
+    #wrapper {
+        background-color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        float: left;
+        border: 1px #D3D3D3 solid;
+        box-shadow: 0 0 5px rgba(255, 231, 43, 0.00);
+        overflow: hidden;
+        width: 350px;
+        height: 420px;
+        max-width:120px;
+    }
+
+    #searchDIV {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 30em;
+        height: 18em;
+        margin-top: -15em; /*set to a negative number 1/2 of your height*/
+        margin-left: -13em; /*set to a negative number 1/2 of your width*/
+    }
+</style>
+
+<div id="wrapper">
+    <input type="hidden" id="ReferanceFieldID" value="" />
+    <input type="hidden" id="ReferanceColumn" value="" />
+    <div style="height:30px;width:100%;background-color:#27658a;vertical-align:middle; font-weight:bold">
+        <table id="tableHeader_srhpnl" width="100%" height="100%" cellpadding="3px" cellspacing="3px">
+            <tr>
+                @*Take a refresh button*@
+                <td align="center" style="width:80%;color:#eee;text-align:center"> </td>
+                <td align="center" style="width:10%;color: darkorange;">
+                    <span title="Refresh" class="glyphicon glyphicon-refresh" style="color:red;vertical-align:middle;cursor:pointer;"></span>
+                </td>
+                <td align="center" style="width:10%">
+                    <span title="Close" onclick="CloseHelp();" class="glyphicon glyphicon-off" style="color:red;vertical-align:middle;cursor:pointer;"></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="textarea" style="padding:5px; font-size:11px">
+        @(new HtmlString(Model))
+    </div>
+</div>

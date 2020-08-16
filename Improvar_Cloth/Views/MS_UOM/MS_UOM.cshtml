@@ -1,0 +1,258 @@
+﻿@model Improvar.ViewModels.UOMMasterEntry
+@{
+    ViewBag.Title = "UOM Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#UOMCD").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter UOM Code", "UOMCD")) { return false; }
+       if (!emptyFieldCheck("Enter UOM Name", "UOMNM")) { return false; }
+       if (!emptyFieldCheck("Enter GST UOM Code", "GST_UOMCD")) { return false; }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_UOM != null)
+        {
+            mldauto = Model.M_UOM.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckUOMCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlnameUOMCODE").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#UOMCD").val("");
+                            msgInfo("Code Already Exists : Please Enter a Valid Code!! ");
+                            message_value = "UOMCD";
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function inputGSTUOM(id, id1) {
+        var str = $("#tempHDD").val().split('/');
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectGSTUOMCD(id, GST_UOMCD, GUOMNM) {
+        if (id == "") {
+            $("#" + GUOMNM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameGSTUOM").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0")
+                    {
+                        msgInfo("Invalid GST UOM Code! Please Enter a Valid GST UOM Code !! ");
+                        $("#GST_UOMCD").val("");
+                        $("#GUOMNM").val("");
+                        message_value = "GST_UOMCD";
+                    }
+                    else
+                    {
+                        $("#tempHDD").val(result);
+                        inputGSTUOM(GST_UOMCD, GUOMNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function pageprinting()
+    {
+        debugger;
+        $("#btnprint").click();
+    }
+</script>
+
+@{
+    string PageControllerName = "MS_UOM";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlnameUOMCODE" value="@Url.Action("CheckUOMCode", PageControllerName)" />
+            <input type="hidden" id="urlnameGSTUOM" value="@Url.Action("GSTUOMCD", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" /> 
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_UOM.M_AUTONO)
+            @Html.HiddenFor(e => e.M_UOM.CLCD)
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "UOM Code")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @if (Model.DefaultAction == "A")
+                        {
+                            @Html.EditorFor(model => model.M_UOM.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", onblur = "CheckUOMCode('UOMCD');", @placeholder = "Code", @onkeyup = "toUpper(this);", maxlength = 3 } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.M_UOM.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", @placeholder = "Code", @onkeyup = "toUpper(this);", maxlength = 3 } })
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "UOM Name")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_UOM.UOMNM, new { htmlAttributes = new { @class = "form-control", id = "UOMNM", @placeholder = "UOM Name", maxlength = 5 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "GST UOM")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_UOM.GST_UOMCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GST_UOMCD", onkeyup = "GetHelp('" + @Url.Action("GetGSTUOMCD", PageControllerName) + "','GST_UOMCD/GUOMNM','1/0','GST UOM Details','GST_UOMCD')", onblur = "SelectGSTUOMCD(this.value,GST_UOMCD,GUOMNM);", @placeholder = "Code", maxlength = 3 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" style="margin-top:5px" onclick="GetHelp('@Url.Action("GetGSTUOMCD", PageControllerName)','GST_UOMCD/GUOMNM','1/0','GST UOM Details','GST_UOMCD')" />
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.MS_GSTUOM.GUOMNM, new { htmlAttributes = new { @class = "form-control", id = "GUOMNM", maxlength = 20, @title = "Only for View", @placeholder = "GST UOM Name", @TabIndex = -1, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Decimals")
+
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_UOM.DECIMALS, new { htmlAttributes = new { @class = "form-control", id = "DECIMALS", @type = "text", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 2 } })
+                    </div>
+                </div>
+            </div>
+           
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Tare Weight")
+
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_UOM.TAREWT, new { htmlAttributes = new { @class = "form-control", id = "TAREWT", maxlength = 3, @onkeypress = "return numericOnly(this,3);" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "GST Qnty Conver Factor")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_UOM.GST_QNTYCONV, new { htmlAttributes = new { @class = "form-control", id = "GST_QNTYCONV", @type = "text", maxlength = 8, @onkeypress = "return numericOnly(this,3);" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "De - Active")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.Checked)
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
