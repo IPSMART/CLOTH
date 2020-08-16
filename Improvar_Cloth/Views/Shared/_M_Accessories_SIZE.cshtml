@@ -1,0 +1,66 @@
+﻿@model Improvar.ViewModels.AccessoriesMasterEntry
+<div style="width: 625px; overflow-y:auto;" id="size">
+    <div class="table-responsive">
+
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Plus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnAddSIZE" title="Add Row" onclick="AddRowSIZE()" />
+                <img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeleteSIZE" title="Delete Row" onclick="DeleteRowSIZE()" />
+                <div class="col-md-10">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleItemACEESize');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Item Size Details</b></center>
+            </div>
+            <table id="exampleItemACEESize" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+                <thead>
+                    <tr style="height:30px;">
+                        <th class="grid_th" style="width:27px;"></th>
+                        <th class="grid_th" style="width:27px;">SL. No.</th>
+                        <th class="grid_th" style="width:75px;">SIZE CODE</th>
+                        <th class="grid_th" style="width:125px;">SIZE NAME</th>
+                        <th class="grid_th" style="width:115px;">BAR CODE</th>
+                        <th class="grid_th" style="width:100px;">INV CODE</th>
+                        <th class="grid_th" style="width:100px;">INV Description</th>
+                        <th class="grid_th" style="width:100px;">UOM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i <= Model.MSITEMINVCD.Count - 1; i++)
+                {
+                        <tr style="font-size:12px; font-weight:bold;">
+                            <td class="grid_td" style="padding-left:7px;padding-right:7px;">
+                                @Html.CheckBoxFor(model => model.MSITEMINVCD[i].Checked, new { htmlAttributes = new { id = "chkid" } })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMINVCD[i].SRLNO, new { id = "SRLNO", @title = "Only Numeric", @placeholder = "SL. No.", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMINVCD[i].SIZECD, new { id = "SIZECD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetSizeDetails", "M_Accessories") + "','" + "SIZECD_" + i + "/" + "SIZENM_" + i + "','1/0','Size Details','" + "SIZECD_" + i + "')", onblur = "SelectSIZECODE(this.value," + "SIZECD_" + i + "," + "SIZENM_" + i + ");", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetSizeDetails", "M_Accessories")','SIZECD_@i/SIZENM_@i','1/0','Size Details','SIZECD_@i')" />
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMINVCD[i].SIZENM, new { id = "SIZENM_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @placeholder = "Size Name", @class = " atextBoxFor " })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMINVCD[i].BARCODE, new { id = "BARCODE_" + i, maxlength = 15, @placeholder = "Bar Code", @class = " atextBoxFor " })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMINVCD[i].INVCD, new { id = "INVCD_" + i, maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetINVDetails", "M_Accessories") + "','" + "INVCD_" + i + "/" + "ITDESCN_" + i + "/" + "UOM_" + i + "','1/0/2','INV Details','" + "INVCD_" + i + "')", onblur = "SelectINVCODE(this.value," + "INVCD_" + i + "," + "ITDESCN_" + i + "," + "UOM_" + i + ");", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetINVDetails", "M_Accessories")','INVCD_@i/ITDESCN_@i/UOM_@i','1/0/2','INV Details','INVCD_@i')" />
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMINVCD[i].ITDESCN, new { id = "ITDESCN_" + i, maxlength = 50, @placeholder = "Inv Description", @class = " atextBoxFor ", @readonly = "readonly" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSITEMINVCD[i].UOM, new { id = "UOM_" + i, maxlength = 3, @placeholder = "UOM", @class = " atextBoxFor ", @readonly = "readonly" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

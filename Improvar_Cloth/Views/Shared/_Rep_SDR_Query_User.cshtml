@@ -1,0 +1,50 @@
+﻿@model Improvar.ViewModels.SDRQueryReport
+<div class="table-responsive" style="margin-top:0px;">
+    @if (Model.DefaultView == true)
+            {
+        @Html.ValidationSummary(true)
+        <div class="grid_title">
+            <img src="~/Image/Plus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnAdd" title="Add Row" onclick="AddUserrow()" />
+            <img src="~/Image/Minus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnDelete" title="Delete Row" onclick="DeleteUserrow()" />
+
+            <div class="col-md-8">
+                <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleUser');" />
+                <img src="~/Image/search.png" title="Help" />
+            </div>
+            <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>User Details</b></center>
+        </div>
+        <table id="exampleUser" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+            <thead>
+                <tr style="height:30px;">
+                    <th class="grid_th" style="width:18px;"></th>
+                    <th class="grid_th" style="width:30px;">SL No.</th>
+                    <th class="grid_th" style="width:150px;">UserId</th>
+                    <th class="grid_th" style="width:350px;">User Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.SDR_USER != null)
+                {
+                    for (int i = 0; i <= Model.SDR_USER.Count - 1; i++)
+                    {
+                        <tr style="font-size:12px; font-weight:bold;">
+                            <td class="grid_td">
+                                @Html.CheckBoxFor(model => model.SDR_USER[i].Checked)
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.SDR_USER[i].SLNO, new { id = "E_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.EditorFor(model => model.SDR_USER[i].USERID, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "USERID_" + i, onblur = "SelectUSERID(this.value,USERID_" + i + ",USERNAME_" + i + ");", onkeyup = "GetHelp('" + Url.Action("GetUSER_IDhelp", "Rep_SDR_Query") + "','USERID_" + i + "/USERNAME_" + i + "','0/1','Select User DETAILS','USERID_" + i + "')" } })
+                                <img src="~/Image/search.png" width="20px" height="20px" title="Help" class="Help_image_button_grid" onclick="GetHelp('@Url.Action("GetUSER_IDhelp", "Rep_SDR_Query")','USERID_@i/USERNAME_@i','1/0','Select User DETAILS','USERID_@i')" />
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.SDR_USER[i].USERNAME, new { id = "USERNAME_" + i, @class = " atextBoxFor " ,@readonly="readonly"})
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+</div>

@@ -1,0 +1,91 @@
+﻿@model Improvar.ViewModels.SubLedgerEntry
+    <div class="table-responsive" style="margin-top:0px;">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Plus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnAdd" title="Add Row" onclick="Addrow()" />
+                <img src="~/Image/Minus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnDelete" title="Delete Row" onclick="Deleterow()" />
+
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleSubLedge');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Company Associates Details</b></center>
+            </div>
+            <table id="exampleSubLedge" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+                <thead>
+                    <tr style="height:30px;">
+                        <th class="grid_th"></th>
+                        <th class="grid_th" style="width:27px;">SL No.</th>
+                        <th class="grid_th" style="width:250px;">PersonName<b style="color:darkred">*</b></th>
+                        <th class="grid_th" style="width:200px;">Designation</th>
+                        <th class="grid_th" style="width:91px;">Dept.</th>
+                        <th class="grid_th" style="width:40px;">Extn.</th>
+                        <th class="grid_th" style="width:132px;">Phone - 1</th>
+                        <th class="grid_th" style="width:142px;">Mobile - 1</th>
+                        <th class="grid_th" style="width:142px;">Mobile - 2</th>
+                        <th class="grid_th">Email</th>
+                        <th class="grid_th" style="width:75px;">DOB</th>
+                        <th class="grid_th" style="width:75px;">DOA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i <= Model.MSUBLEGCONT.Count - 1; i++)
+                    {
+                        <tr style="font-size:12px; font-weight:bold;">
+
+                            <td class="grid_td">
+                                @Html.CheckBoxFor(model => model.MSUBLEGCONT[i].Checked)
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].CPERSON, new { id = "CPN_" + i, @class = " atextBoxFor ", maxlength = 60 })
+                            </td>
+                            <td class="grid_td">
+                                @Html.DropDownListFor(model => model.MSUBLEGCONT[i].DESIG, new SelectList(Model.MSUBLEGCONT[i].Designation, "Value", "Text", Model.MSUBLEGCONT[i].DESIG), new { @class = "atextBoxFor", style = "border: hidden;" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.DropDownListFor(model => Model.MSUBLEGCONT[i].DEPT, new SelectList(Model.DropDown_list, "Value", "Text", Model.MSUBLEGCONT[i].DEPT), "", new { @class = "atextBoxFor select_3d " })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].EXTENSION, new { id = "EXTENSION_" + i, @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @class = " atextBoxFor ", maxlength = 4 })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].PHNO1STD, new { id = "PHNO1STD_" + i, style = "width:50px;margin-right: -3px;", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @class = " atextBoxFor ", maxlength = 5 })
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].PHNO1, new { id = "PHNO1_" + i, @class = " atextBoxFor ", style = "width:80px;", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 10 })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].MOBILE1PREFIX, new { id = "MOBILE1PREFIX_" + i, @class = " atextBoxFor ", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", style = "width:40px;margin-right: -3px;", maxlength = 3 })
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].MOBILE1, new { id = "MOBILE1" + i, @class = " atextBoxFor ", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", style = "width:100px;", maxlength = 12 })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].MOBILE2PREFIX, new { id = "MOBILE2PREFIX_" + i, @class = " atextBoxFor ", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", style = "width:40px;;margin-right: -3px;", maxlength = 3 })
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].MOBILE2, new { id = "MOBILE2_" + i, @class = " atextBoxFor ", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", style = "width:100px;", maxlength = 12 })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].PERSEMAIL, new { id = "E_" + i, @class = " atextBoxFor ", maxlength = 60 })
+                            </td>
+                            <td class="grid_td">
+                                @Html.EditorFor(model => Model.MSUBLEGCONT[i].PERSDOB, new { htmlAttributes = new { id = "DOB_" + i, @class = "atextBoxFor", maxlength = 10 } })
+                                <script>
+                                    $(function () { $("#DOB_@i").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, minDate: '01/01/1900', maxDate: '@Model.maxdate' }); });
+                                </script>
+                            </td>
+                            <td class="grid_td">
+                                @Html.EditorFor(model => Model.MSUBLEGCONT[i].PERSDOA, new { htmlAttributes = new { id = "DOA_" + i, @class = "atextBoxFor", maxlength = 10 } })
+                                <script>
+                                    $(function () { $("#DOA_@i").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' }); });
+                                </script>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        }
+
+    </div>

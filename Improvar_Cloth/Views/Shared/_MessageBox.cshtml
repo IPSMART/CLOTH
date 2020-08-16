@@ -1,0 +1,196 @@
+﻿<div>
+    <script>
+        function ConfirmInDiv(message, okcallback, cancelcallback) {
+            $('#Msgdiv1').show();
+            $('#confirm').show();
+            $("#msgbody_confirm").text(message);
+            $('#Confirmation_Ok').unbind('click');
+            $('#Confirmation_Ok').click(okcallback);
+            $('#Confirmation_Ok').unbind('keypress');
+            $('#Confirmation_Ok').keypress(okcallback);
+            $('#Confirmation_Cancel').unbind('click');
+            $('#Confirmation_Cancel').click(cancelcallback);
+            $('input').blur();
+            $('#Confirmation_Ok').focus();
+        }
+        function divfocus(e, id, id1, id2) {
+            if (e.keyCode == 32) {
+                closeDiv(id, id1);
+                close_box(id2);
+            }
+        }
+        function close_box(id) {
+            $(id).hide();
+            var will_go = message_value;
+            $("#" + will_go).focus();
+        }
+    </script>
+</div>
+@*Do Not Need page Load Use for Statement *@
+<div id="info" class="info_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 0, '#info_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_info" href="#" class="close_msg_button" onclick="close_box('.info_msg_box');closeDiv('#Msgdiv1',0); ">&times;</a>
+        <i style="margin-right:10px;" id="info_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_info" style="text-align:center; font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_info" type="button" value="OK" style="width:50px;height:25px;background-color:#00529B;color:#BDE5F8;" onclick="close_box('.info_msg_box');closeDiv('#Msgdiv1',0); " />
+    </div>
+</div>
+@*Need Page reload with  location.reload(); *@
+
+<div id="info1" class="info_msg_box" style="display:none;" onkeypress="divfocusevent, '#Msgdiv1', 1, '#info_msg_box';">
+    <strong style="font-size: large;">
+        <a id="close_info1" href="#" class="close_msg_button" onclick="close_box('.info_msg_box');closeDiv('#Msgdiv1',1); ">&times;</a>
+        <i style="margin-right:10px;" id="info_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_info1" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_info1" type="button" value="OK" style="width:50px;height:25px;background-color:#00529B;color:#BDE5F8;" onclick="close_box('.info_msg_box');closeDiv('#Msgdiv1',1); " />
+    </div>
+</div>
+@*Need Page reload  location.href = $("#loadurl").val();  *@
+
+<div id="info2" class="info_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 2, '#info_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_info2" href="#" class="close_msg_button" onclick="close_box('.info_msg_box');closeDiv('#Msgdiv1',2); ">&times;</a>
+        <i style="margin-right:10px;" id="info_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_info2" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_info2" type="button" value="OK" style="width:50px;height:25px;background-color:#00529B;color:#BDE5F8;" onclick="close_box('.info_msg_box');closeDiv('#Msgdiv1',2); " />
+    </div>
+</div>
+
+<div id="success" class="success_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 0, '#success_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_success" href="#" class="close_msg_button" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 0); ">&times;</a>
+        <i style="margin-right:10px;" id="success_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_success" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_success" type="button" value="OK" style="width:50px;height:25px;background-color:#4F8A10;color:#DFF2BF;" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 0); " />
+    </div>
+</div>
+@*For save Need Page reload with  location.reload();            use  foe save*@
+<div id="success1" class="success_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 1, '#success_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_success1" href="#" class="close_msg_button" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 1); ">&times;</a>
+        <i style="margin-right:10px;" id="success_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_success1" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_success1" type="button" value="OK" style="width:50px;height:25px;background-color:#4F8A10;color:#DFF2BF;" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 1); " />
+    </div>
+</div>
+@*For save Need Page reload with  location.reload();         use for edit  *@
+<div id="success2" class="success_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 2, '#success_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_success2" href="#" class="close_msg_button" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 2); ">&times;</a>
+        <i style="margin-right:10px;" id="success_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_success2" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_success2" type="button" value="OK" style="width:50px;height:25px;background-color:#4F8A10;color:#DFF2BF;" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 2); " />
+    </div>
+</div>
+@* new by hook            Use for Delete*@
+<div id="success3" class="success_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1',3, '#success_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_success3" href="#" class="close_msg_button" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 3); ">&times;</a>
+        <i style="margin-right:10px;" id="success_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_success3" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_success3" type="button" value="OK" style="width:50px;height:25px;background-color:#4F8A10;color:#DFF2BF;" onclick="close_box('.success_msg_box');closeDiv('#Msgdiv1', 3); " />
+    </div>
+</div>
+
+<div id="warning" class="warning_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 0, '#warning_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_warning" href="#" class="close_msg_button" onclick="close_box('.warning_msg_box');closeDiv('#Msgdiv1', 0); ">&times;</a>
+        <i style="margin-right:10px;" id="warning_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_warning" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_warning" type="button" value="OK" style="width:50px;height:25px;background-color:#9F6000;color:#FEEFB3;" onclick="close_box('.warning_msg_box');closeDiv('#Msgdiv1', 0); " />
+    </div>
+</div>
+<div id="warning1" class="warning_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 1, '#warning_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_warning1" href="#" class="close_msg_button" onclick="close_box('.warning_msg_box');closeDiv('#Msgdiv1', 1); ">&times;</a>
+        <i style="margin-right:10px;" id="warning_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_warning1" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_warning1" type="button" value="OK" style="width:50px;height:25px;background-color:#9F6000;color:#FEEFB3;" onclick="close_box('.warning_msg_box');closeDiv('#Msgdiv1', 1); " />
+    </div>
+</div>
+<div id="warning2" class="warning_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 2, '#warning_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_warning2" href="#" class="close_msg_button" onclick="close_box('.warning_msg_box');closeDiv('#Msgdiv1', 2); ">&times;</a>
+        <i style="margin-right:10px;" id="warning_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_warning2" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_warning2" type="button" value="OK" style="width:50px;height:25px;background-color:#9F6000;color:#FEEFB3;" onclick="close_box('.warning_msg_box');closeDiv('#Msgdiv1', 2); " />
+    </div>
+</div>
+<div id="error" class="error_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 0, '#error_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_error" href="#" class="close_msg_button" onclick="close_box('.error_msg_box');closeDiv('#Msgdiv1', 0); ">&times;</a>
+        <i style="margin-right:10px;" id="error_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_error" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_error" type="button" value="OK" style="width:50px;height:25px;background-color:#D8000C;color:#FFBABA;" onclick="close_box('.error_msg_box');closeDiv('#Msgdiv1', 0); " />
+    </div>
+</div>
+<div id="error1" class="error_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 1, '#error_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_error1" href="#" class="close_msg_button" onclick="close_box('.error_msg_box');closeDiv('#Msgdiv1', 1); ">&times;</a>
+        <i style="margin-right:10px;" id="error_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_error1" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_error1" type="button" value="OK" style="width:50px;height:25px;background-color:#D8000C;color:#FFBABA;" onclick="close_box('.error_msg_box');closeDiv('#Msgdiv1', 1); " />
+    </div>
+</div>
+<div id="error2" class="error_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 2, '#error_msg_box');">
+    <strong style="font-size: large;">
+        <a id="close_error2" href="#" class="close_msg_button" onclick="close_box('.error_msg_box');closeDiv('#Msgdiv1', 2); ">&times;</a>
+        <i style="margin-right:10px;" id="error_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_error2" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="btnok_error2" type="button" value="OK" style="width:50px;height:25px;background-color:#D8000C;color:#FFBABA;" onclick="close_box('.error_msg_box');closeDiv('#Msgdiv1', 2); " />
+    </div>
+</div>
+
+
+<div id="confirm" class="confirm_msg_box" style="display:none;" onkeypress="divfocus(event, '#Msgdiv1', 0, '#confirm_msg_box');">
+    <strong style="font-size: large;">
+        <a id="Confirmation_Cancel" href="#" class="close_msg_button" onclick="close_box('.confirm_msg_box');closeDiv('#Msgdiv1', 0); ">&times;</a>
+        <i style="margin-right:10px;" id="confirm_i" class="fa"></i>
+    </strong>
+    <div id="msgbody_confirm" style="text-align:center;font-weight:bold; font-size:12px"> </div>
+    <div align="center" style="width:100%">
+        <br />
+        <input id="Confirmation_Ok" type="button" value="Ok" style="width:50px;height:25px;background-color:#D8000C;color:#FFBABA;" />
+        <input id="Confirmation_Cancel" type="button" value="Cancel" style="width:50px;height:25px;background-color:#D8000C;color:#FFBABA;" onclick="close_box('.confirm_msg_box');closeDiv('#Msgdiv1', 0); " />
+
+    </div>
+</div>

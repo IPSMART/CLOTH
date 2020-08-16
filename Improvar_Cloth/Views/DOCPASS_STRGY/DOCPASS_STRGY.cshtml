@@ -1,0 +1,431 @@
+﻿@model Improvar.ViewModels.DocumentAuthorizationEntry
+@{
+    ViewBag.Title = "Document Authorization Rule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#EFF_DT").attr("readonly", "readonly");
+            $("#doctyp").attr("disabled", "true");
+           }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Select Document Type", "doctyp")) { return false; }
+       if (!emptyFieldCheck("Enter Effective Date", "EFF_DT")) { return false; }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_DOC_AUTH != null)
+        {
+            mldauto = Model.M_DOC_AUTH.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" == "A") {
+            $("#EFF_DT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        }
+    });
+</script>
+<script>
+    function input6(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectAuthCode(id, AUTHCD_, AUTHNM_) {
+        if (id == "") {
+            $("#" + AUTHCD_.id).val();
+            $("#" + AUTHNM_.id).val();
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlauthhelp").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        msgInfo(" Invalid Code ! ");
+                        $("#" + AUTHCD_.id).val();
+                        $("#" + AUTHNM_.id).val();
+                        message_value = AUTHCD_.id;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input6(AUTHCD_, AUTHNM_);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    }
+</script>
+
+<script>
+    function AddrowLEVEL1(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddLEVEL1").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL1").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivLEVEL1").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function DeleteRowLEVEL1(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteLEVEL1").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL1").animate({ marginTop: '0px' }, 50);
+                $("#partialdivLEVEL1").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function AddrowLEVEL2(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddLEVEL2").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL2").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivLEVEL2").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function DeleteRowLEVEL2(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteLEVEL2").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL2").animate({ marginTop: '0px' }, 50);
+                $("#partialdivLEVEL2").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function AddrowLEVEL3(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddLEVEL3").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL3").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivLEVEL3").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function DeleteRowLEVEL3(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteLEVEL3").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL3").animate({ marginTop: '0px' }, 50);
+                $("#partialdivLEVEL3").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function AddrowLEVEL4(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddLEVEL4").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL4").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivLEVEL4").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function DeleteRowLEVEL4(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteLEVEL4").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL4").animate({ marginTop: '0px' }, 50);
+                $("#partialdivLEVEL4").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function AddrowLEVEL5(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddLEVEL5").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL5").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivLEVEL5").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function DeleteRowLEVEL5(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteLEVEL5").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivLEVEL5").animate({ marginTop: '0px' }, 50);
+                $("#partialdivLEVEL5").html(result);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+@{
+    string PageControllerName = "DOCPASS_STRGY";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="btnAddLEVEL1" value="@Url.Action("AddRowLEVEL1", PageControllerName)" />
+            <input type="hidden" id="btnDeleteLEVEL1" value="@Url.Action("DeleteRowLEVEL1", PageControllerName)" />
+            <input type="hidden" id="btnAddLEVEL2" value="@Url.Action("AddRowLEVEL2", PageControllerName)" />
+            <input type="hidden" id="btnDeleteLEVEL2" value="@Url.Action("DeleteRowLEVEL2", PageControllerName)" />
+            <input type="hidden" id="btnAddLEVEL3" value="@Url.Action("AddRowLEVEL3", PageControllerName)" />
+            <input type="hidden" id="btnDeleteLEVEL3" value="@Url.Action("DeleteRowLEVEL3", PageControllerName)" />
+            <input type="hidden" id="btnAddLEVEL4" value="@Url.Action("AddRowLEVEL4", PageControllerName)" />
+            <input type="hidden" id="btnDeleteLEVEL4" value="@Url.Action("DeleteRowLEVEL4", PageControllerName)" />
+            <input type="hidden" id="btnAddLEVEL5" value="@Url.Action("AddRowLEVEL5", PageControllerName)" />
+            <input type="hidden" id="btnDeleteLEVEL5" value="@Url.Action("DeleteRowLEVEL5", PageControllerName)" />
+            <input type="hidden" id="urlauthhelp" value="@Url.Action("GetAUTHCDhelp", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_DOC_AUTH.M_AUTONO)
+            <ul class="nav nav-tabs">
+                <li class="active">  <a data-toggle="tab" href="#Standard">Standard</a></li>
+                <li><a data-toggle="tab" href="#CompanyLocation">Company Location</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Standard" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row">
+                        <div class="col-md-4" style="margin-top: 2px;">
+                            <div class="editor-label">
+                                @Html.Label("", "Document Type")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.HiddenFor(model => model.M_DOC_AUTH.DOCCD)
+                                <select id="doctyp" name="doctyp" class="form-control">
+                                    <option value="0" selected="selected">====Select Document Type====</option>
+                                    @foreach (var i in Model.DocumentType)
+                                    {
+                                        if (Model.DefaultAction == "A")
+                                        {
+                                    <option value="@i.value">@i.text</option>
+                                        }
+                                        else
+                                        {
+                                            if (Model.M_DOC_AUTH.DOCCD == i.value)
+                                            {
+                                    <option value="@i.value" selected="selected">@i.text</option>
+                                            }
+                                            else
+                                            {
+                                    <option value="@i.value">@i.text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Effective Date")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_DOC_AUTH.EFF_DT, new { htmlAttributes = new { @class = "form-control", id = "EFF_DT", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4" style="margin-top: 2px;">
+                            <div class="editor-label">
+                                @Html.Label("", "De - Activate")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.CheckBoxFor(model => model.Checked)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="background-color:#c4b9b9;width:827px;margin-top:15px;">
+                        <div id="partialdivLEVEL1">
+                            @Html.Partial("_DOCPASS_STRGY_LEVEL1")
+                        </div>
+                    </div>
+                    <div class="row" style="background-color:#c4b9b9;width:827px;margin-top:15px;">
+
+                        <div id="partialdivLEVEL2">
+                            @Html.Partial("_DOCPASS_STRGY_LEVEL2")
+
+                        </div>
+                    </div>
+                    <div class="row" style="background-color:#c4b9b9;width:827px;margin-top:15px;">
+                        <div id="partialdivLEVEL3">
+                            @Html.Partial("_DOCPASS_STRGY_LEVEL3")
+                        </div>
+                    </div>
+                    <div class="row" style="background-color:#c4b9b9;width:827px;margin-top:15px;">
+                        <div id="partialdivLEVEL4">
+                            @Html.Partial("_DOCPASS_STRGY_LEVEL4")
+                        </div>
+
+                    </div>
+                    <div class="row" style="background-color:#c4b9b9;width:827px;margin-top:15px;">
+                        <div id="partialdivLEVEL5">
+                            @Html.Partial("_DOCPASS_STRGY_LEVEL5")
+                        </div>
+                    </div>
+                </div>
+                <div id="CompanyLocation" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row">
+                        <div class="editor-field">
+                            <table id="CompanyLoation" cellpadding="3PX" cellspacing="3PX" border="1" width="300px" style="margin-left:15px;">
+                                <tr>
+                                    <td align="center">
+                                        <input type="checkbox" name="Test" onclick="SetAllCheckBoxes(this, 'CompanyLoation')" />
+                                    </td>
+                                    <td align="center">
+                                        Company Name
+                                    </td>
+                                    <td align="center">
+                                        Location Name
+                                    </td>
+                                </tr>
+                                @for (int i = 0; i < Model.CompanyLocationName.Count(); i++)
+                                {
+                                <tr>
+                                    <td align="center">
+                                        @Html.CheckBoxFor(model => model.CompanyLocationName[i].Checked, new { id = "SelectCheck_" + i })
+                                    </td>
+                                    <td align="center">
+                                        @{ string STRC = Model.CompanyLocationName[i].COMPNM.ToString();}
+                                        @Html.DisplayFor(model => STRC)
+                                        @Html.HiddenFor(model => model.CompanyLocationName[i].COMPCD)
+                                    </td>
+                                    <td align="center">
+                                        @{ string STRL = Model.CompanyLocationName[i].LOCNM.ToString();}
+                                        @Html.DisplayFor(model => STRL)
+                                        @Html.HiddenFor(model => model.CompanyLocationName[i].LOCCD)
+                                    </td>
+                                </tr>
+                                                }
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+                                            }
+                                            else
+                                            {
+                                                @ViewBag.ErrorMessage
+                                            }
+                                            <div class="container">
+                                                <div id="helpDIV">
+                                                </div>
+                                            </div>
+                                            }

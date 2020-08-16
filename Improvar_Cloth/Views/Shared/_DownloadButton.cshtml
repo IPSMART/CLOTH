@@ -1,0 +1,10 @@
+﻿
+<div class="side-by-side">
+    @Html.ActionLink("PDF", "GetPDF", "RPTViewer", new { @class = "btn btn-info",id="btnPDF" })
+    @Html.ActionLink("Excel", "GetExcel", "RPTViewer", new { @class = "btn btn-info" })
+</div>
+<div class="side-by-side form-inline">
+    <span>Go to Page</span>
+    <input id="pagenum" type="number" min="0" class="form-control" style="width:80px" />&nbsp;
+    <input type="button" class="btn btn-success" value="Go" onclick="GOTO();" />
+</div>

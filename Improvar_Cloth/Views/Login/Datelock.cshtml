@@ -1,0 +1,36 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Package Expired</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="intcut icon" type="image/x-icon" href="~/favicon.ico">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-1">
+                <img src="~/Image/CAUTION.png" width="80px" height="100px" />
+            </div>
+            <div class="col-md-11">
+                <h1 style="color:red">@ViewBag.Title</h1>
+            </div>
+        </div>
+        <hr />
+        <h3>For Renewal or Any Update, Contact <span style="color:blue">IPSMART Team.</span> Contact Details Given Below ....</h3>
+        <hr />
+        <div class="row">
+            <div class="col-md-12">
+                <p><span style="font-weight:bold">Phone    : </span>033 4602 1119</p>
+                <p><span style="font-weight:bold">Mail     : </span><span style="color:blue">ipsmart.infotech@gmail.com</span></p>
+                <p><span style="font-weight:bold">Web Site : </span><a href="http://ip-smart.in" target="_blank"><span style="color:blue">www.ip-smart.in/</span></a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

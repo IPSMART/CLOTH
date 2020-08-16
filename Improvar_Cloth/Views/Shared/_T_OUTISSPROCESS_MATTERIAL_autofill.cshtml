@@ -1,0 +1,103 @@
+﻿@model Improvar.ViewModels.IssueForProductionEntry
+<div class="table-responsive">
+    @if (Model.DefaultView == true)
+    {
+        @Html.ValidationSummary(true)
+        <div class="grid_title">
+            <div class="col-md-8">
+                <input type="text" id="searchDis" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleProdBilMatIssue_autofill');" />
+                <img src="~/Image/search.png" title="Help" />
+            </div>
+            <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Material Issue view </b></center>
+        </div>
+        if (Model.TPROGMAST != null)
+        {
+            Improvar.Models.TPROGMAST query = (from c in Model.TPROGMAST where (c.SLNO == Model.SERIAL) select c).SingleOrDefault();
+            if (query != null)
+            {
+                var helpM = new List<Improvar.Models.TTXNDTLview>();
+                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.TTXNDTLview>>(query.ChildData);
+                if (Model.TTXNDTLview != null)
+                {
+                    Model.TTXNDTLview.Clear();
+                }
+                Model.TTXNDTLview = helpM;
+            }
+            <table id="exampleProdBilMatIssue_autofill" class="resizable grid_table" cellpadding="0px" cellspacing="0px" width="100%">
+                <thead>
+                    <tr style="height:30px">
+                        <th class="grid_th" style="width:60px">Item Code</th>
+                        <th class="grid_th" style="width:60px">Item Name</th>
+                        @if (Model.MENU_PARA.ToString() != "KT")
+                        {
+                            <th class="grid_th" style="width:60px">Part Code</th>
+                            <th class="grid_th" style="width:60px">Part Name</th>
+                            <th class="grid_th" style="width:60px">Color Code</th>
+                            <th class="grid_th" style="width:60px">Color Name</th>
+                            <th class="grid_th" style="width:60px">Size Code</th>
+                            <th class="grid_th" style="width:60px">Size Name</th>
+                        }
+                        <th class="grid_th" style="width:60px">UOM</th>
+                        <th class="grid_th" style="width:60px">Bom Quantity</th>
+                        <th class="grid_th" style="width:60px">Quantity</th>
+                        @*<th class="grid_th" style="width:60px">Pend Quantity</th>*@
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.TTXNDTLview != null)
+                    {
+                        for (int i = 0; i <= Model.TTXNDTLview.Count - 1; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.TTXNDTLview[i].ITCD, new { htmlAttributes = new { @class = "atextBoxFor", id = "ITCD_" + i, maxlength = 10, @readonly = "readonly" } })
+                                    @Html.HiddenFor(model => model.TTXNDTLview[i].ParentSerialNo, new { id = "P_SLNO_" + i })
+                                </td>
+
+                                <td>
+                                    @Html.EditorFor(model => model.TTXNDTLview[i].ITNM, new { htmlAttributes = new { @class = "atextBoxFor", id = "ITNM_" + i, maxlength = 30, @readonly = "readonly" } })
+                                </td>
+                                @if (Model.MENU_PARA.ToString() != "KT")
+                                {
+                                    <td>
+                                        @Html.EditorFor(model => model.TTXNDTLview[i].PARTCD, new { htmlAttributes = new { @class = "atextBoxFor", id = "PARTCD_" + i, maxlength = 4 } })
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.TTXNDTLview[i].PARTNM, new { htmlAttributes = new { @class = "atextBoxFor", id = "PARTNM_" + i, maxlength = 30 } })
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.TTXNDTLview[i].COLRCD, new { htmlAttributes = new { @class = "atextBoxFor", id = "COLRCD_" + i, maxlength = 4 } })
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.TTXNDTLview[i].COLRNM, new { htmlAttributes = new { @class = "atextBoxFor", id = "COLRNM_" + i, maxlength = 30 } })
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.TTXNDTLview[i].SIZECD, new { htmlAttributes = new { @class = "atextBoxFor", id = "SIZECD_" + i, maxlength = 4 } })
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.TTXNDTLview[i].SIZENM, new { htmlAttributes = new { @class = "atextBoxFor", id = "SIZENM_" + i, maxlength = 30 } })
+                                    </td>
+                                }
+                                <td>
+                                    @Html.EditorFor(model => model.TTXNDTLview[i].UOM, new { htmlAttributes = new { @class = "atextBoxFor", id = "UOM_" + i, maxlength = 30, @readonly = "readonly" } })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.TTXNDTLview[i].BOMQNTY, new { htmlAttributes = new { @class = "atextBoxFor", id = "BOMQNTY_" + i, maxlength = 30, @readonly = "readonly" } })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.TTXNDTLview[i].QNTY, new { htmlAttributes = new { @class = "atextBoxFor", id = "QNTY_" + i, maxlength = 30, onkeyup = "RefreshMaterial();" } })
+                                </td>
+                                @*<td>
+                                        @Html.EditorFor(model => model.TTXNDTLview[i].PENDQNTY, new { htmlAttributes = new { @class = "atextBoxFor", id = "PENDQNTY_" + i, maxlength = 30 } })
+                                    </td>*@
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+    }
+
+</div>

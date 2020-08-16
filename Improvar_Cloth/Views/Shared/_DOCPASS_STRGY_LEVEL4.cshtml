@@ -1,0 +1,59 @@
+﻿@model Improvar.ViewModels.DocumentAuthorizationEntry
+<div class="table-responsive" style="max-height:109px;overflow-y:auto; border:5px;">
+    @if (Model.DefaultView == true)
+    {
+        @Html.ValidationSummary(true)
+        <div class="grid_title">
+            <img src="~/Image/Plus.png" id="btnAddEmpRateAl" class="Help_image_button_grid" title="Add Row" onclick="AddrowLEVEL4()" />
+            <img src="~/Image/Minus.png" id="btnDeleteEmpRateAl" class="Help_image_button_grid" title="Delete Row" onclick="DeleteRowLEVEL4()" />
+            <div class="col-md-8">
+                <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampledocpasslvl4');" />
+                <img src="~/Image/search.png" title="Help" />
+            </div>
+            <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Level 4</b></center>
+        </div>
+        <table id="exampledocpasslvl4" class="resizable grid_table">
+            <thead>
+                <tr style="height:30px;">
+                    <th class="grid_th"></th>
+                    <th class="grid_th" style="width:4%;">SL NO.</th>
+                    <th class="grid_th">Authority Code</th>
+                    <th class="grid_th" style="width:54%;">Authority Name</th>
+                    <th class="grid_th">From Amount</th>
+                    <th class="grid_th">To Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.MDOCAUTHLEVEL4 != null)
+                {
+                    for (int i = 0; i <= Model.MDOCAUTHLEVEL4.Count - 1; i++)
+                    {
+                        <tr>
+                            <td class="grid_td">
+                                @Html.CheckBoxFor(model => model.MDOCAUTHLEVEL4[i].Checked, new { htmlAttributes = new { id = "chkid" } })
+                                @Html.HiddenFor(model => model.MDOCAUTHLEVEL4[i].DOCCD)
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MDOCAUTHLEVEL4[i].SLNO, new { id = "SLNO", @title = "Only Numeric", @placeholder = "SRL. No.", @class = " atextBoxFor ", maxlength = 4, style = "margin-left: 0px;", @readonly = "readponly" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MDOCAUTHLEVEL4[i].AUTHCD, new { id = "AUTHCDL4_" + i, maxlength = 5, @class = "atextBoxFor textbox_image ", onblur = "SelectAuthCode(this.value," + "AUTHCDL4_" + i + "," + "AUTHNML4_" + i + ");", style = "margin-left: 0px;", onkeyup = "GetHelp('" + @Url.Action("GetAUTHCDhelp", "DOCPASS_STRGY") + "','AUTHCDL4_" + i + "/AUTHNML4_" + i + "','1/0','Select Authorization Details','AUTHCDL4_" + i + "')" })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetAUTHCDhelp", "DOCPASS_STRGY")','AUTHCDL4_@i/AUTHNML4_@i','1/0','Select Authorization Details','AUTHCDL4_@i')" />
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MDOCAUTHLEVEL4[i].AUTHNM, new { id = "AUTHNML4_" + i, maxlength = 10, @class = " atextBoxFor ", @title = "Only For Display", @readonly = "readonly" })
+
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MDOCAUTHLEVEL4[i].AMT_FR, new { id = "AMTFRL1_" + i, @title = "Only Numeric", @onkeypress = "return numericOnly(this,0);", @class = " atextBoxFor ", maxlength = 12, style = "margin-left:0px;" })
+                            </td>
+                            <td class="grid_td">
+                                @Html.TextBoxFor(model => Model.MDOCAUTHLEVEL4[i].AMT_TO, new { id = "AMTTOL1_" + i, @title = "Only Numeric", @onkeypress = "return numericOnly(this,0);", @class = " atextBoxFor ", maxlength = 12, style = "margin-left: 0px;" })
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+</div>

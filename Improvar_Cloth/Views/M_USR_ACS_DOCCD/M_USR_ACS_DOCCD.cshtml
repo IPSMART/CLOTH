@@ -1,0 +1,155 @@
+﻿@model Improvar.ViewModels.UserWiseDocumentTypeRightsEntry
+
+@{
+    ViewBag.Title = "User Wise Document Type Rights";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#user_nav").hide();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        return true;
+    }
+</script>
+
+
+
+<script>
+    function GetDocumentRights() {
+        var user = $("#userID").val();
+        if (user == "") {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msgbody_info").html("Please Select User First !");
+            message_value = "userID";
+            return false;
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                url: $("#urlnameDOCRIGHTS").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: { user: user },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialdiv").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdiv").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+      @{
+          string mldauto = "";
+          if (@Model.M_USR_ACS_DOCCD != null)
+          {
+              mldauto = Model.M_USR_ACS_DOCCD.USER_ID.ToString();
+          }
+          else
+          {
+              mldauto = "";
+          }
+      }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }</script>
+<script>
+    function UserChk() {
+
+    }
+</script>
+@{
+    string PageControllerName = "M_USR_ACS_DOCCD";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <input type="hidden" id="loadurl" value="@Url.Action("M_Month", PageControllerName,new { op="V"})" />
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlnameDOCRIGHTS" value="@Url.Action("Get_Rights", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Select User")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+
+                @if (Model.DefaultAction != "V")
+                {
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => Model.userID, new SelectList(Model.User, "Value", "Text", Model.userID), "====Select User====", new { onclick = "return false;", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            <input class="btn btn-primary" type="button" value="Get Rights" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="GetDocumentRights();" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.TextBoxFor(model => Model.userID, new { @class = "form-control" })
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="row" style="margin-top: 0px;width:max-content;height:auto;background-color:#c4b9b9">
+                <div id="partialdiv">
+                    @if (Model.DefaultAction == "E" || Model.DefaultAction == "V")
+                    {
+                        @Html.Partial("_M_USR_ACS_DOCCD_GRID")
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        <b>NOTE:</b> If no rights available then automatic put all rights of the USER.
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

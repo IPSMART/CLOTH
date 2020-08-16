@@ -1,0 +1,775 @@
+﻿@model Improvar.ViewModels.DocumentTypeEntry
+@{
+    ViewBag.Title = "Document Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string PageControllerName = "MS_DOCTYPE";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Document Type", "DOCTYPE")) { return false; }
+        if (!emptyFieldCheck("Enter Document Code", "DOCCD")) { return false; }
+        if (!emptyFieldCheck("Enter Document Description", "DOCNM")) { return false; }
+        if (!emptyFieldCheck("Enter Prefix", "DOCPRFX")) { return false; }
+        if (!emptyFieldCheck("Select Document Numbering", "DOCJNRL")) { return false; }
+        if (!emptyFieldCheck("Select Payment Receipt Tag", "PRO")) { return false; }
+        if (!emptyFieldCheck("Enter Document Footer", "DOCFOOT")) { return false; }
+        if (!emptyFieldCheck("Enter Document Number Max Length", "DOCNOMAXLENGTH")) { return false; }
+        if (!emptyFieldCheck("Select Document Number W/O Zero", "DOCNOWOZERO")) { return false; }
+        if (!emptyFieldCheck("Enter Document Number Pattern", "DOCNOPATTERN")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_DOCTYPE != null)
+        {
+            mldauto = Model.M_DOCTYPE.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    (function () {
+        if (window.addEventListener) {
+            window.addEventListener('load', run, false);
+        } else if (window.attachEvent) {
+            window.attachEvent('onload', run);
+        }
+        function run() {
+            if ('@Model.DefaultAction' != 'V') {
+                var t = document.getElementById('TableDOCNOPATTERN');
+                var rows = t.rows;
+                for (var i = 0; i < rows.length; i++) {
+                    rows[i].onclick = function (event) {
+                        if (this.parentNode.nodeName == 'THEAD') {
+                            return;
+                        }
+                        var cells = this.cells; //cells collection
+                        var f1 = document.getElementById('DOCNOPATTERN');
+                        var txt = f1.value + cells[0].innerHTML;
+                        txt = txt.replace(/&amp;/g, '&');
+                        f1.value = txt;
+                        $("#DOCNOPATTERN").focus();
+                    };
+                }
+            }
+        }
+    })();
+</script>
+<script>
+    function changeDOCTYPE(id) {
+        debugger;
+        var value = ($("#" + id).find(":selected").val());
+        $.ajax({
+            type: 'GET',
+            url: "@Url.Action("ChangeDocumentType", PageControllerName)",
+            data: {
+                val: value
+            },
+            success: function (result) {
+                debugger
+                if (result == "0") {
+                } else {//
+                    //document.getElementById("DOCCD").value = returncolvalue(result, "DOCCD");
+                    var doccd = returncolvalue(result, "DOCCD");
+                    if (doccd.toString().length > 4) {
+                        document.getElementById("DOCCD").value = doccd.substring(0, 4);
+                    } else {
+                        document.getElementById("DOCCD").value = doccd;
+                    }
+
+
+                    document.getElementById("DOCNM").value = returncolvalue(result, "DOCNM");
+                    //document.getElementById("DOCPRFX").value = returncolvalue(result, "DOCPRFX");
+                    $('#DOCJNRL option[value="' + returncolvalue(result, "DOCJNRL") + '"]').attr("selected", "selected");
+                    document.getElementById("DOCNOPATTERN").value = returncolvalue(result, "DOCNOPATTERN");
+                    document.getElementById("DOCNOMAXLENGTH").value = returncolvalue(result, "DOCNOMAXLENGTH");
+                    $('#PRO option[value="' + returncolvalue(result, "PRO") + '"]').attr("selected", "selected");
+                    $('#DOCNOWOZERO option[value="' + returncolvalue(result, "DOCNOWOZERO") + '"]').attr("selected", "selected");
+                    document.getElementById("DOCFOOT").value = returncolvalue(result, "DOCFOOT");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function SelectDOCCode(id, cd, nm) {
+        if (id == "") {
+            $("#" + cd).val("");
+            $("#" + nm).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetDOC_Code", PageControllerName)",
+                data: { val: id },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val();
+                        document.getElementById(cd).value = returncolvalue(findstr, "DOCCD");
+                        document.getElementById(nm).value = returncolvalue(findstr, "DOCNM");
+                    }
+                    else {
+                        msgInfo(result);
+                        $("#" + cd).val("");
+                        $("#" + nm).val(""); 
+                        message_value = cd;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CheckDocumentCode(id) {
+        var valu = document.getElementById(id).value;
+        if (valu == "") {
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlname").val(),
+                data: {
+                    val: valu
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        msgInfo(" Code Already Exists : Please Enter a Valid Code !! ");
+                        $("#DOCCD").val("");   
+                        message_value = "DOCCD";
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function ViewCompdetails() {
+        debugger;
+        //if (!emptyFieldCheck("", "DOCCD")) { return false; }
+     
+      
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("UpdateCompanycode", PageControllerName )",
+            data: $('form').serialize(),
+            success: function (result) {
+                debugger;
+                if (result == "0") { msgInfo("record not found !!") }
+                $("#WaitingMode").hide();
+               // $('#TableCOMPDETAILS').show();
+                $("#partialdivFamily").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+
+</script>
+<script>
+    function pageprinting() {
+        $("#btnprint").click();
+    }
+</script>
+<script>
+    function AddToPrivious() {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("SavePreviousYrData", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                   msgSuccess1("Previous year data save sucessfully");
+                    message_value = "btnPrvyr";
+                }
+                else {
+                    msgWarning(result);
+                    message_value = "btnPrvyr";
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+@{
+    var module = Module.MODULE;
+    if (Module.MODULE == "FINANCE")
+    {
+        module = "F";
+    }
+    else if (Module.MODULE == "INVENTORY")
+    {
+        module = "I";
+    }
+    else if (Module.MODULE == "SALES")
+    {
+        module = "S";
+    }
+    else if (Module.MODULE == "PAYROLL")
+    {
+        module = "P";
+    }
+
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlname" value="@Url.Action("CheckDocumentCode", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_DOCTYPE.M_AUTONO)
+
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#DocumentDetail">Standard</a></li>
+                <li>
+                    <a data-toggle="tab" href="#CompanyLocation">Company Location</a>
+                </li>
+                <li><a data-toggle="tab" href="#exempl" onclick="ViewCompdetails();"> Example</a></li>
+
+            </ul>
+            <div class="tab-content">
+                <div id="DocumentDetail" class="tab-pane fade in active" style="margin-top: 10px;">
+                    @*<div class="col-lg-6" style="border:2px solid;border-radius:10px;border-color:#4c7c94;margin-bottom:-25px;">*@
+                 <div class="row">
+                     <div class="col-lg-9">
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Doc. Type")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+
+                             <div class="col-md-8">
+                                 <div class="editor-field">
+                                     @if (Model.DefaultAction == "A")
+                                     {
+                                         @Html.DropDownListFor(model => model.M_DOCTYPE.DOCTYPE, new SelectList(Model.DocumentType, "Value", "Text"), "Select doctype", new { id = "DOCTYPE", @class = "form-control", onchange = "changeDOCTYPE(this.id)" })
+                                     }
+                                     else { @Html.DropDownListFor(model => model.M_DOCTYPE.DOCTYPE, new SelectList(Model.DocumentType, "Value", "Text"), "Select doctype", new { id = "DOCTYPE", @class = "form-control", @TabIndex = -1, @readonly = "readonly", @style = "pointer-events:none" })
+                                     }
+                                 </div>
+                             </div>
+                             <div class="col-sm-1">
+                                 @if (Model.DefaultAction == "V")
+                                 {
+                                     if (Model.isPresentinLastYrSchema == "")
+                                     { }
+                                     if (Model.isPresentinLastYrSchema == "ADD")
+                                     {<button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Add to last year schema</button>
+                                     }
+                                     if (Model.isPresentinLastYrSchema == "EDIT")
+                                     {<button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Modify to last year schema</button>
+                                     }
+                                 }
+
+                             </div>
+
+                         </div>
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Document Code")
+                                 </div>
+                             </div>
+                             <div class="col-md-3">
+                                 <div class="editor-field">
+                                     @if (Model.DefaultAction == "A")
+                                     {
+                                         @Html.EditorFor(model => model.M_DOCTYPE.DOCCD, new { htmlAttributes = new { @class = "form-control", id = "DOCCD", onblur = "CheckDocumentCode('DOCCD');", @onkeyup = "toUpper(this);", maxlength = 4 } })
+
+                                     }
+                                     else
+                                     {
+                                         @Html.EditorFor(model => model.M_DOCTYPE.DOCCD, new { htmlAttributes = new { @class = "form-control", id = "DOCCD", @onkeyup = "toUpper(this);", maxlength = 4, @TabIndex = -1,@readonly = "readonly" } })
+                                     }
+                                 </div>
+                             </div>
+                             <div class="col-md-10" style="padding-left:14px;margin-top:3px;">
+                                 <div class="editor-label" style="background-color: #4682b4;padding-left:14px;color:white;border-radius:2px;">
+                                     @if (Model.DefaultAction == "A")
+                                     {
+                                         @Html.Label("'" + module + "' will automatically add before Doc Code")
+                                     }
+
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Doc.Description")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+                             <div class="col-md-11">
+                                 <div class="editor-field">
+                                     @Html.EditorFor(model => model.M_DOCTYPE.DOCNM, new { htmlAttributes = new { @class = "form-control", id = "DOCNM", @placeholder = "Document Description", maxlength = 35 } })
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Doc. Prefix")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+                             <div class="col-md-3">
+                                 <div class="editor-field">
+                                     @Html.EditorFor(model => model.M_DOCTYPE.DOCPRFX, new { htmlAttributes = new { @class = "form-control", id = "DOCPRFX", @onkeyup = "toUpper(this);", maxlength = 4, @placeholder = "Prefix" } })
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Doc. Numbering")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+
+                             <div class="col-md-8">
+                                 <div class="editor-field">
+                                     @Html.DropDownListFor(model => model.M_DOCTYPE.DOCJNRL, new SelectList(Model.DocumentNumbering, "Value", "Text"), "Select Numbering", new { id = "DOCJNRL", @class = "form-control" })
+                                 </div>
+                             </div>
+                         </div>
+
+                         <div class="row">
+                             <div class="col-md-7" style="margin-top: 6px;">
+                                 <div class="editor-label">
+                                     @Html.Label("", "Doc. No. Pattern")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+                             <div class="col-lg-9">
+                                 <div class="editor-field">
+                                     @Html.TextBoxFor(model => model.M_DOCTYPE.DOCNOPATTERN, new { @class = "form-control", id = "DOCNOPATTERN", @placeholder = "Doc. Pattern Select From The Table", maxlength = 100 })
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Doc.No. Max Length")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+                             <div class="col-md-2">
+                                 <div class="editor-field">
+                                     @Html.EditorFor(model => model.M_DOCTYPE.DOCNOMAXLENGTH, new { htmlAttributes = new { @class = "form-control", id = "DOCNOMAXLENGTH", @type = "number", min = 1,max =6} })
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Pymt Receipt tag")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+                             <div class="col-md-6">
+                                 <div class="editor-field">
+                                     @Html.DropDownListFor(model => model.M_DOCTYPE.PRO, new SelectList(Model.DropDown_list, "Value", "Text"), new { id = "PRO", @class = "form-control" })
+                                 </div>
+                             </div>
+                             <div class="row">
+                                 <div class="col-md-7">
+                                     <div class="editor-label" style="margin-top: 6px;">
+                                         @Html.Label("", "Allow Future Date")
+                                         @Html.CheckBoxFor(model => model.FDATE)
+                                     </div>
+                                 </div>
+                                 <div class="col-md-7">
+                                     <div class="editor-label" style="margin-top: 6px;">
+                                         @Html.Label("", "Allow Back Date")
+                                         @Html.CheckBoxFor(model => model.BACKDATE)
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Doc. No. W/O Zero")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+                             <div class="col-md-6">
+                                 <div class="editor-field">
+                                     @Html.DropDownListFor(model => model.M_DOCTYPE.DOCNOWOZERO, new SelectList(Model.DocumentWithoutZero, "Value", "Text"), "Select", new { id = "DOCNOWOZERO", @class = "form-control" })
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-sm-5 col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "Doc. Footer")
+                                     <b style="color:Red;">*</b>
+                                 </div>
+                             </div>
+                             <div class="col-sm-8 col-sm-offset-2  col-md-offset-0">
+                                 <div class="editor-field">
+                                     @Html.EditorFor(model => model.M_DOCTYPE.DOCFOOT, new { htmlAttributes = new { @class = "form-control", id = "DOCFOOT", @placeholder = "Doc. Footer", maxlength = 100 } })
+                                 </div>
+                             </div>
+                         </div>
+                       
+                         <div class="row">
+                             <div class="col-sm-5 col-md-7">
+                                 <div class="editor-field" style="margin-top: 4px;">
+                                     @Html.Label("", "Main doccd")
+                                 </div>
+                             </div>
+                             <div class="col-md-5">
+                                 <div class="editor-field">
+                                     @Html.EditorFor(model => model.M_DOCTYPE.MAINDOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MAINDOCCD", maxlength = 14, onblur = "SelectDOCCode(this.value,'MAINDOCCD','MAINDOCNM');", onkeyup = "GetHelp('" + @Url.Action("GetDOC_Code", PageControllerName) + "','MAINDOCCD/MAINDOCNM','1/0','Doccd Details','MAINDOCCD')", @placeholder = "Code" } })
+                                     <img src="~/Image/search.png" width="20px" id="PriceListHelp" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOC_Code", PageControllerName)','MAINDOCCD/MAINDOCNM','1/0','Doccd Details','MAINDOCCD')" />
+                                 </div>
+                             </div>
+                             <div class="col-md-10">
+                                 <div class="editor-field">
+                                     @Html.EditorFor(model => model.MAINDOCNM, new { htmlAttributes = new { @class = "form-control", id = "MAINDOCNM", @TabIndex = -1, @placeholder = "MAINDOCNM", maxlength = 20, @readonly = "readonly" } })
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-sm-5 col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "flag 1 (Use for IPSMART)")
+                                 </div>
+                             </div>
+                             <div class="col-md-7">
+                                 <div class="editor-field">
+                                     @Html.EditorFor(model => model.M_DOCTYPE.FLAG1, new { htmlAttributes = new { @class = "form-control", id = "FLAG1", @placeholder = "FLAG1", maxlength = 20 } })
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-md-7">
+                                 <div class="editor-label" style="margin-top: 6px;">
+                                     @Html.Label("", "De - Active")
+                                 </div>
+                             </div>
+                             <div class="col-md-7">
+                                 <div class="editor-field" style="margin-top:6px;">
+                                     @Html.CheckBoxFor(model => model.Checked)
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="col-lg-3">
+                         <div class="editor-field">
+                             <table id="TableDOCNOPATTERN" class="table-bordered table-hover">
+                                 <thead>
+                                     <tr style="background-color: #4682b4;color:white;"><th style="padding-right: 10px;">Pattern </th><th>Description </th></tr>
+                                 </thead>
+                                 <tbody>
+                                     <tr><td>&comprefix&</td><td>Company Prefix</td></tr>
+                                     <tr><td>&locprefix&</td><td>Location Prefix</td></tr>
+                                     <tr><td>&docprefix&</td><td>document Code Prefix</td></tr>
+                                     <tr><td>&mm&-&docno&</td><td>Month Code & Document No.</td></tr>
+                                     <tr><td>&mmm&</td><td>Month in word Prefix</td></tr>
+                                     <tr><td>&docno&</td><td>Document No.Prefix</td></tr>
+                                     <tr><td>&finyrs&</td><td>Financial Year[YYYY(2021)]</td></tr>
+                                     <tr><td>&finyr&</td><td>Financial Year[YY-YY(20-21)]</td></tr>
+                                     <tr><td>&finyrf&</td><td>Fin Year[YYYY-YY(2020-21)]</td></tr>
+                                     @foreach (var v in Model.LASTDOCNOPATTERN)
+                                     {
+                                         <tr><td colspan="2" style="background-color: aliceblue;">@v.FIELD_VALUE</td></tr>
+                                     }
+                                 </tbody>
+                             </table>
+                         </div>
+                     </div>
+
+                    @*</div>*@
+                    @*<div class="row">*@
+                        @*<div class="col-lg-9">
+                            <div class="row">
+                                <div class="col-md-7" style="margin-top: 6px;">
+                                    <div class="editor-label">
+                                        @Html.Label("", "Doc. No. Pattern")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="editor-field">
+                                        @Html.TextBoxFor(model => model.M_DOCTYPE.DOCNOPATTERN, new { @class = "form-control", id = "DOCNOPATTERN", @placeholder = "Doc. Pattern Select From The Table", maxlength = 100 })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Doc.No. Max Length")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_DOCTYPE.DOCNOMAXLENGTH, new { htmlAttributes = new { @class = "form-control", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", id = "DOCNOMAXLENGTH", @type = "text", maxlength = 2 } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Pymt Receipt tag")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.M_DOCTYPE.PRO, new SelectList(Model.DropDown_list, "Value", "Text"), new { id = "PRO", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Allow Future Date")
+                                            @Html.CheckBoxFor(model => model.FDATE)
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Allow Back Date")
+                                            @Html.CheckBoxFor(model => model.BACKDATE)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Doc. No. W/O Zero")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.M_DOCTYPE.DOCNOWOZERO, new SelectList(Model.DocumentWithoutZero, "Value", "Text"), "Select", new { id = "DOCNOWOZERO", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-5 col-md-7">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Doc. Footer")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-sm-8 col-sm-offset-2  col-md-offset-0">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_DOCTYPE.DOCFOOT, new { htmlAttributes = new { @class = "form-control", id = "DOCFOOT", @placeholder = "Doc. Footer", maxlength = 100 } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-5 col-md-7">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "flag 1")
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_DOCTYPE.FLAG1, new { htmlAttributes = new { @class = "form-control", id = "FLAG1", @placeholder = "FLAG1", maxlength = 5 } })
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="row">
+                                    <div class="col-sm-5 col-md-7">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Main doccd")
+                                            <b style="color:Red;">*</b>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-8 col-sm-offset-2  col-md-offset-0">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.M_DOCTYPE.MAINDOCCD, new { htmlAttributes = new { @class = "form-control", id = "MAINDOCCD", @placeholder = "Doc. Footer", maxlength = 100 } })
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                            @*<div class="row">
+                                <div class="col-sm-5 col-md-7">
+                                    <div class="editor-field" style="margin-top: 4px;">
+                                        @Html.Label("", "Main doccd")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_DOCTYPE.MAINDOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MAINDOCCD", maxlength = 14, onblur = "SelectDOCCode(this.value,'MAINDOCCD','MAINDOCNM');", onkeyup = "GetHelp('" + @Url.Action("GetDOC_Code", PageControllerName) + "','MAINDOCCD/MAINDOCNM','1/0','Doccd Details','MAINDOCCD')", @placeholder = "Code" } })
+                                        <img src="~/Image/search.png" width="20px" id="PriceListHelp" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOC_Code", PageControllerName)','MAINDOCCD/MAINDOCNM','1/0','Doccd Details','MAINDOCCD')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.MAINDOCNM, new { htmlAttributes = new { @class = "form-control", id = "MAINDOCNM", @TabIndex = -1, @placeholder = "MAINDOCNM", maxlength = 20, @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-7">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "De - Active")
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.CheckBoxFor(model => model.Checked)
+                                    </div>
+                                </div>
+                            </div>*@
+
+                        @*</div>*@
+
+                        @*<div class="col-lg-3">
+                            <div class="editor-field">
+                                <table id="TableDOCNOPATTERN" class="table-bordered table-hover">
+                                    <thead>
+                                        <tr style="background-color: #4682b4;color:white;"><th style="padding-right: 10px;">Pattern </th><th>Description </th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>&comprefix&</td><td>Company Prefix</td></tr>
+                                        <tr><td>&locprefix&</td><td>Location Prefix</td></tr>
+                                        <tr><td>&docprefix&</td><td>document Code Prefix</td></tr>
+                                        <tr><td>&mm&-&docno&</td><td>Month Code & Document No. Prefix</td></tr>
+                                        <tr><td>&mmm&</td><td>Month in word Prefix</td></tr>
+                                        <tr><td>&docno&</td><td>Document No. Prefix</td></tr>
+                                        <tr><td>&finyr&</td><td>Financial Year Prefix</td></tr>
+                                        @foreach (var v in Model.LASTDOCNOPATTERN)
+                                        {
+                                            <tr><td colspan="2" style="background-color: aliceblue;">@v.FIELD_VALUE</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>*@
+                    </div>
+                    @*<div class="row">
+                            <div class="PopUp_Backround">
+                                <div>
+                                    <div id="popup" class="row" style="top:10%;left:40%;position:absolute;width: fit-content;">
+                                        @Html.Partial("_MS_DOCTYPE_Compcod");
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                </div>
+                <div id="CompanyLocation" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row">
+                        <div class="editor-field">
+                            <table id="CompanyLoation" cellpadding="3PX" cellspacing="3PX" border="1" width="550px" style="margin-left:15px;">
+                                <tr>
+                                    <td align="center">
+                                        <input type="checkbox" name="Test" onclick="SetAllCheckBoxes(this, 'CompanyLoation')" />
+                                    </td>
+                                    <td align="center">
+                                        Company Name
+                                    </td>
+                                    <td align="center">
+                                        Location Name
+                                    </td>
+                                </tr>
+                                @for (int i = 0; i < Model.CompanyLocationChk.Count(); i++)
+                                {
+                                    <tr>
+                                        <td align="center">
+                                            @Html.CheckBoxFor(model => model.CompanyLocationChk[i].Checked, new { id = "SelectCheck_" + i })
+                                        </td>
+                                        <td align="center">
+                                            @{ string STRC = Model.CompanyLocationChk[i].COMPNM.ToString();}
+                                            @Html.DisplayFor(model => STRC)
+                                            @Html.HiddenFor(model => model.CompanyLocationChk[i].COMPCD)
+                                        </td>
+                                        <td align="center">
+                                            @{ string STRL = Model.CompanyLocationChk[i].LOCNM.ToString();}
+                                            @Html.DisplayFor(model => STRL)
+                                            @Html.HiddenFor(model => model.CompanyLocationChk[i].LOCCD)
+                                        </td>
+                                    </tr>
+                                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="exempl" class="tab-pane fade" style="margin-top: 10px;">
+                    <div id="partialdivFamily">
+                        @Html.Partial("_MS_DOCTYPE_Compcod");
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+
