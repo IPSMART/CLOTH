@@ -1,0 +1,42 @@
+﻿@model Improvar.ViewModels.UserRight  
+<div style="background-color:#5a8408;text-align:center;border:1px solid">Company and Location Details</div>
+<table cellpadding="0" cellspacing="0" id="comuser" style="FONT-SIZE:9px;">
+    <thead>
+        <tr style="color:#ffeb00;font-weight:bold;font-size:11px">
+            <th style="width:17px;text-align:center;border-bottom: 1px solid">
+                <input type="checkbox" name="Test" onclick="SetAllChkbox(this, 'comuser', 'Checked_')" />
+            </th>
+            <th style="width:32px;border-bottom: 1px solid">Code</th>
+            <th style="width:130px;border-bottom: 1px solid">Company Name</th>
+            <th style="width:32px;border-bottom: 1px solid">Code</th>
+            <th style="width:130px;border-bottom: 1px solid">Location Name</th>
+        </tr>
+    </thead>
+
+    @for (int i = 0; i <= Model.Comp_List.Count - 1; i++)
+    {
+        <tr>
+            <td style="width:17px;text-align:center">
+                @Html.CheckBoxFor(model => Model.Comp_List[i].Check, new { id = "Checked_" + i, @class = "atextBoxFor", @style = "text-align:center;" })
+            </td>
+            <td>
+                @Html.HiddenFor(model => Model.Comp_List[i].comcd, new { id = "comcd_" + i })
+                <span>@Model.Comp_List[i].comcd</span>
+            </td>
+            <td>
+                @Html.HiddenFor(model => Model.Comp_List[i].comnm, new { id = "comnm_" + i })
+                <span>@Model.Comp_List[i].comnm</span>
+            </td>
+            <td>
+                @Html.HiddenFor(model => Model.Comp_List[i].loccd, new { id = "loccd_" + i })
+                <span>@Model.Comp_List[i].loccd</span>
+            </td>
+            <td>
+                @Html.HiddenFor(model => Model.Comp_List[i].locnm, new { id = "locnm_" + i })
+                <span>@Model.Comp_List[i].locnm</span>
+            </td>
+        </tr>
+    }
+
+</table>
+

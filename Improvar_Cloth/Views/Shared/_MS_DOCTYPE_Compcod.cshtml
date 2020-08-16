@@ -1,0 +1,66 @@
+﻿@model Improvar.ViewModels.DocumentTypeEntry
+<script>
+    //$("#popup").ready(function () { $("#dragclass").draggable({ cursor: "move" }); });
+
+    //$('input[type=checkbox]').on('change', function (e) {
+    //    if ($('input[type=checkbox]:checked').length > 2) {
+    //        $(this).prop('checked', false);
+    //        msgInfo("Allowed only First and Last Chacked !!");
+    //    }
+    //});
+
+</script>
+
+
+<div class="editor-field">
+    <table id="TableDOCNOPATTERN" class="table table-bordered table-hover" style="width: 656px;max-height:375px;">
+        <thead>
+            <tr>
+                <th colspan="2" style="background-color: #4682b4;color:white;">Company Name </th>
+                <th colspan="2" style="background-color: #4682b4;color:white;">Location Name </th>
+
+                <th colspan="2" style="background-color: #4682b4;color:white;">Docpattern</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.CompanyLocationName != null)
+            {
+                foreach (var v in Model.CompanyLocationName)
+                {
+                    <tr>
+                        <td colspan="2" style="background-color: aliceblue;">@v.COMPNM</td>
+                        <td colspan="2" style="background-color: aliceblue;">@v.LOCNM</td>
+                        @if (v.Docpattern != null)
+                        {
+                            if (v.Docpattern.Length > 16)
+                            {
+                                <td colspan="2" style="background-color: aliceblue;color:red">
+                                    @v.Docpattern
+                                </td>
+                            }
+                            else
+                            {
+                                <td colspan="2" style="background-color: aliceblue;">
+                                    @v.Docpattern
+                                </td>}
+                        }
+                        else {
+                            <td colspan="2" style="background-color: aliceblue;"></td>
+                        }
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+  <div class="bg-info" > * Docpattern <b style="color:red">Red </b>means Docpattern Length >16 *</div> 
+</div>
+
+
+
+
+
+
+
+

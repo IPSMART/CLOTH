@@ -1,0 +1,40 @@
+1) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 4 at AB column
+2) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 4 at  AJ and AO column
+
+3) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 5 at AB column
+4) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 5 at  AJ and AO column
+
+5) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 6 at AB column
+6) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 6 at  AJ and AO column
+
+7) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 7 at AB column
+8) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 7 at  AJ and AO column
+
+9)Please enter either Part-B details or Transporter information, Check Line No. 7
+
+10) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 8 at AB column
+11) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 8 at  AJ and AO column
+
+12)Please enter either Part-B details or Transporter information, Check Line No. 8
+
+13) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 9 at AB column
+14) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 9 at  AJ and AO column
+
+15) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 10 at AB column
+16) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 10 at  AJ and AO column
+
+17) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 11 at AB column
+18) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 11 at  AJ and AO column
+
+19) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 12 at AB column
+20) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 12 at  AJ and AO column
+
+21) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 13 at AB column
+22) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 13 at  AJ and AO column
+
+23) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 14 at AB column
+24) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 14 at  AJ and AO column
+
+25) Please enter Tax Rate in the form of SGST+CGST+IGST+CESS+Cess Non Advol  example:11+12+0+0+0  Check Line No. 15 at AB column
+26) If Trans Mode is Road then, Please enter Trans Date, Check Line No. 15 at  AJ and AO column
+

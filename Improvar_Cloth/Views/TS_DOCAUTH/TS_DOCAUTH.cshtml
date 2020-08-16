@@ -1,0 +1,313 @@
+﻿@model Improvar.ViewModels.DocumentAuthorisationEntry
+@{
+    ViewBag.Title = "Document Authorisation";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    string PageControllerName = "TS_DOCAUTH";
+
+}
+
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            //   modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_TS_DOCAUTH_DATALIST_GRID'));
+    });
+</script>
+<script>
+    $(function () {
+        $("#FROMDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#TODT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        return true;
+    }
+</script>
+<script>
+    function SelectAllCheckBox_A(obj, tablename, id, id1) {
+        var Table_name = "#" + tablename + " > tbody > tr";
+        var lngth = $(Table_name).length;
+        for (var i = 0; i < lngth ; i++) {
+            var chkbox = document.getElementById("SelectCheck_" + i);
+            chkbox.checked = obj.checked;
+        }
+        if (obj.checked) {
+            $(id).attr('disabled', 'disabled');
+            $(id1).attr('disabled', 'disabled');
+            for (var i = 0; i < lngth ; i++) {
+                var chkbox1 = document.getElementById("SelectCheck1_" + i);
+                chkbox1.checked = false;
+                var chkbox2 = document.getElementById("SelectCheckCancel_" + i);
+                chkbox2.checked = false;
+                $("#SelectCheck1_" + i).attr('disabled', 'disabled');
+                $("#SelectCheckCancel_" + i).attr('disabled', 'disabled');
+            }
+        }
+        else {
+            $(id).removeAttr('disabled');
+            $(id1).removeAttr('disabled');
+            for (var i = 0; i < lngth ; i++) {
+                var chkbox1 = document.getElementById("SelectCheck1_" + i);
+                chkbox1.checked = false;
+                var chkbox2 = document.getElementById("SelectCheckCancel_" + i);
+                chkbox2.checked = false;
+                $("#SelectCheck1_" + i).removeAttr('disabled');
+                $("#SelectCheckCancel_" + i).removeAttr('disabled');
+            }
+        }
+
+    }
+    function SelectAllCheckBox_UA(obj, tablename, id, id1) {
+        var Table_name = "#" + tablename + " > tbody > tr";
+        var lngth = $(Table_name).length;
+        for (var i = 0; i < lngth ; i++) {
+            var chkbox = document.getElementById("SelectCheck1_" + i);
+            chkbox.checked = obj.checked;
+        }
+        if (obj.checked) {
+            $(id).attr('disabled', 'disabled');
+            $(id1).attr('disabled', 'disabled');
+            for (var i = 0; i < lngth ; i++) {
+                var chkbox1 = document.getElementById("SelectCheck_" + i);
+                chkbox1.checked = false;
+                var chkbox2 = document.getElementById("SelectCheckCancel_" + i);
+                chkbox2.checked = false;
+                $("#SelectCheck_" + i).attr('disabled', 'disabled');
+                $("#SelectCheckCancel_" + i).attr('disabled', 'disabled');
+            }
+        }
+        else {
+            $(id).removeAttr('disabled');
+            $(id1).removeAttr('disabled');
+            for (var i = 0; i < lngth ; i++) {
+                var chkbox1 = document.getElementById("SelectCheck_" + i);
+                chkbox1.checked = false;
+                var chkbox2 = document.getElementById("SelectCheckCancel_" + i);
+                chkbox2.checked = false;
+                $("#SelectCheck_" + i).removeAttr('disabled');
+                $("#SelectCheckCancel_" + i).removeAttr('disabled');
+            }
+        }
+    }
+    function SelectAllCheckBox_CANCEL(obj, tablename, id, id1) {
+        var Table_name = "#" + tablename + " > tbody > tr";
+        var lngth = $(Table_name).length;
+        for (var i = 0; i < lngth ; i++) {
+            var chkbox = document.getElementById("SelectCheckCancel_" + i);
+            chkbox.checked = obj.checked;
+        }
+        if (obj.checked) {
+            $(id).attr('disabled', 'disabled');
+            $(id1).attr('disabled', 'disabled');
+            for (var i = 0; i < lngth ; i++) {
+                var chkbox1 = document.getElementById("SelectCheck_" + i);
+                chkbox1.checked = false;
+                var chkbox2 = document.getElementById("SelectCheck1_" + i);
+                chkbox2.checked = false;
+                $("#SelectCheck_" + i).attr('disabled', 'disabled');
+                $("#SelectCheck1_" + i).attr('disabled', 'disabled');
+            }
+        }
+        else {
+            $(id).removeAttr('disabled');
+            $(id1).removeAttr('disabled');
+            for (var i = 0; i < lngth ; i++) {
+                var chkbox1 = document.getElementById("SelectCheck_" + i);
+                chkbox1.checked = false;
+                var chkbox2 = document.getElementById("SelectCheck1_" + i);
+                chkbox2.checked = false;
+                $("#SelectCheck_" + i).removeAttr('disabled');
+                $("#SelectCheck1_" + i).removeAttr('disabled');
+            }
+        }
+    }
+    function Check_CheckBox(thisid, id, id1) {
+        var chkbox = document.getElementById(thisid);
+        if (chkbox.checked) {
+            var chkbox1 = document.getElementById(id);
+            chkbox1.checked = false;
+            var chkbox2 = document.getElementById(id1);
+            chkbox2.checked = false;
+            $("#" + id).attr('disabled', 'disabled');
+            $("#" + id1).attr('disabled', 'disabled');
+        }
+        else {
+            var chkbox1 = document.getElementById(id);
+            chkbox1.checked = false;
+            var chkbox2 = document.getElementById(id1);
+            chkbox2.checked = false;
+            $("#" + id).removeAttr('disabled');
+            $("#" + id1).removeAttr('disabled');
+        }
+    }
+</script>
+<script>
+    function CancelAuthorization() {
+        $.ajax({
+            type: 'POST',
+            url: $("#urlnameCANCEL").val(),
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                if (result == "1") {
+                    $("#WaitingMode").hide()
+                    msgSuccess1("Cancellation Done Successfully !");
+                }
+                else {
+                    $("#WaitingMode").hide()
+                    msgWarning(result);
+                    return false;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function openlinkentry(autono) {
+        var urlp = $("#urlpopup1").val();
+        $.ajax({
+            type: 'post',
+            url: urlp,
+            beforesend: $("#WaitingMode").show(),
+            data: {
+                autono: autono
+            },
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "null") {
+                    msgWarning("Parameter not found in M_DTYPE! Contact to Admin ");
+                }
+                else {
+                    window.open("../../" + result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function GetGrid_Data() {
+        var FDT = $("#FROMDT").val();
+        var TDT = $("#TODT").val();
+        var SRECORD = $("#SHOW_RECORD").val();
+        var DTYPE = $("#DOCTYPE").val();
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("GetGridData", PageControllerName )",
+            beforesend: $("#WaitingMode").show(),
+            data: "FROMDT=" + FDT + "&TODT=" + TDT + "&SHOW_RECORD=" + SRECORD + "&DOCTYPE=" + DTYPE,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $('#partialdiv').html(result);
+                var GridRowMain = $("#_TS_DOCAUTH_DATALIST_GRID > tbody > tr").length;
+                for (i = 0; i <= GridRowMain - 1; i++) {
+                    if (document.getElementById("SelectCheck_" + i).checked) {
+                        Check_CheckBox("SelectCheck_" + i + "", "SelectCheck1_" + i + "", "SelectCheckCancel_" + i + "")
+                    }
+                    else if (document.getElementById("SelectCheck1_" + i).checked) {
+                        Check_CheckBox("SelectCheck1_" + i + "", "SelectCheck_" + i + "", "SelectCheckCancel_" + i + "")
+                    }
+                    else {
+                        Check_CheckBox("SelectCheckCancel_" + i + "", "SelectCheck_" + i + "", "SelectCheck1_" + i + "")
+                    }
+
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlnameCANCEL" value="@Url.Action("CANCEL", PageControllerName)" />
+            <input type="hidden" id="urlpopup1" value="@Url.Action("POPUPSCREEN1", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(s => s.DOCTYPE, new { id = "DOCTYPE" })
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "From Date")
+                        @*<b style="color:Red;">*</b>*@
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.FROMDT, new { htmlAttributes = new { @class = "form-control", id = "FROMDT", @placeholder = "dd/mm/yyyy", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "To Date")
+                        @*<b style="color:Red;">*</b>*@
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.TODT, new { htmlAttributes = new { @class = "form-control", id = "TODT", @placeholder = "dd/mm/yyyy", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Show Report")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.DropDownListFor(model => model.SHOW_RECORD, new SelectList(Model.DropDown_list, "Value", "Text"), new { @class = "form-control", id = "SHOW_RECORD" })
+                    </div>
+                </div>
+                <div class="col-md-4" style="margin-top:0px;width:auto;">
+                    <input type="button" class="btn btn-success" onclick="GetGrid_Data();" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Get_Record" value="Get Record" title="Click To Get Pending Record" />
+                </div>
+                <div class="col-md-6">
+                    <input type="submit" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Download_Excel" value="Download Excel" title="Click To Download Excel" />
+                </div>
+            </div>
+            <div class="row" style="margin-top: 11px;">
+                <div style="background-color:#c4b9b9">
+                    <div id="partialdiv" style="margin-top:0px;">
+                        @Html.Partial("_TS_DOCAUTH_MAIN")
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+

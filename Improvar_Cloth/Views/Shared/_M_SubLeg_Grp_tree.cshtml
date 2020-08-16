@@ -1,0 +1,9 @@
+﻿@model Improvar.ViewModels.SubledgerGrouping
+<ul class="tree" id="tree">
+
+    @if (Model.Tree != null)
+    {
+        @(new HtmlString(Model.Tree))
+    }
+</ul>
+@Html.HiddenFor(_ => _.Base64Tree)

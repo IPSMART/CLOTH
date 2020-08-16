@@ -1,0 +1,221 @@
+﻿@model string
+<script>
+    $("#helpDIV").ready(function () {
+        var hidcol1 = parseInt($("#RefHiddenColumn1").val());
+        var hidcol2 = parseInt($("#RefHiddenColumn2").val());
+        var hidcol3 = parseInt($("#RefHiddenColumn3").val());
+        //initial table into datatable
+        var table = $('#helpmnu').DataTable({
+            responsive: true,
+            keys: true,
+            "columnDefs": [
+          {
+              "targets": [hidcol1],
+              "visible": false,
+              "searchable": false
+          },
+          {
+              "targets": [hidcol2],
+              "visible": false,
+              "searchable": false
+          },
+          {
+              "targets": [hidcol3],
+              "visible": false,
+              "searchable": false
+          }
+            ],
+            "lengthMenu": [10, 15, 20, 25, 30, 100]
+        });
+
+        // "targets": [ 0, 2 ],HIDDEN FIELD
+        $('#helpmnu').dataTable().api();
+        new $.fn.dataTable.Api('#helpmnu');
+        //KEY PRESS
+        table.on('key', function (e, datatable, key, cell, originalEvent) {
+            e.preventDefault();
+            if (key === 13) { // return
+                $('#helpmnu_filter input[type=search]').focus();
+                var rowindex = cell[0][0].row;
+                var cellindex = cell[0][0].column;
+                var data = table.row(rowindex).data();
+                var fieldIDseq = $('#ReferanceFieldID').val().split('/');
+                var columnNMseq = $('#ReferanceColumn').val().split('/');
+                for (var n = 0; n < fieldIDseq.length ; n++) {
+                    var columnSeq = columnNMseq[n];
+                    var fieldData = data[columnSeq];
+                    $("#" + fieldIDseq[n]).val(fieldData);
+                }
+                $('#helpDIV').html("");
+                event.preventDefault();
+                $('#' + fieldIDseq[0]).focus();
+            }
+        });
+        $('#helpDIV tbody').on('click', 'tr', function () {
+            var rowindex = table.row(this).index();
+                var data = table.row(rowindex).data();
+                var fieldIDseq = $('#ReferanceFieldID').val().split('/');
+                var columnNMseq = $('#ReferanceColumn').val().split('/');
+                for (var n = 0; n < fieldIDseq.length ; n++) {
+                    var columnSeq = columnNMseq[n];
+                    var fieldData = data[columnSeq];
+                    $("#" + fieldIDseq[n]).val(fieldData);
+                }
+                $('#helpDIV').html("");
+                $('#' + fieldIDseq[0]).focus();
+        });
+
+        //NEVIGATION will not work any type key press
+        // table.keys.enable('navigation-only');
+        //focus on first cell
+        // table.cell(':eq(0)').focus();
+        // Setup - add a text input to each footer cell
+        $('#helpmnu tfoot th').each(function () {
+            var title = $(this).text();//if need to focus on first search box then input type="text"
+            $(this).html('<input class="responsive-resize" type="text" style="width:75%" placeholder="' + title + '" />');
+        });
+        // Apply the search
+        table.columns().every(function () {
+            var that = this;
+            $('input', this.footer()).on('keyup change', function () {
+                that
+                    .search(this.value)
+                    .draw();
+            });
+        });
+        //RESIZE
+        table.on('responsive-resize', function (e, datatable, columns) {
+            var count = columns.reduce(function (a, b) {
+                return b === false ? a + 1 : a;
+            }, 0);
+
+            console.log(count + ' column(s) are hidden');
+        });
+        //put form text box value to search field that for the filter
+        // var srchval = $('#SearchFldValue').val();
+        // table.search(srchval).draw();
+        // $('#helpmnu_filter input').focus();
+        $('#helpmnu_filter input[type=search]').focus();
+        $('#helpmnu_filter input[type=search]').keyup(function (event) {
+            if (event.which == 40) {
+                 event.preventDefault();
+                $(this).blur();               
+                table.cell(':eq(0)', null, { page: 'current' }).focus();         
+            }
+        });
+    });
+    //drag the halp div
+    $("#wrapper").draggable({ cursor: "move" });
+
+    document.onkeyup = CloseHelp;
+    //close the help Div
+    function CloseHelp()
+    {
+        var KeyID = (window.event) ? event.keyCode : e.keyCode;
+        var sp = $('#SearchFldValue').val();
+        if (KeyID == 27)
+        {
+            $('#helpDIV').html("");
+            $("#" + sp).focus();
+        }
+        else if (KeyID == undefined)
+        {
+            $('#helpDIV').html("");
+          //  $("#" + sp).focus();
+        }
+        else {
+        }
+        return false;
+    }
+</script>
+<script>
+    function imgpreview(id) {
+        var w = 500;
+        var h = 200;
+        var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+        var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+        width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+        height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+        if (screen.width <= 768) {
+            w = 10;
+            h = 10;
+        }
+        var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+        var top = ((height / 2) - (h / 2)) + dualScreenTop;
+
+        var ctrlimg = document.getElementById(id).src;
+        txtCode = "<HTML><HEAD>"
+        + "</HEAD><BODY TOPMARGIN=0 LEFTMARGIN=0 MARGINHEIGHT=0 MARGINWIDTH=0 style='background-color:rgba(0, 0, 0, 0.56)'><CENTER>"
+        + "<IMG src='" + ctrlimg + "' BORDER=0 NAME=FullImage  "
+        + "onload='window.resizeTo(document.FullImage.width,document.FullImage.height)'>"
+        + "</CENTER>"
+        + "</BODY></HTML>";
+        mywindow = window.open('', 'image', 'toolbar=0,location=0,menuBar=0,scrollbars=0,resizable=0, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+        mywindow.document.open();
+        mywindow.document.write(txtCode);
+        return false;
+    }
+</script>
+<style type="text/css">
+    #textarea {
+        border: none;
+        overflow: auto;
+        width: 100%;
+        background-color: cornsilk;
+        max-height: 450px;
+    }
+
+    #wrapper {
+        background-color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        float: left;
+        border: 1px #D3D3D3 solid;
+        box-shadow: 0 0 5px rgba(255, 231, 43, 0.00);
+        overflow: hidden;   
+        min-width: 350px;
+        max-width: 1250px;
+        width:max-content;
+    }
+
+    #helpDIV {
+        /*text box with border*/
+        /*position: fixed;
+        top: 8%;
+        left: 20%;
+        max-width:80%;*/
+ /*Textbox without border with center position helpdiv*/
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        /*end*/
+        z-index: 1100;
+    }
+
+    #helpmnu thead tr {
+        background-color: #0a898c;
+    }
+
+        #helpmnu thead tr th {
+            height: 10px;
+        }
+
+    #helpmnu tbody tr td {
+        padding: 1px;
+    }
+</style>
+<div id="wrapper">
+    <input type="hidden" id="ReferanceFieldID" value="" />
+    <input type="hidden" id="ReferanceColumn" value="" />
+    <div style="text-align: center;width:100%;background-color:#467c7d;vertical-align:middle; font-weight:bold">
+        <span id="helpDIV_Header" style="color:white"></span>
+        <span title="Close [ESC]" onclick="CloseHelp();" class="glyphicon glyphicon-remove" style="color:maroon;vertical-align:middle;cursor:pointer;float:right;margin-right: 5px;">
+        </span>
+    </div>
+    <div id="textarea" style="padding:5px; font-size:11px">
+        @(new HtmlString(Model))
+    </div>
+</div>

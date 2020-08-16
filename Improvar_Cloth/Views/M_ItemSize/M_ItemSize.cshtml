@@ -1,0 +1,194 @@
+﻿@model Improvar.ViewModels.ItemSizeEntry
+@{
+    ViewBag.Title = "Item Size Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#SIZECD").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Size Code", "SIZECD")) { return false; }
+       if (!emptyFieldCheck("Enter Size Name", "SIZENM")) { return false; }
+        return true;
+   }
+</script>
+
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_SIZE != null)
+        {
+            mldauto = Model.M_SIZE.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckSizeCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlname2").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+
+
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msg_ok_info").focus();
+                            $("#SIZECD").val("");
+                            $("#msgbody_info").html(" Code Already Exists : Please Enter a Valid Code !! ");
+                            //  $("#BHDESCN").focus();
+                            message_value = "SIZECD";
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+@{
+    string PageControllerName = "M_ItemSize";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+         <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlname2" value="@Url.Action("CheckSizeCode", PageControllerName)" />
+             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_SIZE.M_AUTONO)
+            @Html.HiddenFor(e => e.M_SIZE.CLCD)
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Size Code")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @if (Model.DefaultAction == "A")
+                        {
+                            @Html.EditorFor(model => model.M_SIZE.SIZECD, new { htmlAttributes = new { @class = "form-control", id = "SIZECD", onblur = "CheckSizeCode('SIZECD');", @placeholder = "Code", @style = "text-transform:uppercase", maxlength = 4 } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.M_SIZE.SIZECD, new { htmlAttributes = new { @class = "form-control", id = "SIZECD", @placeholder = "Code", @style = "text-transform:uppercase", maxlength = 4 } })
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Size Name")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SIZE.SIZENM, new { htmlAttributes = new { @class = "form-control", id = "SIZENM", @placeholder = "Size Name", maxlength = 10 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Alternate Size Name")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SIZE.ALTSIZENM, new { htmlAttributes = new { @class = "form-control", id = "ALTSIZENM", @placeholder = "Alternate Size Name", maxlength = 10 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Print Sequence")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SIZE.PRINT_SEQ, new { htmlAttributes = new { @class = "form-control", id = "PRINT_SEQ", @placeholder = "Seq.", maxlength = 3 } })
+                    </div>
+                </div>
+            </div>
+             <div class="row">
+                 <div class="col-md-5">
+                     <div class="editor-label" style="margin-top: 6px;">
+                         @Html.Label("", "SIZE BAR CODE")
+                     </div>
+                 </div>
+                 <div class="col-md-1">
+                     <div class="editor-field">
+                         @Html.EditorFor(model => model.M_SIZE.SZBARCODE, new { htmlAttributes = new { @class = "form-control", id = "SZBARCODE", @placeholder = "Seq.", maxlength = 3,   READONLY= "READONLY" } })
+                     </div>
+                 </div>
+             </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "De - Activate")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.Checked)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+

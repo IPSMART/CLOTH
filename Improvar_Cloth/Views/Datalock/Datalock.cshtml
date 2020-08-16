@@ -1,0 +1,508 @@
+﻿@model Improvar.ViewModels.dataLock
+@{
+    ViewBag.Title = "Data Lock Rights";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="intcut icon" type="image/x-icon" href="~/favicon.ico" />
+    <title>Data Lock</title>
+    <link rel="stylesheet" media="all" href="~/Content/treeview.css" />
+    <link rel="stylesheet" media="all" href="~/Content/main_layout.css?v=105" />
+    <link rel="stylesheet" href="~/Content/font-awesome.min.css" />
+    <script src="~/Scripts/jquery.min.js"></script>
+    @*<script src="~/Scripts/Custom.js"></script>*@
+    @Scripts.Render("~/Scripts/Custom.js?Ver=" + Session["publishversion"])
+    @Styles.Render("~/Content/MyStyle.css?Ver=" + Session["publishversion"])
+    @Styles.Render("~/Content/themes/base/core.css")
+    @Styles.Render("~/Content/themes/base/accordion.css")
+    @Styles.Render("~/Content/themes/base/autocomplete.css")
+    @Styles.Render("~/Content/themes/base/button.css")
+    @Styles.Render("~/Content/themes/base/datepicker.css")
+    @Styles.Render("~/Content/themes/base/dialog.css")
+    @Styles.Render("~/Content/themes/base/draggable.css")
+    @Styles.Render("~/Content/themes/base/menu.css")
+    @Styles.Render("~/Content/themes/base/progressbar.css")
+    @Styles.Render("~/Content/themes/base/resizable.css")
+    @Styles.Render("~/Content/themes/base/selectable.css")
+    @Styles.Render("~/Content/themes/base/selectmenu.css")
+    @Styles.Render("~/Content/themes/base/sortable.css")
+    @Styles.Render("~/Content/themes/base/slider.css")
+    @Styles.Render("~/Content/themes/base/spinner.css")
+    @Styles.Render("~/Content/themes/base/tabs.css")
+    @Styles.Render("~/Content/themes/base/tooltip.css")
+    @Styles.Render("~/Content/themes/base/theme.css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryui")
+    <style>
+        /* ————————————————————–
+          Tree core styles
+        */
+        .tree {
+            margin: 1em;
+        }
+
+            .tree input {
+                position: absolute;
+                clip: rect(0, 0, 0, 0);
+            }
+
+                .tree input ~ ul {
+                    display: none;
+                }
+
+                .tree input:checked ~ ul {
+                    display: block;
+                }
+
+            /* ————————————————————–
+          Tree rows
+        */
+            .tree li {
+                line-height: 0.5;
+                position: relative;
+                padding: 0 0 1em 1em;
+            }
+
+            .tree ul li {
+                padding: 1em 0 0 1em;
+            }
+
+            .tree > li:last-child {
+                padding-bottom: 0;
+            }
+
+        /* ————————————————————–
+          Tree labels
+        */
+        .tree_label {
+            position: relative;
+            display: inline-block;
+            background-color: transparent;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .default_label {
+            position: relative;
+            display: inline-block;
+            background-color: transparent;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        .default_label_date {
+            position: relative;
+            display: inline-block;
+            background-color: transparent;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        label.tree_label {
+            cursor: pointer;
+        }
+
+            label.tree_label:hover {
+                color: #000;
+            }
+
+        span.tree_label:hover {
+            color: #fff;
+        }
+
+        span.tree_label {
+            cursor: pointer;
+            color: #032f45;
+            font-weight: bold;
+        }
+
+        /* ————————————————————–
+          Tree expanded icon
+        */
+        label.tree_label:before {
+            background: #0707f5;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            float: left;
+            margin: 0 1em 0 -2em;
+            width: 1em;
+            height: 1em;
+            border-radius: 1em;
+            content: '+';
+            text-align: center;
+            line-height: .9em;
+        }
+
+        :checked ~ label.tree_label:before {
+            content: '–';
+        }
+
+        /* ————————————————————–
+          Tree branches
+        */
+        .tree li:before {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -.5em;
+            display: block;
+            width: 0;
+            border-left: 1px solid #777;
+            content: "";
+        }
+
+        .tree_label:after {
+            position: absolute;
+            top: 0;
+            left: -1.5em;
+            display: block;
+            height: 0.5em;
+            width: 1em;
+            border-bottom: 1px solid #777;
+            border-left: 1px solid #777;
+            border-radius: 0 0 0 .3em;
+            content: '';
+        }
+
+        label.tree_label:after {
+            border-bottom: 0;
+        }
+
+        :checked ~ label.tree_label:after {
+            border-radius: 0 .3em 0 0;
+            border-top: 1px solid #777;
+            border-right: 1px solid #777;
+            border-bottom: 0;
+            border-left: 0;
+            bottom: 0;
+            top: 0.5em;
+            height: auto;
+        }
+
+        .tree li:last-child:before {
+            height: 1em;
+            bottom: auto;
+        }
+
+        .tree > li:last-child:before {
+            display: none;
+        }
+
+        .tree_custom {
+            display: block;
+            background: #eee;
+            padding: 1em;
+            border-radius: 0.3em;
+        }
+
+        .menubutton {
+            display: block;
+            width: 22px;
+            height: 2px;
+            border-radius: 1px;
+        }
+
+        .div-sr {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            border: 0;
+        }
+
+        .a {
+            color: blue;
+        }
+        .rightimg {
+            width: 10px;
+            height: 10px;
+            margin-bottom: -1px;
+        }
+    </style>
+    <script>
+        var message_value;
+        function winclose() {
+            if (confirm("Close Window?")) {
+                window.close();
+            }
+        }
+        function closeDiv(id, flag) {
+            $(id).hide();
+            var will_go = message_value;
+            $("#" + will_go).focus();
+
+            if (flag == 1) {
+                location.reload();
+            }
+            else if (flag == 2) {
+                location.href = $("#message_stay").val();
+            }
+        }
+        function close_box(id) {
+            $(id).hide();
+            var will_go = message_value;
+            $("#" + will_go).focus();
+        }
+       
+        function gotoTree()
+        {
+            var com = $("#Comid").val();
+            if (com == "") {
+                msgInfo("Select Company First!");
+                message_value = "Comid";
+                return false;
+            }
+            var loc = $("#Loca").val();
+            if (loc == "") {
+                msgInfo("Select Location!");
+                message_value = "Loca";
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                url: $("#treegen").val(),
+                beforesend: $("#WaitingMode").show(),                
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#_userTree").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+
+        function setpermission(id, index) {           
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#childwindowforur").val(),
+                data: {
+                    serial: $("#serializeString").val(),
+                    id: id,
+                    index: index
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialuserright").show();
+                    $("#partialuserright").html(result);                    
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+
+        function updateTree(index)
+        {
+            var com = $("#Lockdate").val();
+            //if (com == "") {
+            //    $("#Msgdiv1").show();
+            //    $("#info").show();
+            //   msgInfo("Select Date First!");
+            //    message_value = "Lockdate";
+            //    return false;
+            //}
+            debugger;
+            $.ajax({
+                type: 'post',
+                url: $("#updateuserrighturl").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&serialize=" + $("#serializeString").val(),
+                success: function (result) {
+                    $("#WaitingMode").hide();                   
+                    $("#serializeString").val(result);                    
+                    $("#partialuserright").hide();
+                    $("#partialuserright").html("");
+                    if (com == "") {                        
+                        document.getElementById(index).src = "../Image/redlight.png";
+                    }
+                    else {                        
+                        document.getElementById(index).src = "../Image/greenlight.png";
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+
+        function saveright()
+        {
+            $.ajax({
+                type: 'post',
+                url: $("#saveuserrighturl").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    serialize: $("#serializeString").val()                   
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        $("#WaitingMode").hide();
+                        msgSuccess1("Save Successfully ");
+                        //gotoTree();
+                    }
+                    else {
+                        $("#WaitingMode").hide();
+                        msgWarning(result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+        function defaultPermission(id, flag) {
+            if (flag == 0)
+            {
+                id = $("#defaultdateid").val();
+            }
+            var dt = $("#Lockdate1").val();
+            var chk = $("#BackDataAllow").attr('checked');
+            if (dt == "") {
+                msgInfo("Select Date First!");
+                message_value = "Lockdate1";
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                url: $("#defaultpermissiourl").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: {
+                    progcalid: id,
+                    serial: $("#serializeString").val(),
+                    Flag: flag,
+                    DDT: dt,
+                    CHKALW:chk
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialuserright1").hide();
+                    $("#partialuserright1").html("");                  
+                    $("#_userTree").html("");
+                    $("#_userTree").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+
+        function defaultdatewindow(id)
+        {            
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#defaultpermissidateourl").val(),
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialuserright1").show();
+                    $("#partialuserright1").html(result);
+                    $("#defaultdateid").val(id);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    </script>
+</head>
+<body style="background: linear-gradient(-135deg,#c850c0,#4158d0); background-repeat: no-repeat;background-size: cover;">
+    <input type="hidden" id="locationurl" value="@Url.Action("FillLocation", "Datalock")" />
+    <input type="hidden" id="treegen" value="@Url.Action("TreeMenuGen", "Datalock")" />
+    <input type="hidden" id="childwindowforur" value="@Url.Action("Individual_Right", "Datalock")" />
+    <input type="hidden" id="updateuserrighturl" value="@Url.Action("UpdateRights", "Datalock")" />
+    <input type="hidden" id="saveuserrighturl" value="@Url.Action("Save", "Datalock")" />
+    <input type="hidden" id="defaultpermissiourl" value="@Url.Action("DefaultPermission", "Datalock")" />
+    <input type="hidden" id="defaultpermissidateourl" value="@Url.Action("DefaultDatePermission", "Datalock")" />
+    <input type="hidden" id="defaultdate" value="" />
+    <input type="hidden" id="defaultdateid" value="" />
+    @Html.HiddenFor(model=>model.UNQSNO)
+    <nav>
+        <div>
+            <img class="logo" src="~/Image/IPSMART-LOGO.png" />
+        </div>
+        <ul class="list-item">
+            <li><span>@Module.Module_Name - Version @Session["publishversion"]</span></li>
+        </ul>
+        <ul class="list-item1">
+            <li class="liclass">
+                <span style="color:#dcd106;cursor:pointer;" title="Save" onclick="saveright();">Save Lock</span>
+            </li>
+            <li class="liclass">
+                <span style="color:#dcd106;cursor:pointer;" title="Get Rights" onclick="gotoTree();">Get Rights</span>
+            </li>
+            <li class="liclass">
+                <span style="color:#dcd106;cursor:pointer;" title="Close window" onclick="winclose();">Close</span>
+            </li>
+            <li>Welcome  @Session["UR_ID"]</li>
+        </ul>
+    </nav>
+    <div id="WaitingMode" style="display:none; margin: 0px; padding: 0px; position: fixed; right: 0px; top: 0px; width: 100%; height: 100%; background-color: rgb(16, 134, 16); z-index: 30001; opacity: 0.4;">
+        <p style="position: absolute; color: White; top: 46%; left: 47%;">
+            Loading, please wait...<br />
+            <span> <img src="~/Image/ajax_loader.gif" width="60px" height="60px"></span>
+        </p>
+    </div>
+    @if (Model.Defaultview == true)
+    {
+        <div id="mySidenav" class="div-tree1">
+           
+            <div id="_userTree" style="margin:10px;height:95%; overflow-y:auto;">
+               
+            </div>
+
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div style="width:100%;background-color:rgb(111, 163, 208);float:left;bottom:0;margin-bottom:0;position:fixed;right:0;left:0">
+        <div class="abc sec1">
+            @Session["CompanyName" + Model.UNQSNO]
+        </div>
+        <div class="abc sec2">
+            @Session["CompanyLocation" + Model.UNQSNO]
+        </div>
+        <div class="abc sec3">
+            Period- @Session["CompanyFinancial" + Model.UNQSNO]
+        </div>
+        <div class="abc sec3_1">
+            @Module.Module_Name - Version @Session["publishversion"]
+        </div>
+        <div class="abc sec4">
+            Developed byIP SmartTeam
+        </div>
+    </div>
+    <div id="partialuserright" style="display:none">
+
+    </div>
+    <div id="partialuserright1" style="display:none">
+
+    </div>
+    <div id="Msgdiv1" style="display:none">
+        <div id="back_cover">
+            @Html.Partial("_MessageBox")
+        </div>
+    </div>
+</body>
+</html>

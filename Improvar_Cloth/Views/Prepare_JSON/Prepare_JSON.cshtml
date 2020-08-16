@@ -1,0 +1,49 @@
+﻿@model Improvar.ViewModels.Prepare_JSONvalidation
+@{
+    ViewBag.Title = "Prepare_JSON";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+@{
+    string PageControllerName = "Prepare_JSON";
+}
+<script>
+    function UpdateDistance(BLNO, DISTANCE)
+    {
+        var GridRow = $("#PrepareJSON > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++)
+        {
+            var BL_NO = document.getElementById("blno_" + i).value;
+            if (BL_NO == BLNO)
+            {
+                document.getElementById("distance_" + i).value = DISTANCE;
+            }
+        }
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+
+            <div class="row" style="margin-top:10PX">
+                <div class="col-lg-3">              
+                    <input type="submit" value="Download JSON" name="PREPAREJSON" class="btn btn-default" formtarget="_blank" />
+                </div>
+            </div>
+            <div class="row" style="background-color:#c4b9b9;width:100%">
+                <div id="PartialdivEWBILL">
+                    @Html.Partial("_PrepareJSONEWB")
+                </div>
+            </div>
+            
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index:2;">
+
+        </div>
+    </div>
+}
+
+

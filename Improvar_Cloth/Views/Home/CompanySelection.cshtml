@@ -1,0 +1,139 @@
+﻿@model Improvar.ViewModels.CompanySelection
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Company Selection</title>
+    <link rel="intcut icon" type="image/x-icon" href="~/favicon.ico">
+    @Styles.Render("~/Content/css")
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="~/Content/login_signup.css?v=105" />
+    <script>
+        $(document).ready(function () {
+            debugger;
+            if ('@ViewBag.Msg' != "") {
+                alert('@ViewBag.Msg');
+            }
+            var finval = $("#Finyr").val();
+            if (finval == "") {
+                $("#COMPCD").focus();
+            } else {
+                $("#submitbutton").focus();
+            }
+        });
+    </script>
+    <script>
+        function getCompanyLocation() {
+            debugger;
+            var compcd = $("#COMPCD").val();
+            $("#divLoadingSubCat").show(); 
+            $('#LOCCD').empty();
+            var jsonarr = jQuery.parseJSON($('#LocationJSON').val());
+            $.each(jsonarr, function (index, value) {
+                if (value.COMPCD == compcd) {
+                    $('#LOCCD').append("<option value='" + value.LOCCD + "'>" + value.LOCNM + "</option>");
+                }
+            });
+            $('#Finyr').empty();
+            var jsonarr = jQuery.parseJSON($('#FinYearJSON').val());
+            $.each(jsonarr, function (index, value) {
+                if (value.COMPCD == compcd && value.LOCCD == $('#LOCCD').val()) {
+                    $('#Finyr').append("<option value='" + value.FINYR + "'>" + value.FINYR + "</option>");
+                }
+            });
+            $("#divLoadingSubCat").hide();
+        }
+
+        function getCompanyFinancial() {
+            $("#divLoadingSubCat1").show();
+            var compcd = $("#COMPCD").val();
+            var loccd = $("#LOCCD").val();
+            $('#Finyr').empty();
+            var jsonarr = jQuery.parseJSON($('#FinYearJSON').val());
+            $.each(jsonarr, function (index, value) {
+                if (value.COMPCD == compcd && value.LOCCD == loccd) {
+                    $('#Finyr').append("<option value='" + value.FINYR + "'>" + value.FINYR + "</option>");
+                }
+            });
+            $("#divLoadingSubCat1").hide();
+            //$("#submitbutton").focus();
+            return false;
+        }
+        function setFinancialText() {
+            $('#FinancialText').val($('#FinaID option:selected').text())
+        }
+    </script>
+</head>
+<body class="bodyclass">
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(model => model.LocationJSON, new { id = "LocationJSON" })
+        @Html.HiddenFor(model => model.FinYearJSON, new { id = "FinYearJSON" })
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-lg-6">
+                    <center class="logoverticalmargincompsc">
+                        <img src="~/Image/IPSMART-LOGO.png" height="100px" width="100px" />
+                        <h3>
+                            @Module.Module_Name
+                        </h3>
+                    </center>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="flt">
+                            <label><b>@Html.LabelFor(model => model.COMPCD)</b></label>
+                            @Html.DropDownListFor(model => Model.COMPCD, new SelectList(Model.CompanyCode, "COMPCD", "COMPNM"), "--SELECT--", new { @class = "form-control ttext", @onchange = "getCompanyLocation()" })
+                            @Html.ValidationMessageFor(model => model.COMPCD)
+                            <span id="divLoadingSubCat" style="display:none;">
+                                <img src="@Url.Content("~/Image/loader.gif")" alt="loading..." height="20px" width="20px" />
+                            </span>
+                        </div>
+                        <div class="flt">
+                            <label><b>@Html.LabelFor(model => model.LOCCD)</b></label>
+                            @Html.DropDownListFor(model => Model.LOCCD, new SelectList(Model.CompanyLocation, "LOCCD", "LOCNM"), "--SELECT--", new { ID = "LOCCD", @class = "form-control ttext", @onchange = "getCompanyFinancial()" })
+                            @Html.ValidationMessageFor(model => model.LOCCD)
+                            <span id="divLoadingSubCat1" style="display:none;">
+                                <img src="@Url.Content("~/Image/loader.gif")" alt="loading..." height="20px" width="20px" />
+                            </span>
+                        </div>
+                        <div class="flt">
+                            <label><b>@Html.LabelFor(model => model.Finyr)</b></label>
+                            @Html.DropDownListFor(model => Model.Finyr, new SelectList(Model.CompanyFinyr, "FINYR", "FINYR"), "--SELECT--", new { ID = "Finyr", @class = "form-control ttext" })
+                            @Html.ValidationMessageFor(model => model.Finyr)
+                        </div>
+                        <center>
+                            <span id="validationMessage" style="color:red">
+                                @if (Session["package"] != null)
+                                {
+                                    @(new HtmlString(Session["package"].ToString()));
+                                }
+                            </span>
+                            <span style="color:red">@ViewBag.Msg</span>
+                        </center>
+                        <div class="flt">
+                            <label class="checkbox-inline glyphicon-text-size">@Html.CheckBoxFor(model => model.Ischecked, new { @style = "width:17px; height:17px;" }) Set As Default</label>
+                        </div>
+                        <hr />
+                        <center>
+                            <button id="submitbutton" name="submitbutton" type="submit" value="OK" onclick="return validCompanySelection();" class="btn btn-success" style="padding-left:24px;padding-right:24px;float:left">OK</button>
+                            <button type="submit" value="Logout" name="submitbutton" class="btn btn-danger">Logout</button>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Scripts/Custom.js?Ver=" + Session["publishversion"]);
+    @*<script type="text/javascript">
+            getCompanyLocation()
+        </script>*@
+</body>
+</html>

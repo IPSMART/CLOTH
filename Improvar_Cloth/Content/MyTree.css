@@ -1,0 +1,371 @@
+﻿    .menu {
+        position: absolute;
+        width: 200px;
+        padding: 2px;
+        margin: 0;
+        border: 1px solid #bbb;
+        background: #eee;
+        background: -webkit-linear-gradient(to bottom, #fff 0%, #e5e5e5 100px, #e5e5e5 100%);
+        background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100px, #e5e5e5 100%);
+        z-index: 100;
+        border-radius: 3px;
+        box-shadow: 1px 1px 4px rgba(0,0,0,.2);
+        opacity: 0;
+        -webkit-transform: translate(0, 15px) scale(.95);
+        transform: translate(0, 15px) scale(.95);
+        transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+        pointer-events: none;
+    }
+
+    .menu1 {
+        position: absolute;
+        width: 220px;
+        padding: 2px;
+        margin: 0;
+        border: 1px solid #bbb;
+        background: #eee;
+        background: -webkit-linear-gradient(to bottom, #fff 0%, #e5e5e5 100px, #e5e5e5 100%);
+        background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100px, #e5e5e5 100%);
+        z-index: 100;
+        border-radius: 3px;
+        box-shadow: 1px 1px 4px rgba(0,0,0,.2);
+        opacity: 0;
+        -webkit-transform: translate(0, 15px) scale(.95);
+        transform: translate(0, 15px) scale(.95);
+        transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+        pointer-events: none;
+    }
+
+    .menu2 {
+        position: absolute;
+        width: 220px;
+        padding: 2px;
+        margin: 0;
+        border: 1px solid #bbb;
+        background: #eee;
+        background: -webkit-linear-gradient(to bottom, #fff 0%, #e5e5e5 100px, #e5e5e5 100%);
+        background: linear-gradient(to bottom, #fff 0%, #e5e5e5 100px, #e5e5e5 100%);
+        z-index: 100;
+        border-radius: 3px;
+        box-shadow: 1px 1px 4px rgba(0,0,0,.2);
+        opacity: 0;
+        -webkit-transform: translate(0, 15px) scale(.95);
+        transform: translate(0, 15px) scale(.95);
+        transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+        pointer-events: none;
+    }
+
+    .menu-item {
+        display: block;
+        position: relative;
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+    }
+
+    .menu-btn {
+        background: none;
+        line-height: normal;
+        overflow: visible;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        display: block;
+        width: 100%;
+        color: #444;
+        font-family: 'Roboto', sans-serif;
+        font-size: 13px;
+        text-align: left;
+        cursor: pointer;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        padding: 6px 8px;
+        border-radius: 3px;
+    }
+
+        .menu-btn::-moz-focus-inner, .menu-btn::-moz-focus-inner {
+            border: 0;
+            padding: 0;
+        }
+
+    .menu-text {
+        margin-left: 25px;
+    }
+
+    .menu-btn .fa {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+    .menu-item:hover > .menu-btn {
+        color: #fff;
+        outline: none;
+        background-color: #2E3940;
+        background: -webkit-linear-gradient(to bottom, #5D6D79, #2E3940);
+        background: linear-gradient(to bottom, #5D6D79, #2E3940);
+        border: 1px solid #2E3940;
+    }
+
+    .menu-item.disabled {
+        opacity: .5;
+        pointer-events: none;
+    }
+
+        .menu-item.disabled .menu-btn {
+            cursor: default;
+        }
+
+    .menu-separator {
+        display: block;
+        margin: 7px 5px;
+        height: 1px;
+        border-bottom: 1px solid #fff;
+        background-color: #aaa;
+    }
+
+    .menu-item.submenu::after {
+        content: "";
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        border: 5px solid transparent;
+        border-left-color: #808080;
+    }
+
+    .menu-item.submenu:hover::after {
+        border-left-color: #fff;
+    }
+
+    .menu .menu {
+        top: 4px;
+        left: 99%;
+    }
+
+    .show-menu, .menu-item:hover > .menu {
+        opacity: 1;
+        -webkit-transform: translate(0, 0) scale(1);
+        transform: translate(0, 0) scale(1);
+        pointer-events: auto;
+    }
+
+    .menu-item:hover > .menu {
+        -webkit-transition-delay: 100ms;
+        transition-delay: 300ms;
+    }
+
+     .noselect {
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently
+                                      supported by Chrome and Opera */
+    }
+
+    .tree {
+        margin: 1em;
+    }
+
+        .tree input {
+            position: absolute;
+            clip: rect(0, 0, 0, 0);
+        }
+
+            .tree input ~ ul {
+                display: none;
+            }
+
+            .tree input:checked ~ ul {
+                display: block;
+            }
+
+        /* ————————————————————–
+                    Tree rows
+                  */
+        .tree li {
+            line-height: 0.5;
+            position: relative;
+            padding: 0 0 1em 1em;
+        }
+
+        .tree ul li {
+            padding: 1em 1em 0 1em;
+        }
+
+        .tree > li:last-child {
+            padding-bottom: 0;
+            top: 0px;
+        }
+
+        .tree ul, ol {
+            margin-top: -5px;
+            margin-left: -1px;
+            /*margin-bottom: 10px;*/
+        }
+
+        .tree label {
+            margin-bottom: -2px;
+            margin-top: -2px;
+        }
+    /* ————————————————————–
+                    Tree labels
+                  */
+    .tree_label {
+        position: relative;
+        display: inline-block;
+        background-color: transparent;
+        color: #000;
+        font-weight: bold;
+    }
+
+    .default_label {
+        position: relative;
+        display: inline-block;
+        background-color: transparent;
+        color: #000;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 10px;
+    }
+
+    label.tree_label {
+        cursor: pointer;
+    }
+
+        label.tree_label:hover {
+            color: #000;
+        }
+
+    /*span.tree_label:hover {
+                  color: #fff;
+              }*/
+
+    span.tree_label {
+        cursor: pointer;
+        color: #080808;
+        font-weight: bold;
+    }
+
+    /* ————————————————————–
+                    Tree expanded icon
+                  */
+    label.tree_label:before {
+        background: Red;
+        color: #fff;
+        position: relative;
+        z-index: 1;
+        float: left;
+        margin: 0 1em 0 -2em;
+        width: 1em;
+        height: 1em;
+        border-radius: 1em;
+        content: '+';
+        text-align: center;
+        line-height: .9em;
+    }
+
+    :checked ~ label.tree_label:before {
+        content: '–';
+    }
+
+    /* ————————————————————–
+                    Tree branches
+                  */
+    .tree li:before {
+        position: absolute;
+        top: 2px;
+        bottom: -5px;
+        left: -.5em;
+        display: block;
+        width: 0;
+        border-left: 1px solid #000;
+        content: "";
+    }
+
+    .tree_label:after {
+        position: absolute;
+        top: 2px;
+        left: -1.5em;
+        display: block;
+        height: 0.5em;
+        width: 1em;
+        border-bottom: 1px solid #000;
+        border-left: 1px solid #000;
+        border-radius: 0 0 0 .3em;
+        content: '';
+    }
+
+    label.tree_label:after {
+        border-bottom: 0;
+    }
+
+    :checked ~ label.tree_label:after {
+        border-radius: 0 .3em 0 0;
+        border-top: 1px solid #000;
+        border-right: 1px solid #000;
+        border-bottom: 0;
+        border-left: 0;
+        bottom: -2px;
+        top: 0.5em;
+        height: auto;
+    }
+
+    .tree li:last-child:before {
+        height: 1em;
+        bottom: auto;
+    }
+
+    .tree > li:last-child:before {
+        display: none;
+    }
+
+    .tree_custom {
+        display: block;
+        background: #eee;
+        padding: 1em;
+        border-radius: 0.3em;
+    }
+
+    .menubutton {
+        display: block;
+        width: 22px;
+        height: 2px;
+        border-radius: 1px;
+    }
+
+    .div-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        border: 0;
+    }
+
+    .a {
+        color: blue;
+    }
+
+    .fileimg {
+        width: 16px;
+        height: 16px;
+        margin-bottom: -2px;
+    }
+
+    .groupimg {
+        width: 24px;
+        height: 17px;
+        margin-bottom: 4px;
+    }
+
+    .highlight {
+        background: #d8ff00;
+    }

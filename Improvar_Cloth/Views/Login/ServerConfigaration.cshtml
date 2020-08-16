@@ -1,0 +1,106 @@
+﻿@model Improvar.Models.Server
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Server Configuration</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="intcut icon" type="image/x-icon" href="~/favicon.ico">
+</head>
+<body>
+    <div class="container body-content">
+        <div class="jumbotron">
+            <h1>Server Configuration</h1>
+            <section class="content-wrapper main-content clear-fix">
+                @using (Html.BeginForm())
+                {
+                    <fieldset>
+                        <legend style="color:red">Welcome to first time setup configaration</legend>
+
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Host)
+                        </div>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Host, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Host)
+                        </div>
+
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Port)
+                        </div>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Port, new { htmlAttributes = new { @class = "form-control", type = "number" } })
+                            @Html.ValidationMessageFor(model => model.Port)
+                        </div>
+
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ServerName)
+                        </div>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ServerName,new { htmlAttributes = new { @class = "form-control", @Value = "DEDICATED" } })
+                            @Html.ValidationMessageFor(model => model.ServerName)
+                        </div>
+
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ServiceName)
+                        </div>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ServiceName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ServiceName)
+                        </div>
+
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.DBUserName)
+                        </div>
+                        <div class="editor-field">
+                            @Html.PasswordFor(model => model.DBUserName, new { ID = "txtUser",@class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.DBUserName)
+                            <div class="editor-label">
+                                Auto Detect User @Html.CheckBox("check1", false, new { ID = "check1", onclick = "GetUser('check1', 'txtUser');" })
+                            </div> 
+                        </div>                        
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.DBPassword)
+                        </div>
+                        <div class="editor-field">
+                            @Html.PasswordFor(model => model.DBPassword, new { ID = "txtPassword", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.DBPassword)
+                            <div class="editor-label">
+                                Auto Detect Password @Html.CheckBox("check2",false, new { ID = "check2", onclick = "GetPassword('check2', 'txtPassword');" })
+                            </div>                           
+                        </div>
+                        <p>
+                            <input type="submit" value="Configure" class="btn btn-danger" />
+                            <input type="reset" value="Reset" class="btn btn-success" />
+                            <input type="hidden" id="hdd1" value="@Url.Action("GetPassword", "Login")" />
+                            <input type="hidden" id="hdd2" value="@Url.Action("GetUser", "Login")" />
+                        </p>
+                        <p>                           
+                             @if (ViewBag.Msg == "1")
+                             {
+                                <span style="color:royalblue">Sucessfully Save Configuration, @Html.ActionLink("Click to Login","Login","Login", new { @class= "btn btn-success" })</span>
+                             }
+                               
+                        </p>
+                    </fieldset>
+                }
+            </section>
+        </div>
+    </div>
+    <div class="container body-content">
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - IMPROVAR</p>
+        </footer>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Scripts/Custom.js");
+</body>
+</html>

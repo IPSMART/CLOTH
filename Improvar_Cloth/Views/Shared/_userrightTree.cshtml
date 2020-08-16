@@ -1,0 +1,10 @@
+﻿@model Improvar.ViewModels.UserRight    
+<ul class="tree">
+
+    @if (Model.ManuDetails != null)
+    {
+        @(new HtmlString(Model.ManuDetails))
+    }
+</ul>
+@Html.HiddenFor(_ => _.serializeString)
+@Html.HiddenFor(_ => _.serializeStringChild)

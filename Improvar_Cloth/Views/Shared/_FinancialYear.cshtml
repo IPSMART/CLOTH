@@ -1,0 +1,25 @@
+﻿@model Improvar.ViewModels.CompanySelection
+
+<div class="editor-field">
+    <select name="FinaID" id="FinaID"  onchange="setFinancialText()"  class="form-control ttext">
+        <option value="0">-- Select --</option>
+        @foreach (var item in Model.FinancialYear)
+        {
+            if (item.finan == Model.FinancialYearName)
+            {
+                <option value="@item.usr_id" selected="selected">@item.finan</option>
+            }
+            else
+            {
+                <option value="@item.usr_id">@item.finan</option>
+            }
+        }
+    </select>
+    <script>
+        setFinancialText()
+    </script>
+    @Html.ValidationMessageFor(model => model.Loca)
+</div>
+<div class="editor-label" style="color:black">
+  
+</div>

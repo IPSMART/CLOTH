@@ -1,0 +1,554 @@
+﻿@model Improvar.ViewModels.UserRight
+@{
+    ViewBag.Title = "User Rights";
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>User Rights</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico">
+    <link rel="icon" href="~/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" media="all" href="~/Content/treeview.css" />
+    <link rel="stylesheet" media="all" href="~/Content/main_layout.css?Ver=@Module.ContentVersion" />
+    <link rel="stylesheet" href="~/Content/font-awesome.min.css" />
+    <script src="~/Scripts/jquery.min.js"></script>
+    @Scripts.Render("~/Scripts/Custom.js?Ver=" + Module.ContentVersion)
+    @Styles.Render("~/Content/MyStyle.css?Ver=" + Module.ContentVersion)
+    @Styles.Render("~/Content/themes/base/core.css")
+    @Styles.Render("~/Content/themes/base/accordion.css")
+    @Styles.Render("~/Content/themes/base/autocomplete.css")
+    @Styles.Render("~/Content/themes/base/button.css")
+    @Styles.Render("~/Content/themes/base/datepicker.css")
+    @Styles.Render("~/Content/themes/base/dialog.css")
+    @Styles.Render("~/Content/themes/base/draggable.css")
+    @Styles.Render("~/Content/themes/base/menu.css")
+    @Styles.Render("~/Content/themes/base/progressbar.css")
+    @Styles.Render("~/Content/themes/base/resizable.css")
+    @Styles.Render("~/Content/themes/base/selectable.css")
+    @Styles.Render("~/Content/themes/base/selectmenu.css")
+    @Styles.Render("~/Content/themes/base/sortable.css")
+    @Styles.Render("~/Content/themes/base/slider.css")
+    @Styles.Render("~/Content/themes/base/spinner.css")
+    @Styles.Render("~/Content/themes/base/tabs.css")
+    @Styles.Render("~/Content/themes/base/tooltip.css")
+    @Styles.Render("~/Content/themes/base/theme.css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryui")
+    <style>
+        /* ————————————————————–
+          Tree core styles
+        */
+        .tabletd {
+            font-size: 9px;
+        }
+
+        .tree {
+            margin: 1em;
+        }
+
+            .tree input {
+                position: absolute;
+                clip: rect(0, 0, 0, 0);
+            }
+
+                .tree input ~ ul {
+                    display: none;
+                }
+
+                .tree input:checked ~ ul {
+                    display: block;
+                }
+
+            /* ————————————————————–
+          Tree rows
+        */
+            .tree li {
+                line-height: 0.5;
+                position: relative;
+                padding: 0 0 1em 1em;
+            }
+
+            .tree ul li {
+                padding: 1em 0 0 1em;
+            }
+
+            .tree > li:last-child {
+                padding-bottom: 0;
+            }
+
+        /* ————————————————————–
+          Tree labels
+        */
+        .tree_label {
+            position: relative;
+            display: inline-block;
+            background-color: transparent;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .default_label {
+            position: relative;
+            display: inline-block;
+            background-color: transparent;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        label.tree_label {
+            cursor: pointer;
+        }
+
+            label.tree_label:hover {
+                color: #000;
+            }
+
+        span.tree_label:hover {
+            color: #fff;
+        }
+
+        span.tree_label {
+            cursor: pointer;
+            color: #032f45;
+            font-weight: bold;
+        }
+
+        /* ————————————————————–
+          Tree expanded icon
+        */
+        label.tree_label:before {
+            background: #0707f5;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            float: left;
+            margin: 0 1em 0 -2em;
+            width: 1em;
+            height: 1em;
+            border-radius: 1em;
+            content: '+';
+            text-align: center;
+            line-height: .9em;
+        }
+
+        :checked ~ label.tree_label:before {
+            content: '–';
+        }
+
+        /* ————————————————————–
+          Tree branches
+        */
+        .tree li:before {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -.5em;
+            display: block;
+            width: 0;
+            border-left: 1px solid #777;
+            content: "";
+        }
+
+        .tree_label:after {
+            position: absolute;
+            top: 0;
+            left: -1.5em;
+            display: block;
+            height: 0.5em;
+            width: 1em;
+            border-bottom: 1px solid #777;
+            border-left: 1px solid #777;
+            border-radius: 0 0 0 .3em;
+            content: '';
+        }
+
+        label.tree_label:after {
+            border-bottom: 0;
+        }
+
+        :checked ~ label.tree_label:after {
+            border-radius: 0 .3em 0 0;
+            border-top: 1px solid #777;
+            border-right: 1px solid #777;
+            border-bottom: 0;
+            border-left: 0;
+            bottom: 0;
+            top: 0.5em;
+            height: auto;
+        }
+
+        .tree li:last-child:before {
+            height: 1em;
+            bottom: auto;
+        }
+
+        .tree > li:last-child:before {
+            display: none;
+        }
+
+        .tree_custom {
+            display: block;
+            background: #eee;
+            padding: 1em;
+            border-radius: 0.3em;
+        }
+
+        .menubutton {
+            display: block;
+            width: 22px;
+            height: 2px;
+            border-radius: 1px;
+        }
+
+        .div-sr {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            border: 0;
+        }
+
+        .a {
+            color: blue;
+        }
+    </style>
+    <style>
+        #comuser {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            #comuser td, #comuser th {
+                border: 1px solid #ddd;
+                padding: 4px;
+            }
+
+            #comuser tr:nth-child(even) {
+                background-color: #f2f2f2;
+                color: black;
+            }
+
+            #comuser tr:nth-child(odd) {
+                background-color: #fafbb7;
+                color: black;
+            }
+            /*#comuser tr:hover {
+                background-color: #fafbb7;
+                color:black;
+            }*/
+
+            #comuser th {
+                padding-top: 7px;
+                padding-bottom: 7px;
+                text-align: left;
+                background-color: #4f5d7b;
+                color: white;
+            }
+    </style>
+    <script>
+        var message_value;
+        function winclose() {
+            if (confirm("Close Window?")) {
+                window.close();
+            }
+        }
+        function closeDiv(id, flag) {
+            $(id).hide();
+            var will_go = message_value;
+            $("#" + will_go).focus();
+
+            if (flag == 1) {
+                location.reload();
+            }
+            else if (flag == 2) {
+                location.href = $("#message_stay").val();
+            }
+        }
+        function setpermission(id, index) {
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#childwindowforur").val(),
+                data: {
+                    serial: $("#serializeString").val(),
+                    id: id,
+                    index: index
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialuserright").show();
+                    $("#partialuserright").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    alert("Status: " + textStatus); alert("Error: " + errorThrown);
+                }
+            });
+        }
+
+        function gotoTree() {
+            var user = $("#userID").val();
+            if (user == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msgbody_info").html("Select User First!");
+                message_value = "userID";
+                return false;
+            }
+            if ($('#Msgdiv1').css('display') == 'block') {
+                $('#btnok').focus();
+            }
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#treegen").val(),
+                data: $('form').serialize() + "&user=" + user,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#_userTree").html(result.utree);
+                    $("#_compergrid").html(result.compermission);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    alert("Status: " + textStatus);
+                    alert("Error: " + errorThrown);
+                }
+            });
+        }
+        function updateTree(menuid) {
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#updateuserrighturl").val(),
+                data: $('form').serialize() + "&serialize=" + $("#serializeString").val(),
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    var dd = String(result);
+                    var dd1 = dd.split("^^^~~~~^^^");
+                    $("#serializeString").val(dd1[0]);
+                    $("#partialuserright").hide();
+                    $("#partialuserright").html("");
+                    document.getElementById(menuid).src = "../Image/" + dd1[1];
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    alert("Status: " + textStatus); alert("Error: " + errorThrown);
+                }
+            });
+        }
+        function saveright() {
+            var user = $("#userID").val();
+            if (user == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msgbody_info").html("Select User First!");
+                message_value = "userID";
+                return false;
+            }
+            var right = $("#serializeString").val();
+            if (right.length <= 0) {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msgbody_info").html("Set User Right!");
+                message_value = "userID";
+                return false;
+            }
+
+            $.ajax({
+                type: 'post',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#saveuserrighturl").val(),
+                data: $('form').serialize() + "&serialize=" + $("#serializeString").val() + "&user=" + $("#userID").val() + "&child=" + $("#serializeStringChild").val(),
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (result == "1") {
+                        msgSuccess("Save Successfully ");
+                        gotoTree();
+                    }
+                    else {
+                        msgWarning(result);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    alert("Status: " + textStatus); alert("Error: " + errorThrown);
+                }
+            });
+        }
+        function defaultPermission(id, flag) {
+            var user = $("#userID").val();
+            if (user == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msgbody_info").html("Select User First!");
+                message_value = "userID";
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#defaultpermissiourl").val(),
+                data: {
+                    progcalid: id,
+                    serial: $("#serializeString").val(),
+                    Flag: flag
+                },
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    var dd = String(result);
+                    var dd1 = dd.split("^^^^^^^+++++++^^^^^^");
+                    $("#serializeString").val(dd1[0]);
+                    var data = dd1[1];
+                    var data1 = data.split("*");
+                    for (var i = 0; i <= data1.length - 1; i++) {
+                        if (flag == "0") {
+                            document.getElementById(data1[i]).src = "../Image/userpermission1.png";
+                        }
+                        else {
+                            document.getElementById(data1[i]).src = "../Image/userpermission.png";
+                        }
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    alert("Status: " + textStatus); alert("Error: " + errorThrown);
+                }
+            });
+        }
+    </script>
+    <script>
+        function SetAllChkbox(obj, tablename, RowCheckID) {
+            var rows = document.querySelector("#" + tablename + " tbody").rows;
+            for (var i = 0; i <= rows.length - 1; i++) {
+                var flag = 0;
+                var chkbox = document.getElementById(RowCheckID + i);
+                var isdisable = chkbox.getAttribute("disabled");
+                if (isdisable == null) {
+                    chkbox.checked = obj.checked;
+                }
+            }
+        }
+    </script>
+    <style>
+        .tridiv {
+            height: 510px;
+            overflow-y: auto;
+            float: left;
+        }
+
+        .griddiv {
+            overflow-y: auto;
+            float: left;
+            margin-left: 10px;
+        }
+
+        @@media (max-width: 775px) {
+            .tridiv {
+                height: 250px;
+                overflow-y: auto;
+                float: left;
+            }
+
+            .griddiv {
+                overflow-y: auto;
+                float: left;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(-135deg,#c850c0,#4158d0); background-repeat: no-repeat;background-size: cover;">
+    <input type="hidden" id="treegen" value="@Url.Action("generateTree", "UserRights")" />
+    <input type="hidden" id="childwindowforur" value="@Url.Action("Individual_UserRight", "UserRights")" />
+    <input type="hidden" id="updateuserrighturl" value="@Url.Action("UpdateRights", "UserRights")" />
+    <input type="hidden" id="saveuserrighturl" value="@Url.Action("Save", "UserRights")" />
+    <input type="hidden" id="defaultpermissiourl" value="@Url.Action("DefaultPermission", "UserRights")" />
+    <nav>
+        <div>
+            <img class="logo" src="~/Image/IPSMART-LOGO.png" />
+        </div>
+        <ul class="list-item">
+            <li><span>IPSMART - Version @Session["publishversion"]</span></li>
+        </ul>
+        <ul class="list-item1">
+            <li class="liclass">
+                <span style="color:#dcd106;cursor:pointer;" title="Save" onclick="saveright();">Save Rights</span>
+            </li>
+            <li class="liclass">
+                <span style="color:#dcd106;cursor:pointer;" title="Close window" onclick="winclose();">Close</span>
+            </li>
+            <li>Welcome  @Session["UR_ID"]</li>
+        </ul>
+    </nav>
+
+    <div id="mySidenav" class="div-tree1">
+        <div>
+            <span>Select User : </span>@Html.DropDownListFor(model => Model.userID, new SelectList(Model.user, "Value", "Text", Model.userID), "====Select User====", new { @class = "usercombo" }) &nbsp;<input class="userbutton" type="button" value="Get Rights" onclick="gotoTree();" />
+        </div>
+        @using (Html.BeginForm())
+        {
+            <div style="margin:10px;height:95%;display:inline-block">
+                <div class="tridiv">
+                    <div id="_userTree" style="float:left;">
+
+                    </div>
+                </div>
+                <div class="griddiv">
+                    <div id="_compergrid">
+                        @Html.Partial("_userrightcompanygrid")
+
+                    </div>
+                    <div>
+                        <p> Note:</p>
+                        <ol type="A">
+                            <li>1.If click on <u><b>Get Rights</b></u> on that time Loged in company data will come.</li>
+                            <li>2.Selected company only effected when click on <u><b>Save Rights</b></u>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div style="width:100%;background-color:rgb(111, 163, 208);float:left;bottom:0;margin-bottom:0;position:fixed;right:0;left:0">
+        <div class="abc sec1">
+            @Session["CompanyName" + Model?.UNQSNO]
+        </div>
+        <div class="abc sec2">
+            @Session["CompanyLocation" + Model?.UNQSNO]
+        </div>
+        <div class="abc sec3">
+            Period- @Session["CompanyFinancial" + Model?.UNQSNO]
+        </div>
+        <div class="abc sec3_1">
+            IPSMART - Version @Session["publishversion"]
+        </div>
+        <div class="abc sec4">
+            Developed by IPSMART Team
+        </div>
+    </div>
+    <div id="partialuserright" style="display:none">
+
+    </div>
+    <div id="Msgdiv1" style="display:none">
+        <div id="back_cover">
+            @Html.Partial("_MessageBox")
+        </div>
+    </div>
+    <div id="WaitingMode" style="display:none; margin: 0px; padding: 0px; position: fixed; right: 0px; top: 0px; width: 100%; height: 100%; background-color: rgb(16, 134, 16); z-index: 30001; opacity: 0.4;">
+        <p style="position: absolute; color: White; top: 46%; left: 47%;">
+            Loading, please wait...<br />
+            <span> <img src="~/Image/ajax_loader.gif" width="60px" height="60px"></span>
+        </p>
+    </div>
+</body>
+</html>

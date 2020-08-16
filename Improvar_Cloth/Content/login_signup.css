@@ -1,0 +1,147 @@
+﻿
+
+/*My work hook*/
+body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+::-webkit-input-placeholder {
+    color: #abc;
+}
+
+::-moz-placeholder {
+    color: #abc;
+}
+
+:-ms-input-placeholder {
+    color: #abc;
+}
+
+.ttext {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 0px 0 9px 0;
+    display: inline-block;
+    border: 1px solid #abc;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: #28558a;
+    border-radius: 5px;
+    height: 42px;
+}
+
+.ttext_compny {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #abc;
+    box-sizing: border-box;
+    /*background-color: transparent;*/
+    /*color: white;*/
+    border-radius: 5px;
+    height: 42px;
+}
+
+.blocks1 {
+    display: inline-block;
+}
+
+.blocks2 {
+    display: inline-block;
+    border: solid 1px red;
+    width: 100px;
+}
+
+.passview1 {
+    float: left;
+    width: 90%;
+    padding: 12px 20px;
+    /*margin: 8px 0;*/
+    display: inline-block;
+    border: 1px solid #abc;
+    border-right: none;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: #28558a;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    height: 42px;
+}
+
+.passview2 {
+    float: left;
+    width: 10%;
+    max-width: 100px;
+    height: 42px;
+    border-left: none;
+    display: inline-block;
+    border: 1px solid #abc;
+    border-left: none;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: white;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/*button {
+    background-color: #003b64;
+    color: white;
+    padding: 14px 60px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}*/
+
+    button:hover {
+        opacity: 0.8;
+        background-color: #932462;
+    }
+
+.pass {
+    float: right;
+}
+
+
+.bodyclass {
+    width: 100%;
+    min-height: 100vh;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    background: #9053c7;
+    background: -webkit-linear-gradient(-135deg,#c850c0,#4158d0);
+    background: -o-linear-gradient(-135deg,#c850c0,#4158d0);
+    background: -moz-linear-gradient(-135deg,#c850c0,#4158d0);
+    background: linear-gradient(-135deg,#c850c0,#4158d0);
+    /*background-image: url(../Image/log_back1.jpg);*/
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+
+.modal-content {
+    color: #28558a;
+    background-color: #fefefe;
+    background: rgba(215, 220, 245, 0.9);
+    padding: 20px;
+    margin-left: 0%;
+    margin-right: 0%;
+    font-size:medium;
+}
+
+@media (min-width:1024px) {
+    .logoverticalmargincompsc {
+        margin-top: 70px;
+    }
+}

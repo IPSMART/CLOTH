@@ -1,0 +1,80 @@
+﻿@model Improvar.ViewModels.TaxRateProductGroupSetupEntry
+
+<div class="table-responsive">
+    @using (Html.BeginForm())
+    {
+        if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                 <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleTaxgrid');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>  Tax Rate  </b></center>
+            </div>
+            <table id="exampleTaxgrid" class="resizable grid_table" cellpadding="0px" cellspacing="0px" width="100%">
+                <thead>
+                    <tr style="height:30px">
+                        <th class="grid_th" style="width:30px;">SL NO.</th>
+                        <th class="grid_th" style="width:110px;" >Tax Group Code</th>
+                        <th class="grid_th" style="min-width:120px">Tax Group Name</th>
+                        <th class="grid_th" style="width:110px;">IGST %</th>
+                        <th class="grid_th" style="width:110px;">CGST %</th>
+                        <th class="grid_th" style="width:110px;">SGST %</th>
+                        <th class="grid_th" style="width:110px;">CESS %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MPRODTAX != null)
+                    {
+                        for (int i = 0; i <= Model.MPRODTAX.Count - 1; i++)
+                        {
+                            <tr style="font-size:12px; font-weight:bold;">
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MPRODTAX[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @title = "Only Numeric", @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @*@Html.TextBoxFor(model => Model.MPRODTAX[i].TAXGRPCD, new { id = "TAXGRPCD_" + i, onkeyup = "GetHelp('" + @Url.Action("GetMakeCode", "M_Tax_Rate") + "','" + "TAXGRPCD_" + i + "/" + "TAXGRPNM_" + i + "','1/0','Tax Group Details','" + "TAXGRPCD_" + i + "')", onblur = "SelectTaxGroupCode(this.value," + "TAXGRPCD_" + i + "," + "TAXGRPNM_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 4 })
+                                      <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetMakeCode", "M_Tax_Rate")','TAXGRPCD_@i/TAXGRPNM_@i','1/0','Tax Group Deatils','TAXGRPCD_@i')" />*@
+                                    @Html.TextBoxFor(model => Model.MPRODTAX[i].TAXGRPCD, new { id = "TAXGRPCD_" + i, @title = "Only Numeric", @class = " atextBoxFor ", @readonly = "readonly", maxlength = 4 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MPRODTAX[i].TAXGRPNM, new { id = "TAXGRPNM_" + i, @title = "Only Numeric", @class = " atextBoxFor", @readonly = "readonly", maxlength = 30 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MPRODTAX[i].IGSTPER, new { id = "IGSTPER_" + i, @title = "Only Numeric", @class = " atextBoxFor ", @onkeypress = "return numericOnly(this,2);", maxlength = 6 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MPRODTAX[i].CGSTPER, new { id = "CGSTPER_" + i, @title = "Only Numeric", @class = " atextBoxFor ", @onkeypress = "return numericOnly(this,2);", maxlength = 6 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MPRODTAX[i].SGSTPER, new { id = "SGSTPER_" + i, @title = "Only Numeric", @class = " atextBoxFor ", @onkeypress = "return numericOnly(this,2);", maxlength = 6 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MPRODTAX[i].CESSPER, new { id = "CESSPER_" + i, @title = "Only Numeric", @class = " atextBoxFor ", @onkeypress = "return numericOnly(this,2);", maxlength = 6 })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+    }
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

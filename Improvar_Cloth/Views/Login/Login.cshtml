@@ -1,0 +1,108 @@
+﻿@model Improvar.Models.Login
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@Module.Module_Name</title>
+    @Styles.Render("~/Content/css")
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/Custom.js"></script>
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico">
+    <link rel="stylesheet" href="~/Content/login_signup.css?Ver=@Module.ContentVersion" />
+    <script>
+        function ShowHide() {
+            var x1 = document.getElementById("Password");
+            var x2 = document.getElementById("eye");
+            var x3 = document.getElementById("eye_close");
+            if (x1.type === "password") {
+                x1.type = "text";
+                x2.style.display = "none";
+                x3.style.display = "block";
+                return false;
+                //window.onload = ShowHide();
+            }
+            else {
+                x1.type = "password";
+                x2.style.display = "block";
+                x3.style.display = "none";
+                return false;
+                //window.onload = ShowHide();
+            }
+            //window.onload = ShowHide();
+        }
+    </script>
+</head>
+
+<body class="bodyclass">
+    @using (Html.BeginForm())
+    {
+        <div class="modal-content">
+            <div class="row">
+                <div class="col-lg-6">
+                    <center>
+                        <img src="~/Image/IPSMART-LOGO.png" height="100px" width="100px" />
+                        <h3>
+                            @Module.Module_Name
+                        </h3>
+                        <h6><span class="glyphicon glyphicon-log-in"></span>
+                            Welcome to IP-SMART
+                        </h6>
+                    </center>
+                </div>
+                <div class="col-lg-6">
+                    <label><b>User ID</b></label>
+                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { id = "UserName", @class = "ttext TEXT", placeholder = "Enter User ID", required = "required",autofocus= "autofocus", autocomplete = "off", onkeyup = "toUpper(UserName)" } })
+                    <label><b>Password</b></label>
+                    @Html.PasswordFor(model => model.Password, new { value = Model.Password, @class = "passview1 blocks1", placeholder = "Enter Password", id = "Password", required = "required" })
+                    <img src="~/Image/pass_eye_close.png" name="pa2" id="eye" style="cursor:pointer" class="passview2 blocks1" onclick="ShowHide();">
+                    <img src="~/Image/pass_eye.png" style="display:none;cursor:pointer " name="pa3" id="eye_close" class="passview2 blocks1" onclick="ShowHide();">
+                    @Html.HiddenFor(model => model.IP)
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <span>@Html.CheckBoxFor(model => model.REMEMBERME) </span>
+                            Remember me
+                        </div>
+                        <div class="col-lg-5 text-right">
+                            @Html.ActionLink("Change password", "ChangePassword", null, new { onclick = "this.href += '?USERID=' + document.getElementById('UserName').value;" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <button type="submit" class="btn btn-lg btn-info">Login</button>
+                        </div>
+                        <div class="col-lg-5 text-right">
+                            @Html.ActionLink("Forgot Password ?", "ForgotPassword", null, new { onclick = "this.href += '?USERID=' + document.getElementById('UserName').value;" })
+                        </div>
+                    </div>
+                    <center>
+                        <p>
+                            @if (@ViewBag.Flag == "1")
+                            {
+                                <span style="color:red"> @ViewBag.Msg @Html.ActionLink("Click Here", "ChangePassword", new { cpf = "1" })</span>
+                            }
+                            else
+                            {
+                                <span style="color:red">
+                                    @ViewBag.Msg
+                                </span>
+                            }
+                        </p>
+                    </center>
+                </div>
+            </div>
+        </div>
+
+    }
+</body>
+</html>
