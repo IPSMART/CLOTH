@@ -353,8 +353,12 @@ namespace Improvar.Controllers
                                     MPRODTAX_obj.CLCD = MPrdTax.CLCD;
                                     MPRODTAX_obj.EFFDT = MPrdTax.EFFDT;
                                     MPRODTAX_obj.PRODGRPCD = MPrdTax.PRODGRPCD;
-                                    MPRODTAX_obj.FROMRT = VE.M_PRODTAX.FROMRT;
-                                    MPRODTAX_obj.TORT = VE.M_PRODTAX.TORT;
+                                    //MPRODTAX_obj.FROMRT = VE.M_PRODTAX.FROMRT;
+                                    //MPRODTAX_obj.TORT = VE.M_PRODTAX.TORT;
+                                    if (VE.M_PRODTAX.FROMRT == 0) { MPRODTAX_obj.FROMRT = ".01".retDcml(); }
+                                    else { MPRODTAX_obj.FROMRT = VE.M_PRODTAX.FROMRT; }
+                                    if (VE.M_PRODTAX.TORT == 0) { MPRODTAX_obj.TORT = "999999999.99".retDcml(); }
+                                    else { MPRODTAX_obj.TORT = VE.M_PRODTAX.TORT; }
                                     MPRODTAX_obj.TAXGRPCD = VE.MPRODTAX[i].TAXGRPCD;
                                     MPRODTAX_obj.IGSTPER = VE.MPRODTAX[i].IGSTPER;
                                     MPRODTAX_obj.CGSTPER = VE.MPRODTAX[i].CGSTPER;
