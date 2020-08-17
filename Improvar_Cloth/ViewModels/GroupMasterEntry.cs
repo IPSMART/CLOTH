@@ -13,5 +13,6 @@ namespace Improvar.ViewModels
         public M_CNTRL_HDR M_CNTRL_HDR { get; set; }
         public List<IndexKey01> IndexKey01 { get; set; }
         public bool Checked { get; set; }
+        public List<Database_Combo1> Database_Combo1 { get; set; }
     }
 }

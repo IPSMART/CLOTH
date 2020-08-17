@@ -39,7 +39,7 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
-
+                    VE.Database_Combo1 = (from i in DB.M_GROUP select new Database_Combo1() { FIELD_VALUE = i.ITGRPNM }).OrderBy(s => s.FIELD_VALUE).ToList();
 
                     //=================For Group Type================//
                     List<GroupType> GT = new List<GroupType>();
