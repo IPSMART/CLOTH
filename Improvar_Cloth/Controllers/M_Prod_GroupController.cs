@@ -160,7 +160,7 @@ namespace Improvar.Controllers
                         M_PRODGRP MTAXGRP = new M_PRODGRP();
                         MTAXGRP.CLCD = CommVar.ClientCode(UNQSNO);
                         string NAME = VE.M_PRODGRP.PRODGRPNM;
-                        string NAME_CHAR = NAME.Substring(0, 1).ToUpper();
+                        string NAME_CHAR = NAME.Substring(0, 1).ToUpper().Trim();
                         if (VE.DefaultAction == "A")
                         {
                             MTAXGRP.EMD_NO = 0;

@@ -9,8 +9,8 @@ namespace Improvar.Models
     [Table("M_SITEM")]
     public partial class M_SITEM
     {
-    
-        public int? EMD_NO { get; set; }
+     
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -83,7 +83,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string COLRWISEDTL { get; set; }
 
-        public double? MINPURQTY { get; set; }
+        public decimal? MINPURQTY { get; set; }
 
         public long M_AUTONO { get; set; }
 
@@ -95,5 +95,5 @@ namespace Improvar.Models
         [StringLength(20)]
         public string STDBARCODE { get; set; }
 
-    }
+        }
 }

@@ -6,9 +6,10 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("M_SITEM_BARCODE")]
-    public partial class M_SITEM_BARCODE
+    [Table("M_SITEMBOM")]
+    public partial class M_SITEMBOM
     {
+    
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -21,12 +22,18 @@ namespace Improvar.Models
         [StringLength(1)]
         public string TTAG { get; set; }
 
-        [StringLength(8)]
-        public string ITCD { get; set; }
+        [Key]
+        [Column(Order = 0)]
+        [StringLength(10)]
+        public string BOMCD { get; set; }
 
         [Key]
-        [StringLength(20)]
-        public string BARCODE { get; set; }
+        [Column(Order = 1)]
+        public DateTime EFFDT { get; set; }
+
+        [Required]
+        [StringLength(8)]
+        public string ITCD { get; set; }
 
         [StringLength(4)]
         public string SIZECD { get; set; }
@@ -34,10 +41,15 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        [StringLength(8)]
-        public string HSNCODE { get; set; }
+        [StringLength(50)]
+        public string REMARKS { get; set; }
 
-        public decimal? STDRT { get; set; }
-        
+        public decimal? BASEQNTY { get; set; }
+
+        [StringLength(8)]
+        public string SITCD { get; set; }
+
+        public long M_AUTONO { get; set; }
+
     }
 }

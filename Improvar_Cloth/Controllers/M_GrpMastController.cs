@@ -371,7 +371,7 @@ namespace Improvar.Controllers
                             string txtst = VE.M_GROUP.ITGRPNM.Substring(0, 1).ToUpper();
                             string sql = " select max(SUBSTR(ITGRPCD, 2)) ITGRPCD FROM " + CommVar.CurSchema(UNQSNO)+".M_GROUP";
                             var tbl = Master_Help.SQLquery(sql);
-                            if (tbl.Rows.Count > 0)
+                            if (tbl.Rows[0]["ITGRPCD"].ToString()!="")
                             {
                                 MGROUP.ITGRPCD = txtst + (tbl.Rows[0]["ITGRPCD"]).retInt().ToString("D3");
                             }

@@ -15,7 +15,15 @@ namespace Improvar.Models
         {
             Database.SetInitializer<ImprovarDB>(null);
         }
-        
+
+        public virtual DbSet<M_ITEMPLIST_ADD> M_ITEMPLIST_ADD { get; set; }
+        public virtual DbSet<M_ITEMPLISTDTL> M_ITEMPLISTDTL { get; set; }
+        public virtual DbSet<M_SITEMBOM> M_SITEMBOM { get; set; }
+        public virtual DbSet<M_SITEMBOMAPPRVL> M_SITEMBOMAPPRVL { get; set; }
+        public virtual DbSet<M_SITEMBOMMTRL> M_SITEMBOMMTRL { get; set; }
+        public virtual DbSet<M_SITEMBOMPART> M_SITEMBOMPART { get; set; }
+        public virtual DbSet<M_SITEMBOMSJOB> M_SITEMBOMSJOB { get; set; }
+        public virtual DbSet<M_SITEMBOMSUPLR> M_SITEMBOMSUPLR { get; set; }
         public virtual DbSet<M_SITEM_SIZE> M_SITEM_SIZE { get; set; }
         public virtual DbSet<M_AMTTYPE> M_AMTTYPE { get; set; }
         public virtual DbSet<M_BRAND> M_BRAND { get; set; }
