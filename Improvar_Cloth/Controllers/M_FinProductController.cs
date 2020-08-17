@@ -613,7 +613,19 @@ namespace Improvar.Controllers
             return PartialView("_M_FinProduct_ASSORTEDSIZE", VE);
 
         }
-
+        public ActionResult GetItemDetails(string val, string TAG)
+        {
+            string ITGTYPE = "";
+            if (val == null)
+            {
+                return PartialView("_Help2", Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", TAG));
+            }
+            else
+            {
+                string str = Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", TAG);
+                return Content(str);
+            }
+        }
         public ActionResult GetBrandDetails()
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());

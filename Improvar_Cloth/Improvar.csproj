@@ -878,6 +878,7 @@
     <Content Include="Views\M_Brand\M_Brand.cshtml" />
     <Content Include="Views\M_Color\M_Color.cshtml" />
     <Content Include="Views\Shared\_M_Tax_Rate_GRID.cshtml" />
+    <Content Include="Views\Shared\_M_FinProduct_Prices.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -19,7 +19,67 @@ namespace Improvar
     {
         string CS = null;
         Connection Cn = new Connection();
-       public string AUTHCD_help(ImprovarDB DB)
+        public string ARTICLE_ITEM_DETAILS(string val, string ITGTYPE = "F", string DOC_EFF_DT = "", string JOB_CD = "", string searchby = "A")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            try
+            {
+                string scm1 = CommVar.CurSchema(UNQSNO);
+                string sql = "";
+                if (ITGTYPE != "")
+                {
+                    if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
+                }
+                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype, a.pcsperbox, a.styleno, a.PCSPERSET ";
+                sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b ";
+                sql += "where a.itgrpcd=b.itgrpcd ";
+                if (DOC_EFF_DT != "" || JOB_CD != "")
+                {
+                    sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd ";
+                    if (JOB_CD != "") sql += "and y.jobcd='" + JOB_CD + "' ";
+                    if (DOC_EFF_DT != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT + "','dd/mm/yyyy')  ";
+                    sql += ") ";
+                }
+                if (ITGTYPE != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
+                if (searchby == "A" && val != null) sql += "and a.styleno='" + val + "' ";
+                if (searchby == "C" && val != null) sql += "and a.itcd='" + val + "' ";
+                DataTable rsTmp = SQLquery(sql);
+
+                if (val == null)
+                {
+                    if (rsTmp != null)
+                    {
+                        System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                        for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
+                        {
+                            SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["pcsperbox"].ToString() + "</td></tr>");
+                        }
+                        var hdr = "Article No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "PCS / BOX";
+                        return Generate_help(hdr, SB.ToString());
+                    }
+                    else return "0";
+                }
+                else
+                {
+                    string str = "";
+                    if (rsTmp != null && rsTmp.Rows.Count > 0)
+                    {
+                        str = rsTmp.Rows[0]["styleno"] + Cn.GCS() + rsTmp.Rows[0]["itcd"] + Cn.GCS() + rsTmp.Rows[0]["itnm"] + Cn.GCS() + rsTmp.Rows[0]["uomcd"] + Cn.GCS() + rsTmp.Rows[0]["pcsperbox"].ToString() + Cn.GCS() + rsTmp.Rows[0]["PCSPERSET"].ToString();
+                    }
+                    else
+                    {
+                        str = "Invalid " + (searchby == "A" ? " Article Number" : "Item Code") + " ! Please Enter a Valid " + (searchby == "A" ? " Article Number" : "Item Code") + " !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
+
+        }
+        public string AUTHCD_help(ImprovarDB DB)
         {
             using (DB)
             {
@@ -266,7 +326,6 @@ namespace Improvar
                 }
             }
         }
-
         public string SBRAND(string val, string BRAND)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
