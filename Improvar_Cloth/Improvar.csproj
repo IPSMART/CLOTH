@@ -357,6 +357,8 @@
     <Compile Include="Models\M_GODOWN.cs" />
     <Compile Include="Models\M_GROUP.cs" />
     <Compile Include="Models\M_ITEM.cs" />
+    <Compile Include="Models\M_ITEMPLISTDTL.cs" />
+    <Compile Include="Models\M_ITEMPLIST_ADD.cs" />
     <Compile Include="Models\M_ITEM_UN_CNV.cs" />
     <Compile Include="Models\M_JOBMST.cs" />
     <Compile Include="Models\M_LOCA.cs" />
@@ -376,6 +378,12 @@
     <Compile Include="Models\M_SDR_USERID.cs" />
     <Compile Include="Models\M_SIGN_AUTH.cs" />
     <Compile Include="Models\M_SITEM.cs" />
+    <Compile Include="Models\M_SITEMBOM.cs" />
+    <Compile Include="Models\M_SITEMBOMAPPRVL.cs" />
+    <Compile Include="Models\M_SITEMBOMMTRL.cs" />
+    <Compile Include="Models\M_SITEMBOMPART.cs" />
+    <Compile Include="Models\M_SITEMBOMSJOB.cs" />
+    <Compile Include="Models\M_SITEMBOMSUPLR.cs" />
     <Compile Include="Models\M_SITEM_BARCODE.cs" />
     <Compile Include="Models\M_SITEM_COLOR.cs" />
     <Compile Include="Models\M_SITEM_MEASURE.cs" />

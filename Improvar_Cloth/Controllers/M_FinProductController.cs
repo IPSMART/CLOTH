@@ -613,6 +613,31 @@ namespace Improvar.Controllers
             return PartialView("_M_FinProduct_ASSORTEDSIZE", VE);
 
         }
+
+        public ActionResult GetBrandDetails()
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+
+            return PartialView("_Help2", Master_Help.BRANDCD_help(DB));
+        }
+        public ActionResult BrandCode(string val)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var query = (from c in DB.M_BRAND where (c.BRANDCD == val) select c);
+            if (query.Any())
+            {
+                string str = "";
+                foreach (var i in query)
+                {
+                    str = i.BRANDCD + Cn.GCS() + i.BRANDNM;
+                }
+                return Content(str);
+            }
+            else
+            {
+                return Content("0");
+            }
+        }
         //public ActionResult DeleteRowBOX(ItemMasterEntry VE)
         //{
         //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
