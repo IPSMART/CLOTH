@@ -152,7 +152,7 @@ namespace Improvar.Controllers
                     VE.Checked = false;
                 }
                 VE.MPRODTAX = (from i in DB.M_PRODTAX
-                               where (i.PRODGRPCD == sl.PRODGRPCD && i.EFFDT == sl.EFFDT)
+                               where (i.PRODGRPCD == sl.PRODGRPCD && i.EFFDT == sl.EFFDT && i.FROMRT == rate)
                                select new MPRODTAX()
                                {
                                    TAXGRPCD = i.TAXGRPCD,
