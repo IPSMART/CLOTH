@@ -120,6 +120,13 @@
     }
 </script>
 <script>
+    $(function () {
+            if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+                $("#PRICES_EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+            }
+        });
+</script>
+<script>
     function input12(id, id1, id2, id3) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
         $("#" + id.id).val(str[0]);
@@ -847,38 +854,7 @@
     }
 
 </script>
-<script type="text/javascript">
-    var specialKeys = new Array();
-    specialKeys.push(8); //Backspace
-    function numericOnly(elementRef, position) {
-        var keyCodeEntered = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
-        if ((keyCodeEntered >= 48) && (keyCodeEntered <= 57)) {
-            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
-                var aa = elementRef.value;
-                var ab = aa.indexOf('.');
-                var ac = aa.toString().substring(ab);
-                if (ac.length <= position) {
-                    return true; n
-                }
-                else {
-                    return false;
-                }
-            }
-            return true;
-        }
-            // '.' decimal point...
-        else if (keyCodeEntered == 46) {
-            // Allow only 1 decimal point ('.')...
-            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-        return false;
-    }
-</script>
+
 <script>
     function show_name() {
         var des = document.getElementById("QUALITY").value;
@@ -931,7 +907,7 @@
                 <li><a data-toggle="tab" href="#AssortedSize">Assorted Size</a></li>
                 <li><a data-toggle="tab" href="#Color">Color</a></li>
                 <li><a data-toggle="tab" href="#Parts">Parts</a></li>
-                <li><a data-toggle="tab" href="#InventoryCodesBarCode">Inventory Codes / Bar Code</a></li>
+                <li><a data-toggle="tab" href="#InventoryCodesBarCode">Bar Codes</a></li>
                 <li><a data-toggle="tab" href="#Measurement">Measurement</a></li>
                 <li><a data-toggle="tab" href="#PriceList">Price List</a></li>
                 <li><a data-toggle="tab" href="#Documents">Documents</a></li>
@@ -1066,8 +1042,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Item")
-                                    <b style="color:Red;">*</b>
+                                    @Html.Label("", "Facbric item")
                                 </div>
                             </div>
                             @*<div class="col-md-7">
@@ -1506,9 +1481,46 @@
                     </div>
                 </div>
                 <div id="PriceList" class="tab-pane fade" style="margin-top: 10px;">
+                    <script>
+                        function fillPricesGrid() {
+                            $.ajax({
+                                type: 'POST',
+                                url: "@Url.Action("GeneratePrice", PageControllerName )",
+                                data: $('form').serialize(),
+                                success: function (result) {
+                                    $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                                    $("#partialdivDocument").html(result);
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    $("#WaitingMode").hide();
+                                    msgError(XMLHttpRequest.responseText);
+                                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                                }
+                            });
+                        }
+
+                    </script>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Effective Date")
+                                <b style="color:red"><sup>*</sup></b>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.PRICES_EFFDT, new { htmlAttributes = new { @class = "form-control ", id = "PRICES_EFFDT", @placeholder = "dd/mm/yyyy", maxlength = 10, onblur = "DocumentDateCHK(this)",autocomplete="off" } })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="editor-field">
+                                <input class="btn btn-primary" type="button" value="Get Data" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="fillPricesGrid();" />
+                            </div>
+                        </div>
+                    </div>
                     <div class="row" style="margin-top: 11px;width:601px;height:auto;background-color:#c4b9b9">
                         <div id="partialdivMeasurement">
-                            @Html.Partial("_M_FinProduct_Measurement")
+                            @Html.Partial("_M_FinProduct_Prices")
                         </div>
                     </div>
                 </div>

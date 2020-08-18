@@ -307,6 +307,7 @@
     <Compile Include="Models\MSITEMCOLOR.cs" />
     <Compile Include="Models\MSITEMMEASURE.cs" />
     <Compile Include="Models\MSITEMPARTS.cs" />
+    <Compile Include="Models\MSITEMPRICES.cs" />
     <Compile Include="Models\MSUBLEGBRAND.cs" />
     <Compile Include="Models\MSUBLEGCONT.cs" />
     <Compile Include="Models\MSubLegIFSC.cs" />

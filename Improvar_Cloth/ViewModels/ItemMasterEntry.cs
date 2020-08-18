@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Web;
 
@@ -40,8 +41,10 @@ namespace Improvar.ViewModels
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public bool Checked { get; set; }
         public string FABITNM { get; set; }
-        public string FABUOMNM { get; set; }
+        public string FABUOMNM { get; set; }        
+        public string PRICES_EFFDT { get; set; }
         public string FABSTYLENO { get; set; }
+        public DataTable DTPRICES { get; set; }
 
     }
 }

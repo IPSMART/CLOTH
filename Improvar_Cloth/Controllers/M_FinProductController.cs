@@ -535,6 +535,47 @@ namespace Improvar.Controllers
             return PartialView("_UPLOADDOCUMENTS", VE);
 
         }
+        public ActionResult GeneratePrice(ItemMasterEntry VE)
+        {
+            try
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("SIZECD", typeof(string));
+                dt.Columns.Add("COLRCD", typeof(string));
+                VE.DTPRICES = dt.Copy();
+                return PartialView("_M_FinProduct_Prices", VE);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            var doctP = (from i in DB1.MS_DOCCTG
+                         select new DocumentType()
+                         {
+                             value = i.DOC_CTG,
+                             text = i.DOC_CTG
+                         }).OrderBy(s => s.text).ToList();
+            List<UploadDOC> LOCAIFSC = new List<UploadDOC>();
+            int count = 0;
+            for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
+            {
+                if (VE.UploadDOC[i].chk == false)
+                {
+                    count += 1;
+                    UploadDOC IFSC = new UploadDOC();
+                    IFSC = VE.UploadDOC[i];
+                    IFSC.DocumentType = doctP;
+                    LOCAIFSC.Add(IFSC);
+                }
+            }
+            VE.UploadDOC = LOCAIFSC;
+            ModelState.Clear();
+            VE.DefaultView = true;
+            return PartialView("_M_FinProduct_Prices", VE);
+
+        }
         public ActionResult AddRowSIZE(ItemMasterEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());

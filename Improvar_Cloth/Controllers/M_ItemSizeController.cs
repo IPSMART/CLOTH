@@ -186,7 +186,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MSIZE.SZBARCODE = Convert.ToInt16(MAXSZBARCODE + 1).retStr();
+                                MSIZE.SZBARCODE = (Convert.ToInt16(MAXSZBARCODE)+1).retStr();
                             }
                         }
                         if (VE.DefaultAction == "E")
