@@ -25,7 +25,7 @@ namespace Improvar.Controllers
                     return RedirectToAction("Login", "Login");
                 }
                 else
-                {//testing
+                {
                     ViewBag.formname = "Godown Master";
                     GodownMasterEntry VE = new GodownMasterEntry();
                     string loca1 = CommVar.Loccd(UNQSNO).Trim();
