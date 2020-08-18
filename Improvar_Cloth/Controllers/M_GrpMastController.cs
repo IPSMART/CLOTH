@@ -24,7 +24,7 @@ namespace Improvar.Controllers
         //public string GetInternetIp()
         public ActionResult M_GrpMast(FormCollection FC, string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
-            try {
+            try {//test
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
