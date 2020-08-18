@@ -183,7 +183,7 @@
                     data:
                         {
                             val: id,
-                            BRAND: BRAND
+                            Code: BRAND
                         },
                     success: function (result) {
                         if (result == "0") {
@@ -237,18 +237,16 @@
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#COLRCD").val("");
-                        $("#COLRNM").val("");
-                        $("#msg_ok_info").focus();
-                        $("#msgbody_info").html(" Invalid Color Code !! ");
-                        message_value = "COLRCD";
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         input4(COLRCD, COLRNM);
+                    }
+                    else {
+                        $("#COLRCD").val("");
+                        $("#COLRNM").val("");
+                        msgInfo(" Invalid Color Code !! ");
+                        message_value = "COLRCD";
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -365,20 +363,18 @@
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#msg_ok_info").focus();
-                        $("#COLLCD").val("");
-                        $("#COLLNM").val("");
-                        $("#msgbody_info").html(" Invalid Collection Code !! ");
-                        message_value = "COLLCD";
-
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         input5(COLLCD, COLLNM);
                     }
+                    else {
+                        $("#COLLCD").val("");
+                        $("#COLLNM").val("");
+                        msgInfo(" Invalid Collection Code !! ");
+                        message_value = "COLLCD";
+                    }
+                   
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -705,18 +701,16 @@
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#msgbody_info").html(" Invalid  UOM Code !! ");
-                        $("#UOMCD").val("");
-                        $("#UOMNM").val("");
-                        $("#btnok").focus();
-                        message_value = "UOM";
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         inputUOM(UOMCD, UOMNM);
+                    }
+                    else {
+                        $("#UOMCD").val("");
+                        $("#UOMNM").val("");
+                        msgInfo("Invalid  UOM Code !!");
+                        message_value = "UOM";
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -789,6 +783,43 @@
                     $("#WaitingMode").hide();
                     msgError(XMLHttpRequest.responseText);
                     $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function input(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectBrandCode(id, BRANDCD, BRANDNM) {
+        if (id == "") {
+            $("#BRANDNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("BrandCode", PageControllerName)",
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#BRANDCD").val("");
+                        $("#BRANDNM").val("");
+                        $("#msgbody_info").html("Invalid Brand Code !! ");
+                        message_value = "BRANDCD";
+
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input(BRANDCD, BRANDNM);
+                    }
                 }
             });
         }
@@ -869,28 +900,29 @@
     {
         <div class="form-horizontal">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <input type="hidden" id="btnSave" value="@Url.Action(" SAVE", PageControllerName)" />
-            <input type="hidden" id="btnAddSIZE" value="@Url.Action(" AddRowSIZE", PageControllerName)" />
-            <input type="hidden" id="btnDeleteSIZE" value="@Url.Action(" DeleteRowSIZE", PageControllerName)" />
-            <input type="hidden" id="btnAddBOX" value="@Url.Action(" AddRowBOX", PageControllerName)" />
-            <input type="hidden" id="btnDeleteBOX" value="@Url.Action(" DeleteRowBOX", PageControllerName)" />
-            <input type="hidden" id="btnAddCOLOR" value="@Url.Action(" AddRowCOLOR", PageControllerName)" />
-            <input type="hidden" id="btnDeleteCOLOR" value="@Url.Action(" DeleteRowCOLOR", PageControllerName)" />
-            <input type="hidden" id="btnAddPART" value="@Url.Action(" AddRowPARTS", PageControllerName)" />
-            <input type="hidden" id="btnDeletePART" value="@Url.Action(" DeleteRowPARTS", PageControllerName)" />
-            <input type="hidden" id="btnAddINVCD" value="@Url.Action(" AddRowINVCD", PageControllerName)" />
-            <input type="hidden" id="btnDeleteINVCD" value="@Url.Action(" DeleteRowINVCD", PageControllerName)" />
-            <input type="hidden" id="urlname" value="@Url.Action(" ItemGroupCode", PageControllerName)" />
-            <input type="hidden" id="urlname2" value="@Url.Action(" SubBrandCode", PageControllerName)" />
-            <input type="hidden" id="urlnameCIC" value="@Url.Action(" CheckItemCode", PageControllerName)" />
-            <input type="hidden" id="add_doc_url" value="@Url.Action(" AddDOCRow", PageControllerName )" />
-            <input type="hidden" id="del_doc_url" value="@Url.Action(" DeleteDOCRow", PageControllerName )" />
-            <input type="hidden" id="urlnameBOXSize" value="@Url.Action(" SizeCode", PageControllerName)" />
-            <input type="hidden" id="urlnameCOLOR" value="@Url.Action(" ColorCode", PageControllerName)" />
-            <input type="hidden" id="urlnameINV" value="@Url.Action(" INVCode", PageControllerName)" />
-            <input type="hidden" id="urlnamePART" value="@Url.Action(" PARTCode", PageControllerName)" />
-            <input type="hidden" id="srhpnl" value="@Url.Action(" SearchPannelData", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="btnAddSIZE" value="@Url.Action("AddRowSIZE", PageControllerName)" />
+            <input type="hidden" id="btnDeleteSIZE" value="@Url.Action("DeleteRowSIZE", PageControllerName)" />
+            <input type="hidden" id="btnAddBOX" value="@Url.Action("AddRowBOX", PageControllerName)" />
+            <input type="hidden" id="btnDeleteBOX" value="@Url.Action("DeleteRowBOX", PageControllerName)" />
+            <input type="hidden" id="btnAddCOLOR" value="@Url.Action("AddRowCOLOR", PageControllerName)" />
+            <input type="hidden" id="btnDeleteCOLOR" value="@Url.Action("DeleteRowCOLOR", PageControllerName)" />
+            <input type="hidden" id="btnAddPART" value="@Url.Action("AddRowPARTS", PageControllerName)" />
+            <input type="hidden" id="btnDeletePART" value="@Url.Action("DeleteRowPARTS", PageControllerName)" />
+            <input type="hidden" id="btnAddINVCD" value="@Url.Action("AddRowINVCD", PageControllerName)" />
+            <input type="hidden" id="btnDeleteINVCD" value="@Url.Action("DeleteRowINVCD", PageControllerName)" />
+            <input type="hidden" id="urlname" value="@Url.Action("ItemGroupCode", PageControllerName)" />
+            <input type="hidden" id="urlname2" value="@Url.Action("GetSubBrandDetails", PageControllerName)" />
+            <input type="hidden" id="urlnameCIC" value="@Url.Action("CheckItemCode", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="urlnameBOXSize" value="@Url.Action("SizeCode", PageControllerName)" />
+            <input type="hidden" id="urlnameCOLOR" value="@Url.Action("ColorCode", PageControllerName)" />
+            <input type="hidden" id="urlnameINV" value="@Url.Action("INVCode", PageControllerName)" />
+            <input type="hidden" id="urlnamePART" value="@Url.Action("PARTCode", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            <input type="hidden" id="fabitcdlinkcd" value="C" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
             <ul class="nav nav-tabs">
@@ -931,24 +963,24 @@
                                     @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @style = "", maxlength = 12, @onkeyup = "toUpper(this);", @placeholder = "Style" } })
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Copy from another")
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
-                                        <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action(" GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
-                                    </div>
-                                </div>
-                                <div class="col-md-10">
-                                    <div class="editor-field">
-                                        <input type="button" value="Copy from previous" class="btn-sm">
-                                    </div>
+                            @*<div class="row">*@
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Copy from another")
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD1", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-field">
+                                    <input type="button" value="Copy from previous" class="btn-sm">
+                                </div>
+                            </div>
+                            @*</div>*@
 
                         </div>
                         <div class="row">
@@ -961,7 +993,7 @@
                             <div class="col-md-6">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action(" GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
                                 </div>
                             </div>
                             <div class="col-md-10">
@@ -1009,7 +1041,7 @@
                             <div class="col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.SBRANDCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SBRANDCD", maxlength = 4, onkeyup = "GetHelp_WithId('" + @Url.Action("GetSubBrandDetails", PageControllerName) + "','SBRANDCD/SBRANDNM','1/0','Select Sub Brand Details','SBRANDCD','BRANDCD');", onblur = "SelectSubBrandCode(this.value,SBRANDCD,SBRANDNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action(" GetSubBrandDetails", PageControllerName)','SBRANDCD/SBRANDNM','1/0','Select Sub Brand Details','SBRANDCD','BRANDCD')" />
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetSubBrandDetails", PageControllerName)','SBRANDCD/SBRANDNM','1/0','Select Sub Brand Details','SBRANDCD','BRANDCD')" />
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -1032,7 +1064,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-5">
+                            <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Item")
                                     <b style="color:Red;">*</b>
@@ -1046,18 +1078,24 @@
                                 </div>*@
                             <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','C','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="ITCD_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','C')" />
+                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Sub Ledger Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Sub Ledger Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd');", @placeholder = "Code", maxlength = 10 } })
+                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Sub Ledger Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
+
                                 </div>
                             </div>
                             <div class="col-md-11">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.FABSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "FABSTYLENO", maxlength = 12, @TabIndex = -1, @title = "Only for View", @placeholder = "Style Number", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_UOM.UOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "UOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.FABUOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABUOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
@@ -1072,7 +1110,7 @@
                             <div class="col-md-5">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.UOMCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "UOMCD", onkeyup = "GetHelp('" + @Url.Action("GetUOMDetails", PageControllerName) + "','UOMCD/UOMNM','1/0','Select UOM Details','UOMCD');toUpper(this);", onblur = "SelectUOMCode(this.value,UOMCD,UOMNM);", @placeholder = "Code", maxlength = 4, required = "required" } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action(" GetUOMDetails", PageControllerName)','UOMCD/UOMNM','1/0','Select UOM Details','UOMCD')" />
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetUOMDetails", PageControllerName)','UOMCD/UOMNM','1/0','Select UOM Details','UOMCD')" />
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -1106,7 +1144,7 @@
                             <div class="col-md-6">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetColorDetails", PageControllerName) + "','COLRCD/COLRNM','1/0','Select Color Details','COLRCD');", onblur = "SelectColorCode(this.value,COLRCD,COLRNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action(" GetColorDetails", PageControllerName)','COLRCD/COLRNM','1/0','Select Color Details','COLRCD')" />
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetColorDetails", PageControllerName)','COLRCD/COLRNM','1/0','Select Color Details','COLRCD')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -1188,7 +1226,7 @@
                             <div class="col-md-6">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.COLLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLLCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetCollectionDetails", PageControllerName) + "','COLLCD/COLLNM','1/0','Select Collection Details','COLLCD');", onblur = "SelectCollectionCode(this.value,COLLCD,COLLNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action(" GetCollectionDetails", PageControllerName)','COLLCD/COLLNM','1/0','Select Collection Details','COLLCD')" />
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetCollectionDetails", PageControllerName)','COLLCD/COLLNM','1/0','Select Collection Details','COLLCD')" />
                                 </div>
                             </div>
                             <div class="col-md-9">

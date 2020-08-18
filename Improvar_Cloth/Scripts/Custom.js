@@ -1451,13 +1451,19 @@ function CloseZoomTextBoxModal() {
     $("#" + ZoomTextBoxModalId).val($("#txtZoomTextBoxModal").val());
     $("#" + ZoomTextBoxModalId).focus();
 }
-function GetHelpBlur(urlstring, fldIdseq, hpnlIndexseq, caption, hlpfield, blurflds, dependfldIds) {
+var hlpblurval = "";
+function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds) {
     debugger;
     const keyName = event.key;
     const keyType = event.type;
+    var blurvalue = "";
+    var value = $("#" + hlpfield).val();
+    if (value == hlpblurval && (keyType == "mousedown" || keyName == "F2")) {
+        value = "";
+    }
     if (keyName != "F2" && keyName != undefined) { return true; }
     if ($('#' + hlpfield).is('[readonly]')) { return false; }
-
+    var fldIdseq = "", hpnlIndexseq = "";
     if (typeof dependfldIds != "undefined" && dependfldIds != "") {
         var strarr = dependfldIds.split('/');
         dependfldIds = "";
@@ -1478,15 +1484,24 @@ function GetHelpBlur(urlstring, fldIdseq, hpnlIndexseq, caption, hlpfield, blurf
     var tmpbid = blurflds.split("/");//(e.g:"ColSLCD=SLCD/ColGLCD=glCD")
     var fldid = [20];//(e.g:"ColSLCD,ColGLCD")
     for (var i = 0; i <= tmpbid.length - 1; i++) {
-        fldid[i] = (tmpbid[i].split("=")[0]);
+        var tmpvlas = tmpbid[i].split("=");
+        fldid[i] = tmpvlas[0];
+        if (tmpvlas.length > 2) {
+            if (i == 0) {
+                hpnlIndexseq = tmpvlas[2];
+                fldIdseq = tmpvlas[0];
+            }
+            else {
+
+                hpnlIndexseq += '/' + tmpvlas[2];
+                fldIdseq += '/' + tmpvlas[0];
+            }
+        }
     }
-    var value = $("#" + hlpfield).val();
-    if (keyType == "click" || keyName == "F2") {
-        value = "";
+    if (keyType == "mousedown" || keyName == "F2") {
         $("#WaitingMode").show()
     }
-
-    if (keyType != "click" && keyName != "F2" && value == "") {
+    if (keyType != "mousedown" && keyName != "F2" && value == "") {
         ClearAllTextBoxes(fldid.join());
     }
     else {
@@ -1495,10 +1510,9 @@ function GetHelpBlur(urlstring, fldIdseq, hpnlIndexseq, caption, hlpfield, blurf
             url: urlstring,
             data: "&val=" + value + "&Code=" + dependfldIds,
             success: function (result) {
-                debugger;
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    if (keyType != "click" && keyName != "F2") {
+                    if (keyType != "mousedown") {
                         ClearAllTextBoxes(fldid.join());
                     }
                     $('#SearchFldValue').val(hlpfield);
@@ -1514,6 +1528,7 @@ function GetHelpBlur(urlstring, fldIdseq, hpnlIndexseq, caption, hlpfield, blurf
                             var fld = tmpbid[i].split("=");
                             $("#" + fld[0]).val(returncolvalue(result, fld[1]));
                         }
+                        hlpblurval = $("#" + hlpfield).val();
                     }
                     else {
                         $('#helpDIV').html("");
@@ -1522,6 +1537,9 @@ function GetHelpBlur(urlstring, fldIdseq, hpnlIndexseq, caption, hlpfield, blurf
                         message_value = hlpfield;
                     }
                 }
+                //if (keyName == "F2") {
+                //    $("#" + hlpfield).attr("onblur", blurvalue);
+                //}
                 $("#WaitingMode").hide();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {

@@ -39,5 +39,9 @@ namespace Improvar.ViewModels
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public bool Checked { get; set; }
+        public string FABITNM { get; set; }
+        public string FABUOMNM { get; set; }
+        public string FABSTYLENO { get; set; }
+
     }
 }

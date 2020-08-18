@@ -613,18 +613,32 @@ namespace Improvar.Controllers
             return PartialView("_M_FinProduct_ASSORTEDSIZE", VE);
 
         }
-        public ActionResult GetItemDetails(string val, string TAG)
+        //public ActionResult GetItemDetails(string val, string TAG)
+        //{
+        //    string ITGTYPE = "";
+        //    if (val == null)
+        //    {
+        //        return PartialView("_Help2", Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", TAG));
+        //    }
+        //    else
+        //    {
+        //        string str = Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", TAG);
+        //        return Content(str);
+        //    }
+        //}
+        public ActionResult GetItemDetails(string val, string Code)
         {
             string ITGTYPE = "";
-            if (val == null)
+            var str = Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", Code);
+            if (str.IndexOf("='helpmnu'") >= 0)
             {
-                return PartialView("_Help2", Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", TAG));
+                return PartialView("_Help2", str);
             }
             else
             {
-                string str = Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", TAG);
                 return Content(str);
             }
+
         }
         public ActionResult GetBrandDetails()
         {
