@@ -85,24 +85,27 @@ namespace Improvar
             try
             {
                 string scm1 = CommVar.CurSchema(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
                 string sql = "";
-                if (ITGTYPE != "")
+                if (ITGTYPE.retStr() != "")
                 {
                     if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
                 }
-                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype, a.pcsperbox, a.styleno, a.PCSPERSET ";
+                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype, a.pcsperbox, a.styleno, a.PCSPERSET,a.hsncode ";
                 sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b ";
                 sql += "where a.itgrpcd=b.itgrpcd ";
-                if (DOC_EFF_DT != "" || JOB_CD != "")
+                if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
                 {
                     sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd ";
-                    if (JOB_CD != "") sql += "and y.jobcd='" + JOB_CD + "' ";
-                    if (DOC_EFF_DT != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT + "','dd/mm/yyyy')  ";
+                    if (JOB_CD.retStr() != "") sql += "and y.jobcd='" + JOB_CD + "' ";
+                    if (DOC_EFF_DT.retStr() != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT + "','dd/mm/yyyy')  ";
                     sql += ") ";
                 }
-                if (ITGTYPE != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
-                if (searchby == "A" && val != null) sql += "and a.styleno='" + val + "' ";
-                if (searchby == "C" && val != null) sql += "and a.itcd='" + val + "' ";
+                if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
+                //if (searchby == "A" && val.retStr() != "") sql += "and a.styleno='" + val + "' ";
+                //if (searchby == "C" && val.retStr() != "") sql += "and a.itcd='" + val + "' ";
+                if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(uomcd) like '%" + valsrch + "%' or pcsperbox like '%" + valsrch + "%' )  ";
+
                 DataTable rsTmp = SQLquery(sql);
 
                 if (val.retStr() == "" || rsTmp.Rows.Count > 1)
@@ -112,7 +115,7 @@ namespace Improvar
                     {
                         SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["pcsperbox"].ToString() + "</td></tr>");
                     }
-                    var hdr = "Article No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "PCS / BOX";
+                    var hdr = "Design No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "PCS / BOX";
                     return Generate_help(hdr, SB.ToString());
                 }
                 else
@@ -124,7 +127,7 @@ namespace Improvar
                     }
                     else
                     {
-                        str = "Invalid " + (searchby == "A" ? " Article Number" : "Item Code") + " ! Please Enter a Valid " + (searchby == "A" ? " Article Number" : "Item Code") + " !!";
+                        str = "Invalid " + (searchby == "A" ? " Design Number" : "Item Code") + " ! Please Enter a Valid " + (searchby == "A" ? " Design Number" : "Item Code") + " !!";
                     }
                     return str;
                 }
@@ -231,10 +234,10 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
-                var query = (from c in DB.M_SIZE join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { SIZECD = c.SIZECD, SIZENM = c.SIZENM }).ToList();
+                var query = (from c in DB.M_SIZE join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { SIZECD = c.SIZECD, SIZENM = c.SIZENM, SZBARCODE = c.SZBARCODE }).ToList();
                 if (itcd != "")
                 {
-                    query = (from c in DB.M_SITEM_SIZE join k in DB.M_SIZE on c.SIZECD equals k.SIZECD join i in DB.M_CNTRL_HDR on k.M_AUTONO equals i.M_AUTONO where (k.M_AUTONO == i.M_AUTONO && i.INACTIVE_TAG == "N" && c.ITCD == itcd) select new { SIZECD = k.SIZECD, SIZENM = k.SIZENM }).ToList();
+                    query = (from c in DB.M_SITEM_SIZE join k in DB.M_SIZE on c.SIZECD equals k.SIZECD join i in DB.M_CNTRL_HDR on k.M_AUTONO equals i.M_AUTONO where (k.M_AUTONO == i.M_AUTONO && i.INACTIVE_TAG == "N" && c.ITCD == itcd) select new { SIZECD = k.SIZECD, SIZENM = k.SIZENM, SZBARCODE = k.SZBARCODE }).ToList();
                 }
                 if (val == null)
                 {
@@ -254,7 +257,7 @@ namespace Improvar
                         string str = "";
                         foreach (var i in query)
                         {
-                            str = i.SIZECD + Cn.GCS() + i.SIZENM;
+                            str = i.SIZECD + Cn.GCS() + i.SIZENM + Cn.GCS() + i.SZBARCODE;
                         }
                         return str;
                     }

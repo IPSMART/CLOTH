@@ -7,11 +7,11 @@
         {
             @Html.ValidationSummary(true)
             <div class="grid_title">
-                    <img src="~/Image/Plus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnAddCOLOR" title="Add Row" onclick="AddRowCOLOR()" />
-                    <img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeleteCOLOR" title="Delete Row" onclick="DeleteRowCOLOR()" />
+                <img src="~/Image/Plus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnAddCOLOR" title="Add Row" onclick="AddRowCOLOR()" />
+                <img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeleteCOLOR" title="Delete Row" onclick="DeleteRowCOLOR()" />
 
                 <div class="col-md-10">
-                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'FINPRODUCT_COLOR');" />
+                    <input type="text" id="search_color" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'FINPRODUCT_COLOR');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Item Color Details</b></center>
@@ -36,14 +36,14 @@
                                     @Html.CheckBoxFor(model => model.MSITEMCOLOR[i].Checked, new { htmlAttributes = new { id = "chkid" } })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].SLNO, new { id = "SRLNO", @title = "Only Numeric",  maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].SLNO, new { id = "CSLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly" })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].COLRCD, new { id = "COLRCD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetColorDetails", "M_FinProduct") + "','" + "COLRCD_" + i + "/" + "COLRNM_" + i + "','1/0','Color Details','" + "COLRCD_" + i + "')", onblur = "SelectCOLORCODEGRID(this.value," + "COLRCD_" + i + "," + "COLRNM_" + i + ");",  @class = " atextBoxFor textbox_image" })
+                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].COLRCD, new { id = "COLRCD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetColorDetails", "M_FinProduct") + "','" + "COLRCD_" + i + "/" + "COLRNM_" + i + "','1/0','Color Details','" + "COLRCD_" + i + "')", onblur = "SelectCOLORCODEGRID(this.value," + "COLRCD_" + i + "," + "COLRNM_" + i + ");", @class = " atextBoxFor textbox_image" })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetColorDetails", "M_FinProduct")','COLRCD_@i/COLRNM_@i','1/0','Color Details','COLRCD_@i')" />
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].COLRNM, new { id = "COLRNM_" + i, maxlength = 20, @title = "Only For Display", @readonly = "readonly",  @class = " atextBoxFor " })
+                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].COLRNM, new { id = "COLRNM_" + i, maxlength = 20, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor " })
                                 </td>
                                 <td class="grid_td" style="padding-left:7px;padding-right:7px;">
                                     @Html.CheckBoxFor(model => model.MSITEMCOLOR[i].IChecked, new { htmlAttributes = new { id = "IChecked_" } })
