@@ -6,8 +6,8 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("M_ITEMPLISTDTL")]
-    public partial class M_ITEMPLISTDTL
+    [Table("M_ITEMPLIST")]
+    public partial class M_ITEMPLIST
     {
         public short? EMD_NO { get; set; }
 
@@ -28,25 +28,17 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 1)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime EFFDT { get; set; }
 
         [Key]
         [Column(Order = 2)]
-        [Required]
-        [StringLength(12)]
-        public string ITCD { get; set; }
-
         [StringLength(4)]
-        public string SIZECD { get; set; }
+        public string ITGRPCD { get; set; }
 
-        [StringLength(4)]
-        public string COLRCD { get; set; }
+        [StringLength(200)]
+        public string REMARKS { get; set; }
 
-        [Key]
-        [Column(Order = 3)]
-        [Required]
-        [StringLength(8)]
-        public string SIZECOLCD { get; set; }
-        public double RATE { get; set; }
+        public long M_AUTONO { get; set; }
     }
 }

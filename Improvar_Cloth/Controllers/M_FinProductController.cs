@@ -519,14 +519,42 @@ namespace Improvar.Controllers
             return PartialView("_UPLOADDOCUMENTS", VE);
 
         }
+
         public ActionResult GeneratePrice(ItemMasterEntry VE)
         {
             try
             {
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+             var M_PRCLST = (from p in DBF.M_PRCLST
+                     select new
+                     { PRCCD = p.PRCCD,
+                         PRCNM = p.PRCNM
+                     }).ToList();
+
                 DataTable dt = new DataTable();
-                dt.Columns.Add("SIZECD", typeof(string));
-                dt.Columns.Add("COLRCD", typeof(string));
+                DataColumn column;
+                column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
+                column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
+          
+                foreach (var plist in M_PRCLST)
+                {
+                    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
+                }
+                foreach (var size in VE.MSITEMSIZE)
+                {
+                    foreach (var color in VE.MSITEMCOLOR)
+                    {
+                        dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
+                        dt.Rows[rNo]["SIZECD"] = size.SIZECD;
+                        dt.Rows[rNo]["COLRCD"] = color.COLRCD;
+                        for (int i = 0; i > 2; i++)
+                        {
+                            //dt.Rows[rNo]["prc" + i] = "";
+                        }
+                    }
+                }
                 VE.DTPRICES = dt.Copy();
+                TempData["DTPRICES"] = dt;
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_M_FinProduct_Prices", VE);
@@ -535,33 +563,12 @@ namespace Improvar.Controllers
             {
 
             }
-
-            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-            var doctP = (from i in DB1.MS_DOCCTG
-                         select new DocumentType()
-                         {
-                             value = i.DOC_CTG,
-                             text = i.DOC_CTG
-                         }).OrderBy(s => s.text).ToList();
-            List<UploadDOC> LOCAIFSC = new List<UploadDOC>();
-            int count = 0;
-            for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
-            {
-                if (VE.UploadDOC[i].chk == false)
-                {
-                    count += 1;
-                    UploadDOC IFSC = new UploadDOC();
-                    IFSC = VE.UploadDOC[i];
-                    IFSC.DocumentType = doctP;
-                    LOCAIFSC.Add(IFSC);
-                }
-            }
-            VE.UploadDOC = LOCAIFSC;
             ModelState.Clear();
             VE.DefaultView = true;
             return PartialView("_M_FinProduct_Prices", VE);
 
         }
+
         public ActionResult AddRowSIZE(ItemMasterEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
@@ -1096,7 +1103,6 @@ namespace Improvar.Controllers
             {
                 return Content(ex.Message + " " + ex.InnerException);
             }
-
         }
         public ActionResult SAVE(FormCollection FC, ItemMasterEntry VE)
         {
@@ -1369,6 +1375,32 @@ namespace Improvar.Controllers
                             }
                         }
 
+                        #region Price list Save
+                        DataTable DTPRICES = (DataTable)TempData["DTPRICES"]; TempData.Keep();
+                        var prcRows = VE.STRPRICES.retStr().Split('~');
+                        for (int i = 0; i <= prcRows.Length - 1; i++)
+                        {
+                            var prcCols = prcRows[i].Split(',');
+                            for (int j = 2; j <= prcCols.Length - 1; j++)
+                            {
+                                if (prcCols[0] != "" && prcCols[1] != "")
+                                {
+                                    var PRCCD = DTPRICES.Columns[j].ColumnName;
+                                    M_ITEMPLISTDTL MIP = new M_ITEMPLISTDTL();
+                                    MIP.EMD_NO = MSITEM.EMD_NO;
+                                    MIP.CLCD = MSITEM.CLCD;
+                                    MIP.ITCD = MSITEM.ITCD;
+                                    MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
+                                    MIP.PRCCD = PRCCD;
+                                    MIP.SIZECD = prcCols[0];
+                                    MIP.COLRCD = prcCols[1];
+                                    MIP.SIZECOLCD = "abc"+i+j;
+                                    MIP.RATE = prcCols[j].retDbl();
+                                    DB.M_ITEMPLISTDTL.Add(MIP);
+                                }
+                            }
+                        }
+                        #endregion
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", MSITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
 
                         if (VE.DefaultAction == "A")

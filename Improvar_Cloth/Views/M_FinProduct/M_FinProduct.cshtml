@@ -96,7 +96,17 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
-
+        var pricestr = "";
+        var PricesGridlength = $("#exampleItemPrices > tbody > tr").length;
+        for (i = 0; i <= PricesGridlength - 1; i++) {
+            var cellslen = $("#exampleItemPrices > tbody > tr:first > td").length;
+            for (var j = 0; j < cellslen; j++) {
+                pricestr += $("#exampleItemPrices > tbody > tr")[i].cells[j].children[0].value + ",";
+            }
+            pricestr = pricestr.slice(0, -1) + "~";
+        }
+        pricestr = pricestr.slice(0, -1);
+        $("#STRPRICES").val(pricestr);        
         return true;
     }
 </script>
@@ -941,7 +951,8 @@
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
             <input type="hidden" id="fabitcdlinkcd" value="C" />
             @Html.HiddenFor(s => s.DefaultAction)
-            @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
+                        @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
+                        @Html.HiddenFor(a => a.STRPRICES)
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
                 <li><a data-toggle="tab" href="#Size">Size</a></li>
@@ -1524,16 +1535,19 @@
                         </div>
                     </div>
                 </div>
+
                 <div id="PriceList" class="tab-pane fade" style="margin-top: 10px;">
                     <script>
                         function fillPricesGrid() {
                             $.ajax({
                                 type: 'POST',
                                 url: "@Url.Action("GeneratePrice", PageControllerName )",
+                                beforesend: $("#WaitingMode").show(),
                                 data: $('form').serialize(),
                                 success: function (result) {
                                     $("#partialdivPriceList").animate({ marginTop: '0px' }, 50);
                                     $("#partialdivPriceList").html(result);
+                                    $("#WaitingMode").hide();
                                 },
                                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                                     $("#WaitingMode").hide();
@@ -1562,7 +1576,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row" style="margin-top: 11px;width:601px;height:auto;background-color:#c4b9b9">
+                    <div class="row" style="margin-top: 11px;height:auto;background-color:#c4b9b9">
                         <div id="partialdivPriceList">
                             @Html.Partial("_M_FinProduct_Prices")
                         </div>

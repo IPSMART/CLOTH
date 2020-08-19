@@ -45,6 +45,7 @@ namespace Improvar.ViewModels
         public string PRICES_EFFDT { get; set; }
         public string FABSTYLENO { get; set; }
         public DataTable DTPRICES { get; set; }
+        public string STRPRICES { get; set; }
         public string SEARCH_ITCD { get; set; }
 
     }

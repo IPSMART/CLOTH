@@ -55,7 +55,7 @@ namespace Improvar.Models
         public virtual DbSet<M_SITEM_COLOR> M_SITEM_COLOR { get; set; }
         public virtual DbSet<M_SITEM_MEASURE> M_SITEM_MEASURE { get; set; }
         public virtual DbSet<M_SITEM_PARTS> M_SITEM_PARTS { get; set; }
-        public virtual DbSet<M_SIZE> M_SIZE { get; set; }
+        public virtual DbSet<M_SIZE> M_SIZE { get; set; }        
         public virtual DbSet<M_SIZEGRP> M_SIZEGRP { get; set; }
         public virtual DbSet<M_USR_ACS_DOCCD> M_USR_ACS_DOCCD { get; set; }
         public virtual DbSet<T_PSLIP> T_PSLIP { get; set; }
