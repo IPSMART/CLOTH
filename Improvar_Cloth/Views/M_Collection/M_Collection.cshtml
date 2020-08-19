@@ -1,0 +1,197 @@
+﻿@model Improvar.ViewModels.CollectionEntry
+
+@{
+    ViewBag.Title = "Collection Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#COLLCD").attr("readonly", "readonly");
+
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Collection Code", "COLLCD")) { return false; }
+       if (!emptyFieldCheck("Enter Collection Name", "COLLNM")) { return false; }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_COLLECTION != null)
+        {
+            mldauto = Model.M_COLLECTION.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function input(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1]);
+    }
+    function SelectCollectionCODE(id, COLLCD, COLLNM) {
+        if (id == "") {
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlname").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0")
+                    {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#COLLCD").val("");
+                        $("#msg_ok_info").focus();
+                        $("#msgbody_info").html("Enter Invalid Code !! ");
+                        //  $("#BHDESCN").focus();
+                        }
+                    else {
+                        $("#tempHDD").val(result);
+                        input(COLLCD, COLLNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CheckCollectionCode(id) {
+        var valu = document.getElementById(id).value;
+        if (valu == "") {
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlname2").val(),
+                data: {
+                    val: valu
+                },
+                success: function (result) {
+                    if (result == "1") {
+
+
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#COLLCD").val("");
+                        $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                        //  $("#BHDESCN").focus();
+                        message_value = "COLLCD";
+
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+@{
+    string PageControllerName = "M_Collection";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+         <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlname2" value="@Url.Action("CheckCollectionCode", PageControllerName)" />
+             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_COLLECTION.M_AUTONO)
+            @Html.HiddenFor(e => e.M_COLLECTION.CLCD)
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Collection Code")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @if (Model.DefaultAction == "A")
+                        {
+                            @Html.EditorFor(model => model.M_COLLECTION.COLLCD, new { htmlAttributes = new { @class = "form-control", id = "COLLCD", onblur = "CheckCollectionCode('COLLCD');", @placeholder = "Code", @style = "text-transform:uppercase;", maxlength = 4 } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.M_COLLECTION.COLLCD, new { htmlAttributes = new { @class = "form-control", id = "COLLCD", @placeholder = "Code", @style = "text -transform:uppercase", maxlength = 4 } })
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Collection Name")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_COLLECTION.COLLNM, new { htmlAttributes = new { @class = "form-control", id = "COLLNM", @placeholder = "Collection Name", maxlength = 20 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "De - Activate")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.Checked)
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

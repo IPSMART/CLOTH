@@ -1,7 +1,7 @@
 ﻿@model Improvar.ViewModels.ItemMasterEntry
 
 @{
-    ViewBag.Title = "Finished Product Master";
+    ViewBag.Title = "Finished Product/Design Master";
     Layout = "~/Views/Shared/_Layout.cshtml";
     string PageControllerName = "M_FinProduct";
 }
@@ -24,6 +24,14 @@
 </script>
 <script>
     function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Style", "STYLENO")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
         if (!emptyFieldCheck("Enter Item Group Code", "ITGRPCD")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -48,14 +56,7 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
-        if (!emptyFieldCheck("Enter Style", "STYLENO")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }
+
         if (!emptyFieldCheck("Enter UOM", "UOMCD")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -95,6 +96,7 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
+
         return true;
     }
 </script>
@@ -595,14 +597,10 @@
     }
 </script>
 <script>
-    function input6(id, id1) {
-        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-        $("#" + id.id).val(str[0]);
-        $("#" + id1.id).val(str[1].toString());
-    }
-    function SelectSIZECODE(id, SIZECD_, SIZENM_) {
+    function SelectSIZECODE(id, SIZECD_, SIZENM_, BARCODE_) {
         if (id == "") {
             $("#" + SIZENM_.id).val("");
+            $("#" + BARCODE_.id).val("");
         }
         else {
             $.ajax({
@@ -615,11 +613,15 @@
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
                         $("#tempHDD").val(result);
-                        input6(SIZECD_, SIZENM_);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        $("#" + SIZECD_.id).val(str[0]);
+                        $("#" + SIZENM_.id).val(str[1].toString());
+                        $("#" + BARCODE_.id).val(str[2].toString());
                     }
                     else {
-                        $("#" + SIZECD_.id).val("");
                         $("#" + SIZENM_.id).val("");
+                        $("#" + BARCODE_.id).val("");
+                        $("#" + SIZECD_.id).val("");
                         msgInfo("Invalid Size Code !!");
                         message_value = SIZECD_.id;
                     }
@@ -814,8 +816,68 @@
                         $("#tempHDD").val(result);
                         input(BRANDCD, BRANDNM);
                     }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
                 }
             });
+        }
+    }
+</script>
+<script>
+    debugger;
+    function GetFabItcd(id) {
+        if ("@Model.DefaultAction" != "V") {
+            debugger;
+            if (id == "") {
+                ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+            }
+            else {
+                var linkcd = $("#fabitcdlinkcd").val();
+                $.ajax({
+                    type: 'POST',
+                    beforesend: $("#WaitingMode").show(),
+                    url: "@Url.Action("GetItemDetails", PageControllerName)",
+                    data: "&Code=" + linkcd + "&val=" + id,
+                    success: function (result) {
+                        var MSG = result.indexOf('#helpDIV');
+                        if (MSG >= 0) {
+                            ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                            $('#SearchFldValue').val("FABITCD");
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val("FABITCD/FABITNM/FABSTYLENO/FABUOMNM");
+                            $('#ReferanceColumn').val("2/1/0/3");
+                            $('#helpDIV_Header').html("Facbric Item Details");
+                        }
+                        else {
+                            var MSG = result.indexOf(String.fromCharCode(181));
+                            if (MSG >= 0) {
+                                $("#FABITCD").val(returncolvalue(result, "itcd"));
+                                $("#FABITNM").val(returncolvalue(result, "itnm"));
+                                $("#FABSTYLENO").val(returncolvalue(result, "styleno"));
+                                $("#FABUOMNM").val(returncolvalue(result, "uomcd"));
+                                if ($("#HSNCODE").val() == "") {
+                                    $("#HSNCODE").val(returncolvalue(result, "hsncode"));
+                                }
+                            }
+                            else {
+                                $('#helpDIV').html("");
+                                msgInfo("" + result + " !");
+                                ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                                message_value = "FABITCD";
+                            }
+                        }
+                        $("#WaitingMode").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
         }
     }
 </script>
@@ -856,7 +918,18 @@
     }
 </script>
 
-
+@section Scripts {
+    <script>
+        function ReloadWithData() {
+            var searchValue = $('#SEARCH_ITCD').val();
+            var url = window.location.href;
+            var key1 = "searchValue";
+            url = updateQueryStringParameter(url, key1, searchValue);
+            url = updateQueryStringParameter(url, "loadItem", "Y");
+            window.location = url;
+        }
+    </script>
+}
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -872,10 +945,10 @@
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
                 <li><a data-toggle="tab" href="#Size">Size</a></li>
-                <li><a data-toggle="tab" href="#AssortedSize">Assorted Size</a></li>
+                @*<li><a data-toggle="tab" href="#AssortedSize">Assorted Size</a></li>*@
                 <li><a data-toggle="tab" href="#Color">Color</a></li>
                 <li><a data-toggle="tab" href="#Parts">Parts</a></li>
-                <li><a data-toggle="tab" href="#InventoryCodesBarCode">Bar Codes</a></li>
+                <li><a data-toggle="tab" href="#BarCode">Bar Codes</a></li>
                 <li><a data-toggle="tab" href="#Measurement">Measurement</a></li>
                 <li><a data-toggle="tab" href="#PriceList">Price List</a></li>
                 <li><a data-toggle="tab" href="#Documents">Documents</a></li>
@@ -908,22 +981,25 @@
                                 </div>
                             </div>
                             @*<div class="row">*@
-                            @*<div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Copy from another")
+                            @if (Model.DefaultAction == "A")
+                            {
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Copy from another")
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD1", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2');", @placeholder = "Code", maxlength = 10 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    <input type="button" value="Copy from previous" class="btn-sm">
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData()">
+                                    </div>
                                 </div>
-                            </div>*@
+                            }
                             @*</div>*@
 
                         </div>
@@ -1010,7 +1086,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Facbric item")
+                                    @Html.Label("", "Facbric Item")
                                 </div>
                             </div>
                             @*<div class="col-md-7">
@@ -1021,8 +1097,8 @@
                                 </div>*@
                             <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Sub Ledger Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Sub Ledger Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd');", @placeholder = "Code", maxlength = 10 } })
-                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Sub Ledger Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
+                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 10 } })
+                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
 
                                 </div>
                             </div>
@@ -1033,7 +1109,7 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.FABSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "FABSTYLENO", maxlength = 12, @TabIndex = -1, @title = "Only for View", @placeholder = "Style Number", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.FABSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "FABSTYLENO", maxlength = 12, @TabIndex = -1, @title = "Only for View", @placeholder = "Design Number", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -1109,7 +1185,7 @@
                                         <option value="0" selected="selected">====Select====</option>
                                         @foreach (var i in Model.ProductType)
                                         {
-                                            if (Model.DefaultAction == "A")
+                                            if (Model.DefaultAction == "A" && Model.M_SITEM == null)
                                             {
                                                 <option value="@i.value">@i.text</option>
                                             }
@@ -1140,7 +1216,7 @@
                                         <option value="0" selected="selected">====Select====</option>
                                         @foreach (var i in Model.Gender)
                                         {
-                                            if (Model.DefaultAction == "A")
+                                            if (Model.DefaultAction == "A" && Model.M_SITEM == null)
                                             {
                                                 <option value="@i.value">@i.text</option>
                                             }
@@ -1413,13 +1489,13 @@
                         </div>
                     </div>
                 </div>
-                <div id="AssortedSize" class="tab-pane fade" style="margin-top: 10px;">
-                    <div class="row" style="margin-top: 11px;width:601px;height:auto;background-color:#c4b9b9">
-                        <div id="partialdivBOX">
-                            @*@Html.Partial("_M_FinProduct_ASSORTEDSIZE")*@
+                @*<div id="AssortedSize" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row" style="margin-top: 11px;width:601px;height:auto;background-color:#c4b9b9">
+                            <div id="partialdivBOX">
+                                @Html.Partial("_M_FinProduct_ASSORTEDSIZE")
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </div>*@
                 <div id="Color" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row" style="margin-top: 11px;width:251px;height:auto;background-color:#c4b9b9">
                         <div id="partialdivCOLOR">
@@ -1434,10 +1510,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="InventoryCodesBarCode" class="tab-pane fade" style="margin-top: 10px;">
-                    <div class="row" style="margin-top: 11px;width:626px;height:auto;background-color:#c4b9b9">
+                <div id="BarCode" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:757px;height:auto;background-color:#c4b9b9">
                         <div id="partialdivINVCD">
-                            @*@Html.Partial("_M_FinProduct_INVCD")*@
+                            @Html.Partial("_M_FinProduct_BARCD")
                         </div>
                     </div>
                 </div>

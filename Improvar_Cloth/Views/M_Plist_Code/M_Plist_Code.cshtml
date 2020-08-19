@@ -1,0 +1,261 @@
+﻿@model Improvar.ViewModels.PriceListCodeMasterEntry
+@{
+    ViewBag.Title = "Price List Code Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#PRCCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#PRCCD").attr("readonly", "readonly");
+            $("#PRCCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Price List Code", "PRCCD")) { return false; }
+       if (!emptyFieldCheck("Enter Price List Name", "PRCNM")) { return false; }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_PRCLST != null)
+        {
+            mldauto = Model.M_PRCLST.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckPriceListCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#checkPriceListcode").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#PRCCD").val("");
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#btnok").focus();
+                            message_value = "PRCCD";
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function inputsubledger(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectSLCD(id, SLCD, SLNM) {
+        if (id == "") {
+            $("#SLNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#subledger").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#SLCD").val("");
+                        $("#SLNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Sub Ledger Code !! ");
+                        message_value = "SLCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputsubledger(SLCD, SLNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+
+
+</script>
+@{
+    string PageControllerName = "M_Plist_Code";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+       <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="checkPartcode" value="@Url.Action("CheckPartCode", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+
+            <input type="hidden" id="checkPriceListcode" value="@Url.Action("CheckPriceListCode", PageControllerName)" />
+           <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="hidden" id="subledger" value="@Url.Action("SubLedger", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_PRCLST.M_AUTONO)
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Price List Code ")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_PRCLST.PRCCD, new { htmlAttributes = new { @class = "form-control ", id = "PRCCD", @placeholder = "code", maxlength = 4, @style = "text-transform:uppercase;", onblur = "CheckPriceListCode('PRCCD');", } })
+                        @Html.HiddenFor(a => a.M_PRCLST.PRCCD)
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Price List Name  ")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_PRCLST.PRCNM, new { htmlAttributes = new { @class = "form-control ", id = "PRCNM", @placeholder = "Name", maxlength = 30 } })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Price List Group ")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <select class="form-control" id="PRCGRP" name="PRCGRP">
+                        @foreach (var i in Model.DropDown_list)
+                        {
+                            if (Model.DefaultAction == "A")
+                            {
+                                <option value="@i.value" id="@i.value">@i.text</option>
+                            }
+                            else
+                            {
+                                if (Model.M_PRCLST.PRCGRP == i.value)
+                                {
+                                    <option value="@i.value" id="@i.value" selected="selected">@i.text</option>
+                                }
+                                else
+                                {
+                                    <option value="@i.value" id="@i.value">@i.text</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Specific Party")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_PRCLST.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", @placeholder = "Code", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetSubLedger", PageControllerName) + "','SLCD/SLNM','1/0','Sub Ledger Details','SLCD');", onblur = "SelectSLCD(this.value,SLCD,SLNM);" } })
+                        <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetSubLedger", PageControllerName)','SLCD/SLNM','1/0','Sub Ledger Details','SLCD')" />
+
+
+                    </div>
+                </div>
+
+                <div class="col-md-10">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SUBLEG.SLNM, new { htmlAttributes = new { @class = "form-control ", id = "SLNM", @placeholder = "Sub Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                        @Html.Label("", "Deactivate")
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field" style="display: inline-block;">
+                        @Html.CheckBoxFor(model => model.Deactive)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+

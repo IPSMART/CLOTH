@@ -28,7 +28,7 @@ namespace Improvar.ViewModels
         public List<ProductType> ProductType { get; set; }
         public List<MSITEMCOLOR> MSITEMCOLOR { get; set; }
         public List<MSITEMPARTS> MSITEMPARTS { get; set; }
-        //public List<MSITEMINVCD> MSITEMINVCD { get; set; }
+        public List<MSITEMBARCODE> MSITEMBARCODE { get; set; }
         public M_SITEM_SIZE M_SITEM_SIZE { get; set; }
         public List<MSITEMSIZE> MSITEMSIZE { get; set; }
         //public List<MSITEMBOX> MSITEMBOX { get; set; }
@@ -45,6 +45,7 @@ namespace Improvar.ViewModels
         public string PRICES_EFFDT { get; set; }
         public string FABSTYLENO { get; set; }
         public DataTable DTPRICES { get; set; }
+        public string SEARCH_ITCD { get; set; }
 
     }
 }
