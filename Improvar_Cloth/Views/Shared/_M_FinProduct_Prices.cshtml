@@ -1,6 +1,7 @@
 ﻿@model Improvar.ViewModels.ItemMasterEntry
+@using System.Data;
 @{
-    int sl = 0;
+//int sl = 0;
 }
 <script type="text/javascript">
     $(document).ready(function () {
@@ -16,83 +17,46 @@
         {
             <div class="grid_title">
                 <div class="col-md-8">
-                    <input type="text" id="searchItemPrc" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleItemPrc');" />
+                    <input type="text" id="searchItemPrc" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleItemPrices');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Price List Rate Master </b></center>
             </div>
             <div id="gridnm" class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:320px;">
-                    <table id="exampleItemPrc" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
-                        @if (Model.DTPRICES != null &&Model.DTPRICES.Rows.Count > 0)
+                    <table id="exampleItemPrices" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
+                        @if (Model.DTPRICES != null && Model.DTPRICES.Columns.Count > 0)
                         {
                             <thead>
                                 <tr class="sticky-header">
-                                    @if (ViewBag.maingrdcolumn != null)
-                                {
-                                    foreach (var v in ViewBag.maingrdcolumn)
+                                    @foreach (DataColumn column in Model.DTPRICES.Columns)
                                     {
-                                        if (sl == 0)
-                                        {
-                                <th class="grid_th" style="width:45px;">@v</th>
-                                        }
-                                        else if (sl == 1)
-                                        {
-                                <th class="grid_th" style="min-width:62px;">@v</th>
-                                        }
-                                        else if (sl == 2)
-                                        {
-                                <th class="grid_th" style="min-width:150px;">@v</th>
-                                        }
-                                        else if (sl == 4)
-                                        {
-                                <th class="grid_th" style="min-width:150px;">@v</th>
-                                        }
-                                        else if (sl >= 5)
-                                        {
-                                <th class="grid_th text-right" style="width:70px;">@v</th>
-                                        }
-                                        else
-                                        {
-                                <th class="grid_th">@v</th>
-                                        }
-                                        sl++;
+                                        @*<th class="grid_th text-right" style="width:70px;">@v</th>*@
+                                        <th class="grid_th">@column.ColumnName</th>
                                     }
-                                }
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (int i = 0; i <  Model.DTPRICES.Rows.Count; i++)
+                                @for (int i = 0; i < Model.DTPRICES.Rows.Count; i++)
                                 {
-                                sl = 0;
-                                <tr>
-                                    @for (int j = 0; j <  Model.DTPRICES.Rows[i].ItemArray.Count(); j++)
+                                    <tr>
+                                        @for (int j = 0; j < Model.DTPRICES.Columns.Count; j++)
                                         {
-                                            if (sl < 5)
+                                            if (j < 2)
                                             {
-                                        <td>
-                                            @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor ", @READONLY = "READONLY", style = "background-color:lightgrey;" })
-                                        </td>}
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right", style = "background-color:lightgrey;", @Readonly = "Readonly" })
+                                                </td>
+                                            }
                                             else
                                             {
-                                                if (Model.DTPRICES.Rows[i][j].ToString() != "")
-                                                {
-                                        <td>
-                                            @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right", @onkeypress = "return numericOnly(this,3);" })
-                                        </td>
-                                                }
-                                                else
-                                                {
-                                        <td>
-                                            @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right", style = "background-color:lightgrey;", @Readonly = "Readonly" })
-                                        </td>
-                                                }
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right" })
+                                                </td>
                                             }
-                                            sl++;
                                         }
-                                </tr>
+                                    </tr>
                                 }
-
                             </tbody>
                         }
                     </table>
