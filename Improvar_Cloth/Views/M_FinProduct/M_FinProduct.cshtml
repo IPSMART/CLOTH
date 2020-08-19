@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Finished Product Master";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    string PageControllerName = "M_FinProduct";
 }
 
 
@@ -21,9 +22,6 @@
         $("#WaitingMode").hide();
     });
 </script>
-@{
-    string PageControllerName = "M_FinProduct";
-}
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Enter Item Group Code", "ITGRPCD")) {
@@ -121,18 +119,16 @@
 </script>
 <script>
     $(function () {
-            if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
-                $("#PRICES_EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
-            }
-        });
+        if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+            $("#PRICES_EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        }
+    });
 </script>
 <script>
-    function input12(id, id1, id2, id3) {
+    function input12(id, id1) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
         $("#" + id.id).val(str[0]);
         $("#" + id1.id).val(str[1].toString());
-        $("#" + id2.id).val(str[2].toString());
-        $("#" + id3.id).val(str[3].toString());
     }
     function SelectItemGroupCode(id, ITGRPCD, ITGRPNM, BRANDCD, BRANDNM) {
         if (id == "") {
@@ -142,7 +138,7 @@
         else {
             $.ajax({
                 type: 'GET',
-                url: $("#urlname").val(),
+                url: "@Url.Action("ItemGroupCode", PageControllerName)",
                 data: {
                     val: id
                 },
@@ -158,7 +154,7 @@
                     }
                     else {
                         $("#tempHDD").val(result);
-                        input12(ITGRPCD, ITGRPNM, BRANDCD, BRANDNM);
+                        input12(ITGRPCD, ITGRPNM);
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -186,25 +182,23 @@
             if (BRAND != "") {
                 $.ajax({
                     type: 'GET',
-                    url: $("#urlname2").val(),
+                    url: "@Url.Action("GetSubBrandDetails", PageControllerName)",
                     data:
                         {
                             val: id,
                             Code: BRAND
                         },
                     success: function (result) {
-                        if (result == "0") {
-                            $("#Msgdiv1").show();
-                            $("#info").show();
-                            $("#msg_ok_info").focus();
-                            $("#SBRANDCD").val("");
-                            $("#SBRANDNM").val("");
-                            $("#msgbody_info").html("Invalid Sub Brand Code ! Please Enter a Valid Sub Brand Code !! ");
-                            message_value = "SBRANDCD";
-                        }
-                        else {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
                             $("#tempHDD").val(result);
                             input3(SBRANDCD, SBRANDNM);
+                        }
+                        else {
+                            $("#SBRANDCD").val("");
+                            $("#SBRANDNM").val("");
+                            msgInfo("Invalid Sub Brand Code ! Please Enter a Valid Sub Brand Code !!");
+                            message_value = "SBRANDCD";
                         }
                     },
                     error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -220,7 +214,7 @@
                 $("#SBRANDCD").val("");
                 $("#btnok").focus();
                 $("#msgbody_info").html("Please Select / Enter Group Code & Brand Code !! ");
-                message_value = "ITGRPCD";
+                message_value = "BRANDCD";
             }
         }
     }
@@ -279,23 +273,21 @@
         else {
             $.ajax({
                 type: 'GET',
-                url: $("#urlnameCOLOR").val(),
+                url: "@Url.Action("GetColorDetails", PageControllerName)",
                 data: {
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + COLRCD_.id).val("");
-                        $("#" + COLRNM_.id).val("");
-                        $("#btnok").focus();
-                        $("#msgbody_info").html("Invalid Color Code !! ");
-                        message_value = "COLRCD_";
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         inputcolor(COLRCD_, COLRNM_);
+                    }
+                    else {
+                        $("#" + COLRCD_.id).val("");
+                        $("#" + COLRNM_.id).val("");
+                        msgInfo("Invalid Color Code !!");
+                        message_value = COLRCD_.id;
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -323,24 +315,21 @@
         else {
             $.ajax({
                 type: 'GET',
-                url: $("#urlnamePART").val(),
+                url: "@Url.Action("GetPartDetails", PageControllerName)",
                 data: {
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#msg_ok_info").focus();
-                        $("#" + PARTCD_.id).val("");
-                        $("#" + PARTNM_.id).val("");
-                        $("#msgbody_info").html("Invalid Part Code !! ");
-                        message_value = "PARTCD_";
-                        return false;
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         input6(PARTCD_, PARTNM_);
+                    }
+                    else {
+                        $("#" + PARTCD_.id).val("");
+                        $("#" + PARTNM_.id).val("");
+                        msgInfo("Invalid  Part Code !!");
+                        message_value = PARTCD_.id;
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -381,7 +370,7 @@
                         msgInfo(" Invalid Collection Code !! ");
                         message_value = "COLLCD";
                     }
-                   
+
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -396,7 +385,7 @@
     function AddRowSIZE(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnAddSIZE").val(),
+            url: "@Url.Action("AddRowSIZE", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivSIZE").animate({ marginTop: '-10px' }, 50);
@@ -415,7 +404,7 @@
     function DeleteRowSIZE(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnDeleteSIZE").val(),
+            url: "@Url.Action("DeleteRowSIZE", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivSIZE").animate({ marginTop: '0px' }, 50);
@@ -434,7 +423,7 @@
     function AddRowBOX(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnAddBOX").val(),
+            url: "@Url.Action("AddRowBOX", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivBOX").animate({ marginTop: '-10px' }, 50);
@@ -452,7 +441,7 @@
     function DeleteRowBOX(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnDeleteBOX").val(),
+            url: "@Url.Action("DeleteRowBOX", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivBOX").animate({ marginTop: '0px' }, 50);
@@ -470,7 +459,7 @@
     function AddRowPARTS(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnAddPART").val(),
+            url: "@Url.Action("AddRowPARTS", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivPART").animate({ marginTop: '-10px' }, 50);
@@ -486,7 +475,7 @@
     function DeleteRowPARTS(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnDeletePART").val(),
+            url: "@Url.Action("DeleteRowPARTS", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivPART").animate({ marginTop: '0px' }, 50);
@@ -504,7 +493,7 @@
     function AddRowCOLOR(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnAddCOLOR").val(),
+            url: "@Url.Action("AddRowCOLOR", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivCOLOR").animate({ marginTop: '-10px' }, 50);
@@ -520,7 +509,7 @@
     function DeleteRowCOLOR(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnDeleteCOLOR").val(),
+            url: "@Url.Action("DeleteRowCOLOR", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivCOLOR").animate({ marginTop: '0px' }, 50);
@@ -539,7 +528,7 @@
     function AddRowINVCD(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnAddINVCD").val(),
+            url: "@Url.Action("AddRowINVCD", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivINVCD").animate({ marginTop: '-10px' }, 50);
@@ -555,7 +544,7 @@
     function DeleteRowINVCD(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url: $("#btnDeleteINVCD").val(),
+            url: "@Url.Action("DeleteRowINVCD", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivINVCD").animate({ marginTop: '0px' }, 50);
@@ -623,20 +612,18 @@
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#msg_ok_info").focus();
-                        $("#" + SIZECD_.id).val("");
-                        $("#" + SIZENM_.id).val("");
-                        $("#msgbody_info").html("Invalid Size Code !! ");
-                        message_value = "SIZECD_";
-                        return false;
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         input6(SIZECD_, SIZENM_);
                     }
+                    else {
+                        $("#" + SIZECD_.id).val("");
+                        $("#" + SIZENM_.id).val("");
+                        msgInfo("Invalid Size Code !!");
+                        message_value = SIZECD_.id;
+                    }
+
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -717,7 +704,7 @@
                         $("#UOMCD").val("");
                         $("#UOMNM").val("");
                         msgInfo("Invalid  UOM Code !!");
-                        message_value = "UOM";
+                        message_value = "UOMCD";
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -733,7 +720,7 @@
     function AddDOCrow() {
         $.ajax({
             type: 'POST',
-            url: $("#add_doc_url").val(),
+            url: "@Url.Action("AddDOCRow", PageControllerName )",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
@@ -749,7 +736,7 @@
     function DeleteDOCrow() {
         $.ajax({
             type: 'POST',
-            url: $("#del_doc_url").val(),
+            url: "@Url.Action("DeleteDOCRow", PageControllerName )",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
@@ -771,7 +758,7 @@
         else {
             $.ajax({
                 type: 'GET',
-                url: $("#urlnameCIC").val(),
+                url: "@Url.Action("CheckItemCode", PageControllerName)",
                 data: {
                     val: valu
                 },
@@ -877,25 +864,6 @@
         <div class="form-horizontal">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
-            <input type="hidden" id="btnAddSIZE" value="@Url.Action("AddRowSIZE", PageControllerName)" />
-            <input type="hidden" id="btnDeleteSIZE" value="@Url.Action("DeleteRowSIZE", PageControllerName)" />
-            <input type="hidden" id="btnAddBOX" value="@Url.Action("AddRowBOX", PageControllerName)" />
-            <input type="hidden" id="btnDeleteBOX" value="@Url.Action("DeleteRowBOX", PageControllerName)" />
-            <input type="hidden" id="btnAddCOLOR" value="@Url.Action("AddRowCOLOR", PageControllerName)" />
-            <input type="hidden" id="btnDeleteCOLOR" value="@Url.Action("DeleteRowCOLOR", PageControllerName)" />
-            <input type="hidden" id="btnAddPART" value="@Url.Action("AddRowPARTS", PageControllerName)" />
-            <input type="hidden" id="btnDeletePART" value="@Url.Action("DeleteRowPARTS", PageControllerName)" />
-            <input type="hidden" id="btnAddINVCD" value="@Url.Action("AddRowINVCD", PageControllerName)" />
-            <input type="hidden" id="btnDeleteINVCD" value="@Url.Action("DeleteRowINVCD", PageControllerName)" />
-            <input type="hidden" id="urlname" value="@Url.Action("ItemGroupCode", PageControllerName)" />
-            <input type="hidden" id="urlname2" value="@Url.Action("GetSubBrandDetails", PageControllerName)" />
-            <input type="hidden" id="urlnameCIC" value="@Url.Action("CheckItemCode", PageControllerName)" />
-            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
-            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
-            <input type="hidden" id="urlnameBOXSize" value="@Url.Action("SizeCode", PageControllerName)" />
-            <input type="hidden" id="urlnameCOLOR" value="@Url.Action("ColorCode", PageControllerName)" />
-            <input type="hidden" id="urlnameINV" value="@Url.Action("INVCode", PageControllerName)" />
-            <input type="hidden" id="urlnamePART" value="@Url.Action("PARTCode", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
             <input type="hidden" id="fabitcdlinkcd" value="C" />
@@ -940,7 +908,7 @@
                                 </div>
                             </div>
                             @*<div class="row">*@
-                            <div class="col-md-6">
+                            @*<div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Copy from another")
                                 </div>
@@ -955,7 +923,7 @@
                                 <div class="editor-field">
                                     <input type="button" value="Copy from previous" class="btn-sm">
                                 </div>
-                            </div>
+                            </div>*@
                             @*</div>*@
 
                         </div>
@@ -974,7 +942,7 @@
                             </div>
                             <div class="col-md-10">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
                                 </div>
                             </div>
                         </div>
@@ -987,7 +955,7 @@
                             </div>
                             <div class="col-md-11">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60 } })
+                                    @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60, @readonly = "readonly", @TabIndex = -1 } })
                                 </div>
                             </div>
                         </div>
@@ -1093,7 +1061,7 @@
                                     @Html.EditorFor(model => model.M_UOM.UOMNM, new { htmlAttributes = new { @class = "form-control", id = "UOMNM", maxlength = 10, @TabIndex = -1, @title = "Only for View", @placeholder = "UOM Description", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-md-4">
                                 <div class="editor-labelemp" style="margin-top:0px;margin-bottom: -5px;">
                                     @Html.Label("", "HSN Code")
                                 </div>
@@ -1222,7 +1190,7 @@
                                     @Html.EditorFor(model => model.M_SITEM.PCSPERBOX, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERBOX", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-3">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Pcs. Per Set")
                                 </div>
@@ -1232,7 +1200,7 @@
                                     @Html.EditorFor(model => model.M_SITEM.PCSPERSET, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERSET", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Colors Per Set")
                                 </div>
@@ -1488,8 +1456,8 @@
                                 url: "@Url.Action("GeneratePrice", PageControllerName )",
                                 data: $('form').serialize(),
                                 success: function (result) {
-                                    $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
-                                    $("#partialdivDocument").html(result);
+                                    $("#partialdivPriceList").animate({ marginTop: '0px' }, 50);
+                                    $("#partialdivPriceList").html(result);
                                 },
                                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                                     $("#WaitingMode").hide();
@@ -1509,7 +1477,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.PRICES_EFFDT, new { htmlAttributes = new { @class = "form-control ", id = "PRICES_EFFDT", @placeholder = "dd/mm/yyyy", maxlength = 10, onblur = "DocumentDateCHK(this)",autocomplete="off" } })
+                                @Html.EditorFor(model => model.PRICES_EFFDT, new { htmlAttributes = new { @class = "form-control ", id = "PRICES_EFFDT", @placeholder = "dd/mm/yyyy", maxlength = 10, onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -1519,7 +1487,7 @@
                         </div>
                     </div>
                     <div class="row" style="margin-top: 11px;width:601px;height:auto;background-color:#c4b9b9">
-                        <div id="partialdivMeasurement">
+                        <div id="partialdivPriceList">
                             @Html.Partial("_M_FinProduct_Prices")
                         </div>
                     </div>

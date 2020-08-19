@@ -543,6 +543,8 @@ namespace Improvar.Controllers
                 dt.Columns.Add("SIZECD", typeof(string));
                 dt.Columns.Add("COLRCD", typeof(string));
                 VE.DTPRICES = dt.Copy();
+                ModelState.Clear();
+                VE.DefaultView = true;
                 return PartialView("_M_FinProduct_Prices", VE);
             }
             catch (Exception ex)
@@ -967,6 +969,10 @@ namespace Improvar.Controllers
         {
             try
             {
+                if (Code.retStr() == "")
+                {
+                    return Content("Please Selet Brand Code !!");
+                }
                 if (val == null)
                 {
                     return PartialView("_Help2", Master_Help.SBRAND(val, Code));
@@ -1160,6 +1166,7 @@ namespace Improvar.Controllers
                         }
                         MSITEM.ITGRPCD = VE.M_SITEM.ITGRPCD;
                         MSITEM.ITNM = VE.M_SITEM.QUALITY;
+                        MSITEM.BRANDCD = VE.M_SITEM.BRANDCD;
                         MSITEM.SBRANDCD = VE.M_SITEM.SBRANDCD;
                         MSITEM.QUALITY = VE.M_SITEM.QUALITY;
                         MSITEM.STYLENO = VE.M_SITEM.STYLENO.retStr().Trim();
