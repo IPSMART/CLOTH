@@ -86,6 +86,8 @@ namespace Improvar.Controllers
                     P.Add(P3);
                     VE.ProductType = P;
                     //=================For ProductType================//
+                    List<DropDown_list1> PRICES_EFFDTDROP = new List<DropDown_list1>();
+                    VE.DropDown_list1 = PRICES_EFFDTDROP;
                     VE.DefaultAction = op;
                     if (op.Length != 0)
                     {
@@ -419,10 +421,8 @@ namespace Improvar.Controllers
 
                 }
                 VE.M_SITEM = sl;
-                string sql = "select distinct EFFDT from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + sl.ITCD + "' order by EFFDT desc";
-                DataTable dt = Master_Help.SQLquery(sql);
-                VE.DropDown_list1 = (from DataRow Dr in dt.Rows
-                                     select new DropDown_list1() { value = Dr["EFFDT"].retDateStr(), text = Dr["EFFDT"].retDateStr() }).ToList();
+
+                VE.DropDown_list1 = Price_Effdt(VE, sl.ITCD);
                 if (VE.DropDown_list1.Count > 0)
                 {
                     VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
@@ -482,12 +482,12 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
-
         public ActionResult GeneratePrices(ItemMasterEntry VE)
         {
             try
             {
+                string sql = "select rate,sizecd,colrcd,prccd from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
+                DataTable dt_prcrt = Master_Help.SQLquery(sql);
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 var M_PRCLST = (from p in DBF.M_PRCLST
                                 select new
@@ -512,14 +512,24 @@ namespace Improvar.Controllers
                         dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
                         dt.Rows[rNo]["SIZECD"] = size.SIZECD;
                         dt.Rows[rNo]["COLRCD"] = color.COLRCD;
-                        for (int i = 0; i > 2; i++)
+                        //for (int i = 0; i > 2; i++)
+                        //{
+                        //    //dt.Rows[rNo]["prc" + i] = "";
+                        //}
+                        if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
                         {
-                            //dt.Rows[rNo]["prc" + i] = "";
+                            foreach (var plist in M_PRCLST)
+                            {
+                                string rate = (from DataRow dr in dt_prcrt.Rows where dr["sizecd"].retStr() == size.SIZECD && dr["colrcd"].retStr() == color.COLRCD && dr["prccd"].retStr() == plist.PRCCD select dr["rate"].retStr()).FirstOrDefault();
+                                dt.Rows[rNo][plist.PRCCD] = rate;
+                            }
                         }
                     }
                 }
                 VE.DTPRICES = dt.Copy();
                 TempData["DTPRICES"] = dt;
+                VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
+
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_M_FinProduct_Prices", VE);
@@ -532,7 +542,41 @@ namespace Improvar.Controllers
             VE.DefaultView = true;
             return PartialView("_M_FinProduct_Prices", VE);
         }
+        public ActionResult DeletePrices(ItemMasterEntry VE)
+        {
+            try
+            {
+                string sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
+                Master_Help.SQLNonQuery(sql);
 
+                VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
+                if (VE.DropDown_list1.Count > 0)
+                {
+                    VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
+                    VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
+                    VE.DTPRICES = GetPrices(VE);
+                }
+
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_M_FinProduct_Prices", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+
+        }
+        public List<DropDown_list1> Price_Effdt(ItemMasterEntry VE, string ITCD)
+        {
+            string sql = "select distinct EFFDT from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + ITCD + "' order by EFFDT desc";
+            DataTable dt = Master_Help.SQLquery(sql);
+            VE.DropDown_list1 = (from DataRow Dr in dt.Rows
+                                 select new DropDown_list1() { value = Dr["EFFDT"].retDateStr(), text = Dr["EFFDT"].retDateStr() }).ToList();
+            return VE.DropDown_list1;
+
+        }
         public DataTable GetPrices(ItemMasterEntry VE)
         {
             DataTable dt = new DataTable();
@@ -592,8 +636,6 @@ namespace Improvar.Controllers
             TempData["DTPRICES"] = dt;
             return dt;
         }
-
-
         public ActionResult GetItemDetails(string val, string Code)
         {
             try
@@ -1402,9 +1444,13 @@ namespace Improvar.Controllers
 
                             DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+                            if (VE.PRICES_EFFDT.retStr() != "")
+                            {
+                                DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
+                                DB.M_ITEMPLISTDTL.Where(x => x.ITCD == VE.M_SITEM.ITCD && x.EFFDT == PRICES_EFFDT).ToList().ForEach(x => { x.DTAG = "E"; });
+                                DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => x.ITCD == VE.M_SITEM.ITCD && x.EFFDT == PRICES_EFFDT));
 
-                            DB.M_ITEMPLISTDTL.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+                            }
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
