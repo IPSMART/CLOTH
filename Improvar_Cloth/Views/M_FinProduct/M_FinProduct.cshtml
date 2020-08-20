@@ -813,6 +813,9 @@
     }
     function DeletePriceList() {
         if (!emptyFieldCheck("Enter Effective Date", "PRICES_EFFDT")) { return false; }
+        if (!confirm("Are you sure to delete pricelist?")) {
+            return false;
+        }
         $.ajax({
             type: 'POST',
             url: "@Url.Action("DeletePrices", PageControllerName )",
@@ -824,12 +827,11 @@
                     $("#partialdivPriceList").animate({ marginTop: '0px' }, 50);
                     $("#partialdivPriceList").html(result);
                     $("#WaitingMode").hide();
-                    msgInfo("Save Successfully..");
+                    msgInfo("Prices Deleted Successfully..");
                 }
                 else {
                     msgInfo("" + result + " !");
                 }
-
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
