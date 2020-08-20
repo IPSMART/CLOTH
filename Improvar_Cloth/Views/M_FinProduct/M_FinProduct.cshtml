@@ -1313,12 +1313,13 @@
                     </div>
                 </div>
 
+
                 <div id="PriceList" class="tab-pane fade" style="margin-top: 10px;">
                     <script>
                         function fillPricesGrid() {
                             $.ajax({
                                 type: 'POST',
-                                url: "@Url.Action("GeneratePrice", PageControllerName )",
+                                url: "@Url.Action("GeneratePrices", PageControllerName )",
                                 beforesend: $("#WaitingMode").show(),
                                 data: $('form').serialize(),
                                 success: function (result) {
@@ -1333,13 +1334,16 @@
                                 }
                             });
                         }
-
                     </script>
                     <div class="row">
                         <div class="col-md-3">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Effective Date")
-                                <b style="color:red"><sup>*</sup></b>
+                            </div>
+                        </div>
+                        <div class="col-md-7" style="width:auto;">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.PRICES_EFFDTDROP, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control", id = "PRICES_EFFDTDROP" })
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -1359,6 +1363,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                     <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
                         <div id="partialdivDocument">

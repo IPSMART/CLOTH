@@ -133,7 +133,6 @@ namespace Improvar.Controllers
                                     VE = Navigation(VE, DB, Nindex, searchValue);
                                 }
                             }
-                            VE.M_SITEM = sl;
                             VE.M_CNTRL_HDR = sll;
                             VE.M_GROUP = slll;
                             VE.M_SUBBRAND = slsb;
@@ -419,7 +418,17 @@ namespace Improvar.Controllers
                     }
 
                 }
-
+                VE.M_SITEM = sl;
+                string sql = "select distinct EFFDT from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + sl.ITCD + "' order by EFFDT desc";
+                DataTable dt = Master_Help.SQLquery(sql);
+                VE.DropDown_list1 = (from DataRow Dr in dt.Rows
+                                     select new DropDown_list1() { value = Dr["EFFDT"].retDateStr(), text = Dr["EFFDT"].retDateStr() }).ToList();
+                if (VE.DropDown_list1.Count > 0)
+                {
+                    VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
+                    VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
+                    VE.DTPRICES = GetPrices(VE);
+                }
                 VE.UploadDOC = Cn.GetUploadImage(CommVar.CurSchema(UNQSNO).ToString(), Convert.ToInt32(sl.M_AUTONO));
 
                 if (VE.UploadDOC.Count == 0)
@@ -473,7 +482,9 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GeneratePrice(ItemMasterEntry VE)
+
+
+        public ActionResult GeneratePrices(ItemMasterEntry VE)
         {
             try
             {
@@ -515,11 +526,74 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
 
+            }
+            ModelState.Clear();
+            VE.DefaultView = true;
+            return PartialView("_M_FinProduct_Prices", VE);
         }
+
+        public DataTable GetPrices(ItemMasterEntry VE)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                var M_PRCLST = (from p in DBF.M_PRCLST
+                                select new
+                                {
+                                    PRCCD = p.PRCCD,
+                                    PRCNM = p.PRCNM
+                                }).ToList();
+                DataColumn column;
+                column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
+                column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
+
+                foreach (var plist in M_PRCLST)
+                {
+                    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
+                }
+                string sql = "";
+                //sql += "select distinct ''''||a.prccd||''''|| ' '|| a.prccd jprccd, a.prccd  ,b.prcnm ";
+                //sql += "from " + CommVar.CurSchema(UNQSNO) + ".m_itemplistdtl a ," + CommVar.FinSchema(UNQSNO) + ".M_PRCLST b  ";
+                //sql += "where a.prccd=b.prccd and itcd='" +VE.M_SITEM.ITCD + "' ";
+                //DataTable dtprcmaster = Master_Help.SQLquery(sql);
+                // Join columns
+                //string prccds = string.Join(", ", dtprcmaster.Rows.OfType<DataRow>().Select(r => r[0].ToString()));
+                sql = "select PRCCD, EFFDT, ITCD, SIZECD, COLRCD,rate from " + CommVar.CurSchema(UNQSNO)
+                    + ".m_itemplistdtl  where itcd = '" + VE.M_SITEM.ITCD + "' and effdt=to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
+                //sql = "select * from( ";
+                //sql += "select a.itcd,a.sizecd,a.colrcd,a.rate,a.prccd from "+CommVar.CurSchema(UNQSNO)+ ".m_itemplistdtl a where itcd='" + VE.M_SITEM.ITCD + "') ";
+                //sql += "pivot  (sum(rate) for prccd in ("+ prccds + " ))  ";
+                DataTable dtprices = Master_Help.SQLquery(sql);
+
+                foreach (var size in VE.MSITEMSIZE)
+                {
+                    foreach (var color in VE.MSITEMCOLOR)
+                    {
+                        dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
+                        dt.Rows[rNo]["SIZECD"] = size.SIZECD;
+                        dt.Rows[rNo]["COLRCD"] = color.COLRCD;
+                        foreach (var plist in M_PRCLST)
+                        {
+                            DataRow drRATE = dtprices.Select("SIZECD='" + size.SIZECD + "' AND  COLRCD='" + color.COLRCD + "' AND PRCCD='" + plist.PRCCD + "'").FirstOrDefault();
+                            if (drRATE != null)
+                            {
+                                dt.Rows[rNo][plist.PRCCD] = drRATE["rate"].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+            }
+            TempData["DTPRICES"] = dt;
+            return dt;
+        }
+
+
         public ActionResult GetItemDetails(string val, string Code)
         {
             try
@@ -1459,6 +1533,27 @@ namespace Improvar.Controllers
                             }
                         }
 
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", MSITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+
+                        if (VE.DefaultAction == "A")
+                        {
+                            DB.M_SITEM.Add(MSITEM);
+                            DB.M_CNTRL_HDR.Add(MCH);
+                        }
+
+                        else if (VE.DefaultAction == "E")
+                        {
+                            DB.Entry(MSITEM).State = System.Data.Entity.EntityState.Modified;
+                            DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
+                        }
+                        if (VE.UploadDOC != null)
+                        {
+                            var img = Cn.SaveUploadImage("M_SITEM", VE.UploadDOC, MSITEM.M_AUTONO, MSITEM.EMD_NO.Value);
+                            DB.M_CNTRL_HDR_DOC.AddRange(img.Item1);
+                            DB.M_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
+                        }
+                        DB.SaveChanges();
+
                         #region Price list Save
                         DataTable DTPRICES = (DataTable)TempData["DTPRICES"]; TempData.Keep();
                         var prcRows = VE.STRPRICES.retStr().Split('~');
@@ -1485,26 +1580,6 @@ namespace Improvar.Controllers
                             }
                         }
                         #endregion
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SITEM", MSITEM.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-
-                        if (VE.DefaultAction == "A")
-                        {
-                            DB.M_SITEM.Add(MSITEM);
-                            DB.M_CNTRL_HDR.Add(MCH);
-                        }
-
-                        else if (VE.DefaultAction == "E")
-                        {
-                            DB.Entry(MSITEM).State = System.Data.Entity.EntityState.Modified;
-                            DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
-                        }
-                        if (VE.UploadDOC != null)
-                        {
-                            var img = Cn.SaveUploadImage("M_SITEM", VE.UploadDOC, MSITEM.M_AUTONO, MSITEM.EMD_NO.Value);
-                            DB.M_CNTRL_HDR_DOC.AddRange(img.Item1);
-                            DB.M_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
-                        }
-
                         DB.SaveChanges();
                         transaction.Commit();
                         string ContentFlg = "";

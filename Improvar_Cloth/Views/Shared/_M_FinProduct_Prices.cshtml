@@ -51,7 +51,7 @@
                                             else
                                             {
                                                 <td>
-                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right" })
+                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right", @onkeypress = "return numericOnly(this,2);" })
                                                 </td>
                                             }
                                         }
