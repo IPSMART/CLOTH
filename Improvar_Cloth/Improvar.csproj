@@ -239,9 +239,13 @@
     <Compile Include="Controllers\DOCPASS_STRGYController.cs" />
     <Compile Include="Controllers\ImageData.cs" />
     <Compile Include="Controllers\M_BrandController.cs" />
+    <Compile Include="Controllers\M_CollectionController.cs" />
+    <Compile Include="Controllers\M_ColorController.cs" />
     <Compile Include="Controllers\M_FinProductController.cs" />
     <Compile Include="Controllers\M_GrpMastController.cs" />
+    <Compile Include="Controllers\M_ItemPartController.cs" />
     <Compile Include="Controllers\M_ItemSizeController.cs" />
+    <Compile Include="Controllers\M_Plist_CodeController.cs" />
     <Compile Include="Controllers\M_Prod_GroupController.cs" />
     <Compile Include="Controllers\M_SubBrandController.cs" />
     <Compile Include="Controllers\M_SubLeg_SDdtlController.cs" />
@@ -289,6 +293,7 @@
     <Compile Include="Models\MDOCAUTHLAVEL5.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\MenuRightByUser.cs" />
+    <Compile Include="Models\MSITEMBARCODE.cs" />
     <Compile Include="Models\MITEMPLISTADD.cs" />
     <Compile Include="Models\MITEMPLISTADD_SIZE.cs" />
     <Compile Include="Models\MITEMPLISTDTL.cs" />
@@ -485,6 +490,8 @@
     <Compile Include="ViewModels\AmountTypeMasterEntry.cs" />
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
+    <Compile Include="ViewModels\CollectionEntry.cs" />
+    <Compile Include="ViewModels\ColorEntry.cs" />
     <Compile Include="ViewModels\CommonReport.cs" />
     <Compile Include="ViewModels\CompanySelection.cs" />
     <Compile Include="ViewModels\dataLock.cs" />
@@ -499,7 +506,9 @@
     <Compile Include="ViewModels\ItemMasterEntry.cs" />
     <Compile Include="ViewModels\ItemSizeEntry.cs" />
     <Compile Include="ViewModels\ModifyLog.cs" />
+    <Compile Include="ViewModels\PartMasterEntry.cs" />
     <Compile Include="ViewModels\Prepare_JSONvalidation.cs" />
+    <Compile Include="ViewModels\PriceListCodeMasterEntry.cs" />
     <Compile Include="ViewModels\PrintPage.cs" />
     <Compile Include="ViewModels\ProductGroupEntry.cs" />
     <Compile Include="ViewModels\ReportViewinHtml.cs" />
@@ -880,6 +889,10 @@
     <Content Include="Views\M_Color\M_Color.cshtml" />
     <Content Include="Views\Shared\_M_Tax_Rate_GRID.cshtml" />
     <Content Include="Views\Shared\_M_FinProduct_Prices.cshtml" />
+    <Content Include="Views\M_ItemPart\M_ItemPart.cshtml" />
+    <Content Include="Views\M_Collection\M_Collection.cshtml" />
+    <Content Include="Views\Shared\_M_FinProduct_BARCD.cshtml" />
+    <Content Include="Views\M_Plist_Code\M_Plist_Code.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
