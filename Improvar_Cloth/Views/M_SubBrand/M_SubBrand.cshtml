@@ -18,37 +18,36 @@
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         $("#WaitingMode").hide();
-   });
+    });
 </script>
 <script>
-   function requiredFieldValidator()
-   {
-       if (!emptyFieldCheck("Enter Sub Brand Code", "SBRANDCD")) {
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       if (!emptyFieldCheck("Enter Sub Brand Name ", "SBRANDNM")) {
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       if (!emptyFieldCheck("Enter Brand Code", "BRANDCD")) {
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Sub Brand Code", "SBRANDCD")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter Sub Brand Name ", "SBRANDNM")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter Brand Code", "BRANDCD")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
         return true;
-   }
+    }
 </script>
 <script>
     @{
@@ -111,19 +110,16 @@
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#msg_ok_info").focus();
-                        $("#BRANDCD").val("");
-                        $("#BRANDNM").val("");
-                        $("#msgbody_info").html("Invalid Brand Code !! ");
-                        message_value = "BRANDCD";
-
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         input(BRANDCD, BRANDNM);
+                    }
+                    else {
+                        $("#BRANDCD").val("");
+                        $("#BRANDNM").val("");
+                        msgInfo("Invalid Brand Code !!");
+                        message_value = "BRANDCD";
                     }
                 }
             });
@@ -193,14 +189,14 @@
 
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
-            <input type="hidden" id="urlname1" value="@Url.Action("BrandCode",PageControllerName)" />
+            <input type="hidden" id="urlname1" value="@Url.Action("GetBrandDetails", PageControllerName)" />
             <input type="hidden" id="urlname2" value="@Url.Action("CheckSubBrandCode", PageControllerName)" />
             <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
             <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-                        @Html.HiddenFor(s => s.DefaultAction)
-                                    @Html.HiddenFor(a => a.M_SUBBRAND.M_AUTONO)
-                                    @Html.HiddenFor(a => a.M_CNTRL_HDR.M_AUTONO)
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_SUBBRAND.M_AUTONO)
+            @Html.HiddenFor(a => a.M_CNTRL_HDR.M_AUTONO)
             @Html.HiddenFor(e => e.M_SUBBRAND.CLCD)
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
@@ -249,7 +245,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_BRAND.BRANDNM, new { htmlAttributes = new { @class = "form-control", id = "BRANDNM", maxlength = 30, @title = "Only for View", @placeholder = "Brand Name", @TabIndex=-1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.M_BRAND.BRANDNM, new { htmlAttributes = new { @class = "form-control", id = "BRANDNM", maxlength = 30, @title = "Only for View", @placeholder = "Brand Name", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                     </div>

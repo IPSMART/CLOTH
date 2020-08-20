@@ -479,29 +479,27 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
-        public ActionResult GetBrandDetails()
+        public ActionResult GetBrandDetails(string val)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            return PartialView("_Help2", masterHelp.BRANDCD_help(DB));
-        }
-        public ActionResult BRANDCode(string val)
-        {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            var query = (from c in DB.M_BRAND where (c.BRANDCD == val) select c);
-            if (query.Any())
+            try
             {
-                string str = "";
-                foreach (var i in query)
+                if (val == null)
                 {
-                    str = i.BRANDCD + Cn.GCS() + i.BRANDNM;
+                    return PartialView("_Help2", masterHelp.BRANDCD_help(val));
                 }
-                return Content(str);
+                else
+                {
+                    string str = masterHelp.BRANDCD_help(val);
+                    return Content(str);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Content("0");
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
+      
         public ActionResult Addrow(SubLedgerSDdtlMasterEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());

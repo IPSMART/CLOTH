@@ -19,7 +19,8 @@ namespace Improvar.Controllers
         // GET: M_SubBrand
         public ActionResult M_SubBrand(string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
-            try {
+            try
+            {
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -103,7 +104,8 @@ namespace Improvar.Controllers
                         VE.DefaultDay = 0;
                         return View(VE);
                     }
-                } }
+                }
+            }
             catch (Exception ex)
             {
                 SubBrandEntry VE = new SubBrandEntry();
@@ -165,7 +167,7 @@ namespace Improvar.Controllers
                        join o in DB.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
                        join p in DB.M_BRAND on j.MBRANDCD equals (p.BRANDCD)
                        where (j.M_AUTONO == o.M_AUTONO)
-                       select new 
+                       select new
                        {
                            SBRANDCD = j.SBRANDCD,
                            SBRANDNM = j.SBRANDNM,
@@ -181,28 +183,24 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "4"));
         }
-        public ActionResult GetBrandDetails()
+        public ActionResult GetBrandDetails(string val)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-
-            return PartialView("_Help2", Master_Help.BRANDCD_help(DB));           
-        }
-        public ActionResult BrandCode(string val)
-        {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            var query = (from c in DB.M_BRAND where (c.BRANDCD == val) select c);
-            if (query.Any())
+            try
             {
-                string str = "";
-                foreach (var i in query)
+                if (val == null)
                 {
-                    str = i.BRANDCD + Cn.GCS() + i.BRANDNM;
+                    return PartialView("_Help2", Master_Help.BRANDCD_help(val));
                 }
-                return Content(str);
+                else
+                {
+                    string str = Master_Help.BRANDCD_help(val);
+                    return Content(str);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Content("0");
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult CheckSubBrandCode(string val)

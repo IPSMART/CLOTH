@@ -11,7 +11,7 @@
             modeView();
         }
         else if ("@Model.DefaultAction" == "E") {
-          
+
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -202,7 +202,7 @@
             });
         }
     }
-    </script>
+</script>
 <script>
     function input(id, id1) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
@@ -259,24 +259,22 @@
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + BRANDCD.id).val("");
-                        $("#" + BRANDNM.id).val("");
-                        $("#" + BRANDCD.id).focus();
-                        $("#msgbody_info").html("Invalid BRAND Code ! Please Enter a Valid Code !! ");
-                        message_value = BRANDCD.id;
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         input(BRANDCD, BRANDNM);
+                    }
+                    else {
+                        $("#BRANDCD").val("");
+                        $("#BRANDNM").val("");
+                        msgInfo("Invalid Brand Code !!");
+                        message_value = "BRANDCD";
                     }
                 }
             });
         }
     }
-    </script>
+</script>
 <script>
     function Addrow() {
         $.ajax({
@@ -361,7 +359,7 @@
             <input type="hidden" id="urlTAXGRPHLP" value="@Url.Action("GetTAXGRPCDhelp", PageControllerName)" />
             <input type="hidden" id="urlPRICEHLP" value="@Url.Action("GetPRCCDhelp", PageControllerName)" />
             <input type="hidden" id="urlnameAREA" value="@Url.Action("AREACode", PageControllerName)" />
-            <input type="hidden" id="urlnameBRAND" value="@Url.Action("BRANDCode", PageControllerName)" />
+            <input type="hidden" id="urlnameBRAND" value="@Url.Action("GetBrandDetails", PageControllerName)" />
             <input type="hidden" id="urlnameDISCRATE" value="@Url.Action("DISCRATECode", PageControllerName)" />
             <input type="hidden" id="btnAdd" value="@Url.Action("Addrow", PageControllerName)" />
             <input type="hidden" id="btnDelete" value="@Url.Action("Deleterow", PageControllerName)" />
@@ -394,7 +392,8 @@
                         {
                             @Html.EditorFor(model => model.M_SUBLEG_COM.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", maxlength = 10, @placeholder = "Code", @readonly = "readonly" } })
 
-                        }    </div>
+                        }
+                    </div>
                 </div>
                 <div class="col-md-8">
                     <div class="editor-field">
@@ -462,7 +461,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row" >
+            <div class="row">
                 <div class="col-md-6">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Delvery Type")
@@ -470,7 +469,7 @@
                 </div>
                 <div class="col-md-2">
                     <div class="editor-field" style="margin-top:4px;">
-                        @Html.DropDownListFor(model => model.M_SUBLEG_COM.COD, new SelectList(Model.DropDown_list_DelvType, "Value", "Text"),"Select", new { @class = "form-control" })
+                        @Html.DropDownListFor(model => model.M_SUBLEG_COM.COD, new SelectList(Model.DropDown_list_DelvType, "Value", "Text"), "Select", new { @class = "form-control" })
                     </div>
                 </div>
             </div>
@@ -486,8 +485,8 @@
                     </div>
                 </div>
             </div>
-  
-              <div class="row">
+
+            <div class="row">
                 <div class="col-md-6">
                     <div class="editor-field" style="margin-top: 4px;">
                         @Html.Label("", "Scheme Area Code")

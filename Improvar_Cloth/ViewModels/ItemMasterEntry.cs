@@ -47,6 +47,7 @@ namespace Improvar.ViewModels
         public DataTable DTPRICES { get; set; }
         public string STRPRICES { get; set; }
         public string SEARCH_ITCD { get; set; }
+        public string ITEM_BARCODE { get; set; }
 
     }
 }

@@ -23,7 +23,7 @@ namespace Improvar.Models
 
         
 
-        [StringLength(15)]
+        [StringLength(3)]
         public string BARCODE { get; set; }
 
         [Key]

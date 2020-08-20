@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.ItemMasterEntry
 
-<div style="width: 250px;" overflow-y:auto;">
+<div style="width: 373px;" overflow-y:auto;">
     <div class="table-responsive">
 
         @if (Model.DefaultView == true)
@@ -35,14 +35,14 @@
                                     @Html.CheckBoxFor(model => model.MSITEMPARTS[i].Checked, new { htmlAttributes = new { id = "chkid" } })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMPARTS[i].SLNO, new { id = "SRLNO", @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.MSITEMPARTS[i].SLNO, new { id = "PSLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                 </td>
                                 <td class="grid_td">
                                     @Html.TextBoxFor(model => Model.MSITEMPARTS[i].PARTCD, new { id = "PARTCD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetPartDetails", "M_FinProduct") + "','" + "PARTCD_" + i + "/" + "PARTNM_" + i + "','1/0','Part Details','" + "PARTCD_" + i + "')", onblur = "SelectPARTCODEGRID(this.value," + "PARTCD_" + i + "," + "PARTNM_" + i + ");",  @class = " atextBoxFor textbox_image" })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetPartDetails", "M_FinProduct")','PARTCD_@i/PARTNM_@i','1/0','Part Details','PARTCD_@i')" />
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMPARTS[i].PARTNM, new { id = "PARTNM_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly",@class = " atextBoxFor " })
+                                    @Html.TextBoxFor(model => Model.MSITEMPARTS[i].PARTNM, new { id = "PARTNM_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly",@class = " atextBoxFor ", @TabIndex = -1 })
                                 </td>
                             </tr>
                         }

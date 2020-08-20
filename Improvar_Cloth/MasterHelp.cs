@@ -201,9 +201,10 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string GROUP(ImprovarDB DB, string GRPTYPE = "F", string brandcd = "")
+        public string GROUP(string val, string GRPTYPE = "F", string brandcd = "")
         {
-            using (DB)
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
                 string[] itgrptype = GRPTYPE.Split(',');
 
@@ -219,14 +220,33 @@ namespace Improvar
                 {
                     query = query.ToList();
                 }
-
-                System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                for (int i = 0; i <= query.Count - 1; i++)
+                if (val == null)
                 {
-                    SB.Append("<tr><td>" + query[i].ITGRPNM + "</td><td>" + query[i].ITGRPCD + "</td><td>" + query[i].ITGRPTYPE + "</td></tr>");
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].ITGRPNM + "</td><td>" + query[i].ITGRPCD + "</td><td>" + query[i].ITGRPTYPE + "</td></tr>");
+                    }
+                    var hdr = "Item Group Name" + Cn.GCS() + "Item Group Code" + Cn.GCS() + "Item Group Type";
+                    return Generate_help(hdr, SB.ToString());
                 }
-                var hdr = "Item Group Name" + Cn.GCS() + "Item Group Code" + Cn.GCS() + "Item Group Type";
-                return Generate_help(hdr, SB.ToString());
+                else
+                {
+                    query = query.Where(a => a.ITGRPCD == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = i.ITGRPCD + Cn.GCS() + i.ITGRPNM;
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid Item Group Code ! Please Enter a Valid Item Group Code !!";
+                    }
+                }
             }
         }
         public string SIZE(string val, string itcd = "")
@@ -244,9 +264,9 @@ namespace Improvar
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= query.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + query[i].SIZENM + "</td><td>" + query[i].SIZECD + "</td></tr>");
+                        SB.Append("<tr><td>" + query[i].SIZENM + "</td><td>" + query[i].SIZECD + "</td><td>" + query[i].SZBARCODE + "</td></tr>");
                     }
-                    var hdr = "Size Name" + Cn.GCS() + "Size Code";
+                    var hdr = "Size Name" + Cn.GCS() + "Size Code" + Cn.GCS() + "Size Bar Code";
                     return Generate_help(hdr, SB.ToString());
                 }
                 else
@@ -465,9 +485,10 @@ namespace Improvar
             }
         }
 
-        public string BRANDCD_help(ImprovarDB DB)
+        public string BRANDCD_help(string val)
         {
-            using (DB)
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
                 var tbldatadoc = (from c in DB.M_BRAND
                                   join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
@@ -508,14 +529,33 @@ namespace Improvar
                                  DOC_FILE = q.DOC_FILE,
                                  DOC_NAME = q.DOC_NAME
                              }).ToList();
-
-                System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                for (int i = 0; i <= query.Count - 1; i++)
+                if (val == null)
                 {
-                    SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td><td>  <img src='" + query[i].DOC_FILE + "' style='width:20px;height:20px;' />   </td></tr>");
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td><td>  <img src='" + query[i].DOC_FILE + "' style='width:20px;height:20px;' />   </td></tr>");
+                    }
+                    var hdr = "Brand Name" + Cn.GCS() + "Brand Code" + Cn.GCS() + "Image";
+                    return Generate_help(hdr, SB.ToString());
                 }
-                var hdr = "Brand Name" + Cn.GCS() + "Brand Code" + Cn.GCS() + "Image";
-                return Generate_help(hdr, SB.ToString());
+                else
+                {
+                    query = query.Where(a => a.Code == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = i.Code + Cn.GCS() + i.Description;
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid Brand Code ! Please Select / Enter a Valid Brand Code !!";
+                    }
+                }
             }
         }
         public string GSTUOM(string val)

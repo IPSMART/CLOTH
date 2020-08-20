@@ -36,7 +36,7 @@
                                 @Html.CheckBoxFor(model => model.MSITEMMEASURE[i].Checked, new { htmlAttributes = new { id = "chkid_" } })
                             </td>
                             <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSITEMMEASURE[i].SLNO, new {   @class = " atextBoxFor ",  @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSITEMMEASURE[i].SLNO, new {   @class = " atextBoxFor ",  @readonly = "readonly", @TabIndex = -1 })
                             </td>
                             <td class="grid_td">
                                 @Html.TextBoxFor(model => model.MSITEMMEASURE[i].MDESC, new  { @class = "atextBoxFor",   maxlength = 30, @list = "Description_"+i })
