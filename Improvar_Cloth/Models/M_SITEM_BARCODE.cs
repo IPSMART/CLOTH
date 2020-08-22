@@ -34,10 +34,6 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        [StringLength(8)]
-        public string HSNCODE { get; set; }
-
         public decimal? STDRT { get; set; }
-        
     }
 }

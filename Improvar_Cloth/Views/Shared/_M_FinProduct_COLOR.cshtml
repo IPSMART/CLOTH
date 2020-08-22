@@ -7,7 +7,9 @@
         {
             @Html.ValidationSummary(true)
             <div class="grid_title">
-                <img src="~/Image/Plus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnAddCOLOR" title="Add Row" onclick="AddRowCOLOR()" />
+                @*<img src="~/Image/Plus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnAddCOLOR" title="Add Row" onclick="AddRowCOLOR()" />*@
+                <input type="text" id="AddRowsColor" name="AddRowsColor" placeholder="Rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
+                <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddRowCOLOR('AddRowsColor')" />
                 <img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeleteCOLOR" title="Delete Row" onclick="DeleteRowCOLOR()" />
 
                 <div class="col-md-10">

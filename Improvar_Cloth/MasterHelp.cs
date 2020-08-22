@@ -91,7 +91,7 @@ namespace Improvar
                 {
                     if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
                 }
-                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype, a.pcsperbox, a.styleno, a.PCSPERSET,a.hsncode ";
+                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype,a.styleno, a.PCSPERSET,a.hsncode ";
                 sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b ";
                 sql += "where a.itgrpcd=b.itgrpcd ";
                 if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
@@ -113,9 +113,9 @@ namespace Improvar
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["pcsperbox"].ToString() + "</td></tr>");
+                        SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td></tr>");
                     }
-                    var hdr = "Design No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "PCS / BOX";
+                    var hdr = "Design No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM";
                     return Generate_help(hdr, SB.ToString());
                 }
                 else
