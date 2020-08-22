@@ -3,6 +3,7 @@ using Improvar.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -160,13 +161,7 @@ namespace Improvar.Controllers
                             MSITEMSIZE MIS = new MSITEMSIZE();
                             MIS.SRLNO = "1";
                             ITEMSIZE.Add(MIS);
-                            VE.MSITEMSIZE = ITEMSIZE;
-
-                            //List<MSITEMBOX> ITEMBOX = new List<MSITEMBOX>();
-                            //MSITEMBOX MIB = new MSITEMBOX();
-                            //MIB.SRLNO = "1";
-                            //ITEMBOX.Add(MIB);
-                            //VE.MSITEMBOX = ITEMBOX;
+                            VE.MSITEMSIZE = ITEMSIZE;                            
 
                             List<MSITEMCOLOR> ITEMCOLOR = new List<MSITEMCOLOR>();
                             MSITEMCOLOR MIC = new MSITEMCOLOR();
@@ -462,6 +457,45 @@ namespace Improvar.Controllers
             else
             {
                 VE.M_SITEM = sl;
+
+                List<MSITEMSIZE> ITEMSIZE = new List<MSITEMSIZE>();
+                MSITEMSIZE MIS = new MSITEMSIZE();
+                MIS.SRLNO = "1";
+                ITEMSIZE.Add(MIS);
+                VE.MSITEMSIZE = ITEMSIZE;
+
+                List<MSITEMCOLOR> ITEMCOLOR = new List<MSITEMCOLOR>();
+                MSITEMCOLOR MIC = new MSITEMCOLOR();
+                MIC.SLNO = 1;
+                ITEMCOLOR.Add(MIC);
+                VE.MSITEMCOLOR = ITEMCOLOR;
+
+                List<MSITEMPARTS> ITEMPARTS = new List<MSITEMPARTS>();
+                MSITEMPARTS MIP = new MSITEMPARTS();
+                MIP.SLNO = 1;
+                ITEMPARTS.Add(MIP);
+                VE.MSITEMPARTS = ITEMPARTS;
+
+                List<MSITEMBARCODE> SITEMBARCODE = new List<MSITEMBARCODE>();
+                MSITEMBARCODE MII = new MSITEMBARCODE();
+                MII.SRLNO = 1;
+                SITEMBARCODE.Add(MII);
+                VE.MSITEMBARCODE = SITEMBARCODE;
+
+                List<MSITEMMEASURE> ITEMMEASURE = new List<MSITEMMEASURE>();
+                for (int i = 0; i < 10; i++)
+                {
+                    MSITEMMEASURE MIM = new MSITEMMEASURE();
+                    MIM.SLNO = Convert.ToByte(i + 1);
+                    ITEMMEASURE.Add(MIM);
+                }
+                VE.MSITEMMEASURE = ITEMMEASURE;
+
+                List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
+                UploadDOC UPL = new UploadDOC();
+                UPL.DocumentType = doctP;
+                UploadDOC1.Add(UPL);
+                VE.UploadDOC = UploadDOC1;
             }
 
             return VE;
@@ -520,6 +554,13 @@ namespace Improvar.Controllers
                 {
                     column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
                 }
+
+                dt.Rows.Add("");
+                dt.Rows[0]["SIZECD"] = "";//Add blank row
+                dt.Rows[0]["COLRCD"] = "";
+
+                VE.MSITEMCOLOR = VE.MSITEMCOLOR.Where(r => r.COLRCD != null).ToList();
+                VE.MSITEMSIZE = VE.MSITEMSIZE.Where(r => r.SIZECD != null).ToList();
                 foreach (var size in VE.MSITEMSIZE)
                 {
                     foreach (var color in VE.MSITEMCOLOR)
@@ -1563,7 +1604,6 @@ namespace Improvar.Controllers
                         MSITEMBARCODE.EMD_NO = MSITEM.EMD_NO;
                         MSITEMBARCODE.ITCD = MSITEM.ITCD;
                         MSITEMBARCODE.BARCODE = MSITEM.ITGRPCD.Substring(MSITEM.ITGRPCD.Length - 3).retStr() + MSITEM.ITCD.Substring(MSITEM.ITCD.Length - 7).retStr();
-                        MSITEMBARCODE.HSNCODE = MSITEM.HSNCODE;
                         DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
                         {
@@ -1576,7 +1616,6 @@ namespace Improvar.Controllers
                                 MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                 MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
                                 MSITEMBARCODE1.BARCODE = MSITEM.ITCD.retStr() + VE.MSITEMBARCODE[i].SZBARCODE.retStr() + VE.MSITEMBARCODE[i].COLRCD.retStr();
-                                MSITEMBARCODE1.HSNCODE = MSITEM.HSNCODE;
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                             }
                         }
@@ -1639,7 +1678,7 @@ namespace Improvar.Controllers
                                     MIP.PRCCD = PRCCD;
                                     MIP.SIZECD = prcCols[0];
                                     MIP.COLRCD = prcCols[1];
-                                    MIP.SIZECOLCD = "abc" + i + j;
+                                    MIP.SIZECOLCD = MIP.SIZECD + MIP.COLRCD;
                                     MIP.RATE = prcCols[j].retDbl();
                                     DB.M_ITEMPLISTDTL.Add(MIP);
                                 }
@@ -1708,6 +1747,22 @@ namespace Improvar.Controllers
                     {
                         return Content("");
                     }
+                }
+                catch (DbEntityValidationException ex)
+                {
+                    // Retrieve the error messages as a list of strings.
+                    var errorMessages = ex.EntityValidationErrors
+                            .SelectMany(x => x.ValidationErrors)
+                            .Select(x => x.ErrorMessage);
+
+                    // Join the list to a single string.
+                    var fullErrorMessage = string.Join("&quot;", errorMessages);
+
+                    // Combine the original exception message with the new one.
+                    var exceptionMessage = string.Concat(ex.Message, "<br/> &quot; The validation errors are: &quot;", fullErrorMessage);
+
+                    // Throw a new DbEntityValidationException with the improved exception message.
+                    throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
                 }
                 catch (Exception ex)
                 {

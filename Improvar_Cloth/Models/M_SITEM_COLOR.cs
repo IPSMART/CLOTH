@@ -31,10 +31,7 @@ namespace Improvar.Models
         [Key]
         [Column(Order = 1)]
         [StringLength(4)]
-        public string COLRCD { get; set; }
-
-        [StringLength(4)]
-        public string CLBARCODE { get; set; }
+        public string COLRCD { get; set; }        
 
         [StringLength(1)]
         public string INACTIVE_TAG { get; set; }

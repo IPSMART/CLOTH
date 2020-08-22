@@ -73,10 +73,14 @@
                         {
                             <thead>
                                 <tr class="sticky-header">
-                                    @foreach (DataColumn column in Model.DTPRICES.Columns)
+                                    @for (int i = 0; i <= 1; i++)
                                     {
-                                        @*<th class="grid_th text-right" style="width:70px;">@v</th>*@
-                                        <th class="grid_th">@column.Caption</th>
+                                        <th class="grid_th text-right" style="width:70px;">@Model.DTPRICES.Columns[i].Caption</th>
+                                        @*<th class="grid_th">@Model.DTPRICES.Columns[i].Caption</th>*@
+                                    }
+                                    @for (int i = 2; i < Model.DTPRICES.Columns.Count; i++)
+                                    {
+                                        <th class="grid_th">@Model.DTPRICES.Columns[i].Caption <a title="Add first Cell Rate to all Size" onclick="SameRatetoallSize('@i')" style="float:right;cursor:pointer">Same Rate</a></th>
                                     }
                                 </tr>
                             </thead>
@@ -95,7 +99,7 @@
                                             else
                                             {
                                                 <td>
-                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new { @class = "atextBoxFor text-right", @onkeypress = "return numericOnly(this,2);" })
+                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new {@id="rate_"+i+"_"+j, @class = "atextBoxFor text-right", @onkeypress = "return numericOnly(this,2);" })
                                                 </td>
                                             }
                                         }

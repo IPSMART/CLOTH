@@ -850,7 +850,15 @@
         });
     }
 </script>
-
+<script>
+    function SameRatetoallSize(colindex){        
+        var PricesGridlength = $("#exampleItemPrices > tbody > tr").length;
+        var firstCellrate = $("#rate_0_" + colindex).val();
+        for (i = 1; i <= PricesGridlength - 1; i++) {
+            $("#rate_" + i + "_" + colindex).val(firstCellrate);
+        }
+    }
+</script>
 @section Scripts {
     <script>
         function ReloadWithData() {

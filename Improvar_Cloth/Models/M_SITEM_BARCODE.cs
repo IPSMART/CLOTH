@@ -32,10 +32,7 @@ namespace Improvar.Models
         public string SIZECD { get; set; }
 
         [StringLength(4)]
-        public string COLRCD { get; set; }
-
-        [StringLength(8)]
-        public string HSNCODE { get; set; }
+        public string COLRCD { get; set; }        
 
         public decimal? STDRT { get; set; }
         
