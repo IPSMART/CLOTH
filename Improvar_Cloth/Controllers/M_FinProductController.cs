@@ -27,12 +27,22 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Finish Product/Design Master";
+                    //ViewBag.formname = "Finish Product/Design Master";
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ItemMasterEntry VE = new ItemMasterEntry();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
+                    string MNUP = VE.MENU_PARA;
+                    switch (MNUP)
+                    {
+                        case "F":
+                            ViewBag.formname = "Finish Product/Design Master"; break;
+                        case "C":
+                            ViewBag.formname = "Febric  Item"; break;
+                       
+                        default: ViewBag.formname = ""; break;
+                    }
                     VE.Database_Combo1 = (from n in DB.M_SITEM
                                           join j in DB.M_GROUP on n.ITGRPCD equals j.ITGRPCD
                                           where j.ITGRPTYPE == "F"
@@ -135,9 +145,10 @@ namespace Improvar.Controllers
                                     VE = Navigation(VE, DB, Nindex, searchValue);
                                 }
                             }
+                           
                             VE.M_CNTRL_HDR = sll;
                             VE.M_GROUP = slll;
-                            VE.M_SUBBRAND = slsb;
+                            //VE.M_SUBBRAND = slsb;
                             VE.M_BRAND = slb;
                             VE.M_COLLECTION = slc;
                             VE.M_COLOR = slco;
@@ -231,7 +242,7 @@ namespace Improvar.Controllers
                 sl = DB.M_SITEM.Find(aa[0]);
                 sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                 slll = DB.M_GROUP.Find(sl.ITGRPCD);
-                slsb = DB.M_SUBBRAND.Find(sl.SBRANDCD);
+                //slsb = DB.M_SUBBRAND.Find(sl.SBRANDCD);
                 slb = DB.M_BRAND.Find(sl.BRANDCD);
                 slc = DB.M_COLLECTION.Find(sl.COLLCD);
                 slco = DB.M_COLOR.Find(sl.COLRCD);
@@ -1388,7 +1399,7 @@ namespace Improvar.Controllers
                         }
                         MSITEM.ITGRPCD = VE.M_SITEM.ITGRPCD;
                         MSITEM.ITNM = VE.M_SITEM.QUALITY;
-                        MSITEM.BRANDCD = VE.M_SITEM.BRANDCD;
+                        //MSITEM.BRANDCD = VE.M_SITEM.BRANDCD;
                         MSITEM.SBRANDCD = VE.M_SITEM.SBRANDCD;
                         MSITEM.QUALITY = VE.M_SITEM.QUALITY;
                         MSITEM.STYLENO = VE.M_SITEM.STYLENO.retStr().Trim();
@@ -1407,12 +1418,17 @@ namespace Improvar.Controllers
                         MSITEM.UOMCD = VE.M_SITEM.UOMCD;
                         MSITEM.HSNCODE = VE.M_SITEM.HSNCODE;
                         MSITEM.COLRCD = VE.M_SITEM.COLRCD;
-                        MSITEM.PRODUCTTYPE = FC["protyp"].ToString();
+                        //MSITEM.PRODUCTTYPE = FC["protyp"].ToString();
                         MSITEM.GENDER = FC["gender"].ToString();
                         MSITEM.COLLCD = VE.M_SITEM.COLLCD;
-                        MSITEM.PCSPERBOX = VE.M_SITEM.PCSPERBOX;
+                        //MSITEM.PCSPERBOX = VE.M_SITEM.PCSPERBOX;
                         MSITEM.PCSPERSET = VE.M_SITEM.PCSPERSET;
                         MSITEM.COLRPERSET = VE.M_SITEM.COLRPERSET;
+                        if (VE.MENU_PARA=="C")
+                        {
+                            MSITEM.FEATURE = VE.M_SITEM.FEATURE;
+                            MSITEM.DMNSN = VE.M_SITEM.DMNSN;
+                        }
                         //MSITEM.STD_RATE = VE.M_SITEM.STD_RATE;
                         //MSITEM.SAMPPC = VE.M_SITEM.SAMPPC;
                         //MSITEM.STDLOTQTY = VE.M_SITEM.SAMPPC;

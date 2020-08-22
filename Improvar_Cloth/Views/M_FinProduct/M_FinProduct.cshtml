@@ -4,6 +4,15 @@
     ViewBag.Title = "Finished Product/Design Master";
     Layout = "~/Views/Shared/_Layout.cshtml";
     string PageControllerName = "M_FinProduct";
+    string MP = Model.MENU_PARA;
+    switch (MP)
+    {
+        case "F":
+            ViewBag.Title = "Finish Product/Design Master"; break;
+        case "C":
+            ViewBag.Title = "Febric/Item"; break;
+        default: ViewBag.Title = ""; break;
+    }
 }
 
 
@@ -40,14 +49,14 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
-        if (!emptyFieldCheck("Enter Brand Code", "BRANDCD")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }
+        //if (!emptyFieldCheck("Enter Brand Code", "BRANDCD")) {
+        //    $("li").removeClass("active").addClass("");
+        //    $(".nav-tabs li:first-child").addClass('active');
+        //    //below set the  child sequence
+        //    $(".tab-content div").removeClass("active");
+        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //    return false;
+        //}
         if (!emptyFieldCheck("Enter  Quality Description", "QUALITY")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -88,14 +97,14 @@
             message_value = "gender";
             return false;
         }
-        if (!emptyFieldCheck("Enter Pcs. Per Box ", "PCSPERBOX")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }
+        //if (!emptyFieldCheck("Enter Pcs. Per Box ", "PCSPERBOX")) {
+        //    $("li").removeClass("active").addClass("");
+        //    $(".nav-tabs li:first-child").addClass('active');
+        //    //below set the  child sequence
+        //    $(".tab-content div").removeClass("active");
+        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //    return false;
+        //}
         var pricestr = "";
         var PricesGridlength = $("#exampleItemPrices > tbody > tr").length;
         for (i = 0; i <= PricesGridlength - 1; i++) {
@@ -136,7 +145,7 @@
         $("#" + id.id).val(str[0]);
         $("#" + id1.id).val(str[1].toString());
     }
-    function SelectItemGroupCode(id, ITGRPCD, ITGRPNM, BRANDCD, BRANDNM) {
+    function SelectItemGroupCode(id, ITGRPCD, ITGRPNM) {
         if (id == "") {
             $("#ITGRPCD").val("");
             $("#ITGRPNM").val("");
@@ -937,13 +946,51 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
+                                    @*@Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />*@
+
+                                    @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM','1/0','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM','1/0','Select Group Details','ITGRPCD')" />
                                 </div>
                             </div>
                             <div class="col-md-10">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Facbric Item")
+                                </div>
+                            </div>
+                            @*<div class="col-md-7">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','A','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Style Number" } })
+                    <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="STYLE_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','A')" />
+                </div>
+            </div>*@
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
+
+                                </div>
+                            </div>
+                            <div class="col-md-11">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.FABSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "FABSTYLENO", maxlength = 30, @TabIndex = -1, @title = "Only for View", @placeholder = "Design Number", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.FABUOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABUOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
@@ -956,11 +1003,12 @@
                             </div>
                             <div class="col-md-11">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60, @readonly = "readonly", @TabIndex = -1 } })
+                                    @*@Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60, @readonly = "readonly", @TabIndex = -1 } })*@
+                                    @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60} })
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        @*<div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Brand Code")
@@ -994,7 +1042,7 @@
                                     @Html.EditorFor(model => model.M_SUBBRAND.SBRANDNM, new { htmlAttributes = new { @class = "form-control", id = "SBRANDNM", maxlength = 15, @placeholder = "Sub Brand Name", @readonly = "readonly", @TabIndex = -1 } })
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1008,41 +1056,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Facbric Item")
-                                </div>
-                            </div>
-                            @*<div class="col-md-7">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','A','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Style Number" } })
-                                        <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="STYLE_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','A')" />
-                                    </div>
-                                </div>*@
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
-
-                                </div>
-                            </div>
-                            <div class="col-md-11">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.FABSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "FABSTYLENO", maxlength = 30, @TabIndex = -1, @title = "Only for View", @placeholder = "Design Number", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.FABUOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABUOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
+                     
 
                         <div class="row">
                             <div class="col-md-6">
@@ -1098,13 +1112,13 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
+                            @*<div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Product Type")
                                     <b style="color:Red;">*</b>
                                 </div>
-                            </div>
-                            <div class="col-md-7">
+                            </div>*@
+                            @*<div class="col-md-7">
                                 <div class="editor-field">
                                     <select id="protyp" name="protyp" class="form-control">
                                         <option value="0" selected="selected">====Select====</option>
@@ -1128,7 +1142,7 @@
                                         }
                                     </select>
                                 </div>
-                            </div>
+                            </div>*@
                             <div class="col-md-3" style="margin-right:-21px;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Gender")
@@ -1180,7 +1194,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
+                            @*<div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Pcs. Per Box")
                                     <b style="color:Red;">*</b>
@@ -1190,7 +1204,7 @@
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.PCSPERBOX, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERBOX", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
                                 </div>
-                            </div>
+                            </div>*@
                             <div class="col-md-3">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Pcs. Per Set")
@@ -1212,6 +1226,30 @@
                                 </div>
                             </div>
                         </div>
+                        @if (Model.MENU_PARA=="C"){ 
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Features")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.FEATURE, new { htmlAttributes = new { @class = "form-control",id = "FEATURE", maxlength = 20, @placeholder = "Features" } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Dimention")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SITEM.DMNSN, new { htmlAttributes = new { @class = "form-control",id = "DMNSN", maxlength = 20, @placeholder = "Dimention" } })
+                                </div>
+                            </div>
+                        </div>
+                        }
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1225,9 +1263,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
 
                     <div class="col-lg-3">
                         @if (Model.DefaultAction == "V" || Model.DefaultAction == "E" || Model.DefaultAction == "D")
