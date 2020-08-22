@@ -194,7 +194,7 @@
                 <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
 
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Group Code")
                                 <b style="color:Red;">*</b>
@@ -214,7 +214,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Group Name")
                                 <b style="color:Red;">*</b>
@@ -238,7 +238,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Group Type")
                             </div>
@@ -270,7 +270,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Product Group")
                             </div>
@@ -288,18 +288,49 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "De - Activate")
+                                @Html.Label("", "HSNCODE")
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="editor-field" style="margin-top:6px;">
-                                @Html.CheckBoxFor(model => model.Checked)
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", @placeholder = "HSNCODE", maxlength = 40, @list = "HSNCODElist" } })
+                                <datalist id="HSNCODElist">
+                                    @foreach (var jg in Model.Database_Combo1)
+                                    {
+                                        <option value="@jg.FIELD_VALUE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Bar Code Generation Type")
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => Model.M_GROUP.BARGENTYPE, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control" })
                             </div>
                         </div>
                     </div>
-                </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "De - Activate")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field" style="margin-top:6px;">
+                                    @Html.CheckBoxFor(model => model.Checked)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                     <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
                         <div id="partialdivDocument">

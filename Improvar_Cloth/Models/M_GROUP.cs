@@ -41,6 +41,8 @@ namespace Improvar.Models
         public string PRODGRPCD { get; set; }
 
         public long M_AUTONO { get; set; }
-        
+
+        [StringLength(1)]
+        public string BARGENTYPE { get; set; }
     }
 }

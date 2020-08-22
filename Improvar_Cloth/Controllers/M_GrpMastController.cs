@@ -82,7 +82,26 @@ namespace Improvar.Controllers
                     GT.Add(GT9);
                     VE.GroupType = GT;
                     //=================End Group Type================//
+                    //=================For HSNCODE Database Combo================//
+                    VE.Database_Combo2 = (from i in DB.M_GROUP select new Database_Combo2() { FIELD_VALUE = i.HSNCODE }).OrderBy(s => s.FIELD_VALUE).ToList();
+                    //=================END HSNCODE Database Combo================//
 
+                    //=================For Bar Code Generation Type================//
+                    List<DropDown_list1> list1 = new List<DropDown_list1>();
+                    DropDown_list1 obj1 = new DropDown_list1();
+                    obj1.text = "Common";
+                    obj1.value = "C";
+                    list1.Add(obj1);
+                    DropDown_list1 obj2 = new DropDown_list1();
+                    obj2.text = "Individual";
+                    obj2.value = "I";
+                    list1.Add(obj2);
+                    DropDown_list1 obj3 = new DropDown_list1();
+                    obj3.text = "Entry";
+                    obj3.value = "E";
+                    list1.Add(obj3);
+                    VE.DropDown_list1 = list1;
+                    //=================End Bar Code Generation Type================//
                     VE.DefaultAction = op;
 
                     if (op.Length != 0)
@@ -407,8 +426,8 @@ namespace Improvar.Controllers
                         MGROUP.ITGRPNM = VE.M_GROUP.ITGRPNM;
                         MGROUP.ITGRPTYPE = FC["grptype"].ToString();
                         MGROUP.PRODGRPCD = VE.M_GROUP.PRODGRPCD;
-
-
+                        MGROUP.HSNCODE = VE.M_GROUP.HSNCODE;
+                        MGROUP.BARGENTYPE = VE.M_GROUP.BARGENTYPE;
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_GROUP", MGROUP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {

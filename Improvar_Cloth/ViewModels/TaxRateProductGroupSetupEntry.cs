@@ -13,5 +13,7 @@ namespace Improvar.ViewModels
         public M_CNTRL_HDR M_CNTRL_HDR { get; set; }
         public List<MPRODTAX> MPRODTAX { get; set; }
         public bool Checked { get; set; }
+        public string FROMRT { get; set; }
+        public string TORT { get; set; }
     }
 }
