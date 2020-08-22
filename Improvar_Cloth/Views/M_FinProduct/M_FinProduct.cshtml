@@ -10,7 +10,7 @@
         case "F":
             ViewBag.Title = "Finish Product/Design Master"; break;
         case "C":
-            ViewBag.Title = "Febric/Item"; break;
+            ViewBag.Title = "Febric Item"; break;
         default: ViewBag.Title = ""; break;
     }
 }
@@ -57,14 +57,14 @@
         //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
         //    return false;
         //}
-        if (!emptyFieldCheck("Enter  Quality Description", "QUALITY")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }
+        //if (!emptyFieldCheck("Enter  Quality Description", "QUALITY")) {
+        //    $("li").removeClass("active").addClass("");
+        //    $(".nav-tabs li:first-child").addClass('active');
+        //    //below set the  child sequence
+        //    $(".tab-content div").removeClass("active");
+        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //    return false;
+        //}
 
         if (!emptyFieldCheck("Enter UOM", "UOMCD")) {
             $("li").removeClass("active").addClass("");
@@ -145,7 +145,7 @@
         $("#" + id.id).val(str[0]);
         $("#" + id1.id).val(str[1].toString());
     }
-    function SelectItemGroupCode(id, ITGRPCD, ITGRPNM) {
+    function SelectItemGroupCode(id, ITGRPCD, ITGRPNM,BRANDCD,BRANDNM) {
         if (id == "") {
             $("#ITGRPCD").val("");
             $("#ITGRPNM").val("");
@@ -395,12 +395,32 @@
     }
 </script>
 <script>
-    function AddRowSIZE(urlstring, id) {
+    @*function AddRowSIZE(urlstring, id) {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("AddRowSIZE", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
+                $("#partialdivSIZE").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivSIZE").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }*@
+    function AddRowSIZE(ID) {
+        debugger;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowSIZE", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
                 $("#partialdivSIZE").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivSIZE").html(result);
             },
@@ -467,7 +487,7 @@
     }
 </script>
 <script>
-    function AddRowCOLOR(urlstring, id) {
+    @*function AddRowCOLOR(urlstring, id) {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("AddRowCOLOR", PageControllerName)",
@@ -482,6 +502,26 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
+    }*@
+    function AddRowCOLOR(ID) {
+        debugger;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowCOLOR", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+        data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+        success: function (result) {
+            $("#WaitingMode").hide();
+            $("#partialdivCOLOR").animate({ marginTop: '-10px' }, 50);
+            $("#partialdivCOLOR").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
     }
     function DeleteRowCOLOR(urlstring, id) {
         $.ajax({
@@ -730,7 +770,8 @@
         if ("@Model.DefaultAction" != "V") {
             debugger;
             if (id == "") {
-                ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                //ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                ClearAllTextBoxes("FABITCD,FABITNM,FABUOMNM");
             }
             else {
                 var linkcd = $("#fabitcdlinkcd").val();
@@ -742,11 +783,13 @@
                     success: function (result) {
                         var MSG = result.indexOf('#helpDIV');
                         if (MSG >= 0) {
-                            ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                            //ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                            ClearAllTextBoxes("FABITCD,FABITNM,FABUOMNM");
                             $('#SearchFldValue').val("FABITCD");
                             $('#helpDIV').html(result);
-                            $('#ReferanceFieldID').val("FABITCD/FABITNM/FABSTYLENO/FABUOMNM");
-                            $('#ReferanceColumn').val("2/1/0/3");
+                            //$('#ReferanceFieldID').val("FABITCD/FABITNM/FABSTYLENO/FABUOMNM");
+                            $('#ReferanceFieldID').val("FABITCD/FABITNM/FABUOMNM");
+                            $('#ReferanceColumn').val("2/1/3");
                             $('#helpDIV_Header').html("Facbric Item Details");
                         }
                         else {
@@ -754,7 +797,7 @@
                             if (MSG >= 0) {
                                 $("#FABITCD").val(returncolvalue(result, "itcd"));
                                 $("#FABITNM").val(returncolvalue(result, "itnm"));
-                                $("#FABSTYLENO").val(returncolvalue(result, "styleno"));
+                                //$("#FABSTYLENO").val(returncolvalue(result, "styleno"));
                                 $("#FABUOMNM").val(returncolvalue(result, "uomcd"));
                                 if ($("#HSNCODE").val() == "") {
                                     $("#HSNCODE").val(returncolvalue(result, "hsncode"));
@@ -763,7 +806,8 @@
                             else {
                                 $('#helpDIV').html("");
                                 msgInfo("" + result + " !");
-                                ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                                //ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                                ClearAllTextBoxes("FABITCD,FABITNM,FABUOMNM");
                                 message_value = "FABITCD";
                             }
                         }
@@ -914,7 +958,7 @@
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Design No")
-                                    <b style="color:Red;">*</b>
+                                    @*<b style="color:Red;">*</b>*@
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -938,7 +982,7 @@
                                 </div>
                                 <div class="col-md-8">
                                     <div class="editor-field">
-                                        <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData()">
+                                        <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
                                     </div>
                                 </div>
                             }
@@ -954,12 +998,10 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="editor-field">
-                                    @*@Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />*@
+                                    @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
 
-                                    @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM','1/0','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM','1/0','Select Group Details','ITGRPCD')" />
-                                </div>
+                               </div>
                             </div>
                             <div class="col-md-10">
                                 <div class="editor-field">
@@ -981,8 +1023,10 @@
             </div>*@
                             <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
+                                    @*@Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />*@
+                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
 
                                 </div>
                             </div>
@@ -991,11 +1035,11 @@
                                     @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                            @*<div class="col-md-7">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.FABSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "FABSTYLENO", maxlength = 30, @TabIndex = -1, @title = "Only for View", @placeholder = "Design Number", @readonly = "readonly" } })
                                 </div>
-                            </div>
+                            </div>*@
                             <div class="col-md-3">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.FABUOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABUOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
@@ -1016,11 +1060,11 @@
                                 </div>
                             </div>
                         </div>
-                        @*<div class="row">
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Brand Code")
-                                    <b style="color:Red;">*</b>
+                                    @*<b style="color:Red;">*</b>*@
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -1050,8 +1094,8 @@
                                     @Html.EditorFor(model => model.M_SUBBRAND.SBRANDNM, new { htmlAttributes = new { @class = "form-control", id = "SBRANDNM", maxlength = 15, @placeholder = "Sub Brand Name", @readonly = "readonly", @TabIndex = -1 } })
                                 </div>
                             </div>
-                        </div>*@
-                        <div class="row">
+                        </div>
+                        @*<div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Description")
@@ -1063,7 +1107,7 @@
                                     @Html.EditorFor(model => model.M_SITEM.QUALITY, new { htmlAttributes = new { @class = "form-control", id = "QUALITY", @placeholder = "Item Description", maxlength = 40, @onkeyup = "show_name();" } })
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
                      
 
                         <div class="row">
@@ -1151,7 +1195,7 @@
                                     </select>
                                 </div>
                             </div>*@
-                            <div class="col-md-3" style="margin-right:-21px;">
+                            <div class="col-md-6" style="margin-right:-1px;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Gender")
                                     <b style="color:Red;">*</b>
@@ -1213,7 +1257,7 @@
                                     @Html.EditorFor(model => model.M_SITEM.PCSPERBOX, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERBOX", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
                                 </div>
                             </div>*@
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Pcs. Per Set")
                                 </div>
@@ -1223,7 +1267,7 @@
                                     @Html.EditorFor(model => model.M_SITEM.PCSPERSET, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERSET", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Colors Per Set")
                                 </div>
@@ -1236,12 +1280,12 @@
                         </div>
                         @if (Model.MENU_PARA=="C"){ 
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Features")
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.FEATURE, new { htmlAttributes = new { @class = "form-control",id = "FEATURE", maxlength = 20, @placeholder = "Features" } })
                                 </div>
@@ -1251,7 +1295,7 @@
                                     @Html.Label("", "Dimention")
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_SITEM.DMNSN, new { htmlAttributes = new { @class = "form-control",id = "DMNSN", maxlength = 20, @placeholder = "Dimention" } })
                                 </div>
