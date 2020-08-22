@@ -1,0 +1,62 @@
+﻿@model Improvar.ViewModels.SalesOrderEntry
+
+<div style="transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-lg-4">
+                    <input type="text" id="FilterSearch" name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SalPur_PENDING_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;background-color:#c4b9b9;"><b>Invoice Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;overflow-x:hidden;max-height:150px;">
+                    <table id="_T_SalPur_PENDING_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1124px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:20px;">
+                                <th class="" style="width: 50px;">Invoice Code</th>
+                                <th class="" style="width: 150px;">Invoice Number</th>
+                                <th class="" style="width: 100px;">Invoice Date</th>
+                                <th class="" style="width: 150px;">Invoice Made On</th>
+                                <th class="" style="width: 150px;">Invoice Made By ID</th>
+                                <th style="width:300px;">Invoice Made By Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.TSORDDTL_SEARCHPANEL != null)
+                            {
+                                for (int i = 0; i <= Model.TSORDDTL_SEARCHPANEL.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_SEARCHPANEL[i].DOCCD, new { id = "SP_DOCCD_" + i, onclick = "SelectInvoiceNumber(SP_AUTONO_" + i + ".value,SP_DOCCD_" + i + ".value);", @class = " atextBoxFor ", maxlength = 5, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => Model.TSORDDTL_SEARCHPANEL[i].AUTONO, new { id = "SP_AUTONO_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_SEARCHPANEL[i].DOCNO, new { id = "SP_DOCNO_" + i, onclick = "SelectInvoiceNumber(SP_AUTONO_" + i + ".value,SP_DOCCD_" + i + ".value);", @class = " atextBoxFor ", maxlength = 6, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TSORDDTL_SEARCHPANEL[i].DOCDT, new { htmlAttributes = new { id = "SP_DOCDT_" + i, onclick = "SelectInvoiceNumber(SP_AUTONO_" + i + ".value,SP_DOCCD_" + i + ".value);", @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TSORDDTL_SEARCHPANEL[i].SB_MADEDT, new { htmlAttributes = new { id = "SP_SB_MADEDT_" + i, onclick = "SelectInvoiceNumber(SP_AUTONO_" + i + ".value,SP_DOCCD_" + i + ".value);", @class = " atextBoxFor ", maxlength = 20, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TSORDDTL_SEARCHPANEL[i].SB_MADEBY_ID, new { htmlAttributes = new { id = "SP_SB_MADEBY_ID_" + i, onclick = "SelectInvoiceNumber(SP_AUTONO_" + i + ".value,SP_DOCCD_" + i + ".value);", @class = " atextBoxFor ", maxlength = 40, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TSORDDTL_SEARCHPANEL[i].SB_MADEBY_NAME, new { htmlAttributes = new { id = "SP_SB_MADEBY_NAME_" + i, onclick = "SelectInvoiceNumber(SP_AUTONO_" + i + ".value,SP_DOCCD_" + i + ".value);", @class = " atextBoxFor ", maxlength = 50, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

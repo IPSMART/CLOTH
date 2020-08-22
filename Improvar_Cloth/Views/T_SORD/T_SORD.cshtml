@@ -1,0 +1,1763 @@
+﻿@model Improvar.ViewModels.SalesOrderEntry
+@{
+    string PageControllerName = "T_SORD";
+    string MenuName = "";
+    string Caption = "";
+    string C_Length = "";
+}
+@{
+    switch (Model.DOC_CODE)
+    {
+        case "SORD":
+            ViewBag.Title = "Sales Order Entry"; break;
+        default: ViewBag.Title = "Sales Order Entry"; break;
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .TextAreaRemarks {
+        height: 190px;
+    }
+</style>
+<script src="~/Scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<script type="text/javascript">
+    $("#WaitingMode").show();
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            if ("@Model.Edit_Tag" == "False") {
+                $("#PARTY_HELP").hide();
+                $("#SLCD").attr("readonly", "readonly");
+            }
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            ChangeDoctype();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function ChangeDoctype() {
+        var docdt = $("#DOCDT").val();
+        var DOC_CD = document.getElementById("DOCCD").value;
+        $.ajax({
+            type: 'GET',
+            beforesend: $("#WaitingMode").show(),
+            url: '@Url.Action("changeDocumentType", PageControllerName)',
+            data:
+            {
+                DOC_CD: DOC_CD,
+                DOCDT: docdt,
+                AllowBDATE: '@Model.AllowBackDate',
+                DOCNO: '@Model.T_SORD.DOCNO'
+            },
+            success: function (result) {
+                if (result != "") {
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    var maxdocdt = result.split(String.fromCharCode(181) + '^' + String.fromCharCode(181));
+                    var dt = maxdocdt[1].split('~');
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    $("#DOCDT").datepicker("option", "minDate", dt[0]);
+                    $("#DOCDT").datepicker("option", "maxDate", dt[1]);
+                }
+                $("#WaitingMode").hide();
+                return false;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.T_CNTRL_HDR != null)
+        {
+            if (@Model.T_CNTRL_HDR.AUTONO != null)
+            {
+                mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter SalesMen", "SLMSLCD")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    function DateSeparator(DATE) {
+        var TextDate = document.getElementById(DATE.id).value;
+        const keyName = event.key;
+        if (keyName != "Backspace") {
+            var DATE_LENGTH = TextDate.length;
+            if (DATE_LENGTH == 2) {
+                TextDate = TextDate + "/";
+            }
+            else if (DATE_LENGTH == 5) {
+                TextDate = TextDate + "/";
+            }
+            document.getElementById(DATE.id).value = TextDate;
+        }
+    }
+</script>
+<script>
+    $(function () {
+        $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        if ("@Model.DefaultAction" == "V") {
+            $("#FDTforsearch").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+            $("#TDTforsearch").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        }
+
+    });
+</script>
+<script>
+    function GetGridData() {
+        var DOCCD = $("#doctype").val();
+        var DOCNO = $("#IN_PO_WO_DOCNO").val();
+        var DOCDT = $("#IN_PO_WO_DOCDT").val();
+        if (DOCCD == 0) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#btnok").focus();
+            $("#msgbody_info").html("Please Select @Caption Document Type !! ");
+            message_value = "doctype";
+            return false;
+        }
+        if (DOCNO == "") {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#btnok").focus();
+            $("#msgbody_info").html("Please Select / Enter @Caption Document Number !! ");
+            message_value = "doctype";
+            return false;
+        }
+        if (DOCDT == "") {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#btnok").focus();
+            $("#msgbody_info").html("Please Select / Enter @Caption Document Date !! ");
+            message_value = "doctype";
+            return false;
+        }
+        var FIND_CLICK = "Y";
+        $.ajax({
+            type: 'post',
+            url: $("#urlnameGETRECORD").val(),
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&FIND_CLICK=" + FIND_CLICK + "&Code=" + DOCCD + "&DOCNO=" + DOCNO + "&DOCDT=" + DOCDT,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $('#partialdiv').html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function CancelQNTYCheck(id, BAL_QNTY_, CANCQTY_, ITDESCN_) {
+        var BALANCE_QTY = document.getElementById(BAL_QNTY_.id).value;
+        if (BALANCE_QTY == "") { BALANCE_QTY = parseFloat(0); } else { BALANCE_QTY = parseFloat(BALANCE_QTY); }
+        var CANCEL_QTY = document.getElementById(CANCQTY_.id).value;
+        if (CANCEL_QTY == "") { CANCEL_QTY = parseFloat(0); } else { CANCEL_QTY = parseFloat(CANCEL_QTY); }
+        if (CANCEL_QTY > BALANCE_QTY) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msg_ok_info").focus();
+            $("#msgbody_info").html("Cancel Quantity is not More than the Balance Quantity ! Please Maintain the Ratio !! Total Balance Quantity is : " + BALANCE_QTY + " , for Particular Item : " + ITDESCN_ + "");
+            message_value = CANCQTY_.id;
+        }
+
+
+    }
+</script>
+<script>
+    function OpenSize(id, SLNO, ITCD, ITNM, PCSPERSET, ARTNO, UOM, TOTAL_PCS, NO_SETS, STKTYPE, FREESTK, TAG) {
+        if (id == "") { id = parseFloat(0) } else { id = parseFloat(id) }
+        if (NO_SETS == "") { NO_SETS = parseFloat(0) } else { NO_SETS = parseFloat(NO_SETS) }
+        var SerialNo = document.getElementById(SLNO).value;
+        if (SerialNo == "") { SerialNo = parseInt(0) } else { SerialNo = parseInt(SerialNo) }
+        var ITEM = document.getElementById(ITCD).value;
+        var ITEM_NM = document.getElementById(ITNM).value;
+        var PCS_PERSET = document.getElementById(PCSPERSET).value;
+        if (PCS_PERSET == "") { PCS_PERSET = parseFloat(0) } else { PCS_PERSET = parseFloat(PCS_PERSET) }
+        var ART_NO = document.getElementById(ARTNO).value; ART_NO = ART_NO.replace('+', 'μ'); ART_NO = ART_NO.replace('&', '‡');
+        var UOM = document.getElementById(UOM).value;
+        var PCS = document.getElementById(TOTAL_PCS).value;
+        if (PCS == "") { PCS = parseFloat(0) } else { PCS = parseFloat(PCS) }
+        var STK_TYPE = document.getElementById(STKTYPE).value;
+        var FREE_STK = document.getElementById(FREESTK).value;
+        $("#hiddenITEM").val(ITEM);
+        if (ITEM.toString() != "") {
+            if (ITEM.toString() != "") {
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("OPENSIZE", PageControllerName)",
+                    beforesend: $("#WaitingMode").show(),
+                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&ART_NO=" + ART_NO + "&UOM=" + UOM + "&PCS=" + PCS + "&QNTY=" + parseFloat(id) + "&STK_TYPE=" + STK_TYPE + "&FREE_STK=" + FREE_STK + "&NO_SETS=" + NO_SETS + "&TAG=" + TAG + "&PCS_PERSET=" + PCS_PERSET,
+                    success: function (result) {
+                        $('#popup').html(result);
+                        if (TAG == 1) {
+                            $("#WaitingMode").hide();
+                            $('#popup').show();
+                            $('.PopUp_Backround').show();
+                            CalculateSizeTotal();
+                            if ("@Model.DefaultAction" != "V") {
+                                $("#SIZE_QNTY_0").focus();
+                            }
+                        }
+                        else {
+                            //$("#btnCloseSize").click();
+                            setTimeout(function () { document.getElementById("btnCloseSize").click(); }, 10);
+                            $('#popup').hide();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError("Error: " + textStatus + "," + errorThrown);
+                    }
+                });
+            }
+            else {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#btnok").focus();
+                $("#msgbody_info").html("Article No is not Available ! Please Select / Enter a Article No !! ");
+                message_value = ITCD.id;
+            }
+        }
+    }
+    function CloseSize() {
+        if ("@Model.DefaultAction" != "V") {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("CLOSESIZE", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    var slno = parseInt(result.SerialNo) - 1;
+                    if (result.MESSAGE == "SUCCESS") {
+                        $('#ChildData_' + slno).val(result.ChildData);
+                        $('#AMOUNT_' + slno).val(result.AMOUNT);
+                        $('#QNTY_' + slno).val(result.QNTY);
+                        $('#BOXES_' + slno).val(result.BOXES);
+                        $('#SETS_' + slno).val(result.SETS);
+                        $('#ALL_SIZE_' + slno).val(result.ALL_SIZE);
+                        $('#RATE_DISPLAY_' + slno).val(result.RATE_DISPLAY);
+                    }
+                    else {
+                        msgInfo(result);
+                    }
+                    //$('#partialdivItemTab').html(result);
+                    //var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
+
+                    //for (i = 0; i <= GridRowMain - 1; i++) {
+                    //    var ARTICLE = document.getElementById("ARTNO_" + i).value;
+                    //    if (ARTICLE == "") {
+                    //        $("#ARTNO_" + i).focus();
+                    //        break;
+                    //    }
+                    //}
+                    CalculateTotal();
+                    var total_rowcnt = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
+                    if (slno < total_rowcnt - 1) {
+                        var index = slno + 1;
+                        document.getElementById("ARTNO_" + index).focus();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+        $("#popup").html("");
+        $('.PopUp_Backround').fadeOut();
+    }
+    function CancelSize() {
+        $("#popup").html("");
+        $('.PopUp_Backround').fadeOut();
+    }
+
+    function CalculateSizeQnty(QNTY) {
+        var CHECK_TAG = document.getElementById("SAME_QTY").checked;
+        if (CHECK_TAG == true) {
+            var GridRow = $("#_T_SORD_SIZE_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                var QUANTITY = document.getElementById("SIZE_QNTY_" + i).value;
+                if (QUANTITY == "") { QUANTITY = parseFloat(0) } else { QUANTITY = parseFloat(QUANTITY) }
+                if (QUANTITY == 0) {
+                    document.getElementById("SIZE_QNTY_" + i).value = QNTY;
+                }
+            }
+        }
+        CalculateSizeTotal();
+    }
+</script>
+<script>
+    function CalculateTotal() {
+        var TOTAL_PIECES = 0; var TOTAL_BOXES = 0; var TOTAL_NOOFSETS = 0; var TOTAL_SETS = 0; var TOTAL_AMOUNT = 0;
+        var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+            var ITEM = document.getElementById("ITCD_" + i).value;
+            if (ITEM != "") {
+                var QUANTITY = document.getElementById("QNTY_" + i).value; if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
+                var AMOUNT = document.getElementById("AMOUNT_" + i).value; if (AMOUNT == "") { AMOUNT = parseFloat(0); } else { AMOUNT = parseFloat(AMOUNT); }
+                var BOXES = document.getElementById("BOXES_" + i).value; if (BOXES == "") { BOXES = parseFloat(0); } else { BOXES = parseFloat(BOXES); }
+                var NOOFSETS = document.getElementById("NOOFSETS_" + i).value; if (NOOFSETS == "") { NOOFSETS = parseFloat(0); } else { NOOFSETS = parseFloat(NOOFSETS); }
+                var SETS = document.getElementById("SETS_" + i).value; if (SETS == "") { SETS = parseFloat(0); } else { SETS = parseFloat(SETS); }
+                TOTAL_AMOUNT = parseFloat(TOTAL_AMOUNT) + parseFloat(AMOUNT);
+                TOTAL_PIECES = parseFloat(TOTAL_PIECES) + parseFloat(QUANTITY);
+                TOTAL_BOXES = parseFloat(TOTAL_BOXES) + parseFloat(BOXES);
+                TOTAL_NOOFSETS = parseFloat(TOTAL_NOOFSETS) + parseFloat(NOOFSETS);
+                TOTAL_SETS = parseFloat(TOTAL_SETS) + parseFloat(SETS);
+            }
+        }
+        //document.getElementById("TOTPCS").value = parseFloat(TOTAL_PIECES).toFixed(2);
+        document.getElementById("TOTQNTY").value = parseFloat(TOTAL_PIECES).toFixed(2);//
+        document.getElementById("TOTBOX").value = parseFloat(TOTAL_BOXES).toFixed(2);  //
+        document.getElementById("TOTSET").value = parseFloat(TOTAL_SETS).toFixed(2);   //
+        document.getElementById("TOTAL_NOOFSETS").value = parseFloat(TOTAL_NOOFSETS).toFixed(2);
+        document.getElementById("TOTAL_BOXES").value = parseFloat(TOTAL_BOXES).toFixed(2);
+        document.getElementById("TOTAL_QNTY").value = parseFloat(TOTAL_PIECES).toFixed(2);
+        document.getElementById("TOTAL_SETS").value = parseFloat(TOTAL_SETS).toFixed(2);
+        document.getElementById("APROXVAL").value = parseFloat(TOTAL_AMOUNT).toFixed(2);
+    }
+</script>
+<script>
+    function CalculateSizeTotal() {
+        var TOTAL_SIZE_QNTY = 0;
+        var GridRow = $("#_T_SORD_SIZE_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var SIZE = document.getElementById("SIZECD_" + i).value;
+            if (SIZE != "") {
+                var QUANTITY = document.getElementById("SIZE_QNTY_" + i).value; if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
+                TOTAL_SIZE_QNTY = parseFloat(TOTAL_SIZE_QNTY) + parseFloat(QUANTITY);
+            }
+        }
+        document.getElementById("TOTAL_SIZE_QNTY").value = parseFloat(TOTAL_SIZE_QNTY).toFixed(2);
+    }
+</script>
+<script>
+    function CalculateBoxSets(i) {
+        var STOCK_TYPE = document.getElementById("STKTYPE_" + i).value;
+        if (STOCK_TYPE != "") {
+            $("#NOOFSETS_" + i).blur();
+            //document.getElementById("BOXES_" + i).value = 0;
+            //document.getElementById("SETS_" + i).value = 0;
+        }
+    }
+</script>
+<script>
+    function SelectArticleCode(id, ARTNO_, ITNM_, ITCD_, UOM_, TOTAL_PCS_, PCSPERSET_, RowIndex) {
+        if (id == "") {
+            $("#" + ARTNO_.id).val("");
+            $("#" + ITCD_.id).val("");
+            $("#" + ITNM_.id).val("");
+            $("#" + UOM_.id).val("");
+            $("#" + TOTAL_PCS_.id).val("");
+            $("#" + PCSPERSET_.id).val("");
+            $("#RATE_DISPLAY_" + RowIndex).val("");
+            $("#QNTY_" + RowIndex).val("");
+            $("#BOXES_" + RowIndex).val("");
+            $("#SETS_" + RowIndex).val("");
+            $("#ALL_SIZE_" + RowIndex).val("");
+            $("#ChildData_" + RowIndex).val("");
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                url: $("#urlnameARTICLE").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&val=" + id + "&RowIndex=" + RowIndex,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        var str = result.split(String.fromCharCode(181));
+                        document.getElementById(ARTNO_.id).value = str[0].toString();
+                        if (str[6] == "STAYOLD ARTICLE") {
+                            msgInfo("Stay with old Article No. Invalid Aricle Number ! " + result);
+                            message_value = ARTNO_.id;
+                            return;
+                        }
+                        document.getElementById(ITCD_.id).value = str[1].toString();
+                        document.getElementById(ITNM_.id).value = str[2].toString();
+                        document.getElementById(UOM_.id).value = str[3].toString();
+                        document.getElementById(TOTAL_PCS_.id).value = str[4].toString();
+                        document.getElementById(PCSPERSET_.id).value = str[5].toString();                        
+                        if (str[6] == "ITCDCHANGED") {
+                            $("#RATE_DISPLAY_" + RowIndex).val("");
+                            $("#QNTY_" + RowIndex).val("");
+                            $("#BOXES_" + RowIndex).val("");
+                            $("#SETS_" + RowIndex).val("");
+                            $("#ALL_SIZE_" + RowIndex).val("");
+                            $("#ChildData_" + RowIndex).val("");
+                        }
+                    }
+                    else {                        
+                        msgInfo("Invalid Aricle Number ! Please Enter a Valid Article Number !! " + result);
+                        message_value = ARTNO_.id;
+                        $("#" + ARTNO_.id).val("");
+                        $("#" + ITCD_.id).val("");
+                        $("#" + ITNM_.id).val("");
+                        $("#" + UOM_.id).val("");
+                        $("#" + TOTAL_PCS_.id).val("");
+                        $("#" + PCSPERSET_.id).val("");
+                        $("#RATE_DISPLAY_" + RowIndex).val("");
+                        $("#QNTY_" + RowIndex).val("");
+                        $("#BOXES_" + RowIndex).val("");
+                        $("#SETS_" + RowIndex).val("");
+                        $("#ALL_SIZE_" + RowIndex).val("");
+                        $("#ChildData_" + RowIndex).val("");
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CheckArticleItem(id, i, ITCD, ITNM, TOTAL_PCS, PCSPERSET, UOM, STKTYPE, FREESTK) {
+        var valu = document.getElementById(id.id).value;
+        if (valu != "") {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("CheckArticle", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&ART_NO=" + valu + "&STK_TYPE=" + STKTYPE + "&FREE_STK=" + FREESTK + "&SLNO=" + document.getElementById("SLNO_" + i).value,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    var str = result.split(String.fromCharCode(181));
+                    var result1 = str[0].toString();
+                    var result2 = str[1].toString();
+                    if (result1 != "0") {
+                        msgInfo(result1);
+                        ClearAllTextBoxes((id.id + "," + ITCD.id + "," + ITNM.id + "," + TOTAL_PCS.id + "," + PCSPERSET.id + "," + UOM.id));
+                        var fldnm = "NOOFSETS_" + result2;
+                        message_value = fldnm;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectBrandCode(id, BRANDCD, BRANDNM) {
+        if (id == "") {
+            $("#" + BRANDCD.id).val("");
+            $("#" + BRANDNM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameBRAND").val(),
+                data: {
+                    val: id,
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + BRANDCD.id).val("");
+                        $("#" + BRANDNM.id).val("");
+                        $("#msgbody_info").html("Invalid Brand Code ! Please Enter a Valid Brand Code !! ");
+                        message_value = BRANDCD.id;
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(BRANDCD.id).value = str[0].toString();
+                        document.getElementById(BRANDNM.id).value = str[1].toString();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CalcSchmDisc() {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("CalcSchmDisc", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#PARTY_HELP").hide();
+                $("#SLCD").attr("readonly", "readonly");
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                $("#PARTY_HELP").show();
+                $("#SLCD").attr("readonly", false);
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function ApplyToAllItem() {
+        var RATE_PER = document.getElementById("RATEPER").value;
+        if (RATE_PER == "") { RATE_PER = parseFloat(0); } else { RATE_PER = parseFloat(RATE_PER); }
+        if (RATE_PER != 0) {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("ApplyRate", PageControllerName)",
+                data: $('form').serialize() + "&RATE_PER=" + RATE_PER,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialdivItemTab").html(result);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+        else {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msg_ok_info").focus();
+            $("#msgbody_info").html("Rate Percentage not Entered ! Please Enter Rate Percentage Except Zero (0) and Click on Apply or Proceed !! ");
+            message_value = "RATEPER";
+            return false;
+        }
+    }
+</script>
+<script>
+    function SelectSubLedgerCode(id, CODE, NAME, URL) {
+
+        var BRAND = document.getElementById("BRANDCD").value;
+        if (id == "") {
+            $("#" + CODE.id).val("");
+            $("#" + NAME.id).val("");
+            if (URL == "urlnamePARTY") {
+                $("#PRCCD").val("");
+                $("#PriceName").val("");
+                $("#AGSLCD").val("");
+                $("#AgentName").val("");
+                $("#TRSLCD").val("");
+                $("#TransporterName").val("");
+                $("#CRSLCD").val("");
+                $("#CourierName").val("");
+                $("#DISCRTCD").val("");
+                $("#DiscountName").val("");
+                $("#AreaCode").val("");
+                $("#AreaName").val("");
+                $("#PARTYCD_H").val("");
+                $("#PARTYNM_H").val("");
+                $("#PRCCD_H").val("");
+                $("#PRCNM_H").val("");
+                $("#AGTCD_H").val("");
+                $("#AGTNM_H").val("");
+                $("#TRNSCD_H").val("");
+                $("#TRNSNM_H").val("");
+                $("#CURCD_H").val("");
+                $("#CURNM_H").val("");
+                $("#DISCD_H").val("");
+                $("#DISNM_H").val("");
+                $("#AREACD_H").val("");
+                $("#AREANM_H").val("");
+            }
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#" + URL).val(),
+                data: { val: id, BRAND: BRAND, },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + CODE.id).val("");
+                        $("#" + NAME.id).val("");
+                        $("#msgbody_info").html("Invalid Code ! Please Enter a Valid Code !! ");
+                        message_value = CODE.id;
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        var aaa = str.length;
+                        if (str.length == 2) {
+                            document.getElementById(CODE.id).value = str[0].toString();
+                            document.getElementById(NAME.id).value = str[1].toString();
+                        }
+                        else if (str.length > 2) {
+                            if (str[2].toString() != "0") {
+                                document.getElementById(CODE.id).value = str[0].toString();
+                                document.getElementById(NAME.id).value = str[1].toString();
+                                document.getElementById("PRCCD").value = str[2].toString();
+                                document.getElementById("PriceName").value = str[3].toString();
+                                document.getElementById("AGSLCD").value = str[4].toString();
+                                document.getElementById("AgentName").value = str[5].toString();
+                                document.getElementById("TRSLCD").value = str[6].toString();
+                                document.getElementById("TransporterName").value = str[7].toString();
+                                document.getElementById("CRSLCD").value = str[8].toString();
+                                document.getElementById("CourierName").value = str[9].toString();
+                                document.getElementById("DISCRTCD").value = str[10].toString();
+                                document.getElementById("DiscountName").value = str[11].toString();
+                                document.getElementById("AreaCode").value = str[12].toString();
+                                document.getElementById("AreaName").value = str[17].toString(); //str[13].toString();
+                                document.getElementById("DistrictName").value = str[15].toString();
+                                document.getElementById("DOCTH_H").value = str[14].toString();
+                                if (document.getElementById(CODE.id).value != document.getElementById("PARTYCD_H").value && document.getElementById("PARTYCD_H").value != "" &&
+                                    document.getElementById("AreaCode").value != document.getElementById("AREACD_H").value && document.getElementById("AREACD_H").value != "" &&
+                                    document.getElementById("PRCCD").value != document.getElementById("PRCCD_H").value && document.getElementById("PRCCD_H").value != "" &&
+                                    document.getElementById("DISCRTCD").value != document.getElementById("DISCD_H").value && document.getElementById("DISCD_H").value != "") {
+                                    if (document.getElementById(CODE.id).value != "") {
+                                        if (confirm("Data Available for Partcular Party ! Are You Sure ? You Want To Change the Party !!")) {
+                                            document.getElementById(CODE.id).value = str[0].toString();
+                                            document.getElementById(NAME.id).value = str[1].toString();
+                                            document.getElementById("PRCCD").value = str[2].toString();
+                                            document.getElementById("PriceName").value = str[3].toString();
+                                            document.getElementById("AGSLCD").value = str[4].toString();
+                                            document.getElementById("AgentName").value = str[5].toString();
+                                            document.getElementById("TRSLCD").value = str[6].toString();
+                                            document.getElementById("TransporterName").value = str[7].toString();
+                                            document.getElementById("CRSLCD").value = str[8].toString();
+                                            document.getElementById("CourierName").value = str[9].toString();
+                                            document.getElementById("DISCRTCD").value = str[10].toString();
+                                            document.getElementById("DiscountName").value = str[11].toString();
+                                            document.getElementById("AreaCode").value = str[12].toString();
+                                            document.getElementById("AreaName").value = str[17].toString(); //str[13].toString();
+                                            document.getElementById("DistrictName").value = str[15].toString();
+                                            document.getElementById("DOCTH_H").value = str[14].toString();
+                                            var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
+                                            for (i = 0; i <= GridRowMain - 1; i++) {
+                                                document.getElementById("ChildData_" + i).value = null;
+                                                document.getElementById("ARTNO_" + i).value = null;
+                                                document.getElementById("ITCD_" + i).value = null;
+                                                document.getElementById("ITNM_" + i).value = null;
+                                                document.getElementById("TOTAL_PCS_" + i).value = null;
+                                                document.getElementById("UOM_" + i).value = null;
+                                                document.getElementById("RATE_" + i).value = null;
+                                                document.getElementById("QNTY_" + i).value = null;
+                                                document.getElementById("ALL_SIZE_" + i).value = null;
+                                                document.getElementById("STKTYPE_" + i).value = null;
+                                                document.getElementById("FREESTK_" + i).value = null;
+                                            }
+                                        }
+                                        else {
+                                            document.getElementById(CODE.id).value = document.getElementById("PARTYCD_H").value;
+                                            document.getElementById(NAME.id).value = document.getElementById("PARTYNM_H").value;
+                                            document.getElementById("PARTYCD_H").value = document.getElementById(CODE.id).value;
+                                            document.getElementById("PARTYNM_H").value = document.getElementById(NAME.id).value;
+                                            document.getElementById("PRCCD").value = document.getElementById("PRCCD_H").value;
+                                            document.getElementById("PriceName").value = document.getElementById("PRCNM_H").value;
+                                            document.getElementById("PRCCD_H").value = document.getElementById("PRCCD").value;
+                                            document.getElementById("PRCNM_H").value = document.getElementById("PriceName").value;
+                                            document.getElementById("AGSLCD").value = document.getElementById("AGTCD_H").value;
+                                            document.getElementById("AgentName").value = document.getElementById("AGTNM_H").value;
+                                            document.getElementById("AGTCD_H").value = document.getElementById("AGSLCD").value;
+                                            document.getElementById("AGTNM_H").value = document.getElementById("AgentName").value;
+                                            document.getElementById("TRSLCD").value = document.getElementById("TRNSCD_H").value;
+                                            document.getElementById("TransporterName").value = document.getElementById("TRNSNM_H").value;
+                                            document.getElementById("TRNSCD_H").value = document.getElementById("TRSLCD").value;
+                                            document.getElementById("TRNSNM_H").value = document.getElementById("TransporterName").value;
+                                            document.getElementById("CRSLCD").value = document.getElementById("CURCD_H").value;
+                                            document.getElementById("CourierName").value = document.getElementById("CURNM_H").value;
+                                            document.getElementById("CURCD_H").value = document.getElementById("CRSLCD").value;
+                                            document.getElementById("CURNM_H").value = document.getElementById("CourierName").value;
+                                            document.getElementById("DISCRTCD").value = document.getElementById("DISCD_H").value;
+                                            document.getElementById("DiscountName").value = document.getElementById("DISNM_H").value;
+                                            document.getElementById("DISCD_H").value = document.getElementById("DISCRTCD").value;
+                                            document.getElementById("DISNM_H").value = document.getElementById("DiscountName").value;
+                                            document.getElementById("AreaCode").value = document.getElementById("AREACD_H").value;
+                                            document.getElementById("AreaName").value = document.getElementById("AREANM_H").value;
+                                            document.getElementById("AREACD_H").value = document.getElementById("AreaCode").value;
+                                            document.getElementById("AREANM_H").value = document.getElementById("AreaName").value;
+                                        }
+                                    }
+                                }
+                                else {
+                                    document.getElementById("PARTYCD_H").value = str[0].toString();
+                                    document.getElementById("PARTYNM_H").value = str[1].toString();
+                                    document.getElementById("PRCCD_H").value = str[2].toString();
+                                    document.getElementById("PRCNM_H").value = str[3].toString();
+                                    document.getElementById("AGTCD_H").value = str[4].toString();
+                                    document.getElementById("AGTNM_H").value = str[5].toString();
+                                    document.getElementById("TRNSCD_H").value = str[6].toString();
+                                    document.getElementById("TRNSNM_H").value = str[7].toString();
+                                    document.getElementById("CURCD_H").value = str[8].toString();
+                                    document.getElementById("CURNM_H").value = str[9].toString();
+                                    document.getElementById("DISCD_H").value = str[10].toString();
+                                    document.getElementById("DISNM_H").value = str[11].toString();
+                                    document.getElementById("AREACD_H").value = str[12].toString();
+                                    document.getElementById("AREANM_H").value = str[13].toString();
+                                }
+                                if (document.getElementById("PRCCD").value != "") {
+                                    var PRC_CD = document.getElementById("PRCCD").value;
+                                    var DOC_DT = document.getElementById("DOCDT").value;
+                                    $.ajax({
+                                        type: 'GET',
+                                        url: "@Url.Action("GetEffectiveDate", PageControllerName)",
+                                        data: { PRC_CD: PRC_CD, DOC_DT: DOC_DT, },
+                                        contentType: 'application/json',
+                                        success: function (response) {
+                                            if (response.length > 0) {
+                                                $('#EFF_DATE_ID').html('');
+                                                var options = '';
+                                                for (var i = 0; i < response.length; i++) {
+                                                    options += '<option value="' + response[i].value.substring(0, 10).replace(/-/g, '/') + '">' + response[i].text.substring(0, 10).replace(/-/g, '/') + '</option>';
+                                                }
+                                                $('#EFF_DATE_ID').append(options);
+                                            }
+                                        },
+                                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                            $("#WaitingMode").hide();
+                                            msgError(XMLHttpRequest.responseText);
+                                            $("body span h1").remove(); $("#msgbody_error style").remove();
+                                        }
+                                    });
+                                }
+                                if (document.getElementById("DISCRTCD").value != "") {
+                                    var DISC_CD = document.getElementById("DISCRTCD").value;
+                                    var DOC_DT = document.getElementById("DOCDT").value;
+                                    $.ajax({
+                                        type: 'GET',
+                                        url: "@Url.Action("GetDiscEffectiveDate", PageControllerName)",
+                                        data: { DISC_CD: DISC_CD, DOC_DT: DOC_DT, },
+                                        contentType: 'application/json',
+                                        success: function (response) {
+                                            if (response.length > 0) {
+                                                $('#DISC_EFF_DATE_ID').html('');
+                                                var options = '';
+                                                for (var i = 0; i < response.length; i++) {
+                                                    options += '<option value="' + response[i].value.substring(0, 10).replace(/-/g, '/') + '">' + response[i].text.substring(0, 10).replace(/-/g, '/') + '</option>';
+                                                }
+                                                $('#DISC_EFF_DATE_ID').append(options);
+                                            }
+                                        },
+                                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                            $("#WaitingMode").hide();
+                                            msgError(XMLHttpRequest.responseText);
+                                            $("body span h1").remove(); $("#msgbody_error style").remove();
+                                        }
+                                    });
+                                }
+                                if (document.getElementById(CODE.id).value != "") {
+                                    SCHEME_DATA();
+                                }
+
+                            }
+                            else {
+                                $("#Msgdiv1").show();
+                                $("#info").show();
+                                $("#msg_ok_info").focus();
+                                $("#" + CODE.id).val("");
+                                $("#" + NAME.id).val("");
+                                if (URL == "urlnamePARTY") {
+                                    $("#PRCCD").val("");
+                                    $("#PriceName").val("");
+                                    $("#AGSLCD").val("");
+                                    $("#AgentName").val("");
+                                    $("#TRSLCD").val("");
+                                    $("#TransporterName").val("");
+                                    $("#CRSLCD").val("");
+                                    $("#CourierName").val("");
+                                    $("#DISCRTCD").val("");
+                                    $("#DiscountName").val("");
+                                    $("#AreaCode").val("");
+                                    $("#AreaName").val("");
+                                    $("#PARTYCD_H").val("");
+                                    $("#PARTYNM_H").val("");
+                                    $("#PRCCD_H").val("");
+                                    $("#PRCNM_H").val("");
+                                    $("#AGTCD_H").val("");
+                                    $("#AGTNM_H").val("");
+                                    $("#TRNSCD_H").val("");
+                                    $("#TRNSNM_H").val("");
+                                    $("#CURCD_H").val("");
+                                    $("#CURNM_H").val("");
+                                    $("#DISCD_H").val("");
+                                    $("#DISNM_H").val("");
+                                    $("#AREACD_H").val("");
+                                    $("#AREANM_H").val("");
+                                }
+                                $("#msgbody_info").html("PriceList Data Not Avialable for Selected Party ! Please Select / Enter a Valid Party Code !! ");
+                                message_value = CODE.id;
+                                return false;
+                            }
+                        }
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+
+            });
+        }
+    }
+</script>
+<script>
+    function SCHEME_DATA() {
+        if ("@Model.DefaultAction" != "V") {
+            var PARTY = document.getElementById("SLCD").value;
+            var BRAND = document.getElementById("BRANDCD").value;
+            var DATE = document.getElementById("DOCDT").value;
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetSchemeData", PageControllerName)",
+                data: { PARTY: PARTY, BRAND: BRAND, DATE: DATE },
+                success: function (result) {
+                    $('#SCHEME_DIV').html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectOrderDocCode(id, ORDDOCCD, OrdDocName) {
+        if (id == "") {
+            $("#" + ORDDOCCD.id).val("");
+            $("#" + OrdDocName.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameORDERDOCCODE").val(),
+                data: {
+                    val: id,
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + ORDDOCCD.id).val("");
+                        $("#" + OrdDocName.id).val("");
+                        $("#msgbody_info").html("Invalid Order Document Code ! Please Enter a Valid Order Document Code !! ");
+                        message_value = ORDDOCCD.id;
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(ORDDOCCD.id).value = str[0].toString();
+                        document.getElementById(OrdDocName.id).value = str[1].toString();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectPriceListCode(id, PRCCD, PRCNM) {
+        if ("@Model.DefaultAction" != "V") {
+            if (id == "") {
+                ClearAllTextBoxes((PRCCD + "," + PRCNM));
+            }
+            else {
+                var SLCD = document.getElementById("SLCD").value;
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("GetPriceListDetails", PageControllerName)",
+                    data: { val: id, Code: SLCD, },
+                    success: function (result) {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#tempHDD").val(result);
+                            var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                            document.getElementById(PRCCD).value = str[0].toString();
+                            document.getElementById(PRCNM).value = str[1].toString();
+                        }
+                        else {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msg_ok_info").focus();
+                            ClearAllTextBoxes((PRCCD + "," + PRCNM));
+                            $("#msgbody_info").html(result);
+                            message_value = PRCCD.id;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function SelectPayTermsCode(id, PAYTRMCD, PayTermName) {
+        if (id == "") {
+            $("#" + PAYTRMCD.id).val("");
+            $("#" + PayTermName.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetPayTermsDetails", PageControllerName)",
+                data: { val: id, },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + PAYTRMCD.id).val("");
+                        $("#" + PayTermName.id).val("");
+                        $("#msgbody_info").html("Invalid Pay Term Code ! Please Enter a Valid Pay Term Code !! ");
+                        message_value = PAYTRMCD.id;
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(PAYTRMCD.id).value = str[0].toString();
+                        document.getElementById(PayTermName.id).value = str[1].toString();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function AddRow(ID) {
+
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRow", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivItemTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivItemTab").html(result);
+                CalculateTotal();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRow", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivItemTab").animate({ marginTop: '0px' }, 50);
+                $("#partialdivItemTab").html(result);
+                CalculateTotal();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function CalculateTotalPCSBOX(id, PCS_PER) {
+        var QUANTITY = document.getElementById(id);
+        var PCS_PER_BOX = document.getElementById(PCS_PER.id).value;
+        var TOTAL_QUANTITY = 0;
+        var GridRow = $("#_T_SORD_SIZE_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var QUANTITY = document.getElementById("SIZE_QNTY_" + i).value;
+            if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
+            TOTAL_QUANTITY = parseFloat(TOTAL_QUANTITY) + QUANTITY;
+        }
+        var BOX = parseFloat(TOTAL_QUANTITY) / parseFloat(PCS_PER_BOX);
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var QNTY = document.getElementById("SIZE_QNTY_" + i).value;
+            if (QNTY != "") {
+                document.getElementById("TTL_PCS_" + i).value = TOTAL_QUANTITY;
+                document.getElementById("TOTAL_BOX_" + i).value = BOX;
+            }
+        }
+    }
+    function CALCULATION(id, PCS_PER) {
+        var QUANTITY = document.getElementById(id);
+        if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
+        var PCS_PER_BOX = document.getElementById(PCS_PER.id).value;
+        if (PCS_PER_BOX == "") { PCS_PER_BOX = parseFloat(0); } else { PCS_PER_BOX = parseFloat(PCS_PER_BOX); }
+        var BOXES = 0; var PIECES = 0;
+        var VALUE = parseFloat(parseFloat(QUANTITY) / parseFloat(PCS_PER_BOX)).toFixed(2);
+        var VALUE1 = VALUE.toString().split('.');
+        if (VALUE1[1] > 0) {
+            BOXES = VALUE1[0];
+            PIECES = QUANTITY - (BOXES * PCS_PER_BOX);
+        }
+    }
+</script>
+<script>
+    function pageprinting() {
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function SelectInvoiceNumber(AUTONO, DCODE) {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("GOTO_INVOICE", PageControllerName)",
+            data: { AUTONO: AUTONO, DCODE: DCODE, },
+            success: function (result) {
+                window.open("../" + result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+@section Scripts {
+    <script>
+        function ReloadWithData() {
+            var searchValue = $('#AUTONO').val();
+            var url = window.location.href;
+            var key1 = "searchValue";
+            url = updateQueryStringParameter(url, key1, searchValue);
+            url = updateQueryStringParameter(url, "loadOrder", "Y");
+            window.location = url;
+        }
+    </script>
+}
+<script>
+    function SelectORDERno(val, docno, autono) {
+        if ("@Model.DefaultAction" == "V") { return false; }
+        if (val == "") {
+            $("#" + docno.id).val("");
+            $("#" + autono.id).val("");
+        }
+        else {
+            var doccd = $('#DOCCD').val();
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("DOCNO_ORDERhelp", PageControllerName)",
+                data: { val: val, Code: doccd },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        var findstr = result;
+                        document.getElementById("DOCNO").value = returncolvalue(findstr, "DOCNO");
+                        document.getElementById("AUTONO").value = returncolvalue(findstr, "AUTONO");
+                    }
+                    else {
+                        msgInfo(result);
+                        message_value = docno.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CopyStkType() {
+        //var CHECK_TAG = document.getElementById("SAME_STKTYPE").checked;
+        //if (CHECK_TAG == true)
+        //{
+        var STK_TYPE = document.getElementById("STKTYPE_0").value;
+        var GridRow = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            document.getElementById("STKTYPE_" + i).value = STK_TYPE;
+        }
+        //}
+    }
+</script>
+<script>
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode != 46 && charCode > 31
+          && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="urlnameBRAND" value="@Url.Action("GetBrandDetails", PageControllerName)" />
+        <input type="hidden" id="urlnameARTICLE" value="@Url.Action("GetArticleItem", PageControllerName)" />
+        <input type="hidden" id="urlnamePARTY" value="@Url.Action("GetPartyDetails", PageControllerName)" />
+        <input type="hidden" id="urlnameTRANSPORTER" value="@Url.Action("GetTransporterDetails", PageControllerName)" />
+        <input type="hidden" id="urlnameCOURIER" value="@Url.Action("GetCourierDetails", PageControllerName)" />
+        <input type="hidden" id="urlnameAGENT" value="@Url.Action("GetAgentDetails", PageControllerName)" />
+        <input type="hidden" id="urlnameSALESMEN" value="@Url.Action("GetSalesMenDetails", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        @Html.HiddenFor(s => s.DefaultAction)
+        @Html.HiddenFor(a => a.T_SORD.AUTONO, new { id = "AUTONO" })
+        @Html.HiddenFor(a => a.T_SORD.DOCNO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.HIDDEN_SCHEME_DATA, new { id = "HIDDEN_SCHEME_DATA" })
+        <div class="form-horizontal">
+            @if (Model.DefaultAction == "V")
+            {
+                @Html.Partial("_FilteredSearch")
+            }
+            <div class="row" style="margin-top: 5px;">
+                <div class="row">
+                    <div class="col-md-5" style="margin-top: 6px;">
+                        <div class="editor-label">
+                            @Html.Label("", "Document Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-7" style="margin-left:-17px;">
+                        <div class="editor-field">
+                            @if (Model.DefaultAction == "A")
+                            {
+                                @Html.DropDownListFor(model => model.T_SORD.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.T_SORD.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_SORD.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);SCHEME_DATA();", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document No.")
+                        </div>
+                    </div>
+                    @if (Model.DefaultAction == "A")
+                    {
+                        <div class="col-md-2">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_SORD.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO", onkeyup = "GetHelp_WithId('" + @Url.Action("DOCNO_ORDERhelp", PageControllerName) + "','DOCNO/AUTONO','0/4','Document Details','DOCNO','DOCCD')", onblur = "SelectORDERno(this.value,DOCNO,AUTONO);", @placeholder = "Code", maxlength = 6 } })
+                                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("DOCNO_ORDERhelp", PageControllerName )','DOCNO/AUTONO','0/4','Document Details','DOCNO','DOCCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                <input type="button" class="btn btn-sm" value="Fill Order" onclick="ReloadWithData()" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_SORD.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    }
+                    @*<div class="col-md-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Brand Code")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_SORD.BRANDCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BRANDCD", onkeyup = "GetHelp('" + @Url.Action("GetBrandDetails", PageControllerName) + "','BRANDCD/BrandName','1/0','Brand Details','BRANDCD')", onblur = "SelectBrandCode(this.value,BRANDCD,BrandName);", @placeholder = "Code", maxlength = 4 } })
+                            <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetBrandDetails", PageControllerName )','BRANDCD/BrandName','1/0','Brand Details','BRANDCD')" />
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.BrandName, new { htmlAttributes = new { @class = "form-control", id = "BrandName", maxlength = 45, @title = "Only for View", @placeholder = "Brand Name", @readonly = "readonly",tabindex = "-1" } })
+                        </div>
+                    </div>*@
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Party Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field" style="margin-left:-18px;">
+                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PartyName, new { htmlAttributes = new { @class = "form-control", id = "PartyName", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.HiddenFor(model => model.PARTYCD, new { @class = "form-control", id = "PARTYCD_H" })
+                            @Html.HiddenFor(model => model.PARTYNM, new { @class = "form-control", id = "PARTYNM_H" })
+                            @Html.HiddenFor(model => model.AREACD, new { @class = "form-control", id = "AREACD_H" })
+                            @Html.HiddenFor(model => model.AREANM, new { @class = "form-control", id = "AREANM_H" })
+                            @Html.HiddenFor(model => model.DISCD, new { @class = "form-control", id = "DISCD_H" })
+                            @Html.HiddenFor(model => model.DISNM, new { @class = "form-control", id = "DISNM_H" })
+                            @Html.HiddenFor(model => model.PRCCD, new { @class = "form-control", id = "PRCCD_H" })
+                            @Html.HiddenFor(model => model.PRCNM, new { @class = "form-control", id = "PRCNM_H" })
+                            @Html.HiddenFor(model => model.AGTCD, new { @class = "form-control", id = "AGTCD_H" })
+                            @Html.HiddenFor(model => model.AGTNM, new { @class = "form-control", id = "AGTNM_H" })
+                            @Html.HiddenFor(model => model.TRNSCD, new { @class = "form-control", id = "TRNSCD_H" })
+                            @Html.HiddenFor(model => model.TRNSNM, new { @class = "form-control", id = "TRNSNM_H" })
+                            @Html.HiddenFor(model => model.CURCD, new { @class = "form-control", id = "CURCD_H" })
+                            @Html.HiddenFor(model => model.CURNM, new { @class = "form-control", id = "CURNM_H" })
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DistrictName, new { htmlAttributes = new { @class = "form-control", id = "DistrictName", maxlength = 40, @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.AreaCode, new { htmlAttributes = new { @class = "form-control", id = "AreaCode", maxlength = 6, @title = "Only for View", @placeholder = "Area Code", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.AreaName, new { htmlAttributes = new { @class = "form-control", style = "color:#f11245", id = "AreaName", maxlength = 45, @title = "Only for View", @placeholder = "", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7" style="margin-left:-4px;">
+                    <div class="row">
+                        @*<div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Price List")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @if (Model.Delete == "")
+                                {
+                                    @Html.EditorFor(model => model.T_SORD.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @placeholder = "Code", maxlength = 4, @readonly = "readonly", tabindex = "-1" } })
+                                }
+                                else
+                                {
+                                    @Html.EditorFor(model => model.T_SORD.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPriceListDetails", PageControllerName) + "','PRCCD/PriceName','1/0','Price List Details','PRCCD','SLCD')", onblur = "SelectPriceListCode(this.value,'PRCCD','PriceName');", @placeholder = "Code", maxlength = 4 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPriceListDetails", PageControllerName )','PRCCD/PriceName','1/0','Price List Details','PRCCD','SLCD')" />
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.PriceName, new { htmlAttributes = new { @class = "form-control", id = "PriceName", maxlength = 30, @title = "Only for View", @placeholder = "Price List Name", @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>*@
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Effective Date")
+                            </div>
+                        </div>
+                        <div class="col-md-2" style="width:auto;">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => Model.EFF_DATE_ID, new SelectList(Model.DropDown_list1, "value", "text", Model.EFF_DATE_ID), "==Select==", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Agent")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_SORD.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeyup = "GetHelp('" + @Url.Action("GetAgentDetails", PageControllerName) + "','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')", onblur = "SelectSubLedgerCode(this.value,AGSLCD,AgentName,'urlnameAGENT');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetAgentDetails", PageControllerName )','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')" />
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.AgentName, new { htmlAttributes = new { @class = "form-control", id = "AgentName", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Salesmen")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_SORD.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeyup = "GetHelp('" + @Url.Action("GetSalesMenDetails", PageControllerName) + "','SLMSLCD/SalesManName','1/0','Agent Details','SLMSLCD')", onblur = "SelectSubLedgerCode(this.value,SLMSLCD,SalesManName,'urlnameSALESMEN');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetSalesMenDetails", PageControllerName )','SLMSLCD/SalesManName','1/0','SalesMen Details','SLMSLCD')" />
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.SalesManName, new { htmlAttributes = new { @class = "form-control", id = "SalesManName", maxlength = 45, @title = "Only for View", @placeholder = "SalesMen Name", @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Party Ref. Number")
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-11">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_SORD.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 30, @placeholder = "Party Ref. Number" } })
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party Ref. Date")
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_SORD.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-5">
+                    <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                        <div>
+                            <div id="SCHEME_DIV" style="margin-top:0px;">
+                                @Html.Partial("_T_SORD_SCHEME")
+                            </div>
+                        </div>
+                    </div>
+                    <div style="float:right;">
+                        <div class="col-md-8">
+                            <input type="button" class="btn btn-info" onclick="CalcSchmDisc();" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="CalcSchmDis" value="Calculate Scheme & Discount" title="Click to Calculate Scheme & Disc" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <ul class="nav nav-tabs">
+                    <li id="Main_LI4" class=""><a data-toggle="tab" href="#Main">Main</a></li>
+                    <li id="ItemTab_LI4" class="active"><a data-toggle="tab" href="#ItemTab">Item</a></li>
+                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
+                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                    @*<li id="SalesBillMade_LI4" class=""><a data-toggle="tab" href="#SalesBillMade">Sales Bill Made Against Order </a></li>*@
+                </ul>
+                <div class="tab-content">
+                    <div id="Main" class="tab-pane fade" style="margin-top: 5px;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Order Rec Mode")
+                                </div>
+                            </div>
+                            <div class="col-md-5" style="width:auto;">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => Model.OTHRECMD, new SelectList(Model.DropDown_list, "value", "text", Model.OTHRECMD), "==Select==", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "Document Through")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.T_SORD.DOCTH, new SelectList(Model.DocumentThrough, "Value", "Text"), new { @class = "form-control", id = "DOCTH_H" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Delvery Type")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field" style="margin-top:4px;">
+                                    @Html.DropDownListFor(model => model.T_SORD.COD, new SelectList(Model.DropDown_list_DelvType, "Value", "Text"), "Select", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Transporter")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeyup = "GetHelp('" + @Url.Action("GetTransporterDetails", PageControllerName) + "','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')", onblur = "SelectSubLedgerCode(this.value,TRSLCD,TransporterName,'urlnameTRANSPORTER');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetTransporterDetails", PageControllerName )','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')" />
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TransporterName, new { htmlAttributes = new { @class = "form-control", id = "TransporterName", maxlength = 45, @title = "Only for View", @placeholder = "Transporter Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                            @*<div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Destination")
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.DESTN, new { htmlAttributes = new { @class = "form-control", id = "DESTN", maxlength = 25, @title = "Only for View", @placeholder = "Destination" } })
+                                </div>
+                            </div>*@
+                        </div>
+                        @*<div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Courier")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.CRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CRSLCD", onkeyup = "GetHelp('" + @Url.Action("GetCourierDetails", PageControllerName) + "','CRSLCD/CourierName','1/0','Courier Details','CRSLCD')", onblur = "SelectSubLedgerCode(this.value,CRSLCD,CourierName,'urlnameCOURIER');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetCourierDetails", PageControllerName )','CRSLCD/CourierName','1/0','Courier Details','CRSLCD')" />
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.CourierName, new { htmlAttributes = new { @class = "form-control", id = "CourierName", maxlength = 45, @title = "Only for View", @placeholder = "Courier Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Document Through")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.DOCTH1, new { htmlAttributes = new { @class = "form-control", id = "DOCTH1", maxlength = 40, @title = "Only for View", @placeholder = "Document Through 1" } })
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.DOCTH2, new { htmlAttributes = new { @class = "form-control", id = "DOCTH2", maxlength = 40, @title = "Only for View", @placeholder = "Document Through 1" } })
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.DOCTH3, new { htmlAttributes = new { @class = "form-control", id = "DOCTH3", maxlength = 40, @title = "Only for View", @placeholder = "Document Through 1" } })
+                                </div>
+                            </div>
+                        </div>*@
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Delvry Instructions")
+                                </div>
+                            </div>
+                            <div class="col-md-11">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.DELVINS, new { htmlAttributes = new { @class = "form-control", id = "DELVINS", maxlength = 70, @title = "Only for View", @placeholder = "Delivery Instructions" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @*<div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Payment Terms")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.PAYTRMCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PAYTRMCD", onkeyup = "GetHelp('" + @Url.Action("GetPayTermsDetails", PageControllerName) + "','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')", onblur = "SelectPayTermsCode(this.value,PAYTRMCD,PayTermName);", @placeholder = "Code", maxlength = 4 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetPayTermsDetails", PageControllerName )','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.PayTermName, new { htmlAttributes = new { @class = "form-control", id = "PayTermName", maxlength = 30, @title = "Only for View", @placeholder = "Payment Terms Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>*@
+                            @*<div class="col-md-2" style="width:auto;">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Total Boxes")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.TOTBOX, new { htmlAttributes = new { @class = "form-control", id = "TOTBOX", @title = "Only for View", @placeholder = "Total Boxes", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="width:auto;">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Total Sets")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.TOTSET, new { htmlAttributes = new { @class = "form-control", id = "TOTSET", @title = "Only for View", @placeholder = "Total Boxes", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="width:auto;">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Total Pieces")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @title = "Only for View", @placeholder = "Total Pieces", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>*@
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Order Approx Value")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.APROXVAL, new { htmlAttributes = new { @class = "form-control", id = "APROXVAL", maxlength = 12, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Special Notes")
+                                </div>
+                            </div>
+                            <div class="col-md-11">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.SPLNOTE, new { htmlAttributes = new { @class = "form-control", id = "SPLNOTE", maxlength = 100, @placeholder = "Remarks" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @*<div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Discount")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.DISCRTCD, new { htmlAttributes = new { @class = "form-control", id = "DISCRTCD", @placeholder = "Code", maxlength = 4, @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.DiscountName, new { htmlAttributes = new { @class = "form-control", id = "DiscountName", maxlength = 30, @title = "Only for View", @placeholder = "Discount Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>*@
+                            <div class="col-md-7" style="width:auto;">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Discount Effective Date")
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="width:auto;">
+                                <div class="editor-field">
+                                    @*@Html.EditorFor(model => model.PartyName, new { htmlAttributes = new { @class = "form-control", id = "PartyName", maxlength = 45, @title = "Only for View", @placeholder = "dd/MM/yyyy" } })*@
+                                    @Html.DropDownListFor(model => Model.DISC_EFF_DATE_ID, new SelectList(Model.DropDown_list4, "value", "text", Model.DISC_EFF_DATE_ID), "==Select==", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Rate Percentage")
+                                </div>
+                            </div>
+                            @if (Model.DefaultAction == "A")
+                            {
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_SORD.RATEPER, new { htmlAttributes = new { @class = "form-control", id = "RATEPER", maxlength = 12, @placeholder = "Rate Increase%", @onkeypress = "return numericOnly(this,2);" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1" style="margin-top: 1px;">
+                                    @*<button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Save Delivery Order Details" onclick="ApplyToAllItem(); ">Apply</button>*@
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_SORD.RATEPER, new { htmlAttributes = new { @class = "form-control", id = "RATEPER", maxlength = 12, @placeholder = "Rate Increase%", @readonly = "readonly", @onkeypress = "return numericOnly(this,2);" } })
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @if (Model.DefaultAction == "V")
+                        {
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:1050px;">
+                                <div>
+                                    <div id="partialdivItemTab" style="margin-top:0px;">
+                                        @Html.Partial("_T_SORD_SEARCH_PANEL")
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div id="ItemTab" class="tab-pane fade in active" style="margin-top: 5px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivItemTab">
+                                    @Html.Partial("_T_SORD_MAIN")
+                                </div>
+                            </div>
+                            <div class="PopUp_Backround">
+                                <div id="popup" class="row" style="margin-top: 11px;top:40%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Remarks" class="tab-pane fade">
+                        <div class="row">
+                            <div>
+                                <div id="partialdivRemarks">
+                                    @Html.Partial("_TRANSACTIONREMARKS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivDocument" style="margin-top:0px;">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
+
+                        </div>*@
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

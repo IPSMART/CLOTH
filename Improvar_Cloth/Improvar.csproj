@@ -259,6 +259,7 @@
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
+    <Compile Include="Controllers\T_SORDController.cs" />
     <Compile Include="Controllers\User_GuideController.cs" />
     <Compile Include="DropDownHelp.cs" />
     <Compile Include="EmailControl.cs">
@@ -358,6 +359,7 @@
     <Compile Include="Models\M_DTYPE.cs" />
     <Compile Include="Models\M_EMPMAS.cs" />
     <Compile Include="Models\M_EMPMAS_DET.cs" />
+    <Compile Include="Models\M_FLRLOCA.cs" />
     <Compile Include="Models\M_GENLEG.cs" />
     <Compile Include="Models\M_GODLINK.cs" />
     <Compile Include="Models\M_GODOWN.cs" />
@@ -367,6 +369,8 @@
     <Compile Include="Models\M_ITEMPLIST_ADD.cs" />
     <Compile Include="Models\M_ITEM_UN_CNV.cs" />
     <Compile Include="Models\M_JOBMST.cs" />
+    <Compile Include="Models\M_JOBMSTSUB.cs" />
+    <Compile Include="Models\M_LINEMAST.cs" />
     <Compile Include="Models\M_LOCA.cs" />
     <Compile Include="Models\M_LOCKDATA.cs" />
     <Compile Include="Models\M_MACHINE.cs" />
@@ -433,6 +437,11 @@
     <Compile Include="Models\SubLedgerMaster.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
+    <Compile Include="Models\TSORDDTL.cs" />
+    <Compile Include="Models\TSORDDTL_CANC.cs" />
+    <Compile Include="Models\TSORDDTL_CANC_SIZE.cs" />
+    <Compile Include="Models\TSORDDTL_SIZE.cs" />
+    <Compile Include="Models\TTXNDTL_SEARCHPANEL.cs" />
     <Compile Include="Models\T_BATCHDTL.cs" />
     <Compile Include="Models\T_BATCHMST.cs" />
     <Compile Include="Models\T_CNTRL_AUTH.cs" />
@@ -452,6 +461,10 @@
     <Compile Include="Models\T_INHISS.cs" />
     <Compile Include="Models\T_PSLIP.cs" />
     <Compile Include="Models\T_PSLIPDTL.cs" />
+    <Compile Include="Models\T_SORD.cs" />
+    <Compile Include="Models\T_SORDDTL.cs" />
+    <Compile Include="Models\T_SORD_CANC.cs" />
+    <Compile Include="Models\T_SORD_SCHEME.cs" />
     <Compile Include="Models\T_TXN.cs" />
     <Compile Include="Models\T_TXNSTATUS.cs" />
     <Compile Include="Models\UploadDOC.cs" />
@@ -486,6 +499,7 @@
     <Compile Include="MyGlobal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteEndpointMessageProperty.cs" />
+    <Compile Include="SchemeCal.cs" />
     <Compile Include="SMS.cs" />
     <Compile Include="ViewModels\AmountTypeMasterEntry.cs" />
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
@@ -513,6 +527,7 @@
     <Compile Include="ViewModels\ProductGroupEntry.cs" />
     <Compile Include="ViewModels\ReportViewinHtml.cs" />
     <Compile Include="ViewModels\Rep_Doc_Print.cs" />
+    <Compile Include="ViewModels\SalesOrderEntry.cs" />
     <Compile Include="ViewModels\SubBrandEntry.cs" />
     <Compile Include="ViewModels\SubLedgerEntry.cs" />
     <Compile Include="ViewModels\SubLedgerSDdtlMasterEntry.cs" />
@@ -893,6 +908,11 @@
     <Content Include="Views\M_Collection\M_Collection.cshtml" />
     <Content Include="Views\Shared\_M_FinProduct_BARCD.cshtml" />
     <Content Include="Views\M_Plist_Code\M_Plist_Code.cshtml" />
+    <Content Include="Views\T_SORD\T_SORD.cshtml" />
+    <Content Include="Views\Shared\_T_SORD_MAIN.cshtml" />
+    <Content Include="Views\Shared\_T_SORD_SCHEME.cshtml" />
+    <Content Include="Views\Shared\_T_SORD_SEARCH_PANEL.cshtml" />
+    <Content Include="Views\Shared\_T_SORD_SIZE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
