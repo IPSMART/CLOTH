@@ -3,6 +3,7 @@ using Improvar.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -561,6 +562,13 @@ namespace Improvar.Controllers
                 {
                     column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
                 }
+
+                dt.Rows.Add("");
+                dt.Rows[0]["SIZECD"] = "";//Add blank row
+                dt.Rows[0]["COLRCD"] = "";
+
+                VE.MSITEMCOLOR = VE.MSITEMCOLOR.Where(r => r.COLRCD != null).ToList();
+                VE.MSITEMSIZE = VE.MSITEMSIZE.Where(r => r.SIZECD != null).ToList();
                 foreach (var size in VE.MSITEMSIZE)
                 {
                     foreach (var color in VE.MSITEMCOLOR)
@@ -1812,7 +1820,6 @@ namespace Improvar.Controllers
                             DB.M_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
                         }
                         DB.SaveChanges();
-
                         #region Price list Save
                         DataTable DTPRICES = (DataTable)TempData["DTPRICES"]; TempData.Keep();
                         var prcRows = VE.STRPRICES.retStr().Split('~');
@@ -1832,7 +1839,7 @@ namespace Improvar.Controllers
                                     MIP.PRCCD = PRCCD;
                                     MIP.SIZECD = prcCols[0];
                                     MIP.COLRCD = prcCols[1];
-                                    MIP.SIZECOLCD = "abc" + i + j;
+                                    MIP.SIZECOLCD = MIP.SIZECD + MIP.COLRCD;
                                     MIP.RATE = prcCols[j].retDbl();
                                     DB.M_ITEMPLISTDTL.Add(MIP);
                                 }
@@ -1901,6 +1908,22 @@ namespace Improvar.Controllers
                     {
                         return Content("");
                     }
+                }
+                catch (DbEntityValidationException ex)
+                {
+                    // Retrieve the error messages as a list of strings.
+                    var errorMessages = ex.EntityValidationErrors
+                            .SelectMany(x => x.ValidationErrors)
+                            .Select(x => x.ErrorMessage);
+
+                    // Join the list to a single string.
+                    var fullErrorMessage = string.Join("&quot;", errorMessages);
+
+                    // Combine the original exception message with the new one.
+                    var exceptionMessage = string.Concat(ex.Message, "<br/> &quot; The validation errors are: &quot;", fullErrorMessage);
+
+                    // Throw a new DbEntityValidationException with the improved exception message.
+                    throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
                 }
                 catch (Exception ex)
                 {
