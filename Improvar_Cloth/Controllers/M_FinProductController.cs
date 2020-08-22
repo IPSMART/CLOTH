@@ -459,6 +459,10 @@ namespace Improvar.Controllers
 
                 }
             }
+            else
+            {
+                VE.M_SITEM = sl;
+            }
 
             return VE;
         }
