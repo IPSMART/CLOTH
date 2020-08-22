@@ -171,15 +171,16 @@ namespace Improvar.Controllers
                        {
                            COLRCD = j.COLRCD,
                            COLRNM = j.COLRNM,
-                           M_AUTONO = o.M_AUTONO
+                           M_AUTONO = o.M_AUTONO,
+                           CLRBARCODE = j.CLRBARCODE,
                        }).OrderBy(s => s.COLRCD).ToList();
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Color Code" + Cn.GCS() + "Color Name" + Cn.GCS() + "AUTO NO";
+            var hdr = "Color Code" + Cn.GCS() + "Color BarCode" + Cn.GCS() + "Color Name" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= MDT.Count - 1; j++)
             {
-                SB.Append("<tr><td>" + MDT[j].COLRCD + "</td><td>" + MDT[j].COLRNM + "</td><td>" + MDT[j].M_AUTONO + "</td></tr>");
+                SB.Append("<tr><td>" + MDT[j].COLRCD + "</td><td>" + MDT[j].CLRBARCODE + "</td><td>" + MDT[j].COLRNM + "</td><td>" + MDT[j].M_AUTONO + "</td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "2"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "3"));
         }
         public ActionResult AddDOCRow(ColorEntry VE)
         {
