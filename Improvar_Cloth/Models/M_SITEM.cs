@@ -9,7 +9,8 @@ namespace Improvar.Models
     [Table("M_SITEM")]
     public partial class M_SITEM
     {
-     
+        
+
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -50,9 +51,6 @@ namespace Improvar.Models
         [StringLength(10)]
         public string GENDER { get; set; }
 
-        [StringLength(10)]
-        public string PRODUCTTYPE { get; set; }
-
         [StringLength(4)]
         public string COLLCD { get; set; }
 
@@ -62,14 +60,10 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public short? PCSPERBOX { get; set; }
-
         public short? PCSPERSET { get; set; }
 
         [StringLength(3)]
         public string UOMCD { get; set; }
-
-        public byte? COUNTNO { get; set; }
 
         [StringLength(20)]
         public string FEATURE { get; set; }
@@ -92,8 +86,10 @@ namespace Improvar.Models
         [StringLength(8)]
         public string LINKITCD { get; set; }
 
-        [StringLength(20)]
-        public string STDBARCODE { get; set; }
+        public virtual M_COLOR M_COLOR { get; set; }
 
-        }
+        public virtual M_GROUP M_GROUP { get; set; }
+
+      
+    }
 }

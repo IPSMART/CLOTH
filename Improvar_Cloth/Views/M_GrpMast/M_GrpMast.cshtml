@@ -29,7 +29,10 @@
 <script>
    function requiredFieldValidator()
    {
-       if (!emptyFieldCheck("Enter Collection Name", "ITGRPNM")) { return false; }
+       if (!emptyFieldCheck("Enter Group Name", "GRPNM")) { return false; }
+       if (!emptyFieldCheck("Enter Item Group Name", "ITGRPNM")) { return false; }
+       var grptyp = $("#grptype").val();
+       if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
         return true;
    }
 </script>
@@ -227,8 +230,8 @@
                         </div>*@
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 40, @list = "ITGRPNMlist" } })
-                                <datalist id="ITGRPNMlist">
+                                @Html.EditorFor(model => model.M_GROUP.GRPNM, new { htmlAttributes = new { @class = "form-control", id = "GRPNM", @placeholder = "Group Name", maxlength = 40, @list = "GRPNMlist" } })
+                                <datalist id="GRPNMlist">
                                     @foreach (var jg in Model.Database_Combo1)
                                     {
                                         <option value="@jg.FIELD_VALUE" />
@@ -240,7 +243,32 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", " Item Group Name")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Item Group Name", maxlength = 40 } })
+                </div>
+            </div>
+                        @*<div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 40, @list = "ITGRPNMlist" } })
+                                <datalist id="ITGRPNMlist">
+                                    @foreach (var jg in Model.Database_Combo1)
+                                    {
+                                        <option value="@jg.FIELD_VALUE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>*@
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Group Type")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -295,9 +323,9 @@
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", @placeholder = "HSNCODE", maxlength = 40, @list = "HSNCODElist" } })
+                                @Html.EditorFor(model => model.M_GROUP.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", @placeholder = "HSNCODE", maxlength = 8, @list = "HSNCODElist" } })
                                 <datalist id="HSNCODElist">
-                                    @foreach (var jg in Model.Database_Combo1)
+                                    @foreach (var jg in Model.Database_Combo2)
                                     {
                                         <option value="@jg.FIELD_VALUE" />
                                     }

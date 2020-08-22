@@ -9,8 +9,7 @@ namespace Improvar.Models
     [Table("M_COLOR")]
     public partial class M_COLOR
     {
-      
-        public int? EMD_NO { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -29,12 +28,15 @@ namespace Improvar.Models
         [StringLength(20)]
         public string COLRNM { get; set; }
 
-        public long M_AUTONO { get; set; }
+        [StringLength(20)]
+        public string ALTCOLRNM { get; set; }
+
         [Required]
         [StringLength(4)]
         public string CLRBARCODE { get; set; }
 
-        [StringLength(20)]
-        public string ALTCOLRNM { get; set; }
+        public long M_AUTONO { get; set; }
+
+     
     }
 }

@@ -40,7 +40,7 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
-                    VE.Database_Combo1 = (from i in DB.M_GROUP select new Database_Combo1() { FIELD_VALUE = i.ITGRPNM }).OrderBy(s => s.FIELD_VALUE).ToList();
+                    VE.Database_Combo1 = (from i in DB.M_GROUP select new Database_Combo1() { FIELD_VALUE = i.GRPNM }).OrderBy(s => s.FIELD_VALUE).ToList();
 
                     //=================For Group Type================//
                     List<GroupType> GT = new List<GroupType>();
@@ -423,6 +423,7 @@ namespace Improvar.Controllers
                             DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_GROUP.M_AUTONO));
 
                         }
+                        MGROUP.GRPNM = VE.M_GROUP.GRPNM;
                         MGROUP.ITGRPNM = VE.M_GROUP.ITGRPNM;
                         MGROUP.ITGRPTYPE = FC["grptype"].ToString();
                         MGROUP.PRODGRPCD = VE.M_GROUP.PRODGRPCD;

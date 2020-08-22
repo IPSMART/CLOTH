@@ -9,7 +9,7 @@ namespace Improvar.Models
     [Table("M_GROUP")]
     public partial class M_GROUP
     {
-        public int? EMD_NO { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -40,9 +40,11 @@ namespace Improvar.Models
         [StringLength(4)]
         public string PRODGRPCD { get; set; }
 
-        public long M_AUTONO { get; set; }
-
         [StringLength(1)]
         public string BARGENTYPE { get; set; }
+
+        public long M_AUTONO { get; set; }
+
+       
     }
 }
