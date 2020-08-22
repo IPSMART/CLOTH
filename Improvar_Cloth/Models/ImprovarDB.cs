@@ -136,6 +136,13 @@ namespace Improvar.Models
         public virtual DbSet<T_PSLIPDTL> T_PSLIPDTL { get; set; }
         public virtual DbSet<T_GENTRY> T_GENTRY { get; set; }
         public virtual DbSet<MS_MUSRACS> MS_MUSRACS { get; set; }
+        public virtual DbSet<T_SORD> T_SORD { get; set; }
+        public virtual DbSet<T_SORD_SCHEME> T_SORD_SCHEME { get; set; }
+        public virtual DbSet<T_SORDDTL> T_SORDDTL { get; set; }
+        public virtual DbSet<M_LINEMAST> M_LINEMAST { get; set; }
+        public virtual DbSet<M_FLRLOCA> M_FLRLOCA { get; set; }
+        public virtual DbSet<M_JOBMSTSUB> M_JOBMSTSUB { get; set; }
+        public virtual DbSet<T_SORD_CANC> T_SORD_CANC { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (SchemaDBO != null)

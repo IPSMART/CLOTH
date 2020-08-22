@@ -1,0 +1,77 @@
+﻿@model Improvar.ViewModels.SalesOrderEntry
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        @*if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D")
+        {
+            //modeView();
+        }
+        else if ("@Model.DefaultAction" == "E")
+        {
+
+        }
+        else if ("@Model.DefaultAction" == "A")
+        {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }*@
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('SCHEME_TBL'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<div style="transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-10">
+                    <input type="text"  name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'SCHEME_TBL');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height:17px;padding:2px;"><b>Scheme Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:65px;">
+                    <table id="SCHEME_TBL" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:500px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:20px;">
+                                <th class="sticky-cell" style="width:27px;text-align:center;">
+                                    <input type="checkbox" id="ALL_SCHEME" name="ALL_SCHEME" style="margin-left:-3px;" onclick="SetAllCheckBoxesFilter(this, 'SCHEME_TBL', 'SelectCheck_')" />
+                                </th>
+                                <th class="" style="width:250px;">Name</th>
+                                <th class="" style="width:50px;">Code</th>
+                                <th class="" style="width:75px;">Date</th>
+                                <th class="" style="width:25px;">Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.SCHEME_DTL != null)
+                            {
+                                for (int i = 0; i < Model.SCHEME_DTL.Count(); i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:9px;padding-right:9px;">
+                                            @Html.CheckBoxFor(model => model.SCHEME_DTL[i].Checked, new { id = "SelectCheck_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.SCHEME_DTL[i].SCMNAME, new { id = "SCMNAME_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.SCHEME_DTL[i].SCMCODE, new { id = "SCMCODE_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.SCHEME_DTL[i].SCMDATE, new { id = "SCMDATE_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.SCHEME_DTL[i].SCMTYPE, new { id = "SCMTYPE_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

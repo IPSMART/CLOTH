@@ -991,5 +991,422 @@ namespace Improvar
 
             return sql;
         }
+        public List<DropDown_list> OTHER_REC_MODE()
+        {
+            List<DropDown_list> DDL = new List<DropDown_list>();
+            DropDown_list DDL1 = new DropDown_list();
+            DDL1.text = "TelePhone";
+            DDL1.value = "T";
+            DDL.Add(DDL1);
+            DropDown_list DDL2 = new DropDown_list();
+            DDL2.text = "Email";
+            DDL2.value = "E";
+            DDL.Add(DDL2);
+            DropDown_list DDL3 = new DropDown_list();
+            DDL3.text = "Whatsapp";
+            DDL3.value = "W";
+            DDL.Add(DDL3);
+            DropDown_list DDL4 = new DropDown_list();
+            DDL4.text = "Online";
+            DDL4.value = "O";
+            DDL.Add(DDL4);
+            return DDL;
+        }
+        public List<CashOnDelivery> CashOnDelivery()
+        {
+            List<CashOnDelivery> DDL = new List<CashOnDelivery>();
+            CashOnDelivery DDL1 = new CashOnDelivery();
+            DDL1.text = "Yes";
+            DDL1.value = "Y";
+            DDL.Add(DDL1);
+            CashOnDelivery DDL2 = new CashOnDelivery();
+            DDL2.text = "No";
+            DDL2.value = "N";
+            DDL.Add(DDL2);
+            return DDL;
+        }
+        public List<DropDown_list2> STOCK_TYPE()
+        {
+            List<DropDown_list2> STK_DDL = new List<DropDown_list2>();
+            DropDown_list2 STK_DDL0 = new DropDown_list2();
+            STK_DDL0.text = "";
+            STK_DDL0.value = "F";
+            STK_DDL.Add(STK_DDL0);
+            DropDown_list2 STK_DDL1 = new DropDown_list2();
+            STK_DDL1.text = "Raka";
+            STK_DDL1.value = "R";
+            STK_DDL.Add(STK_DDL1);
+            DropDown_list2 STK_DDL2 = new DropDown_list2();
+            STK_DDL2.text = "Loose";
+            STK_DDL2.value = "L";
+            STK_DDL.Add(STK_DDL2);
+            DropDown_list2 STK_DDL3 = new DropDown_list2();
+            STK_DDL3.text = "Destroy";
+            STK_DDL3.value = "D";
+            STK_DDL.Add(STK_DDL3);
+            return STK_DDL;
+        }
+        public List<DropDown_list3> FREE_STOCK()
+        {
+            List<DropDown_list3> FREE_STK_DDL = new List<DropDown_list3>();
+            DropDown_list3 STK_DDL0 = new DropDown_list3();
+            STK_DDL0.text = "";
+            STK_DDL0.value = "N";
+            FREE_STK_DDL.Add(STK_DDL0);
+            DropDown_list3 STK_DDL1 = new DropDown_list3();
+            STK_DDL1.text = "Yes";
+            STK_DDL1.value = "Y";
+            FREE_STK_DDL.Add(STK_DDL1);
+            return FREE_STK_DDL;
+        }
+        public string TRNS_BRAND(ImprovarDB DB, string val, string DOC_CD = "")
+        {
+            using (DB)
+            {
+                var query = (from c in DB.M_BRAND join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { BRANDCD = c.BRANDCD, BRANDNM = c.BRANDNM }).ToList();
+                var BRAND_LINK_DATA = (from Z in DB.M_DOC_BRAND where Z.DOCCD == DOC_CD select Z).ToList();
+                if (BRAND_LINK_DATA != null && BRAND_LINK_DATA.Count > 0)
+                {
+                    query = (from X in DB.M_DOC_BRAND
+                             join Y in DB.M_BRAND on X.BRANDCD equals Y.BRANDCD into Z
+                             from Y in Z.DefaultIfEmpty()
+                             where X.BRANDCD == Y.BRANDCD && X.DOCCD == DOC_CD
+                             select new { BRANDCD = X.BRANDCD, BRANDNM = Y.BRANDNM }).ToList();
+                }
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].BRANDNM + "</td><td>" + query[i].BRANDCD + "</td></tr>");
+                    }
+                    var hdr = "Brand Name" + Cn.GCS() + "Brand Code";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    query = query.Where(a => a.BRANDCD == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = i.BRANDCD + Cn.GCS() + i.BRANDNM;
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "0";
+                    }
+                }
+            }
+        }
+        public string PRICELIST(string val, string Code, string TAG, string BRAND = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            //string SCHEMA = DB.CacheKey.ToString();
+            //string SQL = "select a.slcd, a.agslcd, a.agslnm, b.prccd, b.prcnm, b.areacd, b.areanm, b.trslcd, b.trslnm, b.courcd, b.cournm, b.crlimit, b.crdays ";
+            //SQL += "from (select a.slcd, nvl(b.agslcd, a.agslcd) agslcd, c.slnm agslnm ";
+            //SQL += "from " + SCHEMA + ".m_subleg_com a, " + SCHEMA + ".m_subleg_brand b, " + FSCHEMA + ".m_subleg c ";
+            //SQL += "where a.slcd = '" + Code + "' and a.compcd = '" + COMP + "' and a.slcd = b.slcd(+) and a.compcd = b.compcd(+) and ";
+            //SQL += "nvl(b.agslcd, a.agslcd) = c.slcd and(b.brandcd = '" + BRAND + "' or b.brandcd = null) ) a, ";
+            //SQL += "(select a.slcd, a.prccd, c.prcnm, a.areacd, d.areanm, b.trslcd, e.slnm trslnm, b.courcd, f.slnm cournm, ";
+            //SQL += "nvl(a.crlimit, 0) crlimit, nvl(a.crdays, 0) crdays ";
+            //SQL += " from " + SCHEMA + ".m_subleg_com a," + SCHEMA + ".m_subleg_sddtl b," + FSCHEMA + ".m_prclst c," + FSCHEMA + ".m_areacd d," + FSCHEMA + ".m_subleg e, ";
+            //SQL += "" + FSCHEMA + ".m_subleg f ";
+            //SQL += "where a.slcd = '" + Code + "' and a.compcd = '" + COMP + "' and a.slcd = b.slcd(+) and ";
+            //SQL += "(a.compcd = b.compcd or b.compcd is null) and(b.loccd = '" + LOC + "' or b.loccd is null) and ";
+            //SQL += "a.prccd = c.prccd(+) and a.areacd = d.areacd(+) and(b.trslcd = e.slcd or e.slcd is null) and(b.courcd = f.slcd or f.slcd is null) and ";
+            //SQL += "(b.trslcd = e.slcd or e.slcd is null) ) b ";
+            //SQL += "where a.slcd = b.slcd(+) ";  
+
+            string scm1 = CommVar.CurSchema(UNQSNO);
+            string scmf = CommVar.FinSchema(UNQSNO);
+            string COM = CommVar.Compcd(UNQSNO);
+            string LOC = CommVar.Loccd(UNQSNO);
+
+            if (BRAND != "") BRAND = "'" + BRAND + "'";
+
+            string sql = "";
+            sql += "select a.prccd, a.prcnm, a.discrtcd, a.discrtnm, a.trslcd, a.trslnm, a.courcd, a.cournm, a.taxgrpcd, a.taxgrpnm, ";
+            sql += "b.agslcd, c.slnm agslnm, a.areacd, a.areanm, a.docth,a.cod from ";
+
+            sql += "( select a.slcd, a.prccd, b.prcnm, a.discrtcd, c.discrtnm, g.trslcd, d.slnm trslnm, g.courcd, e.slnm cournm, g.taxgrpcd, f.taxgrpnm, ";
+            sql += "a.areacd, h.areanm, a.agslcd, a.docth,a.cod ";
+            sql += "from " + scm1 + ".m_subleg_com a, " + scmf + ".m_prclst b, " + scmf + ".m_discrt c, " + scmf + ".m_subleg d,";
+            sql += "" + scmf + ".m_subleg e, " + scmf + ".m_taxgrp f, " + scm1 + ".m_subleg_sddtl g, " + scmf + ".m_areacd h ";
+            sql += "where a.slcd='" + Code + "' and (g.compcd='" + COM + "' or g.compcd is null) and (g.loccd='" + LOC + "' or g.loccd is null) and ";
+            sql += "a.prccd=b.prccd(+) and a.discrtcd=c.discrtcd(+) and g.trslcd=d.slcd(+) and g.courcd=e.slcd(+) and g.taxgrpcd=f.taxgrpcd(+) and ";
+            sql += "a.slcd=g.slcd(+) and a.areacd=h.areacd(+) ) a, ";
+
+            sql += "( select a.slcd, nvl(a.bagslcd,a.agslcd) agslcd from ";
+            sql += "(select a.slcd, a.agslcd, b.agslcd bagslcd ";
+            sql += "from " + scm1 + ".m_subleg_com a, " + scm1 + ".m_subleg_brand b ";
+            sql += "where a.slcd=b.slcd(+) and (b.brandcd is null ";
+            if (BRAND != "") sql += "or b.brandcd in(" + BRAND + ")";
+            sql += ") ) a ) b, ";
+
+            sql += scmf + ".m_subleg c ";
+            sql += "where a.slcd=b.slcd(+) and b.agslcd=c.slcd(+) ";
+
+            var QUERY_DATA = SQLquery(sql);
+
+            var query = (from DataRow dr in QUERY_DATA.Rows
+                         select new
+                         {
+                             PRCCD = dr["prccd"].ToString(),
+                             PRCNM = dr["prcnm"].ToString(),
+                             AGSLCD = dr["agslcd"].ToString(),
+                             AGSLNM = dr["agslnm"].ToString(),
+                             TRSLCD = dr["trslcd"].ToString(),
+                             TRSLNM = dr["trslnm"].ToString(),
+                             COURCD = dr["courcd"].ToString(),
+                             COURNM = dr["cournm"].ToString(),
+                             DISCRTCD = dr["discrtcd"].ToString(),
+                             DISCRTNM = dr["discrtnm"].ToString(),
+                             AREACD = dr["areacd"].ToString(),
+                             AREANM = dr["areanm"].ToString(),
+                             TAXGRPCD = dr["taxgrpcd"].ToString(),
+                             DOCTH = dr["docth"].ToString(),
+                             TAXGRPNM = dr["taxgrpnm"].ToString(),
+                             COD = dr["cod"].ToString()
+                         }).ToList();
+
+            if (val == null && TAG == "")
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + query[i].PRCNM + "</td><td>" + query[i].PRCCD + "</td></tr>");
+                }
+                var hdr = "Price List code" + Cn.GCS() + "Price List Name";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (TAG == "")
+                {
+                    query = query.Where(a => a.PRCCD == val).ToList();
+                }
+                if (query.Any())
+                {
+                    string str = "";
+                    foreach (var i in query)
+                    {
+                        if (TAG == "FORBUYER")
+                        {
+                            str = i.TAXGRPCD + Cn.GCS() + i.TAXGRPNM + Cn.GCS() + i.COD;
+                        }
+                        else
+                        {
+                            str = i.PRCCD + Cn.GCS() + i.PRCNM + Cn.GCS() + i.AGSLCD + Cn.GCS() + i.AGSLNM + Cn.GCS() + i.TRSLCD + Cn.GCS() + i.TRSLNM + Cn.GCS() + i.COURCD + Cn.GCS() + i.COURNM + Cn.GCS() + i.DISCRTCD + Cn.GCS() + i.DISCRTNM + Cn.GCS() + i.AREACD + Cn.GCS() + i.AREANM + Cn.GCS() + i.DOCTH;
+                        }
+                    }
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Price List Code ! Please Select / Enter a Valid Price List Code !!";
+                }
+            }
+        }
+        public List<DropDown_list1> EFFECTIVE_DATE(string PRC_CD, string DOC_DT)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            List<DropDown_list1> DDL = new List<DropDown_list1>();
+            string SCHEMA = CommVar.CurSchema(UNQSNO).ToString();
+            string SQL = "select distinct a.effdt ";
+            SQL = SQL + "from " + SCHEMA + ".m_itemplist a, " + SCHEMA + ".m_cntrl_hdr b ";
+            SQL = SQL + "where a.prccd = '" + PRC_CD + "' and a.m_autono = b.m_autono(+) and ";
+            SQL = SQL + "a.effdt <= to_date('" + DOC_DT.Substring(0, 10).Replace('-', '/') + "', 'dd/mm/yyyy') and nvl(b.inactive_tag, 'N')= 'N'";
+            var EFFECTIVE_DATE = SQLquery(SQL);
+            if (EFFECTIVE_DATE != null)
+            {
+                DDL = (from DataRow DR in EFFECTIVE_DATE.Rows
+                       orderby DR["effdt"].ToString() descending
+                       select new DropDown_list1
+                       {
+                           value = DR["effdt"].ToString().Substring(0, 10).Replace("-", "/"),
+                           text = DR["effdt"].ToString().Substring(0, 10).Replace("-", "/")
+                       }).ToList();
+            }
+            return DDL;
+        }
+        public List<DropDown_list4> DISC_EFFECTIVE_DATE(string DISC_CD, string DOC_DT)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            List<DropDown_list4> DDL = new List<DropDown_list4>();
+            string SCHEMA = CommVar.CurSchema(UNQSNO).ToString();
+            string SQL = "select distinct a.effdt ";
+            SQL = SQL + "from " + SCHEMA + ".m_discrthdr a, " + SCHEMA + ".m_cntrl_hdr b ";
+            SQL = SQL + "where a.DISCRTCD = '" + DISC_CD + "' and a.m_autono = b.m_autono(+) and ";
+            SQL = SQL + "a.effdt <= to_date('" + DOC_DT.Substring(0, 10).Replace('-', '/') + "', 'dd/mm/yyyy') and nvl(b.inactive_tag, 'N')= 'N'";
+            var DIS_EFFECTIVE_DATE = SQLquery(SQL);
+            if (DIS_EFFECTIVE_DATE != null)
+            {
+                DDL = (from DataRow DR in DIS_EFFECTIVE_DATE.Rows
+                       orderby DR["effdt"].ToString() descending
+                       select new DropDown_list4
+                       {
+                           value = DR["effdt"].ToString().Substring(0, 10).Replace("-", "/"),
+                           text = DR["effdt"].ToString().Substring(0, 10).Replace("-", "/")
+                       }).ToList();
+            }
+            return DDL;
+        }
+        public string DOCNO_ORDER_help(string DOCCD, string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            {
+                using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
+                {
+                    var query = (from c in DB.T_SORD
+                                 join i in DB.T_CNTRL_HDR on c.AUTONO equals i.AUTONO
+                                 where i.CANCEL != "Y" && i.DOCCD == DOCCD
+                                 select new { c.DOCNO, c.DOCDT, c.SLCD, i.AUTONO }).ToList().Select(s => new
+                                 {
+                                     DOCNO = s.DOCNO,
+                                     DOCDT = s.DOCDT,
+                                     SLCD = s.SLCD,
+                                     SLNM = (from P in DBF.M_SUBLEG where P.SLCD == s.SLCD select P.SLNM).SingleOrDefault(),
+                                     AUTONO = s.AUTONO
+                                 }).ToList();
+                    if (val == null)
+                    {
+                        System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                        for (int i = 0; i <= query.Count - 1; i++)
+                        {
+                            SB.Append("<tr><td>" + query[i].DOCNO + "</td><td>" + query[i].DOCDT.ToString().retDateStr() + "</td><td>" + query[i].SLCD + "</td><td>" + query[i].SLNM + "</td><td>" + query[i].AUTONO + "</td></tr>");
+                        }
+                        var hdr = "Doc No" + Cn.GCS() + "Doc Dt" + Cn.GCS() + "Party Code" + Cn.GCS() + "Party Name" + Cn.GCS() + "Autono";
+                        return Generate_help(hdr, SB.ToString(), "4");
+                    }
+                    else
+                    {
+                        query = query.Where(a => a.DOCNO == val).ToList();
+                        if (query.Any())
+                        {
+                            string str = "";
+                            foreach (var i in query)
+                            {
+                                str = ToReturnFieldValues(query);
+                            }
+                            return str;
+                        }
+                        else
+                        {
+                            return "Invalid Order No. ! Please Select / Enter a Valid Order No. !!";
+                        }
+                    }
+                }
+            }
+        }
+        //public string PAY_TERMS(ImprovarDB DB, string val)
+        //{
+        //    using (DB)
+        //    {
+        //        var query = (from c in DB.M_PAYTRMS
+        //                     select new
+        //                     {
+        //                         PAYTRMCD = c.PAYTRMCD,
+        //                         PAYTRMNM = c.PAYTRMNM
+        //                     }).ToList();
+        //        if (val == null)
+        //        {
+        //            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+        //            for (int i = 0; i <= query.Count - 1; i++)
+        //            {
+        //                SB.Append("<tr><td>" + query[i].PAYTRMNM + "</td><td>" + query[i].PAYTRMCD + "</td></tr>");
+        //            }
+        //            var hdr = "Pay Term Name" + Cn.GCS() + "Pay Term Code";
+        //            return Generate_help(hdr, SB.ToString());
+        //        }
+        //        else
+        //        {
+        //            query = query.Where(a => a.PAYTRMCD == val).ToList();
+        //            if (query.Any())
+        //            {
+        //                string str = "";
+        //                foreach (var i in query)
+        //                {
+        //                    str = i.PAYTRMCD + Cn.GCS() + i.PAYTRMNM;
+        //                }
+        //                return str;
+        //            }
+        //            else
+        //            {
+        //                return "0";
+        //            }
+        //        }
+        //    }
+        //}
+        public string RetriveParkFromFile(string value, string Path, string UserID, string ViewClassName)
+        {
+            try
+            {
+                int op = 0;
+                INI inifile = new INI();
+                string text = System.IO.File.ReadAllText(Path);
+                string[] keys = inifile.GetEntryNames(UserID, Path);
+                string[] SectionName = inifile.GetSectionNames(Path);
+                int Sindex = Array.IndexOf(SectionName, UserID);
+                string NextSecnm = "";
+                if (SectionName.Length - 1 > Sindex)
+                {
+                    NextSecnm = SectionName[Sindex + 1];
+                    int SSindex = text.IndexOf("[" + UserID + "]");
+                    int ESindex = text.IndexOf("[" + NextSecnm + "]");
+                    text = text.Substring(SSindex, ESindex - SSindex);
+                }
+                else
+                {
+                    int SSindex = text.IndexOf("[" + UserID + "]");
+                    text = text.Substring(SSindex);
+                }
+                int afterIndex = Array.IndexOf(keys, value);
+                string nextKeys = "";
+                if (keys.Length - 1 > afterIndex)
+                {
+                    nextKeys = keys[afterIndex + 1];
+                }
+                int start = text.IndexOf(value);
+                int end = nextKeys.Length == 0 ? 0 : text.IndexOf(nextKeys);
+                int lg = text.Length;
+                string stream = end == 0 ? text.Substring(start + value.Length + 1) : text.Substring(start + value.Length + 1, end - start - 1 - nextKeys.Length);
+                stream = Cn.Decrypt(stream);
+                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                Type typeclass = Type.GetType(ViewClassName);
+                var helpM1 = Activator.CreateInstance(typeclass);
+                helpM1 = javaScriptSerializer.Deserialize(stream, typeclass);
+                //Cn.getQueryString(helpM1);               
+                if (HttpContext.Current.Session[value] != null)
+                {
+                    HttpContext.Current.Session.Remove(value);
+                }
+                HttpContext.Current.Session.Add(value, helpM1);
+                string url = "";
+                var PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer.AbsoluteUri;
+                var uri = new Uri(PreviousUrl);//Create Virtually Query String
+                var queryString = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                if (queryString.Get("parkID") == null)
+                {
+                    url = HttpContext.Current.Request.UrlReferrer.ToString() + "&parkID=" + value;
+                }
+                else
+                {
+                    string dd = HttpContext.Current.Request.UrlReferrer.ToString();
+                    int pos = HttpContext.Current.Request.UrlReferrer.ToString().IndexOf("&parkID=");
+                    url = dd.Substring(0, pos);
+                    url = url + "&parkID=" + value;
+                }
+                return url;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

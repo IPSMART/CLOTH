@@ -1242,5 +1242,77 @@ namespace Improvar
             }
             return casenos;
         }
+        public double ConvPcstoBox(double pcs, double pcsperbox)
+        {
+            double box = 0;
+            double dbDzn, dbPcs, zDzn = 0;
+            string txt1, txt2 = "";
+            if (pcsperbox == 0)
+                return 0;
+            if (pcs == 0) dbPcs = 0; else dbPcs = Cn.Roundoff(pcs / pcsperbox, 2);
+
+            txt1 = dbPcs.ToString("0.00");
+            txt1 = txt1.Substring(0, txt1.Length - 3);
+            txt2 = (pcs - Convert.ToDouble(txt1) * pcsperbox).ToString("0");
+
+            if (pcsperbox != 10)
+            {
+                if (Convert.ToDouble(txt2) < 10) box = Convert.ToDouble(txt1 + ".0" + txt2.Substring(txt2.Length - 1));
+                else box = Convert.ToDouble(txt1 + "." + txt2);
+            }
+            else
+            {
+                box = Convert.ToDouble(txt1 + ".0" + txt2.Substring(txt2.Length - 1));
+            }
+            return box;
+        }
+        public double ConvPcstoSet(double pcs, double pcsperset)
+        {
+            double box = 0;
+            double dbDzn, dbPcs, zDzn = 0;
+            string txt1, txt2 = "";
+            if (pcsperset == 0)
+                return 0;
+            if (pcs == 0) dbPcs = 0; else dbPcs = Cn.Roundoff(pcs / pcsperset, 2);
+
+            txt1 = dbPcs.ToString("0.00");
+            txt1 = txt1.Substring(0, txt1.Length - 3);
+            txt2 = (pcs - Convert.ToDouble(txt1) * pcsperset).ToString("0");
+
+            if (pcsperset != 10)
+            {
+                if (Convert.ToDouble(txt2) < 10) box = Convert.ToDouble(txt1 + ".0" + txt2.Substring(txt2.Length - 1));
+                else box = Convert.ToDouble(txt1 + "." + txt2);
+            }
+            else
+            {
+                box = Convert.ToDouble(txt1 + ".0" + txt2.Substring(txt2.Length - 1));
+            }
+            return box;
+        }
+        public double retMaxLateDays(DataTable ostbl, string slcd = "", bool tblnull = false)
+        {
+            double rtval = 0;
+            if (tblnull == true)
+            {
+                string glcd = retSDGlcd(slcd);
+                ostbl = GenOSTbl(glcd, slcd, "", "", "", "", "", "", "Y", "", "", "", "", "", true);
+            }
+
+            if (ostbl.Rows.Count == 0) return rtval;
+
+            DateTime[] dt = (from DataRow dr in ostbl.Rows
+                             where dr["lrdt"].retStr() != "" && dr["drcr"].retStr() == "D"
+                             select Convert.ToDateTime(dr["lrdt"])).ToArray();
+
+            if (dt.Count() > 0)
+            {
+                DateTime minlrdt = dt.Distinct().Min();
+                TimeSpan TSdys = System.DateTime.Now - minlrdt;
+                rtval = TSdys.Days;
+            }
+            if (rtval < 0) rtval = 0;
+            return rtval;
+        }
     }
 }
