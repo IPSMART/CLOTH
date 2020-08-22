@@ -89,10 +89,7 @@ namespace Improvar.Models
 
         [StringLength(100)]
         public string NONOP_REM { get; set; }
-
-        [StringLength(1)]
-        public string SKIPAUTO { get; set; }
-
+        
         [StringLength(20)]
         public string PKGLEGACYCD { get; set; }
 
