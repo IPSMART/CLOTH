@@ -30,6 +30,11 @@ namespace Improvar.Models
         public string COLRNM { get; set; }
 
         public long M_AUTONO { get; set; }
-        
+        [Required]
+        [StringLength(4)]
+        public string CLRBARCODE { get; set; }
+
+        [StringLength(20)]
+        public string ALTCOLRNM { get; set; }
     }
 }

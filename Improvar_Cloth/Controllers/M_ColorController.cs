@@ -262,12 +262,13 @@ namespace Improvar.Controllers
                         {
                             MCOLOR.EMD_NO = 0;
                             MCOLOR.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
+                            MCOLOR.CLRBARCODE = Cn.GenMasterCode("M_COLOR", "CLRBARCODE", "8", 4);
                         }
                         if (VE.DefaultAction == "E")
                         {
                             MCOLOR.DTAG = "E";
                             MCOLOR.M_AUTONO = VE.M_COLOR.M_AUTONO;
-
+                            MCOLOR.CLRBARCODE = VE.M_COLOR.CLRBARCODE;
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_COLOR.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_COLOR.M_AUTONO));
 
@@ -285,6 +286,7 @@ namespace Improvar.Controllers
                             }
                         }
                         MCOLOR.COLRNM = VE.M_COLOR.COLRNM;
+                        MCOLOR.ALTCOLRNM = VE.M_COLOR.ALTCOLRNM;
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_COLOR", MCOLOR.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
 
                         if (VE.DefaultAction == "A")
