@@ -33,14 +33,14 @@
 </script>
 <script>
     function requiredFieldValidator() {
-        if (!emptyFieldCheck("Enter Design", "STYLENO")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }
+        //if (!emptyFieldCheck("Enter Design", "STYLENO")) {
+        //    $("li").removeClass("active").addClass("");
+        //    $(".nav-tabs li:first-child").addClass('active');
+        //    //below set the  child sequence
+        //    $(".tab-content div").removeClass("active");
+        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //    return false;
+        //}
         if (!emptyFieldCheck("Enter Item Group Code", "ITGRPCD")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -273,15 +273,17 @@
     }
 </script>
 <script>
-    function inputcolor(id, id1) {
+    function inputcolor(id, id1,id2) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
         $("#" + id.id).val(str[0]);
         $("#" + id1.id).val(str[1].toString());
+        $("#" + id2.id).val(str[2].toString());
     }
 
-    function SelectCOLORCODEGRID(id, COLRCD_, COLRNM_) {
+    function SelectCOLORCODEGRID(id, COLRCD_, COLRNM_, CLRBARCODE_) {
         if (id == "") {
             $("#" + COLRNM_.id).val("");
+            $("#" + CLRBARCODE_.id).val("");
         }
         else {
             $.ajax({
@@ -294,11 +296,12 @@
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
                         $("#tempHDD").val(result);
-                        inputcolor(COLRCD_, COLRNM_);
+                        inputcolor(COLRCD_, COLRNM_, CLRBARCODE_);
                     }
                     else {
                         $("#" + COLRCD_.id).val("");
                         $("#" + COLRNM_.id).val("");
+                        $("#" + CLRBARCODE_.id).val("");
                         msgInfo("Invalid Color Code !!");
                         message_value = COLRCD_.id;
                     }

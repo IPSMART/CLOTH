@@ -220,15 +220,15 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
-                var query = (from c in DB.M_COLOR join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { COLRCD = c.COLRCD, COLRNM = c.COLRNM }).ToList();
+                var query = (from c in DB.M_COLOR join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { COLRCD = c.COLRCD, COLRNM = c.COLRNM,c.CLRBARCODE }).ToList();
                 if (val == null)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= query.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + query[i].COLRNM + "</td><td>" + query[i].COLRCD + "</td></tr>");
+                        SB.Append("<tr><td>" + query[i].COLRNM + "</td><td>" + query[i].COLRCD + "</td><td>" + query[i].CLRBARCODE + "</td></tr>");
                     }
-                    var hdr = "Color Name" + Cn.GCS() + "Color Code";
+                    var hdr = "Color Name" + Cn.GCS() + "Color Code" + Cn.GCS() + "Color Bar Code";
                     return Generate_help(hdr, SB.ToString());
                 }
                 else
@@ -239,7 +239,7 @@ namespace Improvar
                         string str = "";
                         foreach (var i in query)
                         {
-                            str = i.COLRCD + Cn.GCS() + i.COLRNM;
+                            str = i.COLRCD + Cn.GCS() + i.COLRNM + Cn.GCS() + i.CLRBARCODE;
                         }
                         return str;
                     }

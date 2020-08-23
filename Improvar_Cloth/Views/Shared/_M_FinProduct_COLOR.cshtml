@@ -25,6 +25,7 @@
                         <th class="grid_th" style="width:27px;">SL. No.</th>
                         <th class="grid_th" style="width:75px;">COLOR CODE</th>
                         <th class="grid_th" style="width:125px;">COLOR NAME</th>
+                        <th class="grid_th" style="width:100px">COLOR BAR CODE</th>
                         <th class="grid_th" style="width:27px;">Inactive</th>
                     </tr>
                 </thead>
@@ -41,11 +42,14 @@
                                     @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].SLNO, new { id = "CSLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].COLRCD, new { id = "COLRCD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetColorDetails", "M_FinProduct") + "','" + "COLRCD_" + i + "/" + "COLRNM_" + i + "','1/0','Color Details','" + "COLRCD_" + i + "')", onblur = "SelectCOLORCODEGRID(this.value," + "COLRCD_" + i + "," + "COLRNM_" + i + ");", @class = " atextBoxFor textbox_image" })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetColorDetails", "M_FinProduct")','COLRCD_@i/COLRNM_@i','1/0','Color Details','COLRCD_@i')" />
+                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].COLRCD, new { id = "COLRCD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetColorDetails", "M_FinProduct") + "','" + "COLRCD_" + i + "/" + "COLRNM_" + i + "/" + "CLRBARCODE_" + i + "','1/0/2','Color Details','" + "COLRCD_" + i + "')", onblur = "SelectCOLORCODEGRID(this.value," + "COLRCD_" + i + "," + "COLRNM_" + i + "," + "CLRBARCODE_" + i + ");", @class = " atextBoxFor textbox_image" })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetColorDetails", "M_FinProduct")','COLRCD_@i/COLRNM_@i/CLRBARCODE_@i','1/0/2','Color Details','COLRCD_@i')" />
                                 </td>
                                 <td class="grid_td">
                                     @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].COLRNM, new { id = "COLRNM_" + i, maxlength = 20, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMCOLOR[i].CLRBARCODE, new { id = "CLRBARCODE_" + i, maxlength = 4, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                 </td>
                                 <td class="grid_td" style="padding-left:7px;padding-right:7px;">
                                     @Html.CheckBoxFor(model => model.MSITEMCOLOR[i].IChecked, new { htmlAttributes = new { id = "IChecked_" } })

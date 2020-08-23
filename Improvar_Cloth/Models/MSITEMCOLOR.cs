@@ -37,5 +37,6 @@ namespace Improvar.Models
         
         public bool Checked { get; set; }
         public bool IChecked { get; set; }
+        public string CLRBARCODE { get; set; }
     }
 }
