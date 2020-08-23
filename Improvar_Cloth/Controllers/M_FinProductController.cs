@@ -532,11 +532,13 @@ namespace Improvar.Controllers
         {
             try
             {
+                ItemMasterEntry VE = new ItemMasterEntry();
+                Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 var MDT = (from j in DB.M_SITEM
                            join p in DB.M_CNTRL_HDR on j.M_AUTONO equals (p.M_AUTONO)
                            join q in DB.M_GROUP on j.ITGRPCD equals (q.ITGRPCD)
-                           where (j.M_AUTONO == p.M_AUTONO)
+                           where (j.M_AUTONO == p.M_AUTONO &&q.ITGRPTYPE==VE.MENU_PARA)
                            select new
                            {
                                ITCD = j.ITCD,
@@ -1963,13 +1965,13 @@ namespace Improvar.Controllers
             {
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
 
-                string query = "SELECT A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.PCSPERBOX, A.HSNCODE, ";
+                string query = "SELECT A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, ";
                 query = query + "LISTAGG(D.SIZENM,',') WITHIN GROUP (ORDER BY C.ITCD, D.PRINT_SEQ) sizes ";
                 query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B, " + dbname + ".M_SITEM_SIZE C, " + dbname + ".M_SIZE D, ";
                 query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F ";
                 query = query + "WHERE A.ITGRPCD = B.ITGRPCD(+) AND A.ITCD=C.ITCD(+) AND C.SIZECD=D.SIZECD(+) AND ";
                 query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) ";
-                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.PCSPERBOX, A.HSNCODE ";
+                query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
                 query = query + "ORDER BY B.ITGRPNM, A.STYLENO";
 
                 DataTable tbl = Master_Help.SQLquery(query);
@@ -1983,7 +1985,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "styleno", "string", "c,15", "Design No");
                 HC.GetPrintHeader(IR, "itcd", "string", "c,10", "Item;Code");
                 HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item Name");
-                HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "Pcs/;Box");
+                //HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "Pcs/;Box");
                 HC.GetPrintHeader(IR, "sizes", "string", "c,25", "Sizes");
                 HC.GetPrintHeader(IR, "brandnm", "string", "c,15", "Brand Name");
                 HC.GetPrintHeader(IR, "hsnsaccd", "string", "c,8", "HSN;Code");
@@ -1997,7 +1999,7 @@ namespace Improvar.Controllers
                     dr["itgrpnm"] = tbl.Rows[i]["itgrpnm"];
                     dr["itcd"] = tbl.Rows[i]["itcd"];
                     dr["itnm"] = tbl.Rows[i]["itnm"];
-                    dr["pcsperbox"] = Convert.ToDouble(tbl.Rows[i]["pcsperbox"] == DBNull.Value ? 0 : tbl.Rows[i]["pcsperbox"]);
+                    //dr["pcsperbox"] = Convert.ToDouble(tbl.Rows[i]["pcsperbox"] == DBNull.Value ? 0 : tbl.Rows[i]["pcsperbox"]);
                     dr["sizes"] = (tbl.Rows[i]["sizes"]);
                     dr["hsnsaccd"] = (tbl.Rows[i]["HSNCODE"]);
                     dr["brandnm"] = tbl.Rows[i]["brandnm"];
