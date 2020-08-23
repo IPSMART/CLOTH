@@ -1786,7 +1786,6 @@ namespace Improvar.Controllers
                         MSITEMBARCODE.EMD_NO = MSITEM.EMD_NO;
                         MSITEMBARCODE.ITCD = MSITEM.ITCD;
                         MSITEMBARCODE.BARCODE = MSITEM.ITGRPCD.Substring(MSITEM.ITGRPCD.Length - 3).retStr() + MSITEM.ITCD.Substring(MSITEM.ITCD.Length - 7).retStr();
-                        //MSITEMBARCODE.HSNCODE = MSITEM.HSNCODE;
                         DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
                         {
@@ -1798,8 +1797,7 @@ namespace Improvar.Controllers
                                 MSITEMBARCODE1.ITCD = MSITEM.ITCD;
                                 MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                 MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
-                                MSITEMBARCODE1.BARCODE = MSITEM.ITCD.retStr() + VE.MSITEMBARCODE[i].SZBARCODE.retStr() + VE.MSITEMBARCODE[i].COLRCD.retStr();
-                                //MSITEMBARCODE1.HSNCODE = MSITEM.HSNCODE;
+                                MSITEMBARCODE1.BARCODE = MSITEMBARCODE.BARCODE + VE.MSITEMBARCODE[i].COLRCD.retStr() + VE.MSITEMBARCODE[i].SZBARCODE.retStr();
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                             }
                         }

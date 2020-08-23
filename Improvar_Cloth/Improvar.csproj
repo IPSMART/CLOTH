@@ -279,7 +279,6 @@
     <Compile Include="Models\ImageData.cs" />
     <Compile Include="Models\ImprovarDB.cs" />
     <Compile Include="Models\IndexKey.cs" />
-    <Compile Include="Models\IndexKey1.cs" />
     <Compile Include="Models\ItemMasterTag.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\LocationMaster.cs" />
@@ -313,7 +312,6 @@
     <Compile Include="Models\MSITEMCOLOR.cs" />
     <Compile Include="Models\MSITEMMEASURE.cs" />
     <Compile Include="Models\MSITEMPARTS.cs" />
-    <Compile Include="Models\MSITEMPRICES.cs" />
     <Compile Include="Models\MSUBLEGBRAND.cs" />
     <Compile Include="Models\MSUBLEGCONT.cs" />
     <Compile Include="Models\MSubLegIFSC.cs" />

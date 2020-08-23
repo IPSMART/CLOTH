@@ -22,10 +22,12 @@ namespace Improvar.Models
         public string TTAG { get; set; }
 
         [Key]
+        [Column(Order = 0)]
         [StringLength(8)]
         public string ITCD { get; set; }
 
         [Key]
+        [Column(Order = 1)]
         [StringLength(20)]
         public string BARCODE { get; set; }
 

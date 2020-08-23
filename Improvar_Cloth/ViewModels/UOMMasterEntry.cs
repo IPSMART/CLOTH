@@ -9,7 +9,6 @@ namespace Improvar.ViewModels
         public M_UOM M_UOM { get; set; }
         public MS_GSTUOM MS_GSTUOM { get; set; }
         public M_CNTRL_HDR M_CNTRL_HDR { get; set; }
-        public List<IndexKey1> IndexKey1 { get; set; }
         public bool Checked { get; set; }
     }
 }
