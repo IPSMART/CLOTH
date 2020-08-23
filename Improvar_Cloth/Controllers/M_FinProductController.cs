@@ -102,7 +102,19 @@ namespace Improvar.Controllers
                     VE.DefaultAction = op;
                     if (op.Length != 0)
                     {
-                        VE.IndexKey = (from p in DB.M_SITEM join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD) where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE == "F") select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
+                        var itgrpcd = "";
+                        if (VE.MENU_PARA == "F")
+                        {
+                            itgrpcd = "F";
+                        }
+                        else
+                        {
+                            itgrpcd = "C";
+                        }
+                        //sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) == "C" && r.ITCD == itcd).FirstOrDefault();
+                        VE.IndexKey = (from p in DB.M_SITEM
+                                       join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD)
+                                       where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE == itgrpcd) select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
 
                         if (op == "E" || op == "D" || op == "V" || loadItem == "Y")
@@ -258,7 +270,15 @@ namespace Improvar.Controllers
                     {
                         aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                     }
-                    sl = DB.M_SITEM.Find(aa[0]);
+                    var itcd = aa[0];
+                    if (VE.MENU_PARA == "C")
+                    {
+                        sl = DB.M_SITEM.Where(r=>r.ITCD.Remove(1)=="C"&& r.ITCD== itcd).FirstOrDefault();
+                    }
+                    else
+                    {
+                        sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD == itcd).FirstOrDefault();
+                    }
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                     slll = DB.M_GROUP.Find(sl.ITGRPCD);
                     slsb = DB.M_SUBBRAND.Find(sl.SBRANDCD);
@@ -744,13 +764,15 @@ namespace Improvar.Controllers
         {
             try
             {
+                ItemMasterEntry VE = new ItemMasterEntry();
+                Cn.getQueryString(VE);
                 if (val == null)
                 {
-                    return PartialView("_Help2", Master_Help.GROUP(val));
+                    return PartialView("_Help2", Master_Help.ITGRPCD_help(val, VE.MENU_PARA));
                 }
                 else
                 {
-                    string str = Master_Help.GROUP(val);
+                    string str = Master_Help.ITGRPCD_help(val, VE.MENU_PARA);
                     return Content(str);
                 }
             }
@@ -1574,7 +1596,7 @@ namespace Improvar.Controllers
                             {
                                 string txt = txtst;
                                 string stxt = txt.Substring(0, 1);
-                                string R = stxt + "000001";
+                                string R = stxt + "0000001";
                                 MSITEM.ITCD = R.ToString();
                             }
                             else
@@ -1590,7 +1612,7 @@ namespace Improvar.Controllers
                                     {
                                         Console.WriteLine("Something weired happened");
                                     }
-                                    string newStr = letters + (++number).ToString("D6");
+                                    string newStr = letters + (++number).ToString("D7");
                                     MSITEM.ITCD = newStr.ToString();
                                 }
                                 else

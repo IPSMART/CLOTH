@@ -40,7 +40,7 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
-                    VE.Database_Combo1 = (from i in DB.M_GROUP select new Database_Combo1() { FIELD_VALUE = i.GRPNM }).OrderBy(s => s.FIELD_VALUE).ToList();
+                    VE.Database_Combo1 = (from i in DB.M_GROUP select new Database_Combo1() { FIELD_VALUE = i.GRPNM }).Distinct().OrderBy(s => s.FIELD_VALUE).ToList();
 
                     //=================For Group Type================//
                     List<GroupType> GT = new List<GroupType>();
@@ -118,12 +118,12 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                if (key == "" || key == "F")
+                                if ( key == "F")
                                 {
                                     VE.Index = 0;
                                     VE = Navigation(VE, DB, 0, searchValue);
                                 }
-                                else if (key == "L")
+                                else if (key == "" || key == "L")
                                 {
                                     VE.Index = VE.IndexKey.Count - 1;
                                     VE = Navigation(VE, DB, VE.IndexKey.Count - 1, searchValue);

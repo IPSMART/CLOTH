@@ -201,7 +201,7 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string GROUP(string val, string GRPTYPE = "F", string brandcd = "")
+        public string ITGRPCD_help(string val, string GRPTYPE)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
@@ -216,10 +216,6 @@ namespace Improvar
                                  ITGRPNM = c.ITGRPNM,
                                  ITGRPTYPE = c.ITGRPTYPE
                              }).OrderBy(c => c.ITGRPNM).ToList();
-                if (brandcd != "" && query != null)
-                {
-                    query = query.ToList();
-                }
                 if (val == null)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();

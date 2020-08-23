@@ -145,7 +145,7 @@
         $("#" + id.id).val(str[0]);
         $("#" + id1.id).val(str[1].toString());
     }
-    function SelectItemGroupCode(id, ITGRPCD, ITGRPNM,BRANDCD,BRANDNM) {
+    function SelectItemGroupCode(id, ITGRPCD, ITGRPNM, BRANDCD, BRANDNM) {
         if (id == "") {
             $("#ITGRPCD").val("");
             $("#ITGRPNM").val("");
@@ -510,18 +510,18 @@
             type: 'POST',
             url: "@Url.Action("AddRowCOLOR", PageControllerName)",
             beforesend: $("#WaitingMode").show(),
-        data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-        success: function (result) {
-            $("#WaitingMode").hide();
-            $("#partialdivCOLOR").animate({ marginTop: '-10px' }, 50);
-            $("#partialdivCOLOR").html(result);
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $("#WaitingMode").hide();
-            msgError(XMLHttpRequest.responseText);
-            $("body span h1").remove(); $("#msgbody_error style").remove();
-        }
-    });
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivCOLOR").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivCOLOR").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
     }
     function DeleteRowCOLOR(urlstring, id) {
         $.ajax({
@@ -895,7 +895,7 @@
     }
 </script>
 <script>
-    function SameRatetoallSize(colindex){        
+    function SameRatetoallSize(colindex) {
         var PricesGridlength = $("#exampleItemPrices > tbody > tr").length;
         var firstCellrate = $("#rate_0_" + colindex).val();
         for (i = 1; i <= PricesGridlength - 1; i++) {
@@ -927,6 +927,7 @@
             <input type="hidden" id="fabitcdlinkcd" value="C" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
+            @Html.HiddenFor(a => a.MENU_PARA)
             @Html.HiddenFor(a => a.STRPRICES)
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
@@ -1001,7 +1002,7 @@
                                     @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
                                     <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
 
-                               </div>
+                                </div>
                             </div>
                             <div class="col-md-10">
                                 <div class="editor-field">
@@ -1009,44 +1010,45 @@
                                 </div>
                             </div>
                         </div>
-                        @if (Model.MENU_PARA=="F") { 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Facbric Item")
+                        @if (Model.MENU_PARA == "F")
+                        {
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Facbric Item")
+                                    </div>
                                 </div>
-                            </div>
-                            @*<div class="col-md-7">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','A','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Style Number" } })
-                    <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="STYLE_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','A')" />
-                </div>
-            </div>*@
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @*@Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />*@
-                                    @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
+                                @*<div class="col-md-7">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','A','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Style Number" } })
+                                            <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="STYLE_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','A')" />
+                                        </div>
+                                    </div>*@
+                                <div class="col-md-7">
+                                    <div class="editor-field">
+                                        @*@Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
+                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABSTYLENO=styleno=0/FABUOMNM=uomcd=3','fabitcdlinkcd')" />*@
+                                        @Html.EditorFor(model => model.M_SITEM.FABITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABUOMNM=uomcd=3','fabitcdlinkcd')", onblur = "GetFabItcd(this.value);", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','FABITCD','FABITCD=itcd=2/FABITNM=itnm=1/FABUOMNM=uomcd=3','fabitcdlinkcd')" />
 
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-11">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
+                                <div class="col-md-11">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
+                                    </div>
                                 </div>
-                            </div>
-                            @*<div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.FABSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "FABSTYLENO", maxlength = 30, @TabIndex = -1, @title = "Only for View", @placeholder = "Design Number", @readonly = "readonly" } })
+                                @*<div class="col-md-7">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.FABSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "FABSTYLENO", maxlength = 30, @TabIndex = -1, @title = "Only for View", @placeholder = "Design Number", @readonly = "readonly" } })
+                                        </div>
+                                    </div>*@
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.FABUOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABUOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
+                                    </div>
                                 </div>
-                            </div>*@
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.FABUOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABUOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>}
+                            </div>}
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1056,7 +1058,7 @@
                             <div class="col-md-11">
                                 <div class="editor-field">
                                     @*@Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60, @readonly = "readonly", @TabIndex = -1 } })*@
-                                    @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60} })
+                                    @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "Item Name", maxlength = 60 } })
                                 </div>
                             </div>
                         </div>
@@ -1096,19 +1098,19 @@
                             </div>
                         </div>
                         @*<div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Description")
-                                    <b style="color:Red;">*</b>
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Description")
+                                        <b style="color:Red;">*</b>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-10">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.QUALITY, new { htmlAttributes = new { @class = "form-control", id = "QUALITY", @placeholder = "Item Description", maxlength = 40, @onkeyup = "show_name();" } })
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_SITEM.QUALITY, new { htmlAttributes = new { @class = "form-control", id = "QUALITY", @placeholder = "Item Description", maxlength = 40, @onkeyup = "show_name();" } })
+                                    </div>
                                 </div>
-                            </div>
-                        </div>*@
-                     
+                            </div>*@
+
 
                         <div class="row">
                             <div class="col-md-6">
@@ -1165,36 +1167,36 @@
                         </div>
                         <div class="row">
                             @*<div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Product Type")
-                                    <b style="color:Red;">*</b>
-                                </div>
-                            </div>*@
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Product Type")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>*@
                             @*<div class="col-md-7">
-                                <div class="editor-field">
-                                    <select id="protyp" name="protyp" class="form-control">
-                                        <option value="0" selected="selected">====Select====</option>
-                                        @foreach (var i in Model.ProductType)
-                                        {
-                                            if (Model.DefaultAction == "A" && Model.M_SITEM == null)
+                                    <div class="editor-field">
+                                        <select id="protyp" name="protyp" class="form-control">
+                                            <option value="0" selected="selected">====Select====</option>
+                                            @foreach (var i in Model.ProductType)
                                             {
-                                                <option value="@i.value">@i.text</option>
-                                            }
-                                            else
-                                            {
-                                                if (Model.M_SITEM.PRODUCTTYPE == i.value)
-                                                {
-                                                    <option value="@i.value" selected="selected">@i.text</option>
-                                                }
-                                                else
+                                                if (Model.DefaultAction == "A" && Model.M_SITEM == null)
                                                 {
                                                     <option value="@i.value">@i.text</option>
                                                 }
+                                                else
+                                                {
+                                                    if (Model.M_SITEM.PRODUCTTYPE == i.value)
+                                                    {
+                                                        <option value="@i.value" selected="selected">@i.text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i.value">@i.text</option>
+                                                    }
+                                                }
                                             }
-                                        }
-                                    </select>
-                                </div>
-                            </div>*@
+                                        </select>
+                                    </div>
+                                </div>*@
                             <div class="col-md-6" style="margin-right:-1px;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Gender")
@@ -1247,16 +1249,16 @@
                         </div>
                         <div class="row">
                             @*<div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Pcs. Per Box")
-                                    <b style="color:Red;">*</b>
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Pcs. Per Box")
+                                        <b style="color:Red;">*</b>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.PCSPERBOX, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERBOX", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
-                                </div>
-                            </div>*@
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_SITEM.PCSPERBOX, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERBOX", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
+                                    </div>
+                                </div>*@
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Pcs. Per Set")
@@ -1278,29 +1280,30 @@
                                 </div>
                             </div>
                         </div>
-                        @if (Model.MENU_PARA=="C"){ 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Features")
+                        @if (Model.MENU_PARA == "C")
+                        {
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Features")
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_SITEM.FEATURE, new { htmlAttributes = new { @class = "form-control", id = "FEATURE", maxlength = 20, @placeholder = "Features" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Dimention")
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_SITEM.DMNSN, new { htmlAttributes = new { @class = "form-control", id = "DMNSN", maxlength = 20, @placeholder = "Dimention" } })
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.FEATURE, new { htmlAttributes = new { @class = "form-control",id = "FEATURE", maxlength = 20, @placeholder = "Features" } })
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Dimention")
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.DMNSN, new { htmlAttributes = new { @class = "form-control",id = "DMNSN", maxlength = 20, @placeholder = "Dimention" } })
-                                </div>
-                            </div>
-                        </div>
                         }
                         <div class="row">
                             <div class="col-md-6">
