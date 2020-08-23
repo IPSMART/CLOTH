@@ -393,7 +393,7 @@ namespace Improvar.Controllers
                             var tbl = Master_Help.SQLquery(sql);
                             if (tbl.Rows[0]["ITGRPCD"].ToString()!="")
                             {
-                                MGROUP.ITGRPCD = txtst + (tbl.Rows[0]["ITGRPCD"]).retInt().ToString("D3");
+                                MGROUP.ITGRPCD = txtst + ((tbl.Rows[0]["ITGRPCD"]).retInt()+1).ToString("D3");
                             }
                             else
                             {
