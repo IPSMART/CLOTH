@@ -958,7 +958,7 @@ namespace Improvar.Controllers
                 string ITGTYPE = "F";
                 if (val == null)
                 {
-                    return PartialView("_Help2", Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE));
+                    return PartialView("_Help2", Master_Help.ITCD_help(val, ITGTYPE));
                 }
                 else
                 {
@@ -974,22 +974,22 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            return Content(Master_Help.ARTICLE_ITEM_DETAILS(MAINROW.ARTNO, ITGTYPE) + Cn.GCS() + "");
+                            return Content(Master_Help.ITCD_help(MAINROW.ARTNO, ITGTYPE) + Cn.GCS() + "");
                         }
                     }
                     else
                     {
                         if (MAINROW.ITCD == itcd_db)
                         {
-                            return Content(Master_Help.ARTICLE_ITEM_DETAILS(MAINROW.ARTNO, ITGTYPE) + Cn.GCS() + "");
+                            return Content(Master_Help.ITCD_help(MAINROW.ARTNO, ITGTYPE) + Cn.GCS() + "");
                         }
                         else if (string.IsNullOrEmpty(itcd_db))
                         {
-                            return Content(Master_Help.ARTICLE_ITEM_DETAILS(MAINROW.ITCD, ITGTYPE, "", "", "C") + Cn.GCS() + "STAYOLD ARTICLE");
+                            return Content(Master_Help.ITCD_help(MAINROW.ITCD, ITGTYPE) + Cn.GCS() + "STAYOLD ARTICLE");
                         }
                         else
                         {
-                            return Content(Master_Help.ARTICLE_ITEM_DETAILS(MAINROW.ARTNO, ITGTYPE) + Cn.GCS() + "ITCDCHANGED");
+                            return Content(Master_Help.ITCD_help(MAINROW.ARTNO, ITGTYPE) + Cn.GCS() + "ITCDCHANGED");
                         }
                     }
 

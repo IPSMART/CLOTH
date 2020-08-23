@@ -724,7 +724,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = Master_Help.ARTICLE_ITEM_DETAILS(val, Code);
+                var str = Master_Help.ITCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1555,7 +1555,7 @@ namespace Improvar.Controllers
                             var barcode = VE.MSITEMBARCODE.Where(b => b.SIZECD != null && b.COLRCD != null).Select(a => a.SZBARCODE + a.COLRCD).Distinct().ToList();
                             if (all_barcode.Count() != barcode.Count())
                             {
-                                return Content("SIZE CODE and COLOR CODE duplicate..");
+                                return Content("SIZE CODE and COLOR CODE duplicate in barcode grid.");
                             }
                         }
                         //
