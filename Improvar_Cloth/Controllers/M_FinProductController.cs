@@ -1848,7 +1848,7 @@ namespace Improvar.Controllers
                             var prcCols = prcRows[i].Split(',');
                             for (int j = 2; j <= prcCols.Length - 1; j++)
                             {
-                                if (prcCols[0] != "" && prcCols[1] != "")
+                                if (i==0||(prcCols[0] != "" && prcCols[1] != ""))
                                 {
                                     var PRCCD = DTPRICES.Columns[j].ColumnName;
                                     M_ITEMPLISTDTL MIP = new M_ITEMPLISTDTL();
@@ -1860,6 +1860,8 @@ namespace Improvar.Controllers
                                     MIP.SIZECD = prcCols[0];
                                     MIP.COLRCD = prcCols[1];
                                     MIP.SIZECOLCD = MIP.SIZECD + MIP.COLRCD;
+                                    if (i==0)
+                                    MIP.SIZECOLCD = "SAME";
                                     MIP.RATE = prcCols[j].retDbl();
                                     DB.M_ITEMPLISTDTL.Add(MIP);
                                 }
