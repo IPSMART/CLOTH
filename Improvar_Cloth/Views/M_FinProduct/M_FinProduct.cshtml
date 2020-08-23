@@ -10,7 +10,7 @@
         case "F":
             ViewBag.Title = "Finish Product/Design Master"; break;
         case "C":
-            ViewBag.Title = "Febric Item"; break;
+            ViewBag.Title = "Fabric Item"; break;
         default: ViewBag.Title = ""; break;
     }
 }
@@ -1009,6 +1009,7 @@
                                 </div>
                             </div>
                         </div>
+                        @if (Model.MENU_PARA=="F") { 
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1045,12 +1046,11 @@
                                     @Html.EditorFor(model => model.FABUOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FABUOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
                             </div>
-                        </div>
+                        </div>}
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Name")
-                                    <b style="color:Red;">*</b>
                                 </div>
                             </div>
                             <div class="col-md-11">

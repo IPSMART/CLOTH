@@ -40,7 +40,7 @@ namespace Improvar.Controllers
                         case "F":
                             ViewBag.formname = "Finish Product/Design Master"; break;
                         case "C":
-                            ViewBag.formname = "Febric Item"; break;
+                            ViewBag.formname = "Fabric Item"; break;
                        
                         default: ViewBag.formname = ""; break;
                     }
