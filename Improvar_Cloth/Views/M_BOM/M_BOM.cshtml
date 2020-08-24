@@ -1,0 +1,1262 @@
+﻿@model Improvar.ViewModels.BOMMasterEntry
+@{
+    switch (Model.MENU_PARA)
+    {
+        case "OPR": ViewBag.Title = "BOM (Operation)"; break;
+        case "MTRL": ViewBag.Title = "BOM (Materials)"; break;
+        case "APRV": ViewBag.Title = "BOM (Approval)"; break;
+        default: ViewBag.Title = ""; break;
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string PageControllerName = "M_BOM";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#ITCD").attr("disabled", "ture");
+            $(".sl_bom_grid").prop("disabled", false);
+            $(".image_button_grid_AddRemove").hide();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#ITCD").attr("readonly", "readonly");
+            $("#STYLE_HELP").hide();
+            $("#ITCD_HELP").hide();
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            //$('form :input:enabled:visible:first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Select Effective Date ", "EFFDT")) { return false; }
+        if (!emptyFieldCheck("Enter Item Code", "ITCD")) { return false; }
+        var GridRowM = $("#M_BOM_MATERIAL > tbody > tr").length;
+        for (i = 0; i <= GridRowM - 1; i++) {
+            var ITEM = document.getElementById("ITCDM_" + i).value;
+            if (ITEM == "") {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#msg_ok_info").focus();
+                $("#msgbody_info").html("Enter Item Code IN METERIAL GRID !! ");
+                message_value = "ITCDM_" + i;
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_SITEMBOM != null)
+        {
+            mldauto = Model.M_SITEMBOM.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    if ("@Model.DefaultAction" == "A") {
+        $(function () { $("#EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });
+    }
+</script>
+<script>
+    function GetCodeBlurData(id, CODE, NAME, URLNAME, TAG) {
+        if ("@Model.DefaultAction" != "V") {
+            if (id == "") {
+                ClearAllTextBoxes((CODE + "," + NAME));
+            }
+            else {
+                var ITCD = ""; if (TAG == "Y") { ITCD = $("#ITCD").val(); }
+                $.ajax({
+                    type: 'POST',
+                    url: "../@PageControllerName/" + URLNAME,
+                    data: { val: id, Code: ITCD, },
+                    success: function (result) {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#tempHDD").val(result);
+                            var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                            $("#" + CODE).val(str[0].toString());
+                            $("#" + NAME).val(str[1].toString());
+                        }
+                        else {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            ClearAllTextBoxes((CODE + "," + NAME));
+                            $("#btnok").focus();
+                            $("#msgbody_info").html(result);
+                            message_value = CODE;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function inputSJ(id, id1, id2, id3, id4) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+        $("#" + id2.id).val(str[2].toString());
+        $("#" + id3.id).val(str[3].toString());
+        $("#" + id4.id).val(str[4]);
+    }
+    function SelectSubJobCode(id, SJOBCD_, SJOBNM_, JOBCD_, JOBNM_, STD_SJ_JOBRT_) {
+        var EFF_DT = document.getElementById("EFFDT").value;
+        if (id == "") {
+            $("#" + SJOBCD_.id).val("");
+            $("#" + SJOBNM_.id).val("");
+            $("#" + JOBCD_.id).val("");
+            $("#" + JOBNM_.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameSUBJOB").val(),
+                data: {
+                    val: id,
+                    val1: EFF_DT
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + SJOBCD_.id).val("");
+                        $("#" + SJOBNM_.id).val("");
+                        $("#" + JOBCD_.id).val("");
+                        $("#" + JOBNM_.id).val("");
+                        $("#" + STD_SJ_JOBRT_.id).val("");
+                        $("#msgbody_info").html("Invalid Sub Job Code ! Please Enter a Valid Code !! ");
+                        message_value = SJOBCD_.id;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputSJ(SJOBCD_, SJOBNM_, JOBCD_, JOBNM_, STD_SJ_JOBRT_);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CheckSize(SIZECD, SIZENM, PART, JOB) {
+        var valu = document.getElementById(SIZECD.id).value;
+        if (valu != "") {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("CheckSizeCode", PageControllerName)",
+                data: $('form').serialize() + "&SIZE=" + valu + "&PART=" + PART + "&JOB=" + JOB,
+                success: function (result) {
+                    if (result != "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + SIZECD.id).val("");
+                        $("#" + SIZENM.id).val("");
+                        $("#msgbody_info").html(result);
+                        message_value = SIZECD.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CheckArticleItem(ITCD, STYLENO, ITNM, UOMNM)
+    {
+        if ("@Model.DefaultAction" != "V")
+        {
+            var valu = document.getElementById(ITCD).value;
+            if (valu != "")
+            {
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("CheckArticleItem", PageControllerName)",
+                    data: $('form').serialize() + "&ITEM=" + valu,
+                    success: function (result)
+                    {
+                        if (result != "0")
+                        {
+                            if (confirm("Article / Item Already Exists with Effective Date : " + result + " !\nDo you want to Continue with Same Article ? If Yes then Click on Ok or Click on Cancel !! ")) {
+
+                            }
+                            else
+                            {
+                                ClearAllTextBoxes((ITCD + "," + ITNM + "," + STYLENO + "," + UOMNM));
+                                $("#" + STYLENO).focus();
+                            }
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function inputUOM(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectUOMCode(id, UOMCD, UOMNM) {
+        if (id == "") {
+            $("#UOMCD").val("");
+            $("#UOMNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameUOM").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msgbody_info").html(" Invalid  UOM Code !! ");
+                        $("#UOMCD").val("");
+                        $("#UOMNM").val("");
+                        $("#btnok").focus();
+                        message_value = "UOM";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputUOM(UOMCD, UOMNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function fileCheck(id, index) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            var fname = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE_NAME");
+            fname.value = fileToLoad.name;
+            var fileReader = new FileReader();
+
+            fileReader.onload = function (fileLoadedEvent) {
+                var textAreaFileContents = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE");
+
+                textAreaFileContents.value = fileLoadedEvent.target.result;
+                $("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
+            };
+
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
+
+</script>
+<script>
+    function input443(id, id1, id2) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+        $("#" + id2.id).val(str[2].toString());
+    }
+    function SelectINVCODE(id, INVCD, ITDESCN, INVUOM) {
+        if (id == "") {
+            $("#INVCD").val("");
+            $("#ITDESCN").val("");
+            $("#INVUOM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameINV").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#INVCD").val("");
+                        $("#ITDESCN").val("");
+                        $("#INVUOM").val("");
+                        $("#msgbody_info").html("Invalid INV Code !! ");
+                        message_value = "INVCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input443(INVCD, ITDESCN, INVUOM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script type="text/javascript">
+    var specialKeys = new Array();
+    specialKeys.push(8); //Backspace
+    function numericOnlyForNegative(elementRef, position) {
+        var keyCodeEntered = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        if ((keyCodeEntered >= 48) && (keyCodeEntered <= 57) || (keyCodeEntered == 45)) {
+            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
+                var aa = elementRef.value;
+                var ab = aa.indexOf('.');
+                var ac = aa.toString().substring(ab);
+                if (ac.length <= position) {
+                    return true; n
+                }
+                else {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+            // '.' decimal point...
+        else if (keyCodeEntered == 46) {
+            // Allow only 1 decimal point ('.')...
+            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
+
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+</script>
+<script>
+    function AddRowMAIN(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddMAIN").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivMain").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivMain").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowMAIN(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteMAIN").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                $("#partialdivMain").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function AddRowOPERATION(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddOPERATION").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivOperation").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivOperation").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowOPERATION(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteOPERATION").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivOperation").animate({ marginTop: '0px' }, 50);
+                $("#partialdivOperation").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddRowMATERIAL(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddMATERIAL").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivMaterials").animate({ marginTop: '-10px' }, 50);
+                //$("#partialdivMaterials").html(result);
+
+                $('#popup').html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowMATERIAL(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteMATERIAL").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivMaterials").animate({ marginTop: '0px' }, 50);
+                //$("#partialdivMaterials").html(result);
+                $('#popup').html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddRowRMPM(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnAddRMPM").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $('#popup').html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowRMPM(urlstring, id) {
+        $.ajax({
+            type: 'POST',
+            url: $("#btnDeleteRMPM").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $('#popup').html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function OpenMaterial(id, SLNO, JOB) {
+        var SerialNo = document.getElementById(SLNO).value;
+        var JOBCODE = document.getElementById(JOB).value;
+        $("#hiddensrl").val(SerialNo);
+        if (JOBCODE.toString() != "") {
+            $.ajax({
+                type: 'post',
+                url: $("#urlnameOPENMATERIAL").val(),
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&SerialNo=" + SerialNo + "&JOBCODE=" + JOBCODE,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $('#popup').html(result);
+                    $('.PopUp_Backround').show();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    function CloseMaterial() {
+        $.ajax({
+            type: 'post',
+            url: $("#urlnameCLOSEMATERIAL").val(),
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $('#partialdivMain').html(result);
+                $("#popup").html("");
+                $('.PopUp_Backround').fadeOut();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function CancelMaterial() {
+        $('#popup').html("");
+        $('.PopUp_Backround').fadeOut();
+    }
+</script>
+<script>
+    function OpenRMPM(id, SLNO, JOB) {
+        var SerialNo = document.getElementById(SLNO).value;
+        var JOBCODE = document.getElementById(JOB).value;
+        $("#hiddensrl").val(SerialNo);
+        if (JOBCODE.toString() != "") {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("OPEN_RMPM", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&SerialNo=" + SerialNo + "&JOBCODE=" + JOBCODE,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $('#popup').html(result);
+                    $('.PopUp_Backround').show();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    function CloseRMPM() {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("CLOSE_RMPM", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $('#partialdivMain').html(result);
+                $("#popup").html("");
+                $('.PopUp_Backround').fadeOut();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function CancelRMPM() {
+        $('#popup').html("");
+        $('.PopUp_Backround').fadeOut();
+    }
+</script>
+<script>
+    function SelectArticleItemCode(id, STYLENO, ITCD, ITNM, UOMNM, TAG, COPY_TAG) {
+        if ("@Model.DefaultAction" != "V") {
+            var ID_VAL = document.getElementById(ITCD).value;
+            if (id == "") { id = ID_VAL; TAG = "C"; }
+            if (id == "") {
+                ClearAllTextBoxes((STYLENO + "," + ITCD + "," + ITNM + "," + UOMNM));
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("GetItemDetails", PageControllerName)",
+                    data: { val: id, TAG: TAG },
+                    success: function (result) {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#tempHDD").val(result);
+                            var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                            document.getElementById(STYLENO).value = str[0].toString();
+                            document.getElementById(ITCD).value = str[1].toString();
+                            document.getElementById(ITNM).value = str[2].toString();
+                            document.getElementById(UOMNM).value = str[3].toString();
+                            if (COPY_TAG == "SIMILAR") {
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '@Url.Action("GetOperationData", PageControllerName)',
+                                    beforesend: $("#WaitingMode").show(),
+                                    data: { ITEM: str[1].toString(), },
+                                    success: function (result) {
+                                        $("#WaitingMode").hide();
+                                        $("#REMARKS").focus();
+                                        if (result == "NODATA") {
+                                            $("#Msgdiv1").show();
+                                            $("#info").show();
+                                            $("#msg_ok_info").focus();
+                                            $("#msgbody_info").html("Operation Data Not Available for Particular Item : " + "' " + str[2].toString() + " '" + " ! </br>  You have to Enter Operation Details !! ");
+                                        }
+                                        else {
+                                            if (confirm("If you want to get the Previous Operation Details for Particular Item : " + "' " + str[2].toString() + " '" + " !\nThen Click on OK or Click on Cancel !!  ")) {
+                                                $("#partialdivOperation").html(result);
+                                            }
+                                        }
+                                    },
+                                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                        $("#WaitingMode").hide();
+                                        msgError(XMLHttpRequest.responseText);
+                                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                                    }
+                                });
+                            }
+                        }
+                        else {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            ClearAllTextBoxes((STYLENO + "," + ITCD + "," + ITNM + "," + UOMNM));
+                            $("#btnok").focus();
+                            $("#msgbody_info").html(result);
+                            message_value = STYLENO;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function SelectSimilarItemCode(id, STYLENUMBER, ITEM_CODE, ITEM_NAME, UOM_CODE) {
+        if (id == "") {
+            $("#" + STYLENO.id).val("");
+            $("#" + ITCD.id).val("");
+            $("#" + ITNM.id).val("");
+            $("#" + UOMNM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameITEM").val(),
+                data: { val: id, },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + STYLENO.id).val("");
+                        $("#" + ITCD.id).val("");
+                        $("#" + ITNM.id).val("");
+                        $("#" + UOMNM.id).val("");
+                        $("#msgbody_info").html("Invalid Item Code ! Please Enter a Valid Code !! ");
+                        message_value = STYLENO.id;
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(STYLENO.id).value = str[0].toString();
+                        document.getElementById(ITCD.id).value = str[1].toString();
+                        document.getElementById(ITNM.id).value = str[2].toString();
+                        document.getElementById(UOMNM.id).value = str[3].toString();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectMachineCode(id, MCCD, MCNM) {
+        if (id == "") {
+            $("#" + MCCD.id).val("");
+            $("#" + MCNM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetMachineDetails", PageControllerName)',
+                data: { val: id, },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(MCCD.id).value = str[0].toString();
+                        document.getElementById(MCNM.id).value = str[1].toString();
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + MCCD.id).val("");
+                        $("#" + MCNM.id).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = MAKECD_.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectRMPMItemCode(id, ITCD, ITNM, UOMNM) {
+        if (id == "") {
+            $("#" + ITCD.id).val("");
+            $("#" + ITNM.id).val("");
+            $("#" + UOMNM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameRMPMITEM").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + ITCD.id).val("");
+                        $("#" + ITNM.id).val("");
+                        $("#" + UOMNM.id).val("");
+                        $("#" + ITCD.id).focus();
+                        $("#msgbody_info").html("Invalid Item Code ! Please Enter a Valid Code !! ");
+                        message_value = ITCD.id;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(ITCD.id).value = str[0].toString();
+                        document.getElementById(ITNM.id).value = str[1].toString();
+                        document.getElementById(UOMNM.id).value = str[2].toString();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectMaterialItemCode(id, ITCD, ITNM, UOMNM) {
+        if (id == "") {
+            $("#" + ITCD.id).val("");
+            $("#" + ITNM.id).val("");
+            $("#" + UOMNM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameMATERIALITEM").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + ITCD.id).val("");
+                        $("#" + ITNM.id).val("");
+                        $("#" + UOMNM.id).val("");
+                        $("#msgbody_info").html("Invalid Item Code ! Please Enter a Valid Code !! ");
+                        message_value = ITCD.id;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(ITCD.id).value = str[1].toString();
+                        document.getElementById(ITNM.id).value = str[2].toString();
+                        document.getElementById(UOMNM.id).value = str[3].toString();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script language="javascript">
+    document.onkeyup = KeyCheck;
+    function KeyCheck(e) {
+        var KeyID = (window.event) ? event.keyCode : e.keyCode;
+        if (KeyID == 118) {
+            var GridRowOperation = $("#M_BOM_OPERATION > tbody > tr").length;
+            var LST_PART_CD = "";
+            var LST_PART_NM = "";
+            var LST_SEQ_ORD = "";
+            for (i = 0; i <= GridRowOperation - 1; i++) {
+                var PART_CD = document.getElementById("PARTCDO_" + i).value;
+                var PART_NAME = document.getElementById("PARTNMO_" + i).value;
+                var SEQ_ORD = document.getElementById("SEQORDNOO_" + i).value;
+                if (PART_CD != "") {
+                    LST_PART_CD = PART_CD;
+                    LST_PART_NM = PART_NAME;
+                    if (SEQ_ORD != "") {
+                        LST_SEQ_ORD = SEQ_ORD;
+                    }
+                }
+
+                if (document.getElementById("PARTCDO_" + i).value == "") {
+                    document.getElementById("PARTCDO_" + i).value = LST_PART_CD;
+                    document.getElementById("PARTNMO_" + i).value = LST_PART_NM;
+                    var SEQ = parseInt(LST_SEQ_ORD) + 1;
+                    var pad = "00"
+                    var ans = pad.substring(0, pad.length - SEQ.toString().length) + SEQ
+                    document.getElementById("SEQORDNOO_" + i).value = ans;
+                    return false;
+                }
+            }
+        }
+    }
+</script>
+<script>
+    function pageprinting() {
+        $("#btnprint").click();
+    }
+</script>
+<script>
+    function CopyData(COPY_SIZE, P_SLNO) {
+        var SIZE_CODE = document.getElementById(COPY_SIZE).value;
+        if (SIZE_CODE != "") {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetSizeWiseItemData", PageControllerName)',
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&SIZE_CODE=" + SIZE_CODE + "&P_SLNO=" + P_SLNO,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (result == "NODATA") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#msgbody_info").html("Item Data Not Available for Particular Size : " + "' " + SIZE_CODE + " '" + " ! </br> Please Enter a Valid Size Code !! ");
+                    }
+                    else {
+                        //if (confirm("If you want to get the Previous Item Details for Particular Size : " + "' " + SIZE_CODE + " '" + " !\nThen Click on OK or Click on Cancel !!  "))
+                        //{
+                        //    $('#popup').html(result);
+                        //    $('.PopUp_Backround').show();
+                        //}
+                        $('#popup').html(result);
+                        $('.PopUp_Backround').show();
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+        else {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msg_ok_info").focus();
+            $("#msgbody_info").html("Please Enter a Size to Get the Item Details !! ");
+            message_value = COPY_SIZE;
+        }
+    }
+</script>
+<script>
+    function Check_Size(SIZE, PSLNO) {
+        if (SIZE != "") {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Check_Copy_Size", PageControllerName)',
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&P_SLNO=" + PSLNO + "&val=" + SIZE,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    if (result != "1") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#COPY_SIZE").val("");
+                        $("#msg_ok_info").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = "COPY_SIZE";
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlnameSize" value="@Url.Action("SizeCode", PageControllerName)" />
+            <input type="hidden" id="urlname1" value="@Url.Action("ItemGroup", PageControllerName)" />
+            <input type="hidden" id="urlnameITEM" value="@Url.Action("GetItemDetails", PageControllerName)" />
+            <input type="hidden" id="urlnameRMPMITEM" value="@Url.Action("GetRMPMITEMDETAILS", PageControllerName)" />
+            <input type="hidden" id="urlnameMATERIALITEM" value="@Url.Action("GetMaterialItemDetails", PageControllerName)" />
+            <input type="hidden" id="urlnameINV" value="@Url.Action("INVCode", PageControllerName)" />
+            <input type="hidden" id="urlnamePART" value="@Url.Action("PARTCode", PageControllerName)" />
+            <input type="hidden" id="urlnameJOB" value="@Url.Action("JOBCode", PageControllerName)" />
+            <input type="hidden" id="urlnameSUBJOB" value="@Url.Action("SUBJOBCode", PageControllerName)" />
+            <input type="hidden" id="urlnamePREFJOBBER1" value="@Url.Action("PREFJOBBERCode", PageControllerName)" />
+            <input type="hidden" id="urlnamePREFJOBBER2" value="@Url.Action("PREFJOBBERCode", PageControllerName)" />
+            <input type="hidden" id="urlnamePREFJOBBER3" value="@Url.Action("PREFJOBBERCode", PageControllerName)" />
+            <input type="hidden" id="urlname3" value="@Url.Action("ColorCode", PageControllerName)" />
+            <input type="hidden" id="btnAddMAIN" value="@Url.Action("AddRowMAIN", PageControllerName)" />
+            <input type="hidden" id="btnDeleteMAIN" value="@Url.Action("DeleteRowMAIN", PageControllerName)" />
+            <input type="hidden" id="btnAddOPERATION" value="@Url.Action("AddRowOPERATION", PageControllerName )" />
+            <input type="hidden" id="btnDeleteOPERATION" value="@Url.Action("DeleteRowOPERATION", PageControllerName)" />
+            <input type="hidden" id="btnAddMATERIAL" value="@Url.Action("AddRowMATERIAL", PageControllerName)" />
+            <input type="hidden" id="btnDeleteMATERIAL" value="@Url.Action("DeleteRowMATERIAL", PageControllerName)" />
+            <input type="hidden" id="btnAddRMPM" value="@Url.Action("AddRowRMPM", PageControllerName)" />
+            <input type="hidden" id="btnDeleteRMPM" value="@Url.Action("DeleteRowRMPM", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="urlnameOPENMATERIAL" value="@Url.Action("OpenMaterial", PageControllerName)" />
+            <input type="hidden" id="urlnameCLOSEMATERIAL" value="@Url.Action("CloseMaterial", PageControllerName)" />
+            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_SITEMBOM.M_AUTONO)
+            @Html.HiddenFor(a => a.M_SITEMBOM.BOMCD)
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "BOM Code")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SITEMBOM.BOMCD, new { htmlAttributes = new { @class = "form-control", id = "BOMCD", maxlength = 10, @placeholder = "Code", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Effective Date")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SITEMBOM.EFFDT, new { htmlAttributes = new { @class = "form-control", id = "EFFDT", maxlength = 10, @placeholder = "Code" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Item")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','A','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Style Number" } })
+                                <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="STYLE_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','A')" />
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','C','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Code" } })
+                                <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="ITCD_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','C')" />
+                                @Html.HiddenFor(a => a.M_SITEMBOM.ITCD)
+                            </div>
+                        </div>
+                        <div class="col-md-11">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SITEM.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_UOM.UOMNM, new { htmlAttributes = new { @class = "form-control textbox_image", id = "UOMNM", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Base Quantity")
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SITEMBOM.BASEQNTY, new { htmlAttributes = new { @class = "form-control", id = "BASEQNTY", @placeholder = "Base Qnty", @onkeypress = "return numericOnly(this,2);", maxlength = 12 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Remarks")
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SITEMBOM.REMARKS, new { htmlAttributes = new { @class = "form-control", id = "REMARKS", @placeholder = "Remarks", maxlength = 50 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "De - Activate")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.Checked)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    @if (Model.DefaultAction == "V")
+                    {
+                        <div class="row" style="margin-top: 11px;width:100%;background-color:#c4b9b9;overflow-x:scroll;border:5px groove;">
+                            <div>
+                                <div id="partialdivPrint" style="margin-top:0px;">
+                                    @Html.Partial("_M_BOM_OPERATION_PRINT")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            @if (Model.DefaultAction == "A" && Model.MENU_PARA == "OPR")
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Copy From Other Item")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.STYLENUMBER, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENUMBER", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','A')", onblur = "SelectArticleItemCode(this.value,'STYLENUMBER','ITEM_CODE','ITEM_NAME','UOM_CODE','A','SIMILAR');", @placeholder = "Style Number" } })
+                            <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','A')" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ITEM_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITEM_CODE", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','C')", onblur = "SelectArticleItemCode(this.value,'STYLENUMBER','ITEM_CODE','ITEM_NAME','UOM_CODE','C','SIMILAR');", @placeholder = "Code" } })
+                            <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','C')" />
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ITEM_NAME, new { htmlAttributes = new { @class = "form-control", id = "ITEM_NAME", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.UOM_CODE, new { htmlAttributes = new { @class = "form-control", id = "UOM_CODE", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <ul class="nav nav-tabs">
+                    @if (Model.MENU_PARA == "MTRL")
+                    {
+                        <li id="Standard_LI" class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
+                    }
+                    else if (Model.MENU_PARA == "OPR")
+                    {
+                        <li id="Operations_LI" class="active"><a data-toggle="tab" href="#Operations">Operations</a></li>
+                    }
+                    <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                </ul>
+                <div class="tab-content">
+                    @if (Model.MENU_PARA == "MTRL")
+                    {
+                        <div id="Standard" class="tab-pane fade in active" style="margin-top: 10px;">
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivMain" style="margin-top:0px;">
+                                        @Html.Partial("_M_BOM_MAIN")
+                                    </div>
+                                </div>
+                                <div class="PopUp_Backround">
+                                    <div id="popup" class="row" style="margin-top: 11px;top:7%;position:absolute;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.MENU_PARA == "OPR")
+                    {
+                        <div id="Operations" class="tab-pane fade in active" style="margin-top: 10px;">
+                            <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivOperation" style="margin-top:0px;">
+                                        @Html.Partial("_M_BOM_OPERATION")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivDocument" style="margin-top:0px;">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+

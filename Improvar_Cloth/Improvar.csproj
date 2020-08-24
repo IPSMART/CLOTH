@@ -238,6 +238,7 @@
     <Compile Include="Controllers\DatalockController.cs" />
     <Compile Include="Controllers\DOCPASS_STRGYController.cs" />
     <Compile Include="Controllers\ImageData.cs" />
+    <Compile Include="Controllers\M_BOMController.cs" />
     <Compile Include="Controllers\M_BrandController.cs" />
     <Compile Include="Controllers\M_CollectionController.cs" />
     <Compile Include="Controllers\M_ColorController.cs" />
@@ -267,6 +268,7 @@
     </Compile>
     <Compile Include="ListToDatatable.cs" />
     <Compile Include="Models\APPL_MENU.cs" />
+    <Compile Include="Models\BOM.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\ControlHeader.cs" />
     <Compile Include="Models\DailyTargetDropDowns.cs" />
@@ -308,7 +310,12 @@
     <Compile Include="Models\MSCMITEMGRPDATA.cs" />
     <Compile Include="Models\MSCMITMGRP.cs" />
     <Compile Include="Models\MSIGNAUTH.cs" />
+    <Compile Include="Models\MSITEMBOMMTRL.cs" />
+    <Compile Include="Models\MSITEMBOMMTRL_RMPM.cs" />
+    <Compile Include="Models\MSITEMBOMPART.cs" />
+    <Compile Include="Models\MSITEMBOMSJOB.cs" />
     <Compile Include="Models\MSITEMBOMSUPLR.cs" />
+    <Compile Include="Models\MSITEMBOM_PRINT.cs" />
     <Compile Include="Models\MSITEMCOLOR.cs" />
     <Compile Include="Models\MSITEMMEASURE.cs" />
     <Compile Include="Models\MSITEMPARTS.cs" />
@@ -368,6 +375,7 @@
     <Compile Include="Models\M_ITEM_UN_CNV.cs" />
     <Compile Include="Models\M_JOBMST.cs" />
     <Compile Include="Models\M_JOBMSTSUB.cs" />
+    <Compile Include="Models\M_JOBMSTSUB_STDRT.cs" />
     <Compile Include="Models\M_LINEMAST.cs" />
     <Compile Include="Models\M_LOCA.cs" />
     <Compile Include="Models\M_LOCKDATA.cs" />
@@ -457,6 +465,9 @@
     <Compile Include="Models\T_DO_CANC.cs" />
     <Compile Include="Models\T_GENTRY.cs" />
     <Compile Include="Models\T_INHISS.cs" />
+    <Compile Include="Models\T_INHISSMST.cs" />
+    <Compile Include="Models\T_INHISSMSTSJOB.cs" />
+    <Compile Include="Models\T_INHRECMST.cs" />
     <Compile Include="Models\T_PSLIP.cs" />
     <Compile Include="Models\T_PSLIPDTL.cs" />
     <Compile Include="Models\T_SORD.cs" />
@@ -501,6 +512,7 @@
     <Compile Include="SMS.cs" />
     <Compile Include="ViewModels\AmountTypeMasterEntry.cs" />
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
+    <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
     <Compile Include="ViewModels\ColorEntry.cs" />
@@ -911,6 +923,7 @@
     <Content Include="Views\Shared\_T_SORD_SCHEME.cshtml" />
     <Content Include="Views\Shared\_T_SORD_SEARCH_PANEL.cshtml" />
     <Content Include="Views\Shared\_T_SORD_SIZE.cshtml" />
+    <Content Include="Views\M_BOM\M_BOM.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

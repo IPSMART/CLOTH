@@ -143,6 +143,10 @@ namespace Improvar.Models
         public virtual DbSet<M_FLRLOCA> M_FLRLOCA { get; set; }
         public virtual DbSet<M_JOBMSTSUB> M_JOBMSTSUB { get; set; }
         public virtual DbSet<T_SORD_CANC> T_SORD_CANC { get; set; }
+        public virtual DbSet<M_JOBMSTSUB_STDRT> M_JOBMSTSUB_STDRT { get; set; }
+        public virtual DbSet<T_INHISSMST> T_INHISSMST { get; set; }
+        public virtual DbSet<T_INHISSMSTSJOB> T_INHISSMSTSJOB { get; set; }
+        public virtual DbSet<T_INHRECMST> T_INHRECMST { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (SchemaDBO != null)

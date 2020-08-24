@@ -6,8 +6,8 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("M_SITEMBOMAPPRVL")]
-    public partial class M_SITEMBOMAPPRVL
+    [Table("T_INHISSMSTSJOB")]
+    public partial class T_INHISSMSTSJOB
     {
         public short? EMD_NO { get; set; }
 
@@ -23,22 +23,27 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 0)]
-        [StringLength(10)]
-        public string BOMCD { get; set; }
-
-        public DateTime? EFFDT { get; set; }
-
-        public DateTime? APPRVDT { get; set; }
+        [StringLength(30)]
+        public string AUTONO { get; set; }
 
         [Key]
         [Column(Order = 1)]
-        [StringLength(4)]
-        public string PARTCD { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public short SLNO { get; set; }
 
-        [StringLength(50)]
-        public string REMARK { get; set; }
+        [Key]
+        [Column(Order = 2)]
+        [StringLength(5)]
+        public string SJOBCD { get; set; }
 
-        public long M_AUTONO { get; set; }
+        public decimal? JBRT { get; set; }
+
+        public decimal? JBRTEXT { get; set; }
+
+        [StringLength(3)]
+        public string SEQORDNO { get; set; }
+
+        public decimal? SAMPPC { get; set; }
 
        
     }

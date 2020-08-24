@@ -9,7 +9,6 @@ namespace Improvar.Models
     [Table("M_SITEMBOMPART")]
     public partial class M_SITEMBOMPART
     {
-       
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -51,6 +50,7 @@ namespace Improvar.Models
 
         [StringLength(4)]
         public string SIZECD { get; set; }
-        
+
+       
     }
 }

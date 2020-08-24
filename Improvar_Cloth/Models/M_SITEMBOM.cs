@@ -9,7 +9,6 @@ namespace Improvar.Models
     [Table("M_SITEMBOM")]
     public partial class M_SITEMBOM
     {
-    
         public short? EMD_NO { get; set; }
 
         [Required]

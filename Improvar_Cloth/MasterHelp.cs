@@ -1335,5 +1335,290 @@ namespace Improvar
                 return null;
             }
         }
+        public List<SizeLink> SIZE_LINK()
+        {
+            List<SizeLink> SLNK = new List<SizeLink>();
+            SizeLink SLNK1 = new SizeLink();
+            SLNK1.text = "Yes";
+            SLNK1.value = "Y";
+            SLNK.Add(SLNK1);
+            SizeLink SLNK2 = new SizeLink();
+            SLNK2.text = "No";
+            SLNK2.value = "N";
+            SLNK.Add(SLNK2);
+            return SLNK;
+        }
+        public string ARTICLE_ITEM_DETAILS(string val, string ITGTYPE = "F", string DOC_EFF_DT = "", string JOB_CD = "", string searchby = "A")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            try
+            {
+                string scm1 = CommVar.CurSchema(UNQSNO);
+                string sql = "";
+                if (ITGTYPE != "")
+                {
+                    if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
+                }
+                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype, a.pcsperbox, a.styleno, a.PCSPERSET ";
+                sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b ";
+                sql += "where a.itgrpcd=b.itgrpcd ";
+                if (DOC_EFF_DT != "" || JOB_CD != "")
+                {
+                    sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd ";
+                    if (JOB_CD != "") sql += "and y.jobcd='" + JOB_CD + "' ";
+                    if (DOC_EFF_DT != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT + "','dd/mm/yyyy')  ";
+                    sql += ") ";
+                }
+                if (ITGTYPE != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
+                if (searchby == "A" && val != null) sql += "and a.styleno='" + val + "' ";
+                if (searchby == "C" && val != null) sql += "and a.itcd='" + val + "' ";
+                DataTable rsTmp = SQLquery(sql);
+
+                if (val == null)
+                {
+                    if (rsTmp != null)
+                    {
+                        System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                        for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
+                        {
+                            SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["pcsperbox"].ToString() + "</td></tr>");
+                        }
+                        var hdr = "Article No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "PCS / BOX";
+                        return Generate_help(hdr, SB.ToString());
+                    }
+                    else return "0";
+                }
+                else
+                {
+                    string str = "";
+                    if (rsTmp != null && rsTmp.Rows.Count > 0)
+                    {
+                        str = rsTmp.Rows[0]["styleno"] + Cn.GCS() + rsTmp.Rows[0]["itcd"] + Cn.GCS() + rsTmp.Rows[0]["itnm"] + Cn.GCS() + rsTmp.Rows[0]["uomcd"] + Cn.GCS() + rsTmp.Rows[0]["pcsperbox"].ToString() + Cn.GCS() + rsTmp.Rows[0]["PCSPERSET"].ToString();
+                    }
+                    else
+                    {
+                        str = "Invalid " + (searchby == "A" ? " Article Number" : "Item Code") + " ! Please Enter a Valid " + (searchby == "A" ? " Article Number" : "Item Code") + " !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
+
+        }
+        public string MACHINE_HELP(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
+            {
+                var query = (from c in DB.M_MACHINE
+                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                             where i.INACTIVE_TAG == "N"
+                             select new
+                             {
+                                 MCCD = c.MCCD,
+                                 MCNM = c.MCNM
+                             }).ToList();
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].MCNM + "</td><td>" + query[i].MCCD + "</td></tr>");
+                    }
+                    var hdr = "Machine Name" + Cn.GCS() + "Machine Code";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    query = query.Where(a => a.MCCD == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = i.MCCD + Cn.GCS() + i.MCNM;
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid Machine Code ! Please Select / Enter a Valid Machine Code !!";
+                    }
+                }
+            }
+        }
+        public string SUBJOB(ImprovarDB DB, string VAL, string VAL1)
+        {
+            using (DB)
+            {
+                var tbldatadoc = (from c in DB.M_JOBMSTSUB
+                                  join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                                  join j in DB.M_JOBMST on c.JOBCD equals j.JOBCD
+                                  where i.INACTIVE_TAG == "N" && c.JOBCD == j.JOBCD
+                                  select new
+                                  {
+                                      M_AUTONO = c.M_AUTONO,
+                                      SJOBSTYLE = c.SJOBSTYLE,
+                                      SCATE = c.SCATE,
+                                      SJOBCD = c.SJOBCD,
+                                      SJOBNM = c.SJOBNM,
+                                      JOBNM = j.JOBNM,
+                                      SJOBMCHN = c.SJOBMCHN,
+                                      SJOBSIZE = c.SJOBSIZE
+                                  }).ToList();
+
+                //List<TEMP_helpimg> TEMP_helpimg1 = new List<TEMP_helpimg>();
+                //foreach (var i in tbldatadoc)
+                //{
+                //    TEMP_helpimg UPL = new TEMP_helpimg();
+
+                //    var image = (from h in DB.M_CNTRL_HDR_DOC_DTL
+                //                 where h.M_AUTONO == i.M_AUTONO && h.SLNO == 1
+                //                 select h).OrderBy(d => d.RSLNO).ToList();
+
+                //    var hh = image.GroupBy(x => x.M_AUTONO).Select(x => new
+                //    {
+                //        namefl = string.Join("", x.Select(n => n.DOC_STRING))
+                //    });
+                //    foreach (var ii in hh)
+                //    {
+                //        UPL.DOC_FILE = ii.namefl;
+                //    }
+                //    UPL.M_AUTONO = i.M_AUTONO;
+                //    TEMP_helpimg1.Add(UPL);
+                //}
+                var query = (from c in tbldatadoc
+
+                             select new { M_AUTONO = c.M_AUTONO, SJOBSTYLE = c.SJOBSTYLE, SCATE = c.SCATE, SJOBCD = c.SJOBCD, SJOBNM = c.SJOBNM, JOBNM = c.JOBNM, SJOBMCHN = c.SJOBMCHN, SJOBSIZE = c.SJOBSIZE }).ToList();
+
+                if (VAL != "" && VAL1 == "")
+                {
+                    query = (from c in tbldatadoc
+                             where c.SJOBSTYLE == VAL
+                             select new { M_AUTONO = c.M_AUTONO, SJOBSTYLE = c.SJOBSTYLE, SCATE = c.SCATE, SJOBCD = c.SJOBCD, SJOBNM = c.SJOBNM, JOBNM = c.JOBNM, SJOBMCHN = c.SJOBMCHN, SJOBSIZE = c.SJOBSIZE }).ToList();
+                }
+                else if (VAL == "" && VAL1 != "")
+                {
+                    query = (from c in tbldatadoc
+                             where c.SCATE == VAL1
+                             select new { M_AUTONO = c.M_AUTONO, SJOBSTYLE = c.SJOBSTYLE, SCATE = c.SCATE, SJOBCD = c.SJOBCD, SJOBNM = c.SJOBNM, JOBNM = c.JOBNM, SJOBMCHN = c.SJOBMCHN, SJOBSIZE = c.SJOBSIZE }).ToList();
+                }
+                else if (VAL != "" && VAL1 != "")
+                {
+                    query = (from c in tbldatadoc
+                             where c.SCATE == VAL1
+                             select new { M_AUTONO = c.M_AUTONO, SJOBSTYLE = c.SJOBSTYLE, SCATE = c.SCATE, SJOBCD = c.SJOBCD, SJOBNM = c.SJOBNM, JOBNM = c.JOBNM, SJOBMCHN = c.SJOBMCHN, SJOBSIZE = c.SJOBSIZE }).ToList();
+                }
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr ><td>" + query[i].SJOBSTYLE + "</td><td>" + query[i].SCATE + "</td><td>" + query[i].SJOBNM + "</td><td>" + query[i].SJOBCD + "</td><td>" + query[i].JOBNM + "</td><td>" + query[i].SJOBMCHN + "</td><td>" + query[i].SJOBSIZE + "</td></tr>");
+                }
+                var hdr = "Style Name" + Cn.GCS() + "Category Name" + Cn.GCS() + "Sub Job Name" + Cn.GCS() + "Sub Job Code" + Cn.GCS() + "Job Name" + Cn.GCS() + "Sub Job Machine" + Cn.GCS() + "Sub Job Size";
+                return Generate_help(hdr, SB.ToString());
+            }
+        }
+        public string JOBCD_help(ImprovarDB DB)
+        {
+            using (DB)
+            {
+                var query = (from c in DB.M_JOBMST
+                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                             where i.INACTIVE_TAG == "N"
+                             select new
+                             {
+                                 Code = c.JOBCD,
+                                 Description = c.JOBNM
+                             }).ToList();
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
+                }
+                var hdr = "Job Description" + Cn.GCS() + "Job Code";
+                return Generate_help(hdr, SB.ToString());
+            }
+        }
+        public string PREFJOBBER(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            {
+                var query = (from c in DB.M_SUBLEG join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { SLCD = c.SLCD, SLNM = c.SLNM }).ToList();
+
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].SLNM + "</td><td>" + query[i].SLCD + "</td></tr>");
+                    }
+                    var hdr = "Preferred Jobber / Supplier Name" + Cn.GCS() + "Preferred Jobber / Supplier Code";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    query = query.Where(a => a.SLCD == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = i.SLCD + Cn.GCS() + i.SLNM;
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid Preferred Jobber / Supplier Code ! Please Enter a Valid Preferred Jobber / Supplier Code !!";
+                    }
+                }
+            }
+        }
+        public string STYLE(ImprovarDB DB)
+        {
+            using (DB)
+            {
+                var query = (from c in DB.M_JOBMSTSUB
+                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                             where i.INACTIVE_TAG == "N"
+                             select new
+                             {
+                                 SJOBSTYLE = c.SJOBSTYLE
+                             }).DistinctBy(a => a.SJOBSTYLE).ToList();
+
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + query[i].SJOBSTYLE + "</td></tr>");
+                }
+                var hdr = "Style Name";
+                return Generate_help(hdr, SB.ToString());
+            }
+        }
+        public string CATEGORY(ImprovarDB DB, string VAL)
+        {
+            using (DB)
+            {
+                var query = (from c in DB.M_JOBMSTSUB
+                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                             where i.INACTIVE_TAG == "N" && c.SJOBSTYLE == VAL
+                             select new
+                             {
+                                 SCATE = c.SCATE
+                             }).DistinctBy(a => a.SCATE).ToList();
+
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr ><td>" + query[i].SCATE + "</td></tr>");
+                }
+                var hdr = "Category Name";
+                return Generate_help(hdr, SB.ToString());
+            }
+        }
     }
 }
