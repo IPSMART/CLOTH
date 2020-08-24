@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
-using Improvar.Models;                                           
+using Improvar.Models;
 using Improvar.ViewModels;
 using System.Data;
 using System.Collections.Generic;
@@ -21,7 +21,8 @@ namespace Improvar.Controllers
         // GET: M_BOM
         public ActionResult M_BOM(string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
-            try {
+            try
+            {
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -42,7 +43,8 @@ namespace Improvar.Controllers
                     M_SITEMBOM SITEMBOM = new M_SITEMBOM(); SITEMBOM.EFFDT = System.DateTime.Now; VE.M_SITEMBOM = SITEMBOM;
                     VE.DefaultAction = op;
                     if (op.Length != 0)
-                    { string GCS = Cn.GCS();
+                    {
+                        string GCS = Cn.GCS();
                         VE.IndexKey = (from p in DB.M_SITEMBOM orderby p.BOMCD select new IndexKey() { Navikey = p.BOMCD + GCS + p.EFFDT }).ToList();
                         if (op == "E" || op == "D" || op == "V")
                         {
@@ -479,16 +481,15 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "2" + Cn.GCS() + "4", "3" + Cn.GCS() + "4"));
         }
-        public ActionResult GetItemDetails(string val, string TAG)
+        public ActionResult GetItemDetails(string val, string Code)
         {
-            string ITGTYPE = "";
-            if (val == null)
+            var str = Master_Help.ITCD_help(val, Code);
+            if (str.IndexOf("='helpmnu'") >= 0)
             {
-                return PartialView("_Help2", Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", TAG));
+                return PartialView("_Help2", str);
             }
             else
             {
-                string str = Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", TAG);
                 return Content(str);
             }
         }
@@ -533,17 +534,17 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetMaterialItemDetails(string val)
+        public ActionResult GetMaterialItemDetails(string val, string Code)
         {
             //string ITGTYPE = "A" + Cn.GCS() + "C" + Cn.GCS() + "L" + Cn.GCS() + "P" + Cn.GCS() + "Y";
             string ITGTYPE = "'A','C','L','P','Y'";
-            if (val == null)
+            var str = Master_Help.ITCD_help(val, ITGTYPE, "", "");
+            if (str.IndexOf("='helpmnu'") >= 0)
             {
-                return PartialView("_Help2", Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", "C"));
+                return PartialView("_Help2", str);
             }
             else
             {
-                string str = Master_Help.ARTICLE_ITEM_DETAILS(val, ITGTYPE, "", "", "C");
                 return Content(str);
             }
         }
@@ -2024,7 +2025,7 @@ namespace Improvar.Controllers
                 dr31["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 3px solid;";
                 IR.Rows.Add(dr31);
 
-                string pghdr1 = "";  pghdr1 = "Stiching Operation and Rate Chart";
+                string pghdr1 = ""; pghdr1 = "Stiching Operation and Rate Chart";
                 string repname = CommFunc.retRepname("peration_Rate_Chart");
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
                 return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
