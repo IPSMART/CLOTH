@@ -421,7 +421,8 @@ namespace Improvar.Controllers
                                             SZBARCODE = k.SZBARCODE,
                                             COLRCD = i.COLRCD,
                                             COLRNM = j.COLRNM,
-                                            BARCODE = i.BARCODE
+                                            BARCODE = i.BARCODE,
+                                            CLRBARCODE = j.CLRBARCODE
                                         }).ToList();
 
                     if (VE.MSITEMBARCODE.Count == 0)
@@ -696,7 +697,15 @@ namespace Improvar.Controllers
                 //sql += "select a.itcd,a.sizecd,a.colrcd,a.rate,a.prccd from "+CommVar.CurSchema(UNQSNO)+ ".m_itemplistdtl a where itcd='" + VE.M_SITEM.ITCD + "') ";
                 //sql += "pivot  (sum(rate) for prccd in ("+ prccds + " ))  ";
                 DataTable dtprices = Master_Help.SQLquery(sql);
-
+                dt.Rows.Add("");
+                foreach (var plist in M_PRCLST)
+                {//add same item price
+                    DataRow drRATE = dtprices.Select("SIZECD is null AND  COLRCD is null AND PRCCD='" + plist.PRCCD + "'").FirstOrDefault();
+                    if (drRATE != null)
+                    {
+                        dt.Rows[0][plist.PRCCD] = drRATE["rate"].ToString();
+                    }
+                }
                 foreach (var size in VE.MSITEMSIZE)
                 {
                     foreach (var color in VE.MSITEMCOLOR)
@@ -1785,8 +1794,6 @@ namespace Improvar.Controllers
                                 DB.M_SITEM_PARTS.Add(MIP);
                             }
                         }
-
-
                         M_SITEM_BARCODE MSITEMBARCODE = new M_SITEM_BARCODE();
                         MSITEMBARCODE.CLCD = MSITEM.CLCD;
                         MSITEMBARCODE.EMD_NO = MSITEM.EMD_NO;
@@ -1803,7 +1810,7 @@ namespace Improvar.Controllers
                                 MSITEMBARCODE1.ITCD = MSITEM.ITCD;
                                 MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                 MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
-                                MSITEMBARCODE1.BARCODE = MSITEMBARCODE.BARCODE + VE.MSITEMBARCODE[i].COLRCD.retStr() + VE.MSITEMBARCODE[i].SZBARCODE.retStr();
+                                MSITEMBARCODE1.BARCODE = MSITEMBARCODE.BARCODE + VE.MSITEMBARCODE[i].CLRBARCODE.retStr() + VE.MSITEMBARCODE[i].SZBARCODE.retStr();
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                             }
                         }
