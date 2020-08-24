@@ -534,20 +534,20 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetMaterialItemDetails(string val, string Code)
-        {
-            //string ITGTYPE = "A" + Cn.GCS() + "C" + Cn.GCS() + "L" + Cn.GCS() + "P" + Cn.GCS() + "Y";
-            string ITGTYPE = "'A','C','L','P','Y'";
-            var str = Master_Help.ITCD_help(val, ITGTYPE, "", "");
-            if (str.IndexOf("='helpmnu'") >= 0)
-            {
-                return PartialView("_Help2", str);
-            }
-            else
-            {
-                return Content(str);
-            }
-        }
+        //public ActionResult GetMaterialItemDetails(string val, string Code)
+        //{
+        //    //string ITGTYPE = "A" + Cn.GCS() + "C" + Cn.GCS() + "L" + Cn.GCS() + "P" + Cn.GCS() + "Y";
+        //    string ITGTYPE = "'A','C','L','P','Y'";
+        //    var str = Master_Help.ITCD_help(val, ITGTYPE, "", "");
+        //    if (str.IndexOf("='helpmnu'") >= 0)
+        //    {
+        //        return PartialView("_Help2", str);
+        //    }
+        //    else
+        //    {
+        //        return Content(str);
+        //    }
+        //}
         ////public ActionResult GetRMPMITEMDETAILS(string val)
         ////{
         ////    if (val == null)

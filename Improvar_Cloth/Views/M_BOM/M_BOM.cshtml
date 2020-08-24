@@ -337,7 +337,7 @@
         else {
             $.ajax({
                 type: 'GET',
-                url:"@Url.Action("INVCode", PageControllerName)",
+                url: "@Url.Action("INVCode", PageControllerName)",
                 data: {
                     val: id
                 },
@@ -422,7 +422,7 @@
     function DeleteRowMAIN(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url:"@Url.Action("DeleteRowMAIN", PageControllerName)",
+            url: "@Url.Action("DeleteRowMAIN", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivMain").animate({ marginTop: '0px' }, 50);
@@ -454,7 +454,7 @@
     function DeleteRowOPERATION(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url:"@Url.Action("DeleteRowOPERATION", PageControllerName)",
+            url: "@Url.Action("DeleteRowOPERATION", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivOperation").animate({ marginTop: '0px' }, 50);
@@ -490,7 +490,7 @@
     function DeleteRowMATERIAL(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url:"@Url.Action("DeleteRowMATERIAL", PageControllerName)",
+            url: "@Url.Action("DeleteRowMATERIAL", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 //$("#partialdivMaterials").animate({ marginTop: '0px' }, 50);
@@ -524,7 +524,7 @@
     function DeleteRowRMPM(urlstring, id) {
         $.ajax({
             type: 'POST',
-            url:"@Url.Action("DeleteRowRMPM", PageControllerName)",
+            url: "@Url.Action("DeleteRowRMPM", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 $('#popup').html(result);
@@ -557,7 +557,7 @@
     function DeleteDOCrow() {
         $.ajax({
             type: 'POST',
-            url:"@Url.Action("DeleteDOCRow", PageControllerName )",
+            url: "@Url.Action("DeleteDOCRow", PageControllerName )",
             data: $('form').serialize(),
             success: function (result) {
                 $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
@@ -598,7 +598,7 @@
     function CloseMaterial() {
         $.ajax({
             type: 'post',
-            url:"@Url.Action("CloseMaterial", PageControllerName)",
+            url: "@Url.Action("CloseMaterial", PageControllerName)",
             beforesend: $("#WaitingMode").show(),
             data: $('form').serialize(),
             success: function (result) {
@@ -668,7 +668,7 @@
     }
 </script>
 <script>
-    function SelectArticleItemCode(id) {
+    function SelectArticleItemCode(id, srchfld) {
         if ("@Model.DefaultAction" != "V") {
             debugger;
             if (id == "") {
@@ -681,72 +681,72 @@
                     type: 'POST',
                     beforesend: $("#WaitingMode").show(),
                     url: "@Url.Action("GetItemDetails", PageControllerName)",
-                    data: "&Code=" + linkcd + "&val=" + id,
-                success: function (result) {
-                    var MSG = result.indexOf('#helpDIV');
-                    if (MSG >= 0) {
-                        //ClearAllTextBoxes("ITEM_CODE,ITEM_NAME,FABSTYLENO,UOM_CODE");
-                        ClearAllTextBoxes("ITEM_CODE,ITEM_NAME,UOM_CODE,STYLENUMBER");
-                        $('#SearchFldValue').val("ITEM_CODE");
-                        $('#helpDIV').html(result);
-                        //$('#ReferanceFieldID').val("ITEM_CODE/ITEM_NAME/FABSTYLENO/UOM_CODE");
-                        $('#ReferanceFieldID').val("ITEM_CODE/ITEM_NAME/UOM_CODE/STYLENUMBER");
-                        $('#ReferanceColumn').val("2/1/3/0");
-                        $('#helpDIV_Header').html("Facbric Item Details");
-                    }
-                    else {
-                        var MSG = result.indexOf(String.fromCharCode(181));
+                    data: { val: id, },
+                    success: function (result) {
+                        var MSG = result.indexOf('#helpDIV');
                         if (MSG >= 0) {
-                            $("#ITEM_CODE").val(returncolvalue(result, "itcd"));
-                            $("#ITEM_NAME").val(returncolvalue(result, "itnm"));
-                            //$("#FABSTYLENO").val(returncolvalue(result, "styleno"));
-                            $("#UOM_CODE").val(returncolvalue(result, "uomcd"));
-                            $("#STYLENUMBER").val(returncolvalue(result, "styleno"));
-                            $.ajax({
-                                type: 'GET',
-                                url: '@Url.Action("GetOperationData", PageControllerName)',
-                                beforesend: $("#WaitingMode").show(),
-                                data: { ITEM: str[1].toString(), },
-                                success: function (result) {
-                                    $("#WaitingMode").hide();
-                                    $("#REMARKS").focus();
-                                    if (result == "NODATA") {
-                                        $("#Msgdiv1").show();
-                                        $("#info").show();
-                                        $("#msg_ok_info").focus();
-                                        $("#msgbody_info").html("Operation Data Not Available for Particular Item : " + "' " + str[2].toString() + " '" + " ! </br>  You have to Enter Operation Details !! ");
-                                    }
-                                    else {
-                                        if (confirm("If you want to get the Previous Operation Details for Particular Item : " + "' " + str[2].toString() + " '" + " !\nThen Click on OK or Click on Cancel !!  ")) {
-                                            $("#partialdivOperation").html(result);
-                                        }
-                                    }
-                                },
-                                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                                    $("#WaitingMode").hide();
-                                    msgError(XMLHttpRequest.responseText);
-                                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                                }
-                            });
-                        }
-                        else {
-                            $('#helpDIV').html("");
-                            msgInfo("" + result + " !");
                             //ClearAllTextBoxes("ITEM_CODE,ITEM_NAME,FABSTYLENO,UOM_CODE");
                             ClearAllTextBoxes("ITEM_CODE,ITEM_NAME,UOM_CODE,STYLENUMBER");
-                            message_value = "ITEM_CODE";
+                            $('#SearchFldValue').val(srchfld);
+                            $('#helpDIV').html(result);
+                            //$('#ReferanceFieldID').val("ITEM_CODE/ITEM_NAME/FABSTYLENO/UOM_CODE");
+                            $('#ReferanceFieldID').val("ITEM_CODE/ITEM_NAME/UOM_CODE/STYLENUMBER");
+                            $('#ReferanceColumn').val("2/1/3/0");
+                            $('#helpDIV_Header').html("Facbric Item Details");
                         }
+                        else {
+                            var MSG = result.indexOf(String.fromCharCode(181));
+                            if (MSG >= 0) {
+                                $("#ITEM_CODE").val(returncolvalue(result, "itcd"));
+                                $("#ITEM_NAME").val(returncolvalue(result, "itnm"));
+                                //$("#FABSTYLENO").val(returncolvalue(result, "styleno"));
+                                $("#UOM_CODE").val(returncolvalue(result, "uomcd"));
+                                $("#STYLENUMBER").val(returncolvalue(result, "styleno"));
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '@Url.Action("GetOperationData", PageControllerName)',
+                                    beforesend: $("#WaitingMode").show(),
+                                    data: { ITEM: returncolvalue(result, "itcd"), },
+                                    success: function (result) {
+                                        $("#WaitingMode").hide();
+                                        $("#REMARKS").focus();
+                                        if (result == "NODATA") {
+                                            $("#Msgdiv1").show();
+                                            $("#info").show();
+                                            $("#msg_ok_info").focus();
+                                            $("#msgbody_info").html("Operation Data Not Available for Particular Item : " + "' " + returncolvalue(result, "itnm") + " '" + " ! </br>  You have to Enter Operation Details !! ");
+                                        }
+                                        else {
+                                            if (confirm("If you want to get the Previous Operation Details for Particular Item : " + "' " + returncolvalue(result, "itnm") + " '" + " !\nThen Click on OK or Click on Cancel !!  ")) {
+                                                $("#partialdivOperation").html(result);
+                                            }
+                                        }
+                                    },
+                                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                        $("#WaitingMode").hide();
+                                        msgError(XMLHttpRequest.responseText);
+                                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                                    }
+                                });
+                            }
+                            else {
+                                $('#helpDIV').html("");
+                                msgInfo("" + result + " !");
+                                //ClearAllTextBoxes("ITEM_CODE,ITEM_NAME,FABSTYLENO,UOM_CODE");
+                                ClearAllTextBoxes("ITEM_CODE,ITEM_NAME,UOM_CODE,STYLENUMBER");
+                                message_value = srchfld;
+                            }
+                        }
+                        $("#WaitingMode").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
                     }
-                    $("#WaitingMode").hide();
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
+                });
+            }
         }
-    }
     }
     @*function SelectArticleItemCode(id, STYLENO, ITCD, ITNM, UOMNM, TAG, COPY_TAG) {
         if ("@Model.DefaultAction" != "V") {
@@ -909,7 +909,7 @@
         else {
             $.ajax({
                 type: 'GET',
-                url:"@Url.Action("GetRMPMITEMDETAILS", PageControllerName)",
+                url: "@Url.Action("GetRMPMITEMDETAILS", PageControllerName)",
                 data: {
                     val: id
                 },
@@ -1101,6 +1101,7 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEMBOM.M_AUTONO)
             @Html.HiddenFor(a => a.M_SITEMBOM.BOMCD)
@@ -1141,8 +1142,8 @@
                             <div class="editor-field">
                                 @*@Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','A','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Style Number" } })
                                     <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="STYLE_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','A')" />*@
-                                @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0');", @placeholder = "Design Number", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" id="STYLE_HELP" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0')" />
+                                @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3');", @placeholder = "Design Number", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" id="STYLE_HELP" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3')" />
                             </div>
                         </div>
                         <div class="col-md-7">
@@ -1228,18 +1229,18 @@
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.STYLENUMBER, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENUMBER", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','A')", onblur = "SelectArticleItemCode(this.value,'STYLENUMBER','ITEM_CODE','ITEM_NAME','UOM_CODE','A','SIMILAR');", @placeholder = "Style Number" } })
                                 <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','A')" />*@
-                            @Html.EditorFor(model => model.STYLENUMBER, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENUMBER", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')", onblur = "SelectArticleItemCode(this.value);", @placeholder = "Design Number", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')" />
+                            @Html.EditorFor(model => model.STYLENUMBER, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENUMBER", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENUMBER','STYLENUMBER=styleno=0/ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3')", onblur = "SelectArticleItemCode(this.value,'STYLENUMBER');", @placeholder = "Design Number", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','STYLENUMBER','STYLENUMBER=styleno=0/ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3')" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.ITEM_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITEM_CODE", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','C')", onblur = "SelectArticleItemCode(this.value,'STYLENUMBER','ITEM_CODE','ITEM_NAME','UOM_CODE','C','SIMILAR');", @placeholder = "Code" } })
-                            <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','C')" />*@
-                            @Html.EditorFor(model => model.ITEM_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITEM_CODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')", onblur = "SelectArticleItemCode(this.value);", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','C')" />*@
+                            @Html.EditorFor(model => model.ITEM_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITEM_CODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')", onblur = "SelectArticleItemCode(this.value,'ITEM_CODE');", @placeholder = "Code", maxlength = 8 } })
                             <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')" />
 
-                         </div>
+                        </div>
                     </div>
                     <div class="col-md-10">
                         <div class="editor-field">
