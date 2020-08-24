@@ -1,0 +1,136 @@
+﻿@model Improvar.ViewModels.BOMMasterEntry
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D")
+        {
+            modeView();
+            $(".sl_bom_grid").prop("disabled", false);
+        }
+        else if ("@Model.DefaultAction" == "A")
+        {
+            //$('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('M_BOM_OPERATION'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<div>
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Plus.png" id="btnAddOPERATION" title="Add Row" class="Help_image_button_gridAddRemove" onclick="AddRowOPERATION()" />
+                <img src="~/Image/Minus.png" id="btnDeleteOPERATION" title="Delete Row" class="Help_image_button_gridAddRemove" onclick="DeleteRowOPERATION()" />
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'M_BOM_OPERATION');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bill Of Material Operation Entry Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;max-height:203px;">
+                    <table id="M_BOM_OPERATION" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1460px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="" style="width: 27px;"></th>
+                                <th class="" style="width: 27px;text-align:center;">SL. No.</th>
+                                <th class="" style="width:100px;">Part Code</th>
+                                <th class="" style="width:90px;">Part Name</th>
+                                <th class="" style="width:100px;">Sub Job Style</th>
+                                <th class="" style="width:100px;">Sub Job Category</th>
+                                <th class="" style="width:80px;">Sub Job Code</th>
+                                <th class="" style="width: 40px;">Seq No.</th>
+                                <th class="" style="width:260px;">Sub Job Name</th>
+                                <th class="" style="width:80px;">Job Name</th>
+                                <th class="" style="width:60px;text-align:right;">Fix. Job Rate</th>
+                                <th class="" style="width:60px;text-align:right;">Rate</th>
+                                <th class="" style="width:60px;text-align:right;">Length</th>
+                                <th class="" style="width:60px;text-align:right;">SAM</th>
+                                <th class="" style="width:60px;text-align:right;">Thread Ratio</th>
+                                <th class="" style="width:85px;">Machine Code</th>
+                                <th class="" style="width:165px;">Machine Name</th>
+                                <th class="" style="width:230px;">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.MSITEMBOMSJOB != null)
+                            {
+                                for (int i = 0; i <= Model.MSITEMBOMSJOB.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="grid_td" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.MSITEMBOMSJOB[i].Checked, new { id = "chkid" })
+                                            @Html.HiddenFor(model => model.MSITEMBOMSJOB[i].BOMCD)
+                                            @Html.HiddenFor(model => model.MSITEMBOMSJOB[i].EFFDT)
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SLNO, new { id = "SLNOO_" + i, @class = " atextBoxFor ", maxlength = 2, @style= "text-align:center;",@TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].PARTCD, new { id = "PARTCDO_" + i, @onkeypress = "KeyCheck();", onkeyup = "GetHelp('" + @Url.Action("GetPartDetails", "M_BOM") + "','" + "PARTCDO_" + i + "/" + "PARTNMO_" + i + "','1/0','Part Details','" + "PARTCDO_" + i + "')", onblur = "GetCodeBlurData(this.value,'" + "PARTCDO_" + i + "','" + "PARTNMO_" + i + "','GetPartDetails','');", @class = " atextBoxFor textbox_image", maxlength = 4 })
+                                            <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetPartDetails", "M_BOM")','PARTCDO_@i/PARTNMO_@i','1/0','Part Details','PARTCDO_@i')" />
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].PARTNM, new { id = "PARTNMO_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @*@Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SJOBSTYLE, new { id = "SJOBSTYLE_" + i, onkeyup = "GetHelp('" + @Url.Action("GetSubJobStyle", "M_BOM") + "','" + "SJOBSTYLE_" + i + "','0','Sub Job Style Details','" + "SJOBSTYLE_" + i + "')", onblur = "SelectSubJobStyle(this.value," + "SJOBSTYLE_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 20 })*@
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SJOBSTYLE, new { id = "SJOBSTYLE_" + i, onkeyup = "GetHelp('" + @Url.Action("GetSubJobStyle", "M_BOM") + "','" + "SJOBSTYLE_" + i + "','0','Sub Job Style Details','" + "SJOBSTYLE_" + i + "')", @class = " atextBoxFor textbox_image", maxlength = 20 })
+                                            <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetSubJobStyle", "M_BOM")','SJOBSTYLE_@i','0','Sub Job Details','SJOBSTYLE_@i')" />
+                                        </td>
+                                        <td class="">
+                                            @*@Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SCATE, new { id = "SCATE_" + i, onkeyup = "GetHelpVAL('" + @Url.Action("GetSubJobCategory", "M_BOM") + "','" + "SCATE_" + i + "','0','Sub Job Category Details','" + "SJOBSTYLE_" + i + "')", onblur = "SelectSubJobCategory(this.value," + "SCATE_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 20 })*@
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SCATE, new { id = "SCATE_" + i, onkeyup = "GetHelp_WithId('" + @Url.Action("GetSubJobCategory", "M_BOM") + "','" + "SCATE_" + i + "','0','Sub Job Category Details','SCATE_" + i + "','" + "SJOBSTYLE_" + i + "')", @class = " atextBoxFor textbox_image", maxlength = 20 })
+                                            <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp_WithId('@Url.Action("GetSubJobCategory", "M_BOM")','SCATE_@i','0','Sub Job Category Details','SCATE_@i','SJOBSTYLE_@i')" />
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SJOBCD, new { id = "SJOBCD_" + i, onkeyup = "GetHelp_WithId('" + @Url.Action("GetSubJobDetails", "M_BOM") + "','" + "SJOBCD_" + i + "/" + "SJOBNMO_" + i + "/" + "JOBNMO_" + i + "','3/2/4','Sub Job Details','" + "SJOBCD_" + i + "','" + "SJOBSTYLE_" + i + "/" + "SCATE_" + i + "')", onblur = "SelectSubJobCode(this.value," + "SJOBCD_" + i + "," + "SJOBNMO_" + i + "," + "JOBCDO_" + i + "," + "JOBNMO_" + i + "," + "STD_SJ_JOBRT_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 5 })
+                                            <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp_WithId('@Url.Action("GetSubJobDetails", "M_BOM")','SJOBCD_@i/SJOBNMO_@i/JOBNMO_@i','3/2/4','Sub Job Details','SJOBCD_@i','SJOBSTYLE_@i/SCATE_@i')" />
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SEQORDNO, new { id = "SEQORDNOO_" + i, onkeyup = "KeyCheck();", @class = " atextBoxFor ", title = "Press F7 to Get Last Part Details", maxlength = 3 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SJOBNM, new { id = "SJOBNMO_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.HiddenFor(model => Model.MSITEMBOMSJOB[i].JOBCD, new { id = "JOBCDO_" + i })
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].JOBNM, new { id = "JOBNMO_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].STD_SJ_JOBRT, new { id = "STD_SJ_JOBRT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].JOBRT, new { id = "JOBRTO_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnlyForNegative(this,2);", @maxlength = 12 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].LENCM, new { id = "LENCM_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnlyForNegative(this,4);", @style = "text-align:right;" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SMV, new { id = "SMV_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnlyForNegative(this,4);", @style = "text-align:right;" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].TRATIO, new { id = "TRATIO_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnlyForNegative(this,4);", @style = "text-align:right;" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].MCCD, new { id = "MCCDO_" + i, @onkeypress = "KeyCheck();", onkeyup = "GetHelp('" + @Url.Action("GetMachineDetails", "M_BOM") + "','" + "MCCDO_" + i + "/" + "MCNMO_" + i + "','1/0','Machine Details','" + "MCCDO_" + i + "')", onblur = "SelectMachineCode(this.value," + "MCCDO_" + i + "," + "MCNMO_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 6 })
+                                            <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetMachineDetails", "M_BOM")','MCCDO_@i/MCNMO_@i','1/0','Machine Details','MCCDO_@i')" />
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].MCNM, new { id = "MCNMO_" + i, @class = " atextBoxFor ", maxlength = 40, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].REMARK, new { id = "REMARKO_" + i, @class = " atextBoxFor ", maxlength = 50 })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

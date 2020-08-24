@@ -924,6 +924,11 @@
     <Content Include="Views\Shared\_T_SORD_SEARCH_PANEL.cshtml" />
     <Content Include="Views\Shared\_T_SORD_SIZE.cshtml" />
     <Content Include="Views\M_BOM\M_BOM.cshtml" />
+    <Content Include="Views\Shared\_M_BOM_MAIN.cshtml" />
+    <Content Include="Views\Shared\_M_BOM_MATERIAL.cshtml" />
+    <Content Include="Views\Shared\_M_BOM_OPERATION.cshtml" />
+    <Content Include="Views\Shared\_M_BOM_OPERATION_PRINT.cshtml" />
+    <Content Include="Views\Shared\_M_BOM_RMPM.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

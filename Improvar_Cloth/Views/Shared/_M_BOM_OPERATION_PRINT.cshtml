@@ -1,0 +1,62 @@
+﻿@model Improvar.ViewModels.BOMMasterEntry
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D")
+        {
+            modeView();
+            $(".sl_bom_grid").prop("disabled", false);
+        }
+        else if ("@Model.DefaultAction" == "A")
+        {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('M_BOM_OPERATION_PRINT'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<div style="width: 100%;height:50%; overflow-y:auto;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;text-align:left;"><b style="padding-left:85px;">Part Details</b></center>
+            </div>
+            <table id="M_BOM_OPERATION_PRINT" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+                <thead>
+                    <tr style="height:30px;">
+                        <th class="grid_th" style="width: 27px;"></th>
+                        <th class="grid_th" style="width: 27px;">Sl.No.</th>
+                        <th class="grid_th" style="width:75px;">Part Code</th>
+                        <th class="grid_th" style="width:165px;">Part Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MSITEMBOM_PRINT != null)
+                    {
+                        for (int i = 0; i <= Model.MSITEMBOM_PRINT.Count - 1; i++)
+                        {
+                            <tr style="font-size:12px; font-weight:bold;">
+                                <td class="grid_td" style="padding-left:7px;padding-right:7px;">
+                                    @Html.CheckBoxFor(model => model.MSITEMBOM_PRINT[i].Checked, new { id = "chkidPrint", @class = "sl_bom_grid" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMBOM_PRINT[i].SLNO, new { id = "SLNOO_" + i, @class = "atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMBOM_PRINT[i].PARTCD, new { id = "PARTCDO_" + i, @class = " atextBoxFor textbox_image", @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMBOM_PRINT[i].PARTNM, new { id = "PARTNMO_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+</div>
+
