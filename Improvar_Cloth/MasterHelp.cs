@@ -925,24 +925,45 @@ namespace Improvar
 
             return sql;
         }
+        //public List<DropDown_list> OTHER_REC_MODE()
+        //{
+        //    List<DropDown_list> DDL = new List<DropDown_list>();
+        //    DropDown_list DDL1 = new DropDown_list();
+        //    DDL1.text = "TelePhone";
+        //    DDL1.value = "T";
+        //    DDL.Add(DDL1);
+        //    DropDown_list DDL2 = new DropDown_list();
+        //    DDL2.text = "Email";
+        //    DDL2.value = "E";
+        //    DDL.Add(DDL2);
+        //    DropDown_list DDL3 = new DropDown_list();
+        //    DDL3.text = "Whatsapp";
+        //    DDL3.value = "W";
+        //    DDL.Add(DDL3);
+        //    DropDown_list DDL4 = new DropDown_list();
+        //    DDL4.text = "Online";
+        //    DDL4.value = "O";
+        //    DDL.Add(DDL4);
+        //    return DDL;
+        //}
         public List<DropDown_list> OTHER_REC_MODE()
         {
             List<DropDown_list> DDL = new List<DropDown_list>();
             DropDown_list DDL1 = new DropDown_list();
-            DDL1.text = "TelePhone";
-            DDL1.value = "T";
+            DDL1.text = "Whatsapp";
+            DDL1.value = "W";
             DDL.Add(DDL1);
             DropDown_list DDL2 = new DropDown_list();
-            DDL2.text = "Email";
-            DDL2.value = "E";
+            DDL2.text = "Verbal";
+            DDL2.value = "V";
             DDL.Add(DDL2);
             DropDown_list DDL3 = new DropDown_list();
-            DDL3.text = "Whatsapp";
-            DDL3.value = "W";
+            DDL3.text = "Email";
+            DDL3.value = "E";
             DDL.Add(DDL3);
             DropDown_list DDL4 = new DropDown_list();
-            DDL4.text = "Online";
-            DDL4.value = "O";
+            DDL4.text = "Physical (Static)";
+            DDL4.value = "P";
             DDL.Add(DDL4);
             return DDL;
         }

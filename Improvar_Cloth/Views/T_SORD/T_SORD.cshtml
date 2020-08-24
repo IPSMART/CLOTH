@@ -415,7 +415,7 @@
                         document.getElementById(ITNM_.id).value = str[2].toString();
                         document.getElementById(UOM_.id).value = str[3].toString();
                         document.getElementById(TOTAL_PCS_.id).value = str[4].toString();
-                        document.getElementById(PCSPERSET_.id).value = str[5].toString();                        
+                        document.getElementById(PCSPERSET_.id).value = str[5].toString();
                         if (str[6] == "ITCDCHANGED") {
                             $("#RATE_DISPLAY_" + RowIndex).val("");
                             $("#QNTY_" + RowIndex).val("");
@@ -425,7 +425,7 @@
                             $("#ChildData_" + RowIndex).val("");
                         }
                     }
-                    else {                        
+                    else {
                         msgInfo("Invalid Aricle Number ! Please Enter a Valid Article Number !! " + result);
                         message_value = ARTNO_.id;
                         $("#" + ARTNO_.id).val("");
@@ -1207,6 +1207,7 @@
         <input type="hidden" id="urlnameAGENT" value="@Url.Action("GetAgentDetails", PageControllerName)" />
         <input type="hidden" id="urlnameSALESMEN" value="@Url.Action("GetSalesMenDetails", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="partylinkcd" value="D" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_SORD.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_SORD.DOCNO)
@@ -1276,22 +1277,6 @@
                             </div>
                         </div>
                     }
-                    @*<div class="col-md-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Brand Code")
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_SORD.BRANDCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BRANDCD", onkeyup = "GetHelp('" + @Url.Action("GetBrandDetails", PageControllerName) + "','BRANDCD/BrandName','1/0','Brand Details','BRANDCD')", onblur = "SelectBrandCode(this.value,BRANDCD,BrandName);", @placeholder = "Code", maxlength = 4 } })
-                            <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetBrandDetails", PageControllerName )','BRANDCD/BrandName','1/0','Brand Details','BRANDCD')" />
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.BrandName, new { htmlAttributes = new { @class = "form-control", id = "BrandName", maxlength = 45, @title = "Only for View", @placeholder = "Brand Name", @readonly = "readonly",tabindex = "-1" } })
-                        </div>
-                    </div>*@
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -1302,8 +1287,10 @@
                     </div>
                     <div class="col-md-4">
                         <div class="editor-field" style="margin-left:-18px;">
-                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />
+                            @*@Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />*@
+                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd')", onblur = "SelectSubLedgerCode(this.value);", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd')" />
                         </div>
                     </div>
                     <div class="col-md-10">
@@ -1343,86 +1330,30 @@
                 </div>
                 <div class="col-lg-7" style="margin-left:-4px;">
                     <div class="row">
-                        @*<div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Price List")
-                                <b style="color:Red;">*</b>
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="editor-field">
-                                @if (Model.Delete == "")
-                                {
-                                    @Html.EditorFor(model => model.T_SORD.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @placeholder = "Code", maxlength = 4, @readonly = "readonly", tabindex = "-1" } })
-                                }
-                                else
-                                {
-                                    @Html.EditorFor(model => model.T_SORD.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPriceListDetails", PageControllerName) + "','PRCCD/PriceName','1/0','Price List Details','PRCCD','SLCD')", onblur = "SelectPriceListCode(this.value,'PRCCD','PriceName');", @placeholder = "Code", maxlength = 4 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPriceListDetails", PageControllerName )','PRCCD/PriceName','1/0','Price List Details','PRCCD','SLCD')" />
-                                }
-                            </div>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.PriceName, new { htmlAttributes = new { @class = "form-control", id = "PriceName", maxlength = 30, @title = "Only for View", @placeholder = "Price List Name", @readonly = "readonly", tabindex = "-1" } })
-                            </div>
-                        </div>*@
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Effective Date")
-                            </div>
-                        </div>
-                        <div class="col-md-2" style="width:auto;">
-                            <div class="editor-field">
-                                @Html.DropDownListFor(model => Model.EFF_DATE_ID, new SelectList(Model.DropDown_list1, "value", "text", Model.EFF_DATE_ID), "==Select==", new { @class = "form-control" })
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Agent")
+                                @Html.Label("", "Consignee Code")
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-7">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.T_SORD.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeyup = "GetHelp('" + @Url.Action("GetAgentDetails", PageControllerName) + "','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')", onblur = "SelectSubLedgerCode(this.value,AGSLCD,AgentName,'urlnameAGENT');", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetAgentDetails", PageControllerName )','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')" />
+                                @Html.EditorFor(model => model.T_SORD.CONSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CONSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')" />
                             </div>
                         </div>
                         <div class="col-lg-7">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.AgentName, new { htmlAttributes = new { @class = "form-control", id = "AgentName", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
+                                @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Salesmen")
-                                <b style="color:Red;">*</b>
+                                @Html.Label("", "Party Ref. Number")
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_SORD.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeyup = "GetHelp('" + @Url.Action("GetSalesMenDetails", PageControllerName) + "','SLMSLCD/SalesManName','1/0','Agent Details','SLMSLCD')", onblur = "SelectSubLedgerCode(this.value,SLMSLCD,SalesManName,'urlnameSALESMEN');", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetSalesMenDetails", PageControllerName )','SLMSLCD/SalesManName','1/0','SalesMen Details','SLMSLCD')" />
-                            </div>
-                        </div>
-                        <div class="col-lg-7">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.SalesManName, new { htmlAttributes = new { @class = "form-control", id = "SalesManName", maxlength = 45, @title = "Only for View", @placeholder = "SalesMen Name", @readonly = "readonly", tabindex = "-1" } })
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Party Ref. Number")
-                        </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-md-11">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_SORD.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 30, @placeholder = "Party Ref. Number" } })
@@ -1439,6 +1370,23 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Order Rec Mode")
+                            </div>
+                        </div>
+                        <div class="col-md-5" style="width:auto;">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => Model.OTHRECMD, new SelectList(Model.DropDown_list, "value", "text", Model.OTHRECMD), "==Select==", new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
 
                 </div>
                 <div class="col-lg-5">
@@ -1467,39 +1415,60 @@
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Order Rec Mode")
-                                </div>
-                            </div>
-                            <div class="col-md-5" style="width:auto;">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => Model.OTHRECMD, new SelectList(Model.DropDown_list, "value", "text", Model.OTHRECMD), "==Select==", new { @class = "form-control" })
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="editor-field" style="margin-top: 6px;">
-                                    @Html.Label("", "Document Through")
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.T_SORD.DOCTH, new SelectList(Model.DocumentThrough, "Value", "Text"), new { @class = "form-control", id = "DOCTH_H" })
-                                </div>
-                            </div>
                             <div class="col-md-3">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Delvery Type")
+                                    @Html.Label("", "Agent")
+                                    <b style="color:Red;">*</b>
                                 </div>
                             </div>
-                            <div class="col-md-2">
-                                <div class="editor-field" style="margin-top:4px;">
-                                    @Html.DropDownListFor(model => model.T_SORD.COD, new SelectList(Model.DropDown_list_DelvType, "Value", "Text"), "Select", new { @class = "form-control" })
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeyup = "GetHelp('" + @Url.Action("GetAgentDetails", PageControllerName) + "','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')", onblur = "SelectSubLedgerCode(this.value,AGSLCD,AgentName,'urlnameAGENT');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetAgentDetails", PageControllerName )','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.AgentName, new { htmlAttributes = new { @class = "form-control", id = "AgentName", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Sub Agent")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeyup = "GetHelp('" + @Url.Action("GetAgentDetails", PageControllerName) + "','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')", onblur = "SelectSubLedgerCode(this.value,AGSLCD,AgentName,'urlnameAGENT');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetAgentDetails", PageControllerName )','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.AgentName, new { htmlAttributes = new { @class = "form-control", id = "AgentName", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
                             </div>
                         </div>
                         <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Salesmen")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
                             <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeyup = "GetHelp('" + @Url.Action("GetSalesMenDetails", PageControllerName) + "','SLMSLCD/SalesManName','1/0','Agent Details','SLMSLCD')", onblur = "SelectSubLedgerCode(this.value,SLMSLCD,SalesManName,'urlnameSALESMEN');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetSalesMenDetails", PageControllerName )','SLMSLCD/SalesManName','1/0','SalesMen Details','SLMSLCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.SalesManName, new { htmlAttributes = new { @class = "form-control", id = "SalesManName", maxlength = 45, @title = "Only for View", @placeholder = "SalesMen Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Transporter")
                                 </div>
@@ -1510,64 +1479,56 @@
                                     <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetTransporterDetails", PageControllerName )','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')" />
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-md-9">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.TransporterName, new { htmlAttributes = new { @class = "form-control", id = "TransporterName", maxlength = 45, @title = "Only for View", @placeholder = "Transporter Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
                             </div>
-                            @*<div class="col-md-3">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Destination")
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.DESTN, new { htmlAttributes = new { @class = "form-control", id = "DESTN", maxlength = 25, @title = "Only for View", @placeholder = "Destination" } })
-                                </div>
-                            </div>*@
                         </div>
-                        @*<div class="row">
-                            <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-3">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Courier")
+                                    @Html.Label("", "Order By")
+                                </div>
+                            </div>
+                            <div class="col-md-5" style="width:auto;">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => Model.OTHRECMD, new SelectList(Model.DropDown_list, "value", "text", Model.OTHRECMD), "==Select==", new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "Select By")
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.CRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CRSLCD", onkeyup = "GetHelp('" + @Url.Action("GetCourierDetails", PageControllerName) + "','CRSLCD/CourierName','1/0','Courier Details','CRSLCD')", onblur = "SelectSubLedgerCode(this.value,CRSLCD,CourierName,'urlnameCOURIER');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetCourierDetails", PageControllerName )','CRSLCD/CourierName','1/0','Courier Details','CRSLCD')" />
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.CourierName, new { htmlAttributes = new { @class = "form-control", id = "CourierName", maxlength = 45, @title = "Only for View", @placeholder = "Courier Name", @readonly = "readonly", tabindex = "-1" } })
+                                    @Html.DropDownListFor(model => model.T_SORD.DOCTH, new SelectList(Model.DocumentThrough, "Value", "Text"), new { @class = "form-control", id = "DOCTH_H" })
                                 </div>
                             </div>
                         </div>
+                       
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Document Through")
+                            <div class="col-md-3">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Payment Terms")
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-10">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.DOCTH1, new { htmlAttributes = new { @class = "form-control", id = "DOCTH1", maxlength = 40, @title = "Only for View", @placeholder = "Document Through 1" } })
+                                <div class="col-md-2">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PAYTRMCD", onkeyup = "GetHelp('" + @Url.Action("GetPayTermsDetails", PageControllerName) + "','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')", onblur = "SelectPayTermsCode(this.value,PAYTRMCD,PayTermName);", @placeholder = "Code", maxlength = 4 } })
+                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetPayTermsDetails", PageControllerName )','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.DOCTH2, new { htmlAttributes = new { @class = "form-control", id = "DOCTH2", maxlength = 40, @title = "Only for View", @placeholder = "Document Through 1" } })
+                                <div class="col-md-9">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.PayTermName, new { htmlAttributes = new { @class = "form-control", id = "PayTermName", maxlength = 30, @title = "Only for View", @placeholder = "Payment Terms Name", @readonly = "readonly", tabindex = "-1" } })
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.DOCTH3, new { htmlAttributes = new { @class = "form-control", id = "DOCTH3", maxlength = 40, @title = "Only for View", @placeholder = "Document Through 1" } })
-                                </div>
-                            </div>
-                        </div>*@
+                           
+                        </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Delvry Instructions")
                                 </div>
@@ -1578,66 +1539,9 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
-                            @*<div class="col-md-4">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Payment Terms")
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.PAYTRMCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PAYTRMCD", onkeyup = "GetHelp('" + @Url.Action("GetPayTermsDetails", PageControllerName) + "','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')", onblur = "SelectPayTermsCode(this.value,PAYTRMCD,PayTermName);", @placeholder = "Code", maxlength = 4 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetPayTermsDetails", PageControllerName )','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')" />
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.PayTermName, new { htmlAttributes = new { @class = "form-control", id = "PayTermName", maxlength = 30, @title = "Only for View", @placeholder = "Payment Terms Name", @readonly = "readonly", tabindex = "-1" } })
-                                </div>
-                            </div>*@
-                            @*<div class="col-md-2" style="width:auto;">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Total Boxes")
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.TOTBOX, new { htmlAttributes = new { @class = "form-control", id = "TOTBOX", @title = "Only for View", @placeholder = "Total Boxes", @readonly = "readonly", tabindex = "-1" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2" style="width:auto;">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Total Sets")
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.TOTSET, new { htmlAttributes = new { @class = "form-control", id = "TOTSET", @title = "Only for View", @placeholder = "Total Boxes", @readonly = "readonly", tabindex = "-1" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2" style="width:auto;">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Total Pieces")
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @title = "Only for View", @placeholder = "Total Pieces", @readonly = "readonly", tabindex = "-1" } })
-                                </div>
-                            </div>*@
-                            <div class="col-md-4">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Order Approx Value")
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.APROXVAL, new { htmlAttributes = new { @class = "form-control", id = "APROXVAL", maxlength = 12, @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Special Notes")
                                 </div>
@@ -1648,58 +1552,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            @*<div class="col-md-4">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Discount")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.DISCRTCD, new { htmlAttributes = new { @class = "form-control", id = "DISCRTCD", @placeholder = "Code", maxlength = 4, @readonly = "readonly", tabindex = "-1" } })
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.DiscountName, new { htmlAttributes = new { @class = "form-control", id = "DiscountName", maxlength = 30, @title = "Only for View", @placeholder = "Discount Name", @readonly = "readonly", tabindex = "-1" } })
-                                </div>
-                            </div>*@
-                            <div class="col-md-7" style="width:auto;">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Discount Effective Date")
-                                </div>
-                            </div>
-                            <div class="col-md-2" style="width:auto;">
-                                <div class="editor-field">
-                                    @*@Html.EditorFor(model => model.PartyName, new { htmlAttributes = new { @class = "form-control", id = "PartyName", maxlength = 45, @title = "Only for View", @placeholder = "dd/MM/yyyy" } })*@
-                                    @Html.DropDownListFor(model => Model.DISC_EFF_DATE_ID, new SelectList(Model.DropDown_list4, "value", "text", Model.DISC_EFF_DATE_ID), "==Select==", new { @class = "form-control" })
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Rate Percentage")
-                                </div>
-                            </div>
-                            @if (Model.DefaultAction == "A")
-                            {
-                                <div class="col-md-4">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_SORD.RATEPER, new { htmlAttributes = new { @class = "form-control", id = "RATEPER", maxlength = 12, @placeholder = "Rate Increase%", @onkeypress = "return numericOnly(this,2);" } })
-                                    </div>
-                                </div>
-                                <div class="col-md-1" style="margin-top: 1px;">
-                                    @*<button type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" title="Click to Save Delivery Order Details" onclick="ApplyToAllItem(); ">Apply</button>*@
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="col-md-4">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_SORD.RATEPER, new { htmlAttributes = new { @class = "form-control", id = "RATEPER", maxlength = 12, @placeholder = "Rate Increase%", @readonly = "readonly", @onkeypress = "return numericOnly(this,2);" } })
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                     
                         @if (Model.DefaultAction == "V")
                         {
                             <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:1050px;">

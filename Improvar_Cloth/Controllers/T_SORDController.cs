@@ -1890,5 +1890,25 @@ namespace Improvar.Controllers
         //    TempData["printparameter"] = ind;
         //    return Content("");
         //}
+        public ActionResult GetSubLedgerDetails(string val, string Code)
+        {
+            try
+            {
+                var str = Master_Help.SLCD_help(val, Code);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
     }
 }
