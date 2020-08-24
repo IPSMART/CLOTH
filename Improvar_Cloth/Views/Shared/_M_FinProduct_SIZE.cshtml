@@ -30,30 +30,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (int i = 0; i <= Model.MSITEMSIZE.Count - 1; i++)
-                {
-                        <tr style="font-size:12px; font-weight:bold;">
-                            <td class="grid_td" style="padding-left:7px;padding-right:7px;">
-                                @Html.CheckBoxFor(model => model.MSITEMSIZE[i].Checked, new { htmlAttributes = new { id = "chkid" } })
-                            </td>
-                            <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSITEMSIZE[i].SRLNO, new { id = "SSRLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
-                            </td>
-                            <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSITEMSIZE[i].SIZECD, new { id = "SIZECD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetSizeDetails", "M_FinProduct") + "','" + "SIZECD_" + i + "/" + "SIZENM_" + i + "/" + "BARCODE_" + i + "','1/0/2','Size Details','" + "SIZECD_" + i + "')", onblur = "SelectSIZECODE(this.value," + "SIZECD_" + i + "," + "SIZENM_" + i + "," + "BARCODE_" + i + ");", @class = " atextBoxFor textbox_image" })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetSizeDetails", "M_FinProduct")','SIZECD_@i/SIZENM_@i/BARCODE_@i','1/0/2','Size Details','SIZECD_@i')" />
-                            </td>
-                            <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSITEMSIZE[i].SIZENM, new { id = "SIZENM_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
-                            </td>
-                            <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSITEMSIZE[i].BARCODE, new { id = "BARCODE_" + i, maxlength = 3, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
-                            </td>
-                            <td class="grid_td" style="padding-left:7px;padding-right:7px;">
-                                @Html.CheckBoxFor(model => model.MSITEMSIZE[i].IChecked, new { htmlAttributes = new { id = "IChecked_" } })
-                            </td>
+                    @if (Model.MSITEMSIZE != null)
+                    {
+                        for (int i = 0; i <= Model.MSITEMSIZE.Count - 1; i++)
+                    {
+                            <tr style="font-size:12px; font-weight:bold;">
+                                <td class="grid_td" style="padding-left:7px;padding-right:7px;">
+                                    @Html.CheckBoxFor(model => model.MSITEMSIZE[i].Checked, new { htmlAttributes = new { id = "chkid" } })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMSIZE[i].SRLNO, new { id = "SSRLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMSIZE[i].SIZECD, new { id = "SIZECD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetSizeDetails", "M_FinProduct") + "','" + "SIZECD_" + i + "/" + "SIZENM_" + i + "/" + "BARCODE_" + i + "','1/0/2','Size Details','" + "SIZECD_" + i + "')", onblur = "SelectSIZECODE(this.value," + "SIZECD_" + i + "," + "SIZENM_" + i + "," + "BARCODE_" + i + ");", @class = " atextBoxFor textbox_image" })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetSizeDetails", "M_FinProduct")','SIZECD_@i/SIZENM_@i/BARCODE_@i','1/0/2','Size Details','SIZECD_@i')" />
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMSIZE[i].SIZENM, new { id = "SIZENM_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMSIZE[i].BARCODE, new { id = "BARCODE_" + i, maxlength = 3, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                </td>
+                                <td class="grid_td" style="padding-left:7px;padding-right:7px;">
+                                    @Html.CheckBoxFor(model => model.MSITEMSIZE[i].IChecked, new { htmlAttributes = new { id = "IChecked_" } })
+                                </td>
 
-                        </tr>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

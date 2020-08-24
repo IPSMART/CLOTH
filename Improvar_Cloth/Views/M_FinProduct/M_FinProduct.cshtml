@@ -33,14 +33,15 @@
 </script>
 <script>
     function requiredFieldValidator() {
-        //if (!emptyFieldCheck("Enter Design", "STYLENO")) {
-        //    $("li").removeClass("active").addClass("");
-        //    $(".nav-tabs li:first-child").addClass('active');
-        //    //below set the  child sequence
-        //    $(".tab-content div").removeClass("active");
-        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-        //    return false;
-        //}
+        if ("@Model.MENU_PARA" == "F") {
+        if (!emptyFieldCheck("Enter Design", "STYLENO")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }}
         if (!emptyFieldCheck("Enter Item Group Code", "ITGRPCD")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -927,7 +928,10 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
-            <input type="hidden" id="fabitcdlinkcd" value="C" />
+            @if (Model.MENU_PARA == "F")
+            {  <input type="hidden" id="fabitcdlinkcd" value="F" />}
+            else { <input type="hidden" id="fabitcdlinkcd" value="C" />}
+            
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
             @Html.HiddenFor(a => a.MENU_PARA)
@@ -962,7 +966,9 @@
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Design No")
-                                    @*<b style="color:Red;">*</b>*@
+                                    @if (Model.MENU_PARA == "F")
+                                    { <b style="color:Red;">*</b> }
+                                   
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -980,8 +986,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2');", @placeholder = "Code", maxlength = 8 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />
+                                        @*@Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />*@
+                                        @Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')" />
                                     </div>
                                 </div>
                                 <div class="col-md-8">

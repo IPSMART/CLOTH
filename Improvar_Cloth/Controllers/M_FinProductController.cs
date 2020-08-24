@@ -158,10 +158,10 @@ namespace Improvar.Controllers
                                     VE = Navigation(VE, DB, Nindex, searchValue);
                                 }
                             }
-                           
+                            //VE.M_SITEM = sl;
                             VE.M_CNTRL_HDR = sll;
                             VE.M_GROUP = slll;
-                            //VE.M_SUBBRAND = slsb;
+                            VE.M_SUBBRAND = slsb;
                             VE.M_BRAND = slb;
                             VE.M_COLLECTION = slc;
                             VE.M_COLOR = slco;
@@ -1575,11 +1575,15 @@ namespace Improvar.Controllers
                             var STYLENO = (from x in DB.M_SITEM where x.STYLENO == VE.M_SITEM.STYLENO && x.ITCD != VE.M_SITEM.ITCD select x).ToList();
                             if (STYLENO.Any()) dataexist = true;
                         }
-                        if (dataexist == true)
+                        if (VE.MENU_PARA=="F")
                         {
-                            transaction.Rollback();
-                            return Content("This Design Already exist");
+                            if (dataexist == true)
+                            {
+                                transaction.Rollback();
+                                return Content("This Design Already exist");
+                            }
                         }
+                       
                         if (VE.DefaultAction == "A")
                         {
                             MSITEM.EMD_NO = 0;
