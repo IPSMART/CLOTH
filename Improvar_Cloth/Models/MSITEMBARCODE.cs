@@ -44,7 +44,8 @@ namespace Improvar.Models
         public string SIZENM { get; set; }
         [StringLength(20)]
         public string COLRNM { get; set; }
-        [StringLength(3)]
+        [StringLength(3)]        
         public string SZBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }
     }
 }
