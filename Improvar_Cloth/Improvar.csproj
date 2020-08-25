@@ -932,10 +932,10 @@
     <Content Include="Views\Shared\_M_BOM_OPERATION.cshtml" />
     <Content Include="Views\Shared\_M_BOM_OPERATION_PRINT.cshtml" />
     <Content Include="Views\Shared\_M_BOM_RMPM.cshtml" />
+    <Content Include="Views\M_RetMaster\M_RetMaster.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\M_RetMaster\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

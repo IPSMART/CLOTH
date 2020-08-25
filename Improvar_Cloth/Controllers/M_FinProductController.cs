@@ -370,6 +370,7 @@ namespace Improvar.Controllers
                                           SLNO = i.SLNO,
                                           COLRCD = i.COLRCD,
                                           COLRNM = j.COLRNM,
+                                          CLRBARCODE = j.CLRBARCODE,
                                           IChecked = i.INACTIVE_TAG == "Y" ? true : false,
                                       }).OrderBy(s => s.SLNO).ToList();
 
@@ -566,55 +567,55 @@ namespace Improvar.Controllers
         {
             try
             {
-                string sql = "select rate,sizecd,colrcd,prccd from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
-                DataTable dt_prcrt = Master_Help.SQLquery(sql);
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                var M_PRCLST = (from p in DBF.M_PRCLST
-                                select new
-                                {
-                                    PRCCD = p.PRCCD,
-                                    PRCNM = p.PRCNM
-                                }).ToList();
+                //string sql = "select rate,sizecd,colrcd,prccd from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
+                //DataTable dt_prcrt = Master_Help.SQLquery(sql);
+                //ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                //var M_PRCLST = (from p in DBF.M_PRCLST
+                //                select new
+                //                {
+                //                    PRCCD = p.PRCCD,
+                //                    PRCNM = p.PRCNM
+                //                }).ToList();
 
-                DataTable dt = new DataTable();
-                DataColumn column;
-                column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
-                column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
+                //DataTable dt = new DataTable();
+                //DataColumn column;
+                //column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
+                //column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
 
-                foreach (var plist in M_PRCLST)
-                {
-                    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
-                }
+                //foreach (var plist in M_PRCLST)
+                //{
+                //    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
+                //}
 
-                dt.Rows.Add("");
-                dt.Rows[0]["SIZECD"] = "";//Add blank row
-                dt.Rows[0]["COLRCD"] = "";
+                //dt.Rows.Add("");
+                //dt.Rows[0]["SIZECD"] = "";//Add blank row
+                //dt.Rows[0]["COLRCD"] = "";
 
-                VE.MSITEMCOLOR = VE.MSITEMCOLOR.Where(r => r.COLRCD != null).ToList();
-                VE.MSITEMSIZE = VE.MSITEMSIZE.Where(r => r.SIZECD != null).ToList();
-                foreach (var size in VE.MSITEMSIZE)
-                {
-                    foreach (var color in VE.MSITEMCOLOR)
-                    {
-                        dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
-                        dt.Rows[rNo]["SIZECD"] = size.SIZECD;
-                        dt.Rows[rNo]["COLRCD"] = color.COLRCD;
-                        //for (int i = 0; i > 2; i++)
-                        //{
-                        //    //dt.Rows[rNo]["prc" + i] = "";
-                        //}
-                        if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
-                        {
-                            foreach (var plist in M_PRCLST)
-                            {
-                                string rate = (from DataRow dr in dt_prcrt.Rows where dr["sizecd"].retStr() == size.SIZECD && dr["colrcd"].retStr() == color.COLRCD && dr["prccd"].retStr() == plist.PRCCD select dr["rate"].retStr()).FirstOrDefault();
-                                dt.Rows[rNo][plist.PRCCD] = rate;
-                            }
-                        }
-                    }
-                }
-                VE.DTPRICES = dt.Copy();
-                TempData["DTPRICES"] = dt;
+                //VE.MSITEMCOLOR = VE.MSITEMCOLOR.Where(r => r.COLRCD != null).ToList();
+                //VE.MSITEMSIZE = VE.MSITEMSIZE.Where(r => r.SIZECD != null).ToList();
+                //foreach (var size in VE.MSITEMSIZE)
+                //{
+                //    foreach (var color in VE.MSITEMCOLOR)
+                //    {
+                //        dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
+                //        dt.Rows[rNo]["SIZECD"] = size.SIZECD;
+                //        dt.Rows[rNo]["COLRCD"] = color.COLRCD;
+                //        //for (int i = 0; i > 2; i++)
+                //        //{
+                //        //    //dt.Rows[rNo]["prc" + i] = "";
+                //        //}
+                //        if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
+                //        {
+                //            foreach (var plist in M_PRCLST)
+                //            {
+                //                string rate = (from DataRow dr in dt_prcrt.Rows where dr["sizecd"].retStr() == size.SIZECD && dr["colrcd"].retStr() == color.COLRCD && dr["prccd"].retStr() == plist.PRCCD select dr["rate"].retStr()).FirstOrDefault();
+                //                dt.Rows[rNo][plist.PRCCD] = rate;
+                //            }
+                //        }
+                //    }
+                //}
+                VE.DTPRICES = GetPrices(VE);
+                //TempData["DTPRICES"] = dt;
                 VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
 
                 ModelState.Clear();
