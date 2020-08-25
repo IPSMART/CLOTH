@@ -1,0 +1,646 @@
+﻿@model Improvar.ViewModels.RetailDebtorMasterEntry
+@{
+    ViewBag.Title = "Retail Debtor Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string PageControllerName = "M_RetMaster";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#ITGRPCD").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Mobile No.", "MOBILE")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+       if (!emptyFieldCheck("Enter/Select City.", "CITY")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+       if (!emptyFieldCheck("Enter Pin Code", "PIN")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+       if (!emptyFieldCheck("Enter/Select Sate", "STATECD")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+       if (!emptyFieldCheck("Enter/Select Country", "COUNTRY")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       } 
+       //var gender = $("#gender").val();
+       //if (gender == "0") {
+       //    msgInfo("Select Sex Type"); message_value = "gender";
+       //    $("li").removeClass("active").addClass("");
+       //    $(".nav-tabs li:first-child").addClass('active');
+       //    //below set the  child sequence
+       //    $(".tab-content div").removeClass("active");
+       //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active"); return false;
+       //}
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_RETDEB != null)
+        {
+            mldauto = Model.M_RETDEB.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+        $(function () {
+            $("#DOB").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, mindate: '01/01/1600', maxDate: '@Model.maxdate' });
+            $("#DOW").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+           
+        });
+    }
+</script>
+<script>
+    function CheckGroupCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlname").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msg_ok_info").focus();
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#ITGRPCD").val("");
+                            message_value = "ITGRPCD";
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function input(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectRefRetailCode(id, REFRTDEBCD, REFRTDEBNM) {
+        if (id == "") {
+            $("#REFRTDEBNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetRefRetailDetails", PageControllerName)",
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#REFRTDEBCD").val("");
+                        $("#REFRTDEBNM").val("");
+                        msgInfo("Invalid Ref Retail Code !! ");
+                        message_value = "REFRTDEBCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input(REFRTDEBCD, REFRTDEBNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+
+    function input(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectRefLedgerCode(id, REFSLCD, REFSLNM) {
+        if (id == "") {
+            $("#REFSLNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetRefLedgerDetails", PageControllerName)",
+                data: {
+                val: id
+                },
+            success: function (result) {
+                if (result == "0") {
+                    $("#REFSLCD").val("");
+                    $("#REFSLNM").val("");
+                    msgInfo("Invalid Ref Ledger Code !! ");
+                    message_value = "REFSLCD";
+                }
+                else {
+                    $("#tempHDD").val(result);
+                    input(REFSLCD, REFSLNM);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    }
+</script>
+<script>
+
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function inputSTATE(id, id1) {
+        debugger;
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectSTATE(id, STATECD, STATENM) {
+        debugger
+        if (id == "") {
+            $("#STATECD").val("");
+            //$("#STATE").val("");
+            $("#STATENM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("State", PageControllerName)",
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        msgInfo("Invalid State Code !")
+                        $("#STATECD").val("");
+                        //$("#STATE").val("");
+                        $("#STATENM").val("");
+                        message_value = "STATECD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputSTATE(STATECD, STATENM);
+                    }
+
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function pageprinting()
+    {
+        $("#btnprint").click();
+    }
+</script>
+<script></script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlname" value="@Url.Action("CheckGroupCode", PageControllerName)" />
+            <input type="hidden" id="urlPRODGRP" value="@Url.Action("ProductGrp", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+
+            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_RETDEB.M_AUTONO)
+            @Html.HiddenFor(e => e.M_RETDEB.EMD_NO)
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                <li class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
+                <li><a data-toggle="tab" href="#Documents">Documents</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Code")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_RETDEB.RTDEBCD, new { htmlAttributes = new { @class = "form-control", id = "RTDEBCD", @placeholder = "Code", @onkeyup = "toUpper(this);", maxlength = 8, @readonly = "readonly" } })
+                               
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Mobile No.")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", @title = "Only Numeric", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "MOBILE No.", maxlength = 12 } })
+                               
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Alternate No.")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field"style="width: auto;">
+                                @Html.EditorFor(model => model.M_RETDEB.ALTNO, new { htmlAttributes = new { @class = "form-control", id = "ALTNO", @title = "Only Numeric", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Alternate No.", maxlength = 12 } })
+
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Sex")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field"style="width: auto;">
+                                <select id="gender" name="gender" class="form-control">
+                                    <option value="0" selected="selected">====Select====</option>
+                                    @foreach (var i in Model.DropDown_list1)
+                                    {
+                                        if (Model.DefaultAction == "A" && Model.M_RETDEB == null)
+                                        {
+                                            <option value="@i.value">@i.text</option>
+                                        }
+                                        else
+                                        {
+                                            if (Model.M_RETDEB.SEX == i.value)
+                                            {
+                                                <option value="@i.value" selected="selected">@i.text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@i.value">@i.text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Name")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDEBNM", @placeholder = "Name", maxlength = 50 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Area")
+                               
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.AREA, new { htmlAttributes = new { @class = "form-control", id = "AREA", @placeholder = "Name", maxlength = 30 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;">
+                                @Html.Label("", "City")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.CITY, new { htmlAttributes = new { @class = "form-control", id = "CITY", @placeholder = "City", maxlength = 30, @list = "lstcity" } })
+                                <datalist id="lstcity">
+                                    @foreach (var jg in Model.Database_Combo1)
+                                    {
+                                        <option value="@jg.FIELD_VALUE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Pin")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.PIN, new { htmlAttributes = new { @class = "form-control", id = "PIN", @placeholder = "pin code", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Birthday")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.DOB, new { htmlAttributes = new { @class = "form-control", id = "DOB", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10 } })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Wedding Anniversary")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.DOW, new { htmlAttributes = new { @class = "form-control", id = "DOW", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Email ID")
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.EMAIL, new { htmlAttributes = new { @class = "form-control", id = "EMAIL", @placeholder = "Email ID", @type = "email", maxlength = 100 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                <b>
+                                    @Html.Label("", "Address")
+                                </b>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.ADD1, new { htmlAttributes = new { @class = "form-control", id = "ADD1", @placeholder = "Address Line 1", maxlength = 75 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.ADD2, new { htmlAttributes = new { @class = "form-control", id = "ADD2", @placeholder = "Address Line 2", maxlength = 75 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.ADD3, new { htmlAttributes = new { @class = "form-control", id = "ADD3", @placeholder = "Address Line 3", maxlength = 75 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "State")
+                                <sup style="color:Red;">*</sup>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                </div>
+                                @Html.EditorFor(model => model.M_RETDEB.STATECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STATECD", onblur = "SelectSTATE(this.value,STATECD,STATENM);", onkeyup = "GetHelp('" + @Url.Action("GetState", PageControllerName) + "','STATECD/STATENM','1/0','Select State','STATECD')", @placeholder = "Code", maxlength = 2 } })
+                                <img src="~/Image/search.png" class="Help_image_button" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetState", PageControllerName )','STATECD/STATENM','1/0','Select State','STATECD')" />
+                            </div>
+                        </div>
+                        @*<div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.STATE, new { htmlAttributes = new { @class = "form-control", id = "STATE", @placeholder = "State Name", maxlength = 35, @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>*@
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.MS_STATE.STATENM, new { htmlAttributes = new { @class = "form-control", id = "STATENM", @placeholder = "State Name", @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;">
+                                @Html.Label("", "Country")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.COUNTRY, new { htmlAttributes = new { @class = "form-control", id = "COUNTRY", @placeholder = "Country", maxlength = 30, @list = "lstcountry" } })
+                                <datalist id="lstcountry">
+                                    @foreach (var jg in Model.Database_Combo2)
+                                    {
+                                        <option value="@jg.FIELD_VALUE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Ref Retail")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.REFRTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFRTDEBCD", onblur = "SelectRefRetailCode(this.value,REFRTDEBCD,REFRTDEBNM);", @placeholder = "Ref Retail Code", onkeyup = "GetHelp('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','REFRTDEBCD/REFRTDEBNM','1/0','Ref Retail Details','REFRTDEBCD');toUpper(this);", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetRefRetailDetails", PageControllerName )','REFRTDEBCD/REFRTDEBNM','1/0','Ref Retail Details','REFRTDEBCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.REFRTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "REFRTDEBNM", maxlength = 15, @title = "Only for View", @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Ref Ledger")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onblur = "SelectRefLedgerCode(this.value,REFSLCD,REFSLNM);", @placeholder = "Ref Retail Code", onkeyup = "GetHelp('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD');toUpper(this);", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetRefLedgerDetails", PageControllerName )','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.REFSLNM, new { htmlAttributes = new { @class = "form-control", id = "REFSLNM", maxlength = 15, @title = "Only for View", @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "De - Activate")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field" style="margin-top:6px;">
+                                    @Html.CheckBoxFor(model => model.Checked)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div id="Remarks" class="tab-pane fade" style="margin-top: 10px;">
+                    @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;height:auto;width:fit-content;">*@
+                    <div>
+                        <div id="partialdivRemarks">
+                            @Html.Partial("_MASTERREMARKS")
+                        </div>
+                    </div>
+                    @*</div>*@
+                </div>
+                <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivDocument">
+                            @Html.Partial("_UPLOADDOCUMENTS")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
