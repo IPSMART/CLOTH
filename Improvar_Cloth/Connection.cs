@@ -3340,5 +3340,70 @@ namespace Improvar
             }
 
         }
+        public Models.M_CNTRL_HDR_REM GetMasterReamrks(string schema, long AutoNO)
+        {
+            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), schema);
+
+            M_CNTRL_HDR_REM MCHREM = new M_CNTRL_HDR_REM();
+
+            var REM = (from h in DB.M_CNTRL_HDR_REM where h.M_AUTONO == AutoNO select h).OrderBy(d => d.SLNO).ToList();
+
+            var RE = REM.GroupBy(x => x.M_AUTONO).Select(x => new
+            {
+                MASTER_REM = string.Join("", x.Select(n => n.DOCREM))
+            });
+            foreach (var i in RE)
+            {
+                MCHREM.DOCREM = i.MASTER_REM.ToString();
+            }
+            return MCHREM;
+        }
+        public Tuple<List<M_CNTRL_HDR_REM>> SAVEMASTERREMARKS(M_CNTRL_HDR_REM MSTRHDRREM, long AUTONO, string CLCD, int? EMD)
+        {
+
+            List<M_CNTRL_HDR_REM> REM = new List<M_CNTRL_HDR_REM>();
+
+            if (MSTRHDRREM.DOCREM.Length <= 1000)
+            {
+                M_CNTRL_HDR_REM REMARKS = new M_CNTRL_HDR_REM();
+                REMARKS.M_AUTONO = AUTONO;
+                REMARKS.CLCD = CLCD;
+                REMARKS.EMD_NO = EMD;
+                REMARKS.SLNO = 1;
+                REMARKS.DOCREM = MSTRHDRREM.DOCREM;
+                REM.Add(REMARKS);
+            }
+            else
+            {
+                long length = MSTRHDRREM.DOCREM.Length;
+                long count = length / 1000;
+                int index = 0;
+                for (int i = 0; i <= count - 1; i++)
+                {
+                    M_CNTRL_HDR_REM REMARKS = new M_CNTRL_HDR_REM();
+                    REMARKS.M_AUTONO = AUTONO;
+                    REMARKS.CLCD = CLCD;
+                    REMARKS.EMD_NO = EMD;
+                    REMARKS.SLNO = Convert.ToInt16(i + 1);
+                    REMARKS.DOCREM = MSTRHDRREM.DOCREM.Substring(index, 1000);
+                    index += 1000;
+                    REM.Add(REMARKS);
+                }
+                if (index < MSTRHDRREM.DOCREM.Length)
+                {
+                    int rest = MSTRHDRREM.DOCREM.Length - index;
+                    M_CNTRL_HDR_REM REMARKS = new M_CNTRL_HDR_REM();
+                    REMARKS.M_AUTONO = AUTONO;
+                    REMARKS.CLCD = CLCD;
+                    REMARKS.EMD_NO = EMD;
+                    REMARKS.SLNO = Convert.ToInt16(count + 1);
+                    REMARKS.DOCREM = MSTRHDRREM.DOCREM.Substring(index, rest);
+                    index += rest;
+                    REM.Add(REMARKS);
+                }
+            }
+            var result = Tuple.Create(REM);
+            return result;
+        }
     }
 }

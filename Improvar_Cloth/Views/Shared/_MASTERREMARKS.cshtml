@@ -1,0 +1,27 @@
+﻿@model Improvar.Models.Permission
+
+    <script>
+        $("#partialdivItemDetails").ready(function () {
+            if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+                $("textarea").attr("readonly", "readonly");
+            }
+        });
+    </script>
+    <div style="width: 100%;height:50%;" overflow-y:auto;">
+        <div class="table-responsive">
+
+            @if (Model.DefaultView == true)
+            {
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="tempHDD" name="tempHDD" value="" />
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @Html.Label("", "Note : ")
+                            @Html.TextAreaFor(model => model.M_CNTRL_HDR_REM.DOCREM, new { @class = "TextAreaRemarks", id = "REMARKS", @placeholder = "Remarks" })
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>

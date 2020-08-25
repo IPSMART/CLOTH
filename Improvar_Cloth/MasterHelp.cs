@@ -1589,5 +1589,40 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
+        public string RefRetail_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            {
+                var query = (from c in DB.M_RETDEB join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { RTDEBCD = c.RTDEBCD, RTDEBNM=c.RTDEBNM }).ToList();
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].RTDEBNM + "</td><td>" + query[i].RTDEBCD + "</td></tr>");
+                    }
+                    var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    query = query.Where(a => a.RTDEBCD == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = i.RTDEBCD + Cn.GCS()+ i.RTDEBNM;
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid Ref Retail Code ! Please Select / Enter a Valid Ref Retail Code !!";
+                    }
+                }
+            }
+        }
     }
 }
