@@ -210,7 +210,6 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    sl.DOB = Convert.ToDateTime("1/01/1600");
                     List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                     UploadDOC UPL = new UploadDOC();
                     UPL.DocumentType = doctP;
