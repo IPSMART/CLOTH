@@ -1333,18 +1333,18 @@ namespace Improvar.Controllers
                 try
                 {
                     bool recomodify = false;
-                    if (VE.MENU_PARA == "OPR")
-                    {
-                        List<MSITEMBOMSJOB> Tmplst = (List<MSITEMBOMSJOB>)TempData["MSITEMBOMSJOB_Data"];
-                        TempData.Keep();
-                        List<MSITEMBOMSJOB> Tmplst1 = (List<MSITEMBOMSJOB>)VE.MSITEMBOMSJOB;
-                        var frstL1 = ((Tmplst1.Select(a => a.JOBRT).DefaultIfEmpty()).Except(Tmplst.Select(c => c.JOBRT).DefaultIfEmpty())).ToList();
-                        var sndL1 = ((Tmplst.Select(a => a.JOBRT).DefaultIfEmpty()).Except(Tmplst1.Select(c => c.JOBRT).DefaultIfEmpty())).ToList();
-                        var frstL2 = Tmplst1.Except(Tmplst).ToList();
-                        var sndL2 = Tmplst.Except(Tmplst1).ToList();
-                        if (frstL1.Any() || sndL1.Any()) recomodify = true;
-                        if (frstL2.Any() && sndL2.Any()) if (frstL2.Count != sndL2.Count) recomodify = true;
-                    }
+                    //if (VE.MENU_PARA == "OPR")
+                    //{
+                    //    List<MSITEMBOMSJOB> Tmplst = (List<MSITEMBOMSJOB>)TempData["MSITEMBOMSJOB_Data"];
+                    //    TempData.Keep();
+                    //    List<MSITEMBOMSJOB> Tmplst1 = (List<MSITEMBOMSJOB>)VE.MSITEMBOMSJOB;
+                    //    var frstL1 = ((Tmplst1.Select(a => a.JOBRT).DefaultIfEmpty()).Except(Tmplst.Select(c => c.JOBRT).DefaultIfEmpty())).ToList();
+                    //    var sndL1 = ((Tmplst.Select(a => a.JOBRT).DefaultIfEmpty()).Except(Tmplst1.Select(c => c.JOBRT).DefaultIfEmpty())).ToList();
+                    //    var frstL2 = Tmplst1.Except(Tmplst).ToList();
+                    //    var sndL2 = Tmplst.Except(Tmplst1).ToList();
+                    //    if (frstL1.Any() || sndL1.Any()) recomodify = true;
+                    //    if (frstL2.Any() && sndL2.Any()) if (frstL2.Count != sndL2.Count) recomodify = true;
+                    //}
                     DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".M_CNTRL_HDR in  row share mode");
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
