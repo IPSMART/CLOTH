@@ -76,7 +76,6 @@ namespace Improvar.Models
         public DateTime? DOB { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DOW { get; set; }
-
         public long? M_AUTONO { get; set; }
        
         
