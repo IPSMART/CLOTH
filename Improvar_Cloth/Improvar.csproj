@@ -539,13 +539,13 @@
     <Compile Include="ViewModels\ProductGroupEntry.cs" />
     <Compile Include="ViewModels\ReportViewinHtml.cs" />
     <Compile Include="ViewModels\Rep_Doc_Print.cs" />
+    <Compile Include="ViewModels\RetailDebtorMasterEntry.cs" />
     <Compile Include="ViewModels\SalesOrderEntry.cs" />
     <Compile Include="ViewModels\SubBrandEntry.cs" />
     <Compile Include="ViewModels\SubLedgerEntry.cs" />
     <Compile Include="ViewModels\SubLedgerSDdtlMasterEntry.cs" />
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
-    <Compile Include="ViewModels\TransactionSalesPurchaseEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
     <Compile Include="ViewModels\UserGroupLinkDetails.cs" />
     <Compile Include="ViewModels\UserGuideImprovar.cs" />
