@@ -19,7 +19,7 @@ namespace Improvar
     {
         string CS = null;
         Connection Cn = new Connection();
-        public string ITCD_help(string val, string ITGTYPE, string DOC_EFF_DT = "", string JOB_CD = "")
+        public string ITCD_help(string val, string ITGTYPE, string ITGRPCD = "", string FABITCD = "", string DOC_EFF_DT = "", string JOB_CD = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             try
@@ -31,9 +31,9 @@ namespace Improvar
                 {
                     if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
                 }
-                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype,a.styleno, a.PCSPERSET,a.hsncode ";
-                sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b ";
-                sql += "where a.itgrpcd=b.itgrpcd ";
+                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrpnm, b.itgrptype,a.styleno, a.PCSPERSET,a.hsncode, a.fabitcd, c.itnm fabitnm ";
+                sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b, " + scm1 + ".m_sitem c ";
+                sql += "where a.itgrpcd=b.itgrpcd and a.fabitcd=c.itcd(+) ";
                 if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
                 {
                     sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd ";
@@ -42,7 +42,7 @@ namespace Improvar
                     sql += ") ";
                 }
                 if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
-                if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(uomcd) like '%" + valsrch + "%'  )  ";
+                if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(a.uomcd) like '%" + valsrch + "%'  )  ";
 
                 DataTable rsTmp = SQLquery(sql);
 
@@ -51,9 +51,9 @@ namespace Improvar
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td></tr>");
+                        SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["itgrpnm"] + "</td><td>" + rsTmp.Rows[i]["itgrpcd"] + "</td><td>" + rsTmp.Rows[i]["fabitnm"] + "</td><td>" + rsTmp.Rows[i]["fabitcd"] + "</td></tr>");
                     }
-                    var hdr = "Design No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM";
+                    var hdr = "Design No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "Item Group Name" + Cn.GCS() + "Item Group Code" + Cn.GCS() + "Fabric Item Name" + Cn.GCS() + "Fabric Item Code";
                     return Generate_help(hdr, SB.ToString());
                 }
                 else
@@ -227,7 +227,7 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
-                var query = (from c in DB.M_COLOR join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { COLRCD = c.COLRCD, COLRNM = c.COLRNM,c.CLRBARCODE }).ToList();
+                var query = (from c in DB.M_COLOR join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { COLRCD = c.COLRCD, COLRNM = c.COLRNM, c.CLRBARCODE }).ToList();
                 if (val == null)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -1376,7 +1376,7 @@ namespace Improvar
             SLNK.Add(SLNK2);
             return SLNK;
         }
-        
+
         public string MACHINE_HELP(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
@@ -1594,7 +1594,7 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
             {
-                var query = (from c in DB.M_RETDEB join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { RTDEBCD = c.RTDEBCD, RTDEBNM=c.RTDEBNM }).ToList();
+                var query = (from c in DB.M_RETDEB join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { RTDEBCD = c.RTDEBCD, RTDEBNM = c.RTDEBNM }).ToList();
                 if (val == null)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -1613,7 +1613,7 @@ namespace Improvar
                         string str = "";
                         foreach (var i in query)
                         {
-                            str = i.RTDEBCD + Cn.GCS()+ i.RTDEBNM;
+                            str = i.RTDEBCD + Cn.GCS() + i.RTDEBNM;
                         }
                         return str;
                     }
@@ -1623,6 +1623,54 @@ namespace Improvar
                     }
                 }
             }
+        }
+        public string ITGRPCD_FABITCD_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            try
+            {
+                string scm1 = CommVar.CurSchema(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
+                string sql = "";
+
+                sql += "select distinct b.itgrpcd, b.itgrpnm, a.fabitcd, c.itnm fabitnm, b.grpnm ";
+                sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b, " + scm1 + ".m_sitem c ";
+                sql += "where a.itgrpcd = b.itgrpcd(+) and a.fabitcd = c.itcd(+) ";
+                if (valsrch.retStr() != "") sql += "and ( upper(b.itgrpcd) like '%" + valsrch + "%' or upper(b.itgrpnm) like '%" + valsrch + "%' or upper(a.fabitcd) like '%" + valsrch + "%' or upper(c.itnm) like '%" + valsrch + "%'  )  ";
+                sql += "order by grpnm, itgrpnm, fabitnm ";
+
+
+                DataTable rsTmp = SQLquery(sql);
+
+                if (val.retStr() == "" || rsTmp.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + rsTmp.Rows[i]["itgrpnm"] + "</td><td>" + rsTmp.Rows[i]["itgrpcd"] + "</td><td>" + rsTmp.Rows[i]["fabitnm"] + "</td><td>" + rsTmp.Rows[i]["fabitcd"] + "</td><td>" + rsTmp.Rows[i]["grpnm"] + "</td></tr>");
+                    }
+                    var hdr = "Item Group Name" + Cn.GCS() + "Item Group Code" + Cn.GCS() + "Fabric Item Name" + Cn.GCS() + "Fabric Item Code" + Cn.GCS() + "Group Name";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    string str = "";
+                    if (rsTmp.Rows.Count > 0)
+                    {
+                        str = ToReturnFieldValues("", rsTmp);
+                    }
+                    else
+                    {
+                        str = "Invalid Item Code. Please Enter a Valid Item Code !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
+
         }
     }
 }
