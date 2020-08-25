@@ -388,6 +388,7 @@
     <Compile Include="Models\M_PRODGRP.cs" />
     <Compile Include="Models\M_PRODTAX.cs" />
     <Compile Include="Models\M_REPFORMAT.cs" />
+    <Compile Include="Models\M_RETDEB.cs" />
     <Compile Include="Models\M_SCHEME.cs" />
     <Compile Include="Models\M_SCHEME_HDR.cs" />
     <Compile Include="Models\M_SDR_QUERY.cs" />
