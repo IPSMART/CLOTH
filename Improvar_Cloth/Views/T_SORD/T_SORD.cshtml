@@ -572,280 +572,280 @@
     }
 </script>
 @*<script>
-    function SelectSubLedgerCode(id, CODE, NAME, URL) {
+        function SelectSubLedgerCode(id, CODE, NAME, URL) {
 
-        var BRAND = document.getElementById("BRANDCD").value;
-        if (id == "") {
-            $("#" + CODE.id).val("");
-            $("#" + NAME.id).val("");
-            if (URL == "urlnamePARTY") {
-                $("#PRCCD").val("");
-                $("#PriceName").val("");
-                $("#AGSLCD").val("");
-                $("#AgentName").val("");
-                $("#TRSLCD").val("");
-                $("#TransporterName").val("");
-                $("#CRSLCD").val("");
-                $("#CourierName").val("");
-                $("#DISCRTCD").val("");
-                $("#DiscountName").val("");
-                $("#AreaCode").val("");
-                $("#AreaName").val("");
-                $("#PARTYCD_H").val("");
-                $("#PARTYNM_H").val("");
-                $("#PRCCD_H").val("");
-                $("#PRCNM_H").val("");
-                $("#AGTCD_H").val("");
-                $("#AGTNM_H").val("");
-                $("#TRNSCD_H").val("");
-                $("#TRNSNM_H").val("");
-                $("#CURCD_H").val("");
-                $("#CURNM_H").val("");
-                $("#DISCD_H").val("");
-                $("#DISNM_H").val("");
-                $("#AREACD_H").val("");
-                $("#AREANM_H").val("");
+            var BRAND = document.getElementById("BRANDCD").value;
+            if (id == "") {
+                $("#" + CODE.id).val("");
+                $("#" + NAME.id).val("");
+                if (URL == "urlnamePARTY") {
+                    $("#PRCCD").val("");
+                    $("#PriceName").val("");
+                    $("#AGSLCD").val("");
+                    $("#AgentName").val("");
+                    $("#TRSLCD").val("");
+                    $("#TransporterName").val("");
+                    $("#CRSLCD").val("");
+                    $("#CourierName").val("");
+                    $("#DISCRTCD").val("");
+                    $("#DiscountName").val("");
+                    $("#AreaCode").val("");
+                    $("#AreaName").val("");
+                    $("#PARTYCD_H").val("");
+                    $("#PARTYNM_H").val("");
+                    $("#PRCCD_H").val("");
+                    $("#PRCNM_H").val("");
+                    $("#AGTCD_H").val("");
+                    $("#AGTNM_H").val("");
+                    $("#TRNSCD_H").val("");
+                    $("#TRNSNM_H").val("");
+                    $("#CURCD_H").val("");
+                    $("#CURNM_H").val("");
+                    $("#DISCD_H").val("");
+                    $("#DISNM_H").val("");
+                    $("#AREACD_H").val("");
+                    $("#AREANM_H").val("");
+                }
             }
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: $("#" + URL).val(),
-                data: { val: id, BRAND: BRAND, },
-                success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#msg_ok_info").focus();
-                        $("#" + CODE.id).val("");
-                        $("#" + NAME.id).val("");
-                        $("#msgbody_info").html("Invalid Code ! Please Enter a Valid Code !! ");
-                        message_value = CODE.id;
-                        return false;
-                    }
-                    else {
-                        $("#tempHDD").val(result);
-                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                        var aaa = str.length;
-                        if (str.length == 2) {
-                            document.getElementById(CODE.id).value = str[0].toString();
-                            document.getElementById(NAME.id).value = str[1].toString();
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#" + URL).val(),
+                    data: { val: id, BRAND: BRAND, },
+                    success: function (result) {
+                        if (result == "0") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msg_ok_info").focus();
+                            $("#" + CODE.id).val("");
+                            $("#" + NAME.id).val("");
+                            $("#msgbody_info").html("Invalid Code ! Please Enter a Valid Code !! ");
+                            message_value = CODE.id;
+                            return false;
                         }
-                        else if (str.length > 2) {
-                            if (str[2].toString() != "0") {
+                        else {
+                            $("#tempHDD").val(result);
+                            var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                            var aaa = str.length;
+                            if (str.length == 2) {
                                 document.getElementById(CODE.id).value = str[0].toString();
                                 document.getElementById(NAME.id).value = str[1].toString();
-                                document.getElementById("PRCCD").value = str[2].toString();
-                                document.getElementById("PriceName").value = str[3].toString();
-                                document.getElementById("AGSLCD").value = str[4].toString();
-                                document.getElementById("AgentName").value = str[5].toString();
-                                document.getElementById("TRSLCD").value = str[6].toString();
-                                document.getElementById("TransporterName").value = str[7].toString();
-                                document.getElementById("CRSLCD").value = str[8].toString();
-                                document.getElementById("CourierName").value = str[9].toString();
-                                document.getElementById("DISCRTCD").value = str[10].toString();
-                                document.getElementById("DiscountName").value = str[11].toString();
-                                document.getElementById("AreaCode").value = str[12].toString();
-                                document.getElementById("AreaName").value = str[17].toString(); //str[13].toString();
-                                document.getElementById("DistrictName").value = str[15].toString();
-                                document.getElementById("DOCTH_H").value = str[14].toString();
-                                if (document.getElementById(CODE.id).value != document.getElementById("PARTYCD_H").value && document.getElementById("PARTYCD_H").value != "" &&
-                                    document.getElementById("AreaCode").value != document.getElementById("AREACD_H").value && document.getElementById("AREACD_H").value != "" &&
-                                    document.getElementById("PRCCD").value != document.getElementById("PRCCD_H").value && document.getElementById("PRCCD_H").value != "" &&
-                                    document.getElementById("DISCRTCD").value != document.getElementById("DISCD_H").value && document.getElementById("DISCD_H").value != "") {
-                                    if (document.getElementById(CODE.id).value != "") {
-                                        if (confirm("Data Available for Partcular Party ! Are You Sure ? You Want To Change the Party !!")) {
-                                            document.getElementById(CODE.id).value = str[0].toString();
-                                            document.getElementById(NAME.id).value = str[1].toString();
-                                            document.getElementById("PRCCD").value = str[2].toString();
-                                            document.getElementById("PriceName").value = str[3].toString();
-                                            document.getElementById("AGSLCD").value = str[4].toString();
-                                            document.getElementById("AgentName").value = str[5].toString();
-                                            document.getElementById("TRSLCD").value = str[6].toString();
-                                            document.getElementById("TransporterName").value = str[7].toString();
-                                            document.getElementById("CRSLCD").value = str[8].toString();
-                                            document.getElementById("CourierName").value = str[9].toString();
-                                            document.getElementById("DISCRTCD").value = str[10].toString();
-                                            document.getElementById("DiscountName").value = str[11].toString();
-                                            document.getElementById("AreaCode").value = str[12].toString();
-                                            document.getElementById("AreaName").value = str[17].toString(); //str[13].toString();
-                                            document.getElementById("DistrictName").value = str[15].toString();
-                                            document.getElementById("DOCTH_H").value = str[14].toString();
-                                            var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
-                                            for (i = 0; i <= GridRowMain - 1; i++) {
-                                                document.getElementById("ChildData_" + i).value = null;
-                                                document.getElementById("ARTNO_" + i).value = null;
-                                                document.getElementById("ITCD_" + i).value = null;
-                                                document.getElementById("ITNM_" + i).value = null;
-                                                document.getElementById("TOTAL_PCS_" + i).value = null;
-                                                document.getElementById("UOM_" + i).value = null;
-                                                document.getElementById("RATE_" + i).value = null;
-                                                document.getElementById("QNTY_" + i).value = null;
-                                                document.getElementById("ALL_SIZE_" + i).value = null;
-                                                document.getElementById("STKTYPE_" + i).value = null;
-                                                document.getElementById("FREESTK_" + i).value = null;
+                            }
+                            else if (str.length > 2) {
+                                if (str[2].toString() != "0") {
+                                    document.getElementById(CODE.id).value = str[0].toString();
+                                    document.getElementById(NAME.id).value = str[1].toString();
+                                    document.getElementById("PRCCD").value = str[2].toString();
+                                    document.getElementById("PriceName").value = str[3].toString();
+                                    document.getElementById("AGSLCD").value = str[4].toString();
+                                    document.getElementById("AgentName").value = str[5].toString();
+                                    document.getElementById("TRSLCD").value = str[6].toString();
+                                    document.getElementById("TransporterName").value = str[7].toString();
+                                    document.getElementById("CRSLCD").value = str[8].toString();
+                                    document.getElementById("CourierName").value = str[9].toString();
+                                    document.getElementById("DISCRTCD").value = str[10].toString();
+                                    document.getElementById("DiscountName").value = str[11].toString();
+                                    document.getElementById("AreaCode").value = str[12].toString();
+                                    document.getElementById("AreaName").value = str[17].toString(); //str[13].toString();
+                                    document.getElementById("DistrictName").value = str[15].toString();
+                                    document.getElementById("DOCTH_H").value = str[14].toString();
+                                    if (document.getElementById(CODE.id).value != document.getElementById("PARTYCD_H").value && document.getElementById("PARTYCD_H").value != "" &&
+                                        document.getElementById("AreaCode").value != document.getElementById("AREACD_H").value && document.getElementById("AREACD_H").value != "" &&
+                                        document.getElementById("PRCCD").value != document.getElementById("PRCCD_H").value && document.getElementById("PRCCD_H").value != "" &&
+                                        document.getElementById("DISCRTCD").value != document.getElementById("DISCD_H").value && document.getElementById("DISCD_H").value != "") {
+                                        if (document.getElementById(CODE.id).value != "") {
+                                            if (confirm("Data Available for Partcular Party ! Are You Sure ? You Want To Change the Party !!")) {
+                                                document.getElementById(CODE.id).value = str[0].toString();
+                                                document.getElementById(NAME.id).value = str[1].toString();
+                                                document.getElementById("PRCCD").value = str[2].toString();
+                                                document.getElementById("PriceName").value = str[3].toString();
+                                                document.getElementById("AGSLCD").value = str[4].toString();
+                                                document.getElementById("AgentName").value = str[5].toString();
+                                                document.getElementById("TRSLCD").value = str[6].toString();
+                                                document.getElementById("TransporterName").value = str[7].toString();
+                                                document.getElementById("CRSLCD").value = str[8].toString();
+                                                document.getElementById("CourierName").value = str[9].toString();
+                                                document.getElementById("DISCRTCD").value = str[10].toString();
+                                                document.getElementById("DiscountName").value = str[11].toString();
+                                                document.getElementById("AreaCode").value = str[12].toString();
+                                                document.getElementById("AreaName").value = str[17].toString(); //str[13].toString();
+                                                document.getElementById("DistrictName").value = str[15].toString();
+                                                document.getElementById("DOCTH_H").value = str[14].toString();
+                                                var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
+                                                for (i = 0; i <= GridRowMain - 1; i++) {
+                                                    document.getElementById("ChildData_" + i).value = null;
+                                                    document.getElementById("ARTNO_" + i).value = null;
+                                                    document.getElementById("ITCD_" + i).value = null;
+                                                    document.getElementById("ITNM_" + i).value = null;
+                                                    document.getElementById("TOTAL_PCS_" + i).value = null;
+                                                    document.getElementById("UOM_" + i).value = null;
+                                                    document.getElementById("RATE_" + i).value = null;
+                                                    document.getElementById("QNTY_" + i).value = null;
+                                                    document.getElementById("ALL_SIZE_" + i).value = null;
+                                                    document.getElementById("STKTYPE_" + i).value = null;
+                                                    document.getElementById("FREESTK_" + i).value = null;
+                                                }
                                             }
-                                        }
-                                        else {
-                                            document.getElementById(CODE.id).value = document.getElementById("PARTYCD_H").value;
-                                            document.getElementById(NAME.id).value = document.getElementById("PARTYNM_H").value;
-                                            document.getElementById("PARTYCD_H").value = document.getElementById(CODE.id).value;
-                                            document.getElementById("PARTYNM_H").value = document.getElementById(NAME.id).value;
-                                            document.getElementById("PRCCD").value = document.getElementById("PRCCD_H").value;
-                                            document.getElementById("PriceName").value = document.getElementById("PRCNM_H").value;
-                                            document.getElementById("PRCCD_H").value = document.getElementById("PRCCD").value;
-                                            document.getElementById("PRCNM_H").value = document.getElementById("PriceName").value;
-                                            document.getElementById("AGSLCD").value = document.getElementById("AGTCD_H").value;
-                                            document.getElementById("AgentName").value = document.getElementById("AGTNM_H").value;
-                                            document.getElementById("AGTCD_H").value = document.getElementById("AGSLCD").value;
-                                            document.getElementById("AGTNM_H").value = document.getElementById("AgentName").value;
-                                            document.getElementById("TRSLCD").value = document.getElementById("TRNSCD_H").value;
-                                            document.getElementById("TransporterName").value = document.getElementById("TRNSNM_H").value;
-                                            document.getElementById("TRNSCD_H").value = document.getElementById("TRSLCD").value;
-                                            document.getElementById("TRNSNM_H").value = document.getElementById("TransporterName").value;
-                                            document.getElementById("CRSLCD").value = document.getElementById("CURCD_H").value;
-                                            document.getElementById("CourierName").value = document.getElementById("CURNM_H").value;
-                                            document.getElementById("CURCD_H").value = document.getElementById("CRSLCD").value;
-                                            document.getElementById("CURNM_H").value = document.getElementById("CourierName").value;
-                                            document.getElementById("DISCRTCD").value = document.getElementById("DISCD_H").value;
-                                            document.getElementById("DiscountName").value = document.getElementById("DISNM_H").value;
-                                            document.getElementById("DISCD_H").value = document.getElementById("DISCRTCD").value;
-                                            document.getElementById("DISNM_H").value = document.getElementById("DiscountName").value;
-                                            document.getElementById("AreaCode").value = document.getElementById("AREACD_H").value;
-                                            document.getElementById("AreaName").value = document.getElementById("AREANM_H").value;
-                                            document.getElementById("AREACD_H").value = document.getElementById("AreaCode").value;
-                                            document.getElementById("AREANM_H").value = document.getElementById("AreaName").value;
+                                            else {
+                                                document.getElementById(CODE.id).value = document.getElementById("PARTYCD_H").value;
+                                                document.getElementById(NAME.id).value = document.getElementById("PARTYNM_H").value;
+                                                document.getElementById("PARTYCD_H").value = document.getElementById(CODE.id).value;
+                                                document.getElementById("PARTYNM_H").value = document.getElementById(NAME.id).value;
+                                                document.getElementById("PRCCD").value = document.getElementById("PRCCD_H").value;
+                                                document.getElementById("PriceName").value = document.getElementById("PRCNM_H").value;
+                                                document.getElementById("PRCCD_H").value = document.getElementById("PRCCD").value;
+                                                document.getElementById("PRCNM_H").value = document.getElementById("PriceName").value;
+                                                document.getElementById("AGSLCD").value = document.getElementById("AGTCD_H").value;
+                                                document.getElementById("AgentName").value = document.getElementById("AGTNM_H").value;
+                                                document.getElementById("AGTCD_H").value = document.getElementById("AGSLCD").value;
+                                                document.getElementById("AGTNM_H").value = document.getElementById("AgentName").value;
+                                                document.getElementById("TRSLCD").value = document.getElementById("TRNSCD_H").value;
+                                                document.getElementById("TransporterName").value = document.getElementById("TRNSNM_H").value;
+                                                document.getElementById("TRNSCD_H").value = document.getElementById("TRSLCD").value;
+                                                document.getElementById("TRNSNM_H").value = document.getElementById("TransporterName").value;
+                                                document.getElementById("CRSLCD").value = document.getElementById("CURCD_H").value;
+                                                document.getElementById("CourierName").value = document.getElementById("CURNM_H").value;
+                                                document.getElementById("CURCD_H").value = document.getElementById("CRSLCD").value;
+                                                document.getElementById("CURNM_H").value = document.getElementById("CourierName").value;
+                                                document.getElementById("DISCRTCD").value = document.getElementById("DISCD_H").value;
+                                                document.getElementById("DiscountName").value = document.getElementById("DISNM_H").value;
+                                                document.getElementById("DISCD_H").value = document.getElementById("DISCRTCD").value;
+                                                document.getElementById("DISNM_H").value = document.getElementById("DiscountName").value;
+                                                document.getElementById("AreaCode").value = document.getElementById("AREACD_H").value;
+                                                document.getElementById("AreaName").value = document.getElementById("AREANM_H").value;
+                                                document.getElementById("AREACD_H").value = document.getElementById("AreaCode").value;
+                                                document.getElementById("AREANM_H").value = document.getElementById("AreaName").value;
+                                            }
                                         }
                                     }
+                                    else {
+                                        document.getElementById("PARTYCD_H").value = str[0].toString();
+                                        document.getElementById("PARTYNM_H").value = str[1].toString();
+                                        document.getElementById("PRCCD_H").value = str[2].toString();
+                                        document.getElementById("PRCNM_H").value = str[3].toString();
+                                        document.getElementById("AGTCD_H").value = str[4].toString();
+                                        document.getElementById("AGTNM_H").value = str[5].toString();
+                                        document.getElementById("TRNSCD_H").value = str[6].toString();
+                                        document.getElementById("TRNSNM_H").value = str[7].toString();
+                                        document.getElementById("CURCD_H").value = str[8].toString();
+                                        document.getElementById("CURNM_H").value = str[9].toString();
+                                        document.getElementById("DISCD_H").value = str[10].toString();
+                                        document.getElementById("DISNM_H").value = str[11].toString();
+                                        document.getElementById("AREACD_H").value = str[12].toString();
+                                        document.getElementById("AREANM_H").value = str[13].toString();
+                                    }
+                                    if (document.getElementById("PRCCD").value != "") {
+                                        var PRC_CD = document.getElementById("PRCCD").value;
+                                        var DOC_DT = document.getElementById("DOCDT").value;
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: "@Url.Action("GetEffectiveDate", PageControllerName)",
+                                            data: { PRC_CD: PRC_CD, DOC_DT: DOC_DT, },
+                                            contentType: 'application/json',
+                                            success: function (response) {
+                                                if (response.length > 0) {
+                                                    $('#EFF_DATE_ID').html('');
+                                                    var options = '';
+                                                    for (var i = 0; i < response.length; i++) {
+                                                        options += '<option value="' + response[i].value.substring(0, 10).replace(/-/g, '/') + '">' + response[i].text.substring(0, 10).replace(/-/g, '/') + '</option>';
+                                                    }
+                                                    $('#EFF_DATE_ID').append(options);
+                                                }
+                                            },
+                                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                                $("#WaitingMode").hide();
+                                                msgError(XMLHttpRequest.responseText);
+                                                $("body span h1").remove(); $("#msgbody_error style").remove();
+                                            }
+                                        });
+                                    }
+                                    if (document.getElementById("DISCRTCD").value != "") {
+                                        var DISC_CD = document.getElementById("DISCRTCD").value;
+                                        var DOC_DT = document.getElementById("DOCDT").value;
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: "@Url.Action("GetDiscEffectiveDate", PageControllerName)",
+                                            data: { DISC_CD: DISC_CD, DOC_DT: DOC_DT, },
+                                            contentType: 'application/json',
+                                            success: function (response) {
+                                                if (response.length > 0) {
+                                                    $('#DISC_EFF_DATE_ID').html('');
+                                                    var options = '';
+                                                    for (var i = 0; i < response.length; i++) {
+                                                        options += '<option value="' + response[i].value.substring(0, 10).replace(/-/g, '/') + '">' + response[i].text.substring(0, 10).replace(/-/g, '/') + '</option>';
+                                                    }
+                                                    $('#DISC_EFF_DATE_ID').append(options);
+                                                }
+                                            },
+                                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                                $("#WaitingMode").hide();
+                                                msgError(XMLHttpRequest.responseText);
+                                                $("body span h1").remove(); $("#msgbody_error style").remove();
+                                            }
+                                        });
+                                    }
+                                    if (document.getElementById(CODE.id).value != "") {
+                                        SCHEME_DATA();
+                                    }
+
                                 }
                                 else {
-                                    document.getElementById("PARTYCD_H").value = str[0].toString();
-                                    document.getElementById("PARTYNM_H").value = str[1].toString();
-                                    document.getElementById("PRCCD_H").value = str[2].toString();
-                                    document.getElementById("PRCNM_H").value = str[3].toString();
-                                    document.getElementById("AGTCD_H").value = str[4].toString();
-                                    document.getElementById("AGTNM_H").value = str[5].toString();
-                                    document.getElementById("TRNSCD_H").value = str[6].toString();
-                                    document.getElementById("TRNSNM_H").value = str[7].toString();
-                                    document.getElementById("CURCD_H").value = str[8].toString();
-                                    document.getElementById("CURNM_H").value = str[9].toString();
-                                    document.getElementById("DISCD_H").value = str[10].toString();
-                                    document.getElementById("DISNM_H").value = str[11].toString();
-                                    document.getElementById("AREACD_H").value = str[12].toString();
-                                    document.getElementById("AREANM_H").value = str[13].toString();
+                                    $("#Msgdiv1").show();
+                                    $("#info").show();
+                                    $("#msg_ok_info").focus();
+                                    $("#" + CODE.id).val("");
+                                    $("#" + NAME.id).val("");
+                                    if (URL == "urlnamePARTY") {
+                                        $("#PRCCD").val("");
+                                        $("#PriceName").val("");
+                                        $("#AGSLCD").val("");
+                                        $("#AgentName").val("");
+                                        $("#TRSLCD").val("");
+                                        $("#TransporterName").val("");
+                                        $("#CRSLCD").val("");
+                                        $("#CourierName").val("");
+                                        $("#DISCRTCD").val("");
+                                        $("#DiscountName").val("");
+                                        $("#AreaCode").val("");
+                                        $("#AreaName").val("");
+                                        $("#PARTYCD_H").val("");
+                                        $("#PARTYNM_H").val("");
+                                        $("#PRCCD_H").val("");
+                                        $("#PRCNM_H").val("");
+                                        $("#AGTCD_H").val("");
+                                        $("#AGTNM_H").val("");
+                                        $("#TRNSCD_H").val("");
+                                        $("#TRNSNM_H").val("");
+                                        $("#CURCD_H").val("");
+                                        $("#CURNM_H").val("");
+                                        $("#DISCD_H").val("");
+                                        $("#DISNM_H").val("");
+                                        $("#AREACD_H").val("");
+                                        $("#AREANM_H").val("");
+                                    }
+                                    $("#msgbody_info").html("PriceList Data Not Avialable for Selected Party ! Please Select / Enter a Valid Party Code !! ");
+                                    message_value = CODE.id;
+                                    return false;
                                 }
-                                if (document.getElementById("PRCCD").value != "") {
-                                    var PRC_CD = document.getElementById("PRCCD").value;
-                                    var DOC_DT = document.getElementById("DOCDT").value;
-                                    $.ajax({
-                                        type: 'GET',
-                                        url: "@Url.Action("GetEffectiveDate", PageControllerName)",
-                                        data: { PRC_CD: PRC_CD, DOC_DT: DOC_DT, },
-                                        contentType: 'application/json',
-                                        success: function (response) {
-                                            if (response.length > 0) {
-                                                $('#EFF_DATE_ID').html('');
-                                                var options = '';
-                                                for (var i = 0; i < response.length; i++) {
-                                                    options += '<option value="' + response[i].value.substring(0, 10).replace(/-/g, '/') + '">' + response[i].text.substring(0, 10).replace(/-/g, '/') + '</option>';
-                                                }
-                                                $('#EFF_DATE_ID').append(options);
-                                            }
-                                        },
-                                        error: function (XMLHttpRequest, textStatus, errorThrown) {
-                                            $("#WaitingMode").hide();
-                                            msgError(XMLHttpRequest.responseText);
-                                            $("body span h1").remove(); $("#msgbody_error style").remove();
-                                        }
-                                    });
-                                }
-                                if (document.getElementById("DISCRTCD").value != "") {
-                                    var DISC_CD = document.getElementById("DISCRTCD").value;
-                                    var DOC_DT = document.getElementById("DOCDT").value;
-                                    $.ajax({
-                                        type: 'GET',
-                                        url: "@Url.Action("GetDiscEffectiveDate", PageControllerName)",
-                                        data: { DISC_CD: DISC_CD, DOC_DT: DOC_DT, },
-                                        contentType: 'application/json',
-                                        success: function (response) {
-                                            if (response.length > 0) {
-                                                $('#DISC_EFF_DATE_ID').html('');
-                                                var options = '';
-                                                for (var i = 0; i < response.length; i++) {
-                                                    options += '<option value="' + response[i].value.substring(0, 10).replace(/-/g, '/') + '">' + response[i].text.substring(0, 10).replace(/-/g, '/') + '</option>';
-                                                }
-                                                $('#DISC_EFF_DATE_ID').append(options);
-                                            }
-                                        },
-                                        error: function (XMLHttpRequest, textStatus, errorThrown) {
-                                            $("#WaitingMode").hide();
-                                            msgError(XMLHttpRequest.responseText);
-                                            $("body span h1").remove(); $("#msgbody_error style").remove();
-                                        }
-                                    });
-                                }
-                                if (document.getElementById(CODE.id).value != "") {
-                                    SCHEME_DATA();
-                                }
-
-                            }
-                            else {
-                                $("#Msgdiv1").show();
-                                $("#info").show();
-                                $("#msg_ok_info").focus();
-                                $("#" + CODE.id).val("");
-                                $("#" + NAME.id).val("");
-                                if (URL == "urlnamePARTY") {
-                                    $("#PRCCD").val("");
-                                    $("#PriceName").val("");
-                                    $("#AGSLCD").val("");
-                                    $("#AgentName").val("");
-                                    $("#TRSLCD").val("");
-                                    $("#TransporterName").val("");
-                                    $("#CRSLCD").val("");
-                                    $("#CourierName").val("");
-                                    $("#DISCRTCD").val("");
-                                    $("#DiscountName").val("");
-                                    $("#AreaCode").val("");
-                                    $("#AreaName").val("");
-                                    $("#PARTYCD_H").val("");
-                                    $("#PARTYNM_H").val("");
-                                    $("#PRCCD_H").val("");
-                                    $("#PRCNM_H").val("");
-                                    $("#AGTCD_H").val("");
-                                    $("#AGTNM_H").val("");
-                                    $("#TRNSCD_H").val("");
-                                    $("#TRNSNM_H").val("");
-                                    $("#CURCD_H").val("");
-                                    $("#CURNM_H").val("");
-                                    $("#DISCD_H").val("");
-                                    $("#DISNM_H").val("");
-                                    $("#AREACD_H").val("");
-                                    $("#AREANM_H").val("");
-                                }
-                                $("#msgbody_info").html("PriceList Data Not Avialable for Selected Party ! Please Select / Enter a Valid Party Code !! ");
-                                message_value = CODE.id;
-                                return false;
                             }
                         }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError("Error: " + textStatus + "," + errorThrown);
                     }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError("Error: " + textStatus + "," + errorThrown);
-                }
 
-            });
+                });
+            }
         }
-    }
-</script>*@
+    </script>*@
 <script>
     debugger;
     function SelectSubLedgerCode(id) {
         if ("@Model.DefaultAction" != "V") {
             debugger;
             if (id == "") {
-                ClearAllTextBoxes("AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
+                ClearAllTextBoxes("SLCD,PartyName,AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
             }
             else {
                 var linkcd = $("#partylinkcd").val();
@@ -857,7 +857,7 @@
                     success: function (result) {
                         var MSG = result.indexOf('#helpDIV');
                         if (MSG >= 0) {
-                            ClearAllTextBoxes("AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
+                            ClearAllTextBoxes("SLCD,PartyName,AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
                             $('#SearchFldValue').val("SLCD");
                             $('#helpDIV').html(result);
                             $('#ReferanceFieldID').val("SLCD/PartyName");
@@ -947,7 +947,7 @@
                             else {
                                 $('#helpDIV').html("");
                                 msgInfo("" + result + " !");
-                                ClearAllTextBoxes("AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
+                                ClearAllTextBoxes("SLCD,PartyName,AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
                                 message_value = "SLCD";
                             }
                         }
@@ -1374,7 +1374,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_SORD.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);SCHEME_DATA();", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            @Html.EditorFor(model => model.T_SORD.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);SCHEME_DATA();", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -1618,7 +1618,7 @@
                                     @Html.Label("", "Order By")
                                 </div>
                             </div>
-                            <div class="col-md-5" style="width:auto;">
+                            <div class="col-md-10">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_SORD.ORDBY, new { htmlAttributes = new { @class = "form-control", id = "ORDBY", maxlength = 50, @placeholder = "Order By" } })
                                 </div>
@@ -1628,7 +1628,7 @@
                                     @Html.Label("", "Select By")
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-10">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_SORD.SELBY, new { htmlAttributes = new { @class = "form-control", id = "SELBY", maxlength = 50, @placeholder = "Select By" } })
                                 </div>
@@ -1643,13 +1643,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PAYTRMCD", onkeyup = "GetHelp('" + @Url.Action("GetPayTermsDetails", PageControllerName) + "','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')", onblur = "SelectPayTermsCode(this.value,PAYTRMCD,PayTermName);", @placeholder = "Code", maxlength = 4 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetPayTermsDetails", PageControllerName )','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')" />
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.PayTermName, new { htmlAttributes = new { @class = "form-control", id = "PayTermName", maxlength = 30, @title = "Only for View", @placeholder = "Payment Terms Name", @readonly = "readonly", tabindex = "-1" } })
+                                    @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control", id = "PAYTRMS", @placeholder = "Code", maxlength = 3 } })
                                 </div>
                             </div>
 
@@ -1662,7 +1656,7 @@
                             </div>
                             <div class="col-md-11">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.DELVINS, new { htmlAttributes = new { @class = "form-control", id = "DELVINS", maxlength = 70, @title = "Only for View", @placeholder = "Delivery Instructions" } })
+                                    @Html.EditorFor(model => model.T_SORD.DELVINS, new { htmlAttributes = new { @class = "form-control", id = "DELVINS", maxlength = 200, @title = "Only for View", @placeholder = "Delivery Instructions" } })
                                 </div>
                             </div>
                         </div>
@@ -1675,7 +1669,7 @@
                             </div>
                             <div class="col-md-11">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.SPLNOTE, new { htmlAttributes = new { @class = "form-control", id = "SPLNOTE", maxlength = 100, @placeholder = "Remarks" } })
+                                    @Html.EditorFor(model => model.T_SORD.SPLNOTE, new { htmlAttributes = new { @class = "form-control", id = "SPLNOTE", maxlength = 300, @placeholder = "Remarks" } })
                                 </div>
                             </div>
                         </div>
