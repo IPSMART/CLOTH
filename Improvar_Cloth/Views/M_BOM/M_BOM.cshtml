@@ -1138,14 +1138,14 @@
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="editor-field">
+                        @*<div class="col-md-7">*@
+                            @*<div class="editor-field">*@
                                 @*@Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','A','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Style Number" } })
                                     <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="STYLE_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','A')" />*@
-                                @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3');", @placeholder = "Design Number", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" id="STYLE_HELP" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3')" />
-                            </div>
-                        </div>
+                                @*@Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3');", @placeholder = "Design Number", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" id="STYLE_HELP" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3')" />*@
+                            @*</div>*@
+                        @*</div>*@
                         <div class="col-md-7">
                             <div class="editor-field">
                                 @*@Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','C','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Code" } })
@@ -1153,6 +1153,11 @@
                                 @Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0');", @placeholder = "Code", maxlength = 8 } })
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0')" />
                                 @*@Html.HiddenFor(a => a.M_SITEMBOM.ITCD)*@
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", maxlength = 8, @TabIndex = -1, @title = "Only for View", @placeholder = "Design Number", @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-11">

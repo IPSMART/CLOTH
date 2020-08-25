@@ -16,7 +16,7 @@ namespace Improvar.Controllers
         string CS = null;
         MasterHelp Master_Help = new MasterHelp();
         MasterHelpFa Master_HelpFa = new MasterHelpFa();
-        M_SITEMBOM sl; M_CNTRL_HDR sll; M_SIZE sl1; M_COLOR sl2; M_SITEM sl3; M_JOBMSTSUB_STDRT MJS;
+        M_SITEMBOM sl; M_CNTRL_HDR sll; M_SIZE sl1; M_COLOR sl2; M_SITEM sl3; M_JOBMSTSUB_STDRT MJS;M_UOM sl4;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: M_BOM
         public ActionResult M_BOM(string op = "", string key = "", int Nindex = 0, string searchValue = "")
@@ -97,6 +97,7 @@ namespace Improvar.Controllers
                             VE.M_SIZE = sl1;
                             VE.M_COLOR = sl2;
                             VE.M_SITEM = sl3;
+                            VE.M_UOM = sl4;
                         }
                         if (op.ToString() == "A")
                         {
@@ -155,7 +156,7 @@ namespace Improvar.Controllers
 
         public BOMMasterEntry Navigation(BOMMasterEntry VE, ImprovarDB DB, int index, string searchValue)
         {
-            sl = new M_SITEMBOM(); sll = new M_CNTRL_HDR(); sl1 = new M_SIZE(); sl2 = new M_COLOR(); sl3 = new M_SITEM(); MJS = new M_JOBMSTSUB_STDRT();
+            sl = new M_SITEMBOM(); sll = new M_CNTRL_HDR(); sl1 = new M_SIZE(); sl2 = new M_COLOR(); sl3 = new M_SITEM(); MJS = new M_JOBMSTSUB_STDRT();sl4 = new M_UOM();
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), CommVar.InvSchema(UNQSNO));
@@ -178,6 +179,7 @@ namespace Improvar.Controllers
                 sl1 = DB.M_SIZE.Find(sl.SIZECD);
                 sl2 = DB.M_COLOR.Find(sl.COLRCD);
                 sl3 = DB.M_SITEM.Find(sl.ITCD);
+                sl4 = DBF.M_UOM.Find(sl3.UOMCD);
                 if (sll.INACTIVE_TAG == "Y")
                 {
                     VE.Checked = true;
