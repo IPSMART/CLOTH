@@ -208,6 +208,16 @@ namespace Improvar.Controllers
                         VE.UploadDOC = UploadDOC1;
                     }
                 }
+                else
+                {
+                    sl.DOB = Convert.ToDateTime("1/01/1600");
+                    List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
+                    UploadDOC UPL = new UploadDOC();
+                    UPL.DocumentType = doctP;
+                    UploadDOC1.Add(UPL);
+                    VE.UploadDOC = UploadDOC1;
+
+                }
             }
             catch (Exception ex)
             {

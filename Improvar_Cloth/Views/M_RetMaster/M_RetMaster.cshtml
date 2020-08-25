@@ -128,7 +128,7 @@
 <script>
     if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
         $(function () {
-            $("#DOB").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, mindate: '01/01/1600', maxDate: '@Model.maxdate' });
+            $("#DOB").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#DOW").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
            
         });
