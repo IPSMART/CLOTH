@@ -13,10 +13,8 @@ namespace Improvar.Controllers
        
         Connection Cn = new Connection();
         string CS = null;
-        M_RETDEB sl;
+        M_RETDEB sl; MS_STATE sl1;
         M_CNTRL_HDR sll;
-        M_BRAND sBRND;
-        M_PRODGRP sPROD;
         M_CNTRL_HDR_REM MCHR;
         MasterHelp Master_Help = new MasterHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -39,6 +37,7 @@ namespace Improvar.Controllers
 
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                    var LOCCD = CommVar.Loccd(UNQSNO); var COMPCD = CommVar.Compcd(UNQSNO);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
                     //=================For City Database Combo================//
                     VE.Database_Combo1 = (from j in DB.M_RETDEB select new Database_Combo1() { FIELD_VALUE = j.CITY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
@@ -111,20 +110,37 @@ namespace Improvar.Controllers
                                     VE = Navigation(VE, DB, Nindex, searchValue);
                                 }
                             }
-                            VE.M_RETDEB = sl;
+                            VE.MS_STATE = sl1;
                             VE.M_CNTRL_HDR = sll;
                             VE.M_CNTRL_HDR_REM = MCHR;
                         }
                         if (op.ToString() == "A")
                         {
+                            sl = new M_RETDEB();
                             List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                             UploadDOC UPL = new UploadDOC();
                             UPL.DocumentType = doctP;
                             UploadDOC1.Add(UPL);
                             VE.UploadDOC = UploadDOC1;
-                            VE.Database_Combo1 = (from j in DB.M_LOCA select new Database_Combo1() { FIELD_VALUE = j.DISTRICT }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-                            VE.Database_Combo2 = (from j in DB.M_LOCA select new Database_Combo2() { FIELD_VALUE = j.COUNTRY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                            var query = (from c in DB.M_LOCA where c.LOCCD == LOCCD && c.COMPCD == COMPCD
+                                         select new
+                                         {
+                                             STATECD = c.STATECD,
+                                             STATE = c.STATE,
+                                             DISTRICT = c.DISTRICT,
+                                             COUNTRY= c.COUNTRY
+                                         }).FirstOrDefault();
+                            if (query != null)
+                            {
+                                sl.CITY = query.DISTRICT;
+                                sl.STATECD = query.STATECD;
+                                sl.COUNTRY = query.COUNTRY;
+                                MS_STATE mstate = new MS_STATE();
+                                mstate.STATENM = query.STATE;
+                                VE.MS_STATE = mstate;
+                            }
                         }
+                        VE.M_RETDEB = sl;
                         return View(VE);
                     }
                     else
@@ -150,6 +166,7 @@ namespace Improvar.Controllers
             try
             {
                 sl = new M_RETDEB();
+                sl1 = new MS_STATE();
                 sll = new M_CNTRL_HDR();
                 MCHR = new M_CNTRL_HDR_REM();
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
@@ -167,8 +184,10 @@ namespace Improvar.Controllers
                         aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                     }
                     sl = DB.M_RETDEB.Find(aa[0]);
+                    sl1 = DB1.MS_STATE.Find(sl.STATECD);
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
-                 
+                    if (sl.REFRTDEBCD != null)
+                    { var Party = DB.M_RETDEB.Find(sl.REFRTDEBCD); if (Party != null) { VE.REFRTDEBNM = Party.RTDEBNM; } }
                     if (sll.INACTIVE_TAG == "Y")
                     {
                         VE.Checked = true;
@@ -205,22 +224,28 @@ namespace Improvar.Controllers
                        select new
                        {
                            RTDEBCD = j.RTDEBCD,
-                           M_AUTONO = o.M_AUTONO
+                           RTDEBNM = j.RTDEBNM,
+                           MOBILE = j.MOBILE,
+                           CITY = j.CITY,
+                           PIN = j.PIN,
+                           STATE = j.STATE,
+                           COUNTRY = j.COUNTRY,
+                           M_AUTONO = j.M_AUTONO
                        }).OrderBy(s => s.RTDEBCD).ToList();
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Group Code" + Cn.GCS() + "Group Name" + Cn.GCS() + "AUTO NO";
+            var hdr = "Code" + Cn.GCS() + "Name" + Cn.GCS() + "Mobile No." + Cn.GCS() + "City" + Cn.GCS() + "Pin" + Cn.GCS() + "State" + Cn.GCS() + "Country" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= MDT.Count - 1; j++)
             {
-                SB.Append("<tr><td>" + MDT[j].RTDEBCD + "</td><td>" + MDT[j].M_AUTONO + "</td></tr>");
+                SB.Append("<tr><td>" + MDT[j].RTDEBCD + "</td><td>" + MDT[j].RTDEBNM + "</td><td>" + MDT[j].MOBILE + "</td><td>" + MDT[j].CITY + "</td><td>" + MDT[j].PIN + "</td><td>" + MDT[j].STATE + "</td><td>" + MDT[j].COUNTRY + "</td><td>" + MDT[j].M_AUTONO + "</td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "1"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "7"));
         }
         public ActionResult GetState()
         {
             try
             {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                return PartialView("_Help2", Master_Help.STATECD_help(DB));
+             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+             return PartialView("_Help2", Master_Help.STATECD_help(DB));  
             }
             catch (Exception ex)
             {
@@ -238,16 +263,7 @@ namespace Improvar.Controllers
                 {
                     string str = "";
                     foreach (var i in query)
-                    {
-
-                        //if (i.TDSSTATECD != null)
-                        //{
-                        //    str = i.STATECD + Cn.GCS() + i.STATENM + Cn.GCS() + i.TDSSTATECD;
-                        //}
-                        //else {
-                            str = i.STATECD + Cn.GCS() + i.STATENM;
-                        //}
-
+                    { str = i.STATECD + Cn.GCS() + i.STATENM;
                     }
                     return Content(str);
                 }
@@ -266,21 +282,16 @@ namespace Improvar.Controllers
         {
             try
             {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                return PartialView("_Help2", Master_Help.RefRetail_help(val));
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetRefLedgerDetails(string val)
-        {
-            try
-            {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                return PartialView("_Help2", Master_Help.RefLedger_help(val));
+                if (val == null)
+                {
+                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                    return PartialView("_Help2", Master_Help.RefRetail_help(val));
+                }
+                else
+                {
+                    string str = Master_Help.RefRetail_help(val);
+                    return Content(str);
+                }
             }
             catch (Exception ex)
             {
@@ -289,20 +300,39 @@ namespace Improvar.Controllers
             }
         }
       
-        //public ActionResult CheckGroupCode(string val)
-        //{
-        //    string VALUE = val.ToUpper();
-        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO).ToString());
-        //    var query = (from c in DB.M_RETDEB where (c.ITGRPCD == VALUE) select c);
-        //    if (query.Any())
-        //    {
-        //        return Content("1");
-        //    }
-        //    else
-        //    {
-        //        return Content("0");
-        //    }
-        //}
+        public ActionResult GetRefLedgerDetails(string val, string Code)
+        {
+            try
+            {
+                var agent = Code.Split(Convert.ToChar(Cn.GCS()));
+                if (agent.Count() > 1)
+                {
+                    if (agent[1] == "")
+                    {
+                        return Content("Please Select Ref Ledger !!");
+                    }
+                    else
+                    {
+                        Code = agent[0];
+                    }
+                }
+                var str = Master_Help.SLCD_help(val, Code);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        
         public ActionResult AddDOCRow(RetailDebtorMasterEntry VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), "IMPROVAR");
@@ -381,9 +411,12 @@ namespace Improvar.Controllers
                         MRETDEB.CLCD = CommVar.ClientCode(UNQSNO);
                         if (VE.DefaultAction == "A")
                         {
+                            var mobno = VE.M_RETDEB.MOBILE;
+                            var ChkDuplicateMobNo = (from i in DB.M_RETDEB where i.MOBILE == mobno select new { i.MOBILE,i.RTDEBNM }).FirstOrDefault();
+                            if (ChkDuplicateMobNo != null) { return Content("Mobile No : "+ChkDuplicateMobNo.MOBILE + " already exsist for " + ChkDuplicateMobNo.RTDEBNM); }
                             MRETDEB.EMD_NO = 0;
                             MRETDEB.M_AUTONO = Cn.M_AUTONO(CommVar.FinSchema(UNQSNO).ToString());
-                            MRETDEB.RTDEBCD = Cn.GenMasterCode("M_RETDEB", "RTDEBCD", VE.M_RETDEB.RTDEBNM.ToUpper().Trim().Substring(0, 1), 7,"F");
+                            MRETDEB.RTDEBCD = Cn.GenMasterCode("M_RETDEB", "RTDEBCD", VE.M_RETDEB.RTDEBNM.ToUpper().Trim().Substring(0, 1), 8,"F");
 
                            
                         }
@@ -411,8 +444,7 @@ namespace Improvar.Controllers
                             DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_RETDEB.M_AUTONO));
 
                         }
-                        var ChkDuplicateMobNo = (from i in DB.M_RETDEB where i.RTDEBNM == VE.M_RETDEB.RTDEBNM select new { i.MOBILE }).FirstOrDefault();
-                        if (ChkDuplicateMobNo!=null) { return Content(ChkDuplicateMobNo.MOBILE+" No. already exsist with "+ VE.M_RETDEB.RTDEBNM+" name"); }
+                      
                         MRETDEB.MOBILE = VE.M_RETDEB.MOBILE;
                         MRETDEB.ALTNO = VE.M_RETDEB.ALTNO;
                         MRETDEB.SEX = FC["gender"].ToString();
@@ -426,6 +458,7 @@ namespace Improvar.Controllers
                         MRETDEB.ADD1 = VE.M_RETDEB.ADD1;
                         MRETDEB.ADD2 = VE.M_RETDEB.ADD2;
                         MRETDEB.ADD3 = VE.M_RETDEB.ADD3;
+                        MRETDEB.STATECD = VE.M_RETDEB.STATECD;
                         MRETDEB.STATE = VE.MS_STATE.STATENM;
                         MRETDEB.COUNTRY = VE.M_RETDEB.COUNTRY;
                         MRETDEB.REFRTDEBCD = VE.M_RETDEB.REFRTDEBCD;
@@ -511,21 +544,16 @@ namespace Improvar.Controllers
             }
         }
         [HttpPost]
-        public ActionResult M_RetMaster(FormCollection FC)
+        public ActionResult M_RetMaster(FormCollection FC, RetailDebtorMasterEntry VE)
         {
             try
             {
                 string dbname = CommVar.FinSchema(UNQSNO).ToString();
 
-                string query = "select a.itgrpnm, a.itgrpcd, case ";
-                query = query + "when a.itgrptype='F' then 'Finish Product' ";
-                query = query + "when a.itgrptype='A' then 'Accessories' ";
-                query = query + "when a.itgrptype='Y' then 'Yarn' ";
-                query = query + "when a.itgrptype='S' then 'Scheme Material' ";
-                query = query + "when a.itgrptype='C' then 'Fabric' ";
-                query = query + "end itgrptype from " + dbname + ".M_RETDEB a, " + dbname + ".m_cntrl_hdr c ";
-                query = query + "where  a.m_autono=c.m_autono(+) and nvl(c.inactive_tag,'N') = 'N' ";
-                query = query + "order by itgrptype, a.itgrpnm";
+                string query = "select a.RTDEBCD, a.RTDEBNM,a.MOBILE,a.CITY,a.PIN,a.STATE,a.COUNTRY ";
+                query = query + " from " + dbname + ".M_RETDEB a, " + dbname + ".m_cntrl_hdr c ";
+                query = query + "where  a.m_autono=c.m_autono(+) and nvl(c.inactive_tag,'N') = 'N'  and a.RTDEBCD ='" + VE.M_RETDEB.RTDEBCD + "' ";
+                query = query + "order by RTDEBCD, a.RTDEBNM";
 
                 CS = Cn.GetConnectionString();
 
@@ -538,7 +566,6 @@ namespace Improvar.Controllers
                 {
                     Cn.con.Open();
                 }
-
                 string str = query;
                 Cn.com = new OracleCommand(str, Cn.con);
                 Cn.da.SelectCommand = Cn.com;
@@ -553,24 +580,30 @@ namespace Improvar.Controllers
                     HtmlConverter HC = new HtmlConverter();
 
                     HC.RepStart(IR, 2);
-                    HC.GetPrintHeader(IR, "itgrpnm", "string", "c,20", "Group Name");
-                    HC.GetPrintHeader(IR, "itgrpcd", "string", "c,7", "Group Code");
-                    //HC.GetPrintHeader(IR, "brandnm", "string", "c,20", "Brande");
-                    HC.GetPrintHeader(IR, "itgrptype", "string", "c,10", "Group Type");
+                    HC.GetPrintHeader(IR, "RTDEBNM", "string", "c,20", "Name");
+                    HC.GetPrintHeader(IR, "RTDEBCD", "string", "c,7", "Code");
+                    HC.GetPrintHeader(IR, "MOBILE", "string", "c,10", "Mobile No.");
+                    HC.GetPrintHeader(IR, "CITY", "string", "c,10", "City");
+                    HC.GetPrintHeader(IR, "PIN", "string", "c,10", "Pin Code");
+                    HC.GetPrintHeader(IR, "STATE", "string", "c,10", "State");
+                    HC.GetPrintHeader(IR, "COUNTRY", "string", "c,10", "Country");
 
                     for (int i = 0; i <= Cn.ds.Tables["mst_rep"].Rows.Count - 1; i++)
                     {
                         DataRow dr = IR.NewRow();
-                        dr["itgrpnm"] = Cn.ds.Tables["mst_rep"].Rows[i]["itgrpnm"];
-                        dr["itgrpcd"] = Cn.ds.Tables["mst_rep"].Rows[i]["itgrpcd"];
-                        //dr["brandnm"] = Cn.ds.Tables["mst_rep"].Rows[i]["brandnm"];
-                        dr["itgrptype"] = Cn.ds.Tables["mst_rep"].Rows[i]["itgrptype"];
+                        dr["RTDEBNM"] = Cn.ds.Tables["mst_rep"].Rows[i]["RTDEBNM"];
+                        dr["RTDEBCD"] = Cn.ds.Tables["mst_rep"].Rows[i]["RTDEBCD"];
+                        dr["MOBILE"] = Cn.ds.Tables["mst_rep"].Rows[i]["MOBILE"];
+                        dr["CITY"] = Cn.ds.Tables["mst_rep"].Rows[i]["CITY"];
+                        dr["PIN"] = Cn.ds.Tables["mst_rep"].Rows[i]["PIN"];
+                        dr["STATE"] = Cn.ds.Tables["mst_rep"].Rows[i]["STATE"];
+                        dr["COUNTRY"] = Cn.ds.Tables["mst_rep"].Rows[i]["COUNTRY"];
                         dr["Flag"] = " class='grid_td'";
                         IR.Rows.Add(dr);
                     }
                     string pghdr1 = "";
-                    string repname = CommFunc.retRepname("Group Master Details");
-                    pghdr1 = "Group Master Details";
+                    string repname = CommFunc.retRepname("Retail Debtor Master Details");
+                    pghdr1 = "Retail Debtor Master Details";
                     PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "P", false);
                     return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
 

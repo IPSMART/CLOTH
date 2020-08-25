@@ -72,9 +72,9 @@ namespace Improvar.Models
 
         [StringLength(8)]
         public string REFSLCD { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DOB { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DOW { get; set; }
 
         public long? M_AUTONO { get; set; }
