@@ -1890,5 +1890,62 @@ namespace Improvar.Controllers
         //    TempData["printparameter"] = ind;
         //    return Content("");
         //}
+        public ActionResult GetSubLedgerDetails(string val, string Code)
+        {
+            try
+            {
+                var agent = Code.Split(Convert.ToChar(Cn.GCS()));
+                if (agent.Count() > 1)
+                {
+                    if (agent[1] == "")
+                    {
+                        return Content("Please Select Agent !!");
+                    }
+                    else
+                    {
+                        Code = agent[0];
+                    }
+                }
+                var str = Master_Help.SLCD_help(val, Code);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetSubCodeDetails(string Code, string val)
+        {
+            var str = Master_Help.SLCD_help(val, Code);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                if (str.IndexOf(Cn.GCS()) > 0)
+                {
+                    //var DATA = str.Split(Convert.ToChar(Cn.GCS()));
+                    double latedays = Salesfunc.retMaxLateDays(null, val, true);
+                    string latedaysdsp = "";
+                    if (latedays > 60) latedaysdsp = "Late by " + latedays.ToString();
+                    var str1 = str.retCompValue("slcd") + Cn.GCS() + str.retCompValue("slnm") + Cn.GCS() + Master_Help.PRICELIST("", val, "FORPARTY") + Cn.GCS() + str.retCompValue("district") + Cn.GCS() + latedays.ToString() + Cn.GCS() + latedaysdsp;
+
+                    return Content(str1);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+        }
     }
 }

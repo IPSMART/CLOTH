@@ -2022,5 +2022,56 @@ namespace Improvar
                 return ex.Message + ex.InnerException;
             }
         }
+        public string SLCD_help(string val, string LINK_CD = "", string CAPTION = "", string GLCD = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+            string linkcd = LINK_CD.retSqlformat();
+            string valsrch = val.ToUpper().Trim();
+            if (CAPTION.retStr() == "")
+            {
+                if (LINK_CD == "D") { CAPTION = "Party"; }
+                else if (LINK_CD == "T") { CAPTION = "Transporter"; }
+                else if (LINK_CD == "U") { CAPTION = "Courier"; }
+                else if (LINK_CD == "M") { CAPTION = "SalesMen"; }
+                else if (LINK_CD == "A") { CAPTION = "Agent"; }
+                else if (LINK_CD == "C") { CAPTION = "Creditor"; }
+                else if (LINK_CD == "E") { CAPTION = "Employee"; } else { CAPTION = "Subledger"; }
+            }
+            sql = "";
+            sql += "select distinct a.slcd, a.slnm, a.gstno, nvl(a.slarea,a.district) slarea,a.statecd,a.district ";
+            sql += "from " + scmf + ".m_subleg a, " + scmf + ".m_subleg_link b, " + scmf + ".m_cntrl_hdr c, " + scmf + ".m_cntrl_loca d , " + scmf + ".m_subleg_gl f ";
+            sql += "where a.slcd=b.slcd(+) and a.m_autono=c.m_autono(+) and a.m_autono=d.m_autono(+) and a.slcd=f.slcd(+) and ";
+            if (valsrch.retStr() != "") sql += "( upper(a.slcd) like '%" + valsrch + "%' or upper(a.slnm) like '%" + valsrch + "%' or upper(a.gstno) like '%" + valsrch + "%' or upper(nvl(a.slarea,a.district)) like '%" + valsrch + "%' ) and ";
+            if (GLCD.retStr() != "") sql += "f.glcd = '" + GLCD + "' and ";
+            if (linkcd != "") sql += "b.linkcd in (" + linkcd + ") and ";
+            sql += "(d.compcd='" + COM + "' or d.compcd is null) and (d.loccd='" + LOC + "' or d.loccd is null) and ";
+            sql += "nvl(c.inactive_tag,'N') = 'N' "; // and rownum<50000";
+            sql += "order by slnm,slcd";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["slnm"] + "</td><td>" + tbl.Rows[i]["slcd"] + " </td><td>" + tbl.Rows[i]["gstno"] + " </td><td>" + tbl.Rows[i]["slarea"] + " </td><td>" + tbl.Rows[i]["statecd"] + " </td></tr>");
+                }
+                var hdr = "" + CAPTION + " Name" + Cn.GCS() + "" + CAPTION + " Code" + Cn.GCS() + "GST Number" + Cn.GCS() + "Area" + Cn.GCS() + "State Code";
+                return (Generate_help(hdr, SB.ToString(), "4"));
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid " + CAPTION + " Code ! Please Enter a Valid " + CAPTION + " Code !!";
+                }
+            }
+        }
     }
 }

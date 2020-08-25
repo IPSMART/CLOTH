@@ -19,7 +19,7 @@ namespace Improvar
     {
         string CS = null;
         Connection Cn = new Connection();
-        public string ITCD_help(string val, string ITGTYPE )
+        public string ITCD_help(string val, string ITGTYPE, string DOC_EFF_DT = "", string JOB_CD = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             try
@@ -34,6 +34,13 @@ namespace Improvar
                 sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype,a.styleno, a.PCSPERSET,a.hsncode ";
                 sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b ";
                 sql += "where a.itgrpcd=b.itgrpcd ";
+                if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
+                {
+                    sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd ";
+                    if (JOB_CD.retStr() != "") sql += "and y.jobcd='" + JOB_CD.retStr() + "' ";
+                    if (DOC_EFF_DT.retStr() != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT.retStr() + "','dd/mm/yyyy')  ";
+                    sql += ") ";
+                }
                 if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
                 if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(uomcd) like '%" + valsrch + "%'  )  ";
 
@@ -918,24 +925,45 @@ namespace Improvar
 
             return sql;
         }
+        //public List<DropDown_list> OTHER_REC_MODE()
+        //{
+        //    List<DropDown_list> DDL = new List<DropDown_list>();
+        //    DropDown_list DDL1 = new DropDown_list();
+        //    DDL1.text = "TelePhone";
+        //    DDL1.value = "T";
+        //    DDL.Add(DDL1);
+        //    DropDown_list DDL2 = new DropDown_list();
+        //    DDL2.text = "Email";
+        //    DDL2.value = "E";
+        //    DDL.Add(DDL2);
+        //    DropDown_list DDL3 = new DropDown_list();
+        //    DDL3.text = "Whatsapp";
+        //    DDL3.value = "W";
+        //    DDL.Add(DDL3);
+        //    DropDown_list DDL4 = new DropDown_list();
+        //    DDL4.text = "Online";
+        //    DDL4.value = "O";
+        //    DDL.Add(DDL4);
+        //    return DDL;
+        //}
         public List<DropDown_list> OTHER_REC_MODE()
         {
             List<DropDown_list> DDL = new List<DropDown_list>();
             DropDown_list DDL1 = new DropDown_list();
-            DDL1.text = "TelePhone";
-            DDL1.value = "T";
+            DDL1.text = "Whatsapp";
+            DDL1.value = "W";
             DDL.Add(DDL1);
             DropDown_list DDL2 = new DropDown_list();
-            DDL2.text = "Email";
-            DDL2.value = "E";
+            DDL2.text = "Verbal";
+            DDL2.value = "V";
             DDL.Add(DDL2);
             DropDown_list DDL3 = new DropDown_list();
-            DDL3.text = "Whatsapp";
-            DDL3.value = "W";
+            DDL3.text = "Email";
+            DDL3.value = "E";
             DDL.Add(DDL3);
             DropDown_list DDL4 = new DropDown_list();
-            DDL4.text = "Online";
-            DDL4.value = "O";
+            DDL4.text = "Physical (Static)";
+            DDL4.value = "P";
             DDL.Add(DDL4);
             return DDL;
         }
@@ -1348,66 +1376,7 @@ namespace Improvar
             SLNK.Add(SLNK2);
             return SLNK;
         }
-        public string ARTICLE_ITEM_DETAILS(string val, string ITGTYPE = "F", string DOC_EFF_DT = "", string JOB_CD = "", string searchby = "A")
-        {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
-            try
-            {
-                string scm1 = CommVar.CurSchema(UNQSNO);
-                string sql = "";
-                if (ITGTYPE != "")
-                {
-                    if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
-                }
-                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrptype, a.pcsperbox, a.styleno, a.PCSPERSET ";
-                sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b ";
-                sql += "where a.itgrpcd=b.itgrpcd ";
-                if (DOC_EFF_DT != "" || JOB_CD != "")
-                {
-                    sql += "and a.itcd = (select distinct y.itcd from " + scm1 + ".v_sjobmst_stdrt y where a.itcd=y.itcd ";
-                    if (JOB_CD != "") sql += "and y.jobcd='" + JOB_CD + "' ";
-                    if (DOC_EFF_DT != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT + "','dd/mm/yyyy')  ";
-                    sql += ") ";
-                }
-                if (ITGTYPE != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
-                if (searchby == "A" && val != null) sql += "and a.styleno='" + val + "' ";
-                if (searchby == "C" && val != null) sql += "and a.itcd='" + val + "' ";
-                DataTable rsTmp = SQLquery(sql);
-
-                if (val == null)
-                {
-                    if (rsTmp != null)
-                    {
-                        System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                        for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
-                        {
-                            SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["pcsperbox"].ToString() + "</td></tr>");
-                        }
-                        var hdr = "Article No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "PCS / BOX";
-                        return Generate_help(hdr, SB.ToString());
-                    }
-                    else return "0";
-                }
-                else
-                {
-                    string str = "";
-                    if (rsTmp != null && rsTmp.Rows.Count > 0)
-                    {
-                        str = rsTmp.Rows[0]["styleno"] + Cn.GCS() + rsTmp.Rows[0]["itcd"] + Cn.GCS() + rsTmp.Rows[0]["itnm"] + Cn.GCS() + rsTmp.Rows[0]["uomcd"] + Cn.GCS() + rsTmp.Rows[0]["pcsperbox"].ToString() + Cn.GCS() + rsTmp.Rows[0]["PCSPERSET"].ToString();
-                    }
-                    else
-                    {
-                        str = "Invalid " + (searchby == "A" ? " Article Number" : "Item Code") + " ! Please Enter a Valid " + (searchby == "A" ? " Article Number" : "Item Code") + " !!";
-                    }
-                    return str;
-                }
-            }
-            catch (Exception ex)
-            {
-                return ex.Message + " " + ex.InnerException;
-            }
-
-        }
+        
         public string MACHINE_HELP(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();

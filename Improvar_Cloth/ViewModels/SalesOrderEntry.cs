@@ -112,6 +112,8 @@ namespace Improvar.ViewModels
         public string DOCNO { get; set; }
         public string FDT { get; set; }
         public string TDT { get; set; }
+        public string CONSLNM { get; set; }
+        public string SAGSLNM { get; set; }
     }
     public class SalesOrderEntry_MAINGRID
     {
