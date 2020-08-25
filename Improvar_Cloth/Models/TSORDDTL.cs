@@ -92,5 +92,20 @@ namespace Improvar.Models
         public double? PCSPERSET { get; set; }
         public double? BOXES { get; set; }
         public double? SETS { get; set; }
+        [StringLength(4)]
+        public string ITGRPCD { get; set; }
+        [StringLength(30)]
+        public string ITGRPNM { get; set; }
+        [StringLength(8)]
+        public string FABITCD { get; set; }
+        [StringLength(60)]
+        public string FABITNM { get; set; }
+        public string GRPNM { get; set; }
+        public string STYLENO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? DELVDT { get; set; }
+
+        [StringLength(500)]
+        public string ITREM { get; set; }
     }
 }

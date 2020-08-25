@@ -1947,5 +1947,46 @@ namespace Improvar.Controllers
                 }
             }
         }
+        public ActionResult GetItemDetails(string val, string Code)
+        {
+            try
+            {
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                var str = Master_Help.ITCD_help(val, "", data[0].retSqlformat(), data[1].retSqlformat());
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetItemGroupDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.ITGRPCD_FABITCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
     }
 }
