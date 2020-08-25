@@ -571,7 +571,7 @@
         }
     }
 </script>
-<script>
+@*<script>
     function SelectSubLedgerCode(id, CODE, NAME, URL) {
 
         var BRAND = document.getElementById("BRANDCD").value;
@@ -836,6 +836,130 @@
                 }
 
             });
+        }
+    }
+</script>*@
+<script>
+    debugger;
+    function SelectSubLedgerCode(id) {
+        if ("@Model.DefaultAction" != "V") {
+            debugger;
+            if (id == "") {
+                ClearAllTextBoxes("AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
+            }
+            else {
+                var linkcd = $("#partylinkcd").val();
+                $.ajax({
+                    type: 'POST',
+                    beforesend: $("#WaitingMode").show(),
+                    url: "@Url.Action("GetSubCodeDetails", PageControllerName)",
+                    data: "&Code=" + linkcd + "&val=" + id,
+                    success: function (result) {
+                        var MSG = result.indexOf('#helpDIV');
+                        if (MSG >= 0) {
+                            ClearAllTextBoxes("AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
+                            $('#SearchFldValue').val("SLCD");
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val("SLCD/PartyName");
+                            $('#ReferanceColumn').val("1/0");
+                            $('#helpDIV_Header').html("Party Details");
+                        }
+                        else {
+                            var MSG = result.indexOf(String.fromCharCode(181));
+                            if (MSG >= 0) {
+                                $("#tempHDD").val(result);
+                                var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                                $("#SLCD").val(str[0]);
+                                $("#PartyName").val(str[1]);
+                                $("#AGSLCD").val(str[4]);
+                                $("#AgentName").val(str[5]);
+                                $("#TRSLCD").val(str[6]);
+                                $("#TransporterName").val(str[7]);
+                                $("#AreaCode").val(str[12]);
+                                $("#AreaName").val(str[17]); //str[13].toString();
+                                $("#DistrictName").val(str[15]);
+                                $("#DOCTH_H").val(str[14]);
+                                if ($("#SLCD").val() != $("#PARTYCD_H").val() && $("#PARTYCD_H").val() != "" &&
+                                    $("#AreaCode").val() != $("#AREACD_H").val() && $("#AREACD_H").val() != ""
+                                    ) {
+                                    if ($("#SLCD").val() != "") {
+                                        if (confirm("Data Available for Partcular Party ! Are You Sure ? You Want To Change the Party !!")) {
+                                            $("#SLCD").val(str[0]);
+                                            $("#PartyName").val(str[1]);
+                                            $("#AGSLCD").val(str[4]);
+                                            $("#AgentName").val(str[5]);
+                                            $("#TRSLCD").val(str[6]);
+                                            $("#TransporterName").val(str[7]);
+                                            $("#AreaCode").val(str[12]);
+                                            $("#AreaName").val(str[17]); //str[13]);
+                                            $("#DistrictName").val(str[15]);
+                                            $("#DOCTH_H").val(str[14]);
+                                            var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
+                                            for (i = 0; i <= GridRowMain - 1; i++) {
+                                                $("#ChildData_" + i).val(null);
+                                                $("#ARTNO_" + i).val(null);
+                                                $("#ITCD_" + i).val(null);
+                                                $("#ITNM_" + i).val(null);
+                                                $("#TOTAL_PCS_" + i).val(null);
+                                                $("#UOM_" + i).val(null);
+                                                $("#RATE_" + i).val(null);
+                                                $("#QNTY_" + i).val(null);
+                                                $("#ALL_SIZE_" + i).val(null);
+                                                $("#STKTYPE_" + i).val(null);
+                                                $("#FREESTK_" + i).val(null);
+                                            }
+                                        }
+                                        else {
+                                            $("#SLCD").val($("#PARTYCD_H").val());
+                                            $("#PartyName").val($("#PARTYNM_H").val());
+                                            $("#PARTYCD_H").val($("#SLCD").val());
+                                            $("#PARTYNM_H").val($("#PartyName").val());
+                                            $("#AGSLCD").val($("#AGTCD_H").val());
+                                            $("#AgentName").val($("#AGTNM_H").val());
+                                            $("#AGTCD_H").val($("#AGSLCD").val());
+                                            $("#AGTNM_H").val($("#AgentName").val());
+                                            $("#TRSLCD").val($("#TRNSCD_H").val());
+                                            $("#TransporterName").val($("#TRNSNM_H").val());
+                                            $("#TRNSCD_H").val($("#TRSLCD").val());
+                                            $("#TRNSNM_H").val($("#TransporterName").val());
+                                            $("#AreaCode").val($("#AREACD_H").val());
+                                            $("#AreaName").val($("#AREANM_H").val());
+                                            $("#AREACD_H").val($("#AreaCode").val());
+                                            $("#AREANM_H").val($("#AreaName").val());
+                                        }
+                                    }
+                                }
+                                else {
+                                    $("#PARTYCD_H").val(str[0]);
+                                    $("#PARTYNM_H").val(str[1]);
+                                    $("#AGTCD_H").val(str[4]);
+                                    $("#AGTNM_H").val(str[5]);
+                                    $("#TRNSCD_H").val(str[6]);
+                                    $("#TRNSNM_H").val(str[7]);
+                                    $("#AREACD_H").val(str[12]);
+                                    $("#AREANM_H").val(str[13]);
+                                }
+
+                                //if ($("#SLCD").val() != "") {
+                                //    SCHEME_DATA();
+                                //}
+                            }
+                            else {
+                                $('#helpDIV').html("");
+                                msgInfo("" + result + " !");
+                                ClearAllTextBoxes("AGSLCD,AgentName,TRSLCD,TransporterName,AreaCode,AreaName,PARTYCD_H,PARTYNM_H,AGTCD_H,AGTNM_H,TRNSCD_H,TRNSNM_H,AREACD_H,AREANM_H");
+                                message_value = "SLCD";
+                            }
+                        }
+                        $("#WaitingMode").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
         }
     }
 </script>
@@ -1208,6 +1332,9 @@
         <input type="hidden" id="urlnameSALESMEN" value="@Url.Action("GetSalesMenDetails", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
+        <input type="hidden" id="agentlinkcd" value="A" />
+        <input type="hidden" id="salesmanlinkcd" value="S" />
+        <input type="hidden" id="trnsportlinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_SORD.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_SORD.DOCNO)
@@ -1300,16 +1427,10 @@
                             @Html.HiddenFor(model => model.PARTYNM, new { @class = "form-control", id = "PARTYNM_H" })
                             @Html.HiddenFor(model => model.AREACD, new { @class = "form-control", id = "AREACD_H" })
                             @Html.HiddenFor(model => model.AREANM, new { @class = "form-control", id = "AREANM_H" })
-                            @Html.HiddenFor(model => model.DISCD, new { @class = "form-control", id = "DISCD_H" })
-                            @Html.HiddenFor(model => model.DISNM, new { @class = "form-control", id = "DISNM_H" })
-                            @Html.HiddenFor(model => model.PRCCD, new { @class = "form-control", id = "PRCCD_H" })
-                            @Html.HiddenFor(model => model.PRCNM, new { @class = "form-control", id = "PRCNM_H" })
                             @Html.HiddenFor(model => model.AGTCD, new { @class = "form-control", id = "AGTCD_H" })
                             @Html.HiddenFor(model => model.AGTNM, new { @class = "form-control", id = "AGTNM_H" })
                             @Html.HiddenFor(model => model.TRNSCD, new { @class = "form-control", id = "TRNSCD_H" })
                             @Html.HiddenFor(model => model.TRNSNM, new { @class = "form-control", id = "TRNSNM_H" })
-                            @Html.HiddenFor(model => model.CURCD, new { @class = "form-control", id = "CURCD_H" })
-                            @Html.HiddenFor(model => model.CURNM, new { @class = "form-control", id = "CURNM_H" })
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -1423,8 +1544,10 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeyup = "GetHelp('" + @Url.Action("GetAgentDetails", PageControllerName) + "','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')", onblur = "SelectSubLedgerCode(this.value,AGSLCD,AgentName,'urlnameAGENT');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetAgentDetails", PageControllerName )','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')" />
+                                    @*@Html.EditorFor(model => model.T_SORD.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeyup = "GetHelp('" + @Url.Action("GetAgentDetails", PageControllerName) + "','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')", onblur = "SelectSubLedgerCode(this.value,AGSLCD,AgentName,'urlnameAGENT');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetAgentDetails", PageControllerName )','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')" />*@
+                                    @Html.EditorFor(model => model.T_SORD.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Agent Details','AGSLCD','AGSLCD=slcd=1/AgentName=slnm=0','agentlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Agent Details','AGSLCD','AGSLCD=slcd=1/AgentName=slnm=0','agentlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Agent Details','AGSLCD','AGSLCD=slcd=1/AgentName=slnm=0','agentlinkcd')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -1440,13 +1563,13 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeyup = "GetHelp('" + @Url.Action("GetAgentDetails", PageControllerName) + "','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')", onblur = "SelectSubLedgerCode(this.value,AGSLCD,AgentName,'urlnameAGENT');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetAgentDetails", PageControllerName )','AGSLCD/AgentName','1/0','Agent Details','AGSLCD')" />
+                                    @Html.EditorFor(model => model.T_SORD.SAGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SAGSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.AgentName, new { htmlAttributes = new { @class = "form-control", id = "AgentName", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
+                                    @Html.EditorFor(model => model.SAGSLNM, new { htmlAttributes = new { @class = "form-control", id = "SAGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Sub Agent Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
                             </div>
                         </div>
@@ -1459,8 +1582,10 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeyup = "GetHelp('" + @Url.Action("GetSalesMenDetails", PageControllerName) + "','SLMSLCD/SalesManName','1/0','Agent Details','SLMSLCD')", onblur = "SelectSubLedgerCode(this.value,SLMSLCD,SalesManName,'urlnameSALESMEN');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetSalesMenDetails", PageControllerName )','SLMSLCD/SalesManName','1/0','SalesMen Details','SLMSLCD')" />
+                                    @*@Html.EditorFor(model => model.T_SORD.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeyup = "GetHelp('" + @Url.Action("GetSalesMenDetails", PageControllerName) + "','SLMSLCD/SalesManName','1/0','Agent Details','SLMSLCD')", onblur = "SelectSubLedgerCode(this.value,SLMSLCD,SalesManName,'urlnameSALESMEN');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetSalesMenDetails", PageControllerName )','SLMSLCD/SalesManName','1/0','SalesMen Details','SLMSLCD')" />*@
+                                    @Html.EditorFor(model => model.T_SORD.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -1475,8 +1600,10 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeyup = "GetHelp('" + @Url.Action("GetTransporterDetails", PageControllerName) + "','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')", onblur = "SelectSubLedgerCode(this.value,TRSLCD,TransporterName,'urlnameTRANSPORTER');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetTransporterDetails", PageControllerName )','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')" />
+                                    @*@Html.EditorFor(model => model.T_SORD.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeyup = "GetHelp('" + @Url.Action("GetTransporterDetails", PageControllerName) + "','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')", onblur = "SelectSubLedgerCode(this.value,TRSLCD,TransporterName,'urlnameTRANSPORTER');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetTransporterDetails", PageControllerName )','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')" />*@
+                                    @Html.EditorFor(model => model.T_SORD.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -1493,7 +1620,7 @@
                             </div>
                             <div class="col-md-5" style="width:auto;">
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => Model.OTHRECMD, new SelectList(Model.DropDown_list, "value", "text", Model.OTHRECMD), "==Select==", new { @class = "form-control" })
+                                    @Html.EditorFor(model => model.T_SORD.ORDBY, new { htmlAttributes = new { @class = "form-control", id = "ORDBY", maxlength = 50, @placeholder = "Order By" } })
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -1503,29 +1630,29 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.T_SORD.DOCTH, new SelectList(Model.DocumentThrough, "Value", "Text"), new { @class = "form-control", id = "DOCTH_H" })
+                                    @Html.EditorFor(model => model.T_SORD.SELBY, new { htmlAttributes = new { @class = "form-control", id = "SELBY", maxlength = 50, @placeholder = "Select By" } })
                                 </div>
                             </div>
                         </div>
-                       
+
                         <div class="row">
                             <div class="col-md-3">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Payment Terms")
-                                    </div>
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Payment Terms")
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PAYTRMCD", onkeyup = "GetHelp('" + @Url.Action("GetPayTermsDetails", PageControllerName) + "','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')", onblur = "SelectPayTermsCode(this.value,PAYTRMCD,PayTermName);", @placeholder = "Code", maxlength = 4 } })
-                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetPayTermsDetails", PageControllerName )','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')" />
-                                    </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PAYTRMCD", onkeyup = "GetHelp('" + @Url.Action("GetPayTermsDetails", PageControllerName) + "','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')", onblur = "SelectPayTermsCode(this.value,PAYTRMCD,PayTermName);", @placeholder = "Code", maxlength = 4 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetPayTermsDetails", PageControllerName )','PAYTRMCD/PayTermName','1/0','Payment Term Details','PAYTRMCD')" />
                                 </div>
-                                <div class="col-md-9">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.PayTermName, new { htmlAttributes = new { @class = "form-control", id = "PayTermName", maxlength = 30, @title = "Only for View", @placeholder = "Payment Terms Name", @readonly = "readonly", tabindex = "-1" } })
-                                    </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.PayTermName, new { htmlAttributes = new { @class = "form-control", id = "PayTermName", maxlength = 30, @title = "Only for View", @placeholder = "Payment Terms Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
-                           
+                            </div>
+
                         </div>
                         <div class="row">
                             <div class="col-md-3">
@@ -1552,7 +1679,7 @@
                                 </div>
                             </div>
                         </div>
-                     
+
                         @if (Model.DefaultAction == "V")
                         {
                             <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:1050px;">
