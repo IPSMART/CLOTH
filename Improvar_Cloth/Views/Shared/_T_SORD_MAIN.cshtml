@@ -77,12 +77,12 @@
                                         </td>
                                         <td class="">
                                             @*@Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", onclick = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "PCSPERSET_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "',NOOFSETS_" + i + ".value,'" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','1');", onkeydown = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "PCSPERSET_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "',NOOFSETS_" + i + ".value,'" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','1');", @TabIndex = -1, @class = " atextBoxFor", maxlength = 12 } })*@
-                                            @Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", onclick = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "PCSPERSET_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','1');", onkeydown = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "PCSPERSET_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','1');", @TabIndex = -1, @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", onclick = "OpenSize(" + i + ",'1');", onkeydown = "OpenSize(" + i + ",'1');", @TabIndex = -1, @class = " atextBoxFor", maxlength = 12 } })
 
 
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TSORDDTL[i].RATE_DISPLAY, new { htmlAttributes = new { id = "RATE_DISPLAY_" + i, @class = " atextBoxFor", @style = "text-align: right;", @TabIndex = -1,  @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
+                                            @Html.EditorFor(model => Model.TSORDDTL[i].RATE_DISPLAY, new { htmlAttributes = new { id = "RATE_DISPLAY_" + i, @class = " atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].ALL_SIZE, new { id = "ALL_SIZE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })

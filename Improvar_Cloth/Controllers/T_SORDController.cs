@@ -534,7 +534,7 @@ namespace Improvar.Controllers
             }
             return Content(str);
         }
-        public ActionResult OPENSIZE(SalesOrderEntry VE, short SerialNo, string ITEM, string ITEM_NM, string ART_NO, string UOM, double? PCS, double? QNTY, string STK_TYPE, string FREE_STK, double NO_SETS, string TAG, double PCS_PERSET)
+        public ActionResult OPENSIZE(SalesOrderEntry VE, short SerialNo, string ITEM, string ITEM_NM, string ART_NO, string UOM, double? QNTY, string TAG)
         {
             //Thread.Sleep(5000);
             Cn.getQueryString(VE);
@@ -543,11 +543,13 @@ namespace Improvar.Controllers
             try
             {
                 ART_NO = ART_NO.Replace('μ', '+'); ART_NO = ART_NO.Replace('‡', '&');
-                ViewBag.Article = ART_NO; ViewBag.Pcs = PCS; ViewBag.Set = PCS_PERSET;
+                ViewBag.Article = ART_NO; //ViewBag.Pcs = PCS; ViewBag.Set = PCS_PERSET;
                 TempData["OpenedSizeSerialNo"] = SerialNo.retShort();
                 short POSRL = Convert.ToInt16(SerialNo);
                 string prceffdt = VE.EFF_DATE_ID; string prccd = VE.PRCCD;
-                var query = (from c in VE.TSORDDTL where (c.ITCD == ITEM && c.FREESTK == FREE_STK) select c).ToList();
+                //var query = (from c in VE.TSORDDTL where (c.ITCD == ITEM && c.FREESTK == FREE_STK) select c).ToList();
+                var query = (from c in VE.TSORDDTL where (c.ITCD == ITEM) select c).ToList();
+
                 if (query != null)
                 {
                     string sql = "";
@@ -581,14 +583,14 @@ namespace Improvar.Controllers
                                             ITNM_HIDDEN = ITEM_NM,
                                             ARTNO_HIDDEN = ART_NO,
                                             UOM_HIDDEN = UOM,
-                                            PCS_HIDDEN = PCS.Value,
-                                            PCSPERSET_HIDDEN = PCS_PERSET,
-                                            FREESTK_HIDDEN = FREE_STK,
-                                            STKTYPE_HIDDEN = STK_TYPE,
+                                          //  PCS_HIDDEN = PCS.Value,
+                                           // PCSPERSET_HIDDEN = PCS_PERSET,
+                                           // FREESTK_HIDDEN = FREE_STK,
+                                            //STKTYPE_HIDDEN = STK_TYPE,
                                             ITCOLSIZE = ITEM + dr["colrcd"].ToString() + dr["sizecd"].ToString(),
                                             RATE = Convert.ToDouble(dr["rate"].ToString()),
-                                            QNTY = NO_SETS != 0 && PCS_PERSET != 0 ? (dr["mixsize"].ToString() == "M" ? (NO_SETS * PCS_PERSET / SIZE_COUNT) : (PCSPERBOX != PCS_PERSET ? (NO_SETS * PCS_PERSET / SIZE_COUNT) : NO_SETS * PCS_PERSET)) : (NO_SETS * PCS_PERSET),
-                                            QNTY_HIDDEN = NO_SETS != 0 && PCS_PERSET != 0 ? (dr["mixsize"].ToString() == "M" ? (NO_SETS * PCS_PERSET / SIZE_COUNT) : (PCSPERBOX != PCS_PERSET ? (NO_SETS * PCS_PERSET / SIZE_COUNT) : NO_SETS * PCS_PERSET)) : QNTY
+                                            //QNTY = NO_SETS != 0 && PCS_PERSET != 0 ? (dr["mixsize"].ToString() == "M" ? (NO_SETS * PCS_PERSET / SIZE_COUNT) : (PCSPERBOX != PCS_PERSET ? (NO_SETS * PCS_PERSET / SIZE_COUNT) : NO_SETS * PCS_PERSET)) : (NO_SETS * PCS_PERSET),
+                                            //QNTY_HIDDEN = NO_SETS != 0 && PCS_PERSET != 0 ? (dr["mixsize"].ToString() == "M" ? (NO_SETS * PCS_PERSET / SIZE_COUNT) : (PCSPERBOX != PCS_PERSET ? (NO_SETS * PCS_PERSET / SIZE_COUNT) : NO_SETS * PCS_PERSET)) : QNTY
                                         }).OrderBy(a => a.PRINT_SEQ).ToList();
                     //bool isItcdChanged = false;
                     //if (query != null && query.First().ALL_SIZE != null)
@@ -638,13 +640,14 @@ namespace Improvar.Controllers
                                 helpMT.ForEach(a =>
                                 {
                                     a.ParentSerialNo = SerialNo; a.ITCD_HIDDEN = ITEM; a.ITNM_HIDDEN = ITEM_NM; a.ARTNO_HIDDEN = ART_NO; a.UOM_HIDDEN = UOM;
-                                    a.PCS_HIDDEN = PCS.Value; a.QNTY_HIDDEN = QNTY;
-                                    a.FREESTK_HIDDEN = FREE_STK; a.STKTYPE_HIDDEN = STK_TYPE; a.PCSPERSET_HIDDEN = PCS_PERSET;
+                                   // a.PCS_HIDDEN = PCS.Value;
+                                    a.QNTY_HIDDEN = QNTY;
+                                   // a.FREESTK_HIDDEN = FREE_STK; a.STKTYPE_HIDDEN = STK_TYPE; a.PCSPERSET_HIDDEN = PCS_PERSET;
                                     if (a.QNTY_HIDDEN == 0) { a.QNTY_HIDDEN = null; a.QNTY = null; }
                                     if (TAG == "0")
                                     {
-                                        var CAL_QNTY = a.PCSPERSET_HIDDEN != 0 && NO_SETS != 0 ? NO_SETS * PCS_PERSET : 0;
-                                        a.QNTY = a.MIXSIZE == "M" ? CAL_QNTY / helpMT.Count : (NO_SETS != a.PCSPERSET_HIDDEN ? CAL_QNTY / helpMT.Count : CAL_QNTY);
+                                        //var CAL_QNTY = a.PCSPERSET_HIDDEN != 0 && NO_SETS != 0 ? NO_SETS * PCS_PERSET : 0;
+                                       // a.QNTY = a.MIXSIZE == "M" ? CAL_QNTY / helpMT.Count : (NO_SETS != a.PCSPERSET_HIDDEN ? CAL_QNTY / helpMT.Count : CAL_QNTY);
                                         //var CAL_QNTY = a.PCSPERSET_HIDDEN != 0 ? NO_SETS * PCS_PERSET : 0;
                                         //a.QNTY = a.MIXSIZE == "M" ? CAL_QNTY / helpMT.Count : CAL_QNTY;
                                         a.QNTY_HIDDEN = a.QNTY;

@@ -201,21 +201,16 @@
     }
 </script>
 <script>
-    function OpenSize(id, SLNO, ITCD, ITNM, PCSPERSET, ARTNO, UOM, TOTAL_PCS, NO_SETS, STKTYPE, FREESTK, TAG) {
-        if (id == "") { id = parseFloat(0) } else { id = parseFloat(id) }
-        if (NO_SETS == "") { NO_SETS = parseFloat(0) } else { NO_SETS = parseFloat(NO_SETS) }
-        var SerialNo = document.getElementById(SLNO).value;
+    function OpenSize(i, TAG) {
+        var QNTY = $("#QNTY_" + i).val();
+        if (QNTY == "") { QNTY = parseFloat(0) } else { QNTY = parseFloat(QNTY) }
+        var SerialNo = $("#SLNO_"+i).val();
         if (SerialNo == "") { SerialNo = parseInt(0) } else { SerialNo = parseInt(SerialNo) }
-        var ITEM = document.getElementById(ITCD).value;
-        var ITEM_NM = document.getElementById(ITNM).value;
-        var PCS_PERSET = document.getElementById(PCSPERSET).value;
-        if (PCS_PERSET == "") { PCS_PERSET = parseFloat(0) } else { PCS_PERSET = parseFloat(PCS_PERSET) }
-        var ART_NO = document.getElementById(ARTNO).value; ART_NO = ART_NO.replace('+', 'μ'); ART_NO = ART_NO.replace('&', '‡');
-        var UOM = document.getElementById(UOM).value;
-        var PCS = document.getElementById(TOTAL_PCS).value;
-        if (PCS == "") { PCS = parseFloat(0) } else { PCS = parseFloat(PCS) }
-        var STK_TYPE = document.getElementById(STKTYPE).value;
-        var FREE_STK = document.getElementById(FREESTK).value;
+        var ITEM =  $("#ITCD_"+i).val();
+        var ITEM_NM = $("#ITNM_"+i).val();
+        var ART_NO = $("#STYLENO_"+i).val(); ART_NO = ART_NO.replace('+', 'μ'); ART_NO = ART_NO.replace('&', '‡');
+        var UOM =  $("#UOM_"+i).val();
+
         $("#hiddenITEM").val(ITEM);
         if (ITEM.toString() != "") {
             if (ITEM.toString() != "") {
@@ -223,7 +218,7 @@
                     type: 'POST',
                     url: "@Url.Action("OPENSIZE", PageControllerName)",
                     beforesend: $("#WaitingMode").show(),
-                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&ART_NO=" + ART_NO + "&UOM=" + UOM + "&PCS=" + PCS + "&QNTY=" + parseFloat(id) + "&STK_TYPE=" + STK_TYPE + "&FREE_STK=" + FREE_STK + "&NO_SETS=" + NO_SETS + "&TAG=" + TAG + "&PCS_PERSET=" + PCS_PERSET,
+                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&ART_NO=" + ART_NO + "&UOM=" + UOM + "&QNTY=" + parseFloat(QNTY)  + "&TAG=" + TAG ,
                     success: function (result) {
                         $('#popup').html(result);
                         if (TAG == 1) {

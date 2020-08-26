@@ -23,88 +23,87 @@
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         $("#WaitingMode").hide();
-   });
+    });
 </script>
 <script>
-   function requiredFieldValidator()
-   {
-       if (!emptyFieldCheck("Enter Mobile No.", "MOBILE")) {
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       var mobile = $("#MOBILE").val();
-       if (isNaN(mobile) || mobile.indexOf(" ") != -1) {
-           msgInfo("Enter number");
-           message_value = "MOBILE";
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       if (mobile.length < 10) {
-           msgInfo("Enter 10 digit mobile number!");
-           message_value = "MOBILE";
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       if (!emptyFieldCheck("Enter/Select City.", "CITY")) {
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       if (!emptyFieldCheck("Enter Pin Code", "PIN")) {
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       
-       if (!emptyFieldCheck("Enter/Select Sate", "STATECD")) {
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Mobile No.", "MOBILE")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        var mobile = $("#MOBILE").val();
+        if (isNaN(mobile) || mobile.indexOf(" ") != -1) {
+            msgInfo("Enter number");
+            message_value = "MOBILE";
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (mobile.length < 10) {
+            msgInfo("Enter 10 digit mobile number!");
+            message_value = "MOBILE";
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter/Select City.", "CITY")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter Pin Code", "PIN")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
 
-       var mail = $("#EMAIL").val();
-       var mailformat = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,4})?$/;
-       if (!mailformat.test(mail)) {
-           msgInfo("enter valid mail id!");
-           message_value = "EMAIL";
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       if (!emptyFieldCheck("Enter/Select Country", "COUNTRY")) {
-           $("li").removeClass("active").addClass("");
-           $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
-           $(".tab-content div").removeClass("active");
-           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-           return false;
-       }
-       return true;
-   }
+        if (!emptyFieldCheck("Enter/Select Sate", "STATECD")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+
+        var mail = $("#EMAIL").val();
+        var mailformat = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,4})?$/;
+        if (!mailformat.test(mail)) {
+            msgInfo("enter valid mail id!");
+            message_value = "EMAIL";
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if (!emptyFieldCheck("Enter/Select Country", "COUNTRY")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        return true;
+    }
 </script>
 <script>
     @{
@@ -129,7 +128,7 @@
         $(function () {
             $("#DOB").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#DOW").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
-           
+
         });
     }
 </script>
@@ -187,18 +186,19 @@
                     val: id
                 },
                 success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#msgbody_info").html(" Invalid Ref Retail !! ");
-                        $("#REFRTDEBCD").val("");
-                        $("#REFRTDEBNM").val("");
-                        $("#btnok").focus();
-                        message_value = "REFRTDEBCD";
-                    }
-                    else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         input(REFRTDEBCD, REFRTDEBNM);
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#REFRTDEBCD").val("");
+                        $("#REFRTDEBNM").val("");
+                        $("#msgbody_info").html(" Invalid Ref Retail !! ");
+                        message_value = "REFRTDEBCD";
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -284,8 +284,7 @@
     }
 </script>
 <script>
-    function pageprinting()
-    {
+    function pageprinting() {
         $("#btnprint").click();
     }
 </script>
@@ -375,8 +374,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_RETDEB.RTDEBCD, new { htmlAttributes = new { @class = "form-control", id = "RTDEBCD", @placeholder = "Code", @onkeyup = "toUpper(this);", maxlength = 8, @readonly = "readonly" } })
-                               
+                                @Html.EditorFor(model => model.M_RETDEB.RTDEBCD, new { htmlAttributes = new { @class = "form-control", id = "RTDEBCD", @placeholder = "Code", @onkeyup = "toUpper(this);", maxlength = 8, @readonly = "readonly" } })
+
                             </div>
                         </div>
                     </div>
@@ -390,7 +389,7 @@
                         <div class="col-md-6">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_RETDEB.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", @title = "Only Numeric", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "MOBILE No.", maxlength = 10 } })
-                               
+
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -399,7 +398,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="editor-field"style="width: auto;">
+                            <div class="editor-field" style="width: auto;">
                                 @Html.EditorFor(model => model.M_RETDEB.ALTNO, new { htmlAttributes = new { @class = "form-control", id = "ALTNO", @title = "Only Numeric", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Alternate No.", maxlength = 10 } })
 
                             </div>
@@ -410,7 +409,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="editor-field"style="width: auto;">
+                            <div class="editor-field" style="width: auto;">
                                 <select id="gender" name="gender" class="form-control">
                                     <option value="0" selected="selected">====Select====</option>
                                     @foreach (var i in Model.DropDown_list1)
@@ -453,7 +452,7 @@
                         <div class="col-md-4">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Area")
-                               
+
                             </div>
                         </div>
                         <div class="col-md-9">
@@ -570,20 +569,20 @@
                                 @Html.Label("", "State")
                                 <sup style="color:Red;">*</sup>
                             </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
                             </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                </div>
-                                @Html.EditorFor(model => model.M_RETDEB.STATECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STATECD", onblur = "SelectSTATE(this.value,STATECD,STATENM);", onkeyup = "GetHelp('" + @Url.Action("GetState", PageControllerName) + "','STATECD/STATENM','1/0','Select State','STATECD')", @placeholder = "Code", maxlength = 2 } })
-                                <img src="~/Image/search.png" class="Help_image_button" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetState", PageControllerName )','STATECD/STATENM','1/0','Select State','STATECD')" />
-                            </div>
-                      
+                            @Html.EditorFor(model => model.M_RETDEB.STATECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STATECD", onblur = "SelectSTATE(this.value,STATECD,STATENM);", onkeyup = "GetHelp('" + @Url.Action("GetState", PageControllerName) + "','STATECD/STATENM','1/0','Select State','STATECD')", @placeholder = "Code", maxlength = 2 } })
+                            <img src="~/Image/search.png" class="Help_image_button" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetState", PageControllerName )','STATECD/STATENM','1/0','Select State','STATECD')" />
+                        </div>
+
                         <div class="col-md-8">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.MS_STATE.STATENM, new { htmlAttributes = new { @class = "form-control", id = "STATENM", @placeholder = "State Name", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
-                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -621,7 +620,7 @@
                                 @Html.EditorFor(model => model.REFRTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "REFRTDEBNM", maxlength = 15, @title = "Only for View", @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
-                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -632,7 +631,7 @@
                         <div class="col-md-6">
                             <div class="editor-field">
                                 @*@Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onblur = "SelectRefLedgerCode(this.value,REFSLCD,REFSLNM);", @placeholder = "Ref Retail Code", onkeyup = "GetHelp('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD');toUpper(this);", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetRefLedgerDetails", PageControllerName )','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD')" />*@
+                                    <img src="~/Image/search.png" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetRefLedgerDetails", PageControllerName )','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD')" />*@
                                 @Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0/GSTNO=gstno=2')", onblur = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0/GSTNO=gstno=2')", @placeholder = "Code", maxlength = 8 } })
                                 <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefLedgerDetails", PageControllerName)','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0/GSTNO=gstno=2')" />
                             </div>
@@ -648,19 +647,19 @@
                             </div>
                         </div>
                     </div>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "De - Activate")
-                                </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "De - Activate")
                             </div>
-                            <div class="col-md-3">
-                                <div class="editor-field" style="margin-top:6px;">
-                                    @Html.CheckBoxFor(model => model.Checked)
-                                </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.Checked)
                             </div>
                         </div>
                     </div>
+                </div>
                 <div id="Remarks" class="tab-pane fade" style="margin-top: 10px;">
                     <div>
                         <div id="partialdivRemarks">
