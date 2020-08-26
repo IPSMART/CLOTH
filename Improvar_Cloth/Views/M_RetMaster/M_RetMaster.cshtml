@@ -14,7 +14,6 @@
         }
         else if ("@Model.DefaultAction" == "E") {
 
-            $("#ITGRPCD").attr("readonly", "readonly");
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -634,13 +633,18 @@
                             <div class="editor-field">
                                 @*@Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onblur = "SelectRefLedgerCode(this.value,REFSLCD,REFSLNM);", @placeholder = "Ref Retail Code", onkeyup = "GetHelp('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD');toUpper(this);", maxlength = 8 } })
                                 <img src="~/Image/search.png" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetRefLedgerDetails", PageControllerName )','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD')" />*@
-                                @Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0')", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefLedgerDetails", PageControllerName)','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0')" />
+                                @Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0/GSTNO=gstno=2')", onblur = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0/GSTNO=gstno=2')", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefLedgerDetails", PageControllerName)','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0/GSTNO=gstno=2')" />
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.REFSLNM, new { htmlAttributes = new { @class = "form-control", id = "REFSLNM", maxlength = 15, @title = "Only for View", @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", maxlength = 15, @title = "Only for View", @placeholder = "GST Number", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                     </div>

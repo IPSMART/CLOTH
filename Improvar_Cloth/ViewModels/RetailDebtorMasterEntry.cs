@@ -17,5 +17,6 @@ namespace Improvar.ViewModels
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public string REFRTDEBNM { get; set; }
         public string REFSLNM { get; set; }
+        public string GSTNO { get; set; }
     }
 }
