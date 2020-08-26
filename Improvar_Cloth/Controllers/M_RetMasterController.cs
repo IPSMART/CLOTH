@@ -425,7 +425,7 @@ namespace Improvar.Controllers
                         {
                             var mobno = VE.M_RETDEB.MOBILE;
                             var ChkDuplicateMobNo = (from i in DB.M_RETDEB where i.MOBILE == mobno select new { i.MOBILE,i.RTDEBNM }).FirstOrDefault();
-                            if (ChkDuplicateMobNo != null) { return Content("Mobile No : "+ChkDuplicateMobNo.MOBILE + " already exsist for " + ChkDuplicateMobNo.RTDEBNM); }
+                            if (ChkDuplicateMobNo != null) { transaction.Rollback(); return Content("Mobile No : '"+ChkDuplicateMobNo.MOBILE + "' already exsist for '" + ChkDuplicateMobNo.RTDEBNM +"' please change entered Mobile No."); }
                             MRETDEB.EMD_NO = 0;
                             MRETDEB.M_AUTONO = Cn.M_AUTONO(CommVar.FinSchema(UNQSNO).ToString());
                             MRETDEB.RTDEBCD = Cn.GenMasterCode("M_RETDEB", "RTDEBCD", VE.M_RETDEB.RTDEBNM.ToUpper().Trim().Substring(0, 1), 8,"F");
