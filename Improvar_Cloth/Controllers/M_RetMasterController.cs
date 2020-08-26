@@ -313,18 +313,18 @@ namespace Improvar.Controllers
         {
             try
             {
-                var agent = Code.Split(Convert.ToChar(Cn.GCS()));
-                if (agent.Count() > 1)
-                {
-                    if (agent[1] == "")
-                    {
-                        return Content("Please Select Ref Ledger !!");
-                    }
-                    else
-                    {
-                        Code = agent[0];
-                    }
-                }
+                //var agent = Code.Split(Convert.ToChar(Cn.GCS()));
+                //if (agent.Count() > 1)
+                //{
+                //    if (agent[1] == "")
+                //    {
+                //        return Content("Please Select Ref Ledger !!");
+                //    }
+                //    else
+                //    {
+                //        Code = agent[0];
+                //    }
+                //}
                 var str = Master_Help.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {

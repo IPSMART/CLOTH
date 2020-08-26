@@ -465,7 +465,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;">
+                            <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "City")
                                 <b style="color:Red;">*</b>
                             </div>
@@ -503,7 +503,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_RETDEB.DOB, new { htmlAttributes = new { @class = "form-control", id = "DOB", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10 } })
+                                @Html.EditorFor(model => model.M_RETDEB.DOB, new { htmlAttributes = new { @class = "form-control", id = "DOB", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10, onblur = "DocumentDateCHK(this)" } })
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -513,7 +513,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_RETDEB.DOW, new { htmlAttributes = new { @class = "form-control", id = "DOW", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10 } })
+                                @Html.EditorFor(model => model.M_RETDEB.DOW, new { htmlAttributes = new { @class = "form-control", id = "DOW", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10, onblur = "DocumentDateCHK(this)" } })
                             </div>
                         </div>
                     </div>
@@ -587,7 +587,7 @@
                         </div>
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;">
+                            <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Country")
                                 <b style="color:Red;">*</b>
                             </div>
@@ -634,7 +634,7 @@
                             <div class="editor-field">
                                 @*@Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onblur = "SelectRefLedgerCode(this.value,REFSLCD,REFSLNM);", @placeholder = "Ref Retail Code", onkeyup = "GetHelp('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD');toUpper(this);", maxlength = 8 } })
                                 <img src="~/Image/search.png" width="20px" class="Help_image_button" style="margin-top: 5px;" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetRefLedgerDetails", PageControllerName )','REFSLCD/REFSLNM','1/0','Ref Ledger Details','REFSLCD')" />*@
-                                @Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0')", onblur = "SelectRefLedgerCode(this.value);", @placeholder = "Code", maxlength = 8 } })
+                                @Html.EditorFor(model => model.M_RETDEB.REFSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "REFSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefLedgerDetails", PageControllerName) + "','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0')", @placeholder = "Code", maxlength = 8 } })
                                 <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefLedgerDetails", PageControllerName)','Ref Ledger Details','REFSLCD','REFSLCD=slcd=1/REFSLNM=slnm=0')" />
                             </div>
                         </div>
