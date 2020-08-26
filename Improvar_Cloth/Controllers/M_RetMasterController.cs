@@ -188,6 +188,9 @@ namespace Improvar.Controllers
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                     if (sl.REFRTDEBCD != null)
                     { var Party = DB.M_RETDEB.Find(sl.REFRTDEBCD); if (Party != null) { VE.REFRTDEBNM = Party.RTDEBNM; } }
+                    if (sl.REFSLCD != null)
+                    { var RefSLCD = DB.M_SUBLEG.Find(sl.REFSLCD); if (RefSLCD != null) { VE.REFSLNM = RefSLCD.SLNM;VE.GSTNO = RefSLCD.GSTNO; } }
+
                     if (sll.INACTIVE_TAG == "Y")
                     {
                         VE.Checked = true;
@@ -515,7 +518,9 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-
+                        var refrtdebcd = VE.M_RETDEB.REFRTDEBCD;
+                        var ChkRefRetail = (from i in DB.M_RETDEB where i.REFRTDEBCD == refrtdebcd select new { i.REFRTDEBCD,i.RTDEBCD,i.RTDEBNM }).FirstOrDefault();
+                        if (ChkRefRetail != null) { return Content("Reference Retail found at : '" + ChkRefRetail.RTDEBCD + "' and Name : '" + ChkRefRetail.RTDEBNM +"'"); }
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", Convert.ToInt32(VE.M_RETDEB.M_AUTONO), VE.DefaultAction, CommVar.FinSchema(UNQSNO).ToString());
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
