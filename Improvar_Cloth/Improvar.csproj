@@ -261,6 +261,7 @@
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
+    <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
     <Compile Include="Controllers\User_GuideController.cs" />
     <Compile Include="DropDownHelp.cs" />
@@ -477,7 +478,15 @@
     <Compile Include="Models\T_SORD_CANC.cs" />
     <Compile Include="Models\T_SORD_SCHEME.cs" />
     <Compile Include="Models\T_TXN.cs" />
+    <Compile Include="Models\T_TXNACK.cs" />
+    <Compile Include="Models\T_TXNAMT.cs" />
+    <Compile Include="Models\T_TXNDTL.cs" />
+    <Compile Include="Models\T_TXNMEMO.cs" />
+    <Compile Include="Models\T_TXNOTH.cs" />
+    <Compile Include="Models\T_TXNPYMT.cs" />
     <Compile Include="Models\T_TXNSTATUS.cs" />
+    <Compile Include="Models\T_TXNTRANS.cs" />
+    <Compile Include="Models\T_TXN_LINKNO.cs" />
     <Compile Include="Models\UploadDOC.cs" />
     <Compile Include="Models\USERGUIDE.cs" />
     <Compile Include="Models\USER_ACTIVITY.cs" />
@@ -546,6 +555,7 @@
     <Compile Include="ViewModels\SubLedgerSDdtlMasterEntry.cs" />
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
+    <Compile Include="ViewModels\TransactionPackingSlipEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
     <Compile Include="ViewModels\UserGroupLinkDetails.cs" />
     <Compile Include="ViewModels\UserGuideImprovar.cs" />
@@ -933,6 +943,7 @@
     <Content Include="Views\Shared\_M_BOM_OPERATION_PRINT.cshtml" />
     <Content Include="Views\Shared\_M_BOM_RMPM.cshtml" />
     <Content Include="Views\M_RetMaster\M_RetMaster.cshtml" />
+    <Content Include="Views\T_SALE\T_SALE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

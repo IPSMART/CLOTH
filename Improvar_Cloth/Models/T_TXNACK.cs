@@ -6,8 +6,8 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("T_TXNSTATUS")]
-    public partial class T_TXNSTATUS
+    [Table("T_TXNACK")]
+    public partial class T_TXNACK
     {
         public short? EMD_NO { get; set; }
 
@@ -28,13 +28,28 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 1)]
-        [StringLength(1)]
-        public string STSTYPE { get; set; }
-
-        [Key]
-        [Column(Order = 2)]
         [StringLength(5)]
         public string FLAG1 { get; set; }
+
+        public DateTime? DOCDT { get; set; }
+
+        [StringLength(8)]
+        public string TRSLCD { get; set; }
+
+        [StringLength(20)]
+        public string REFNO { get; set; }
+
+        public DateTime? REFDT { get; set; }
+
+        [StringLength(50)]
+        public string PERSNAME { get; set; }
+
+        [StringLength(1000)]
+        public string REMARKS { get; set; }
+
+        public double? WT { get; set; }
+
+        public double? AMT { get; set; }
 
         [Required]
         [StringLength(40)]
@@ -53,8 +68,5 @@ namespace Improvar.Models
 
         [StringLength(50)]
         public string USR_MNM { get; set; }
-
-        [StringLength(2000)]
-        public string STSREM { get; set; }
     }
 }

@@ -148,6 +148,14 @@ namespace Improvar.Models
         public virtual DbSet<T_INHISSMST> T_INHISSMST { get; set; }
         public virtual DbSet<T_INHISSMSTSJOB> T_INHISSMSTSJOB { get; set; }
         public virtual DbSet<T_INHRECMST> T_INHRECMST { get; set; }
+        public virtual DbSet<T_TXN_LINKNO> T_TXN_LINKNO { get; set; }
+        public virtual DbSet<T_TXNACK> T_TXNACK { get; set; }
+        public virtual DbSet<T_TXNAMT> T_TXNAMT { get; set; }
+        public virtual DbSet<T_TXNDTL> T_TXNDTL { get; set; }
+        public virtual DbSet<T_TXNMEMO> T_TXNMEMO { get; set; }
+        public virtual DbSet<T_TXNOTH> T_TXNOTH { get; set; }
+        public virtual DbSet<T_TXNPYMT> T_TXNPYMT { get; set; }
+        public virtual DbSet<T_TXNTRANS> T_TXNTRANS { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (SchemaDBO != null)

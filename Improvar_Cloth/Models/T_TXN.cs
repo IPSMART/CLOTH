@@ -9,7 +9,7 @@ namespace Improvar.Models
     [Table("T_TXN")]
     public partial class T_TXN
     {
-        public int? EMD_NO { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -50,8 +50,6 @@ namespace Improvar.Models
 
         public double? CURRRT { get; set; }
 
-        public double? APPROXVAL { get; set; }
-
         public double? BLAMT { get; set; }
 
         public DateTime? PREFDT { get; set; }
@@ -66,12 +64,6 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string ROYN { get; set; }
-
-        [StringLength(30)]
-        public string CUTRECDOCAUTONO { get; set; }
-
-        [StringLength(30)]
-        public string FAAUTONO { get; set; }
 
         [Required]
         [StringLength(6)]
@@ -88,9 +80,6 @@ namespace Improvar.Models
         public double? TCSPER { get; set; }
 
         public double? TCSAMT { get; set; }
-
-        [StringLength(30)]
-        public string MCPAUTONO { get; set; }
 
         [StringLength(8)]
         public string PARGLCD { get; set; }
@@ -110,11 +99,14 @@ namespace Improvar.Models
         [StringLength(1)]
         public string REPROCESS { get; set; }
 
-        [StringLength(4)]
-        public string PRCCD { get; set; }
-
         [StringLength(1)]
         public string BARGENTYPE { get; set; }
 
+        public double? WPPER { get; set; }
+
+        public double? RPPER { get; set; }
+
+        [StringLength(50)]
+        public string MENU_PARA { get; set; }
     }
 }
