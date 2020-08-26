@@ -49,16 +49,9 @@ namespace Improvar.Controllers
             string GLOBAL_MENU_NAME = "";
             try
             {
-                string UNQSNO = Cn.getQueryStringUNQSNO();
-                ArrayList ManuLine = null;
-                DataTable MenuTble;
-                dataLock Mnu = new dataLock();
-                Hashtable checkParent = new Hashtable();
-                #region Menugenerate             
-                string sql = null;
                 System.Text.StringBuilder SB1 = new System.Text.StringBuilder();
                 string uid = Session["UR_ID"].ToString();
-                string COM = Session["CompanyCode"+ UNQSNO].ToString();
+                string COM = Session["CompanyCode" + UNQSNO].ToString();
                 string LOC = Session["CompanyLocationCode" + UNQSNO].ToString();
                 string scm1 = Session["DatabaseSchemaName" + UNQSNO].ToString();
                 string MODULE_CODE = Session["ModuleCode"].ToString();
@@ -75,153 +68,197 @@ namespace Improvar.Controllers
                     DDLR.M_AUTONO = i.M_AUTONO;
                     DLR.Add(DDLR);
                 }
+                dataLock Mnu = new dataLock();
+                #region Menugenerate                 
+                string sql = "";
+
+                //sql = "Select m.MENU_ID,m.MENU_NAME,m.MENU_INDEX,m.MENU_PARENT_ID,m.menu_find_id,"
+                //    + " m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset')||'~'||m.menu_date_option||'~'||m.menu_type||'~'||p.E_DAY||'~'||p.D_DAY  as MENU_PERMISSIONID, ";
+                //sql += fld1;
+                //sql += "p.E_DAY,p.A_DAY,'Y' AS PERDOTNETMENU,'Y' AS ATVDOTNETMENU,p.D_DAY,m.MENU_ORDER_CODE,m.MENU_DOCCD,m.MENU_PARA  menu_para, ";
+                //sql += "(select case  when exists(select 1 from appl_menu_fav f where  m.menu_id=f.menu_id and m.menu_index=f.menu_index and m.module_code='"
+                //    + CommVar.ModuleCode() + "' and user_id='" + CommVar.UserID() + "') then 'Y'  else 'N' end from dual) as menu_fav ";
+                //sql += " from " + CommVar.CurSchema(unqsno) + ".M_USR_ACS p , APPL_MENU m ";
+                //sql += " where p.MENU_NAME=m.MENU_ID and p.MENU_INDEX=m.MENU_INDEX and p.USER_ID='" + CommVar.UserID() + "' and m.module_code='" + CommVar.ModuleCode() + "' and ";
+                //sql += "p.compcd = '" + CommVar.Compcd(unqsno) + "' and p.loccd = '" + CommVar.Loccd(unqsno) + "' and p.schema_name = '" + CommVar.CurSchema(unqsno) + "' " + fld2;
+                //sql += "union ";
+                //sql += "Select m.MENU_ID,m.MENU_NAME,m.MENU_INDEX,m.MENU_PARENT_ID,m.menu_find_id,"
+                //    + " m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset')||'~'||m.menu_date_option||'~'||m.menu_type||'~'||p.E_DAY||'~'||p.D_DAY as MENU_PERMISSIONID, ";
+                //sql += fld1;
+                //sql += "p.E_DAY,p.A_DAY,'Y' AS PERDOTNETMENU,'Y' AS ATVDOTNETMENU,p.D_DAY,m.MENU_ORDER_CODE,m.MENU_DOCCD,m.MENU_PARA , ";
+                //sql += "(select case  when exists(select 1 from appl_menu_fav f where  m.menu_id=f.menu_id and m.menu_index=f.menu_index and m.module_code='"
+                //    + CommVar.ModuleCode() + "' and user_id='" + CommVar.UserID() + "') then 'Y'  else 'N' end from dual) as menu_fav ";
+                //sql += " from " + CommVar.CurSchema(unqsno) + ".m_usr_acs_grpdtl q, " + CommVar.CurSchema(unqsno) + ".M_USR_ACS p ,APPL_MENU m ";
+                //sql += " where p.MENU_NAME=m.MENU_ID and p.MENU_INDEX=m.MENU_INDEX and q.USER_ID='" + CommVar.UserID() + "' and m.module_code='" + CommVar.ModuleCode() + "' and ";
+                //sql += " p.compcd = '" + CommVar.Compcd(unqsno) + "' and p.loccd = '" + CommVar.Loccd(unqsno) + "' and p.schema_name='" + CommVar.CurSchema(unqsno) + "' and q.linkuser_id=p.user_id and ";
+                //sql += " m.menu_id||m.menu_index not in (select menu_name||menu_index from " + CommVar.CurSchema(unqsno) + ".m_usr_acs where user_id='" + CommVar.UserID() + "') " + fld2;
+                //sql += " order by MENU_ORDER_CODE,MENU_PARENT_ID";
+
                 sql = "";
                 sql += "Select m.MENU_ID,m.MENU_NAME,m.MENU_INDEX,m.MENU_PARENT_ID, m.MENU_ID||'~'||m.MENU_INDEX||'~'||nvl(m.MENU_PROGCALL,'Notset') as MENU_PROGCALL,m.MENU_ORDER_CODE,m.menu_type ";
                 sql += "from APPL_MENU m ";
-                sql += "where m.module_code='" + MODULE_CODE + "' order by m.menu_order_code";
+                sql += "where m.module_code='" + CommVar.ModuleCode() + "' order by m.menu_order_code,m.MENU_PARENT_ID";
 
-                MenuTble = masterHelp.SQLquery(sql);
-                int root = 0, child = 0;
-                string menu = "";
-                ManuLine = new ArrayList();
-                if (MenuTble.Rows.Count>0)
+                DataTable menuTable = masterHelp.SQLquery(sql);
+
+                string IDENTIFIER = Session["MotherMenuIdentifier"].ToString();
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                Stack ulStack = new Stack();
+                foreach (DataRow maindr in menuTable.Rows)
                 {
-                    string IDENTIFIER = Session["MotherMenuIdentifier"].ToString();
-                    IEnumerable<DataRow> results = from row in MenuTble.AsEnumerable() where row.Field<string>("MENU_TYPE") == "E" select row;
-                    var TY = results.CopyToDataTable();
-                    ManuLine = new ArrayList();
-                    foreach (DataRow menu_row in results)
+                    string MENU_ID = maindr["MENU_ID"].retStr();
+                    string MENU_NAME = maindr["MENU_NAME"].retStr();
+                    string MENU_INDEX = maindr["MENU_INDEX"].retStr();
+                    string parentId = maindr["MENU_PARENT_ID"].retStr();
+                    //string menu_find_id = maindr["menu_find_id"].retStr() == "" ? "" : " -" + maindr["menu_find_id"].retStr();
+                    //string MENU_DETAIL = maindr["MENU_PERMISSIONID"].retStr();
+                    //string MENU_PROGCALL = MENU_DETAIL.Split('~')[2];
+                    //string MENU_DOCCD = maindr["MENU_DOCCD"].retStr();
+                    //string MENU_PARA = maindr["menu_para"].retStr();
+                    //string mnamefav = maindr["menu_fav"].retStr();
+                    string menu_type = maindr["menu_type"].retStr();
+                    string Uidindex = "";
+                    if (parentId == IDENTIFIER)
                     {
-                        string parent = menu_row.ItemArray[3].ToString().Trim();
-                        string mname = menu_row.ItemArray[1].ToString().Trim();
-                        if(mname.ToUpper()== "Opening Assets".ToUpper())
+                        Uidindex = IDENTIFIER;
+                    }
+                    else
+                    {
+                        Uidindex = MENU_ID + "!" + MENU_INDEX;
+                    }
+                    string Menu = "";
+                    if (hasChildMenutbl(menuTable, Uidindex))
+                    {
+                        while (ulStack.Count > 0)
                         {
-
-                        }
-                        GLOBAL_MENU_NAME = menu_row.ItemArray[1].ToString().Trim();
-                        string[] menuid = parent.Split('!');
-                        if (menuid.Length == 1)
-                        {
-                            throw new Exception("MISSING SIGN(!) IN MENU_PARENT_ID in " + GLOBAL_MENU_NAME + "<br/>");
-                        }
-                        string image = "";
-                        string displayDT = "";
-                        if (DLR.Any(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])))
-                        {
-                            image = "&nbsp;<img src='../Image/greenlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
-                            displayDT = "(" + DLR.Where(a => a.Menu_ID == menu_row.ItemArray[0].ToString() && a.Menu_index == Convert.ToInt32(menu_row.ItemArray[2])).Select(a => a.Lockdate).SingleOrDefault() + ")";
-                        }
-                        else
-                        {
-                            image = "&nbsp;<img src='../Image/redlight.png' class='rightimg' id='" + menu_row.ItemArray[0].ToString() + menu_row.ItemArray[2].ToString() + "'/>";
-                        }
-                        string Omenu = " <li><span class='tree_label'>" + "<img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<span title='" + mname + "' onclick=return&nbsp;setpermission('" + menu_row.ItemArray[0].ToString().Trim() + "'," + menu_row.ItemArray[2] + ");>" + mname + image + "</span>&nbsp;<span style='color:#ececec' class='default_label_date'>" + displayDT + "</span>" + "</span></li>";
-                        while (true)
-                        {
-                            IEnumerable<DataRow> results1 =
-                            from row in MenuTble.AsEnumerable()
-                            where row.Field<string>("MENU_ID") == menuid[0].ToString() && row.Field<Int16>("MENU_INDEX") == Convert.ToInt16(menuid[1])
-                            orderby row.Field<string>("MENU_ORDER_CODE")
-                            select row;
-                            DataTable boundTable = results1.CopyToDataTable<DataRow>();
-                            GLOBAL_MENU_NAME = boundTable.Rows[0][1].ToString();
-                            if (boundTable.Rows[0]["MENU_PARENT_ID"].ToString() == IDENTIFIER)
+                            var tu = (ulStack.Contains(parentId));
+                            if (parentId == IDENTIFIER && ulStack.Count > 0)
                             {
-                                string parent2 = boundTable.Rows[0][3].ToString();
-                                string id = menuid[0] + "!" + menuid[1];
-                                if (checkParent.ContainsKey(menuid[0] + "!" + menuid[1]) == false)
-                                {
-                                    string Menu = "<li>";
-                                    Menu = Menu + "<input type='checkbox' checked='checked'  id='" + id + "'/>" + "<label class='tree_label' for='" + id + "'><img src='../Image/folder.png' class='folderimg'/>&nbsp;" + boundTable.Rows[0][1].ToString() + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultdatewindow('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "');>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "',1);>&nbsp;(Reset)</span>";
-                                    Menu = Menu + "<ul>";
-                                    checkParent.Add(boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString(), Menu);
-                                    if (root == 0)
-                                    {
-                                        menu = Menu + menu;
-                                        root = 1;
-                                    }
-                                    else
-                                    {
-                                        //menu = menu + "</ul> </li></ul> </li>";
-                                        menu = menu + "</ul> </li>";
-                                        ManuLine.Add(menu);
-                                        menu = Menu + Omenu;
-                                        child = 0;
-                                    }
-                                }
-                                else
-                                {
-                                    if (child == 0)
-                                    {
-                                        menu = menu + Omenu;
-                                    }
-                                }
-                                break;
+                                ulStack.Pop(); Menu += "</li></ul>";
+                            }
+                            else if (parentId == ulStack.Peek().retStr())
+                            {
+                                ulStack.Pop(); Menu += "</ul>";
+                            }
+                            else if (ulStack.Contains(parentId))
+                            {
+                                ulStack.Pop(); Menu += "</li></ul>";
                             }
                             else
                             {
-                                string parent1 = boundTable.Rows[0][3].ToString();
-                                string id = menuid[0] + "!" + menuid[1];
-                                if (checkParent.ContainsKey(menuid[0] + "!" + menuid[1]) == false)
-                                {
-                                    string SubMenu = "<li>";
-                                    SubMenu = SubMenu + "<input type='checkbox' checked='checked'  id='" + id + "'/>" + "<label class='tree_label' for='" + id + "'><img src='../Image/folder.png' class='folderimg'/>&nbsp;" + boundTable.Rows[0][1].ToString() + "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultdatewindow('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "');>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString() + "',1);>&nbsp;(Reset)</span>";
-                                    SubMenu = SubMenu + "<ul>";
-                                    checkParent.Add(boundTable.Rows[0][0].ToString() + "!" + boundTable.Rows[0][2].ToString(), SubMenu);
-                                    if (child == 0)
-                                    {
-                                        menu = SubMenu + Omenu;
-                                        child = 1;
-                                    }
-                                    else
-                                    {
-                                        if (checkParent.ContainsKey(parent1) == false)
-                                        {
-                                            menu = menu + "</ul> </li></ul> </li>";
-                                            ManuLine.Add(menu);
-                                            root = 0;
-                                            menu = SubMenu + Omenu;
-                                        }
-                                        else
-                                        {
-                                            menu = menu + "</ul> </li>" + SubMenu + Omenu;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    menu = menu + Omenu;
-                                    break;
-                                }
-                                menuid = parent1.Split('!');
+                                break;
                             }
                         }
+                        //Menu += "<li>";
+                        //Menu += "<input type='checkbox'  id='" + MENU_DETAIL + "'/>" + "<label class='tree_label' for='" + MENU_DETAIL
+                        //    + "'><img src='../Image/folder.png' class='folderimg'/>&nbsp;" + MENU_NAME + "</label>";
+                        //Menu += "<ul>";
+
+                        Menu += "<li>";
+                        Menu += "<input type='checkbox' checked='checked'  id='" + Uidindex + "'/>" + "<label class='tree_label' for='"
+                            + Uidindex + "'><img src='../Image/folder.png' class='folderimg'/>&nbsp;" + MENU_NAME +
+                            "</label><span class='default_label'>&nbsp;(</span><span style='color:#ececec' class='default_label' onclick=defaultdatewindow('"
+                            + MENU_ID + "!" + MENU_INDEX +
+                            "');>Set Defalt</span><span class='default_label'>)</span><span class='default_label' onclick=defaultPermission('" + MENU_ID + "!" + MENU_INDEX + "',1);>&nbsp;(Reset)</span>";
+                        Menu += "<ul>";
+
+                        if (ulStack.Count == 0 || parentId != ulStack.Peek().retStr())
+                        {
+                            ulStack.Push(parentId);
+                        }
                     }
-                }
-                ManuLine.Add(menu + "</ul> </li>");
-                #endregion
-                System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                if (ManuLine != null)
-                {
-                    for (int i = 0; i <= ManuLine.Count - 1; i++)
+                    else
                     {
-                        SB.Append(ManuLine[i].ToString());
+                        if (MENU_NAME == "Product (Misc Bill)")
+                        {
+
+                        }
+                        while (ulStack.Count > 0)
+                        {
+                            if (parentId == IDENTIFIER && ulStack.Count > 0)
+                            {
+                                ulStack.Pop(); Menu += "</li></ul>";
+                            }
+                            else if (parentId == ulStack.Peek().retStr())
+                            {
+                                ulStack.Pop(); Menu += "</ul>";
+                            }
+                            else if (parentId == ulStack.Peek().retStr())
+                            {
+                                ulStack.Pop(); Menu += "</li></ul>";
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+
+                        string image = "";
+                        string displayDT = "";
+                        if (DLR.Any(a => a.Menu_ID == MENU_ID && a.Menu_index == Convert.ToInt32(MENU_INDEX)))
+                        {
+                            image = "&nbsp;<img src='../Image/greenlight.png' class='rightimg' id='" + MENU_ID + MENU_INDEX + "'/>";
+                            displayDT = "(" + DLR.Where(a => a.Menu_ID == MENU_ID && a.Menu_index == Convert.ToInt32(MENU_INDEX)).Select(a => a.Lockdate).SingleOrDefault() + ")";
+                        }
+                        else
+                        {
+                            image = "&nbsp;<img src='../Image/redlight.png' class='rightimg' id='" + MENU_ID + MENU_INDEX + "'/>";
+                        }
+                        var tmpMenu = " <li><span class='tree_label'>" + "<img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<span title='" + MENU_NAME
+                             + "' onclick=return&nbsp;setpermission('" + MENU_ID + "'," + MENU_INDEX + ");>" + MENU_NAME + image
+                             + "</span>&nbsp;<span style='color:#ececec' class='default_label_date'>" + displayDT + "</span>" + "</span></li>";
+
+                        //Menu += " <li><span class='tree_label'>";
+                        //Menu += " <img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<a onclick =return&nbsp;winopen('" + MENU_PROGCALL + "','" + enc_MENU_DETAIL + "','" + enc_MENU_DOCCD + "','" + enc_MENU_PARA + "');>" + MENU_NAME + menu_find_id + "</a>&nbsp;";
+
+                        //    Menu += "<img src = '../Image/favrit1.png' class='fileimg'  onclick =return&nbsp;addFavorite('" + MENU_ID + "','" + MENU_INDEX + "'); />";
+                        //string Omenu = " <li><span class='tree_label'>" + "<img src='../Image/file1.png' class='fileimg'/>&nbsp;" + "<span title='" + MENU_NAME + "' onclick=return&nbsp;setpermission('" + MENU_ID + "'," + MENU_INDEX+ ");>" + MENU_NAME + image + "</span>&nbsp;<span style='color:#ececec' class='default_label_date'>" + displayDT + "</span>" + "</span></li>";
+
+                        //Menu += " </span></li>";
+
+                        if (menu_type == "E")
+                        {
+                            Menu += tmpMenu;
+                            //continue;//skip this
+                        }
                     }
+                    SB.Append(Menu);
+                }
+                while (ulStack.Count > 0)
+                {
+                    ulStack.Pop();
+                    SB.Append("</ul>");
                 }
                 Mnu.ManuDetails = SB.ToString();
+                SB.Clear();
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 Mnu.serializeString = javaScriptSerializer.Serialize(DLR);
                 return PartialView("_datalockTree", Mnu);
+
+                #endregion
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                GLOBAL_MENU_NAME = "MENU NAME (" + GLOBAL_MENU_NAME + ") Need to Change the menu type in the database APPL_MENU TABLE. [Contact with IPSMART Team]. ";
+                //GLOBAL_MENU_NAME = "MENU NAME (" + GLOBAL_MENU_NAME + ") Need to Change the menu type in the database APPL_MENU TABLE. [Contact with IPSMART Team]. ";
                 string INNEREX = "";
                 if (ex.InnerException != null) { INNEREX = ex.InnerException.Message; }
                 return Content(ex.Message + "<BR/>" + INNEREX + "<BR/>" + GLOBAL_MENU_NAME);
             }
         }
+        private bool hasChildMenutbl(DataTable dt, string MENU_ID)
+        {
+            if (dt.Select("MENU_PARENT_ID='" + MENU_ID + "'").Length > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public ActionResult Individual_Right(string serial, string id, int index)
         {
             try
