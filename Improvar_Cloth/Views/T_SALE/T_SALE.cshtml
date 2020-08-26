@@ -1,7 +1,492 @@
-﻿
+﻿@model Improvar.ViewModels.TransactionPackingSlipEntry
 @{
-    ViewBag.Title = "T_SALE";
+    string PageControllerName = "T_SALE";
+    ViewBag.Title = "Packing Slip Entry";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>T_SALE</h2>
+<style>
+    .TextAreaRemarks {
+        height: 190px;
+    }
+</style>
+<script src="~/Scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<script type="text/javascript">
+    $("#WaitingMode").show();
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
 
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.T_CNTRL_HDR != null)
+        {
+            if (@Model.T_CNTRL_HDR.AUTONO != null)
+            {
+                mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter SalesMen", "SLMSLCD")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+            $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        }
+    });
+</script>
+
+
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function pageprinting() {
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="partylinkcd" value="D" />
+        <input type="hidden" id="agentlinkcd" value="A" />
+        <input type="hidden" id="salesmanlinkcd" value="S" />
+        <input type="hidden" id="trnsportlinkcd" value="T" />
+        @Html.HiddenFor(s => s.DefaultAction)
+        @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
+        @Html.HiddenFor(a => a.T_TXN.DOCNO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        <div class="form-horizontal">
+            @if (Model.DefaultAction == "V")
+            {
+                @Html.Partial("_FilteredSearch")
+            }
+            <div class="row" style="margin-top: 5px;">
+                <div class="row">
+                    <div class="col-md-5" style="margin-top: 6px;">
+                        <div class="editor-label">
+                            @Html.Label("", "Document Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field">
+                            @if (Model.DefaultAction == "A")
+                            {
+                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Bill Type")
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXNOTH.BLTYPE, new { htmlAttributes = new { @class = "form-controlemp textbox_imageemp", id = "BLTYPE", @placeholder = "Bill Type", @list = "BillType_List" } })
+                            <datalist id="BillType_List">
+                                @foreach (var i in Model.DropDown_list1)
+                                {
+                                    <option value="@i.value" />
+                                }
+                            </datalist>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Party Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0')" />
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Due Days")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.DUEDAYS, new { htmlAttributes = new { @class = "form-control", id = "DUEDAYS", maxlength = 3, @placeholder = "Due Days" } })
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="row">
+                <ul class="nav nav-tabs">
+                    <li id="Main_LI4" class=""><a data-toggle="tab" href="#Main">Main</a></li>
+                    <li id="ItemTab_LI4" class="active"><a data-toggle="tab" href="#ItemTab">Item</a></li>
+                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
+                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                    @*<li id="SalesBillMade_LI4" class=""><a data-toggle="tab" href="#SalesBillMade">Sales Bill Made Against Order </a></li>*@
+                </ul>
+                <div class="tab-content">
+                    <div id="Main" class="tab-pane fade" style="margin-top: 5px;">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Consignee Code")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.CONSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CONSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')" />
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Agent")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.AGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "AGSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Agent Details','AGSLCD','AGSLCD=slcd=1/AGSLNM=slnm=0','agentlinkcd')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.AGSLNM, new { htmlAttributes = new { @class = "form-control", id = "AGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Sub Agent")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.SAGSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SAGSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Sub Agent Details','SAGSLCD','SAGSLCD=slcd=1/SAGSLNM=slnm=0','agentlinkcd/AGSLCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.SAGSLNM, new { htmlAttributes = new { @class = "form-control", id = "SAGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Sub Agent Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Godown")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @*@Html.EditorFor(model => model.T_TXN.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeyup = "GetHelp('" + @Url.Action("GetSalesMenDetails", PageControllerName) + "','SLMSLCD/SalesManName','1/0','Agent Details','SLMSLCD')", onblur = "SelectSubLedgerCode(this.value,SLMSLCD,SalesManName,'urlnameSALESMEN');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetSalesMenDetails", PageControllerName )','SLMSLCD/SalesManName','1/0','SalesMen Details','SLMSLCD')" />*@
+                                    @*@Html.EditorFor(model => model.T_TXN.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd');", @placeholder = "Code", maxlength = 8 } })*@
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @*@Html.EditorFor(model => model.SalesManName, new { htmlAttributes = new { @class = "form-control", id = "SalesManName", maxlength = 45, @title = "Only for View", @placeholder = "SalesMen Name", @readonly = "readonly", tabindex = "-1" } })*@
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Price Code")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @*@Html.EditorFor(model => model.T_TXN.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeyup = "GetHelp('" + @Url.Action("GetTransporterDetails", PageControllerName) + "','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')", onblur = "SelectSubLedgerCode(this.value,TRSLCD,TransporterName,'urlnameTRANSPORTER');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetTransporterDetails", PageControllerName )','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')" />*@
+                                    @*@Html.EditorFor(model => model.T_TXN.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })*@
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd')" />
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @*@Html.EditorFor(model => model.TransporterName, new { htmlAttributes = new { @class = "form-control", id = "TransporterName", maxlength = 45, @title = "Only for View", @placeholder = "Transporter Name", @readonly = "readonly", tabindex = "-1" } })*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Select By")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.SELBY, new { htmlAttributes = new { @class = "form-controlemp textbox_imageemp", id = "SELBY", maxlength = 50, @placeholder = "Select By", @list = "SelectBy_List" } })
+                                    <datalist id="SelectBy_List">
+                                        @foreach (var i in Model.DropDown_list1)
+                                        {
+                                            <option value="@i.value" />
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "Packed By")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.PACKBY, new { htmlAttributes = new { @class = "form-control", id = "PACKBY", maxlength = 50, @placeholder = "Packed By" } })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Deal By")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.DEALBY, new { htmlAttributes = new { @class = "form-controlemp textbox_imageemp", id = "DEALBY", @placeholder = "Deal By", maxlength = 50, @list = "DealBy_List" } })
+                                    <datalist id="DealBy_List">
+                                        @foreach (var i in Model.DropDown_list1)
+                                        {
+                                            <option value="@i.value" />
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Total Nos.")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TOTNOS, new { htmlAttributes = new { @class = "form-control", id = "TOTNOS", @style = "text-align: right;", maxlength = 15, @TabIndex = -1, @placeholder = "Qnty Nos", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Total Quantity")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;", maxlength = 15, @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Total Tax")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", maxlength = 15, @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "R/off")
+                                </div>
+                            </div>
+                            <div class="col-md-1" style="margin-right: -41px;">
+                                <div class="editor-field" style="margin-top:6px;">
+                                    @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Bill Amount")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="ItemTab" class="tab-pane fade in active" style="margin-top: 5px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivItemTab">
+                                    @Html.Partial("_T_SORD_MAIN")
+                                </div>
+                            </div>
+                            <div class="PopUp_Backround">
+                                <div id="popup" class="row" style="margin-top: 11px;top:40%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Remarks" class="tab-pane fade">
+                        <div class="row">
+                            <div>
+                                <div id="partialdivRemarks">
+                                    @Html.Partial("_TRANSACTIONREMARKS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivDocument" style="margin-top:0px;">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
+
+                        </div>*@
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
