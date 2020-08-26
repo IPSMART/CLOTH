@@ -40,6 +40,28 @@
            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
            return false;
        }
+       //if (mobile.length < 10) {
+       //    msgInfo("Enter 10 digit mobile number!");
+       //    message_value = "MOBILE";
+       //    $("li").removeClass("active").addClass("");
+       //    $(".nav-tabs li:first-child").addClass('active');
+       //    //below set the  child sequence
+       //    $(".tab-content div").removeClass("active");
+       //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+       //    return false;
+       //}
+       var mail = $("#GOEMAIL").val();
+       var mailformat = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,4})?$/;
+       if (!mailformat.test(mail)) {
+           msgInfo("Enter valid Email id!");
+           message_value = "GOEMAIL";
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
         return true;
    }
 </script>
@@ -201,9 +223,9 @@
                                 @Html.Label("", "Pin Code")
                             </div>
                         </div>
-                        <div class="col-md-10">
+                        <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GODOWN.PIN, new { htmlAttributes = new { @class = "form-control ", id = "PIN", @placeholder = "Pin Code", maxlength = 7 } })
+                                @Html.EditorFor(model => model.M_GODOWN.PIN, new { htmlAttributes = new { @class = "form-control ", id = "PIN", @placeholder = "Pin Code", @title = "Only Numeric",@onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7 } })
                             </div>
                         </div>
                     </div>
@@ -213,9 +235,9 @@
                                 @Html.Label("", "Phone No.")
                             </div>
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GODOWN.GOPHNO, new { htmlAttributes = new { @class = "form-control ", id = "GOPHNO", @placeholder = "Phone No", maxlength = 20 } })
+                                @Html.EditorFor(model => model.M_GODOWN.GOPHNO, new { htmlAttributes = new { @class = "form-control ", id = "GOPHNO", @title = "Only Numeric", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Phone No", maxlength = 20 } })
                             </div>
                         </div>
                     </div>
@@ -239,7 +261,7 @@
                                 @Html.Label("", "fssai Lic #")
                             </div>
                         </div>
-                        <div class="col-md-10">
+                        <div class="col-md-8">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_GODOWN.FSSAILICNO, new { htmlAttributes = new { @class = "form-control ", id = "FSSAILICNO", @placeholder = "fssai Lic No", maxlength = 25 } })
                             </div>
