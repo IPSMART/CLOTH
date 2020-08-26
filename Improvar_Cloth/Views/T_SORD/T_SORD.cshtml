@@ -10,6 +10,8 @@
     {
         case "SORD":
             ViewBag.Title = "Sales Order Entry"; break;
+        case "PORD":
+            ViewBag.Title = "Purchase Order Entry"; break;
         default: ViewBag.Title = "Sales Order Entry"; break;
     }
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -104,7 +106,7 @@
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter SalesMen", "SLMSLCD")) { return false; }
         return true;
@@ -128,8 +130,10 @@
 </script>
 <script>
     $(function () {
-        $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
-        $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        if ("@Model.DefaultAction" != "V") {
+            $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        }
         if ("@Model.DefaultAction" == "V") {
             $("#FDTforsearch").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
             $("#TDTforsearch").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
@@ -204,12 +208,12 @@
     function OpenSize(i, TAG) {
         var QNTY = $("#QNTY_" + i).val();
         if (QNTY == "") { QNTY = parseFloat(0) } else { QNTY = parseFloat(QNTY) }
-        var SerialNo = $("#SLNO_"+i).val();
+        var SerialNo = $("#SLNO_" + i).val();
         if (SerialNo == "") { SerialNo = parseInt(0) } else { SerialNo = parseInt(SerialNo) }
-        var ITEM =  $("#ITCD_"+i).val();
-        var ITEM_NM = $("#ITNM_"+i).val();
-        var ART_NO = $("#STYLENO_"+i).val(); ART_NO = ART_NO.replace('+', 'μ'); ART_NO = ART_NO.replace('&', '‡');
-        var UOM =  $("#UOM_"+i).val();
+        var ITEM = $("#ITCD_" + i).val();
+        var ITEM_NM = $("#ITNM_" + i).val();
+        var ART_NO = $("#STYLENO_" + i).val(); ART_NO = ART_NO.replace('+', 'μ'); ART_NO = ART_NO.replace('&', '‡');
+        var UOM = $("#UOM_" + i).val();
 
         $("#hiddenITEM").val(ITEM);
         if (ITEM.toString() != "") {
@@ -218,7 +222,7 @@
                     type: 'POST',
                     url: "@Url.Action("OPENSIZE", PageControllerName)",
                     beforesend: $("#WaitingMode").show(),
-                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&ART_NO=" + ART_NO + "&UOM=" + UOM + "&QNTY=" + parseFloat(QNTY)  + "&TAG=" + TAG ,
+                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&ART_NO=" + ART_NO + "&UOM=" + UOM + "&QNTY=" + parseFloat(QNTY) + "&TAG=" + TAG,
                     success: function (result) {
                         $('#popup').html(result);
                         if (TAG == 1) {
@@ -277,9 +281,9 @@
                     //var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
 
                     //for (i = 0; i <= GridRowMain - 1; i++) {
-                    //    var ARTICLE = document.getElementById("ARTNO_" + i).value;
+                    //    var ARTICLE = document.getElementById("STYLENO_" + i).value;
                     //    if (ARTICLE == "") {
-                    //        $("#ARTNO_" + i).focus();
+                    //        $("#STYLENO_" + i).focus();
                     //        break;
                     //    }
                     //}
@@ -287,7 +291,7 @@
                     var total_rowcnt = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
                     if (slno < total_rowcnt - 1) {
                         var index = slno + 1;
-                        document.getElementById("ARTNO_" + index).focus();
+                        document.getElementById("STYLENO_" + index).focus();
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -327,26 +331,26 @@
             var ITEM = document.getElementById("ITCD_" + i).value;
             if (ITEM != "") {
                 var QUANTITY = document.getElementById("QNTY_" + i).value; if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
-                var AMOUNT = document.getElementById("AMOUNT_" + i).value; if (AMOUNT == "") { AMOUNT = parseFloat(0); } else { AMOUNT = parseFloat(AMOUNT); }
-                var BOXES = document.getElementById("BOXES_" + i).value; if (BOXES == "") { BOXES = parseFloat(0); } else { BOXES = parseFloat(BOXES); }
-                var NOOFSETS = document.getElementById("NOOFSETS_" + i).value; if (NOOFSETS == "") { NOOFSETS = parseFloat(0); } else { NOOFSETS = parseFloat(NOOFSETS); }
-                var SETS = document.getElementById("SETS_" + i).value; if (SETS == "") { SETS = parseFloat(0); } else { SETS = parseFloat(SETS); }
-                TOTAL_AMOUNT = parseFloat(TOTAL_AMOUNT) + parseFloat(AMOUNT);
+                //var AMOUNT = document.getElementById("AMOUNT_" + i).value; if (AMOUNT == "") { AMOUNT = parseFloat(0); } else { AMOUNT = parseFloat(AMOUNT); }
+                //var BOXES = document.getElementById("BOXES_" + i).value; if (BOXES == "") { BOXES = parseFloat(0); } else { BOXES = parseFloat(BOXES); }
+                //var NOOFSETS = document.getElementById("NOOFSETS_" + i).value; if (NOOFSETS == "") { NOOFSETS = parseFloat(0); } else { NOOFSETS = parseFloat(NOOFSETS); }
+                //var SETS = document.getElementById("SETS_" + i).value; if (SETS == "") { SETS = parseFloat(0); } else { SETS = parseFloat(SETS); }
+                //TOTAL_AMOUNT = parseFloat(TOTAL_AMOUNT) + parseFloat(AMOUNT);
                 TOTAL_PIECES = parseFloat(TOTAL_PIECES) + parseFloat(QUANTITY);
-                TOTAL_BOXES = parseFloat(TOTAL_BOXES) + parseFloat(BOXES);
-                TOTAL_NOOFSETS = parseFloat(TOTAL_NOOFSETS) + parseFloat(NOOFSETS);
-                TOTAL_SETS = parseFloat(TOTAL_SETS) + parseFloat(SETS);
+                //TOTAL_BOXES = parseFloat(TOTAL_BOXES) + parseFloat(BOXES);
+                //TOTAL_NOOFSETS = parseFloat(TOTAL_NOOFSETS) + parseFloat(NOOFSETS);
+                //TOTAL_SETS = parseFloat(TOTAL_SETS) + parseFloat(SETS);
             }
         }
         //document.getElementById("TOTPCS").value = parseFloat(TOTAL_PIECES).toFixed(2);
-        document.getElementById("TOTQNTY").value = parseFloat(TOTAL_PIECES).toFixed(2);//
-        document.getElementById("TOTBOX").value = parseFloat(TOTAL_BOXES).toFixed(2);  //
-        document.getElementById("TOTSET").value = parseFloat(TOTAL_SETS).toFixed(2);   //
-        document.getElementById("TOTAL_NOOFSETS").value = parseFloat(TOTAL_NOOFSETS).toFixed(2);
-        document.getElementById("TOTAL_BOXES").value = parseFloat(TOTAL_BOXES).toFixed(2);
+        //document.getElementById("TOTQNTY").value = parseFloat(TOTAL_PIECES).toFixed(2);//
+        //document.getElementById("TOTBOX").value = parseFloat(TOTAL_BOXES).toFixed(2);  //
+        //document.getElementById("TOTSET").value = parseFloat(TOTAL_SETS).toFixed(2);   //
+        //document.getElementById("TOTAL_NOOFSETS").value = parseFloat(TOTAL_NOOFSETS).toFixed(2);
+        //document.getElementById("TOTAL_BOXES").value = parseFloat(TOTAL_BOXES).toFixed(2);
         document.getElementById("TOTAL_QNTY").value = parseFloat(TOTAL_PIECES).toFixed(2);
-        document.getElementById("TOTAL_SETS").value = parseFloat(TOTAL_SETS).toFixed(2);
-        document.getElementById("APROXVAL").value = parseFloat(TOTAL_AMOUNT).toFixed(2);
+        //document.getElementById("TOTAL_SETS").value = parseFloat(TOTAL_SETS).toFixed(2);
+        //document.getElementById("APROXVAL").value = parseFloat(TOTAL_AMOUNT).toFixed(2);
     }
 </script>
 <script>
@@ -374,9 +378,9 @@
     }
 </script>
 <script>
-    function SelectArticleCode(id, ARTNO_, ITNM_, ITCD_, UOM_, TOTAL_PCS_, PCSPERSET_, RowIndex) {
+    function SelectArticleCode(id, STYLENO_, ITNM_, ITCD_, UOM_, TOTAL_PCS_, PCSPERSET_, RowIndex) {
         if (id == "") {
-            $("#" + ARTNO_.id).val("");
+            $("#" + STYLENO_.id).val("");
             $("#" + ITCD_.id).val("");
             $("#" + ITNM_.id).val("");
             $("#" + UOM_.id).val("");
@@ -400,10 +404,10 @@
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
                         var str = result.split(String.fromCharCode(181));
-                        document.getElementById(ARTNO_.id).value = str[0].toString();
+                        document.getElementById(STYLENO_.id).value = str[0].toString();
                         if (str[6] == "STAYOLD ARTICLE") {
                             msgInfo("Stay with old Article No. Invalid Aricle Number ! " + result);
-                            message_value = ARTNO_.id;
+                            message_value = STYLENO_.id;
                             return;
                         }
                         document.getElementById(ITCD_.id).value = str[1].toString();
@@ -422,8 +426,8 @@
                     }
                     else {
                         msgInfo("Invalid Aricle Number ! Please Enter a Valid Article Number !! " + result);
-                        message_value = ARTNO_.id;
-                        $("#" + ARTNO_.id).val("");
+                        message_value = STYLENO_.id;
+                        $("#" + STYLENO_.id).val("");
                         $("#" + ITCD_.id).val("");
                         $("#" + ITNM_.id).val("");
                         $("#" + UOM_.id).val("");
@@ -669,7 +673,7 @@
                                                 var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
                                                 for (i = 0; i <= GridRowMain - 1; i++) {
                                                     document.getElementById("ChildData_" + i).value = null;
-                                                    document.getElementById("ARTNO_" + i).value = null;
+                                                    document.getElementById("STYLENO_" + i).value = null;
                                                     document.getElementById("ITCD_" + i).value = null;
                                                     document.getElementById("ITNM_" + i).value = null;
                                                     document.getElementById("TOTAL_PCS_" + i).value = null;
@@ -892,7 +896,7 @@
                                             var GridRowMain = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
                                             for (i = 0; i <= GridRowMain - 1; i++) {
                                                 $("#ChildData_" + i).val(null);
-                                                $("#ARTNO_" + i).val(null);
+                                                $("#STYLENO_" + i).val(null);
                                                 $("#ITCD_" + i).val(null);
                                                 $("#ITNM_" + i).val(null);
                                                 $("#TOTAL_PCS_" + i).val(null);
@@ -1349,7 +1353,7 @@
                             <b style="color:Red;">*</b>
                         </div>
                     </div>
-                    <div class="col-md-7" style="margin-left:-17px;">
+                    <div class="col-md-7">
                         <div class="editor-field">
                             @if (Model.DefaultAction == "A")
                             {
@@ -1369,7 +1373,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_SORD.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);SCHEME_DATA();", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            @Html.EditorFor(model => model.T_SORD.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -1377,28 +1381,28 @@
                             @Html.Label("", "Document No.")
                         </div>
                     </div>
-                    @if (Model.DefaultAction == "A")
-                    {
-                        <div class="col-md-2">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_SORD.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO", onkeyup = "GetHelp_WithId('" + @Url.Action("DOCNO_ORDERhelp", PageControllerName) + "','DOCNO/AUTONO','0/4','Document Details','DOCNO','DOCCD')", onblur = "SelectORDERno(this.value,DOCNO,AUTONO);", @placeholder = "Code", maxlength = 6 } })
-                                <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("DOCNO_ORDERhelp", PageControllerName )','DOCNO/AUTONO','0/4','Document Details','DOCNO','DOCCD')" />
+                    @*@if (Model.DefaultAction == "A")
+                        {
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO", onkeyup = "GetHelp_WithId('" + @Url.Action("DOCNO_ORDERhelp", PageControllerName) + "','DOCNO/AUTONO','0/4','Document Details','DOCNO','DOCCD')", onblur = "SelectORDERno(this.value,DOCNO,AUTONO);", @placeholder = "Code", maxlength = 6 } })
+                                    <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("DOCNO_ORDERhelp", PageControllerName )','DOCNO/AUTONO','0/4','Document Details','DOCNO','DOCCD')" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-1">
-                            <div class="editor-field">
-                                <input type="button" class="btn btn-sm" value="Fill Order" onclick="ReloadWithData()" />
+                            <div class="col-md-1">
+                                <div class="editor-field">
+                                    <input type="button" class="btn btn-sm" value="Fill Order" onclick="ReloadWithData()" />
+                                </div>
                             </div>
+                        }
+                        else
+                        {*@
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_SORD.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                         </div>
-                    }
-                    else
-                    {
-                        <div class="col-md-1">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_SORD.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
-                            </div>
-                        </div>
-                    }
+                    </div>
+                    @*}*@
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -1408,10 +1412,10 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="editor-field" style="margin-left:-18px;">
+                        <div class="editor-field">
                             @*@Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
                                 <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />*@
-                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd')", onblur = "SelectSubLedgerCode(this.value);", @placeholder = "Code", maxlength = 8 } })
+                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd')" />
                         </div>
                     </div>
@@ -1444,81 +1448,72 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-7" style="margin-left:-4px;">
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Consignee Code")
-                                <b style="color:Red;">*</b>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_SORD.CONSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CONSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0');", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')" />
-                            </div>
-                        </div>
-                        <div class="col-lg-7">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
-                            </div>
+                @*<div class="col-lg-7" style="margin-left:-4px;">*@
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Consignee Code")
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party Ref. Number")
-                            </div>
-                        </div>
-                        <div class="col-md-11">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_SORD.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 30, @placeholder = "Party Ref. Number" } })
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party Ref. Date")
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_SORD.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                            </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_SORD.CONSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CONSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')" />
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Order Rec Mode")
-                            </div>
-                        </div>
-                        <div class="col-md-5" style="width:auto;">
-                            <div class="editor-field">
-                                @Html.DropDownListFor(model => Model.OTHRECMD, new SelectList(Model.DropDown_list, "value", "text", Model.OTHRECMD), "==Select==", new { @class = "form-control" })
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-
-
-                </div>
-                <div class="col-lg-5">
-                    <div class="row" style="background-color:#c4b9b9;border:5px groove;">
-                        <div>
-                            <div id="SCHEME_DIV" style="margin-top:0px;">
-                                @Html.Partial("_T_SORD_SCHEME")
-                            </div>
-                        </div>
-                    </div>
-                    <div style="float:right;">
-                        <div class="col-md-8">
-                            <input type="button" class="btn btn-info" onclick="CalcSchmDisc();" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="CalcSchmDis" value="Calculate Scheme & Discount" title="Click to Calculate Scheme & Disc" />
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Party Ref. Number")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_SORD.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 30, @placeholder = "Party Ref. Number" } })
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Party Ref. Date")
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_SORD.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", @placeholder = "dd/mm/yyyy", onblur = "DocumentDateCHK(this);", autocomplete = "off", maxlength = 10 } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Order Rec Mode")
+                        </div>
+                    </div>
+                    <div class="col-md-5" style="width:auto;">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => Model.OTHRECMD, new SelectList(Model.DropDown_list, "value", "text", Model.OTHRECMD), "==Select==", new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                @*</div>*@
+                @*<div class="col-lg-5">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="SCHEME_DIV" style="margin-top:0px;">
+                                    @Html.Partial("_T_SORD_SCHEME")
+                                </div>
+                            </div>
+                        </div>
+                        <div style="float:right;">
+                            <div class="col-md-8">
+                                <input type="button" class="btn btn-info" onclick="CalcSchmDisc();" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="CalcSchmDis" value="Calculate Scheme & Discount" title="Click to Calculate Scheme & Disc" />
+                            </div>
+                        </div>
+                    </div>*@
             </div>
             <div class="row">
                 <ul class="nav nav-tabs">
@@ -1531,7 +1526,7 @@
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Agent")
                                     <b style="color:Red;">*</b>
@@ -1553,7 +1548,6 @@
                             <div class="col-md-1">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Sub Agent")
-                                    <b style="color:Red;">*</b>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -1569,7 +1563,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Salesmen")
                                     <b style="color:Red;">*</b>
@@ -1608,7 +1602,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Order By")
                                 </div>
@@ -1618,7 +1612,7 @@
                                     @Html.EditorFor(model => model.T_SORD.ORDBY, new { htmlAttributes = new { @class = "form-control", id = "ORDBY", maxlength = 50, @placeholder = "Order By" } })
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-1">
                                 <div class="editor-field" style="margin-top: 6px;">
                                     @Html.Label("", "Select By")
                                 </div>
@@ -1631,7 +1625,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Payment Terms")
                                 </div>
@@ -1644,7 +1638,7 @@
 
                         </div>
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Delvry Instructions")
                                 </div>
@@ -1657,7 +1651,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Special Notes")
                                 </div>

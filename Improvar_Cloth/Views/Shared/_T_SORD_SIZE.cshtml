@@ -37,7 +37,7 @@
         }
     }
 }
-<div id="dragclass" style="transform: translate(0%, 0%);z-index: 1100;overflow-y:auto;max-height:322px;height:auto;overflow-y:hidden;background-color:#c4b9b9;padding:7px;border-radius: 7px;">
+<div id="dragclass" style="transform: translate(0%, 0%);z-index: 1100;overflow-y:auto;height:auto;overflow-y:hidden;background-color:#c4b9b9;padding:7px;border-radius: 7px;">
     <div class="table-responsive">
         @if (Model.DefaultView == true)
             {
@@ -47,7 +47,9 @@
                     <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SORD_SIZE_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
-                <center style="font-size:11px;color:darkmagenta;border:1px inset;"><b>Sales Order Entry Item Size Details for :- <a style="text-align: right;padding-right: 10px;color: red;font-variant: petite-caps;font-weight: bolder;"> ( Article Number :- @ViewBag.Article , Pcs / Box :-  @ViewBag.Pcs , Pcs / Set :-  @ViewBag.Set ) </a></b><a><input type="checkbox" id="SAME_QTY" name="SAME_QTY" checked="checked" /></a></center>
+                @*<center style="font-size:11px;color:darkmagenta;border:1px inset;"><b>Sales Order Entry Item Size Details for :- <a style="text-align: right;padding-right: 10px;color: red;font-variant: petite-caps;font-weight: bolder;"> ( Article Number :- @ViewBag.Article , Pcs / Box :-  @ViewBag.Pcs , Pcs / Set :-  @ViewBag.Set ) </a></b><a><input type="checkbox" id="SAME_QTY" name="SAME_QTY" checked="checked" /></a></center>*@
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;"><b>Sales Order Entry Item Size Details for :- <a style="text-align: right;padding-right: 10px;color: red;font-variant: petite-caps;font-weight: bolder;"> ( Design Number :- @ViewBag.Article ) </a></b><a><input type="checkbox" id="SAME_QTY" name="SAME_QTY" checked="checked" /></a></center>
+
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:320px;">

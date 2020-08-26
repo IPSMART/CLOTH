@@ -1462,7 +1462,7 @@ function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds) {
         value = "";
     }
     if (keyName != "F2" && keyName != undefined) { return true; }
-    if ($('#' + hlpfield).is('[readonly]')) { return false; }
+    //if ($('#' + hlpfield).is('[readonly]')) { return false; }
     var fldIdseq = "", hpnlIndexseq = "";
     if (typeof dependfldIds != "undefined" && dependfldIds != "") {
         var strarr = dependfldIds.split('/');

@@ -107,5 +107,15 @@ namespace Improvar.Models
 
         [StringLength(500)]
         public string ITREM { get; set; }
+        [StringLength(30)]
+        public string ORDAUTONO { get; set; }
+
+        public short? ORDSLNO { get; set; }
+
+        [Required]
+        [StringLength(4)]
+        public string PRCCD { get; set; }
+
+        public DateTime? PRCEFFDT { get; set; }
     }
 }

@@ -54,15 +54,15 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public decimal? QNTY { get; set; }
+        public double? QNTY { get; set; }
 
-        public decimal? RATE { get; set; }
+        public double? RATE { get; set; }
 
-        public decimal DISCAMT { get; set; }
+        public double DISCAMT { get; set; }
 
-        public decimal SCMDISCAMT { get; set; }
+        public double SCMDISCAMT { get; set; }
 
-        public decimal TAXAMT { get; set; }
+        public double TAXAMT { get; set; }
 
         [StringLength(30)]
         public string ORDAUTONO { get; set; }

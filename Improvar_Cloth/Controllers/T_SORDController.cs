@@ -36,6 +36,7 @@ namespace Improvar.Controllers
                     switch (VE.DOC_CODE)
                     {
                         case "SORD": ViewBag.formname = "Sales Order Entry"; break;
+                        case "PORD": ViewBag.formname = "Purchase Order Entry"; break;
                         default: ViewBag.formname = "Sales Order Entry"; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -205,7 +206,15 @@ namespace Improvar.Controllers
                                     var SalesMen = DBF.M_SUBLEG.Find(sl.SLMSLCD); if (SalesMen != null) { VE.SalesManName = SalesMen.SLNM; }
                                     var Agent = DBF.M_SUBLEG.Find(sl.AGSLCD); if (Agent != null) { VE.AgentName = Agent.SLNM; VE.AGTCD = sl.AGSLCD; VE.AGTNM = Agent.SLNM; }
                                     var Transporter = DBF.M_SUBLEG.Find(sl.TRSLCD); if (Transporter != null) { VE.TransporterName = Transporter.SLNM; VE.TRNSCD = sl.TRSLCD; VE.TRNSNM = Transporter.SLNM; }
-                                    ////var Courier = DBF.M_SUBLEG.Find(sl.CRSLCD); if (Courier != null) { VE.CourierName = Courier.SLNM; VE.CURCD = sl.CRSLCD; VE.CURNM = Courier.SLNM; }
+                                    if (sl.CONSLCD != null)
+                                    {
+                                        VE.CONSLNM = DBF.M_SUBLEG.Find(sl.CONSLCD).SLNM;
+                                    }
+                                    if (sl.SAGSLCD != null)
+                                    {
+                                        VE.SAGSLNM = DBF.M_SUBLEG.Find(sl.SAGSLCD).SLNM;
+                                    }
+
                                     ////var PriceList = DBF.M_PRCLST.Find(sl.PRCCD); if (PriceList != null) { VE.PriceName = PriceList.PRCNM; VE.PRCCD = sl.PRCCD; VE.PRCNM = PriceList.PRCNM; }
                                     ////var Brand = DB.M_BRAND.Find(sl.BRANDCD); if (Brand != null) { VE.BrandName = Brand.BRANDNM; }
                                     ////var PayTerms = DB.M_PAYTRMS.Find(sl.PAYTRMCD); if (PayTerms != null) { VE.PayTermName = PayTerms.PAYTRMNM; }
@@ -238,7 +247,7 @@ namespace Improvar.Controllers
                                         str += " select distinct b.doccd, b.docno, b.docdt, b.autono, ";
                                         str += " b.usr_id sb_madeby_id, c.user_name sb_madeby_name, b.usr_entdt sb_madeby_dt ";
                                         str += " from " + CommVar.CurSchema(UNQSNO) + ".t_txndtl a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b, user_appl c ";
-                                        str += " where a.autono = b.autono and a.ordautono = '" + sl.AUTONO + "' and b.usr_id = c.user_id(+) ";
+                                        str += " where a.autono = b.autono and a.AGDOCNO = '" + sl.AUTONO + "' and b.usr_id = c.user_id(+) ";
                                         DataTable dtbl = Master_Help.SQLquery(str);
                                         VE.TSORDDTL_SEARCHPANEL = (from DataRow dr1 in dtbl.Rows
                                                                    select new TSORDDTL_SEARCHPANEL()
@@ -252,22 +261,22 @@ namespace Improvar.Controllers
                                                                        SB_MADEDT = dr1["sb_madeby_dt"].retStr()
                                                                    }).OrderBy(s => s.AUTONO).ToList();
                                     }
-                                    //SCHEME DETAILS
-                                    VE.SCHEME_DTL = (from x in DB.T_SORD_SCHEME
-                                                     join y in DB.M_SCHEME_HDR on x.SCMCD equals y.SCMCD into z
-                                                     from y in z.DefaultIfEmpty()
-                                                     where x.AUTONO == sl.AUTONO
-                                                     select new { x.SCMCD, y.SCMNM, y.SCMDT, y.SCMTYPE }).ToList().Select(A => new SCHEME_DTL()
-                                                     {
-                                                         SCMCODE = A.SCMCD,
-                                                         SCMNAME = A.SCMNM,
-                                                         SCMDATE = A.SCMDT.Value.ToString().Replace('-', '/').Substring(0, 10),
-                                                         SCMTYPE = A.SCMTYPE
-                                                     }).OrderBy(s => s.SCMCODE).ToList();
-                                    if (VE.SCHEME_DTL != null)
-                                    {
-                                        VE.SCHEME_DTL.ForEach(x => x.Checked = true);
-                                    }
+                                    //////SCHEME DETAILS
+                                    ////VE.SCHEME_DTL = (from x in DB.T_SORD_SCHEME
+                                    ////                 join y in DB.M_SCHEME_HDR on x.SCMCD equals y.SCMCD into z
+                                    ////                 from y in z.DefaultIfEmpty()
+                                    ////                 where x.AUTONO == sl.AUTONO
+                                    ////                 select new { x.SCMCD, y.SCMNM, y.SCMDT, y.SCMTYPE }).ToList().Select(A => new SCHEME_DTL()
+                                    ////                 {
+                                    ////                     SCMCODE = A.SCMCD,
+                                    ////                     SCMNAME = A.SCMNM,
+                                    ////                     SCMDATE = A.SCMDT.Value.ToString().Replace('-', '/').Substring(0, 10),
+                                    ////                     SCMTYPE = A.SCMTYPE
+                                    ////                 }).OrderBy(s => s.SCMCODE).ToList();
+                                    ////if (VE.SCHEME_DTL != null)
+                                    ////{
+                                    ////    VE.SCHEME_DTL.ForEach(x => x.Checked = true);
+                                    ////}
                                     var javaScriptSerializerData = new System.Web.Script.Serialization.JavaScriptSerializer();
                                     string JR_Data = javaScriptSerializerData.Serialize(VE.SCHEME_DTL);
                                     VE.HIDDEN_SCHEME_DATA = JR_Data;
@@ -278,15 +287,15 @@ namespace Improvar.Controllers
                                     //str1 += " from " + CommVar.CurSchema(UNQSNO) + ".T_SORDDTL i, " + CommVar.CurSchema(UNQSNO) + ".M_SITEM j  where i.ITCD = j.ITCD(+)   and i.AUTONO = '" + sl.AUTONO + "' ";
                                     //str1 += " group by i.AUTONO, i.STKDRCR, i.STKTYPE, i.FREESTK, i.ITCD, j.ITNM, j.STYLENO, j.PCSPERBOX, j.PCSPERSET, j.UOMCD ";
                                     str1 += "select ROW_NUMBER() OVER(ORDER BY c.styleno) AS SLNO, ";
-                                    str1 += "a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERBOX, c.PCSPERSET, c.UOMCD, ";
-                                    str1 += "a.sizedsp, b.ratedsp, a.scmdiscamt, a.discamt, a.qnty from ";
-                                    str1 += "(select a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, ";
+                                    str1 += "a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERSET, c.UOMCD, ";
+                                    str1 += "a.sizedsp, b.ratedsp, a.scmdiscamt, a.discamt, a.qnty,A.DELVDT,a.ITREM,c.itgrpcd, d.itgrpnm,c.fabitcd, e.itnm fabitnm from ";
+                                    str1 += "(select a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD,A.DELVDT,a.ITREM, ";
                                     str1 += "a.autono || a.stkdrcr || nvl(a.stktype, '') || nvl(a.freestk, '') || a.itcd autoitcd, ";
                                     str1 += "LISTAGG(b.SIZENM, ',') WITHIN GROUP(order by a.autono, a.stkdrcr, a.stktype, a.freestk, a.ITCD, b.PRINT_SEQ) sizedsp, ";
                                     str1 += "sum(a.SCMDISCAMT) SCMDISCAMT, sum(a.DISCAMT) DISCAMT, sum(a.QNTY) QNTY ";
                                     str1 += "from " + CommVar.CurSchema(UNQSNO) + ".T_SORDDTL a, " + CommVar.CurSchema(UNQSNO) + ".M_SIZE b ";
                                     str1 += "where a.sizecd = b.sizecd(+) and a.AUTONO = '" + sl.AUTONO + "' ";
-                                    str1 += "group by a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, ";
+                                    str1 += "group by a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD,A.DELVDT,a.ITREM, ";
                                     str1 += "a.autono || a.stkdrcr || nvl(a.stktype, '') || nvl(a.freestk, '') || a.itcd) a, ";
                                     str1 += "(select autono, autono|| stkdrcr || nvl(stktype, '') || nvl(freestk, '') || itcd autoitcd, ";
                                     str1 += "listagg(decode(minsizenm, maxsizenm, minsizenm, minsizenm || '-' || maxsizenm) || ' @' || to_char(rate), ', ') within group(order by autono, itcd, stktype, freestk) ratedsp from ";
@@ -295,8 +304,8 @@ namespace Improvar.Controllers
                                     str1 += "where a.sizecd = b.sizecd(+) and a.AUTONO = '" + sl.AUTONO + "' ";
                                     str1 += "group by a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, a.rate) ";
                                     str1 += "group by autono, autono || stkdrcr || nvl(stktype, '') || nvl(freestk, '') || itcd) b, ";
-                                    str1 += CommVar.CurSchema(UNQSNO) + ".m_sitem c ";
-                                    str1 += "where a.autoitcd = b.autoitcd(+) and a.itcd = c.itcd(+) ";
+                                    str1 += CommVar.CurSchema(UNQSNO) + ".m_sitem c, " + CommVar.CurSchema(UNQSNO) + ".m_group d, " + CommVar.CurSchema(UNQSNO) + ".m_sitem e ";
+                                    str1 += "where a.autoitcd = b.autoitcd(+) and a.itcd = c.itcd(+) and c.itgrpcd=d.itgrpcd and c.fabitcd=e.itcd(+) ";
                                     str1 += "order by styleno ";
 
                                     //str1 += "select ROW_NUMBER() OVER(ORDER BY c.styleno) AS SLNO, ";
@@ -335,19 +344,25 @@ namespace Improvar.Controllers
                                                        FREESTK = dr["FREESTK"].retStr(),
                                                        ITCD = dr["ITCD"].retStr(),
                                                        ITNM = dr["ITNM"].retStr(),
-                                                       ARTNO = dr["STYLENO"].retStr(),
-                                                       TOTAL_PCS = dr["PCSPERBOX"].retDbl(),
+                                                       STYLENO = dr["STYLENO"].retStr(),
+                                                       //TOTAL_PCS = dr["PCSPERBOX"].retDbl(),
                                                        PCSPERSET = dr["PCSPERSET"].retDbl(),
                                                        UOM = dr["UOMCD"].retStr(),
                                                        QNTY = dr["QNTY"].retDbl(),
                                                        RATE_DISPLAY = dr["ratedsp"].ToString(),
-                                                       ALL_SIZE = dr["sizedsp"].ToString()
+                                                       ALL_SIZE = dr["sizedsp"].ToString(),
+                                                       DELVDT = dr["DELVDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["DELVDT"].retDateStr()),
+                                                       ITREM = dr["ITREM"].ToString(),
+                                                       ITGRPCD = dr["ITGRPCD"].ToString(),
+                                                       ITGRPNM = dr["ITGRPNM"].ToString(),
+                                                       FABITCD = dr["FABITCD"].ToString(),
+                                                       FABITNM = dr["FABITNM"].ToString()
                                                    }).OrderBy(s => s.SLNO).ToList();
                                     foreach (var z in VE.TSORDDTL)
                                     {
                                         str1 = "select i.SIZECD,k.SIZENM,i.COLRCD,i.QNTY,i.RATE,i.SCMDISCAMT,i.DISCAMT,k.PRINT_SEQ "
                                              + "from " + CommVar.CurSchema(UNQSNO) + ".T_SORDDTL i, " + CommVar.CurSchema(UNQSNO) + ".M_SIZE k "
-                                             + " where  i.SIZECD = k.SIZECD(+)  and i.AUTONO = '" + z.AUTONO + "' AND I.ITCD='" + z.ITCD + "' AND nvl(i.freestk,'')='" + z.FREESTK + "' AND nvl(i.stktype,'')= '" + z.STKTYPE + "' "
+                                             + " where  i.SIZECD = k.SIZECD(+)  and i.AUTONO = '" + z.AUTONO + "' AND I.ITCD='" + z.ITCD + "' "
                                              + " order by k.PRINT_SEQ";
                                         tbl = Master_Help.SQLquery(str1);
                                         VE.TSORDDTL_SIZE = (from DataRow dr in tbl.Rows
@@ -363,7 +378,7 @@ namespace Improvar.Controllers
                                                                 ITCD = z.ITCD,
                                                                 SLNO = z.SLNO,
                                                                 ITCOLSIZE = z.ITCD + dr["COLRCD"].retStr() + dr["SIZECD"].retStr(),
-                                                                PCS_HIDDEN = z.TOTAL_PCS.Value,
+                                                                PCS_HIDDEN = z.TOTAL_PCS.retDbl(),
                                                                 PCSPERSET_HIDDEN = z.PCSPERSET.retDbl(),
                                                                 QNTY_HIDDEN = z.QNTY,
                                                             }).ToList();
@@ -444,11 +459,11 @@ namespace Improvar.Controllers
                                     {
                                         VE.Edit = ""; VE.Delete = "";
                                     }
-                                    var DATA_EXIST = (from x in DB.T_DODTL where x.ORDAUTONO == sl.AUTONO select x).ToList();
-                                    if (DATA_EXIST.Any())
-                                    {
-                                        if (DATA_EXIST.Count > 0) VE.Edit_Tag = false;
-                                    }
+                                    //var DATA_EXIST = (from x in DB.T_DODTL where x.ORDAUTONO == sl.AUTONO select x).ToList();
+                                    //if (DATA_EXIST.Any())
+                                    //{
+                                    //    if (DATA_EXIST.Count > 0) VE.Edit_Tag = false;
+                                    //}
                                 }
                                 else
                                 {
@@ -497,32 +512,30 @@ namespace Improvar.Controllers
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yr_code = CommVar.YearCode(UNQSNO);
             VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
             string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
-            string sql = "select distinct a.autono, a.doccd,a.brandcd, e.brandnm, c.docno, to_char(a.docdt,'dd/mm/yyyy') docdt, ";
-            sql += "c.docdt ddocdt, a.slcd, d.slnm, d.district, a.prefno, 0 tbox,a.aproxval,a.totbox,a.totset,a.totqnty ";
-            sql += " from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d, " + scm + ".m_brand e ";
+            string sql = "select distinct a.autono, a.doccd, c.docno, to_char(a.docdt,'dd/mm/yyyy') docdt, ";
+            sql += "c.docdt ddocdt, a.slcd, d.slnm, d.district, a.prefno, 0 tbox,a.aproxval ";
+            sql += " from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d ";
             sql += "where a.autono = c.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and "; // and c.yr_cd = '" + YR1;
             if (SRC_FDT.retStr() != "") sql += "c.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "c.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(c.vchrno like '%" + SRC_DOCNO.retStr() + "%' or c.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
             if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(d.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
-            sql += "a.slcd = d.slcd and a.brandcd=e.brandcd(+) and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "' ";
+            sql += "a.slcd = d.slcd and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "' ";
             sql += "order by docdt, docno ";
             var tbl = Master_Help.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Order Number" + Cn.GCS() + "Order Date" + Cn.GCS() + "Brand" + Cn.GCS() + "Party Order Number" + Cn.GCS() + "Party Name"
-                + Cn.GCS() + "Total Boxes" + Cn.GCS() + "Total Sets" + Cn.GCS() + "Total Quantity" + Cn.GCS() + "Order Approx Value" + Cn.GCS() + "AUTO NO";
+            var hdr = "Order Number" + Cn.GCS() + "Order Date" + Cn.GCS() + "Party Order Number" + Cn.GCS() + "Party Name"
+                + Cn.GCS() + "Order Approx Value" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
-                string totbox = tbl.Rows[j]["brandcd"].retStr() == "CUFN" ? tbl.Rows[j]["totbox"].retStr() : "";
-                string totset = tbl.Rows[j]["brandcd"].retStr() == "CUCU" ? tbl.Rows[j]["totset"].retStr() : "";
-                SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" + tbl.Rows[j]["brandnm"]
-                    + " </td><td>" + tbl.Rows[j]["prefno"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> ["
-                    + tbl.Rows[j]["district"] + "]  (" + tbl.Rows[j]["slcd"] + ") " + " </td><td>" + totbox + " </td><td>"
-                    + totset + " </td><td>" + tbl.Rows[j]["totqnty"] + " </td><td>" + tbl.Rows[j]["aproxval"] + " </td><td>"
+               
+                SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" 
+                    + tbl.Rows[j]["prefno"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> ["
+                    + tbl.Rows[j]["district"] + "]  (" + tbl.Rows[j]["slcd"] + ") " + " </td><td>" + tbl.Rows[j]["aproxval"] + " </td><td>"
                     + tbl.Rows[j]["autono"] + " </td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "9", "9"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "5", "5"));
         }
         public ActionResult changeDocumentType(Permission VE, string DOC_CD, string DOCDT = "", bool AllowBDATE = false, string DOCNO = "")
         {
@@ -553,26 +566,27 @@ namespace Improvar.Controllers
                 if (query != null)
                 {
                     string sql = "";
-                    sql += "select a.itcd, a.styleno, nvl(a.pcsperbox,0) pcsperbox, nvl(a.pcsperset,0) pcsperset, a.sizecd, a.sizenm, a.mixsize, a.print_seq, a.colrcd, a.colrnm, a.slno, nvl(b.rate,0) rate from ";
-                    sql += "( select a.itcd, a.styleno, a.pcsperbox, a.pcsperset, b.sizecd, d.sizenm, a.mixsize, d.print_seq, c.colrcd, c.slno, e.colrnm ";
+                    sql += "select a.itcd, a.styleno, nvl(a.pcsperset,0) pcsperset, a.sizecd, a.sizenm, a.print_seq, a.colrcd, a.colrnm, a.slno, nvl(b.rate,0) rate from ";
+                    sql += "( select a.itcd, a.styleno,  a.pcsperset, b.sizecd, d.sizenm, d.print_seq, c.colrcd, c.slno, e.colrnm ";
                     sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_sitem_size b, " + scm1 + ".m_sitem_color c, ";
                     sql += scm1 + ".m_size d, " + scm1 + ".m_color e ";
                     sql += "where a.itcd = '" + ITEM + "' and a.itcd = b.itcd(+) and a.itcd = c.itcd(+) and b.sizecd = d.sizecd(+) and c.colrcd = e.colrcd(+) and ";
                     sql += "nvl(b.inactive_tag, 'N')= 'N' and nvl(c.inactive_tag, 'N')= 'N' ) a, ";
-                    sql += "( select a.itcd, a.sizecd, a.rate ";
+                    sql += "( select a.itcd, a.sizecd, a.rate,a.colrcd ";
                     sql += "from " + scm1 + ".m_itemplistdtl a ";
-                    sql += "where a.prccd='" + prccd + "' and a.effdt=to_date('" + prceffdt + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
-                    sql += "where a.itcd=b.itcd(+) and a.sizecd=b.sizecd(+) ";
+                    //sql += "where a.prccd='" + prccd + "' and a.effdt=to_date('" + prceffdt + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
+                    sql += "where a.effdt=to_date('" + VE.T_SORD.DOCDT.retStr().Remove(10) + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
+                    sql += "where a.itcd=b.itcd(+) and a.sizecd=b.sizecd(+) and a.colrcd=b.colrcd(+) ";
                     sql += "order by print_seq, slno ";
 
                     var SIZE_DATA = Master_Help.SQLquery(sql); int SL_NO = 0;
                     var SIZE_COUNT = SIZE_DATA.Rows.Count;
-                    Double PCSPERBOX = Convert.ToDouble(SIZE_DATA.Rows[0]["pcsperbox"]);
+                    //Double PCSPERBOX = Convert.ToDouble(SIZE_DATA.Rows[0]["pcsperbox"]);
                     VE.TSORDDTL_SIZE = (from DataRow dr in SIZE_DATA.Rows
                                         select new TSORDDTL_SIZE()
                                         {
                                             SLNO = ++SL_NO,
-                                            MIXSIZE = dr["mixsize"].ToString(),
+                                            //MIXSIZE = dr["mixsize"].ToString(),
                                             PRINT_SEQ = dr["print_seq"].ToString(),
                                             SIZECD = dr["sizecd"].ToString(),
                                             SIZENM = dr["sizenm"].ToString(),
@@ -583,9 +597,9 @@ namespace Improvar.Controllers
                                             ITNM_HIDDEN = ITEM_NM,
                                             ARTNO_HIDDEN = ART_NO,
                                             UOM_HIDDEN = UOM,
-                                          //  PCS_HIDDEN = PCS.Value,
-                                           // PCSPERSET_HIDDEN = PCS_PERSET,
-                                           // FREESTK_HIDDEN = FREE_STK,
+                                            //  PCS_HIDDEN = PCS.Value,
+                                            // PCSPERSET_HIDDEN = PCS_PERSET,
+                                            // FREESTK_HIDDEN = FREE_STK,
                                             //STKTYPE_HIDDEN = STK_TYPE,
                                             ITCOLSIZE = ITEM + dr["colrcd"].ToString() + dr["sizecd"].ToString(),
                                             RATE = Convert.ToDouble(dr["rate"].ToString()),
@@ -640,14 +654,14 @@ namespace Improvar.Controllers
                                 helpMT.ForEach(a =>
                                 {
                                     a.ParentSerialNo = SerialNo; a.ITCD_HIDDEN = ITEM; a.ITNM_HIDDEN = ITEM_NM; a.ARTNO_HIDDEN = ART_NO; a.UOM_HIDDEN = UOM;
-                                   // a.PCS_HIDDEN = PCS.Value;
+                                    // a.PCS_HIDDEN = PCS.Value;
                                     a.QNTY_HIDDEN = QNTY;
-                                   // a.FREESTK_HIDDEN = FREE_STK; a.STKTYPE_HIDDEN = STK_TYPE; a.PCSPERSET_HIDDEN = PCS_PERSET;
+                                    // a.FREESTK_HIDDEN = FREE_STK; a.STKTYPE_HIDDEN = STK_TYPE; a.PCSPERSET_HIDDEN = PCS_PERSET;
                                     if (a.QNTY_HIDDEN == 0) { a.QNTY_HIDDEN = null; a.QNTY = null; }
                                     if (TAG == "0")
                                     {
                                         //var CAL_QNTY = a.PCSPERSET_HIDDEN != 0 && NO_SETS != 0 ? NO_SETS * PCS_PERSET : 0;
-                                       // a.QNTY = a.MIXSIZE == "M" ? CAL_QNTY / helpMT.Count : (NO_SETS != a.PCSPERSET_HIDDEN ? CAL_QNTY / helpMT.Count : CAL_QNTY);
+                                        // a.QNTY = a.MIXSIZE == "M" ? CAL_QNTY / helpMT.Count : (NO_SETS != a.PCSPERSET_HIDDEN ? CAL_QNTY / helpMT.Count : CAL_QNTY);
                                         //var CAL_QNTY = a.PCSPERSET_HIDDEN != 0 ? NO_SETS * PCS_PERSET : 0;
                                         //a.QNTY = a.MIXSIZE == "M" ? CAL_QNTY / helpMT.Count : CAL_QNTY;
                                         a.QNTY_HIDDEN = a.QNTY;
@@ -1481,38 +1495,28 @@ namespace Improvar.Controllers
                             TSORD.SLCD = VE.T_SORD.SLCD;
                             TSORD.AGSLCD = VE.T_SORD.AGSLCD;
                             TSORD.TRSLCD = VE.T_SORD.TRSLCD;
-                            ////TSORD.CRSLCD = VE.T_SORD.CRSLCD;
-                            ////TSORD.DESTN = VE.T_SORD.DESTN;
                             TSORD.SLMSLCD = VE.T_SORD.SLMSLCD;
                             TSORD.PREFNO = VE.T_SORD.PREFNO;
                             TSORD.PREFDT = VE.T_SORD.PREFDT;
                             TSORD.RECMODE = VE.OTHRECMD;
-                            ////TSORD.DOCTH1 = VE.T_SORD.DOCTH1;
-                            ////TSORD.DOCTH2 = VE.T_SORD.DOCTH2;
-                            ////TSORD.DOCTH3 = VE.T_SORD.DOCTH3;
                             TSORD.COD = VE.T_SORD.COD;
                             TSORD.DELVINS = VE.T_SORD.DELVINS;
                             TSORD.DUEDAYS = VE.T_SORD.DUEDAYS;
-                            ////TSORD.PAYTRMCD = VE.T_SORD.PAYTRMCD;
-                            ////TSORD.BRANDCD = VE.T_SORD.BRANDCD;
-                            ////TSORD.PRCCD = VE.T_SORD.PRCCD;
-                            ////TSORD.PRCEFFDT = Convert.ToDateTime(VE.EFF_DATE_ID).Date;
-                            ////TSORD.DISCRTCD = VE.T_SORD.DISCRTCD;
-                            ////TSORD.DISCRTEFFDT = Convert.ToDateTime(VE.DISC_EFF_DATE_ID).Date;
                             TSORD.DOCTH = VE.T_SORD.DOCTH;
-                            //TSORD.DESPTHCRTR = VE.T_SORD.DESPTHCRTR;
                             TSORD.APROXVAL = VE.T_SORD.APROXVAL;
                             TSORD.SPLNOTE = VE.T_SORD.SPLNOTE;
                             TSORD.RATEPER = VE.T_SORD.RATEPER;
+                            TSORD.CONSLCD = VE.T_SORD.CONSLCD;
+                            TSORD.SAGSLCD = VE.T_SORD.SAGSLCD;
+                            TSORD.ORDBY = VE.T_SORD.ORDBY;
+                            TSORD.SELBY = VE.T_SORD.SELBY;
+                            TSORD.PAYTRMS = VE.T_SORD.PAYTRMS;
 
-                            ////TSORD.TOTBOX = VE.T_SORD.TOTBOX;  //new
-                            ////TSORD.TOTSET = VE.T_SORD.TOTSET;  //new
-                            ////TSORD.TOTQNTY = VE.T_SORD.TOTQNTY;//new
                             if (VE.DefaultAction == "E")
                             {
                                 TSORD.DTAG = "E";
-                                dbsql = MasterHelpFa.TblUpdt("t_sord_scheme", TSORD.AUTONO, "E");
-                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                                //dbsql = MasterHelpFa.TblUpdt("t_sord_scheme", TSORD.AUTONO, "E");
+                                //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                                 dbsql = MasterHelpFa.TblUpdt("t_sorddtl", TSORD.AUTONO, "E");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -1532,126 +1536,94 @@ namespace Improvar.Controllers
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                             int COUNTER = 0;
-                            var DO_DATA = (from z in DB.T_DODTL where z.ORDAUTONO == TSORD.AUTONO select z).DistinctBy(A => A.AUTONO).ToList();
-                            string DO_AUTONO = "";
-                            if (DO_DATA != null && DO_DATA.Count > 0 && VE.DefaultAction == "E")
-                            {
-                                DO_AUTONO = DO_DATA[0].AUTONO;
-                                dbsql = MasterHelpFa.TblUpdt("t_dodtl", DO_AUTONO, "E");
-                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            }
+                            //var DO_DATA = (from z in DB.T_DODTL where z.ORDAUTONO == TSORD.AUTONO select z).DistinctBy(A => A.AUTONO).ToList();
+                            //string DO_AUTONO = "";
+                            //if (DO_DATA != null && DO_DATA.Count > 0 && VE.DefaultAction == "E")
+                            //{
+                            //    DO_AUTONO = DO_DATA[0].AUTONO;
+                            //    dbsql = MasterHelpFa.TblUpdt("t_dodtl", DO_AUTONO, "E");
+                            //    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            //}
                             for (int i = 0; i <= VE.TSORDDTL.Count - 1; i++)
                             {
                                 if (VE.TSORDDTL[i].SLNO != 0 && VE.TSORDDTL[i].ITCD != null)
                                 {
-                                    try
+
+                                    var SIZE_CODE = VE.TSORDDTL[i].ALL_SIZE.Split(',');
+                                    if (VE.TSORDDTL[i].ChildData != null)
                                     {
-                                        var SIZE_CODE = VE.TSORDDTL[i].ALL_SIZE.Split(',');
-                                        if (VE.TSORDDTL[i].ChildData != null)
+                                        string data = VE.TSORDDTL[i].ChildData;
+                                        var helpM = new List<Improvar.Models.TSORDDTL_SIZE>();
+                                        var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                                        helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.TSORDDTL_SIZE>>(data);
+                                        helpM = helpM.Where(a => SIZE_CODE.Contains(a.SIZECD)).ToList();
+                                        for (int j = 0; j <= helpM.Count - 1; j++)
                                         {
-                                            string data = VE.TSORDDTL[i].ChildData;
-                                            var helpM = new List<Improvar.Models.TSORDDTL_SIZE>();
-                                            var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                                            helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.TSORDDTL_SIZE>>(data);
-                                            helpM = helpM.Where(a => SIZE_CODE.Contains(a.SIZECD)).ToList();
-                                            for (int j = 0; j <= helpM.Count - 1; j++)
+                                            if (helpM[j].SLNO != 0 && helpM[j].RATE != null && helpM[j].QNTY != null && helpM[j].QNTY != 0)
                                             {
-                                                if (helpM[j].SLNO != 0 && helpM[j].RATE != null && helpM[j].QNTY != null && helpM[j].QNTY != 0)
+                                                COUNTER = COUNTER + 1;
+
+                                                T_SORDDTL TSORDDTL = new T_SORDDTL();
+                                                TSORDDTL.EMD_NO = TSORD.EMD_NO;
+                                                TSORDDTL.CLCD = TSORD.CLCD;
+                                                TSORDDTL.DTAG = TSORD.DTAG;
+                                                TSORDDTL.TTAG = TSORD.TTAG;
+                                                TSORDDTL.AUTONO = TSORD.AUTONO;
+                                                TSORDDTL.SLNO = Convert.ToInt16(COUNTER);
+                                                TSORDDTL.BLSLNO = Convert.ToInt16(COUNTER);
+                                                if (VE.MENU_PARA == "SB")
                                                 {
-                                                    COUNTER = COUNTER + 1;
-
-                                                    T_SORDDTL TSORDDTL = new T_SORDDTL();
-                                                    TSORDDTL.EMD_NO = TSORD.EMD_NO;
-                                                    TSORDDTL.CLCD = TSORD.CLCD;
-                                                    TSORDDTL.DTAG = TSORD.DTAG;
-                                                    TSORDDTL.TTAG = TSORD.TTAG;
-                                                    TSORDDTL.AUTONO = TSORD.AUTONO;
-                                                    TSORDDTL.SLNO = Convert.ToInt16(COUNTER);
-                                                    if (VE.MENU_PARA == "SB")
-                                                    {
-                                                        TSORDDTL.STKDRCR = "D";
-                                                    }
-                                                    else
-                                                    {
-                                                        TSORDDTL.STKDRCR = "C";
-                                                    }
-                                                    TSORDDTL.STKTYPE = VE.TSORDDTL[i].STKTYPE;
-                                                    TSORDDTL.FREESTK = VE.TSORDDTL[i].FREESTK;
-                                                    TSORDDTL.ITCD = VE.TSORDDTL[i].ITCD;
-                                                    TSORDDTL.SIZECD = helpM[j].SIZECD;
-                                                    TSORDDTL.COLRCD = helpM[j].COLRCD;
-                                                    ////TSORDDTL.QNTY = helpM[j].QNTY;
-                                                    ////TSORDDTL.RATE = helpM[j].RATE;
-                                                    ////TSORDDTL.SCMDISCAMT = helpM[j].SCMDISCAMT;
-                                                    ////TSORDDTL.DISCAMT = helpM[j].DISCAMT;
-                                                    TSORDDTL.TAXAMT = 0;
-
-                                                    dbsql = MasterHelpFa.RetModeltoSql(TSORDDTL);
-                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                                    if (VE.DefaultAction == "E")
-                                                    {
-                                                        if (DO_DATA != null && DO_DATA.Count > 0)
-                                                        {
-                                                            T_DODTL TDODTL = new T_DODTL();
-                                                            TDODTL.EMD_NO = DO_DATA[0].EMD_NO;
-                                                            TDODTL.CLCD = DO_DATA[0].CLCD;
-                                                            TDODTL.DTAG = DO_DATA[0].DTAG;
-                                                            TDODTL.TTAG = DO_DATA[0].TTAG;
-                                                            TDODTL.ORDAUTONO = DO_DATA[0].ORDAUTONO;
-                                                            TDODTL.AUTONO = DO_AUTONO;
-                                                            TDODTL.SLNO = Convert.ToInt16(COUNTER);
-                                                            if (VE.MENU_PARA == "SB")
-                                                            {
-                                                                TDODTL.STKDRCR = "D";
-                                                            }
-                                                            else
-                                                            {
-                                                                TDODTL.STKDRCR = "C";
-                                                            }
-                                                            TDODTL.STKTYPE = VE.TSORDDTL[i].STKTYPE;
-                                                            TDODTL.FREESTK = VE.TSORDDTL[i].FREESTK;
-                                                            TDODTL.ITCD = VE.TSORDDTL[i].ITCD;
-                                                            TDODTL.SIZECD = helpM[j].SIZECD;
-                                                            TDODTL.COLRCD = helpM[j].COLRCD;
-                                                            TDODTL.QNTY = helpM[j].QNTY;
-                                                            TDODTL.RATE = helpM[j].RATE;
-                                                            TDODTL.SCMDISCAMT = helpM[j].SCMDISCAMT;
-                                                            TDODTL.DISCAMT = helpM[j].DISCAMT;
-                                                            TDODTL.TAXAMT = 0;
-                                                            dbsql = MasterHelpFa.RetModeltoSql(TDODTL);
-                                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                                        }
-                                                    }
+                                                    TSORDDTL.STKDRCR = "D";
                                                 }
+                                                else
+                                                {
+                                                    TSORDDTL.STKDRCR = "C";
+                                                }
+                                                TSORDDTL.STKTYPE = "T";// VE.TSORDDTL[i].STKTYPE;
+                                                TSORDDTL.FREESTK = VE.TSORDDTL[i].FREESTK;
+                                                TSORDDTL.ITCD = VE.TSORDDTL[i].ITCD;
+                                                TSORDDTL.SIZECD = helpM[j].SIZECD;
+                                                TSORDDTL.COLRCD = helpM[j].COLRCD;
+                                                TSORDDTL.QNTY = helpM[j].QNTY;
+                                                TSORDDTL.RATE = helpM[j].RATE;
+                                                TSORDDTL.SCMDISCAMT = helpM[j].SCMDISCAMT;
+                                                TSORDDTL.DISCAMT = helpM[j].DISCAMT;
+                                                TSORDDTL.TAXAMT = 0;
+                                                TSORDDTL.ORDAUTONO = VE.TSORDDTL[i].ORDAUTONO;
+                                                TSORDDTL.ORDSLNO = VE.TSORDDTL[i].ORDSLNO;
+                                                TSORDDTL.PRCCD = "EXFI";// VE.TSORDDTL[i].PRCCD;
+                                                TSORDDTL.PRCEFFDT = VE.TSORDDTL[i].PRCEFFDT;
+                                                TSORDDTL.DELVDT = VE.TSORDDTL[i].DELVDT;
+                                                TSORDDTL.ITREM = VE.TSORDDTL[i].ITREM;
+
+                                                dbsql = MasterHelpFa.RetModeltoSql(TSORDDTL);
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                             }
                                         }
                                     }
-                                    catch
-                                    {
-                                        dberrmsg += VE.TSORDDTL[i].ARTNO + ",";
-                                    }
+
                                 }
                             }
 
-                            if (VE.SCHEME_DTL != null)
-                            {
-                                for (int j = 0; j <= VE.SCHEME_DTL.Count - 1; j++)
-                                {
-                                    if (VE.SCHEME_DTL[j].Checked == true)
-                                    {
-                                        T_SORD_SCHEME TSORDSCHEME = new T_SORD_SCHEME();
-                                        TSORDSCHEME.EMD_NO = TSORD.EMD_NO;
-                                        TSORDSCHEME.CLCD = TSORD.CLCD;
-                                        TSORDSCHEME.DTAG = TSORD.DTAG;
-                                        TSORDSCHEME.TTAG = TSORD.TTAG;
-                                        TSORDSCHEME.AUTONO = TSORD.AUTONO;
-                                        TSORDSCHEME.SCMCD = VE.SCHEME_DTL[j].SCMCODE;
+                            //if (VE.SCHEME_DTL != null)
+                            //{
+                            //    for (int j = 0; j <= VE.SCHEME_DTL.Count - 1; j++)
+                            //    {
+                            //        if (VE.SCHEME_DTL[j].Checked == true)
+                            //        {
+                            //            T_SORD_SCHEME TSORDSCHEME = new T_SORD_SCHEME();
+                            //            TSORDSCHEME.EMD_NO = TSORD.EMD_NO;
+                            //            TSORDSCHEME.CLCD = TSORD.CLCD;
+                            //            TSORDSCHEME.DTAG = TSORD.DTAG;
+                            //            TSORDSCHEME.TTAG = TSORD.TTAG;
+                            //            TSORDSCHEME.AUTONO = TSORD.AUTONO;
+                            //            TSORDSCHEME.SCMCD = VE.SCHEME_DTL[j].SCMCODE;
 
-                                        dbsql = MasterHelpFa.RetModeltoSql(TSORDSCHEME);
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    }
-                                }
-                            }
+                            //            dbsql = MasterHelpFa.RetModeltoSql(TSORDSCHEME);
+                            //            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            //        }
+                            //    }
+                            //}
                             if (VE.UploadDOC != null)// add DOCUMENT
                             {
                                 var img = Cn.SaveUploadImageTransaction(VE.UploadDOC, TSORD.AUTONO, TSORD.EMD_NO.Value);
@@ -1698,8 +1670,8 @@ namespace Improvar.Controllers
                         }
                         else if (VE.DefaultAction == "V")
                         {
-                            dbsql = MasterHelpFa.TblUpdt("t_sord_scheme", VE.T_SORD.AUTONO, "D");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            //dbsql = MasterHelpFa.TblUpdt("t_sord_scheme", VE.T_SORD.AUTONO, "D");
+                            //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                             dbsql = MasterHelpFa.TblUpdt("t_sorddtl", VE.T_SORD.AUTONO, "D");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
