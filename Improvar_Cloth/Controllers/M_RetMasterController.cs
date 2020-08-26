@@ -520,7 +520,7 @@ namespace Improvar.Controllers
                     {
                         var refrtdebcd = VE.M_RETDEB.REFRTDEBCD;
                         var ChkRefRetail = (from i in DB.M_RETDEB where i.REFRTDEBCD == refrtdebcd select new { i.REFRTDEBCD,i.RTDEBCD,i.RTDEBNM }).FirstOrDefault();
-                        if (ChkRefRetail != null) { return Content("Reference Retail found at : '" + ChkRefRetail.RTDEBCD + "' and Name : '" + ChkRefRetail.RTDEBNM +"'"); }
+                        if (ChkRefRetail != null) { transaction.Rollback(); return Content("Delete not possible Child record found. Reference Retail found at Retail code: '" + ChkRefRetail.RTDEBCD + "' and Name : '" + ChkRefRetail.RTDEBNM +"'"); }
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_RETDEB", Convert.ToInt32(VE.M_RETDEB.M_AUTONO), VE.DefaultAction, CommVar.FinSchema(UNQSNO).ToString());
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
