@@ -1693,5 +1693,24 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
+        public string FLOOR(ImprovarDB DB)
+        {
+            var query = (from c in DB.M_FLRLOCA
+                         join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                         where i.INACTIVE_TAG == "N"
+                         select new
+                         {
+                             FLRCD = c.FLRCD,
+                             FLRNM = c.FLRNM
+                         }).ToList();
+
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+            for (int i = 0; i <= query.Count - 1; i++)
+            {
+                SB.Append("<tr><td>" + query[i].FLRNM + "</td><td>" + query[i].FLRCD + "</td></tr>");
+            }
+            var hdr = "Floor Name" + Cn.GCS() + "Floor Code";
+            return Generate_help(hdr, SB.ToString());
+        }
     }
 }
