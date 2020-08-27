@@ -1590,7 +1590,7 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string RefRetail_help(string val)
+        public string RTDEBCD_help(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
