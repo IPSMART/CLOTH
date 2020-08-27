@@ -529,8 +529,8 @@ namespace Improvar.Controllers
                 + Cn.GCS() + "Order Approx Value" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
-               
-                SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" 
+
+                SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>"
                     + tbl.Rows[j]["prefno"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> ["
                     + tbl.Rows[j]["district"] + "]  (" + tbl.Rows[j]["slcd"] + ") " + " </td><td>" + tbl.Rows[j]["aproxval"] + " </td><td>"
                     + tbl.Rows[j]["autono"] + " </td></tr>");
@@ -1947,15 +1947,13 @@ namespace Improvar.Controllers
         {
             try
             {
-                ItemMasterEntry VE = new ItemMasterEntry();
-                Cn.getQueryString(VE);
-                if (val.retStr() == "")
+                string str = Master_Help.ITGRPCD_help(val, "");
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", Master_Help.ITGRPCD_help(val,""));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.ITGRPCD_help(val, "");
                     return Content(str);
                 }
             }
