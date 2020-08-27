@@ -97,9 +97,10 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string PRCCD_help(ImprovarDB DB)
+        public string PRCCD_help(string val)
         {
-            using (DB)
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
             {
                 var query = (from c in DB.M_PRCLST
                              join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
@@ -109,13 +110,34 @@ namespace Improvar
                                  Code = c.PRCCD,
                                  Description = c.PRCNM
                              }).ToList();
-                System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                for (int i = 0; i <= query.Count - 1; i++)
+                if (val == null)
                 {
-                    SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
+                    }
+                    var hdr = "Price Name" + Cn.GCS() + "Price code";
+                    return Generate_help(hdr, SB.ToString());
                 }
-                var hdr = "Price code" + Cn.GCS() + "Price Name";
-                return Generate_help(hdr, SB.ToString());
+                else
+                {
+                    query = query.Where(a => a.Code == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = i.Code + Cn.GCS() + i.Description;
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid Price Code ! Please Enter a Valid Price Code !!";
+                    }
+
+                }
             }
         }
         public string DISCRTCD_help(ImprovarDB DB)
@@ -1671,6 +1693,41 @@ namespace Improvar
                 return ex.Message + " " + ex.InnerException;
             }
 
+        }
+        public string GODOWN(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
+            {
+                var query = (from i in DB.M_GODOWN join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { GOCD = i.GOCD, GONM = i.GONM }).OrderBy(s => s.GONM).ToList();
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].GONM + "</td><td>" + query[i].GOCD + "</td></tr>");
+                    }
+                    var hdr = "Godown Name" + Cn.GCS() + "Godown Code";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    query = query.Where(a => a.GOCD == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = ToReturnFieldValues(query);
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid Godown Code ! Please Select / Enter a Valid Godown Code !!";
+                    }
+                }
+            }
         }
     }
 }

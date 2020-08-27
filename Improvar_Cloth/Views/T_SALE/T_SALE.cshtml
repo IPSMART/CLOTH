@@ -66,11 +66,78 @@
     $(function () {
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
-            $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
         }
     });
 </script>
-
+<script>
+    function SelectGodownCode(id, GOCD, GONM) {
+        if ("@Model.DefaultAction" != "V") {
+            if (id == "") {
+                $("#" + GOCD.id).val("");
+                $("#" + GONM.id).val("");
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetGodownDetails", PageControllerName)',
+                    data: { val: id },
+                    success: function (result) {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#tempHDD").val(result);
+                            var findstr = $("#tempHDD").val();
+                            document.getElementById(GOCD.id).value = returncolvalue(findstr, "GOCD");
+                            document.getElementById(GONM.id).value = returncolvalue(findstr, "GONM");
+                        }
+                        else {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#" + GOCD.id).val("");
+                            $("#" + GONM.id).val("");
+                            $("#btnok").focus();
+                            $("#msgbody_info").html(result);
+                            message_value = GOCD.id;
+                        }
+                    }
+                });
+            }
+        }
+    }
+    function SelectPRICECODE(id, fld1, fld2) {
+        if (id == "") {
+            $("#" + fld1.id).val("");
+            $("#" + fld2.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetPriceDetails", PageControllerName)',
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        $("#" + fld1.id).val(str[0].toString());
+                        $("#" + fld2.id).val(str[1].toString());
+                    }
+                    else {
+                        $("#" + fld1.id).val("");
+                        $("#" + fld2.id).val("");
+                        msgInfo(result);
+                        message_value = fld1.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    }
+</script>
 
 <script>
     function AddDOCrow() {
@@ -174,23 +241,23 @@
                             <b style="color:Red;">*</b>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-1">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Bill Type")
                         </div>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXNOTH.BLTYPE, new { htmlAttributes = new { @class = "form-controlemp textbox_imageemp", id = "BLTYPE", @placeholder = "Bill Type", @list = "BillType_List" } })
+                            @Html.EditorFor(model => model.T_TXNOTH.BLTYPE, new { htmlAttributes = new { @class = "form-control", id = "BLTYPE", @placeholder = "Bill Type", maxlength = 5, @list = "BillType_List" } })
                             <datalist id="BillType_List">
-                                @foreach (var i in Model.DropDown_list1)
+                                @foreach (var jg in Model.Database_Combo1)
                                 {
-                                    <option value="@i.value" />
+                                    <option value="@jg.FIELD_VALUE" />
                                 }
                             </datalist>
                         </div>
@@ -215,10 +282,9 @@
                             @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-1">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Due Days")
-                            <b style="color:Red;">*</b>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -232,14 +298,14 @@
             </div>
             <div class="row">
                 <ul class="nav nav-tabs">
-                    <li id="Main_LI4" class=""><a data-toggle="tab" href="#Main">Main</a></li>
-                    <li id="ItemTab_LI4" class="active"><a data-toggle="tab" href="#ItemTab">Item</a></li>
+                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                    <li id="ItemTab_LI4" class=""><a data-toggle="tab" href="#ItemTab">Item</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
                     @*<li id="SalesBillMade_LI4" class=""><a data-toggle="tab" href="#SalesBillMade">Sales Bill Made Against Order </a></li>*@
                 </ul>
                 <div class="tab-content">
-                    <div id="Main" class="tab-pane fade" style="margin-top: 5px;">
+                    <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -262,7 +328,6 @@
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Agent")
-                                    <b style="color:Red;">*</b>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -302,15 +367,13 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @*@Html.EditorFor(model => model.T_TXN.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeyup = "GetHelp('" + @Url.Action("GetSalesMenDetails", PageControllerName) + "','SLMSLCD/SalesManName','1/0','Agent Details','SLMSLCD')", onblur = "SelectSubLedgerCode(this.value,SLMSLCD,SalesManName,'urlnameSALESMEN');", @placeholder = "Code", maxlength = 8 } })
-                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetSalesMenDetails", PageControllerName )','SLMSLCD/SalesManName','1/0','SalesMen Details','SLMSLCD')" />*@
-                                    @*@Html.EditorFor(model => model.T_TXN.SLMSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLMSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd');", @placeholder = "Code", maxlength = 8 } })*@
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Salesmen Details','SLMSLCD','SLMSLCD=slcd=1/SalesManName=slnm=0','salesmanlinkcd')" />
+                                    @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','GOCD/GONM','1/0','Godown Details','GOCD')", onblur = "SelectGodownCode(this.value,GOCD,GONM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','GOCD/GONM','1/0','Godown Details','GOCD')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
-                                    @*@Html.EditorFor(model => model.SalesManName, new { htmlAttributes = new { @class = "form-control", id = "SalesManName", maxlength = 45, @title = "Only for View", @placeholder = "SalesMen Name", @readonly = "readonly", tabindex = "-1" } })*@
+                                    @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -320,15 +383,13 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @*@Html.EditorFor(model => model.T_TXN.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeyup = "GetHelp('" + @Url.Action("GetTransporterDetails", PageControllerName) + "','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')", onblur = "SelectSubLedgerCode(this.value,TRSLCD,TransporterName,'urlnameTRANSPORTER');", @placeholder = "Code", maxlength = 8 } })
-                                        <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetTransporterDetails", PageControllerName )','TRSLCD/TransporterName','1/0','Transporter Details','TRSLCD')" />*@
-                                    @*@Html.EditorFor(model => model.T_TXN.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })*@
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRSLCD','TRSLCD=slcd=1/TransporterName=slnm=0','trnsportlinkcd')" />
+                                    @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetPriceDetails", PageControllerName) + "','PRCCD/PRCNM','1/0','Price Code Details','PRCCD')", onblur = "SelectPRICECODE(this.value,PRCCD,PRCNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetPriceDetails", PageControllerName)','PRCCD/PRCNM','1/0','Price Code Details','PRCCD')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
-                                    @*@Html.EditorFor(model => model.TransporterName, new { htmlAttributes = new { @class = "form-control", id = "TransporterName", maxlength = 45, @title = "Only for View", @placeholder = "Transporter Name", @readonly = "readonly", tabindex = "-1" } })*@
+                                    @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Only for View", @placeholder = "Price List Name", @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
@@ -340,11 +401,11 @@
                             </div>
                             <div class="col-md-10">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.SELBY, new { htmlAttributes = new { @class = "form-controlemp textbox_imageemp", id = "SELBY", maxlength = 50, @placeholder = "Select By", @list = "SelectBy_List" } })
+                                    @Html.EditorFor(model => model.T_TXNOTH.SELBY, new { htmlAttributes = new { @class = "form-control", id = "SELBY", @placeholder = "Select By", maxlength = 50, @list = "SelectBy_List" } })
                                     <datalist id="SelectBy_List">
-                                        @foreach (var i in Model.DropDown_list1)
+                                        @foreach (var jg in Model.Database_Combo2)
                                         {
-                                            <option value="@i.value" />
+                                            <option value="@jg.FIELD_VALUE" />
                                         }
                                     </datalist>
                                 </div>
@@ -369,11 +430,11 @@
                             </div>
                             <div class="col-md-10">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.DEALBY, new { htmlAttributes = new { @class = "form-controlemp textbox_imageemp", id = "DEALBY", @placeholder = "Deal By", maxlength = 50, @list = "DealBy_List" } })
+                                    @Html.EditorFor(model => model.T_TXNOTH.DEALBY, new { htmlAttributes = new { @class = "form-control", id = "DEALBY", @placeholder = "Deal By", maxlength = 50, @list = "DealBy_List" } })
                                     <datalist id="DealBy_List">
-                                        @foreach (var i in Model.DropDown_list1)
+                                        @foreach (var jg in Model.Database_Combo3)
                                         {
-                                            <option value="@i.value" />
+                                            <option value="@jg.FIELD_VALUE" />
                                         }
                                     </datalist>
                                 </div>
@@ -381,14 +442,14 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Total Nos.")
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTNOS, new { htmlAttributes = new { @class = "form-control", id = "TOTNOS", @style = "text-align: right;", maxlength = 15, @TabIndex = -1, @placeholder = "Qnty Nos", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.TOTNOS, new { htmlAttributes = new { @class = "form-control", id = "TOTNOS", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Qnty Nos", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -398,7 +459,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;", maxlength = 15, @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;",  @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -408,12 +469,12 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", maxlength = 15, @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;",  @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-2">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "R/off")
                                 </div>
@@ -440,11 +501,11 @@
                             </div>
                         </div>
                     </div>
-                    <div id="ItemTab" class="tab-pane fade in active" style="margin-top: 5px;">
+                    <div id="ItemTab" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row" style="background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivItemTab">
-                                    @Html.Partial("_T_SORD_MAIN")
+                                    @*@Html.Partial("_T_SORD_MAIN")*@
                                 </div>
                             </div>
                             <div class="PopUp_Backround">
