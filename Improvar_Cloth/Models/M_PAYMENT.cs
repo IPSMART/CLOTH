@@ -6,8 +6,8 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("M_PARTS")]
-    public partial class M_PARTS
+    [Table("M_PAYMENT")]
+    public partial class M_PAYMENT
     {
         public short? EMD_NO { get; set; }
 
@@ -22,14 +22,16 @@ namespace Improvar.Models
         public string TTAG { get; set; }
 
         [Key]
-        [StringLength(4)]
-        public string PARTCD { get; set; }
+        [StringLength(2)]
+        public string PYMTCD { get; set; }
 
-        [StringLength(15)]
-        public string PARTNM { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string PYMTNM { get; set; }
 
-        [StringLength(1)]
-        public string PRTBARCODE { get; set; }
+        [Required]
+        [StringLength(8)]
+        public string GLCD { get; set; }
 
         public long M_AUTONO { get; set; }
     }

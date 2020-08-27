@@ -243,7 +243,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        MGOD.GOCD = VE.M_GODOWN.GOCD.ToUpper();
+                        MGOD.GOCD = VE.M_GODOWN.GOCD.ToUpper().Trim();
                         MGOD.GONM = VE.M_GODOWN.GONM;
                         MGOD.GOADD1 = VE.M_GODOWN.GOADD1;
                         MGOD.GOADD2 = VE.M_GODOWN.GOADD2;
