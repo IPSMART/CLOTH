@@ -40,6 +40,6 @@ namespace Improvar.Models
 
         public long M_AUTONO { get; set; }
 
-       
+
     }
 }
