@@ -20,7 +20,7 @@ namespace Improvar.Controllers
         MasterHelpFa MasterHelpFa = new MasterHelpFa();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: T_SORD
-        T_SORD sl; T_CNTRL_HDR sll; T_CNTRL_HDR_REM TCHR; M_JOBMST MJOB; M_FLRLOCA MFLOOR; M_DOCTYPE DOCTYP;
+        T_SORD sl; T_CNTRL_HDR sll; T_CNTRL_HDR_REM TCHR; M_JOBMST MJOB; M_FLRLOCA MFLOOR; M_DOCTYPE DOCTYP; M_SUBLEG Subleg;
         public ActionResult T_SORD(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "", string loadOrder = "N")
         {
             try
@@ -37,7 +37,7 @@ namespace Improvar.Controllers
                     {
                         case "SORD": ViewBag.formname = "Sales Order Entry"; break;
                         case "PORD": ViewBag.formname = "Purchase Order Entry"; break;
-                        default: ViewBag.formname = "Sales Order Entry"; break;
+                        default: ViewBag.formname = "Menupara not found in appl_menu"; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     string COMP = CommVar.Compcd(UNQSNO);
@@ -104,6 +104,7 @@ namespace Improvar.Controllers
                                 }
                             }
                             VE.T_SORD = sl;
+                            VE.M_SUBLEG = Subleg;
                             VE.T_CNTRL_HDR = sll;
                             VE.M_JOBMST = MJOB;
                             VE.M_FLRLOCA = MFLOOR;
@@ -180,7 +181,7 @@ namespace Improvar.Controllers
                     {
                         using (DB)
                         {
-                            sl = new T_SORD(); sll = new T_CNTRL_HDR(); TCHR = new T_CNTRL_HDR_REM(); MJOB = new M_JOBMST(); MFLOOR = new M_FLRLOCA();
+                            sl = new T_SORD(); sll = new T_CNTRL_HDR(); TCHR = new T_CNTRL_HDR_REM(); MJOB = new M_JOBMST(); MFLOOR = new M_FLRLOCA(); Subleg = new M_SUBLEG();
                             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                             double? TOTAL_BOXES = 0; double? TOTAL_QNTY = 0; double? TOTAL_SETS = 0;
                             if (VE.IndexKey.Count != 0)
@@ -195,6 +196,7 @@ namespace Improvar.Controllers
                                     aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                                 }
                                 sl = DB.T_SORD.Find(aa[0].Trim());
+                                Subleg = DBF.M_SUBLEG.Find(sl.SLCD);
                                 sll = DB.T_CNTRL_HDR.Find(sl.AUTONO);
                                 DOCTYP = DB.M_DOCTYPE.Find(sl.DOCCD);
                                 TCHR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO), sl.AUTONO);
@@ -476,47 +478,21 @@ namespace Improvar.Controllers
             }
             return VE;
         }
-        //public ActionResult SearchPannelData(SalesOrderEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
-        //{
-        //    Cn.getQueryString(VE);
-        //    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yr_code = CommVar.YearCode(UNQSNO);
-        //    VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
-        //    string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
-        //    string sql = "select distinct a.autono, a.doccd, e.brandnm, c.docno, to_char(a.docdt,'dd/mm/yyyy') docdt, ";
-        //    sql += "c.docdt ddocdt, a.slcd, d.slnm, d.district, a.prefno, 0 tbox ";
-        //    sql += " from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d, " + scm + ".m_brand e ";
-        //    sql += "where a.autono = c.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and "; // and c.yr_cd = '" + YR1;
-        //    if (SRC_FDT.retStr() != "") sql += "c.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
-        //    if (SRC_TDT.retStr() != "") sql += "c.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
-        //    if (SRC_DOCNO.retStr() != "") sql += "(c.vchrno like '%" + SRC_DOCNO.retStr() + "%' or c.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
-        //    if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(d.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
-        //    sql += "a.slcd = d.slcd and a.brandcd=e.brandcd(+) ";
-        //    sql += "order by docdt, docno ";
-        //    var tbl = Master_Help.SQLquery(sql);
-
-        //    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-        //    var hdr = "Order Number" + Cn.GCS() + "Order Date" + Cn.GCS() + "Brand" + Cn.GCS() + "Party Order Number" + Cn.GCS() + "Party Name" + Cn.GCS() + "AUTO NO";
-        //    for (int j = 0; j <= tbl.Rows.Count - 1; j++)
-        //    {
-        //        SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" + tbl.Rows[j]["brandnm"] + " </td><td>" + tbl.Rows[j]["prefno"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "]  (" + tbl.Rows[j]["slcd"] + ") " + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
-        //    }
-        //    return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "5", "5"));
-        //}
         public ActionResult SearchPannelData(SalesOrderEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
         {
             Cn.getQueryString(VE);
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yr_code = CommVar.YearCode(UNQSNO);
             VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
-            string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
+            string doccd = VE.DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
             string sql = "select distinct a.autono, a.doccd, c.docno, to_char(a.docdt,'dd/mm/yyyy') docdt, ";
             sql += "c.docdt ddocdt, a.slcd, d.slnm, d.district, a.prefno, 0 tbox,a.aproxval ";
             sql += " from " + scm + ".t_sord a, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg d ";
-            sql += "where a.autono = c.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and "; // and c.yr_cd = '" + YR1;
+            sql += "where a.autono = c.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and ";
             if (SRC_FDT.retStr() != "") sql += "c.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "c.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(c.vchrno like '%" + SRC_DOCNO.retStr() + "%' or c.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
             if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(d.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
-            sql += "a.slcd = d.slcd and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "' ";
+            sql += "a.slcd = d.slcd and c.yr_cd='" + CommVar.YearCode(UNQSNO) + "' and c.doccd in(" + doccd + ") ";
             sql += "order by docdt, docno ";
             var tbl = Master_Help.SQLquery(sql);
 
