@@ -27,15 +27,16 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_SORD_MAIN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1633px;">
+                    <table id="_T_SORD_MAIN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" @*style="width: 1633px;"*@>
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
-                                <th class="" style="width: 27px;text-align:center;">SL No.</th>
-                                <th class="" style="width: 179px;">Item Group Name</th>
-                                <th class="" style="width: 179px;">Fabric Item Name</th>
+                                <th class="" style="width: 30px;text-align:center;">SL No.</th>
+                                <th class="" style="width: 59px;">ItmGrp Code</th>
+                                <th class="" style="width: 100px;">ItmGrp Name</th>
                                 <th class="" style="width: 92px;">Item Code</th>
                                 <th class="" style="width: 179px;">Item Name</th>
+                                <th class="" style="width: 179px;">Fabric Item Name</th>
                                 <th class="" style="width:96px;">Design</th>
                                 <th class="" style="width:47px;">UOM</th>
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
@@ -60,13 +61,11 @@
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].ITGRPNM, new { id = "ITGRPNM_" + i, maxlength = 30, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_SORD") + "','Item Group Details','" + "ITGRPNM_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1/" + "FABITCD_" + i + "=fabitcd=3/" + "FABITNM_" + i + "=fabitnm=2');", @class = " atextBoxFor textbox_image", @readonly = "readonly" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_SORD")','Item Group Details','ITGRPNM_@i','ITGRPNM_@i=itgrpnm=0/ITGRPCD_@i=itgrpcd=1/FABITCD_@i=fabitcd=3/FABITNM_@i=fabitnm=2')" />
-                                            @Html.HiddenFor(model => model.TSORDDTL[i].ITGRPCD, new { id = "ITGRPCD_" + i })
+                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].ITGRPCD, new { id = "ITGRPCD_" + i, maxlength = 10, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_SORD") + "','Item Group Details','" + "ITGRPCD_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1');", @class = " atextBoxFor textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_SORD") + "','Item Group Details','" + "ITGRPCD_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1');" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_SORD")','Item Group Details','ITGRPCD_@i','ITGRPNM_@i=itgrpnm=0/ITGRPCD_@i=itgrpcd=1')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].FABITNM, new { id = "FABITNM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TSORDDTL[i].FABITCD, new { id = "FABITCD_" + i })
+                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].ITGRPNM, new { id = "ITGRPNM_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].ITCD, new { id = "ITCD_" + i, maxlength = 60, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_SORD") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=itcd=2/" + "ITNM_" + i + "=itnm=1/" + "UOM_" + i + "=uomcd=3/" + "STYLENO_" + i + "=styleno=0/" + "ITGRPCD_" + i + "=itgrpcd=5/" + "ITGRPNM_" + i + "=itgrpnm/" + "FABITCD_" + i + "=fabitcd=7/" + "FABITNM_" + i + "=fabitnm','" + "ITGRPCD_" + i + "/" + "FABITCD_" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_SORD") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=itcd=2/" + "ITNM_" + i + "=itnm=1/" + "UOM_" + i + "=uomcd=3/" + "STYLENO_" + i + "=styleno=0/" + "ITGRPCD_" + i + "=itgrpcd=5/" + "ITGRPNM_" + i + "=itgrpnm/" + "FABITCD_" + i + "=fabitcd=7/" + "FABITNM_" + i + "=fabitnm','" + "ITGRPCD_" + i + "/" + "FABITCD_" + i + "');", @class = " atextBoxFor textbox_image" })
@@ -74,6 +73,10 @@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].ITNM, new { id = "ITNM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].FABITNM, new { id = "FABITNM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TSORDDTL[i].FABITCD, new { id = "FABITCD_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].STYLENO, new { id = "STYLENO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -84,8 +87,6 @@
                                         <td class="">
                                             @*@Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", onclick = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "PCSPERSET_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "',NOOFSETS_" + i + ".value,'" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','1');", onkeydown = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "PCSPERSET_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "',NOOFSETS_" + i + ".value,'" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','1');", @TabIndex = -1, @class = " atextBoxFor", maxlength = 12 } })*@
                                             @Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", onclick = "OpenSize(" + i + ",'1');", onkeydown = "OpenSize(" + i + ",'1');", @TabIndex = -1, @class = " atextBoxFor", maxlength = 12 } })
-
-
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TSORDDTL[i].RATE_DISPLAY, new { htmlAttributes = new { id = "RATE_DISPLAY_" + i, @class = " atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })

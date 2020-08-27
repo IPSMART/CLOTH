@@ -1947,13 +1947,15 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = Master_Help.ITGRPCD_FABITCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
+                ItemMasterEntry VE = new ItemMasterEntry();
+                Cn.getQueryString(VE);
+                if (val.retStr() == "")
                 {
-                    return PartialView("_Help2", str);
+                    return PartialView("_Help2", Master_Help.ITGRPCD_help(val,""));
                 }
                 else
                 {
+                    string str = Master_Help.ITGRPCD_help(val, "");
                     return Content(str);
                 }
             }
