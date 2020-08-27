@@ -62,6 +62,5 @@ namespace Improvar.Models
         [StringLength(50)]
         public string REMARK { get; set; }
 
-      
     }
 }

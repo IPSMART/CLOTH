@@ -1,0 +1,234 @@
+﻿@model Improvar.ViewModels.JobMasterEntry
+@{
+    ViewBag.Title = "Material Job Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string PageControllerName = "M_MtrlJobMaster";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#JOBCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#JOBCD").attr("readonly", "readonly");
+            $("#JOBCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator()
+    {
+        if (!emptyFieldCheck("Enter Job Code", "JOBCD")) { return false; }
+        if (!emptyFieldCheck("Enter Job Name", "JOBNM")) { return false; }
+       
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_MTRLJOBMST != null)
+        {
+            mldauto = Model.M_MTRLJOBMST.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckJobCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#checkJobcode").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#JOBCD").val("");
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#btnok").focus();
+                            message_value = "JOBCD";
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function CheckJBInitial(id) {
+        var jobcd = $("#JOBCD").val();
+        if (id == "") {
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#checkJobInitial").val(),
+                data: {
+                    val: id,
+                    jobcd: jobcd
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#JBATCHNINI").val("");
+                        $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                        $("#btnok").focus();
+                        message_value = "JBATCHNINI";
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="checkJobcode" value="@Url.Action("CheckJobCode", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="checkJobInitial" value="@Url.Action("CheckBatchInitial", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_MTRLJOBMST.M_AUTONO)
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Code")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_MTRLJOBMST.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control ", onblur = "CheckJobCode('JOBCD');", id = "JOBCD", @placeholder = "code", maxlength = 2, @style = "text-transform:uppercase;" } })
+
+                        @Html.HiddenFor(a => a.M_MTRLJOBMST.MTRLJOBCD)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Name")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_MTRLJOBMST.MTRLJOBNM, new { htmlAttributes = new { @class = "form-control ", id = "JOBNM", @placeholder = "Name", maxlength = 15 } })
+
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Batch Initial")
+                       <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_MTRLJOBMST.MBATCHNINI, new { htmlAttributes = new { @class = "form-control ", id = "MBATCHNINI", @placeholder = "Btch.", maxlength = 2} })
+                    </div>
+                </div>
+            </div>*@
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Rec.MtrlJob Code")
+                        @*<b style="color:red"><sup>*</sup></b>*@
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_MTRLJOBMST.RMTRLJOBCD, new { htmlAttributes = new { @class = "form-control ", id = "RMTRLJOBCD", @placeholder = "CODE", maxlength = 2 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Iss.Mtrl.Desc")
+                        
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_MTRLJOBMST.MTRLDESC, new { htmlAttributes = new { @class = "form-control ", id = "MTRLDESC", @placeholder = "DESCP.", maxlength = 30 } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                        @Html.Label("", "Deactivate")
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field" style="display: inline-block;">
+                        @Html.CheckBoxFor(model => model.Deactive)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+

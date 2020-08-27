@@ -1,0 +1,414 @@
+﻿@model Improvar.ViewModels.Job_SubMasterEntry
+@{
+    ViewBag.Title = "Sub Job Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#SJOBCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#SJOBCD").attr("readonly", "readonly");
+            $("#SJOBCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Sub  Job Name", "SJOBNM")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
+           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_JOBMSTSUB != null)
+        {
+            mldauto = Model.M_JOBMSTSUB.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckJObSubCode(id) {
+        var valu = document.getElementById(id).value;
+        if (valu == "") {
+        }
+        else {
+            if ("@Model.DefaultAction" == "A") {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#checSobSubcode").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#SJOBCD").val("");
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#btnok").focus();
+                            message_value = "SJOBCD";
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function inputjobcd(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectJobMaster(id, JOBCD, JOBNM) {
+        if (id == "") {
+            $("#JOBNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#jobMast").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#JOBCD").val("");
+                        $("#JOBNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Job Code !! ");
+                        message_value = "JOBCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputjobcd(JOBCD, JOBNM);
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+               // $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+              //  $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+</script>
+<script>
+    function fileCheck(id, index) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            var fname = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE_NAME");
+            fname.value = fileToLoad.name;
+            var fileReader = new FileReader();
+
+            fileReader.onload = function (fileLoadedEvent) {
+                var textAreaFileContents = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE");
+
+                textAreaFileContents.value = fileLoadedEvent.target.result;
+                $("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
+            };
+
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    var specialKeys = new Array();
+    specialKeys.push(8); //Backspace
+    function numericOnly(elementRef, position) {
+        var keyCodeEntered = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        if ((keyCodeEntered >= 48) && (keyCodeEntered <= 57)) {
+            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
+                var aa = elementRef.value;
+                var ab = aa.indexOf('.');
+                var ac = aa.toString().substring(ab);
+                if (ac.length <= position) {
+                    return true; n
+                }
+                else {
+                    return false;
+                }
+            }
+            return true;
+        }
+            // '.' decimal point...
+        else if (keyCodeEntered == 46) {
+            // Allow only 1 decimal point ('.')...
+            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
+    }
+</script>
+@{
+    string PageControllerName = "M_Sub_Job";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="checSobSubcode" value="@Url.Action("CheckJobSubCode", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="jobMast" value="@Url.Action("JobMaster", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_JOBMSTSUB.M_AUTONO)
+
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
+                <li><a data-toggle="tab" href="#Documents">Documents</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Standard" class="tab-pane fade in active" style="margin-top: 10px;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sub Job Code")
+                                <b style="color:red"><sup>*</sup></b>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.SJOBCD, new { htmlAttributes = new { @class = "form-control ", onblur = "CheckJObSubCode('SJOBCD');", id = "SJOBCD", @placeholder = "code", maxlength = 3, @style = "text-transform:uppercase;", @readonly = "readonly" } })
+
+                                @Html.HiddenFor(a => a.M_JOBMSTSUB.SJOBCD)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sub Job Category")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.SJOBSTYLE, new { htmlAttributes = new { @class = "form-control ", id = "SJOBSTYLE", @placeholder = "Sub Job Category", maxlength = 20, @list = "CATEGORY" } })
+                                <datalist id="CATEGORY">
+                                    @foreach (var CT in Model.SJOBCATEGORY)
+                                    {
+                                    <option value="@CT.CATEGORY" />
+                                    }
+                                </datalist>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sub Job Sub-Category")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.SCATE, new { htmlAttributes = new { @class = "form-control ", id = "SCATE", @placeholder = "Sub Job Sub-Category", maxlength = 20, @list = "SUB_CATEGORY" } })
+                                <datalist id="SUB_CATEGORY">
+                                    @foreach (var SCT in Model.SJOBSUBCATEGORY)
+                                    {
+                                    <option value="@SCT.SUBCATEGORY" />
+                                    }
+                                </datalist>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sub Job Name")
+                                <b style="color:red"><sup>*</sup></b>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.SJOBNM, new { htmlAttributes = new { @class = "form-control ", id = "SJOBNM", @placeholder = "Name", maxlength = 30 } })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Job Machine")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.SJOBMCHN, new { htmlAttributes = new { @class = "form-control ", id = "SJOBMCHN", @placeholder = "Job Machine", maxlength = 10, @list = "MACHINE" } })
+                                <datalist id="MACHINE">
+                                    @foreach (var SJM in Model.SJOBMACHINE)
+                                    {
+                                    <option value="@SJM.MACHINE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sub Job Size")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.SJOBSIZE, new { htmlAttributes = new { @class = "form-control ", id = "SJOBSIZE", @placeholder = "Sub Job Size", maxlength = 10, @list = "SIZE" } })
+                                <datalist id="SIZE">
+                                    @foreach (var SZ in Model.SJOBSIZE)
+                                    {
+                                    <option value="@SZ.SIZE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sub Job Batch")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.SJOBATCH, new { htmlAttributes = new { @class = "form-control ", id = "SJOBATCH", @placeholder = "Sub Job Batch", maxlength = 15, @list = "BATCH" } })
+                                <datalist id="BATCH">
+                                    @foreach (var BTH in Model.SJOBBATCH)
+                                    {
+                                    <option value="@BTH.BATCH" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Job Code")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeyup = "GetHelp('" + @Url.Action("GetJobMaster", PageControllerName) + "','JOBCD/JOBNM','1/0','Job Details','JOBCD');toUpper(this);", onblur = "SelectJobMaster(this.value,JOBCD,JOBNM);", @placeholder = "Code", maxlength = 2 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetJobMaster", PageControllerName)','JOBCD/JOBNM','1/0','Job Deatils','JOBCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMST.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", @TabIndex = -1, @placeholder = "Job Name", maxlength = 15, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sub Job SAM")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_JOBMSTSUB.SJOBSAM, new { htmlAttributes = new { @class = "form-control ", id = "SJOBSAM", @placeholder = "Sub Job SAM", maxlength = 8, onkeypress = "return numericOnly(this,2);" } })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                                @Html.Label("", "Deactivate")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field" style="display: inline-block;">
+                                @Html.CheckBoxFor(model => model.Deactive)
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivDocument">
+                            @Html.Partial("_UPLOADDOCUMENTS")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+
+
+
