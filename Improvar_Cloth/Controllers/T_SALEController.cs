@@ -787,38 +787,40 @@ namespace Improvar.Controllers
         {
             try
             {
-                if (val == null)
+                var str = Master_Help.GOCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", Master_Help.GODOWN(val));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.GODOWN(val);
                     return Content(str);
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                return Content(Ex.Message + Ex.InnerException);
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult GetPriceDetails(string val)
         {
             try
             {
-                if (val == null)
+                var str = Master_Help.PRCCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", Master_Help.PRCCD_help(val));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.PRCCD_help(val);
                     return Content(str);
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                return Content(Ex.Message + Ex.InnerException);
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult AddDOCRow(TransactionPackingSlipEntry VE)
