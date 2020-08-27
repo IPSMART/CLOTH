@@ -146,7 +146,6 @@ namespace Improvar
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
                 string[] itgrptype = GRPTYPE.Split(',');
-
                 var query = (from c in DB.M_GROUP
                              where (itgrptype.Contains(c.ITGRPTYPE))
                              select new
@@ -167,15 +166,10 @@ namespace Improvar
                 }
                 else
                 {
-                    query = query.Where(a => a.ITGRPCD == val).ToList();
+                    query = query.Where(a => a.ITGRPCD == val).ToList();                  
                     if (query.Any())
                     {
-                        string str = "";
-                        foreach (var i in query)
-                        {
-                            str = i.ITGRPCD + Cn.GCS() + i.ITGRPNM;
-                        }
-                        return str;
+                        return ToReturnFieldValues(query);
                     }
                     else
                     {
