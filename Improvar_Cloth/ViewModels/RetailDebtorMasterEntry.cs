@@ -5,7 +5,7 @@ namespace Improvar.ViewModels
 {
     public class RetailDebtorMasterEntry : Permission
     {
-        public string MSG { get; set; }
+        public string DOBYEAR { get; set; }
         public List<GroupType> GroupType { get; set; }
         public M_RETDEB M_RETDEB { get; set; }
         public MS_STATE MS_STATE { get; set; }

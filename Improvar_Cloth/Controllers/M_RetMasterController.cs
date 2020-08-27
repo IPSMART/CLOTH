@@ -171,7 +171,7 @@ namespace Improvar.Controllers
                 MCHR = new M_CNTRL_HDR_REM();
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
-
+                FormCollection FC = new FormCollection();
                 if (VE.IndexKey.Count != 0)
                 {
                     string[] aa = null;
@@ -190,7 +190,7 @@ namespace Improvar.Controllers
                     { var Party = DB.M_RETDEB.Find(sl.REFRTDEBCD); if (Party != null) { VE.REFRTDEBNM = Party.RTDEBNM; } }
                     if (sl.REFSLCD != null)
                     { var RefSLCD = DB.M_SUBLEG.Find(sl.REFSLCD); if (RefSLCD != null) { VE.REFSLNM = RefSLCD.SLNM;VE.GSTNO = RefSLCD.GSTNO; } }
-
+                   
                     if (sll.INACTIVE_TAG == "Y")
                     {
                         VE.Checked = true;
@@ -460,7 +460,7 @@ namespace Improvar.Controllers
                             DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_RETDEB.M_AUTONO));
 
                         }
-                      
+                        string dateStr = "";
                         MRETDEB.MOBILE = VE.M_RETDEB.MOBILE;
                         MRETDEB.ALTNO = VE.M_RETDEB.ALTNO;
                         MRETDEB.SEX = FC["gender"].ToString();
@@ -468,7 +468,20 @@ namespace Improvar.Controllers
                         MRETDEB.AREA = VE.M_RETDEB.AREA;
                         MRETDEB.CITY = VE.M_RETDEB.CITY;
                         MRETDEB.PIN = VE.M_RETDEB.PIN;
-                        MRETDEB.DOB = VE.M_RETDEB.DOB;
+                        string month = FC["month"].retStr();
+                        if (month == "") month = "01";
+                        string day = FC["day"].retStr();
+                        if (day == "") day = "01";
+                      string year = FC["DOBYEAR"].retStr();
+                        if (year == "") year = "1600";
+                        /*FC["month"].retStr();*/
+                        dateStr = day + "/" + month + "/" + year;
+                        DateTime DOB;
+                        if (DateTime.TryParse(dateStr, out DOB))
+                        {
+                            MRETDEB.DOB = DOB;
+                        }
+                        //MRETDEB.DOB = VE.M_RETDEB.DOB;
                         MRETDEB.DOW = VE.M_RETDEB.DOW;
                         MRETDEB.EMAIL = VE.M_RETDEB.EMAIL;
                         MRETDEB.ADD1 = VE.M_RETDEB.ADD1;
