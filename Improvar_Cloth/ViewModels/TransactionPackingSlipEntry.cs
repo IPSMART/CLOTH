@@ -20,8 +20,9 @@ namespace Improvar.ViewModels
         public T_TXNSTATUS T_TXNSTATUS { get; set; }
         public T_TXNTRANS T_TXNTRANS { get; set; }
         public List<DocumentType> DocumentType { get; set; }
-        public List<DropDown_list1> DropDown_list1 { get; set; }
-        public List<DropDown_list2> DropDown_list2 { get; set; }
+        public List<Database_Combo1> Database_Combo1 { get; set; }
+        public List<Database_Combo2> Database_Combo2 { get; set; }
+        public List<Database_Combo3> Database_Combo3 { get; set; }
         public string SLNM { get; set; }
         public string CONSLNM { get; set; }
         public string AGSLNM { get; set; }
@@ -30,5 +31,7 @@ namespace Improvar.ViewModels
         public double TOTQNTY { get; set; }
         public double TOTTAX { get; set; }
         public bool RoundOff { get; set; }
+        public string GONM { get; set; }
+        public string PRCNM { get; set; }
     }
 }

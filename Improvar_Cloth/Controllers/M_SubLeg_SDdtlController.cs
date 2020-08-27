@@ -344,7 +344,7 @@ namespace Improvar.Controllers
             DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             if (val == null)
             {
-                return PartialView("_Help2", masterHelp.PRCCD_help(DBF));
+                return PartialView("_Help2", masterHelp.PRCCD_help(val));
             }
             else
             {
