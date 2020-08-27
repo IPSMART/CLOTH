@@ -252,6 +252,7 @@
     <Compile Include="Controllers\M_RetMasterController.cs" />
     <Compile Include="Controllers\M_SubBrandController.cs" />
     <Compile Include="Controllers\M_SubLeg_SDdtlController.cs" />
+    <Compile Include="Controllers\M_Sub_JobController.cs" />
     <Compile Include="Controllers\M_Tax_RateController.cs" />
     <Compile Include="Controllers\M_Tax_Rate_CodeController.cs" />
     <Compile Include="Controllers\M_USR_ACS_DOCCDController.cs" />
@@ -543,6 +544,7 @@
     <Compile Include="ViewModels\ItemMasterEntry.cs" />
     <Compile Include="ViewModels\ItemSizeEntry.cs" />
     <Compile Include="ViewModels\JobMasterEntry.cs" />
+    <Compile Include="ViewModels\Job_SubMasterEntry.cs" />
     <Compile Include="ViewModels\ModifyLog.cs" />
     <Compile Include="ViewModels\PartMasterEntry.cs" />
     <Compile Include="ViewModels\Prepare_JSONvalidation.cs" />
@@ -948,6 +950,7 @@
     <Content Include="Views\M_RetMaster\M_RetMaster.cshtml" />
     <Content Include="Views\T_SALE\T_SALE.cshtml" />
     <Content Include="Views\M_MtrlJobMaster\M_MtrlJobMaster.cshtml" />
+    <Content Include="Views\M_Sub_Job\M_Sub_Job.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

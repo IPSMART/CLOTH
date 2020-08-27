@@ -39,6 +39,8 @@ namespace Improvar.Models
         [StringLength(2)]
         public string JOBCD { get; set; }
 
+        public long M_AUTONO { get; set; }
+
         [StringLength(20)]
         public string SCATE { get; set; }
 
@@ -49,7 +51,5 @@ namespace Improvar.Models
         public string SJOBATCH { get; set; }
 
         public decimal? SJOBSAM { get; set; }
-
-        public long M_AUTONO { get; set; }
     }
 }
