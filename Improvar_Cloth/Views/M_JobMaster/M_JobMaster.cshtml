@@ -1,0 +1,520 @@
+﻿@model Improvar.ViewModels.JobMasterEntry
+@{
+    ViewBag.Title = "Job Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string PageControllerName = "M_JobMaster";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#JOBCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#JOBCD").attr("readonly", "readonly");
+            $("#JOBCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator()
+    {
+        if (!emptyFieldCheck("Enter Job Code", "JOBCD")) { return false; }
+        if (!emptyFieldCheck("Enter Job Name", "JOBNM")) { return false; }
+        if (!emptyFieldCheck("Enter/Select Prdoct Group", "PRODGRPCD")) { return false; }
+        if (!emptyFieldCheck("Enter UOM", "UOMCD")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_JOBMST != null)
+        {
+            mldauto = Model.M_JOBMST.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckJobCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#checkJobcode").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#JOBCD").val("");
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#btnok").focus();
+                            message_value = "JOBCD";
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function inputglcd(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectGLCD1(id, SCGLCD, GLNM1) {
+        if (id == "") {
+            $("#GLNM1").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#genledger").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#SCGLCD").val("");
+                        $("#GLNM1").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Creditor Ledger Code !! ");
+                        message_value = "SCGLCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputglcd(SCGLCD, GLNM1);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    function SelectGLCD2(id, EXPGLCD, GLNM2) {
+        if (id == "") {
+            $("#GLNM2").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#genledger").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#SCGLCD").val("");
+                        $("#GLNM2").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Expenses Ledger  Code !! ");
+                        message_value = "EXPGLCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputglcd(EXPGLCD, GLNM2);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectPRODGRPCODE(id, PRODGRPCD, PRODGRPNM)
+    {
+        if (id == "")
+        {
+            $("#" + PRODGRPCD.id).val("");
+            $("#" + PRODGRPNM.id).val("");
+        }
+        else
+        {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetPRODGRPDetails", PageControllerName)",
+                data: { val: id },
+                success: function (result)
+                {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0)
+                    {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        $("#" + PRODGRPCD.id).val(str[0].toString());
+                        $("#" + PRODGRPNM.id).val(str[1].toString());
+                    }
+                    else
+                    {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + PRODGRPCD.id).val("");
+                        $("#" + PRODGRPNM.id).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = PRODGRPCD.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function CheckJBInitial(id) {
+        var jobcd = $("#JOBCD").val();
+        if (id == "") {
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#checkJobInitial").val(),
+                data: {
+                    val: id,
+                    jobcd: jobcd
+                },
+                success: function (result) {
+                    if (result == "1") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#JBATCHNINI").val("");
+                        $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                        $("#btnok").focus();
+                        message_value = "JBATCHNINI";
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function inputUOM(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectUOMCode(id, UOMCD, UOMNM) {
+        if (id == "") {
+            $("#UOMCD").val("");
+            $("#UOMNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnameUOM").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msgbody_info").html(" Invalid  UOM Code !! ");
+                        $("#UOMCD").val("");
+                        $("#UOMNM").val("");
+                        $("#btnok").focus();
+                        message_value = "UOM";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputUOM(UOMCD, UOMNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="checkJobcode" value="@Url.Action("CheckJobCode", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="genledger" value="@Url.Action("GenLedger", PageControllerName)" />
+            <input type="hidden" id="urlnameUOM" value="@Url.Action("GetUOMDetails", PageControllerName)" />
+            <input type="hidden" id="checkJobInitial" value="@Url.Action("CheckBatchInitial", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_JOBMST.M_AUTONO)
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Code")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.JOBCD, new { htmlAttributes = new { @class = "form-control ", onblur = "CheckJobCode('JOBCD');", id = "JOBCD", @placeholder = "code", maxlength = 2, @style = "text-transform:uppercase;" } })
+
+                        @Html.HiddenFor(a => a.M_JOBMST.JOBCD)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Name")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.JOBNM, new { htmlAttributes = new { @class = "form-control ", id = "JOBNM", @placeholder = "Name", maxlength = 15 } })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Creditor Ledger Code")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.SCGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SCGLCD", onkeyup = "GetHelp('" + @Url.Action("GetGenLedger", PageControllerName) + "','SCGLCD/GLNM1','1/0','Creditor Ledger Details','SCGLCD');", onblur = "SelectGLCD1(this.value,SCGLCD,GLNM1);", @placeholder = "Code", maxlength = 8 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGenLedger", PageControllerName)','SCGLCD/GLNM1','1/0','Creditors Ledger Details','SCGLCD')" />
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_GENLEG.GLNM, new { htmlAttributes = new { @class = "form-control", id = "GLNM1", @placeholder = "Creditor Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Expenses Ledger Code")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.EXPGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "EXPGLCD", onkeyup = "GetHelp('" + @Url.Action("GetGenLedger", PageControllerName) + "','EXPGLCD/GLNM2','1/0','Group Details','EXPGLCD');", onblur = "SelectGLCD2(this.value,EXPGLCD,GLNM2);", @placeholder = "Code", maxlength = 8 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGenLedger", PageControllerName)','EXPGLCD/GLNM2','1/0','Expenses Ledger Details','EXPGLCD')" />
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_GENLEG1.GLNM, new { htmlAttributes = new { @class = "form-control", id = "GLNM2", @placeholder = "Expenses Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Prdoct Group")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.PRODGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRODGRPCD", onkeyup = "toUpper(this);GetHelp('" + @Url.Action("GetPRODGRPDetails", PageControllerName) + "','PRODGRPCD/PRODGRPNM','1/0','Select Product group  Details','PRODGRPCD');", onblur = "SelectPRODGRPCODE(this.value,PRODGRPCD,PRODGRPNM);", @placeholder = "Code", maxlength = 4, required = "required" } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetPRODGRPDetails", PageControllerName)','PRODGRPCD/PRODGRPNM','1/0','Select Product group Details','PRODGRPCD')" />
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_PRODGRP.PRODGRPNM, new { htmlAttributes = new { @class = "form-control", id = "PRODGRPNM", maxlength = 30, @TabIndex = -1, @title = "Only for View", @placeholder = "Product Group Description", @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "UOM")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.UOMCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "UOMCD", onkeyup = "GetHelp('" + @Url.Action("GetUOMDetails", PageControllerName) + "','UOMCD/UOMNM','1/0','Select UOM Details','UOMCD');toUpper(this);", onblur = "SelectUOMCode(this.value,UOMCD,UOMNM);", @placeholder = "Code", maxlength = 4, required = "required" } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetUOMDetails", PageControllerName)','UOMCD/UOMNM','1/0','Select UOM Details','UOMCD')" />
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_UOM.UOMNM, new { htmlAttributes = new { @class = "form-control", id = "UOMNM", maxlength = 10, @TabIndex = -1, @title = "Only for View", @placeholder = "UOM Description", @readonly = "readonly" } })
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Batch Initial")
+                        @*<b style="color:red"><sup>*</sup></b>*@
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.JBATCHNINI, new { htmlAttributes = new { @class = "form-control ", id = "JBATCHNINI", @placeholder = "Btch.", maxlength = 1, onblur = "CheckJBInitial(this.value);" } })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-labelemp" style="margin-top:0px;margin-bottom: -5px;">
+                        @Html.Label("", "HSN Code")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.HSNSACCD, new { htmlAttributes = new { @class = "form-control", id = "HSNSACCD", @placeholder = "HSNSACCD", maxlength = 5, @list = "hsncode" } })
+                        <datalist id="hsncode">
+                            @foreach (var jg in Model.Database_Combo1)
+                            {
+                                <option value="@jg.FIELD_VALUE" />
+                            }
+                        </datalist>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Seq Order")
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.JOBSEQ, new { htmlAttributes = new { @class = "form-control ", id = "JOBSEQ", @placeholder = "Name", @onkeypress = "return numericOnly(this,0);", maxlength = 2 } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Rec.MtrlJob Code")
+                        @*<b style="color:red"><sup>*</sup></b>*@
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.RMTRLJOBCD, new { htmlAttributes = new { @class = "form-control ", id = "RMTRLJOBCD", @placeholder = "", maxlength = 2 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Iss.MtrlJob Code")
+                        @*<b style="color:red"><sup>*</sup></b>*@
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.IMTRLJOBCD, new { htmlAttributes = new { @class = "form-control ", id = "IMTRLJOBCD", @placeholder = "", maxlength = 20 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Iss.Mtrl.Desc")
+                        @*<b style="color:red"><sup>*</sup></b>*@
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBMST.ISSMTRLDESC, new { htmlAttributes = new { @class = "form-control ", id = "ISSMTRLDESC", @placeholder = "", maxlength = 20 } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                        @Html.Label("", "Deactivate")
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field" style="display: inline-block;">
+                        @Html.CheckBoxFor(model => model.Deactive)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+

@@ -41,6 +41,7 @@ namespace Improvar
                     if (DOC_EFF_DT.retStr() != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT.retStr() + "','dd/mm/yyyy')  ";
                     sql += ") ";
                 }
+                if (ITGRPCD.retStr() != "") sql += "and a.ITGRPCD in (" + ITGRPCD + ") ";
                 if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
                 if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(a.uomcd) like '%" + valsrch + "%'  )  ";
 
@@ -97,10 +98,9 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string PRCCD_help(string val)
+        public string PRCCD_help(ImprovarDB DB)
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
-            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            using (DB)
             {
                 var query = (from c in DB.M_PRCLST
                              join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
@@ -110,34 +110,13 @@ namespace Improvar
                                  Code = c.PRCCD,
                                  Description = c.PRCNM
                              }).ToList();
-                if (val == null)
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
                 {
-                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= query.Count - 1; i++)
-                    {
-                        SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
-                    }
-                    var hdr = "Price Name" + Cn.GCS() + "Price code";
-                    return Generate_help(hdr, SB.ToString());
+                    SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
                 }
-                else
-                {
-                    query = query.Where(a => a.Code == val).ToList();
-                    if (query.Any())
-                    {
-                        string str = "";
-                        foreach (var i in query)
-                        {
-                            str = i.Code + Cn.GCS() + i.Description;
-                        }
-                        return str;
-                    }
-                    else
-                    {
-                        return "Invalid Price Code ! Please Enter a Valid Price Code !!";
-                    }
-
-                }
+                var hdr = "Price code" + Cn.GCS() + "Price Name";
+                return Generate_help(hdr, SB.ToString());
             }
         }
         public string DISCRTCD_help(ImprovarDB DB)
@@ -1611,7 +1590,7 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string RefRetail_help(string val)
+        public string RTDEBCD_help(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
@@ -1694,40 +1673,45 @@ namespace Improvar
             }
 
         }
-        public string GODOWN(string val)
+        public string JOBPRCCD_help(ImprovarDB DB)
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
-            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
+            using (DB)
             {
-                var query = (from i in DB.M_GODOWN join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { GOCD = i.GOCD, GONM = i.GONM }).OrderBy(s => s.GONM).ToList();
-                if (val == null)
+                var query = (from c in DB.M_JOBPRCCD
+                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                             where i.INACTIVE_TAG == "N"
+                             select new
+                             {
+                                 Code = c.JOBPRCCD,
+                                 Description = c.JOBPRCNM
+                             }).ToList();
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
                 {
-                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= query.Count - 1; i++)
-                    {
-                        SB.Append("<tr><td>" + query[i].GONM + "</td><td>" + query[i].GOCD + "</td></tr>");
-                    }
-                    var hdr = "Godown Name" + Cn.GCS() + "Godown Code";
-                    return Generate_help(hdr, SB.ToString());
+                    SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
                 }
-                else
-                {
-                    query = query.Where(a => a.GOCD == val).ToList();
-                    if (query.Any())
-                    {
-                        string str = "";
-                        foreach (var i in query)
-                        {
-                            str = ToReturnFieldValues(query);
-                        }
-                        return str;
-                    }
-                    else
-                    {
-                        return "Invalid Godown Code ! Please Select / Enter a Valid Godown Code !!";
-                    }
-                }
+                var hdr = "Job Price Name" + Cn.GCS() + "Job Price Code";
+                return Generate_help(hdr, SB.ToString());
             }
+        }
+        public string FLOOR(ImprovarDB DB)
+        {
+            var query = (from c in DB.M_FLRLOCA
+                         join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                         where i.INACTIVE_TAG == "N"
+                         select new
+                         {
+                             FLRCD = c.FLRCD,
+                             FLRNM = c.FLRNM
+                         }).ToList();
+
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+            for (int i = 0; i <= query.Count - 1; i++)
+            {
+                SB.Append("<tr><td>" + query[i].FLRNM + "</td><td>" + query[i].FLRCD + "</td></tr>");
+            }
+            var hdr = "Floor Name" + Cn.GCS() + "Floor Code";
+            return Generate_help(hdr, SB.ToString());
         }
     }
 }

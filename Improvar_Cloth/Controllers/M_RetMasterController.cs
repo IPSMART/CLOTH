@@ -297,11 +297,11 @@ namespace Improvar.Controllers
                 if (val == null)
                 {
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                    return PartialView("_Help2", Master_Help.RefRetail_help(val));
+                    return PartialView("_Help2", Master_Help.RTDEBCD_help(val));
                 }
                 else
                 {
-                    string str = Master_Help.RefRetail_help(val);
+                    string str = Master_Help.RTDEBCD_help(val);
                     return Content(str);
                 }
             }

@@ -243,14 +243,19 @@
     <Compile Include="Controllers\M_CollectionController.cs" />
     <Compile Include="Controllers\M_ColorController.cs" />
     <Compile Include="Controllers\M_FinProductController.cs" />
+    <Compile Include="Controllers\M_FloorController.cs" />
     <Compile Include="Controllers\M_GrpMastController.cs" />
     <Compile Include="Controllers\M_ItemPartController.cs" />
     <Compile Include="Controllers\M_ItemSizeController.cs" />
+    <Compile Include="Controllers\M_JobMasterController.cs" />
+    <Compile Include="Controllers\M_LineController.cs" />
+    <Compile Include="Controllers\M_MtrlJobMasterController.cs" />
     <Compile Include="Controllers\M_Plist_CodeController.cs" />
     <Compile Include="Controllers\M_Prod_GroupController.cs" />
     <Compile Include="Controllers\M_RetMasterController.cs" />
     <Compile Include="Controllers\M_SubBrandController.cs" />
     <Compile Include="Controllers\M_SubLeg_SDdtlController.cs" />
+    <Compile Include="Controllers\M_Sub_JobController.cs" />
     <Compile Include="Controllers\M_Tax_RateController.cs" />
     <Compile Include="Controllers\M_Tax_Rate_CodeController.cs" />
     <Compile Include="Controllers\M_USR_ACS_DOCCDController.cs" />
@@ -378,11 +383,13 @@
     <Compile Include="Models\M_JOBMST.cs" />
     <Compile Include="Models\M_JOBMSTSUB.cs" />
     <Compile Include="Models\M_JOBMSTSUB_STDRT.cs" />
+    <Compile Include="Models\M_JOBPRCCD.cs" />
     <Compile Include="Models\M_LINEMAST.cs" />
     <Compile Include="Models\M_LOCA.cs" />
     <Compile Include="Models\M_LOCKDATA.cs" />
     <Compile Include="Models\M_MACHINE.cs" />
     <Compile Include="Models\M_MONTH.cs" />
+    <Compile Include="Models\M_MTRLJOBMST.cs" />
     <Compile Include="Models\M_PARTS.cs" />
     <Compile Include="Models\M_PARTYGRP.cs" />
     <Compile Include="Models\M_POST.cs" />
@@ -536,10 +543,14 @@
     <Compile Include="ViewModels\DocumentTypeEntry.cs" />
     <Compile Include="ViewModels\EWayBillReport.cs" />
     <Compile Include="ViewModels\EWayBill_JSON.cs" />
+    <Compile Include="ViewModels\FloorLocationMasterEntry.cs" />
     <Compile Include="ViewModels\GodownMasterEntry.cs" />
     <Compile Include="ViewModels\GroupMasterEntry.cs" />
     <Compile Include="ViewModels\ItemMasterEntry.cs" />
     <Compile Include="ViewModels\ItemSizeEntry.cs" />
+    <Compile Include="ViewModels\JobMasterEntry.cs" />
+    <Compile Include="ViewModels\Job_SubMasterEntry.cs" />
+    <Compile Include="ViewModels\LineMasterEntry.cs" />
     <Compile Include="ViewModels\ModifyLog.cs" />
     <Compile Include="ViewModels\PartMasterEntry.cs" />
     <Compile Include="ViewModels\Prepare_JSONvalidation.cs" />
@@ -944,6 +955,11 @@
     <Content Include="Views\Shared\_M_BOM_RMPM.cshtml" />
     <Content Include="Views\M_RetMaster\M_RetMaster.cshtml" />
     <Content Include="Views\T_SALE\T_SALE.cshtml" />
+    <Content Include="Views\M_MtrlJobMaster\M_MtrlJobMaster.cshtml" />
+    <Content Include="Views\M_Sub_Job\M_Sub_Job.cshtml" />
+    <Content Include="Views\M_Floor\M_Floor.cshtml" />
+    <Content Include="Views\M_Line\M_Line.cshtml" />
+    <Content Include="Views\M_JobMaster\M_JobMaster.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
