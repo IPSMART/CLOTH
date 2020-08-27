@@ -70,76 +70,6 @@
     });
 </script>
 <script>
-    function SelectGodownCode(id, GOCD, GONM) {
-        if ("@Model.DefaultAction" != "V") {
-            if (id == "") {
-                $("#" + GOCD.id).val("");
-                $("#" + GONM.id).val("");
-            }
-            else {
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("GetGodownDetails", PageControllerName)',
-                    data: { val: id },
-                    success: function (result) {
-                        var MSG = result.indexOf(String.fromCharCode(181));
-                        if (MSG >= 0) {
-                            $("#tempHDD").val(result);
-                            var findstr = $("#tempHDD").val();
-                            document.getElementById(GOCD.id).value = returncolvalue(findstr, "GOCD");
-                            document.getElementById(GONM.id).value = returncolvalue(findstr, "GONM");
-                        }
-                        else {
-                            $("#Msgdiv1").show();
-                            $("#info").show();
-                            $("#" + GOCD.id).val("");
-                            $("#" + GONM.id).val("");
-                            $("#btnok").focus();
-                            $("#msgbody_info").html(result);
-                            message_value = GOCD.id;
-                        }
-                    }
-                });
-            }
-        }
-    }
-    function SelectPRICECODE(id, fld1, fld2) {
-        if (id == "") {
-            $("#" + fld1.id).val("");
-            $("#" + fld2.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetPriceDetails", PageControllerName)',
-                data: {
-                    val: id
-                },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        $("#tempHDD").val(result);
-                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                        $("#" + fld1.id).val(str[0].toString());
-                        $("#" + fld2.id).val(str[1].toString());
-                    }
-                    else {
-                        $("#" + fld1.id).val("");
-                        $("#" + fld2.id).val("");
-                        msgInfo(result);
-                        message_value = fld1.id;
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError("Error: " + textStatus + "," + errorThrown);
-                }
-            });
-        }
-    }
-</script>
-
-<script>
     function AddDOCrow() {
         $.ajax({
             type: 'POST',
@@ -367,8 +297,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','GOCD/GONM','1/0','Godown Details','GOCD')", onblur = "SelectGodownCode(this.value,GOCD,GONM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','GOCD/GONM','1/0','Godown Details','GOCD')" />
+                                    @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -383,8 +313,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetPriceDetails", PageControllerName) + "','PRCCD/PRCNM','1/0','Price Code Details','PRCCD')", onblur = "SelectPRICECODE(this.value,PRCCD,PRCNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetPriceDetails", PageControllerName)','PRCCD/PRCNM','1/0','Price Code Details','PRCCD')" />
+                                    @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -459,7 +389,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;",  @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -469,7 +399,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;",  @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>

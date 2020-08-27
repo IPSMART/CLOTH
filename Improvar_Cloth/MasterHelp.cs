@@ -98,27 +98,49 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string PRCCD_help(ImprovarDB DB)
-        {
-            using (DB)
-            {
-                var query = (from c in DB.M_PRCLST
-                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
-                             where i.INACTIVE_TAG == "N"
-                             select new
-                             {
-                                 Code = c.PRCCD,
-                                 Description = c.PRCNM
-                             }).ToList();
-                System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                for (int i = 0; i <= query.Count - 1; i++)
-                {
-                    SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
-                }
-                var hdr = "Price code" + Cn.GCS() + "Price Name";
-                return Generate_help(hdr, SB.ToString());
-            }
-        }
+        //public string PRCCD_help(string val)
+        //{
+        //    var UNQSNO = Cn.getQueryStringUNQSNO();
+        //    using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+        //    {
+        //        var query = (from c in DB.M_PRCLST
+        //                     join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+        //                     where i.INACTIVE_TAG == "N"
+        //                     select new
+        //                     {
+        //                         Code = c.PRCCD,
+        //                         Description = c.PRCNM
+        //                     }).ToList();
+        //        if (val == null)
+        //        {
+        //            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+        //            for (int i = 0; i <= query.Count - 1; i++)
+        //            {
+        //                SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
+        //            }
+        //            var hdr = "Price Name" + Cn.GCS() + "Price code";
+        //            return Generate_help(hdr, SB.ToString());
+        //        }
+        //        else
+        //        {
+        //            query = query.Where(a => a.Code == val).ToList();
+        //            if (query.Any())
+        //            {
+        //                string str = "";
+        //                foreach (var i in query)
+        //                {
+        //                    str = i.Code + Cn.GCS() + i.Description;
+        //                }
+        //                return str;
+        //            }
+        //            else
+        //            {
+        //                return "Invalid Price Code ! Please Enter a Valid Price Code !!";
+        //            }
+
+        //        }
+        //    }
+        //}
         public string DISCRTCD_help(ImprovarDB DB)
         {
             using (DB)
@@ -166,7 +188,7 @@ namespace Improvar
                 }
                 else
                 {
-                    query = query.Where(a => a.ITGRPCD == val).ToList();                  
+                    query = query.Where(a => a.ITGRPCD == val).ToList();
                     if (query.Any())
                     {
                         return ToReturnFieldValues(query);
@@ -1706,6 +1728,80 @@ namespace Improvar
             }
             var hdr = "Floor Name" + Cn.GCS() + "Floor Code";
             return Generate_help(hdr, SB.ToString());
+        }
+        public string GOCD_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.GOCD,a.GONM ";
+            sql += "from " + scm + ".M_GODOWN a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.GOCD) like '%" + valsrch + "%' or upper(a.GONM) like '%" + valsrch + "%' ) ";
+            sql += "order by a.GOCD,a.GONM";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["GONM"] + "</td><td>" + tbl.Rows[i]["GOCD"] + " </td></tr>");
+                }
+                var hdr = "Godown Name" + Cn.GCS() + "Godown Code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Godown Code ! Please Select / Enter a Valid Godown Code !!";
+                }
+            }
+        }
+        public string PRCCD_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.PRCCD,a.PRCNM ";
+            sql += "from " + scm + ".M_PRCLST a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.PRCCD) like '%" + valsrch + "%' or upper(a.PRCNM) like '%" + valsrch + "%' ) ";
+            sql += "order by a.PRCCD,a.PRCNM";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["PRCNM"] + "</td><td>" + tbl.Rows[i]["PRCCD"] + " </td></tr>");
+                }
+                var hdr = "Price Name" + Cn.GCS() + "Price code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Price Code ! Please Enter a Valid Price Code !!";
+                }
+            }
         }
     }
 }
