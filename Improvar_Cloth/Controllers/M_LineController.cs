@@ -242,7 +242,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        MLINE.LINECD = VE.M_LINEMAST.LINECD.ToUpper();
+                        MLINE.LINECD = VE.M_LINEMAST.LINECD.ToUpper().Trim();
                         MLINE.LINENM = VE.M_LINEMAST.LINENM;
                         MLINE.FLRCD = VE.M_LINEMAST.FLRCD;
                         //Control header 
