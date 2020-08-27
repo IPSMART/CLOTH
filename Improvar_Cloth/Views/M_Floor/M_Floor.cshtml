@@ -1,0 +1,286 @@
+﻿@model Improvar.ViewModels.FloorLocationMasterEntry
+@{
+    ViewBag.Title = "Floor Location Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#FLRCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#FLRCD").attr("readonly", "readonly");
+            $("#FLRCD").attr("disabled", "true");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+   });
+</script>
+<script>
+   function requiredFieldValidator()
+   {
+       if (!emptyFieldCheck("Enter Floor Code ", "FLRCD")) { return false; }
+       if (!emptyFieldCheck("Enter loor Name", "FLRNM")) { return false; }
+       if (!emptyFieldCheck("Enter job Price Code", "JOBPRCCD")) { return false; }
+       if (!emptyFieldCheck("Enter Sub Ledger code", "SLCD")) { return false; }
+        return true;
+   }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_FLRLOCA != null)
+        {
+            mldauto = Model.M_FLRLOCA.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckFloorCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#checkFlrcode").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#FLRCD").val("");
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#btnok").focus();
+                            message_value = "FLRCD";
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function inputfloor(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+
+    function SelectJOBPRCCD(id, JOBPRCCD, JOBPRCNM) {
+        if (id == "") {
+            $("#JOBPRCNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#SelectJOBPRCCOD").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#JOBPRCCD").val("");
+                        $("#JOBPRCNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Job Price Code !! ");
+                        message_value = "JOBPRCCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputfloor(JOBPRCCD, JOBPRCNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    //end JOBPRCCD
+
+    function SelectSubLedge(id, SLCD, SLNM) {
+        if (id == "") {
+            $("#SLNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#SelectSLCD").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#SLCD").val("");
+                        $("#SLNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Sub Ledger Code !! ");
+                        message_value = "SLCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputfloor(SLCD, SLNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    //end SLCD
+    //end
+</script>
+
+@{
+    string PageControllerName = "M_Floor";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+       <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="checkFlrcode" value="@Url.Action("CheckFloorCode", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="SelectSLCD" value="@Url.Action("SubLedger", PageControllerName)" />
+            <input type="hidden" id="SelectJOBPRCCOD" value="@Url.Action("JOBPRCCode", PageControllerName)" />
+           <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+@Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_FLRLOCA.M_AUTONO)
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Floor Code")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_FLRLOCA.FLRCD, new { htmlAttributes = new { @class = "form-control ", onblur = "CheckFloorCode('FLRCD');", id = "FLRCD", @placeholder = "Code", maxlength = 3, @style = "text-transform:uppercase;" } })
+                        @Html.HiddenFor(a => a.M_FLRLOCA.FLRCD)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Floor Name")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_FLRLOCA.FLRNM, new { htmlAttributes = new { @class = "form-control ", id = "FLRNM", @placeholder = "Name", maxlength = 15 } })
+
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Job Price Code")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_FLRLOCA.JOBPRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBPRCCD", @placeholder = "Code", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetJOBPRCCode", PageControllerName) + "','JOBPRCCD/JOBPRCNM','1/0','Job Price Code Details','JOBPRCCD');", onblur = "SelectJOBPRCCD(this.value,JOBPRCCD,JOBPRCNM);" } })
+                        <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetJOBPRCCode", PageControllerName)','JOBPRCCD/JOBPRCNM','1/0','Job Price Code Details','JOBPRCCD')" />
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_JOBPRCCD.JOBPRCNM, new { htmlAttributes = new { @class = "form-control ", id = "JOBPRCNM", @placeholder = " Name", maxlength = 15, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "Sub Ledger Code")
+                        <b style="color:red"><sup>*</sup></b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_FLRLOCA.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", @placeholder = "Code", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetSubLedger", PageControllerName) + "','SLCD/SLNM','1/0','Sub Ledger Details','SLCD');", onblur = "SelectSubLedge(this.value,SLCD,SLNM);" } })
+                        <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetSubLedger", PageControllerName)','SLCD/SLNM','1/0','Sub Ledger Details','SLCD')" />
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SUBLEG.SLNM, new { htmlAttributes = new { @class = "form-control ", id = "SLNM", @placeholder = " Name", maxlength = 45, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                        @Html.Label("", "Deactivate")
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field" style="display: inline-block;">
+                        @Html.CheckBoxFor(model => model.Deactive)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
+
+

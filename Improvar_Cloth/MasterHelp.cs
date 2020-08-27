@@ -1672,5 +1672,26 @@ namespace Improvar
             }
 
         }
+        public string JOBPRCCD_help(ImprovarDB DB)
+        {
+            using (DB)
+            {
+                var query = (from c in DB.M_JOBPRCCD
+                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                             where i.INACTIVE_TAG == "N"
+                             select new
+                             {
+                                 Code = c.JOBPRCCD,
+                                 Description = c.JOBPRCNM
+                             }).ToList();
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
+                }
+                var hdr = "Job Price Name" + Cn.GCS() + "Job Price Code";
+                return Generate_help(hdr, SB.ToString());
+            }
+        }
     }
 }
