@@ -223,11 +223,7 @@ namespace Improvar.Controllers
                                     ////VE.DropDown_list4 = Master_Help.DISC_EFFECTIVE_DATE(sl.DISCRTCD, sl.DOCDT.ToString().Substring(0, 10).Replace('-', '/'));
                                     ////if (sl.DISCRTEFFDT != null) { VE.DISC_EFF_DATE_ID = sl.DISCRTEFFDT.ToString().Substring(0, 10).Replace('-', '/'); }
                                     ////var Discount = DBF.M_DISCRT.Find(sl.DISCRTCD); if (Discount != null) { VE.DiscountName = Discount.DISCRTNM; VE.DISCD = sl.DISCRTCD; VE.DISNM = Discount.DISCRTNM; }
-                                    var Area = DB.M_SUBLEG_COM.Find(sl.SLCD, sll.COMPCD); if (Area != null) { VE.AreaCode = Area.AREACD; VE.AREACD = Area.AREACD; }
-                                    if (VE.AreaCode != null)
-                                    {
-                                        //var AreaName = DBF.M_AREACD.Find(VE.AreaCode); if (AreaName != null) { VE.AreaName = AreaName.AREANM; VE.AREANM = AreaName.AREANM; }
-                                    }
+                                  
                                     if (VE.DefaultAction == "V")
                                     {
                                         //VE.TSORDDTL_SEARCHPANEL = (from X in DB.T_TXNDTL
