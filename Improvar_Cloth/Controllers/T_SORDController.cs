@@ -223,11 +223,7 @@ namespace Improvar.Controllers
                                     ////VE.DropDown_list4 = Master_Help.DISC_EFFECTIVE_DATE(sl.DISCRTCD, sl.DOCDT.ToString().Substring(0, 10).Replace('-', '/'));
                                     ////if (sl.DISCRTEFFDT != null) { VE.DISC_EFF_DATE_ID = sl.DISCRTEFFDT.ToString().Substring(0, 10).Replace('-', '/'); }
                                     ////var Discount = DBF.M_DISCRT.Find(sl.DISCRTCD); if (Discount != null) { VE.DiscountName = Discount.DISCRTNM; VE.DISCD = sl.DISCRTCD; VE.DISNM = Discount.DISCRTNM; }
-                                    var Area = DB.M_SUBLEG_COM.Find(sl.SLCD, sll.COMPCD); if (Area != null) { VE.AreaCode = Area.AREACD; VE.AREACD = Area.AREACD; }
-                                    if (VE.AreaCode != null)
-                                    {
-                                        //var AreaName = DBF.M_AREACD.Find(VE.AreaCode); if (AreaName != null) { VE.AreaName = AreaName.AREANM; VE.AREANM = AreaName.AREANM; }
-                                    }
+                                  
                                     if (VE.DefaultAction == "V")
                                     {
                                         //VE.TSORDDTL_SEARCHPANEL = (from X in DB.T_TXNDTL
@@ -529,8 +525,8 @@ namespace Improvar.Controllers
                 + Cn.GCS() + "Order Approx Value" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
-               
-                SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" 
+
+                SB.Append("<tr><td>" + tbl.Rows[j]["docno"] + "</td><td>" + tbl.Rows[j]["docdt"] + " </td><td>"
                     + tbl.Rows[j]["prefno"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> ["
                     + tbl.Rows[j]["district"] + "]  (" + tbl.Rows[j]["slcd"] + ") " + " </td><td>" + tbl.Rows[j]["aproxval"] + " </td><td>"
                     + tbl.Rows[j]["autono"] + " </td></tr>");
@@ -1947,15 +1943,13 @@ namespace Improvar.Controllers
         {
             try
             {
-                ItemMasterEntry VE = new ItemMasterEntry();
-                Cn.getQueryString(VE);
-                if (val.retStr() == "")
+                string str = Master_Help.ITGRPCD_help(val, "");
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", Master_Help.ITGRPCD_help(val,""));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.ITGRPCD_help(val, "");
                     return Content(str);
                 }
             }
