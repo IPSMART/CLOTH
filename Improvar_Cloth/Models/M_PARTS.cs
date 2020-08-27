@@ -9,7 +9,7 @@ namespace Improvar.Models
     [Table("M_PARTS")]
     public partial class M_PARTS
     {
-        public int? EMD_NO { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -28,7 +28,9 @@ namespace Improvar.Models
         [StringLength(15)]
         public string PARTNM { get; set; }
 
+        [StringLength(1)]
+        public string PRTBARCODE { get; set; }
+
         public long M_AUTONO { get; set; }
-        
     }
 }

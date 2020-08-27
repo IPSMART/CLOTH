@@ -209,7 +209,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        MGOD.PARTCD = VE.M_PARTS.PARTCD.ToUpper();
+                        MGOD.PARTCD = VE.M_PARTS.PARTCD.ToUpper().Trim();
                         MGOD.PARTNM = VE.M_PARTS.PARTNM;
                         //Control header 
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_PARTS", MGOD.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
