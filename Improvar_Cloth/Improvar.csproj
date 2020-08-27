@@ -250,6 +250,7 @@
     <Compile Include="Controllers\M_JobMasterController.cs" />
     <Compile Include="Controllers\M_LineController.cs" />
     <Compile Include="Controllers\M_MtrlJobMasterController.cs" />
+    <Compile Include="Controllers\M_PaymentController.cs" />
     <Compile Include="Controllers\M_Plist_CodeController.cs" />
     <Compile Include="Controllers\M_Prod_GroupController.cs" />
     <Compile Include="Controllers\M_RetMasterController.cs" />
@@ -393,6 +394,7 @@
     <Compile Include="Models\M_MTRLJOBMST.cs" />
     <Compile Include="Models\M_PARTS.cs" />
     <Compile Include="Models\M_PARTYGRP.cs" />
+    <Compile Include="Models\M_PAYMENT.cs" />
     <Compile Include="Models\M_POST.cs" />
     <Compile Include="Models\M_PRCLST.cs" />
     <Compile Include="Models\M_PRODGRP.cs" />
@@ -555,6 +557,7 @@
     <Compile Include="ViewModels\LineMasterEntry.cs" />
     <Compile Include="ViewModels\ModifyLog.cs" />
     <Compile Include="ViewModels\PartMasterEntry.cs" />
+    <Compile Include="ViewModels\PaymentReceivedEntry.cs" />
     <Compile Include="ViewModels\Prepare_JSONvalidation.cs" />
     <Compile Include="ViewModels\PriceListCodeMasterEntry.cs" />
     <Compile Include="ViewModels\PrintPage.cs" />
@@ -964,6 +967,7 @@
     <Content Include="Views\M_Line\M_Line.cshtml" />
     <Content Include="Views\M_JobMaster\M_JobMaster.cshtml" />
     <Content Include="Views\M_Stktype\M_Stktype.cshtml" />
+    <Content Include="Views\M_Payment\M_Payment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
