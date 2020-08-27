@@ -27,11 +27,12 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_SORD_MAIN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1633px;">
+                    <table id="_T_SORD_MAIN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" @*style="width: 1633px;"*@>
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
-                                <th class="" style="width: 27px;text-align:center;">SL No.</th>
+                                <th class="" style="width: 30px;text-align:center;">SL No.</th>
+                                <th class="" style="width: 59px;">Item Group Code</th>
                                 <th class="" style="width: 179px;">Item Group Name</th>
                                 <th class="" style="width: 179px;">Fabric Item Name</th>
                                 <th class="" style="width: 92px;">Item Code</th>
@@ -60,9 +61,11 @@
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].ITGRPNM, new { id = "ITGRPNM_" + i, maxlength = 30, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_SORD") + "','Item Group Details','" + "ITGRPNM_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1/" + "FABITCD_" + i + "=fabitcd=3/" + "FABITNM_" + i + "=fabitnm=2');", @class = " atextBoxFor textbox_image", @readonly = "readonly" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_SORD")','Item Group Details','ITGRPNM_@i','ITGRPNM_@i=itgrpnm=0/ITGRPCD_@i=itgrpcd=1/FABITCD_@i=fabitcd=3/FABITNM_@i=fabitnm=2')" />
-                                            @Html.HiddenFor(model => model.TSORDDTL[i].ITGRPCD, new { id = "ITGRPCD_" + i })
+                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].ITGRPCD, new { id = "ITGRPCD_" + i, maxlength = 10, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_SORD") + "','Item Group Details','" + "ITGRPCD_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1/" + "FABITCD_" + i + "=fabitcd=3/" + "FABITNM_" + i + "=fabitnm=2');", @class = " atextBoxFor textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_SORD") + "','Item Group Details','" + "ITGRPCD_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1/" + "FABITCD_" + i + "=fabitcd=3/" + "FABITNM_" + i + "=fabitnm=2');" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_SORD")','Item Group Details','ITGRPCD_@i','ITGRPNM_@i=itgrpnm=0/ITGRPCD_@i=itgrpcd=1/FABITCD_@i=fabitcd=3/FABITNM_@i=fabitnm=2')" />
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].ITGRPNM, new { id = "ITGRPNM_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].FABITNM, new { id = "FABITNM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
