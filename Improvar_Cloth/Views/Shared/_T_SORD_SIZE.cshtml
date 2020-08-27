@@ -4,12 +4,6 @@
 }
 <script type="text/javascript">
     $(document).ready(function () {
-        @*if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
-            modeView();
-        }
-        else if ("@Model.DefaultAction" == "A") {
-            $('form :input:enabled:visible:not([readonly]):first').focus();
-        }*@
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SORD_SIZE_GRID'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
     });
@@ -98,9 +92,8 @@
                                             @Html.TextBoxFor(model => Model.TSORDDTL_SIZE[i].COLRNM, new { id = "COLRNM_" + i, maxlength = 10, @title = "Only For Display", @placeholder = "Color Name", @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         </td>
                                     }
-
                                     <td class="">
-                                        @Html.EditorFor(model => Model.TSORDDTL_SIZE[i].RATE, new { htmlAttributes = new { id = "SIZE_RATE_" + i, maxlength = 10, @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor ", @readonly = "readonly", @style = "text-align: right;", @TabIndex = -1 } })
+                                        @Html.EditorFor(model => Model.TSORDDTL_SIZE[i].RATE, new { htmlAttributes = new { id = "SIZE_RATE_" + i, maxlength = 10, @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor ", @style = "text-align: right;" } })
                                     </td>
 
                                     <td class="">

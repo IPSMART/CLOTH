@@ -141,46 +141,6 @@
 </script>
 
 <script>
-    function input12(id, id1) {
-        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-        $("#" + id.id).val(str[0]);
-        $("#" + id1.id).val(str[1].toString());
-    }
-    function SelectItemGroupCode(id, ITGRPCD, ITGRPNM, BRANDCD, BRANDNM) {
-        if (id == "") {
-            $("#ITGRPCD").val("");
-            $("#ITGRPNM").val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: "@Url.Action("GetItemGroupDetails", PageControllerName)",
-                data: {
-                    val: id
-                },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        $("#tempHDD").val(result);
-                        input12(ITGRPCD, ITGRPNM);
-                    }
-                    else {
-                        $("#ITGRPCD").val("");
-                        $("#ITGRPNM").val("");
-                        msgInfo("Invalid Item Group Code ! Please Enter a Valid Item Group Code !!");
-                        message_value = "ITGRPCD";
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    }
-</script>
-<script>
     function input3(id, id1) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
         $("#" + id.id).val(str[0]);
@@ -1010,8 +970,12 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />
+                                    @Html.TextBoxFor(model => Model.M_SITEM.ITGRPCD, new { id = "ITGRPCD", maxlength = 10, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPNM=itgrpnm=0/ITGRPCD=itgrpcd=1');", @class = " atextBoxFor textbox_image", onblur =  "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPNM=itgrpnm=0/ITGRPCD=itgrpcd=1');" })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPNM=itgrpnm=0/ITGRPCD=itgrpcd=1')" />
+
+
+                                    @*@Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
+                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />*@
 
                                 </div>
                             </div>

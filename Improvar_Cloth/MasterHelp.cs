@@ -182,7 +182,7 @@ namespace Improvar
                 }
                 else
                 {
-                    if (dt.Rows.Count > 1)
+                    if (dt.Rows.Count > 0)
                     {
                         return ToReturnFieldValues("", dt);
                     }

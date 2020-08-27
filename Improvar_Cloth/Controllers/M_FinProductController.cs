@@ -778,13 +778,13 @@ namespace Improvar.Controllers
             {
                 ItemMasterEntry VE = new ItemMasterEntry();
                 Cn.getQueryString(VE);
-                if (val == null)
+                string str = Master_Help.ITGRPCD_help(val, VE.MENU_PARA);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", Master_Help.ITGRPCD_help(val, VE.MENU_PARA));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.ITGRPCD_help(val, VE.MENU_PARA);
                     return Content(str);
                 }
             }
