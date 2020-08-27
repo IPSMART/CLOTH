@@ -44,7 +44,10 @@ namespace Improvar.Models
         public string BARGENTYPE { get; set; }
 
         public long M_AUTONO { get; set; }
+        [StringLength(25)]
+        public string SHORTNM { get; set; }
+        
 
-       
+
     }
 }

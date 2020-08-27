@@ -425,6 +425,7 @@ namespace Improvar.Controllers
                         }
                         MGROUP.GRPNM = VE.M_GROUP.GRPNM;
                         MGROUP.ITGRPNM = VE.M_GROUP.ITGRPNM;
+                        MGROUP.SHORTNM = VE.M_GROUP.SHORTNM;
                         MGROUP.ITGRPTYPE = FC["grptype"].ToString();
                         MGROUP.PRODGRPCD = VE.M_GROUP.PRODGRPCD;
                         MGROUP.HSNCODE = VE.M_GROUP.HSNCODE;
