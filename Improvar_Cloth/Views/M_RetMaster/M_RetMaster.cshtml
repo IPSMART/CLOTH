@@ -26,7 +26,7 @@
 
     });
 </script>
-<script>
+@*<script>
     function call() {
         debugger;
         var kcyear = document.getElementsByName("DOBYEAR")[0],
@@ -58,7 +58,7 @@
         }
         validate_date();
     }
-</script>
+</script>*@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Enter Mobile No.", "MOBILE")) {
@@ -541,22 +541,19 @@
                                 @Html.Label("", "Birthday")
                             </div>
                         </div>
-                        @*<div class="col-md-6">
+                        <div class="col-md-6">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.M_RETDEB.DOB, new { htmlAttributes = new { @class = "form-control", id = "DOB", @placeholder = "dd/mm/yyyy", autocomplete = "off", maxlength = 10, onblur = "DocumentDateCHK(this)" } })
                                 </div>
-                            </div>*@<div class="col-md-1" style="width:auto;">
+                            </div>
+                        @*@*<div class="col-md-1" style="width:auto;">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Year :")
                             </div>
                         </div>
-                        @*<div class="form-control">*@
-                        @*<select name="DOBYEAR" onchange="call()">
-                                <option value="">select</option>
-                            </select>*@
-                        <div class="col-md-3">
+                        <div class="col-md-3">*@
                             @*@Html.EditorFor(model => model.DOBYEAR, new { htmlAttributes = new { @class = "form-control", id = "DOBYEAR",  onchange = "call()" } })@*TYPE = "NUMBER",MAX = 3000, MIN = 1600,*@
-                            <select name="DOBYEAR" class = "form-control" onchange="call()">
+                            @*<select name="DOBYEAR" class = "form-control" onchange="call()">
                                 <option value="">select</option>
                             </select>
                         </div>
@@ -591,8 +588,7 @@
                             <select name="day" class="form-control">
                                 <option value="">select</option>
                             </select>
-                            @*</div>*@
-                        </div>
+                        </div>*@
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Wedding Anniversary")
