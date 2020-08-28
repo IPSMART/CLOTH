@@ -26,6 +26,7 @@ namespace Improvar.ViewModels
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public List<Database_Combo3> Database_Combo3 { get; set; }
+        public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
         public string SLNM { get; set; }
         public string CONSLNM { get; set; }
         public string AGSLNM { get; set; }
@@ -56,6 +57,7 @@ namespace Improvar.ViewModels
         public string TRANSLNM { get; set; }
         public string CRSLNM { get; set; }
         public string BARCODE { get; set; }
+        public short TXNSLNO { get; set; }
         [StringLength(4)]
         public string ITGRPCD { get; set; }
         public string ITGRPNM { get; set; }
@@ -79,6 +81,20 @@ namespace Improvar.ViewModels
         [StringLength(4)]
         public string SIZECD { get; set; }
         public string SIZENM { get; set; }
+        [StringLength(15)]
         public string SHADE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? QNTY { get; set; }
+        public string UOM { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? NOS { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? RATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? DISCPER { get; set; }
+        [StringLength(8)]
+        public string HSNCODE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? GSTPER { get; set; }
     }
 }

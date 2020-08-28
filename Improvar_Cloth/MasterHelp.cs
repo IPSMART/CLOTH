@@ -40,7 +40,7 @@ namespace Improvar
                     if (DOC_EFF_DT.retStr() != "") sql += "and y.bomeffdt <= to_date('" + DOC_EFF_DT.retStr() + "','dd/mm/yyyy')  ";
                     sql += ") ";
                 }
-                if (ITGRPCD.retStr() != "") sql += "and a.ITGRPCD in (" + ITGRPCD + ") ";
+                if (ITGRPCD.retStr() != "") sql += "and a.ITGRPCD ='" + ITGRPCD + "' ";
                 if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";
                 if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(a.uomcd) like '%" + valsrch + "%'  )  ";
 
@@ -163,12 +163,15 @@ namespace Improvar
         }
         public string ITGRPCD_help(string ITGRPCD, string GRPTYPE)
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO(); 
+            var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
-                string sql = "select * from "+CommVar.CurSchema(UNQSNO)+ ".M_GROUP where 1=1";
+                string valsrch = ITGRPCD.ToUpper().Trim();
+                string sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_GROUP where 1=1";
                 if (GRPTYPE.retStr() != "") sql += " and ITGRPTYPE in (" + GRPTYPE.retSqlformat() + ") ";
-                if (ITGRPCD.retStr() != "") sql += " and ITGRPCD ='"+ITGRPCD+ "' ";
+                //if (ITGRPCD.retStr() != "") sql += " and ITGRPCD ='" + ITGRPCD + "' ";
+                if (valsrch.retStr() != "") sql += "and ( upper(ITGRPCD) like '%" + valsrch + "%' or upper(ITGRPNM) like '%" + valsrch + "%' ) ";
+
                 DataTable dt = SQLquery(sql);
                 if (ITGRPCD.retStr() == "" || dt.Rows.Count > 1)
                 {
@@ -1796,5 +1799,159 @@ namespace Improvar
                 }
             }
         }
+        public string MTRLJOBCD_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.MTRLJOBCD,a.MTRLJOBNM ";
+            sql += "from " + scm + ".M_MTRLJOBMST a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.MTRLJOBCD) like '%" + valsrch + "%' or upper(a.MTRLJOBNM) like '%" + valsrch + "%' ) ";
+            sql += "order by a.MTRLJOBCD,a.MTRLJOBNM";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["MTRLJOBNM"] + "</td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td></tr>");
+                }
+                var hdr = "Material Job Name" + Cn.GCS() + "Material Job code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Material Job Code ! Please Enter a Valid Material Job Code !!";
+                }
+            }
+        }
+        public string PARTCD_help(string val, string itcd = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.PARTCD,a.PARTNM ";
+            sql += "from " + scm + ".M_PARTS a, " + scm + ".M_CNTRL_HDR b ";
+            if (itcd.retStr() != "") sql += ", " + scm + ".M_SITEM_PARTS c ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (itcd.retStr() != "") sql += "and  a.PARTCD = c.PARTCD(+) and c.itcd = '" + itcd + "' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.PARTCD) like '%" + valsrch + "%' or upper(a.PARTNM) like '%" + valsrch + "%' ) ";
+            sql += "order by a.PARTCD,a.PARTNM";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["PARTNM"] + "</td><td>" + tbl.Rows[i]["PARTCD"] + " </td></tr>");
+                }
+                var hdr = "Part Name" + Cn.GCS() + "Part code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Part Code ! Please Enter a Valid Part Code !!";
+                }
+            }
+        }
+        public string COLRCD_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.COLRCD,a.COLRNM,a.CLRBARCODE ";
+            sql += "from " + scm + ".M_COLOR a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.COLRCD) like '%" + valsrch + "%' or upper(a.COLRNM) like '%" + valsrch + "%' ) ";
+            sql += "order by a.COLRCD,a.COLRNM";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["COLRNM"] + "</td><td>" + tbl.Rows[i]["COLRCD"] + " </td><td>" + tbl.Rows[i]["CLRBARCODE"] + " </td></tr>");
+                }
+                var hdr = "Color Name" + Cn.GCS() + "Color code" + Cn.GCS() + "Color Bar Code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Color Code ! Please Enter a Valid Color Code !!";
+                }
+            }
+        }
+        public string SIZECD_help(string val, string itcd = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.SIZECD,a.SIZENM,a.SZBARCODE ";
+            sql += "from " + scm + ".M_SIZE a, " + scm + ".M_CNTRL_HDR b ";
+            if (itcd.retStr() != "") sql += ", " + scm + ".M_SITEM_SIZE c ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (itcd.retStr() != "") sql += "and  a.SIZECD = c.SIZECD(+) and c.itcd = '" + itcd + "' ";
+            if (valsrch.retStr() != "") sql += "and  upper(a.SIZECD) = '" + valsrch + "'  ";
+            sql += "order by a.SIZECD,a.SIZENM";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["SIZENM"] + "</td><td>" + tbl.Rows[i]["SIZECD"] + " </td><td>" + tbl.Rows[i]["SZBARCODE"] + " </td></tr>");
+                }
+                var hdr = "Size Name" + Cn.GCS() + "Size code" + Cn.GCS() + "Size Bar Code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Size Code ! Please Enter a Valid Size Code !!";
+                }
+            }
+        }
+
+
     }
 }

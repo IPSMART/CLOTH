@@ -171,7 +171,9 @@ namespace Improvar.Models
         public string PARTNM { get; set; }
         public string COLRNM { get; set; }
         public string SIZENM { get; set; }
+        [StringLength(15)]
         public string SHADE { get; set; }
         public string UOM { get; set; }
+        public short TXNSLNO { get; set; }
     }
 }
