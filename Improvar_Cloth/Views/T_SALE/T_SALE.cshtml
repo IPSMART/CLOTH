@@ -58,7 +58,7 @@
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter SalesMen", "SLMSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter SalesMen", "CRSLCD")) { return false; }
         return true;
     }
 </script>
@@ -66,8 +66,111 @@
     $(function () {
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
+</script>
+<script>
+    function OpenAmount() {
+        var AUTO_NO = document.getElementById("AUTONO").value;
+        var A_T_NOS = 0;// = document.getElementById("T_NOS").value;
+        var A_T_QNTY = document.getElementById("T_QNTY").value;
+        var A_T_AMT = document.getElementById("T_AMT").value;
+        var A_T_TAXABLE = document.getElementById("T_GROSS_AMT").value;
+        var A_T_IGST_AMT = document.getElementById("T_IGST_AMT").value;
+        var A_T_CGST_AMT = document.getElementById("T_CGST_AMT").value;
+        var A_T_SGST_AMT = document.getElementById("T_SGST_AMT").value;
+        var A_T_CESS_AMT = document.getElementById("T_CESS_AMT").value;
+        var A_T_NET_AMT = document.getElementById("T_NET_AMT").value;
+
+        if (A_T_NOS == "") { A_T_NOS = parseInt(0) } else { A_T_NOS = parseInt(A_T_NOS) }
+        if (A_T_QNTY == "") { A_T_QNTY = parseFloat(0) } else { A_T_QNTY = parseFloat(A_T_QNTY) }
+        if (A_T_AMT == "") { A_T_AMT = parseFloat(0) } else { A_T_AMT = parseFloat(A_T_AMT) }
+        if (A_T_TAXABLE == "") { A_T_TAXABLE = parseFloat(0) } else { A_T_TAXABLE = parseFloat(A_T_TAXABLE) }
+        if (A_T_IGST_AMT == "") { A_T_IGST_AMT = parseFloat(0) } else { A_T_IGST_AMT = parseFloat(A_T_IGST_AMT) }
+        if (A_T_CGST_AMT == "") { A_T_CGST_AMT = parseFloat(0) } else { A_T_CGST_AMT = parseFloat(A_T_CGST_AMT) }
+        if (A_T_SGST_AMT == "") { A_T_SGST_AMT = parseFloat(0) } else { A_T_SGST_AMT = parseFloat(A_T_SGST_AMT) }
+        if (A_T_CESS_AMT == "") { A_T_CESS_AMT = parseFloat(0) } else { A_T_CESS_AMT = parseFloat(A_T_CESS_AMT) }
+        if (A_T_NET_AMT == "") { A_T_NET_AMT = parseFloat(0) } else { A_T_NET_AMT = parseFloat(A_T_NET_AMT) }
+
+        var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0;
+
+        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            var IGST = document.getElementById("IGSTPER_" + i).value;
+            if (IGST == "") { IGST = parseFloat(0); } else { IGST = parseFloat(IGST); }
+            var CGST = document.getElementById("CGSTPER_" + i).value;
+            if (CGST == "") { CGST = parseFloat(0); } else { CGST = parseFloat(CGST); }
+            var SGST = document.getElementById("SGSTPER_" + i).value;
+            if (SGST == "") { SGST = parseFloat(0); } else { SGST = parseFloat(SGST); }
+            var CESS = document.getElementById("CESSPER_" + i).value;
+            if (CESS == "") { CESS = parseFloat(0); } else { CESS = parseFloat(CESS); }
+            if (IGST > IGST_PER) {
+                IGST_PER = IGST;
+            }
+            if (CGST > CGST_PER) {
+                CGST_PER = CGST;
+            }
+            if (SGST > SGST_PER) {
+                SGST_PER = SGST;
+            }
+            if (CESS > CESS_PER) {
+                CESS_PER = CESS;
+            }
+        }
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("OPEN_AMOUNT", PageControllerName)",
+            data: $('form').serialize() + "&AUTO_NO=" + AUTO_NO + "&A_T_NOS=" + A_T_NOS + "&A_T_QNTY=" + A_T_QNTY + "&A_T_AMT=" + A_T_AMT + "&A_T_TAXABLE=" + A_T_TAXABLE
+                                        + "&A_T_IGST_AMT=" + A_T_IGST_AMT + "&A_T_CGST_AMT=" + A_T_CGST_AMT + "&A_T_SGST_AMT=" + A_T_SGST_AMT + "&A_T_CESS_AMT=" + A_T_CESS_AMT
+                                        + "&A_T_NET_AMT=" + A_T_NET_AMT + "&IGST_PER=" + IGST_PER + "&CGST_PER=" + CGST_PER + "&SGST_PER=" + SGST_PER + "&CESS_PER=" + CESS_PER,
+            success: function (result) {
+                $('#partialdivAmounts').html(result);
+                $("#AMTRATE_0").focus();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function CalulateTareWt(GRWT, NTWT, TRWT) {
+        var GROSS = document.getElementById(GRWT.id).value;
+        if (GROSS == "") {
+            GROSS = parseFloat(0);
+        }
+        var NET = document.getElementById(NTWT.id).value;
+        if (NET == "") {
+            NET = parseFloat(0);
+        }
+        var TARE = GROSS - NET;
+        document.getElementById(TRWT.id).value = TARE.toFixed(3);
+    }
+</script>
+<script>
+    function BarCodeData() {
+        var barcd = $("#BARCODE").val();
+        if (barcd != "") {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("GetBarCodeData", PageControllerName)",
+                data: {
+                    val: barcd
+                },
+                success: function (result) {
+                    $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivDocument").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
 </script>
 <script>
     function AddDOCrow() {
@@ -133,7 +236,7 @@
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
-        <input type="hidden" id="salesmanlinkcd" value="S" />
+        <input type="hidden" id="courierlinkcd" value="U" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
@@ -226,13 +329,14 @@
                 </div>
 
             </div>
-            <div class="row">
+            <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main</a></li>
-                    <li id="ItemTab_LI4" class=""><a data-toggle="tab" href="#ItemTab">Item</a></li>
+                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
+                    <li id="ProductTab_LI4" class=""><a data-toggle="tab" href="#ProductTab" accesskey="P">Product(P)</a></li>
+                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amounts" onclick="OpenAmount();">Amounts</a></li>
+                    <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
-                    @*<li id="SalesBillMade_LI4" class=""><a data-toggle="tab" href="#SalesBillMade">Sales Bill Made Against Order </a></li>*@
                 </ul>
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
@@ -431,15 +535,297 @@
                             </div>
                         </div>
                     </div>
-                    <div id="ItemTab" class="tab-pane fade" style="margin-top: 5px;">
-                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                    <div id="ProductTab" class="tab-pane fade" style="margin-top: 5px;">
+                        <div class="row">
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Bar Code")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control", id = "BARCODE", maxlength = 25, @placeholder = "BARCODE", onblur = "BarCodeData();" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="CalcSchmDis" value="Get Item Data" title="Click to Calculate Scheme & Disc" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0');", @placeholder = "Item Group Code", maxlength = 4 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0');", @placeholder = "Material Job Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0');", @placeholder = "Item Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @placeholder = "Stock Type" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0');", @placeholder = "Part Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')" />
+
+                                    </div>
+                                </div>
+                         
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0');", @placeholder = "Color Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0');", @placeholder = "Size Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPNM=1/ITGRPNM=ITGRPNM=0')" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Shade" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Quantity" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Nos" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Rate" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Disc" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "Hsncode", @readonly = "readonly", @TabIndex = -1 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", maxlength = 30, @title = "Only for View", @placeholder = "GSTPER" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1" style="width:auto;">
+                                    <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="CalcSchmDis" accesskey="R" value="Add Row" title="Click to Calculate Scheme & Disc" />
+                                </div>
+                            </div>
                             <div>
-                                <div id="partialdivItemTab">
-                                    @*@Html.Partial("_T_SORD_MAIN")*@
+                                <div id="partialdivProductTab">
+                                    @Html.Partial("_T_SALE_PRODUCT")
                                 </div>
                             </div>
                             <div class="PopUp_Backround">
                                 <div id="popup" class="row" style="margin-top: 11px;top:40%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivAmounts" style="margin-top:0px;">
+                                    @Html.Partial("_T_SALE_AMOUNT")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Transport" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Transporter")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Courier")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.CRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CRSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd')" />
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.CRSLNM, new { htmlAttributes = new { @class = "form-control", id = "CRSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Courier Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Eway Bill Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.EWAYBILLNO, new { htmlAttributes = new { @class = "form-control", id = "EWAYBILLNO", maxlength = 20, @placeholder = "Eway Bill Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "LR Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LRNO, new { htmlAttributes = new { @class = "form-control", id = "LRNO", maxlength = 15, @placeholder = "LR Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "LR Date")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LRDT, new { htmlAttributes = new { @class = "form-control", id = "LRDT", maxlength = 10, onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Vechicle Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LORRYNO, new { htmlAttributes = new { @class = "form-control", id = "LORRYNO", maxlength = 16, @placeholder = "Vechicle Number" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Gross Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.GRWT, new { htmlAttributes = new { @class = "form-control", id = "GRWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Gross Weight" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Net Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.NTWT, new { htmlAttributes = new { @class = "form-control", id = "NTWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Net Weight" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Tare Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRWT, new { htmlAttributes = new { @class = "form-control", id = "TRWT", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Tare Weight", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Cases Nos.")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.CASENOS, new { htmlAttributes = new { @class = "form-control", id = "CASENOS", maxlength = 500, @placeholder = "Cases Nos" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "No of Cases")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "No of Cases" } })
                                 </div>
                             </div>
                         </div>
@@ -454,7 +840,7 @@
                         </div>
                     </div>
                     <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
-                        <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div>
                                 <div id="partialdivDocument" style="margin-top:0px;">
                                     @Html.Partial("_UPLOADDOCUMENTS")

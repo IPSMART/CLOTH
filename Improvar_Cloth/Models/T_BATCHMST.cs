@@ -4,11 +4,12 @@ namespace Improvar.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
 
     [Table("T_BATCHMST")]
     public partial class T_BATCHMST
     {
-        public int? EMD_NO { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -21,42 +22,27 @@ namespace Improvar.Models
         public string TTAG { get; set; }
 
         [Key]
-        [Column(Order = 0)]
-        [StringLength(30)]
-        public string BATCHAUTONO { get; set; }
-
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int BATCHSLNO { get; set; }
+        [StringLength(25)]
+        public string BARNO { get; set; }
 
         [Required]
         [StringLength(30)]
         public string AUTONO { get; set; }
 
-        public int SLNO { get; set; }
-
-        [Required]
-        [StringLength(5)]
-        public string DOCCD { get; set; }
-
-        [Required]
-        [StringLength(6)]
-        public string DOCNO { get; set; }
-
-        public DateTime? DOCDT { get; set; }
-
-        [StringLength(40)]
-        public string BATCHNO { get; set; }
+        public short SLNO { get; set; }
 
         [StringLength(8)]
         public string SLCD { get; set; }
 
+        [Required]
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
 
+        [StringLength(2)]
+        public string JOBCD { get; set; }
+
         [Required]
-        [StringLength(10)]
+        [StringLength(8)]
         public string ITCD { get; set; }
 
         [StringLength(4)]
@@ -68,52 +54,51 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public double? NOS { get; set; }
+        public decimal? NOS { get; set; }
 
-        public double? QNTY { get; set; }
+        public decimal? QNTY { get; set; }
 
-        public double? STKQNTY { get; set; }
+        public decimal? RATE { get; set; }
 
-        public double? RATE { get; set; }
+        public decimal? AMT { get; set; }
+
+        public decimal? FLAGMTR { get; set; }
+
+        [StringLength(100)]
+        public string ITREM { get; set; }
+
+        [StringLength(30)]
+        public string PDESIGN { get; set; }
 
         [StringLength(30)]
         public string ORGBATCHAUTONO { get; set; }
 
-        public int? ORGBATCHSLNO { get; set; }
+        public short? ORGBATCHSLNO { get; set; }
 
-        public int? GSM { get; set; }
+        public decimal? DIA { get; set; }
 
-        [StringLength(5)]
-        public string TEXTURE { get; set; }
+        public decimal? CUTLENGTH { get; set; }
 
-        public int? GAUGE { get; set; }
-
-        public int? LL { get; set; }
+        [StringLength(10)]
+        public string LOCABIN { get; set; }
 
         [StringLength(15)]
-        public string MCHNNAME { get; set; }
-
-        public double? DIA { get; set; }
-
-        public double? CUTLENGTH { get; set; }
-
-        [StringLength(1)]
-        public string QNTYIN { get; set; }
+        public string SHADE { get; set; }
 
         [StringLength(15)]
-        public string COLRNM { get; set; }
+        public string MILLNM { get; set; }
 
-        [StringLength(15)]
-        public string MILLNM { get; set; }        
+        [StringLength(40)]
+        public string BATCHNO { get; set; }
 
         [Required]
         [StringLength(1)]
         public string STKTYPE { get; set; }
-        
-        [StringLength(2)]
-        public string JOBCD { get; set; }
 
-        [StringLength(1)]
-        public string FABTYPE { get; set; }
+        [StringLength(30)]
+        public string ORDAUTONO { get; set; }
+
+        public short? ORDSLNO { get; set; }
+
     }
 }

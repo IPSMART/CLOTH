@@ -159,6 +159,10 @@ namespace Improvar.Models
         public virtual DbSet<T_TXNOTH> T_TXNOTH { get; set; }
         public virtual DbSet<T_TXNPYMT> T_TXNPYMT { get; set; }
         public virtual DbSet<T_TXNTRANS> T_TXNTRANS { get; set; }
+        public virtual DbSet<T_BATCH_IMG_HDR> T_BATCH_IMG_HDR { get; set; }
+        public virtual DbSet<T_BATCH_IMG_HDR_DTL> T_BATCH_IMG_HDR_DTL { get; set; }
+        public virtual DbSet<T_BATCH_IMG_HDR_LINK> T_BATCH_IMG_HDR_LINK { get; set; }
+        public virtual DbSet<T_BATCHMST_PRICE> T_BATCHMST_PRICE { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (SchemaDBO != null)

@@ -461,9 +461,15 @@
     <Compile Include="Models\TSORDDTL_CANC.cs" />
     <Compile Include="Models\TSORDDTL_CANC_SIZE.cs" />
     <Compile Include="Models\TSORDDTL_SIZE.cs" />
+    <Compile Include="Models\TTXNAMT.cs" />
+    <Compile Include="Models\TTXNDTL.cs" />
     <Compile Include="Models\TTXNDTL_SEARCHPANEL.cs" />
     <Compile Include="Models\T_BATCHDTL.cs" />
     <Compile Include="Models\T_BATCHMST.cs" />
+    <Compile Include="Models\T_BATCHMST_PRICE.cs" />
+    <Compile Include="Models\T_BATCH_IMG_HDR.cs" />
+    <Compile Include="Models\T_BATCH_IMG_HDR_DTL.cs" />
+    <Compile Include="Models\T_BATCH_IMG_HDR_LINK.cs" />
     <Compile Include="Models\T_CNTRL_AUTH.cs" />
     <Compile Include="Models\T_CNTRL_DOC_PASS.cs" />
     <Compile Include="Models\T_CNTRL_HDR.cs" />
@@ -968,6 +974,8 @@
     <Content Include="Views\M_JobMaster\M_JobMaster.cshtml" />
     <Content Include="Views\M_Stktype\M_Stktype.cshtml" />
     <Content Include="Views\M_Payment\M_Payment.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_AMOUNT.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_PRODUCT.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

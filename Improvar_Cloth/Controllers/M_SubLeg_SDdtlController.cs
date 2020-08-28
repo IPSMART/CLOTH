@@ -339,32 +339,52 @@ namespace Improvar.Controllers
             return PartialView("_SearchPannel2", masterHelpFa.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "3", "3"));
 
         }
-        public ActionResult GetPRCCDhelp(string val)
+        public ActionResult GetPriceDetails(string val)
         {
-            DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            if (val == null)
+            try
             {
-                return PartialView("_Help2", masterHelp.PRCCD_help(val));
-            }
-            else
-            {
-                var query = (from c in DBF.M_PRCLST where (c.PRCCD == val) select c);
-                if (query.Any())
+                var str = masterHelp.PRCCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    string str = "";
-                    foreach (var i in query)
-                    {
-                        str = i.PRCCD + Cn.GCS() + i.PRCNM;
-                    }
-                    return Content(str);
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    return Content("0");
+                    return Content(str);
                 }
             }
-
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
+        //public ActionResult GetPRCCDhelp(string val)
+        //{
+        //    DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+        //    if (val == null)
+        //    {
+        //        return PartialView("_Help2", masterHelp.PRCCD_help(val));
+        //    }
+        //    else
+        //    {
+        //        var query = (from c in DBF.M_PRCLST where (c.PRCCD == val) select c);
+        //        if (query.Any())
+        //        {
+        //            string str = "";
+        //            foreach (var i in query)
+        //            {
+        //                str = i.PRCCD + Cn.GCS() + i.PRCNM;
+        //            }
+        //            return Content(str);
+        //        }
+        //        else
+        //        {
+        //            return Content("0");
+        //        }
+        //    }
+
+        //}
         public ActionResult GetSLCDhelp(string val, string Code)
         {
             DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());

@@ -823,6 +823,124 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetBarCodeData(string val)
+        {
+            TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+            Cn.getQueryString(VE);
+            string scm = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+            sql += "select a.PRCCD,a.PRCNM ";
+            sql += "from " + scm + ".M_PRCLST a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            sql += "order by a.PRCCD,a.PRCNM";
+            DataTable tbl = Master_Help.SQLquery(sql);
+
+            VE.DefaultView = true;
+            ModelState.Clear();
+            return PartialView("_T_SALE_PRODUCT", VE);
+
+        }
+        public ActionResult OPEN_AMOUNT(TransactionPackingSlipEntry VE, string AUTO_NO, int A_T_NOS, double A_T_QNTY, double A_T_AMT, double A_T_TAXABLE, double A_T_IGST_AMT, double A_T_CGST_AMT, double A_T_SGST_AMT, double A_T_CESS_AMT, double A_T_NET_AMT, double IGST_PER, double CGST_PER, double SGST_PER, double CESS_PER)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            string COM_CD = CommVar.Compcd(UNQSNO); string LOC_CD = CommVar.Loccd(UNQSNO);
+            string DATABASE = CommVar.CurSchema(UNQSNO).ToString();
+            string DATABASEF = CommVar.FinSchema(UNQSNO);
+            Cn.getQueryString(VE); string S_P = "";
+            S_P = "S";
+
+
+            ViewBag.NOS = A_T_NOS;
+            ViewBag.QNTY = A_T_QNTY;
+            ViewBag.TAXABLEAMT = A_T_TAXABLE;
+            ViewBag.NETAMT = A_T_NET_AMT;
+            ViewBag.IGSTAMT = A_T_IGST_AMT;
+            ViewBag.CGSTAMT = A_T_CGST_AMT;
+            ViewBag.SGSTAMT = A_T_SGST_AMT;
+            ViewBag.CESSAMT = A_T_CESS_AMT;
+            double A_CURR_AMT = 0; double A_TOTAL_AMT = 0; double A_IGST_AMT = 0; double A_CGST_AMT = 0; double A_SGST_AMT = 0; double A_CESS_AMT = 0; double A_DUTY_AMT = 0; double A_NET_AMT = 0;
+            try
+            {
+                string QUERY = "select a.amtcd, b.amtnm, b.calccode, b.addless, b.CALCTYPE,b.calcformula, a.amtdesc, b.glcd, b.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, a.sgstper, a.sgstamt, a.cgstper, a.cgstamt,a.CESSPER,";
+                QUERY = QUERY + " a.CESSAMT, a.dutyper, a.dutyamt from " + DATABASE + ".t_txnamt a, " + DATABASE + ".m_amttype b where a.amtcd=b.amtcd(+) and b.salpur='" + S_P + "' and a.autono='" + AUTO_NO + "' ";
+                QUERY = QUERY + " union select b.amtcd, b.amtnm, b.calccode, b.addless,b.CALCTYPE, b.calcformula, '' amtdesc, b.glcd, b.hsncode, 0 amtrate, 0 curr_amt, 0 amt,0 igstper, 0 igstamt, 0 sgstper, 0 sgstamt, 0 cgstper, 0 cgstamt, ";
+                QUERY = QUERY + " 0 CESSPER, 0 CESSAMT, 0 dutyper, 0 dutyamt from " + DATABASE + ".m_amttype b, " + DATABASE + ".m_cntrl_hdr c where b.m_autono=c.m_autono(+) and b.salpur='" + S_P + "'  and nvl(c.inactive_tag,'N') = 'N' ";
+                QUERY = QUERY + "and b.amtcd not in (select amtcd from " + DATABASE + ".t_txnamt where autono='" + AUTO_NO + "')";
+
+                var AMOUNT_DATA = Master_Help.SQLquery(QUERY);
+
+                //ModelState.Clear();
+
+                if (VE.TTXNAMT == null)
+                {
+                    VE.TTXNAMT = (from DataRow dr in AMOUNT_DATA.Rows
+                                  select new TTXNAMT()
+                                  {
+                                      AMTCD = dr["amtcd"].ToString(),
+                                      ADDLESS = dr["addless"].ToString(),
+                                      GLCD = dr["GLCD"].ToString(),
+                                      AMTNM = dr["amtnm"].ToString(),
+                                      CALCCODE = dr["calccode"].ToString(),
+                                      CALCTYPE = dr["CALCTYPE"].ToString(),
+                                      CALCFORMULA = dr["calcformula"].ToString(),
+                                      AMTDESC = dr["amtdesc"].ToString(),
+                                      HSNCODE = dr["hsncode"].ToString(),
+                                      AMTRATE = Convert.ToDouble(dr["amtrate"].ToString()),
+                                      CURR_AMT = Convert.ToDouble(dr["curr_amt"].ToString()),
+                                      AMT = Convert.ToDouble(dr["amt"].ToString()),
+                                      IGSTPER = IGST_PER,
+                                      CGSTPER = CGST_PER,
+                                      SGSTPER = SGST_PER,
+                                      CESSPER = CESS_PER,
+                                      IGSTAMT = Convert.ToDouble(dr["igstamt"].ToString()),
+                                      CGSTAMT = Convert.ToDouble(dr["cgstamt"].ToString()),
+                                      SGSTAMT = Convert.ToDouble(dr["sgstamt"].ToString()),
+                                      CESSAMT = Convert.ToDouble(dr["CESSAMT"].ToString()),
+                                      DUTYAMT = Convert.ToDouble(dr["dutyamt"].ToString()),
+                                  }).ToList();
+                }
+
+                for (int p = 0; p <= VE.TTXNAMT.Count - 1; p++)
+                {
+                    VE.TTXNAMT[p].SLNO = Convert.ToInt16(p + 1);
+
+                    VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT == null ? 0 : VE.TTXNAMT[p].AMT.Value +
+                                            VE.TTXNAMT[p].IGSTAMT == null ? 0 : VE.TTXNAMT[p].IGSTAMT.Value +
+                                            VE.TTXNAMT[p].CGSTAMT == null ? 0 : VE.TTXNAMT[p].CGSTAMT.Value +
+                                            VE.TTXNAMT[p].SGSTAMT == null ? 0 : VE.TTXNAMT[p].SGSTAMT.Value +
+                                            VE.TTXNAMT[p].CESSAMT == null ? 0 : VE.TTXNAMT[p].CESSAMT.Value +
+                                           VE.TTXNAMT[p].DUTYAMT == null ? 0 : VE.TTXNAMT[p].DUTYAMT.Value;
+
+                    A_CURR_AMT = A_CURR_AMT + VE.TTXNAMT[p].CURR_AMT == null ? 0 : VE.TTXNAMT[p].CURR_AMT.Value;
+                    A_TOTAL_AMT = A_TOTAL_AMT + VE.TTXNAMT[p].AMT == null ? 0 : VE.TTXNAMT[p].AMT.Value;
+                    A_IGST_AMT = A_IGST_AMT + VE.TTXNAMT[p].IGSTAMT == null ? 0 : VE.TTXNAMT[p].IGSTAMT.Value;
+                    A_CGST_AMT = A_CGST_AMT + VE.TTXNAMT[p].CGSTAMT == null ? 0 : VE.TTXNAMT[p].CGSTAMT.Value;
+                    A_SGST_AMT = A_SGST_AMT + VE.TTXNAMT[p].SGSTAMT == null ? 0 : VE.TTXNAMT[p].SGSTAMT.Value;
+                    A_CESS_AMT = A_CESS_AMT + VE.TTXNAMT[p].CESSAMT == null ? 0 : VE.TTXNAMT[p].CESSAMT.Value;
+                    A_NET_AMT = A_NET_AMT + A_TOTAL_AMT + A_IGST_AMT + A_CGST_AMT + A_SGST_AMT + A_CESS_AMT;
+                }
+                VE.A_T_CURR = A_CURR_AMT;
+                VE.A_T_AMOUNT = A_TOTAL_AMT;
+                VE.A_T_IGST = A_IGST_AMT;
+                VE.A_T_CGST = A_CGST_AMT;
+                VE.A_T_SGST = A_SGST_AMT;
+                VE.A_T_CESS = A_CESS_AMT;
+                VE.A_T_DUTY = A_DUTY_AMT;
+                VE.A_T_NET = A_NET_AMT;
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_SALE_AMOUNT", VE);
+
+            }
+            catch (Exception ex)
+            {
+                VE.DefaultView = false;
+                VE.DefaultDay = 0;
+                ViewBag.ErrorMessage = ex.Message + ex.InnerException;
+                return View(VE);
+            }
+        }
+
         public ActionResult AddDOCRow(TransactionPackingSlipEntry VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
