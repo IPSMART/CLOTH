@@ -59,5 +59,26 @@ namespace Improvar.ViewModels
         [StringLength(4)]
         public string ITGRPCD { get; set; }
         public string ITGRPNM { get; set; }
+        [StringLength(2)]
+        public string MTRLJOBCD { get; set; }
+        public string MTRLJOBNM { get; set; }
+        [StringLength(8)]
+        public string ITCD { get; set; }
+        public string ITNM { get; set; }
+        public string STYLENO { get; set; }
+        public string FABITCD { get; set; }
+        public string FABITNM { get; set; }
+        [StringLength(1)]
+        public string STKTYPE { get; set; }
+        [StringLength(4)]
+        public string PARTCD { get; set; }
+        public string PARTNM { get; set; }
+        [StringLength(4)]
+        public string COLRCD { get; set; }
+        public string COLRNM { get; set; }
+        [StringLength(4)]
+        public string SIZECD { get; set; }
+        public string SIZENM { get; set; }
+        public string SHADE { get; set; }
     }
 }

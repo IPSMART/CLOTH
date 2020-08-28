@@ -466,6 +466,10 @@
     <Compile Include="Models\TTXNDTL_SEARCHPANEL.cs" />
     <Compile Include="Models\T_BATCHDTL.cs" />
     <Compile Include="Models\T_BATCHMST.cs" />
+    <Compile Include="Models\T_BATCHMST_PRICE.cs" />
+    <Compile Include="Models\T_BATCH_IMG_HDR.cs" />
+    <Compile Include="Models\T_BATCH_IMG_HDR_DTL.cs" />
+    <Compile Include="Models\T_BATCH_IMG_HDR_LINK.cs" />
     <Compile Include="Models\T_CNTRL_AUTH.cs" />
     <Compile Include="Models\T_CNTRL_DOC_PASS.cs" />
     <Compile Include="Models\T_CNTRL_HDR.cs" />
