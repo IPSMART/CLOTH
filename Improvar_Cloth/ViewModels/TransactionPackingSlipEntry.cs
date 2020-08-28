@@ -1,6 +1,7 @@
 ﻿using Improvar.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -19,6 +20,8 @@ namespace Improvar.ViewModels
         public T_TXNPYMT T_TXNPYMT { get; set; }
         public T_TXNSTATUS T_TXNSTATUS { get; set; }
         public T_TXNTRANS T_TXNTRANS { get; set; }
+        public List<TTXNAMT> TTXNAMT { get; set; }
+        public List<TTXNDTL> TTXNDTL { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
@@ -33,5 +36,28 @@ namespace Improvar.ViewModels
         public bool RoundOff { get; set; }
         public string GONM { get; set; }
         public string PRCNM { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_CURR { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_AMOUNT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_IGST { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_SGST { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_CGST { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_CESS { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_DUTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? A_T_NET { get; set; }
+        public string TRANSLNM { get; set; }
+        public string CRSLNM { get; set; }
+        public string BARCODE { get; set; }
+        [StringLength(4)]
+        public string ITGRPCD { get; set; }
+        public string ITGRPNM { get; set; }
     }
 }

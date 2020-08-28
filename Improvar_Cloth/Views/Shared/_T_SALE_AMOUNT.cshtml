@@ -1,0 +1,189 @@
+﻿@model Improvar.ViewModels.TransactionPackingSlipEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) {
+            var titlee = $(this).find("input").val();
+            $(this).attr('title', titlee);
+        });
+    });
+</script>
+
+<div style="transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_AMOUNT_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Amount Details</b></center>
+                <center style="font-size: 11px;color: maroon; border: 1px inset;">
+                    <b><span style="font-variant: petite-caps;color: red;">Total :- </span></b>
+                    <span>
+                        NOS : @ViewBag.NOS ,
+                        Quantity : @ViewBag.QNTY ,
+                        Taxable Amount : @ViewBag.TAXABLEAMT ,
+                        Net Amount : @ViewBag.NETAMT ,
+                        Currency Amount : @ViewBag.CURRAMT,
+                        IGST Amount : @ViewBag.IGSTAMT ,
+                        CGST Amount : @ViewBag.CGSTAMT,
+                        SGST Amount : @ViewBag.SGSTAMT ,
+                        CESS Amount : @ViewBag.CESSAMT,
+                        DUTY Amount : @ViewBag.DUTYAMT
+                    </span>
+                </center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;max-height:192px;">
+                    <table id="_T_SALE_AMOUNT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1725px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell">SL No.</th>
+                                <th class="" style="width:100px;">Amount Code</th>
+                                <th class="" style="width:70px;">Add / Less</th>
+                                <th class="" style="width:200px;">Amount Name</th>
+                                <th class="" style="width:50px;">Calc. Code</th>
+                                <th class="" style="width:165px;">Description</th>
+                                <th class="" style="width:150px;">HSN Code</th>
+                                <th class="" style="width:165px;">Rate</th>
+                                <th class="" style="width:165px;">Currency Amount</th>
+                                <th class="" style="width:165px;">Amount</th>
+                                <th class="" style="width:75px;">IGST %</th>
+                                <th class="" style="width:165px;">IGST Amt</th>
+                                <th class="" style="width:75px;">CGST %</th>
+                                <th class="" style="width:165px;">CGST Amt</th>
+                                <th class="" style="width:75px;">SGST %</th>
+                                <th class="" style="width:165px;">SGST Amt</th>
+                                <th class="" style="width:75px;">CESS %</th>
+                                <th class="" style="width:165px;">CESS Amt</th>
+                                <th class="" style="width:75px;">DUTY %</th>
+                                <th class="" style="width:165px;">DUTY Amt</th>
+                                <th class="sticky-cell-opposite" style="width:165px;">Net Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.TTXNAMT != null)
+                            {
+                                for (int i = 0; i <= Model.TTXNAMT.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell">
+                                            @Html.TextBoxFor(model => Model.TTXNAMT[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", maxlength = 4, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTCD, new { id = "AMTCD_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => Model.TTXNAMT[i].GLCD, new { id = "GLCD_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNAMT[i].ADDLESS, new { id = "ADDLESS_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTNM, new { id = "AMTNM_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNAMT[i].CALCCODE, new { id = "CALCCODE_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                            @Html.HiddenFor(model => Model.TTXNAMT[i].CALCTYPE, new { id = "CALCTYPE_" + i })
+                                            @Html.HiddenFor(model => Model.TTXNAMT[i].CALCFORMULA, new { id = "CALCFORMULA_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTDESC, new { id = "AMTDESC_" + i, @class = " atextBoxFor ", maxlength = 50 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNAMT[i].HSNCODE, new { id = "HSNCODE_" + i, @class = " atextBoxFor ", maxlength = 8 })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].AMTRATE, new { htmlattributes = new { id = "AMTRATE_" + i, onFocus = "this.select()", onblur = "AmountCalculation(AMTRATE_" + i + ",A_AMT_" + i + ",CALCTYPE_" + i + ",CALCFORMULA_" + i + ",AIGSTPER_" + i + ",ACGSTPER_" + i + ",ASGSTPER_" + i + ",ACESSPER_" + i + ",ADUTYPER_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ",ANETAMT_" + i + ");", @class = " atextBoxFor text-right", maxlength = 12 } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].CURR_AMT, new { htmlattributes = new { id = "ACURR_AMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].AMT, new { htmlattributes = new { id = "A_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].IGSTPER, new { htmlattributes = new { id = "AIGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].IGSTAMT, new { htmlattributes = new { id = "AIGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",AIGSTPER_" + i + ",ANETAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].CGSTPER, new { htmlattributes = new { id = "ACGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].CGSTAMT, new { htmlattributes = new { id = "ACGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].SGSTPER, new { htmlattributes = new { id = "ASGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].SGSTAMT, new { htmlattributes = new { id = "ASGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ASGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].CESSPER, new { htmlattributes = new { id = "ACESSPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].CESSAMT, new { htmlattributes = new { id = "ACESSAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACESSPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].DUTYPER, new { htmlattributes = new { id = "ADUTYPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].DUTYAMT, new { htmlattributes = new { id = "ADUTYAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ADUTYPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                        </td>
+                                        <td class="sticky-cell-opposite">
+                                            @Html.EditorFor(model => Model.TTXNAMT[i].NETAMT, new { htmlattributes = new { id = "ANETAMT_" + i, maxlength = 12, @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="sticky-footer">
+                                <td class="sticky-cell"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.A_T_CURR, new { htmlattributes = new { id = "A_T_CURR", @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.A_T_AMOUNT, new { htmlattributes = new { id = "A_T_AMOUNT", @class = "atextBoxFor  text-right", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.A_T_IGST, new { htmlattributes = new { id = "A_T_IGST", @class = "atextBoxFor  text-right", @readonly = "readonly" } })
+                                </td>
+                                <td></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.A_T_CGST, new { htmlattributes = new { id = "A_T_CGST", @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.A_T_SGST, new { htmlattributes = new { id = "A_T_SGST", @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.A_T_CESS, new { htmlattributes = new { id = "A_T_CESS", @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.A_T_DUTY, new { htmlattributes = new { id = "A_T_DUTY", @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                </td>
+                                <td class="sticky-cell-opposite" style="text-align:right;">
+                                    @Html.EditorFor(model => Model.A_T_NET, new { htmlattributes = new { id = "A_T_NET", @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
