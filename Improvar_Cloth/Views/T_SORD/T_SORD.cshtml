@@ -3,7 +3,11 @@
     string PageControllerName = "T_SORD";
     string MenuName = "";
     string Caption = "";
-    string C_Length = "";
+    string DOCNO = "";
+    if (Model.T_SORD != null)
+    {
+        DOCNO = Model.T_SORD.DOCNO;
+    }
 }
 @{
     switch (Model.DOC_CODE)
@@ -55,7 +59,7 @@
                 DOC_CD: DOC_CD,
                 DOCDT: docdt,
                 AllowBDATE: '@Model.AllowBackDate',
-                DOCNO: '@Model.T_SORD.DOCNO'
+                DOCNO: '@DOCNO'
             },
             success: function (result) {
                 if (result != "") {
@@ -107,8 +111,8 @@
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter SalesMen", "SLMSLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter SalesMen", "SLMSLCD")) { return false; }
         return true;
     }
 </script>
@@ -1415,13 +1419,13 @@
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName,'urlnamePARTY');", @placeholder = "Code", maxlength = 8 } })
                                 <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD','BRANDCD')" />*@
-                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/PartyName=slnm=0','partylinkcd')" />
+                            @Html.EditorFor(model => model.T_SORD.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=SLAREA','partylinkcd')" />
                         </div>
                     </div>
                     <div class="col-md-10">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.PartyName, new { htmlAttributes = new { @class = "form-control", id = "PartyName", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.M_SUBLEG.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
                             @Html.HiddenFor(model => model.PARTYCD, new { @class = "form-control", id = "PARTYCD_H" })
                             @Html.HiddenFor(model => model.PARTYNM, new { @class = "form-control", id = "PARTYNM_H" })
                             @Html.HiddenFor(model => model.AREACD, new { @class = "form-control", id = "AREACD_H" })
@@ -1434,19 +1438,9 @@
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.DistrictName, new { htmlAttributes = new { @class = "form-control", id = "DistrictName", maxlength = 40, @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.M_SUBLEG.SLAREA, new { htmlAttributes = new { @class = "form-control", id = "SLAREA", maxlength = 40, @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
                         </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.AreaCode, new { htmlAttributes = new { @class = "form-control", id = "AreaCode", maxlength = 6, @title = "Only for View", @placeholder = "Area Code", @readonly = "readonly", tabindex = "-1" } })
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.AreaName, new { htmlAttributes = new { @class = "form-control", style = "color:#f11245", id = "AreaName", maxlength = 45, @title = "Only for View", @placeholder = "", @readonly = "readonly", tabindex = "-1" } })
-                        </div>
-                    </div>
+                    </div>       
                 </div>
                 @*<div class="col-lg-7" style="margin-left:-4px;">*@
                 <div class="row">
@@ -1623,7 +1617,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">

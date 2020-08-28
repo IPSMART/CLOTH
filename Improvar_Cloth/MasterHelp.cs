@@ -17,11 +17,10 @@ namespace Improvar
 {
     public class MasterHelp : MasterHelpFa
     {
-        string CS = null;
         Connection Cn = new Connection();
+        string UNQSNO = CommVar.getQueryStringUNQSNO();
         public string ITCD_help(string val, string ITGTYPE, string ITGRPCD = "", string FABITCD = "", string DOC_EFF_DT = "", string JOB_CD = "")
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
             try
             {
                 string scm1 = CommVar.CurSchema(UNQSNO);
@@ -162,36 +161,30 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string ITGRPCD_help(string val, string GRPTYPE)
+        public string ITGRPCD_help(string ITGRPCD, string GRPTYPE)
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
+            var UNQSNO = Cn.getQueryStringUNQSNO(); 
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
-                string[] itgrptype = GRPTYPE.Split(',');
-                var query = (from c in DB.M_GROUP
-                             where (itgrptype.Contains(c.ITGRPTYPE))
-                             select new
-                             {
-                                 ITGRPCD = c.ITGRPCD,
-                                 ITGRPNM = c.ITGRPNM,
-                                 ITGRPTYPE = c.ITGRPTYPE
-                             }).OrderBy(c => c.ITGRPNM).ToList();
-                if (val == null)
+                string sql = "select * from "+CommVar.CurSchema(UNQSNO)+ ".M_GROUP where 1=1";
+                if (GRPTYPE.retStr() != "") sql += " and ITGRPTYPE in (" + GRPTYPE.retSqlformat() + ") ";
+                if (ITGRPCD.retStr() != "") sql += " and ITGRPCD ='"+ITGRPCD+ "' ";
+                DataTable dt = SQLquery(sql);
+                if (ITGRPCD.retStr() == "" || dt.Rows.Count > 1)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= query.Count - 1; i++)
+                    for (int i = 0; i <= dt.Rows.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + query[i].ITGRPNM + "</td><td>" + query[i].ITGRPCD + "</td><td>" + query[i].ITGRPTYPE + "</td></tr>");
+                        SB.Append("<tr><td>" + dt.Rows[i]["ITGRPNM"] + "</td><td>" + dt.Rows[i]["ITGRPCD"] + "</td><td>" + dt.Rows[i]["ITGRPTYPE"] + "</td></tr>");
                     }
                     var hdr = "Item Group Name" + Cn.GCS() + "Item Group Code" + Cn.GCS() + "Item Group Type";
                     return Generate_help(hdr, SB.ToString());
                 }
                 else
                 {
-                    query = query.Where(a => a.ITGRPCD == val).ToList();
-                    if (query.Any())
+                    if (dt.Rows.Count > 0)
                     {
-                        return ToReturnFieldValues(query);
+                        return ToReturnFieldValues("", dt);
                     }
                     else
                     {

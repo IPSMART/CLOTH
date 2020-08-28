@@ -15,7 +15,8 @@ namespace Improvar.Models
         {
             Database.SetInitializer<ImprovarDB>(null);
         }
-        
+        public virtual DbSet<M_PAYMENT> M_PAYMENT { get; set; }
+        public virtual DbSet<M_STKTYPE> M_STKTYPE { get; set; }
         public virtual DbSet<M_JOBPRCCD> M_JOBPRCCD { get; set; }
         public virtual DbSet<M_MTRLJOBMST> M_MTRLJOBMST { get; set; }
         public virtual DbSet<M_RETDEB> M_RETDEB { get; set; }

@@ -1,0 +1,192 @@
+﻿@model Improvar.ViewModels.StockTypeEntry
+@{
+    ViewBag.Title = "Stock Type";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string PageControllerName = "M_Stktype";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#STKTYPE").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Name", "STKNAME")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_STKTYPE != null)
+        {
+            mldauto = Model.M_STKTYPE.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckSTKTYPE(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("CheckStockType", PageControllerName)",
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msg_ok_info").focus();
+                            $("#msgbody_info").html("Stock Type Already Exists : Please Enter a Valid Stock Type !! ");
+                            $("#STKTYPE").val("");
+                            message_value = "STKTYPE";
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function pageprinting() {
+        $("#btnprint").click();
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_STKTYPE.M_AUTONO)
+            @Html.HiddenFor(e => e.M_STKTYPE.EMD_NO)
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Stock Type")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_STKTYPE.STKTYPE, new { htmlAttributes = new { @class = "form-control", id = "STKTYPE", onblur = "CheckSTKTYPE('STKTYPE');", @placeholder = "Type", @onkeyup = "toUpper(this);", maxlength = 1 } })
+                        @Html.HiddenFor(a => a.M_STKTYPE.STKTYPE)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Name")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_STKTYPE.STKNAME, new { htmlAttributes = new { @class = "form-control", id = "STKNAME", @placeholder = "Name", maxlength = 15 } })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", " Short Name")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_STKTYPE.SHORTNM, new { htmlAttributes = new { @class = "form-control", id = "SHORTNM", @placeholder = "Short Name", maxlength = 15 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", " Flag")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_STKTYPE.FLAG1, new { htmlAttributes = new { @class = "form-control", id = "FLAG1", @placeholder = "Flag", maxlength = 5 } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Default")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.Checked)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                        @Html.Label("", "Deactivate")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="display: inline-block;">
+                        @Html.CheckBoxFor(model => model.Deactive)
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

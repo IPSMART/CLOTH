@@ -15,7 +15,7 @@ namespace Improvar.ViewModels
         public M_LINEMAST M_LINEMAST { get; set; }
         public M_SITEM M_SITEM { get; set; }
         public M_PARTS M_PARTS { get; set; }
-        public M_EMPMAS M_EMPMAS { get; set; }
+        public M_SUBLEG M_SUBLEG { get; set; }
         public M_JOBMSTSUB M_JOBMSTSUB { get; set; }
         public M_FLRLOCA M_FLRLOCA { get; set; }
         public T_SORD T_SORD { get; set; }
@@ -65,15 +65,9 @@ namespace Improvar.ViewModels
 
         [StringLength(12)]
         public string PayTermName { get; set; }
-        //public double? TOTBOX { get; set; }
-        //public double? TOTPCS { get; set; }
-
-        [StringLength(6)]
-        public string AreaCode { get; set; }
+        public double? TOTPCS { get; set; }
+        
         public string DistrictName { get; set; }
-
-        [StringLength(30)]
-        public string AreaName { get; set; }
 
         [StringLength(30)]
         public string DiscountName { get; set; }
