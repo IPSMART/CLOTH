@@ -152,7 +152,7 @@ namespace Improvar.Controllers
                 sGen = DBF.M_GENLEG.Find(sl.SCGLCD);
                 sGen1 = DBF.M_GENLEG.Find(sl.EXPGLCD);
                 sGRP = DB.M_PRODGRP.Find(sl.PRODGRPCD);
-                sHsn = DB.M_SITEM.Find(sl.HSNSACCD);
+                sHsn = DB.M_SITEM.Find(sl.HSNCODE);
                 sluom = DBF.M_UOM.Find(sl.UOMCD);
                 if (sll.INACTIVE_TAG == "Y")
                 {
@@ -321,7 +321,7 @@ namespace Improvar.Controllers
                         MJBMST.EXPGLCD = VE.M_JOBMST.EXPGLCD;
                         MJBMST.JBATCHNINI = VE.M_JOBMST.JBATCHNINI;
                         MJBMST.PRODGRPCD = VE.M_JOBMST.PRODGRPCD;
-                        MJBMST.HSNSACCD = VE.M_JOBMST.HSNSACCD;
+                        MJBMST.HSNCODE = VE.M_JOBMST.HSNCODE;
                         MJBMST.UOMCD = VE.M_JOBMST.UOMCD;
                         MJBMST.RMTRLJOBCD = VE.M_JOBMST.RMTRLJOBCD;
                         MJBMST.IMTRLJOBCD = VE.M_JOBMST.IMTRLJOBCD;
