@@ -426,7 +426,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.M_JOBMST.HSNSACCD, new { htmlAttributes = new { @class = "form-control", id = "HSNSACCD", @placeholder = "HSNSACCD", maxlength = 5, @list = "hsncode" } })
+                        @Html.EditorFor(model => model.M_JOBMST.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNSACCD", @placeholder = "HSNSACCD", maxlength = 5, @list = "hsncode" } })
                         <datalist id="hsncode">
                             @foreach (var jg in Model.Database_Combo1)
                             {

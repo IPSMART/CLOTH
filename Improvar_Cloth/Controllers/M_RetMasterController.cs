@@ -468,20 +468,20 @@ namespace Improvar.Controllers
                         MRETDEB.AREA = VE.M_RETDEB.AREA;
                         MRETDEB.CITY = VE.M_RETDEB.CITY;
                         MRETDEB.PIN = VE.M_RETDEB.PIN;
-                        string month = FC["month"].retStr();
-                        if (month == "") month = "01";
-                        string day = FC["day"].retStr();
-                        if (day == "") day = "01";
-                      string year = FC["DOBYEAR"].retStr();
-                        if (year == "") year = "1600";
-                        /*FC["month"].retStr();*/
-                        dateStr = day + "/" + month + "/" + year;
-                        DateTime DOB;
-                        if (DateTime.TryParse(dateStr, out DOB))
-                        {
-                            MRETDEB.DOB = DOB;
-                        }
-                        //MRETDEB.DOB = VE.M_RETDEB.DOB;
+                      //  string month = FC["month"].retStr();
+                      //  if (month == "") month = "01";
+                      //  string day = FC["day"].retStr();
+                      //  if (day == "") day = "01";
+                      //string year = FC["DOBYEAR"].retStr();
+                      //  if (year == "") year = "1600";
+                      //  /*FC["month"].retStr();*/
+                      //  dateStr = day + "/" + month + "/" + year;
+                      //  DateTime DOB;
+                      //  if (DateTime.TryParse(dateStr, out DOB))
+                      //  {
+                      //      MRETDEB.DOB = DOB;
+                      //  }
+                        MRETDEB.DOB = VE.M_RETDEB.DOB;
                         MRETDEB.DOW = VE.M_RETDEB.DOW;
                         MRETDEB.EMAIL = VE.M_RETDEB.EMAIL;
                         MRETDEB.ADD1 = VE.M_RETDEB.ADD1;
