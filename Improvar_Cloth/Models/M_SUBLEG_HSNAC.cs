@@ -32,6 +32,5 @@ namespace Improvar.Models
         [StringLength(8)]
         public string HSNSACCD { get; set; }
 
-        public virtual M_SUBLEG M_SUBLEG { get; set; }
     }
 }

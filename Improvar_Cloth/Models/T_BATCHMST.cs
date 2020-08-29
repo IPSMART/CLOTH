@@ -9,7 +9,6 @@ namespace Improvar.Models
     [Table("T_BATCHMST")]
     public partial class T_BATCHMST
     {
-       
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -39,6 +38,10 @@ namespace Improvar.Models
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
 
+        [Required]
+        [StringLength(1)]
+        public string STKTYPE { get; set; }
+
         [StringLength(2)]
         public string JOBCD { get; set; }
 
@@ -65,11 +68,18 @@ namespace Improvar.Models
 
         public decimal? FLAGMTR { get; set; }
 
+        public decimal? MTRL_COST { get; set; }
+
+        public decimal? OTH_COST { get; set; }
+
         [StringLength(100)]
         public string ITREM { get; set; }
 
         [StringLength(30)]
         public string PDESIGN { get; set; }
+
+        [StringLength(8)]
+        public string HSNCODE { get; set; }
 
         [StringLength(30)]
         public string ORGBATCHAUTONO { get; set; }
@@ -91,10 +101,6 @@ namespace Improvar.Models
 
         [StringLength(40)]
         public string BATCHNO { get; set; }
-
-        [Required]
-        [StringLength(1)]
-        public string STKTYPE { get; set; }
 
         [StringLength(30)]
         public string ORDAUTONO { get; set; }

@@ -97,9 +97,6 @@ namespace Improvar.Models
         public string LINECD { get; set; }
 
         [StringLength(1)]
-        public string REPROCESS { get; set; }
-
-        [StringLength(1)]
         public string BARGENTYPE { get; set; }
 
         public decimal? WPPER { get; set; }

@@ -41,8 +41,6 @@ namespace Improvar.Models
         [StringLength(15)]
         public string USR_SIP { get; set; }
 
-        public virtual MS_COUNTRY MS_COUNTRY { get; set; }
-
-        public virtual MS_STATE MS_STATE { get; set; }
+        
     }
 }

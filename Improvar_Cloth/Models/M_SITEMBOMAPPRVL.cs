@@ -39,7 +39,6 @@ namespace Improvar.Models
         public string REMARK { get; set; }
 
         public long M_AUTONO { get; set; }
-
-
+        
     }
 }

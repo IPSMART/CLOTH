@@ -6,13 +6,10 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("M_SUBLEG_GL")]
-    public partial class M_SUBLEG_GL
+    [Table("M_BLTYPE")]
+    public partial class M_BLTYPE
     {
-        public int? EMD_NO { get; set; }
-
-        [StringLength(1)]
-        public string TTAG { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -21,15 +18,13 @@ namespace Improvar.Models
         [StringLength(1)]
         public string DTAG { get; set; }
 
-        [Key]
-        [Column(Order = 0)]
-        [StringLength(8)]
-        public string SLCD { get; set; }
+        [StringLength(1)]
+        public string TTAG { get; set; }
 
         [Key]
-        [Column(Order = 1)]
-        [StringLength(8)]
-        public string GLCD { get; set; }
+        [StringLength(5)]
+        public string BLTYPE { get; set; }
 
+        public long M_AUTONO { get; set; }
     }
 }

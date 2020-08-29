@@ -59,6 +59,6 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string DEPT { get; set; }
-        public virtual M_SUBLEG M_SUBLEG { get; set; }
+      
     }
 }

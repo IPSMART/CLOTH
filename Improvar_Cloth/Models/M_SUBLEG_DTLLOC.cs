@@ -43,6 +43,6 @@ namespace Improvar.Models
         [StringLength(8)]
         public string TRSLCD { get; set; }
 
-        public virtual M_SUBLEG M_SUBLEG { get; set; }        
+        
     }
 }

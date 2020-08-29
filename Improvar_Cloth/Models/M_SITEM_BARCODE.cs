@@ -21,23 +21,20 @@ namespace Improvar.Models
         [StringLength(1)]
         public string TTAG { get; set; }
 
-        [Key]
-        [Column(Order = 0)]
         [StringLength(8)]
         public string ITCD { get; set; }
 
         [Key]
-        [Column(Order = 1)]
-        [StringLength(20)]
+        [StringLength(25)]
         public string BARCODE { get; set; }
 
         [StringLength(4)]
         public string SIZECD { get; set; }
 
         [StringLength(4)]
-        public string COLRCD { get; set; }        
+        public string COLRCD { get; set; }
 
         public decimal? STDRT { get; set; }
-        
+
     }
 }

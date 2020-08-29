@@ -9,10 +9,7 @@ namespace Improvar.Models
     [Table("M_SITEM_SIZE")]
     public partial class M_SITEM_SIZE
     {
-        public int? EMD_NO { get; set; }
-
-        [StringLength(1)]
-        public string TTAG { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -21,9 +18,12 @@ namespace Improvar.Models
         [StringLength(1)]
         public string DTAG { get; set; }
 
+        [StringLength(1)]
+        public string TTAG { get; set; }
+
         [Key]
         [Column(Order = 0)]
-        [StringLength(12)]
+        [StringLength(8)]
         public string ITCD { get; set; }
 
         [Key]

@@ -37,6 +37,13 @@ namespace Improvar.Models
         [StringLength(25)]
         public string BARNO { get; set; }
 
+        [Required]
+        [StringLength(2)]
+        public string MTRLJOBCD { get; set; }
+
+        [StringLength(4)]
+        public string PARTCD { get; set; }
+
         [StringLength(8)]
         public string HSNCODE { get; set; }
 
@@ -94,6 +101,9 @@ namespace Improvar.Models
         public string BATCHNO { get; set; }
 
         [StringLength(30)]
+        public string BALENO { get; set; }
+
+        [StringLength(30)]
         public string RECPROGAUTONO { get; set; }
 
         [StringLength(15)]
@@ -101,13 +111,6 @@ namespace Improvar.Models
 
         public short? RECPROGSLNO { get; set; }
 
-        [StringLength(30)]
-        public string ISSPROGAUTONO { get; set; }
-
-        public short? ISSPROGSLNO { get; set; }
-
-        [StringLength(15)]
-        public string ISSPROGLOTNO { get; set; }
-
+       
     }
 }

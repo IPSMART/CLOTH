@@ -349,6 +349,7 @@
     <Compile Include="Models\MUSRACSGRPDTL.cs" />
     <Compile Include="Models\M_AMTTYPE.cs" />
     <Compile Include="Models\M_AREACD.cs" />
+    <Compile Include="Models\M_BLTYPE.cs" />
     <Compile Include="Models\M_BRAND.cs" />
     <Compile Include="Models\M_CLASS1.cs" />
     <Compile Include="Models\M_CLASS2.cs" />
@@ -418,6 +419,7 @@
     <Compile Include="Models\M_SITEM_MEASURE.cs" />
     <Compile Include="Models\M_SITEM_PARTS.cs" />
     <Compile Include="Models\M_SITEM_SIZE.cs" />
+    <Compile Include="Models\M_SITEM_SLCD.cs" />
     <Compile Include="Models\M_SIZE.cs" />
     <Compile Include="Models\M_SIZEGRP.cs" />
     <Compile Include="Models\M_STKTYPE.cs" />

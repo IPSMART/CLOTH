@@ -34,6 +34,5 @@ namespace Improvar.Models
         [StringLength(1000)]
         public string DOCREM { get; set; }
 
-        //public virtual T_CNTRL_HDR T_CNTRL_HDR { get; set; }
     }
 }

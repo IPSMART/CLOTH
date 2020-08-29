@@ -9,7 +9,7 @@ namespace Improvar.Models
     [Table("M_SITEM_COLOR")]
     public partial class M_SITEM_COLOR
     {
-        public int? EMD_NO { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]
@@ -31,10 +31,10 @@ namespace Improvar.Models
         [Key]
         [Column(Order = 1)]
         [StringLength(4)]
-        public string COLRCD { get; set; }        
+        public string COLRCD { get; set; }
 
         [StringLength(1)]
         public string INACTIVE_TAG { get; set; }
-        
+
     }
 }

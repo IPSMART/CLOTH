@@ -9,6 +9,7 @@ namespace Improvar.Models
     [Table("T_TXNDTL")]
     public partial class T_TXNDTL
     {
+       
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -31,7 +32,9 @@ namespace Improvar.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public short SLNO { get; set; }
 
-        public short? BLSLNO { get; set; }
+        [Required]
+        [StringLength(2)]
+        public string MTRLJOBCD { get; set; }
 
         [Required]
         [StringLength(8)]
@@ -91,13 +94,9 @@ namespace Improvar.Models
 
         public decimal? FLAGMTR { get; set; }
 
-        public decimal? MTRL_COST { get; set; }
+        public decimal? TOTDISCAMT { get; set; }
 
-        public decimal? OTH_COST { get; set; }
-
-        public decimal? DISCAMT { get; set; }
-
-        public decimal? SCMDISCAMT { get; set; }
+        public decimal? TXBLVAL { get; set; }
 
         public decimal? IGSTAMT { get; set; }
 
@@ -119,11 +118,9 @@ namespace Improvar.Models
 
         public decimal? DUTYPER { get; set; }
 
-        public decimal? WGHT { get; set; }
+        public decimal? NETAMT { get; set; }
 
-        [Required]
-        [StringLength(2)]
-        public string MTRLJOBCD { get; set; }
+        public decimal? OTHRAMT { get; set; }
 
         [StringLength(16)]
         public string AGDOCNO { get; set; }
@@ -137,20 +134,21 @@ namespace Improvar.Models
         [StringLength(1)]
         public string DISCTYPE { get; set; }
 
+        public decimal? DISCAMT { get; set; }
+
         public decimal? SCMDISCRATE { get; set; }
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
 
-        public decimal? TDDISCAMT { get; set; }
+        public decimal? SCMDISCAMT { get; set; }
 
         public decimal? TDDISCRATE { get; set; }
 
         [StringLength(1)]
         public string TDDISCTYPE { get; set; }
 
-        [StringLength(30)]
-        public string AGSTCHAUTONO { get; set; }
+        public decimal? TDDISCAMT { get; set; }
 
         [StringLength(4)]
         public string PRCCD { get; set; }
@@ -159,5 +157,7 @@ namespace Improvar.Models
 
         [StringLength(25)]
         public string BARNO { get; set; }
+
+       
     }
 }

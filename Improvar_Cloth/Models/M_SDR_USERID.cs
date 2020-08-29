@@ -31,6 +31,6 @@ namespace Improvar.Models
         [StringLength(40)]
         public string USERID { get; set; }
 
-        public virtual M_SDR_QUERY M_SDR_QUERY { get; set; }
+      
     }
 }

@@ -35,6 +35,6 @@ namespace Improvar.Models
         public string MAINBARNO { get; set; }
 
         public short? MAINSLNO { get; set; }
-        
+
     }
 }

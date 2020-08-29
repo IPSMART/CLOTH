@@ -59,12 +59,12 @@ namespace Improvar.Models
         public virtual DbSet<M_SITEM_COLOR> M_SITEM_COLOR { get; set; }
         public virtual DbSet<M_SITEM_MEASURE> M_SITEM_MEASURE { get; set; }
         public virtual DbSet<M_SITEM_PARTS> M_SITEM_PARTS { get; set; }
-        public virtual DbSet<M_SIZE> M_SIZE { get; set; }        
+        public virtual DbSet<M_SIZE> M_SIZE { get; set; }
         public virtual DbSet<M_SIZEGRP> M_SIZEGRP { get; set; }
         public virtual DbSet<M_USR_ACS_DOCCD> M_USR_ACS_DOCCD { get; set; }
         public virtual DbSet<T_PSLIP> T_PSLIP { get; set; }
         public virtual DbSet<T_TXN> T_TXN { get; set; }
-        
+
         public virtual DbSet<M_PRCLST> M_PRCLST { get; set; }
         public virtual DbSet<T_TXNSTATUS> T_TXNSTATUS { get; set; }
         public virtual DbSet<M_CNTRL_HDR_REM> M_CNTRL_HDR_REM { get; set; }
@@ -91,7 +91,7 @@ namespace Improvar.Models
         public virtual DbSet<M_TAXGRP> M_TAXGRP { get; set; }
         public virtual DbSet<M_DESPMDCD> M_DESPMDCD { get; set; }
         public virtual DbSet<M_EMPMAS> M_EMPMAS { get; set; }
-        public virtual DbSet<M_EMPMAS_DET> M_EMPMAS_DET { get; set; }        
+        public virtual DbSet<M_EMPMAS_DET> M_EMPMAS_DET { get; set; }
         public virtual DbSet<M_PARTYGRP> M_PARTYGRP { get; set; }
         public virtual DbSet<M_DISCRTHDR> M_DISCRTHDR { get; set; }
         public virtual DbSet<M_AREACD> M_AREACD { get; set; }
@@ -163,7 +163,8 @@ namespace Improvar.Models
         public virtual DbSet<T_BATCH_IMG_HDR_DTL> T_BATCH_IMG_HDR_DTL { get; set; }
         public virtual DbSet<T_BATCH_IMG_HDR_LINK> T_BATCH_IMG_HDR_LINK { get; set; }
         public virtual DbSet<T_BATCHMST_PRICE> T_BATCHMST_PRICE { get; set; }
-       
+        public virtual DbSet<M_BLTYPE> M_BLTYPE { get; set; }
+        public virtual DbSet<M_SITEM_SLCD> M_SITEM_SLCD { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (SchemaDBO != null)

@@ -30,7 +30,6 @@ namespace Improvar.Models
         [Column(Order = 1)]
         [StringLength(2)]
         public string NATBUSCD { get; set; }
-
-        public virtual M_SUBLEG M_SUBLEG { get; set; }
+        
     }
 }

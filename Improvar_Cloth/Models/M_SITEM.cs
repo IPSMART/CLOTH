@@ -83,5 +83,7 @@ namespace Improvar.Models
 
         [StringLength(8)]
         public string LINKITCD { get; set; }
+
+       
     }
 }

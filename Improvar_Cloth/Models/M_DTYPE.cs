@@ -6,7 +6,7 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("SD_DH2020.M_DTYPE")]
+    [Table("M_DTYPE")]
     public partial class M_DTYPE
     {
         [Key]
