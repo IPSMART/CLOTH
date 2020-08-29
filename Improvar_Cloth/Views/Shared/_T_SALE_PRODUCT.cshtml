@@ -49,67 +49,68 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if (Model.TTXNDTL != null)
+                            @if (Model.TBATCHDTL != null)
                             {
-                                for (int i = 0; i <= Model.TTXNDTL.Count - 1; i++)
+                                for (int i = 0; i <= Model.TBATCHDTL.Count - 1; i++)
                                 {
                             <tr style="font-size:12px; font-weight:bold;">
                                 <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                    @Html.CheckBoxFor(model => model.TTXNDTL[i].Checked, new { id = "chkid_" + i, @TabIndex = -1 })
+                                    @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
+                                    @Html.HiddenFor(model => model.TBATCHDTL[i].TXNSLNO, new { id = "P_TXNSLNO_" + i })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].ITGRPNM, new { id = "ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                    @Html.HiddenFor(model => model.TTXNDTL[i].ITGRPCD, new { id = "ITGRPCD_" + i })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITGRPNM, new { id = "P_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => model.TBATCHDTL[i].ITGRPCD, new { id = "P_ITGRPCD_" + i })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].MTRLJOBNM, new { id = "MTRLJOBNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                    @Html.HiddenFor(model => model.TTXNDTL[i].MTRLJOBCD, new { id = "MTRLJOBCD_" + i })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].MTRLJOBNM, new { id = "P_MTRLJOBNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLJOBCD, new { id = "P_MTRLJOBCD_" + i })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].ITNM, new { id = "ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                    @Html.HiddenFor(model => model.TTXNDTL[i].ITCD, new { id = "ITCD_" + i })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITNM, new { id = "P_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => model.TBATCHDTL[i].ITCD, new { id = "P_ITCD_" + i })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].FABITNM, new { id = "FABITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                    @Html.HiddenFor(model => model.TTXNDTL[i].FABITCD, new { id = "FABITCD_" + i })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].FABITNM, new { id = "P_FABITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => model.TBATCHDTL[i].FABITCD, new { id = "P_FABITCD_" + i })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].STYLENO, new { id = "STYLENO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].STYLENO, new { id = "P_STYLENO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                                 <td class="">
-                                    @Html.DropDownListFor(model => Model.TTXNDTL[i].STKTYPE, new SelectList(Model.TTXNDTL[i].DropDown_list1, "value", "text", Model.TTXNDTL[i].STKTYPE), new { id = "STKTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
+                                    @Html.DropDownListFor(model => Model.TBATCHDTL[i].STKTYPE, new SelectList(Model.TBATCHDTL[i].DropDown_list1, "value", "text", Model.TBATCHDTL[i].STKTYPE), new { id = "STKTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].PARTNM, new { id = "PARTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                    @Html.HiddenFor(model => model.TTXNDTL[i].PARTCD, new { id = "PARTCD_" + i })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].PARTNM, new { id = "P_PARTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => model.TBATCHDTL[i].PARTCD, new { id = "P_PARTCD_" + i })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].COLRCD, new { id = "COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRCD, new { id = "P_COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].COLRNM, new { id = "COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRNM, new { id = "P_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].SIZENM, new { id = "SIZENM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                    @Html.HiddenFor(model => model.TTXNDTL[i].SIZECD, new { id = "SIZECD_" + i })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].SIZENM, new { id = "P_SIZENM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => model.TBATCHDTL[i].SIZECD, new { id = "P_SIZECD_" + i })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].SHADE, new { id = "SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].SHADE, new { id = "P_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                                 <td class="">
-                                    @Html.EditorFor(model => Model.TTXNDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
+                                    @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
                                 </td>
                                 <td class="">
-                                    @Html.TextBoxFor(model => Model.TTXNDTL[i].UOM, new { id = "UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "P_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                                 <td class="">
-                                    @Html.EditorFor(model => Model.TTXNDTL[i].NOS, new { htmlAttributes = new { id = "NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
+                                    @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
                                 </td>
                                 <td class="">
-                                    @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14 } })
+                                    @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "P_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14 } })
                                 </td>
                             </tr>
                                 }

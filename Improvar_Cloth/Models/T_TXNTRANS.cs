@@ -48,11 +48,11 @@ namespace Improvar.Models
         [StringLength(20)]
         public string EWAYBILLNO { get; set; }
 
-        public double? GRWT { get; set; }
+        public decimal? GRWT { get; set; }
 
-        public double? TRWT { get; set; }
+        public decimal? TRWT { get; set; }
 
-        public double? NTWT { get; set; }
+        public decimal? NTWT { get; set; }
 
         [StringLength(35)]
         public string RECVPERSON { get; set; }

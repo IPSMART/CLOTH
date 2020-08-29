@@ -38,6 +38,6 @@ namespace Improvar.Models
 
         [StringLength(4000)]
         public string DOC_STRING { get; set; }
-
+        
     }
 }

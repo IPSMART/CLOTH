@@ -79,47 +79,47 @@ namespace Improvar.Models
         [StringLength(2)]
         public string JOBCD { get; set; }
 
-        public double? NOS { get; set; }
+        public decimal? NOS { get; set; }
 
-        public double? QNTY { get; set; }
+        public decimal? QNTY { get; set; }
 
-        public double? BLQNTY { get; set; }
+        public decimal? BLQNTY { get; set; }
 
-        public double? RATE { get; set; }
+        public decimal? RATE { get; set; }
 
-        public double? AMT { get; set; }
+        public decimal? AMT { get; set; }
 
-        public double? FLAGMTR { get; set; }
+        public decimal? FLAGMTR { get; set; }
 
-        public double? MTRL_COST { get; set; }
+        public decimal? MTRL_COST { get; set; }
 
-        public double? OTH_COST { get; set; }
+        public decimal? OTH_COST { get; set; }
 
-        public double? DISCAMT { get; set; }
+        public decimal? DISCAMT { get; set; }
 
-        public double? SCMDISCAMT { get; set; }
+        public decimal? SCMDISCAMT { get; set; }
 
-        public double? IGSTAMT { get; set; }
+        public decimal? IGSTAMT { get; set; }
 
-        public double? IGSTPER { get; set; }
+        public decimal? IGSTPER { get; set; }
 
-        public double? CGSTAMT { get; set; }
+        public decimal? CGSTAMT { get; set; }
 
-        public double? CGSTPER { get; set; }
+        public decimal? CGSTPER { get; set; }
 
-        public double? SGSTAMT { get; set; }
+        public decimal? SGSTAMT { get; set; }
 
-        public double? SGSTPER { get; set; }
+        public decimal? SGSTPER { get; set; }
 
-        public double? CESSAMT { get; set; }
+        public decimal? CESSAMT { get; set; }
 
-        public double? CESSPER { get; set; }
+        public decimal? CESSPER { get; set; }
 
-        public double? DUTYAMT { get; set; }
+        public decimal? DUTYAMT { get; set; }
 
-        public double? DUTYPER { get; set; }
+        public decimal? DUTYPER { get; set; }
 
-        public double? WGHT { get; set; }
+        public decimal? WGHT { get; set; }
 
         [Required]
         [StringLength(2)]
@@ -130,21 +130,21 @@ namespace Improvar.Models
 
         public DateTime? AGDOCDT { get; set; }
 
-        public double? SHORTQNTY { get; set; }
+        public decimal? SHORTQNTY { get; set; }
 
-        public double? DISCRATE { get; set; }
+        public decimal? DISCRATE { get; set; }
 
         [StringLength(1)]
         public string DISCTYPE { get; set; }
 
-        public double? SCMDISCRATE { get; set; }
+        public decimal? SCMDISCRATE { get; set; }
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
 
-        public double? TDDISCAMT { get; set; }
+        public decimal? TDDISCAMT { get; set; }
 
-        public double? TDDISCRATE { get; set; }
+        public decimal? TDDISCRATE { get; set; }
 
         [StringLength(1)]
         public string TDDISCTYPE { get; set; }

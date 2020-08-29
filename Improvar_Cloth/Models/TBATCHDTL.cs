@@ -43,31 +43,31 @@ namespace Improvar.Models
         [Required]
         [StringLength(1)]
         public string STKDRCR { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? NOS { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? QNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? BLQNTY { get; set; }
 
-        public decimal? NOS { get; set; }
-
-        public decimal? QNTY { get; set; }
-
-        public decimal? BLQNTY { get; set; }
-
-        public decimal? FLAGMTR { get; set; }
+        public double? FLAGMTR { get; set; }
 
         [StringLength(100)]
         public string ITREM { get; set; }
-
-        public decimal? RATE { get; set; }
-
-        public decimal? DISCRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? RATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? DISCRATE { get; set; }
 
         [StringLength(1)]
         public string DISCTYPE { get; set; }
-
-        public decimal? SCMDISCRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? SCMDISCRATE { get; set; }
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
-
-        public decimal? TDDISCRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? TDDISCRATE { get; set; }
 
         [StringLength(1)]
         public string TDDISCTYPE { get; set; }
@@ -77,9 +77,9 @@ namespace Improvar.Models
 
         public short? ORDSLNO { get; set; }
 
-        public decimal? DIA { get; set; }
+        public double? DIA { get; set; }
 
-        public decimal? CUTLENGTH { get; set; }
+        public double? CUTLENGTH { get; set; }
 
         [StringLength(10)]
         public string LOCABIN { get; set; }
@@ -108,5 +108,30 @@ namespace Improvar.Models
 
         [StringLength(15)]
         public string ISSPROGLOTNO { get; set; }
+        public bool Checked { get; set; }
+        public string ITGRPCD { get; set; }
+        public string ITGRPNM { get; set; }
+        [StringLength(8)]
+        public string ITCD { get; set; }
+        public string ITNM { get; set; }
+        [StringLength(2)]
+        public string MTRLJOBCD { get; set; }
+        public string MTRLJOBNM { get; set; }
+        public string FABITCD { get; set; }
+        public string FABITNM { get; set; }
+        public string STYLENO { get; set; }
+        [StringLength(4)]
+        public string PARTCD { get; set; }
+        public string PARTNM { get; set; }
+        [StringLength(4)]
+        public string COLRCD { get; set; }
+        public string COLRNM { get; set; }
+        [StringLength(4)]
+        public string SIZECD { get; set; }
+        public string SIZENM { get; set; }
+        public string UOM { get; set; }
+        [StringLength(1)]
+        public string STKTYPE { get; set; }
+        public List<DropDown_list1> DropDown_list1 { get; set; }
     }
 }

@@ -47,9 +47,9 @@ namespace Improvar.Models
         [StringLength(1000)]
         public string REMARKS { get; set; }
 
-        public double? WT { get; set; }
+        public decimal? WT { get; set; }
 
-        public double? AMT { get; set; }
+        public decimal? AMT { get; set; }
 
         [Required]
         [StringLength(40)]

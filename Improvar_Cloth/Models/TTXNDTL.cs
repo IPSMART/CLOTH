@@ -82,41 +82,41 @@ namespace Improvar.Models
         public double? NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? QNTY { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? BLQNTY { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? AMT { get; set; }
 
         public double? FLAGMTR { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? MTRL_COST { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? OTH_COST { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? DISCAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SCMDISCAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? IGSTAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? IGSTPER { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? CGSTAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? CGSTPER { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SGSTAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SGSTPER { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? CESSAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? CESSPER { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? DUTYAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? DUTYPER { get; set; }
 
         public double? WGHT { get; set; }
@@ -129,21 +129,21 @@ namespace Improvar.Models
         public string AGDOCNO { get; set; }
 
         public DateTime? AGDOCDT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SHORTQNTY { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? DISCRATE { get; set; }
 
         [StringLength(1)]
         public string DISCTYPE { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SCMDISCRATE { get; set; }
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? TDDISCAMT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? TDDISCRATE { get; set; }
 
         [StringLength(1)]
@@ -162,18 +162,9 @@ namespace Improvar.Models
         public bool Checked { get; set; }
         public string ITGRPCD { get; set; }
         public string ITGRPNM { get; set; }
-        public string MTRLJOBNM { get; set; }
         public string ITNM { get; set; }
+        public string STYLENO { get; set; }
         public string FABITCD { get; set; }
         public string FABITNM { get; set; }
-        public string STYLENO { get; set; }
-        public List<DropDown_list1> DropDown_list1 { get; set; }
-        public string PARTNM { get; set; }
-        public string COLRNM { get; set; }
-        public string SIZENM { get; set; }
-        [StringLength(15)]
-        public string SHADE { get; set; }
-        public string UOM { get; set; }
-        public short TXNSLNO { get; set; }
     }
 }

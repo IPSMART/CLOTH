@@ -9,6 +9,7 @@ namespace Improvar.Models
     [Table("T_BATCHMST")]
     public partial class T_BATCHMST
     {
+       
         public short? EMD_NO { get; set; }
 
         [Required]
