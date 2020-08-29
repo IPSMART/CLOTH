@@ -1951,7 +1951,19 @@ namespace Improvar
                 }
             }
         }
-
+        public List<DropDown_list_BARGENTYPE> BARGEN_TYPE()
+        {
+            List<DropDown_list_BARGENTYPE> DDL = new List<DropDown_list_BARGENTYPE>();
+            DropDown_list_BARGENTYPE DDL1 = new DropDown_list_BARGENTYPE();
+            DDL1.Text = "Common";
+            DDL1.Value = "C";
+            DDL.Add(DDL1);
+            DropDown_list_BARGENTYPE DDL2 = new DropDown_list_BARGENTYPE();
+            DDL2.Text = "Entry";
+            DDL2.Value = "E";
+            DDL.Add(DDL2);
+            return DDL;
+        }
 
     }
 }

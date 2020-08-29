@@ -28,13 +28,18 @@ namespace Improvar.ViewModels
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public List<Database_Combo3> Database_Combo3 { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
+        public List<DropDown_list_BARGENTYPE> DropDown_list_BARGENTYPE { get; set; }
+        public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
         public string SLNM { get; set; }
+        public string SLAREA { get; set; }
+        public string GSTNO { get; set; }
         public string CONSLNM { get; set; }
         public string AGSLNM { get; set; }
         public string SAGSLNM { get; set; }
         public double TOTNOS { get; set; }
         public double TOTQNTY { get; set; }
         public double TOTTAX { get; set; }
+        public double TOTTAXVAL { get; set; }
         public bool RoundOff { get; set; }
         public string GONM { get; set; }
         public string PRCNM { get; set; }
@@ -97,5 +102,7 @@ namespace Improvar.ViewModels
         public string HSNCODE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GSTPER { get; set; }
+        [StringLength(4)]
+        public string TAXGRPCD { get; set; }
     }
 }

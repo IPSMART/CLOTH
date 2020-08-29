@@ -272,5 +272,15 @@ namespace Improvar.Models
         public string Value { get; set; }
         public string Text { get; set; }
     }
-
+    public class DropDown_list_BARGENTYPE
+    {
+        public string Value { get; set; }
+        public string Text { get; set; }
+    }
+    public class DropDown_list_MTRLJOBCD
+    {
+        public bool Checked { get; set; }
+        public string MTRLJOBCD { get; set; }
+        public string MTRLJOBNM { get; set; }
+    }
 }

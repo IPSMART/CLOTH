@@ -32,7 +32,30 @@ namespace Improvar.Controllers
                 {
                     TransactionPackingSlipEntry VE = (parkID == "") ? new TransactionPackingSlipEntry() : (Improvar.ViewModels.TransactionPackingSlipEntry)Session[parkID];
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
-                    ViewBag.formname = "Packing Slip Entry";
+                    switch (VE.MENU_PARA)
+                    {
+                        case "SBPCK":
+                            ViewBag.formname = "Packing Slip"; break;
+                        case "SB":
+                            ViewBag.formname = "Sales Bill (Agst Packing Slip)"; break;
+                        case "SBDIR":
+                            ViewBag.formname = "Sales Bill"; break;
+                        case "SR":
+                            ViewBag.formname = "Sales Return (SRM)"; break;
+                        case "SBCM":
+                            ViewBag.formname = "Cash Memo"; break;
+                        case "SBCMR":
+                            ViewBag.formname = "Cash Memo Return Note"; break;
+                        case "SBEXP":
+                            ViewBag.formname = "Sales Bill (Export)"; break;
+                        case "PI":
+                            ViewBag.formname = "Proforma Invoice"; break;
+                        case "PB":
+                            ViewBag.formname = "Purchase Bill"; break;
+                        case "PR":
+                            ViewBag.formname = "Purchase Return (PRM)"; break;
+                        default: ViewBag.formname = ""; break;
+                    }
                     string LOC = CommVar.Loccd(UNQSNO);
                     string COM = CommVar.Compcd(UNQSNO);
                     string YR1 = CommVar.YearCode(UNQSNO);
@@ -48,6 +71,26 @@ namespace Improvar.Controllers
 
                     VE.Database_Combo3 = (from n in DB.T_TXNOTH
                                           select new Database_Combo3() { FIELD_VALUE = n.DEALBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.DropDown_list_BARGENTYPE = Master_Help.BARGEN_TYPE();
+
+                    VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                    foreach(var v in VE.DropDown_list_MTRLJOBCD)
+                    {
+                        if(VE.MENU_PARA== "PB" || VE.MENU_PARA == "PR")
+                        {
+                            if(v.MTRLJOBCD== "FS" || v.MTRLJOBCD == " PL" || v.MTRLJOBCD == "DY")
+                            {
+                                v.Checked = true;
+                            }
+                        }
+                        else
+                        {
+                            if (v.MTRLJOBCD == "FS")
+                            {
+                                v.Checked = true;
+                            }
+                        }
+                    }
                     VE.DropDown_list_StkType = (from n in DB.M_STKTYPE
                                                 select new DropDown_list_StkType() { value = n.STKTYPE, text = n.STKNAME }).OrderBy(s => s.value).Distinct().ToList();
 
