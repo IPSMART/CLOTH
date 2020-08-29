@@ -22,6 +22,7 @@ namespace Improvar.ViewModels
         public T_TXNTRANS T_TXNTRANS { get; set; }
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
+        public List<TBATCHDTL> TBATCHDTL { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }

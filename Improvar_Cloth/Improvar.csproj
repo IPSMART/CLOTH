@@ -455,6 +455,7 @@
     <Compile Include="Models\SignAuthority.cs" />
     <Compile Include="Models\SubLedgerDetails.cs" />
     <Compile Include="Models\SubLedgerMaster.cs" />
+    <Compile Include="Models\TBATCHDTL.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
     <Compile Include="Models\TSORDDTL.cs" />
