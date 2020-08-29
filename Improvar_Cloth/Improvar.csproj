@@ -306,9 +306,7 @@
     <Compile Include="Models\MenuRightByUser.cs" />
     <Compile Include="Models\MSITEMBARCODE.cs" />
     <Compile Include="Models\MITEMPLISTADD.cs" />
-    <Compile Include="Models\MITEMPLISTADD_SIZE.cs" />
     <Compile Include="Models\MITEMPLISTDTL.cs" />
-    <Compile Include="Models\MITEMSIZE.cs" />
     <Compile Include="Models\MJOBMSTSUBSTDRT.cs" />
     <Compile Include="Models\MLocIFSC.cs" />
     <Compile Include="Models\MODULE.cs" />
@@ -328,6 +326,7 @@
     <Compile Include="Models\MSITEMCOLOR.cs" />
     <Compile Include="Models\MSITEMMEASURE.cs" />
     <Compile Include="Models\MSITEMPARTS.cs" />
+    <Compile Include="Models\MSITEMSLCD.cs" />
     <Compile Include="Models\MSUBLEGBRAND.cs" />
     <Compile Include="Models\MSUBLEGCONT.cs" />
     <Compile Include="Models\MSubLegIFSC.cs" />
@@ -349,6 +348,7 @@
     <Compile Include="Models\MUSRACSGRPDTL.cs" />
     <Compile Include="Models\M_AMTTYPE.cs" />
     <Compile Include="Models\M_AREACD.cs" />
+    <Compile Include="Models\M_BATCH_IMG_HDR.cs" />
     <Compile Include="Models\M_BLTYPE.cs" />
     <Compile Include="Models\M_BRAND.cs" />
     <Compile Include="Models\M_CLASS1.cs" />
@@ -415,10 +415,8 @@
     <Compile Include="Models\M_SITEMBOMSJOB.cs" />
     <Compile Include="Models\M_SITEMBOMSUPLR.cs" />
     <Compile Include="Models\M_SITEM_BARCODE.cs" />
-    <Compile Include="Models\M_SITEM_COLOR.cs" />
     <Compile Include="Models\M_SITEM_MEASURE.cs" />
     <Compile Include="Models\M_SITEM_PARTS.cs" />
-    <Compile Include="Models\M_SITEM_SIZE.cs" />
     <Compile Include="Models\M_SITEM_SLCD.cs" />
     <Compile Include="Models\M_SIZE.cs" />
     <Compile Include="Models\M_SIZEGRP.cs" />
@@ -943,11 +941,9 @@
     <Content Include="Views\M_Tax_Rate\M_Tax_Rate.cshtml" />
     <Content Include="Views\M_Tax_Rate_Code\M_Tax_Rate_Code.cshtml" />
     <Content Include="Views\M_ItemSize\M_ItemSize.cshtml" />
-    <Content Include="Views\Shared\_M_FinProduct_ASSORTEDSIZE.cshtml" />
-    <Content Include="Views\Shared\_M_FinProduct_COLOR.cshtml" />
     <Content Include="Views\Shared\_M_FinProduct_Measurement.cshtml" />
     <Content Include="Views\Shared\_M_FinProduct_PART.cshtml" />
-    <Content Include="Views\Shared\_M_FinProduct_SIZE.cshtml" />
+    <Content Include="Views\Shared\_M_FinProduct_SLCD.cshtml" />
     <Content Include="Views\M_SubBrand\M_SubBrand.cshtml" />
     <Content Include="Views\M_Brand\M_Brand.cshtml" />
     <Content Include="Views\M_Color\M_Color.cshtml" />

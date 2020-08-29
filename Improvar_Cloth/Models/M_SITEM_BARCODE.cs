@@ -9,6 +9,7 @@ namespace Improvar.Models
     [Table("M_SITEM_BARCODE")]
     public partial class M_SITEM_BARCODE
     {
+   
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -26,7 +27,7 @@ namespace Improvar.Models
 
         [Key]
         [StringLength(25)]
-        public string BARCODE { get; set; }
+        public string BARNO { get; set; }
 
         [StringLength(4)]
         public string SIZECD { get; set; }
@@ -36,5 +37,7 @@ namespace Improvar.Models
 
         public decimal? STDRT { get; set; }
 
+        [StringLength(1)]
+        public string INACTIVE_TAG { get; set; }
     }
 }

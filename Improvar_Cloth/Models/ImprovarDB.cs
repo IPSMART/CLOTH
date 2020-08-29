@@ -15,6 +15,12 @@ namespace Improvar.Models
         {
             Database.SetInitializer<ImprovarDB>(null);
         }
+        //public virtual DbSet<M_BATCH_IMG_HDR> M_BATCH_IMG_HDR { get; set; }
+        //public virtual DbSet<M_ITEMPLIST_ADD> M_ITEMPLIST_ADD { get; set; }
+        //public virtual DbSet<M_ITEMPLISTDTL> M_ITEMPLISTDTL { get; set; }
+        //public virtual DbSet<M_SITEM> M_SITEM { get; set; }
+        //public virtual DbSet<M_SITEM_BARCODE> M_SITEM_BARCODE { get; set; }
+        //public virtual DbSet<M_SITEM_SLCD> M_SITEM_SLCD { get; set; }
         public virtual DbSet<M_PAYMENT> M_PAYMENT { get; set; }
         public virtual DbSet<M_STKTYPE> M_STKTYPE { get; set; }
         public virtual DbSet<M_JOBPRCCD> M_JOBPRCCD { get; set; }
@@ -28,7 +34,7 @@ namespace Improvar.Models
         public virtual DbSet<M_SITEMBOMPART> M_SITEMBOMPART { get; set; }
         public virtual DbSet<M_SITEMBOMSJOB> M_SITEMBOMSJOB { get; set; }
         public virtual DbSet<M_SITEMBOMSUPLR> M_SITEMBOMSUPLR { get; set; }
-        public virtual DbSet<M_SITEM_SIZE> M_SITEM_SIZE { get; set; }
+        //public virtual DbSet<M_SITEM_SIZE> M_SITEM_SIZE { get; set; }
         public virtual DbSet<M_AMTTYPE> M_AMTTYPE { get; set; }
         public virtual DbSet<M_BRAND> M_BRAND { get; set; }
         public virtual DbSet<M_CNTRL_AUTH> M_CNTRL_AUTH { get; set; }
@@ -56,7 +62,7 @@ namespace Improvar.Models
         public virtual DbSet<M_SCHEME_HDR> M_SCHEME_HDR { get; set; }
         public virtual DbSet<M_SITEM> M_SITEM { get; set; }
         public virtual DbSet<M_SITEM_BARCODE> M_SITEM_BARCODE { get; set; }
-        public virtual DbSet<M_SITEM_COLOR> M_SITEM_COLOR { get; set; }
+        //public virtual DbSet<M_SITEM_COLOR> M_SITEM_COLOR { get; set; }
         public virtual DbSet<M_SITEM_MEASURE> M_SITEM_MEASURE { get; set; }
         public virtual DbSet<M_SITEM_PARTS> M_SITEM_PARTS { get; set; }
         public virtual DbSet<M_SIZE> M_SIZE { get; set; }

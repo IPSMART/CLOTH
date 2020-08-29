@@ -9,6 +9,7 @@ namespace Improvar.Models
     [Table("M_SITEM")]
     public partial class M_SITEM
     {
+
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -83,7 +84,5 @@ namespace Improvar.Models
 
         [StringLength(8)]
         public string LINKITCD { get; set; }
-
-       
     }
 }

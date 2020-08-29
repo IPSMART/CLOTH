@@ -1267,7 +1267,9 @@ namespace Improvar.Controllers
 
                     if (VE.APPLY_TO_ALL_SIZE == true)
                     {
-                        var SIZE_COUNT = (from c in DB.M_SITEM_SIZE join k in DB.M_SIZE on c.SIZECD equals k.SIZECD join i in DB.M_CNTRL_HDR on k.M_AUTONO equals i.M_AUTONO where (k.M_AUTONO == i.M_AUTONO && i.INACTIVE_TAG == "N" && c.ITCD == VE.M_SITEMBOM.ITCD) select new { SIZECD = k.SIZECD, SIZENM = k.SIZENM }).ToList();
+                        var SIZE_COUNT = (from c in DB.M_SIZE                                         
+                                          join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                                          where (c.M_AUTONO == i.M_AUTONO && i.INACTIVE_TAG == "N" ) select new { SIZECD = c.SIZECD, SIZENM = c.SIZENM }).ToList();
                         if (SIZE_COUNT != null && SIZE_COUNT.Count > 0)
                         {
                             List<MSITEMBOMPART> BOMPART = new List<MSITEMBOMPART>(); for (int i = 0; i <= VE.MSITEMBOMPART.Count - 1; i++) { if (VE.MSITEMBOMPART[i].JOBCD != null && VE.MSITEMBOMPART[i].SIZECD != null) { MSITEMBOMPART ITEMBOMPART = new MSITEMBOMPART(); ITEMBOMPART = VE.MSITEMBOMPART[i]; BOMPART.Add(ITEMBOMPART); } }

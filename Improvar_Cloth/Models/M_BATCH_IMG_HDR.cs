@@ -6,8 +6,8 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("M_SITEM_COLOR")]
-    public partial class M_SITEM_COLOR
+    [Table("M_BATCH_IMG_HDR")]
+    public partial class M_BATCH_IMG_HDR
     {
         public short? EMD_NO { get; set; }
 
@@ -23,18 +23,25 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 0)]
-        [StringLength(8)]
-        public string ITCD { get; set; }
-
-        public byte? SLNO { get; set; }
+        [StringLength(25)]
+        public string BARNO { get; set; }
 
         [Key]
         [Column(Order = 1)]
-        [StringLength(4)]
-        public string COLRCD { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public short SLNO { get; set; }
 
-        [StringLength(1)]
-        public string INACTIVE_TAG { get; set; }
+        [StringLength(100)]
+        public string DOC_FLNAME { get; set; }
 
+        [StringLength(10)]
+        public string DOC_EXTN { get; set; }
+
+        [StringLength(15)]
+        public string DOC_CTG { get; set; }
+
+        [StringLength(300)]
+        public string DOC_DESC { get; set; }
+        
     }
 }

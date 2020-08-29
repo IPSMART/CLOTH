@@ -899,9 +899,9 @@
             @Html.HiddenFor(a => a.STRPRICES)
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
-                <li><a data-toggle="tab" href="#Size">Size</a></li>
+                <li><a data-toggle="tab" href="#Slcd">Slcd</a></li>
                 @*<li><a data-toggle="tab" href="#AssortedSize">Assorted Size</a></li>*@
-                <li><a data-toggle="tab" href="#Color">Color</a></li>
+                @*<li><a data-toggle="tab" href="#Color">Color</a></li>*@
                 <li><a data-toggle="tab" href="#Parts">Parts</a></li>
                 <li><a data-toggle="tab" href="#BarCode">Bar Codes</a></li>
                 <li><a data-toggle="tab" href="#Measurement">Measurement</a></li>
@@ -1376,10 +1376,10 @@
                         }
                     </div>
                 </div>
-                <div id="Size" class="tab-pane fade" style="margin-top: 10px;">
+                <div id="Slcd" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
                         <div id="partialdivSIZE">
-                            @Html.Partial("_M_FinProduct_SIZE")
+                            @Html.Partial("_M_FinProduct_SLCD")
                         </div>
                     </div>
                 </div>

@@ -11,15 +11,15 @@ namespace Improvar.Models
     {
         public short? EMD_NO { get; set; }
 
-        [StringLength(1)]
-        public string TTAG { get; set; }
-
         [Required]
         [StringLength(4)]
         public string CLCD { get; set; }
 
         [StringLength(1)]
         public string DTAG { get; set; }
+
+        [StringLength(1)]
+        public string TTAG { get; set; }
 
         [Key]
         [Column(Order = 0)]
@@ -32,21 +32,10 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 2)]
-        [Required]
-        [StringLength(12)]
-        public string ITCD { get; set; }
+        [StringLength(25)]
+        public string BARNO { get; set; }
 
-        [StringLength(4)]
-        public string SIZECD { get; set; }
-
-        [StringLength(4)]
-        public string COLRCD { get; set; }
-
-        [Key]
-        [Column(Order = 3)]
-        [Required]
-        [StringLength(8)]
-        public string SIZECOLCD { get; set; }
-        public double RATE { get; set; }
+        public decimal RATE { get; set; }
+        
     }
 }

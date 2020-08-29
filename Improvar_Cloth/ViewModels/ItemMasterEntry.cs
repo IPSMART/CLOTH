@@ -29,9 +29,7 @@ namespace Improvar.ViewModels
         public List<MSITEMCOLOR> MSITEMCOLOR { get; set; }
         public List<MSITEMPARTS> MSITEMPARTS { get; set; }
         public List<MSITEMBARCODE> MSITEMBARCODE { get; set; }
-        public M_SITEM_SIZE M_SITEM_SIZE { get; set; }
-        public List<MSITEMSIZE> MSITEMSIZE { get; set; }
-        //public List<MSITEMBOX> MSITEMBOX { get; set; }
+        public List<MSITEMSLCD> MSITEMSLCD { get; set; }
         public List<MSITEMMEASURE> MSITEMMEASURE { get; set; }
         public List<DOCTYPE> Document { get; set; }
         public M_CNTRL_HDR M_CNTRL_HDR { get; set; }

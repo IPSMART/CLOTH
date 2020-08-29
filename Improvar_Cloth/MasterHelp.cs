@@ -202,10 +202,7 @@ namespace Improvar
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
                 var query = (from c in DB.M_SIZE join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { SIZECD = c.SIZECD, SIZENM = c.SIZENM, SZBARCODE = c.SZBARCODE }).ToList();
-                if (itcd != "")
-                {
-                    query = (from c in DB.M_SITEM_SIZE join k in DB.M_SIZE on c.SIZECD equals k.SIZECD join i in DB.M_CNTRL_HDR on k.M_AUTONO equals i.M_AUTONO where (k.M_AUTONO == i.M_AUTONO && i.INACTIVE_TAG == "N" && c.ITCD == itcd) select new { SIZECD = k.SIZECD, SIZENM = k.SIZENM, SZBARCODE = k.SZBARCODE }).ToList();
-                }
+             
                 if (val == null)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();

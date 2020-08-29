@@ -32,21 +32,14 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 2)]
-        [StringLength(8)]
-        public string ITCD { get; set; }
-
-        [StringLength(4)]
-        public string SIZECD { get; set; }
-
-        [StringLength(4)]
-        public string COLRCD { get; set; }
+        [StringLength(25)]
+        public string BARNO { get; set; }
 
         public decimal RATE { get; set; }
 
         public decimal? OLDRATE { get; set; }
 
-        [Key]
-        [Column(Order = 3)]
+        [Required]
         [StringLength(8)]
         public string SIZECOLCD { get; set; }
 
@@ -54,7 +47,7 @@ namespace Improvar.Models
         public string REMARKS { get; set; }
 
         [Key]
-        [Column(Order = 4)]
+        [Column(Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long M_AUTONO { get; set; }
 
