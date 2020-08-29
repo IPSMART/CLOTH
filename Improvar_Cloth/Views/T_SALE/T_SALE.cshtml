@@ -333,6 +333,7 @@
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
                     <li id="ProductTab_LI4" class=""><a data-toggle="tab" href="#ProductTab" accesskey="P">Product(P)</a></li>
+                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amounts" onclick="OpenAmount();" accesskey="A">Amounts(A)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
@@ -679,6 +680,15 @@
                             </div>
                             <div class="PopUp_Backround">
                                 <div id="popup" class="row" style="margin-top: 11px;top:40%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Detail" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivDetail" style="margin-top:0px;">
+                                    @Html.Partial("_T_SALE_DETAIL")
                                 </div>
                             </div>
                         </div>

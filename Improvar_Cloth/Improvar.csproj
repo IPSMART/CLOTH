@@ -977,6 +977,7 @@
     <Content Include="Views\M_Payment\M_Payment.cshtml" />
     <Content Include="Views\Shared\_T_SALE_AMOUNT.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PRODUCT.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_DETAIL.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
