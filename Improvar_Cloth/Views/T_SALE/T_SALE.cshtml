@@ -637,72 +637,73 @@
                                         @Html.Label("", "Material Job Code")
                                     </div>
                                 </div>
-                                <div class="col-md-6" style="margin-top:5px;width:auto;height:161px; overflow:auto;">
-                                    <div class="editor-field">
-                                        <table id="exampleLT" border="1" style="width: auto;">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="3">
-                                                        <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
-                                                    </th>
-                                                </tr>
-                                                <tr style="background-color:#808080;" class="grid_th">
-                                                    <th align="center"></th>
-                                                    <th align="center">
-                                                        Name
-                                                    </th>
-                                                    <th align="center">
-                                                        Code
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count(); i++)
-                                                {
+                                <div class="col-md-6" style="width:auto">
+                                    @*<div class="col-md-6" style="margin-top:5px;width:auto;height:161px; overflow:auto;">*@
+                                        <div class="editor-field">
+                                            <table id="exampleLT" border="1" style="width: auto;">
+                                                <thead>
                                                     <tr>
-                                                        @if (Model.DefaultAction == "V")
-                                                        {
-                                                            if (Model.DropDown_list_MTRLJOBCD[i].Checked == true)
-                                                            {
-                                                                <td align="center">
-                                                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
-                                                                </td>
-                                                                <td align="center">
-                                                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                                                    @Html.DisplayFor(model => STRC1)
-                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
-                                                                </td>
-                                                                <td align="center">
-                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                                                    @Html.DisplayFor(model => STRC)
-                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
-                                                                </td>
-                                                                            }
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <td align="center">
-                                                                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
-                                                                            </td>
-                                                                            <td align="center">
-                                                                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                                                                @Html.DisplayFor(model => STRC1)
-                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
-                                                                            </td>
-                                                                            <td align="center">
-                                                                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                                                                @Html.DisplayFor(model => STRC)
-                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
-                                                                            </td>
-                                                                                    }
-
+                                                        <th colspan="3">
+                                                            <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
+                                                        </th>
                                                     </tr>
-                                                                                    }
-                                            </tbody>
-                                        </table>
+                                                    <tr style="background-color:#808080;" class="grid_th">
+                                                        <th align="center"></th>
+                                                        <th align="center">
+                                                            Name
+                                                        </th>
+                                                        <th align="center">
+                                                            Code
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count(); i++)
+                                                    {
+                                                        <tr>
+                                                            @if (Model.DefaultAction == "V")
+                                                            {
+                                                                if (Model.DropDown_list_MTRLJOBCD[i].Checked == true)
+                                                                {
+                                                                    <td align="center">
+                                                                        @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
+                                                                    </td>
+                                                                    <td align="center">
+                                                                        @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                                                        @Html.DisplayFor(model => STRC1)
+                                                                        @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
+                                                                    </td>
+                                                                    <td align="center">
+                                                                        @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                                        @Html.DisplayFor(model => STRC)
+                                                                        @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                                    </td>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td align="center">
+                                                                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
+                                                                                </td>
+                                                                                <td align="center">
+                                                                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                                                                    @Html.DisplayFor(model => STRC1)
+                                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
+                                                                                </td>
+                                                                                <td align="center">
+                                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                                                    @Html.DisplayFor(model => STRC)
+                                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                                                </td>
+                                                                                        }
+
+                                                        </tr>
+                                                                                        }
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             <div class="row">
                                 <div class="col-md-1">
                                     <div class="editor-field">

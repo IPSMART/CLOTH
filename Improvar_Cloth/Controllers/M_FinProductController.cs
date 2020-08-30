@@ -210,9 +210,12 @@ namespace Improvar.Controllers
                             VE.MSITEMPARTS = ITEMPARTS;
 
                             List<MSITEMBARCODE> SITEMBARCODE = new List<MSITEMBARCODE>();
-                            MSITEMBARCODE MII = new MSITEMBARCODE();
-                            MII.SRLNO = 1;
-                            SITEMBARCODE.Add(MII);
+                            for (int i = 0; i < 15; i++)
+                            {
+                                MSITEMBARCODE MII = new MSITEMBARCODE();
+                                MII.SRLNO =Convert.ToByte( i + 1);
+                                SITEMBARCODE.Add(MII);
+                            }
                             VE.MSITEMBARCODE = SITEMBARCODE;
 
                             List<MSITEMMEASURE> ITEMMEASURE = new List<MSITEMMEASURE>();
@@ -567,55 +570,51 @@ namespace Improvar.Controllers
         {
             try
             {
-                //string sql = "select rate,sizecd,colrcd,prccd from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
-                //DataTable dt_prcrt = Master_Help.SQLquery(sql);
-                //ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                //var M_PRCLST = (from p in DBF.M_PRCLST
-                //                select new
-                //                {
-                //                    PRCCD = p.PRCCD,
-                //                    PRCNM = p.PRCNM
-                //                }).ToList();
+                string sql = "select rate,sizecd,colrcd,prccd from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
+                DataTable dt_prcrt = Master_Help.SQLquery(sql);
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                var M_PRCLST = (from p in DBF.M_PRCLST
+                                select new
+                                {
+                                    PRCCD = p.PRCCD,
+                                    PRCNM = p.PRCNM
+                                }).ToList();
 
-                //DataTable dt = new DataTable();
-                //DataColumn column;
-                //column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
-                //column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
+                DataTable dt = new DataTable();
+                DataColumn column;
+                column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
+                column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
 
-                //foreach (var plist in M_PRCLST)
-                //{
-                //    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
-                //}
+                foreach (var plist in M_PRCLST)
+                {
+                    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
+                }
 
-                //dt.Rows.Add("");
-                //dt.Rows[0]["SIZECD"] = "";//Add blank row
-                //dt.Rows[0]["COLRCD"] = "";
+                dt.Rows.Add("");
+                dt.Rows[0]["SIZECD"] = "";//Add blank row
+                dt.Rows[0]["COLRCD"] = "";
 
-                //VE.MSITEMCOLOR = VE.MSITEMCOLOR.Where(r => r.COLRCD != null).ToList();
-                //VE.MSITEMSLCD = VE.MSITEMSLCD.Where(r => r.SIZECD != null).ToList();
-                //foreach (var size in VE.MSITEMSLCD)
-                //{
-                //    foreach (var color in VE.MSITEMCOLOR)
-                //    {
-                //        dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
-                //        dt.Rows[rNo]["SIZECD"] = size.SIZECD;
-                //        dt.Rows[rNo]["COLRCD"] = color.COLRCD;
-                //        //for (int i = 0; i > 2; i++)
-                //        //{
-                //        //    //dt.Rows[rNo]["prc" + i] = "";
-                //        //}
-                //        if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
-                //        {
-                //            foreach (var plist in M_PRCLST)
-                //            {
-                //                string rate = (from DataRow dr in dt_prcrt.Rows where dr["sizecd"].retStr() == size.SIZECD && dr["colrcd"].retStr() == color.COLRCD && dr["prccd"].retStr() == plist.PRCCD select dr["rate"].retStr()).FirstOrDefault();
-                //                dt.Rows[rNo][plist.PRCCD] = rate;
-                //            }
-                //        }
-                //    }
-                //}
+               var MSITEMBARCODE = VE.MSITEMBARCODE.Where(r => r.COLRCD != null || r.SIZECD != null).ToList();            
+                    foreach (var color in VE.MSITEMBARCODE)
+                    {
+                        dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
+                        dt.Rows[rNo]["SIZECD"] = color.SIZECD;
+                        dt.Rows[rNo]["COLRCD"] = color.COLRCD;
+                    //for (int i = 0; i > 2; i++)
+                    //{
+                    //    //dt.Rows[rNo]["prc" + i] = "";
+                    //}
+                    if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
+                    {
+                        foreach (var plist in M_PRCLST)
+                        {
+                            string rate = (from DataRow dr in dt_prcrt.Rows where dr["sizecd"].retStr() == color.SIZECD && dr["colrcd"].retStr() == color.COLRCD && dr["prccd"].retStr() == plist.PRCCD select dr["rate"].retStr()).FirstOrDefault();
+                            dt.Rows[rNo][plist.PRCCD] = rate;
+                        }
+                    }
+                }
                 VE.DTPRICES = GetPrices(VE);
-                //TempData["DTPRICES"] = dt;
+                TempData["DTPRICES"] = dt;
                 VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
 
                 ModelState.Clear();

@@ -450,61 +450,7 @@
         });
     }
 </script>
-<script>
-    @*function AddRowCOLOR(urlstring, id) {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddRowCOLOR", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivCOLOR").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivCOLOR").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }*@
-    function AddRowCOLOR(ID) {
-        debugger;
-        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddRowCOLOR", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivCOLOR").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivCOLOR").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    function DeleteRowCOLOR(urlstring, id) {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteRowCOLOR", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivCOLOR").animate({ marginTop: '0px' }, 50);
-                $("#partialdivCOLOR").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
 
-</script>
 <script>
     function AddRowINVCD(urlstring, id) {
         $.ajax({
@@ -1181,7 +1127,11 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="editor-field">
-                                    <select id="gender" name="gender" class="form-control">
+
+                                    @Html.DropDownListFor(model => model.M_SITEM.GENDER, new SelectList(Model.Gender, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+
+
+                                    @*<select id="gender" name="gender" class="form-control">
                                         <option value="0" selected="selected">====Select====</option>
                                         @foreach (var i in Model.Gender)
                                         {
@@ -1201,7 +1151,7 @@
                                                 }
                                             }
                                         }
-                                    </select>
+                                    </select>*@
                                 </div>
                             </div>
                         </div>
@@ -1303,12 +1253,13 @@
                                     @Html.Label("", "Product Image")
                                 </div>
                             </div>
-
                             <div class="row" style="text-align:-webkit-center">
-                                @if (Model.UploadDOC.Count != 0)
+                                @if (Model.UploadDOC != null)
                                 {
-                                    if (Model.UploadDOC[0].DOC_FILE != null)
+                                    if (Model.UploadDOC.Count != 0)
                                     {
+                                        if (Model.UploadDOC[0].DOC_FILE != null)
+                                        {
                                         <div id="myCarousel" class="carousel slide" data-ride="carousel">
                                             <!-- Indicators -->
                                             <ol class="carousel-indicators" style="bottom:0px;">
@@ -1366,10 +1317,11 @@
                                                 <span class="sr-only">Next</span>
                                             </a>
                                         </div>
-                                    }
-                                    else
-                                    {
+                                        }
+                                        else
+                                        {
                                         <img src="~/Image/NoImage.jpg" id="emppic" width="190px" height="111px" style="margin-bottom: 2px;text-align:-webkit-center;" alt="No Image Found" />
+                                        }
                                     }
                                 }
                             </div>
@@ -1380,13 +1332,6 @@
                     <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
                         <div id="partialdivSIZE">
                             @Html.Partial("_M_FinProduct_SLCD")
-                        </div>
-                    </div>
-                </div>
-                <div id="Color" class="tab-pane fade" style="margin-top: 10px;">
-                    <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
-                        <div id="partialdivCOLOR">
-                            @Html.Partial("_M_FinProduct_COLOR")
                         </div>
                     </div>
                 </div>
