@@ -221,10 +221,22 @@ namespace Improvar.Controllers
             }
 
         }
-        public ActionResult GetGenLedger()
+        //public ActionResult GetGenLedger()
+        //{
+        //    ImprovarDB DBfin = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+        //    return PartialView("_Help2", Master_HelpFa.GLCD_help(DBfin));
+        //}
+        public ActionResult GetGenLedgerDetails(string val)
         {
-            ImprovarDB DBfin = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            return PartialView("_Help2", Master_HelpFa.GLCD_help(DBfin));
+            var str = Master_Help.GLCD_help(val);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
+            }
         }
         public ActionResult GetUOMDetails(string val)
         {

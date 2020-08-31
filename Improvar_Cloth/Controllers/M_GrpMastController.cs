@@ -207,10 +207,35 @@ namespace Improvar.Controllers
                     sPROD = DB.M_PRODGRP.Find(sl.PRODGRPCD);
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                     string class1cd = sl.CLASS1CD.retStr();
+                    string salglcd= sl.SALGLCD.retStr();
+                    string purglcd = sl.PURGLCD.retStr();
+                    string salretglcd = sl.SALRETGLCD.retStr();
+                    string purretglcd = sl.PURRETGLCD.retStr();
+
                     if (class1cd != "")
                     {
                         var classnm = (from a in DBF.M_CLASS1 where a.CLASS1CD == class1cd select new { a.CLASS1NM }).FirstOrDefault();
                         VE.CLASS1NM = classnm.CLASS1NM;
+                    }
+                    if (salglcd != "")
+                    {
+                        var salglnm = (from a in DBF.M_GENLEG where a.GLCD == salglcd select new { a.GLNM }).FirstOrDefault();
+                        VE.SALGLNM = salglnm.GLNM;
+                    }
+                    if (purglcd != "")
+                    {
+                        var purglnm = (from a in DBF.M_GENLEG where a.GLCD == salglcd select new { a.GLNM }).FirstOrDefault();
+                        VE.PURGLNM = purglnm.GLNM;
+                    }
+                    if (salretglcd != "")
+                    {
+                        var salretglnm = (from a in DBF.M_GENLEG where a.GLCD == salglcd select new { a.GLNM }).FirstOrDefault();
+                        VE.SALRETGLNM = salretglnm.GLNM;
+                    }
+                    if (purretglcd != "")
+                    {
+                        var purretglnm = (from a in DBF.M_GENLEG where a.GLCD == salglcd select new { a.GLNM }).FirstOrDefault();
+                        VE.PURRETGLNM = purretglnm.GLNM;
                     }
 
                     if (sll.INACTIVE_TAG == "Y")
@@ -318,6 +343,18 @@ namespace Improvar.Controllers
         public ActionResult GetClass1Details(string val)
         {
             var str = Master_Help.CLASS1(val);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
+            }
+        }
+        public ActionResult GetGenLedgerDetails(string val)
+        {
+            var str = Master_Help.GLCD_help(val);
             if (str.IndexOf("='helpmnu'") >= 0)
             {
                 return PartialView("_Help2", str);
@@ -449,6 +486,10 @@ namespace Improvar.Controllers
                         MGROUP.PRODGRPCD = VE.M_GROUP.PRODGRPCD;
                         MGROUP.HSNCODE = VE.M_GROUP.HSNCODE;
                         MGROUP.BARGENTYPE = VE.M_GROUP.BARGENTYPE;
+                        MGROUP.SALGLCD = VE.M_GROUP.SALGLCD;
+                        MGROUP.PURGLCD = VE.M_GROUP.PURGLCD;
+                        MGROUP.SALRETGLCD = VE.M_GROUP.SALRETGLCD;
+                        MGROUP.PURRETGLCD = VE.M_GROUP.PURRETGLCD;
                         MGROUP.CLASS1CD = VE.M_GROUP.CLASS1CD;
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_GROUP", MGROUP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
