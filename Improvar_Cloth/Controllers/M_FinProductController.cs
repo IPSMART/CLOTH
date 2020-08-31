@@ -518,57 +518,56 @@ namespace Improvar.Controllers
         {
             try
             {
-                string sql = "select rate,sizecd,colrcd,prccd from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
-                DataTable dt_prcrt = masterHelp.SQLquery(sql);
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                var M_PRCLST = (from p in DBF.M_PRCLST
-                                select new
-                                {
-                                    PRCCD = p.PRCCD,
-                                    PRCNM = p.PRCNM
-                                }).ToList();
+                //string sql = "select rate,sizecd,colrcd,prccd from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
+                //DataTable dt_prcrt = masterHelp.SQLquery(sql);
+                //ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                //var M_PRCLST = (from p in DBF.M_PRCLST
+                //                select new
+                //                {
+                //                    PRCCD = p.PRCCD,
+                //                    PRCNM = p.PRCNM
+                //                }).ToList();
 
 
-                DataTable dt = new DataTable();
-                DataColumn column;
-                column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
-                column = dt.Columns.Add("SZBARCODE", typeof(string)); column.Caption = "SZBARCODE";
-                column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
-                column = dt.Columns.Add("CLRBARCODE", typeof(string)); column.Caption = "CLRBARCODE";
+                //DataTable dt = new DataTable();
+                //DataColumn column;
+                //column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
+                //column = dt.Columns.Add("SZBARCODE", typeof(string)); column.Caption = "SZBARCODE";
+                //column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
+                //column = dt.Columns.Add("CLRBARCODE", typeof(string)); column.Caption = "CLRBARCODE";
 
-                foreach (var plist in M_PRCLST)
-                {
-                    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
-                }
+                //foreach (var plist in M_PRCLST)
+                //{
+                //    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
+                //}
 
-                dt.Rows.Add("");
-                dt.Rows[0]["SIZECD"] = "";//Add blank row
-                dt.Rows[0]["COLRCD"] = "";
-                dt.Rows[0]["SZBARCODE"] = "";
-                dt.Rows[0]["CLRBARCODE"] = "";
+                //dt.Rows.Add("");
+                //dt.Rows[0]["SIZECD"] = "";//Add blank row
+                //dt.Rows[0]["COLRCD"] = "";
+                //dt.Rows[0]["SZBARCODE"] = "";
+                //dt.Rows[0]["CLRBARCODE"] = "";
 
-                var MSITEMBARCODE = VE.MSITEMBARCODE.Where(r => r.COLRCD != null || r.SIZECD != null).ToList();
-                foreach (MSITEMBARCODE bar in MSITEMBARCODE)
-                {
-                    dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
-                    dt.Rows[rNo]["SIZECD"] = bar.SIZECD;
-                    dt.Rows[rNo]["COLRCD"] = bar.COLRCD;
-                    dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
-                    dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
-                    if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
-                    {
-                        foreach (var plist in M_PRCLST)
-                        {
-                            string rate = (from DataRow dr in dt_prcrt.Rows
-                                           where dr["sizecd"].retStr() == bar.SIZECD && dr["colrcd"].retStr() == bar.COLRCD && dr["prccd"].retStr() == plist.PRCCD
-                                           select dr["rate"].retStr()).FirstOrDefault();
-                            dt.Rows[rNo][plist.PRCCD] = rate;
-                        }
-                    }
-                }
-                //VE.DTPRICES = GetPrices(VE);
-                VE.DTPRICES = dt;
-                TempData["DTPRICES"] = dt;
+                //var MSITEMBARCODE = VE.MSITEMBARCODE.Where(r => r.COLRCD != null || r.SIZECD != null).ToList();
+                //foreach (MSITEMBARCODE bar in MSITEMBARCODE)
+                //{
+                //    dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
+                //    dt.Rows[rNo]["SIZECD"] = bar.SIZECD;
+                //    dt.Rows[rNo]["COLRCD"] = bar.COLRCD;
+                //    dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
+                //    dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
+                //    if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
+                //    {
+                //        foreach (var plist in M_PRCLST)
+                //        {
+                //            string rate = (from DataRow dr in dt_prcrt.Rows
+                //                           where dr["sizecd"].retStr() == bar.SIZECD && dr["colrcd"].retStr() == bar.COLRCD && dr["prccd"].retStr() == plist.PRCCD
+                //                           select dr["rate"].retStr()).FirstOrDefault();
+                //            dt.Rows[rNo][plist.PRCCD] = rate;
+                //        }
+                //    }
+                //}
+                VE.DTPRICES = GetPrices(VE);
+                TempData["DTPRICES"] = VE.DTPRICES;
                 VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
 
                 ModelState.Clear();
@@ -624,6 +623,11 @@ namespace Improvar.Controllers
             DataTable dt = new DataTable();
             try
             {
+                string sql = "";
+                sql += " select rate,prccd,SIZECD,COLRCD from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL a," + CommVar.CurSchema(UNQSNO) + ".M_SITEM_BARCODE b ";
+                sql += "where a.barno=b.barno and b.itcd='" + VE.M_SITEM.ITCD + "' and a.effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy')  ";
+                sql += "order by EFFDT desc ";
+                DataTable dt_prcrt = masterHelp.SQLquery(sql);
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 var M_PRCLST = (from p in DBF.M_PRCLST
                                 select new
@@ -631,53 +635,51 @@ namespace Improvar.Controllers
                                     PRCCD = p.PRCCD,
                                     PRCNM = p.PRCNM
                                 }).ToList();
+
+
                 DataColumn column;
                 column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
+                column = dt.Columns.Add("SZBARCODE", typeof(string)); column.Caption = "SZBARCODE";
                 column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
+                column = dt.Columns.Add("CLRBARCODE", typeof(string)); column.Caption = "CLRBARCODE";
 
                 foreach (var plist in M_PRCLST)
                 {
                     column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
                 }
-                string sql = "";
-                //sql += "select distinct ''''||a.prccd||''''|| ' '|| a.prccd jprccd, a.prccd  ,b.prcnm ";
-                //sql += "from " + CommVar.CurSchema(UNQSNO) + ".m_itemplistdtl a ," + CommVar.FinSchema(UNQSNO) + ".M_PRCLST b  ";
-                //sql += "where a.prccd=b.prccd and itcd='" +VE.M_SITEM.ITCD + "' ";
-                //DataTable dtprcmaster = Master_Help.SQLquery(sql);
-                // Join columns
-                //string prccds = string.Join(", ", dtprcmaster.Rows.OfType<DataRow>().Select(r => r[0].ToString()));
-                sql = "select PRCCD, EFFDT, ITCD, SIZECD, COLRCD,rate from " + CommVar.CurSchema(UNQSNO)
-                    + ".m_itemplistdtl  where itcd = '" + VE.M_SITEM.ITCD + "' and effdt=to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
-                //sql = "select * from( ";
-                //sql += "select a.itcd,a.sizecd,a.colrcd,a.rate,a.prccd from "+CommVar.CurSchema(UNQSNO)+ ".m_itemplistdtl a where itcd='" + VE.M_SITEM.ITCD + "') ";
-                //sql += "pivot  (sum(rate) for prccd in ("+ prccds + " ))  ";
-                DataTable dtprices = masterHelp.SQLquery(sql);
                 dt.Rows.Add("");
                 foreach (var plist in M_PRCLST)
                 {//add same item price
-                    DataRow drRATE = dtprices.Select("SIZECD is null AND  COLRCD is null AND PRCCD='" + plist.PRCCD + "'").FirstOrDefault();
+                    DataRow drRATE = dt_prcrt.Select("SIZECD is null AND  COLRCD is null AND PRCCD='" + plist.PRCCD + "'").FirstOrDefault();
                     if (drRATE != null)
                     {
                         dt.Rows[0][plist.PRCCD] = drRATE["rate"].ToString();
                     }
                 }
-                //foreach (var size in VE.MSITEMSLCD)
-                //{
-                //    foreach (var color in VE.MSITEMCOLOR)
-                //    {
-                //        dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
-                //        dt.Rows[rNo]["SIZECD"] = size.SIZECD;
-                //        dt.Rows[rNo]["COLRCD"] = color.COLRCD;
-                //        foreach (var plist in M_PRCLST)
-                //        {
-                //            DataRow drRATE = dtprices.Select("SIZECD='" + size.SIZECD + "' AND  COLRCD='" + color.COLRCD + "' AND PRCCD='" + plist.PRCCD + "'").FirstOrDefault();
-                //            if (drRATE != null)
-                //            {
-                //                dt.Rows[rNo][plist.PRCCD] = drRATE["rate"].ToString();
-                //            }
-                //        }
-                //    }
-                //}
+                dt.Rows[0]["SIZECD"] = "";//Add blank row
+                dt.Rows[0]["COLRCD"] = "";
+                dt.Rows[0]["SZBARCODE"] = "";
+                dt.Rows[0]["CLRBARCODE"] = "";
+
+                var MSITEMBARCODE = VE.MSITEMBARCODE.Where(r => r.COLRCD != null || r.SIZECD != null).ToList();
+                foreach (MSITEMBARCODE bar in MSITEMBARCODE)
+                {
+                    dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
+                    dt.Rows[rNo]["SIZECD"] = bar.SIZECD;
+                    dt.Rows[rNo]["COLRCD"] = bar.COLRCD;
+                    dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
+                    dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
+                    if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
+                    {
+                        foreach (var plist in M_PRCLST)
+                        {
+                            string rate = (from DataRow dr in dt_prcrt.Rows
+                                           where dr["sizecd"].retStr() == bar.SIZECD && dr["colrcd"].retStr() == bar.COLRCD && dr["prccd"].retStr() == plist.PRCCD
+                                           select dr["rate"].retStr()).FirstOrDefault();
+                            dt.Rows[rNo][plist.PRCCD] = rate;
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1692,7 +1694,7 @@ namespace Improvar.Controllers
                                 MIP.CLCD = MSITEM.CLCD;
                                 MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
                                 MIP.PRCCD = PRCCD;
-                                MIP.BARNO = MSITEMBARCODE.BARNO + prcCols[1] + prcCols[3];
+                                MIP.BARNO = MSITEMBARCODE.BARNO + prcCols[3] + prcCols[1];
                                 MIP.RATE = prcCols[j].retDbl();
                                 DB.M_ITEMPLISTDTL.Add(MIP);
                                 //}
@@ -1769,7 +1771,7 @@ namespace Improvar.Controllers
                 {
                     transaction.Rollback();
                     Cn.SaveException(ex, "");
-                    return Content(ex.Message + ex.InnerException?.Message);
+                    return Content(ex.Message + ex.InnerException?.InnerException);
                 }
             }
 

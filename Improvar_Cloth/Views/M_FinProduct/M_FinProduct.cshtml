@@ -1109,11 +1109,8 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="editor-field">
-
-                                    @Html.DropDownListFor(model => model.M_SITEM.GENDER, new SelectList(Model.Gender, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
-
-
-                                    @*<select id="gender" name="gender" class="form-control">
+                                    @Html.DropDownListFor(model => model.M_SITEM.GENDER, new SelectList(Model.Gender, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
+                                                                        @*<select id="gender" name="gender" class="form-control">
                                         <option value="0" selected="selected">====Select====</option>
                                         @foreach (var i in Model.Gender)
                                         {
