@@ -107,5 +107,9 @@ namespace Improvar.ViewModels
         [StringLength(4)]
         public string TAXGRPCD { get; set; }
         public string PSTYLENO { get; set; }
+        public double BALSTOCK { get; set; }
+        public double? FLAGMTR { get; set; }
+        [StringLength(1)]
+        public string DISCTYPE { get; set; }
     }
 }

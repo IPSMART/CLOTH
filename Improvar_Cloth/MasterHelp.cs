@@ -2066,7 +2066,28 @@ namespace Improvar
                 }
 
 }
-                
+        public List<DISC_TYPE> DISC_TYPE()
+        {
+            List<DISC_TYPE> DTYP = new List<DISC_TYPE>();
+            DISC_TYPE DTYP3 = new DISC_TYPE();
+            DTYP3.Text = "%";
+            DTYP3.Value = "P";
+            DTYP.Add(DTYP3);
+            DISC_TYPE DTYP2 = new DISC_TYPE();
+            DTYP2.Text = "Nos";
+            DTYP2.Value = "N";
+            DTYP.Add(DTYP2);
+            DISC_TYPE DTYP1 = new DISC_TYPE();
+            DTYP1.Text = "Qnty";
+            DTYP1.Value = "Q";
+            DTYP.Add(DTYP1);
+            DISC_TYPE DTYP4 = new DISC_TYPE();
+            DTYP4.Text = "Fixed";
+            DTYP4.Value = "F";
+            DTYP.Add(DTYP4);
+            return DTYP;
+        }
+
 
     }
 }
