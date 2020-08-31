@@ -304,6 +304,7 @@
     <Compile Include="Models\MDOCAUTHLAVEL5.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\MenuRightByUser.cs" />
+    <Compile Include="Models\Model1a.cs" />
     <Compile Include="Models\MSITEMBARCODE.cs" />
     <Compile Include="Models\MITEMPLISTADD.cs" />
     <Compile Include="Models\MITEMPLISTDTL.cs" />

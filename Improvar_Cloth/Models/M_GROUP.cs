@@ -43,11 +43,24 @@ namespace Improvar.Models
         [StringLength(1)]
         public string BARGENTYPE { get; set; }
 
-        public long M_AUTONO { get; set; }
         [StringLength(25)]
         public string SHORTNM { get; set; }
-        
 
+        [StringLength(8)]
+        public string SALGLCD { get; set; }
 
+        [StringLength(8)]
+        public string PURGLCD { get; set; }
+
+        [StringLength(8)]
+        public string SALRETGLCD { get; set; }
+
+        [StringLength(8)]
+        public string PURRETGLCD { get; set; }
+
+        public long M_AUTONO { get; set; }
+
+        [StringLength(8)]
+        public string CLASS1CD { get; set; }
     }
 }

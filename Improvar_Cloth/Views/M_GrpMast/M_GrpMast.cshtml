@@ -3,8 +3,9 @@
     ViewBag.Title = "Group Master";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-
+@{
+    string PageControllerName = "M_GrpMast";
+}
 
 <script src="~/Scripts/jquery.min.js"></script>
 <script type="text/javascript">
@@ -24,17 +25,16 @@
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         $("#WaitingMode").hide();
-   });
+    });
 </script>
 <script>
-   function requiredFieldValidator()
-   {
-       if (!emptyFieldCheck("Enter Group Name", "GRPNM")) { return false; }
-       if (!emptyFieldCheck("Enter Item Group Name", "ITGRPNM")) { return false; }
-       var grptyp = $("#grptype").val();
-       if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Group Name", "GRPNM")) { return false; }
+        if (!emptyFieldCheck("Enter Item Group Name", "ITGRPNM")) { return false; }
+        var grptyp = $("#grptype").val();
+        if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
         return true;
-   }
+    }
 </script>
 <script>
     @{
@@ -164,14 +164,12 @@
     }
 </script>
 <script>
-    function pageprinting()
-    {
+    function pageprinting() {
         $("#btnprint").click();
     }
 </script>
-@{
-    string PageControllerName = "M_GrpMast";
-}
+<script></script>
+
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -224,10 +222,10 @@
                             </div>
                         </div>
                         @*<div class="col-md-9">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 30 } })
-                            </div>
-                        </div>*@
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 30 } })
+                                </div>
+                            </div>*@
                         <div class="col-md-8">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_GROUP.GRPNM, new { htmlAttributes = new { @class = "form-control", id = "GRPNM", @placeholder = "Group Name", maxlength = 40, @list = "GRPNMlist" } })
@@ -248,21 +246,21 @@
                             </div>
                         </div>
                         <div class="col-md-9">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Item Group Name", maxlength = 40 } })
-                </div>
-            </div>
-                        @*<div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 40, @list = "ITGRPNMlist" } })
-                                <datalist id="ITGRPNMlist">
-                                    @foreach (var jg in Model.Database_Combo1)
-                                    {
-                                        <option value="@jg.FIELD_VALUE" />
-                                    }
-                                </datalist>
+                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Item Group Name", maxlength = 40 } })
                             </div>
-                        </div>*@
+                        </div>
+                        @*<div class="col-md-8">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 40, @list = "ITGRPNMlist" } })
+                                    <datalist id="ITGRPNMlist">
+                                        @foreach (var jg in Model.Database_Combo1)
+                                        {
+                                            <option value="@jg.FIELD_VALUE" />
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>*@
                     </div>
                     <div class="row">
                         <div class="col-md-7">
@@ -276,101 +274,192 @@
                             </div>
                         </div>
                     </div>
-                        <div class="row">
-                            <div class="col-md-7">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Group Type")
-                                    <b style="color:Red;">*</b>
-                                </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Group Type")
+                                <b style="color:Red;">*</b>
                             </div>
-                            <div class="col-md-6">
-                                <div class="editor-field">
-                                    <select id="grptype" name="grptype" class="form-control">
-                                        <option value="0" selected="selected">====Select====</option>
-                                        @foreach (var i in Model.GroupType)
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                <select id="grptype" name="grptype" class="form-control">
+                                    <option value="0" selected="selected">====Select====</option>
+                                    @foreach (var i in Model.GroupType)
+                                    {
+                                        if (Model.DefaultAction == "A")
                                         {
-                                            if (Model.DefaultAction == "A")
+                                            <option value="@i.value">@i.text</option>
+                                        }
+                                        else
+                                        {
+                                            if (Model.M_GROUP.ITGRPTYPE == i.value)
                                             {
-                                                <option value="@i.value">@i.text</option>
+                                                <option value="@i.value" selected="selected">@i.text</option>
                                             }
                                             else
                                             {
-                                                if (Model.M_GROUP.ITGRPTYPE == i.value)
-                                                {
-                                                    <option value="@i.value" selected="selected">@i.text</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value="@i.value">@i.text</option>
-                                                }
+                                                <option value="@i.value">@i.text</option>
                                             }
                                         }
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-7">
-                                <div class="editor-field" style="margin-top: 4px;">
-                                    @Html.Label("", "Product Group")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_GROUP.PRODGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRODGRPCD", onkeyup = "GetHelp('" + @Url.Action("GetProductGrp", PageControllerName) + "','PRODGRPCD/PRODGRPNM','1/0','Select Product Group Code','PRODGRPCD')", @placeholder = "Code", maxlength = 4, onblur = "SelectProductGrp(this.value,PRODGRPCD,PRODGRPNM);" } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" on onclick="GetHelp('@Url.Action("GetProductGrp", PageControllerName)','PRODGRPCD/PRODGRPNM','1/0','Select Product Group Code','PRODGRPCD')" />
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_PRODGRP.PRODGRPNM, new { htmlAttributes = new { @class = "form-control", id = "PRODGRPNM", @placeholder = "Product Group Name", maxlength = 15, @TabIndex = -1, @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-7">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "HSNCODE")
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_GROUP.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", @title = "Only Numeric", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "HSNCODE", maxlength = 8, @list = "HSNCODElist" } })
-                                    <datalist id="HSNCODElist">
-                                        @foreach (var jg in Model.Database_Combo2)
-                                        {
-                                            <option value="@jg.FIELD_VALUE" />
-                                        }
-                                    </datalist>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-7">
-                                <div class="editor-field" style="margin-top: 4px;">
-                                    @Html.Label("", "Bar Code Generation Type")
-
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => Model.M_GROUP.BARGENTYPE, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control" })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "De - Activate")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field" style="margin-top:6px;">
-                                    @Html.CheckBoxFor(model => model.Checked)
-                                </div>
+                                    }
+                                </select>
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Product Group")
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.PRODGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRODGRPCD", onkeyup = "GetHelp('" + @Url.Action("GetProductGrp", PageControllerName) + "','PRODGRPCD/PRODGRPNM','1/0','Select Product Group Code','PRODGRPCD')", @placeholder = "Code", maxlength = 4, onblur = "SelectProductGrp(this.value,PRODGRPCD,PRODGRPNM);" } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" on onclick="GetHelp('@Url.Action("GetProductGrp", PageControllerName)','PRODGRPCD/PRODGRPNM','1/0','Select Product Group Code','PRODGRPCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_PRODGRP.PRODGRPNM, new { htmlAttributes = new { @class = "form-control", id = "PRODGRPNM", @placeholder = "Product Group Name", maxlength = 15, @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "HSNCODE")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", @title = "Only Numeric", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "HSNCODE", maxlength = 8, @list = "HSNCODElist" } })
+                                <datalist id="HSNCODElist">
+                                    @foreach (var jg in Model.Database_Combo2)
+                                    {
+                                        <option value="@jg.FIELD_VALUE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Bar Code Generation Type")
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => Model.M_GROUP.BARGENTYPE, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "SAL Ledger Code")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.SALGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SALGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','SAL Ledger Details','SALGLCD','SALGLCD=GLCD=1/SALGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','SAL Ledger Details','SALGLCD','SALGLCD=GLCD=1/SALGLNM=GLNM=0');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','SAL Ledger Details','SALGLCD','SALGLCD=GLCD=1/SALGLNM=GLNM=0')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.SALGLNM, new { htmlAttributes = new { @class = "form-control", id = "SALGLNM", @placeholder = "Creditor Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "PUR Ledger Code")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                              
+                                @Html.EditorFor(model => model.M_GROUP.PURGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.PURGLNM, new { htmlAttributes = new { @class = "form-control", id = "PURGLNM", @placeholder = "Creditor Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "SALRET Ledger Code")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.SALRETGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SALRETGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','SALRETGLCD','SALRETGLCD=GLCD=1/SALRETGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','SALRETGLCD','SALRETGLCD=GLCD=1/SALRETGLNM=GLNM=0');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','PUR Ledger Details','SALRETGLCD','SALRETGLCD=GLCD=1/SALRETGLNM=GLNM=0')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.SALRETGLNM, new { htmlAttributes = new { @class = "form-control", id = "SALRETGLNM", @placeholder = "Creditor Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "PURRET Ledger Code")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.PURRETGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURRETGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURRETGLCD','PURRETGLCD=GLCD=1/PURRETGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURRETGLCD','PURRETGLCD=GLCD=1/PURRETGLNM=GLNM=0');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','PUR Ledger Details','PURRETGLCD','PURRETGLCD=GLCD=1/PURRETGLNM=GLNM=0')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.PURRETGLNM, new { htmlAttributes = new { @class = "form-control", id = "PURRETGLNM", @placeholder = "Creditor Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div id="CLASS1" class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Class 1")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.CLASS1CD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CLASS1CD", onkeydown = "GetHelpBlur('" + @Url.Action("GetClass1Details", PageControllerName) + "','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetClass1Details", PageControllerName) + "','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetClass1Details", PageControllerName)','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.CLASS1NM, new { htmlAttributes = new { @class = "form-control", id = "CLASS1NM", maxlength = 40, @title = "Only for View", @placeholder = "Class 1 Name", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "De - Activate")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.Checked)
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                     <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
                         <div id="partialdivDocument">
@@ -378,16 +467,16 @@
                         </div>
                     </div>
                 </div>
-                </div>
             </div>
-                }
-                else
-                {
-                @ViewBag.ErrorMessage
-                }
-                <div class="container">
-                    <div id="helpDIV">
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
 
-                    </div>
-                </div>
-                }
+        </div>
+    </div>
+}
