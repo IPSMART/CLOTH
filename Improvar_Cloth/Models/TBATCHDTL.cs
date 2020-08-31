@@ -138,5 +138,7 @@ namespace Improvar.Models
         public List<DISC_TYPE> DISC_TYPE { get; set; }
         public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
         public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
+        [StringLength(15)]
+        public string STKNAME { get; set; }
     }
 }

@@ -740,8 +740,7 @@ namespace Improvar
             glcd = tbl.Rows[0]["glcd"].retStr();
             return glcd;
         }
-
-        public DataTable retCutterBalFifo(string selslcd = "", string tdt = "", string curschema = "")
+              public DataTable retCutterBalFifo(string selslcd = "", string tdt = "", string curschema = "")
         {
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "", fdt = CommVar.FinStartDate(UNQSNO);
@@ -925,7 +924,6 @@ namespace Improvar
             }
             return rsiss;
         }
-
         public string retCaseNos(DataTable pslipdata)
         {
             string lastdocno = "";

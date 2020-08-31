@@ -33,7 +33,7 @@ namespace Improvar.Models
 
         [StringLength(16)]
         public string LORRYNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? LRDT { get; set; }
 
         [StringLength(15)]

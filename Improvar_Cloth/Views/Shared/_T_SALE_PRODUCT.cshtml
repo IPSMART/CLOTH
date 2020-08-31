@@ -13,7 +13,7 @@
         {
             @Html.ValidationSummary(true)
             <div class="grid_title">
-                <input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
+                @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
                 @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />
                     <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="HelB_image_buttonAddRemove" onclick="DeleteRow()" />*@
                 <div class="col-md-8">
@@ -26,33 +26,33 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_SALE_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1633px;">
+                    <table id="_T_SALE_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2775px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
-                                <th class="" style="width: 30px;text-align:center;">SL No.</th>
-                                <th class="" style="width: 30px;text-align:center;">Bill Sl #</th>
-                                <th class="" style="width: 59px;">ItmGrp</th>
-                                <th class="" style="width: 100px;">Material Job</th>
-                                <th class="" style="width: 92px;">Item</th>
+                                <th class="" style="width: 55px;text-align:center;">SL No.</th>
+                                <th class="" style="width: 53px;text-align:center;">Bill Sl #</th>
+                                <th class="">ItmGrp</th>
+                                <th class="">Material Job</th>
+                                <th class="">Item</th>
                                 @*<th class="" style="width: 179px;">Fabric Item</th>*@
-                                <th class="" style="width:96px;">Design</th>
-                                <th class="" style="width:65px;">Stock Type</th>
-                                <th class="" style="width: 59px;">Part</th>
+                                <th class="" style="width:162px;">Design</th>
+                                <th class="">Stock Type</th>
+                                <th class="">Part</th>
                                 <th class="" style="width: 59px;">Color Code</th>
-                                <th class="" style="width: 59px;">Color Name</th>
-                                <th class="" style="width: 59px;">Size</th>
-                                <th class="" style="width: 59px;">Shade</th>
+                                <th class="">Color Name</th>
+                                <th class="">Size</th>
+                                <th class="" style="width: 177px;">Shade</th>
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
                                 <th class="" style="width:47px;">UOM</th>
                                 <th class="" style="width:111px;text-align:right;">Nos</th>
                                 <th class="" style="width:111px;text-align:right;">Rate</th>
                                 <th class="" style="width:111px;text-align:right;">GST Per</th>
                                 <th class="" style="width:111px;text-align:right;">Disc (%)</th>
-                                <th class="" style="width:111px;">Disc Type</th>
-                                <th class="" style="width:111px;">Disc-1</th>
+                                <th class="" style="width:65px;">Disc Type</th>
+                                <th class="" style="width:50px;">Disc-1</th>
                                 <th class="" style="width:111px;text-align:right;">Disc1 Rate</th>
-                                <th class="" style="width:111px;">Disc-2</th>
+                                <th class="" style="width:50px;">Disc-2</th>
                                 <th class="" style="width:111px;text-align:right;">Disc2 Rate</th>
                                 <th class="" style="width:111px;">Image Upload</th>
                             </tr>
@@ -93,7 +93,9 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.DropDownListFor(model => Model.TBATCHDTL[i].STKTYPE, new SelectList(Model.TBATCHDTL[i].DropDown_list1, "value", "text", Model.TBATCHDTL[i].STKTYPE), new { id = "B_STKTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].STKNAME, new { id = "B_STKNAME_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i })
+                                            @*@Html.DropDownListFor(model => Model.TBATCHDTL[i].STKTYPE, new SelectList(Model.TBATCHDTL[i].DropDown_list1, "value", "text", Model.TBATCHDTL[i].STKTYPE), new { id = "B_STKTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })*@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].PARTNM, new { id = "B_PARTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -126,34 +128,43 @@
                                         </td>
 
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_GSTPER_", @onkeypress = "return numericOnly(this,2);", maxlength = 5 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTPER_", @onkeypress = "return numericOnly(this,2);", maxlength = 5 } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            @Html.DropDownListFor(model => Model.TBATCHDTL[i].DISCTYPE, new SelectList(Model.TBATCHDTL[i].DISC_TYPE, "value", "text", Model.TBATCHDTL[i].DISCTYPE), new { id = "B_DISCTYPE" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+
+                                            @*@Html.DropDownListFor(model => Model.TBATCHDTL[i].DISCTYPE, new SelectList(Model.TBATCHDTL[i].DISC_TYPE, "value", "text", Model.TBATCHDTL[i].DISCTYPE), new { id = "B_DISCTYPE" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })*@
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_TDDISCTYPE", maxlength = 1, @list = "TDDISCTYPE_List1" } })
-                                            <datalist id="TDDISCTYPE_List1">
-                                                @foreach (var jg in Model.TDDISC_TYPE)
-                                                {
-                                                    <option value="@jg.FIELD_VALUE" />
-                                                }
-                                            </datalist>
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+
+                                            @*@Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_TDDISCTYPE", maxlength = 1, @list = "TDDISCTYPE_List1" } })
+                                                <datalist id="TDDISCTYPE_List1">
+                                                    @foreach (var jg in Model.TDDISC_TYPE)
+                                                    {
+                                                        <option value="@jg.FIELD_VALUE" />
+                                                    }
+                                                </datalist>*@
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_SCMDISCTYPE", maxlength = 1, @list = "SCMDISCTYPE_List1" } })
-                                            <datalist id="SCMDISCTYPE_List1">
-                                                @foreach (var jg in Model.SCMDISC_TYPE)
-                                                {
-                                                    <option value="@jg.FIELD_VALUE" />
-                                                }
-                                            </datalist>
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].SCMDISCTYPE, new { id = "B_SCMDISCTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+
+                                            @*@Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_SCMDISCTYPE", maxlength = 1, @list = "SCMDISCTYPE_List1" } })
+                                                <datalist id="SCMDISCTYPE_List1">
+                                                    @foreach (var jg in Model.SCMDISC_TYPE)
+                                                    {
+                                                        <option value="@jg.FIELD_VALUE" />
+                                                    }
+                                                </datalist>*@
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
@@ -198,5 +209,13 @@
                 </div>
             </div>
         }
+    </div>
+    <div class="row">
+        <div class="col-md-1" style="width:auto;">
+            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="Fill_BarCodeData()" />
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
+        </div>
     </div>
 </div>

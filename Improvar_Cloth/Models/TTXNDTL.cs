@@ -166,5 +166,16 @@ namespace Improvar.Models
         public string STYLENO { get; set; }
         public string FABITCD { get; set; }
         public string FABITNM { get; set; }
+        public string UOM { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? TXBLVAL { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? NETAMT { get; set; }
+        [StringLength(8)]
+        public string GLCD { get; set; }
+        public short TXNSLNO { get; set; }
+        public string MTRLJOBNM { get; set; }
+        [StringLength(15)]
+        public string STKNAME { get; set; }
     }
 }
