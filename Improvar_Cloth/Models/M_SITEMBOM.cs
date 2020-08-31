@@ -29,6 +29,7 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 1)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime EFFDT { get; set; }
 
         [Required]
