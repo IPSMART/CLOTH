@@ -34,6 +34,10 @@ namespace Improvar.Models
         public short SLNO { get; set; }
 
         [Required]
+        [StringLength(6)]
+        public string GOCD { get; set; }
+
+        [Required]
         [StringLength(25)]
         public string BARNO { get; set; }
 
@@ -100,6 +104,9 @@ namespace Improvar.Models
         [StringLength(40)]
         public string BATCHNO { get; set; }
 
+        [StringLength(4)]
+        public string BALEYR { get; set; }
+
         [StringLength(30)]
         public string BALENO { get; set; }
 
@@ -110,7 +117,6 @@ namespace Improvar.Models
         public string RECPROGLOTNO { get; set; }
 
         public short? RECPROGSLNO { get; set; }
-
-       
+        
     }
 }

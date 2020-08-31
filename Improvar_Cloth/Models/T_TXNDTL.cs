@@ -72,6 +72,9 @@ namespace Improvar.Models
         [StringLength(40)]
         public string BATCHNO { get; set; }
 
+        [StringLength(4)]
+        public string BALEYR { get; set; }
+
         [StringLength(30)]
         public string BALENO { get; set; }
 
@@ -158,6 +161,12 @@ namespace Improvar.Models
         [StringLength(25)]
         public string BARNO { get; set; }
 
-       
+        [StringLength(8)]
+        public string GLCD { get; set; }
+
+        [StringLength(8)]
+        public string CLASS1CD { get; set; }
+
+      
     }
 }
