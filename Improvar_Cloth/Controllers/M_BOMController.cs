@@ -390,28 +390,28 @@ namespace Improvar.Controllers
                         var javaScriptSerializer1 = new System.Web.Script.Serialization.JavaScriptSerializer();
                         string JR1 = javaScriptSerializer1.Serialize(VE.MSITEMBOMMTRL);
                         i.ChildData = JR1;
-                        ////VE.MSITEMBOMMTRL_RMPM = (from a in DB.M_SITEMBOMINVMTRL
-                        ////                         where (a.BOMCD == sl.BOMCD && a.EFFDT == sl.EFFDT && a.SLNO == i.SLNO)
-                        ////                         select new MSITEMBOMMTRL_RMPM()
-                        ////                         {
-                        ////                             BOMCD = a.BOMCD,
-                        ////                             EFFDT = a.EFFDT,
-                        ////                             PSLNO = a.RSLNO,
-                        ////                             ITCD = a.ITCD,
-                        ////                             QNTY = a.QNTY,
-                        ////                             MTRLRT = a.MTRLRT,
-                        ////                             REMARK = a.REMARK,
-                        ////                             SIZE_LNK = a.SIZE_LNK,
-                        ////                             ParentSerialNo = i.SLNO,
-                        ////                             SLNO = i.SLNO
-                        ////                         }).OrderBy(s => s.PSLNO).ToList();
+                        VE.MSITEMBOMMTRL_RMPM = (from a in DB.M_SITEMBOMMTRL
+                                                 where (a.BOMCD == sl.BOMCD && a.EFFDT == sl.EFFDT && a.SLNO == i.SLNO)
+                                                 select new MSITEMBOMMTRL_RMPM()
+                                                 {
+                                                     BOMCD = a.BOMCD,
+                                                     EFFDT = a.EFFDT,
+                                                     PSLNO = a.RSLNO,
+                                                     ITCD = a.ITCD,
+                                                     QNTY = a.QNTY,
+                                                     MTRLRT = a.MTRLRT,
+                                                     REMARK = a.REMARK,
+                                                     SIZE_LNK = a.SIZE_LNK,
+                                                     ParentSerialNo = i.SLNO,
+                                                     SLNO = i.SLNO
+                                                 }).OrderBy(s => s.PSLNO).ToList();
                         //foreach (var x in VE.MSITEMBOMMTRL)
                         //{
                         //    var temp_data = (from xx in DBI.M_ITEM where xx.ITCD == x.ITCD select xx.ITDESCN).ToList();
                         //    x.ITNM = temp_data != null && temp_data.Count > 0 ? temp_data[0] : "";
                         //    //var temp = DBI.M_ITEM.Find(x.ITCD);
                         //}
-                        foreach (var x in VE.MSITEMBOMMTRL_RMPM) { var temp = DBI.M_ITEM.Find(x.ITCD); x.ITNM = temp.ITDESCN; }
+                        foreach (var x in VE.MSITEMBOMMTRL_RMPM) { var temp = DB.M_SITEM.Find(x.ITCD); x.ITNM = temp.ITNM; }
                         var javaScriptSerializer2 = new System.Web.Script.Serialization.JavaScriptSerializer();
                         string JR2 = javaScriptSerializer2.Serialize(VE.MSITEMBOMMTRL_RMPM);
                         i.ChildData_RMPM = JR2;
@@ -550,20 +550,20 @@ namespace Improvar.Controllers
         //        return Content(str);
         //    }
         //}
-        ////public ActionResult GetRMPMITEMDETAILS(string val)
-        ////{
-        ////    if (val == null)
-        ////    {
-        ////        //return PartialView("_Help2", Master_Help.INVENTORY_ITEM("001", "", val));
-        ////        return PartialView("_Help2", Master_Help.INVENTORY_ITEM("", "", val));
-        ////    }
-        ////    else
-        ////    {
-        ////        //string str = Master_Help.INVENTORY_ITEM("001", "", val);
-        ////        string str = Master_Help.INVENTORY_ITEM("", "", val);
-        ////        return Content(str);
-        ////    }
-        ////}
+        public ActionResult GetRMPMITEMDETAILS(string val)
+        {
+            if (val == null)
+            {
+                //return PartialView("_Help2", Master_Help.INVENTORY_ITEM("001", "", val));
+                return PartialView("_Help2", Master_Help.INVENTORY_ITEM("", "", val));
+            }
+            else
+            {
+                //string str = Master_Help.INVENTORY_ITEM("001", "", val);
+                string str = Master_Help.INVENTORY_ITEM("", "", val);
+                return Content(str);
+            }
+        }
         public ActionResult GetUOMDetails(string val)
         {
             try
@@ -1443,7 +1443,7 @@ namespace Improvar.Controllers
                                     ITEMBOMPART.EMD_NO = ITEMBOM.EMD_NO;
                                     ITEMBOMPART.BOMCD = ITEMBOM.BOMCD;
                                     ITEMBOMPART.EFFDT = ITEMBOM.EFFDT;
-                                    ////ITEMBOMPART.SLNO = VE.MSITEMBOMPART[i].SLNO;
+                                    ITEMBOMPART.SLNO = Convert.ToByte(VE.MSITEMBOMPART[i].SLNO);
                                     ITEMBOMPART.JOBCD = VE.MSITEMBOMPART[i].JOBCD;
                                     ITEMBOMPART.PARTCD = VE.MSITEMBOMPART[i].PARTCD;
                                     ITEMBOMPART.SIZECD = VE.MSITEMBOMPART[i].SIZECD;
@@ -1494,9 +1494,9 @@ namespace Improvar.Controllers
                                     DB.M_SITEMBOMPART.Add(ITEMBOMPART);
                                     DB.SaveChanges();
 
-                                    if (VE.MSITEMBOMPART[i].ChildData != null)
+                                    if (VE.MSITEMBOMPART[i].ChildData_RMPM != null)
                                     {
-                                        string data = VE.MSITEMBOMPART[i].ChildData;
+                                        string data = VE.MSITEMBOMPART[i].ChildData_RMPM;
                                         var helpM = new List<Improvar.Models.MSITEMBOMMTRL>();
                                         var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                                         helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.MSITEMBOMMTRL>>(data);
@@ -1573,19 +1573,19 @@ namespace Improvar.Controllers
                                         {
                                             if (helpM[j].PSLNO != 0 && helpM[j].ITCD != null)
                                             {
-                                                ////M_SITEMBOMINVMTRL INV_ITEMBOMMTRL = new M_SITEMBOMINVMTRL();
-                                                ////INV_ITEMBOMMTRL.CLCD = ITEMBOM.CLCD;
-                                                ////INV_ITEMBOMMTRL.EMD_NO = ITEMBOM.EMD_NO;
-                                                ////INV_ITEMBOMMTRL.BOMCD = ITEMBOM.BOMCD;
-                                                ////INV_ITEMBOMMTRL.EFFDT = ITEMBOM.EFFDT;
-                                                ////INV_ITEMBOMMTRL.SLNO = ITEMBOMPART.SLNO;
-                                                ////INV_ITEMBOMMTRL.RSLNO = helpM[j].PSLNO;
-                                                ////INV_ITEMBOMMTRL.ITCD = helpM[j].ITCD;
-                                                ////INV_ITEMBOMMTRL.QNTY = helpM[j].QNTY;
-                                                ////INV_ITEMBOMMTRL.MTRLRT = helpM[j].MTRLRT;
-                                                ////INV_ITEMBOMMTRL.SIZE_LNK = helpM[j].SIZE_LNK;
-                                                ////INV_ITEMBOMMTRL.REMARK = helpM[j].REMARK;
-                                                ////DB.M_SITEMBOMINVMTRL.Add(INV_ITEMBOMMTRL);
+                                                //M_SITEMBOMMTRL INV_ITEMBOMMTRL = new M_SITEMBOMMTRL();
+                                                //INV_ITEMBOMMTRL.CLCD = ITEMBOM.CLCD;
+                                                //INV_ITEMBOMMTRL.EMD_NO = ITEMBOM.EMD_NO;
+                                                //INV_ITEMBOMMTRL.BOMCD = ITEMBOM.BOMCD;
+                                                //INV_ITEMBOMMTRL.EFFDT = ITEMBOM.EFFDT;
+                                                //INV_ITEMBOMMTRL.SLNO = ITEMBOMPART.SLNO;
+                                                //INV_ITEMBOMMTRL.RSLNO = Convert.ToByte(helpM[j].PSLNO);
+                                                //INV_ITEMBOMMTRL.ITCD = helpM[j].ITCD;
+                                                //INV_ITEMBOMMTRL.QNTY = helpM[j].QNTY;
+                                                //INV_ITEMBOMMTRL.MTRLRT = helpM[j].MTRLRT;
+                                                //INV_ITEMBOMMTRL.SIZE_LNK = helpM[j].SIZE_LNK;
+                                                //INV_ITEMBOMMTRL.REMARK = helpM[j].REMARK;
+                                                //DB.M_SITEMBOMMTRL.Add(INV_ITEMBOMMTRL);
                                             }
                                         }
                                     }
