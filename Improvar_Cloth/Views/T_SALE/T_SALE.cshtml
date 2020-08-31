@@ -627,8 +627,8 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','BARCODE','BARCODE=slcd=1/CONSLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','BARCODE','BARCODE=slcd=1/CONSLNM=slnm=0');", @placeholder = "Bar Code", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Consignee Details','BARCODE','BARCODE=slcd=1/CONSLNM=slnm=0')" />
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/ITGRPCD=ITGRPCD/ITGRPNM=ITGRPNM/ITCD=ITCD/STYLENO=STYLENO/COLRCD=COLRCD/COLRNM=COLRNM/SIZECD=SIZECD/SIZENM=SIZENM/UOM=UOM/HSNCODE=HSNCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/ITGRPCD=ITGRPCD/ITGRPNM=ITGRPNM/ITCD=ITCD/STYLENO=STYLENO/COLRCD=COLRCD/COLRNM=COLRNM/SIZECD=SIZECD/SIZENM=SIZENM/UOM=UOM/HSNCODE=HSNCODE');", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/ITGRPCD=ITGRPCD/ITGRPNM=ITGRPNM/ITCD=ITCD/STYLENO=STYLENO/COLRCD=COLRCD/COLRNM=COLRNM/SIZECD=SIZECD/SIZENM=SIZENM/UOM=UOM/HSNCODE=HSNCODE')" />
                                         </div>
                                     </div>
                                     @*<div class="col-md-8">
@@ -733,8 +733,8 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/FABITCD=fabitcd=7/FABITNM=fabitnm=6/HSNCODE=hsncode','ITGRPCD')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/FABITCD=fabitcd=7/FABITNM=fabitnm=6/HSNCODE=hsncode','ITGRPCD');", @placeholder = "Item Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/FABITCD=fabitcd=7/FABITNM=fabitnm=6/HSNCODE=hsncode','ITGRPCD')" />
+                                            @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0','ITGRPCD')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0','ITGRPCD');", @placeholder = "Item Code", maxlength = 8 } })
+                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0','ITGRPCD')" />
                                             @Html.HiddenFor(model => model.ITNM, new { id = "ITNM" })
                                         </div>
                                     </div>
@@ -856,9 +856,7 @@
                                             @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Only for View", @placeholder = "Shade" } })
                                         </div>
                                     </div>
-                                    <div class="col-md-1" style="width:auto;">
-                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="R" value="Add Row(R)" title="Click to Fill Data in Product Details" />
-                                    </div>
+                                   
                                 </div>
                                 <div class="row">
                                     <div class="col-md-8">
@@ -898,11 +896,14 @@
                                             @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE" } })
                                         </div>
                                     </div>
-                                    <div class="col-md-1">
+                                    <div class="col-md-4">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10 } })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetLocationBinDetails", PageControllerName)','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')" />
                                         </div>
+                                    </div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="R" value="Add Row(R)" title="Click to Fill Data in Product Details" onclick="BARCODEGRID_FILL()"/>
                                     </div>
                                 </div>
                                                                                         }

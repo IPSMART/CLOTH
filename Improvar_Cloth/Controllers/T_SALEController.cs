@@ -1034,22 +1034,25 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetBarCodeData(string val)
+        public ActionResult GetBarCodeDetails(string val)
         {
-            TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
-            Cn.getQueryString(VE);
-            string scm = CommVar.FinSchema(UNQSNO);
-            string sql = "";
-            sql += "select a.PRCCD,a.PRCNM ";
-            sql += "from " + scm + ".M_PRCLST a, " + scm + ".M_CNTRL_HDR b ";
-            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
-            sql += "order by a.PRCCD,a.PRCNM";
-            DataTable tbl = Master_Help.SQLquery(sql);
-
-            VE.DefaultView = true;
-            ModelState.Clear();
-            return PartialView("_T_SALE_PRODUCT", VE);
-
+            try
+            {
+                var str = Master_Help.BARCODE_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
         public ActionResult OPEN_AMOUNT(TransactionPackingSlipEntry VE, string AUTO_NO, int A_T_NOS, double A_T_QNTY, double A_T_AMT, double A_T_TAXABLE, double A_T_IGST_AMT, double A_T_CGST_AMT, double A_T_SGST_AMT, double A_T_CESS_AMT, double A_T_NET_AMT, double IGST_PER, double CGST_PER, double SGST_PER, double CESS_PER)
         {
