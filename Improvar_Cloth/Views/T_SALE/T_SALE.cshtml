@@ -608,7 +608,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.DropDown_list_BARGENTYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE" })
+                                    @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE" })
                                 </div>
                             </div>
 
@@ -830,7 +830,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10,@placeholder = "Disc. Rate" } })
+                                            @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate" } })
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -840,13 +840,9 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", @placeholder = "Hsncode", maxlength = 8, @list = "HSNCODE_List" } })
-                                            <datalist id="HSNCODE_List">
-                                                @foreach (var jg in Model.Database_Combo3)
-                                                {
-                                                    <option value="@jg.FIELD_VALUE" />
-                                                }
-                                            </datalist>
+                                            @Html.DropDownListFor(model => model.HSNCODE, new SelectList(Model.HSN_CODE, "Value", "Text"), new { @class = "form-control", id = "HSNCODE" })
+
+
                                             @*@Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 30, @title = "Only for View", @placeholder = "Hsncode", @readonly = "readonly", @TabIndex = -1 } })*@
                                         </div>
                                     </div>
@@ -862,6 +858,51 @@
                                     </div>
                                     <div class="col-md-1" style="width:auto;">
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="R" value="Add Row(R)" title="Click to Fill Data in Product Details" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.TDDISCTYPE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCTYPE", @placeholder = "TDDISCTYPE", maxlength = 1, @list = "TDDISCTYPE_List" } })
+                                            <datalist id="TDDISCTYPE_List">
+                                                @foreach (var jg in Model.TDDISC_TYPE)
+                                                {
+                                                    <option value="@jg.FIELD_VALUE" />
+                                                }
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.TDDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "TDDISCRATE" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SCMDISCTYPE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCTYPE", @placeholder = "SCMDISCTYPE", maxlength = 8, @list = "SCMDISCTYPE_List" } })
+                                            <datalist id="SCMDISCTYPE_List">
+                                                @foreach (var jg in Model.SCMDISC_TYPE)
+                                                {
+                                                    <option value="@jg.FIELD_VALUE" />
+                                                }
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetLocationBinDetails", PageControllerName)','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')" />
+                                        </div>
                                     </div>
                                 </div>
                                                                                         }

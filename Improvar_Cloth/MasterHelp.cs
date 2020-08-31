@@ -1985,14 +1985,51 @@ namespace Improvar
                 }
             }
         }
-        public List<DropDown_list_BARGENTYPE> BARGEN_TYPE()
+        public string LOCABIN_help(string val)
         {
-            List<DropDown_list_BARGENTYPE> DDL = new List<DropDown_list_BARGENTYPE>();
-            DropDown_list_BARGENTYPE DDL1 = new DropDown_list_BARGENTYPE();
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.LOCABIN,a.GOCD,c.GONM ";
+            sql += "from " + scm + ".M_LOCABIN a, " + scm + ".M_CNTRL_HDR b, " + scm + ".M_GODOWN c ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and a.GOCD=c.GOCD(+) and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.LOCABIN) like '%" + valsrch + "%' or upper(a.GOCD) like '%" + valsrch + "%' ) ";
+            sql += "order by a.LOCABIN,a.GOCD";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["GONM"] + "</td><td>" + tbl.Rows[i]["GOCD"] + "</td><td>" + tbl.Rows[i]["LOCABIN"] + " </td></tr>");
+                }
+                var hdr = "Godown Name" + Cn.GCS() + "Godown Code" + Cn.GCS() + "Location Bin";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Stock Type ! Please Enter a Valid Stock Type !!";
+                }
+            }
+        }
+        public List<BARGEN_TYPE> BARGEN_TYPE()
+        {
+            List<BARGEN_TYPE> DDL = new List<BARGEN_TYPE>();
+            BARGEN_TYPE DDL1 = new BARGEN_TYPE();
             DDL1.Text = "Common";
             DDL1.Value = "C";
             DDL.Add(DDL1);
-            DropDown_list_BARGENTYPE DDL2 = new DropDown_list_BARGENTYPE();
+            BARGEN_TYPE DDL2 = new BARGEN_TYPE();
             DDL2.Text = "Entry";
             DDL2.Value = "E";
             DDL.Add(DDL2);

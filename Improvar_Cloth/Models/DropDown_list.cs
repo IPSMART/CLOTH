@@ -11,7 +11,7 @@ namespace Improvar.Models
         public string text { get; set; }
         public string value { get; set; }
     }
-   
+
     public class DropDown_list1
     {
         public string text { get; set; }
@@ -276,7 +276,7 @@ namespace Improvar.Models
         public string Value { get; set; }
         public string Text { get; set; }
     }
-    public class DropDown_list_BARGENTYPE
+    public class BARGEN_TYPE
     {
         public string Value { get; set; }
         public string Text { get; set; }
@@ -286,5 +286,18 @@ namespace Improvar.Models
         public bool Checked { get; set; }
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }
+    }
+    public class TDDISC_TYPE
+    {
+        public string FIELD_VALUE { get; set; }
+    }
+    public class SCMDISC_TYPE
+    {
+        public string FIELD_VALUE { get; set; }
+    }
+    public class HSN_CODE
+    {
+        public string text { get; set; }
+        public string value { get; set; }
     }
 }

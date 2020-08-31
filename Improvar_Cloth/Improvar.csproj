@@ -379,6 +379,7 @@
     <Compile Include="Models\M_GODLINK.cs" />
     <Compile Include="Models\M_GODOWN.cs" />
     <Compile Include="Models\M_GROUP.cs" />
+    <Compile Include="Models\M_HSNCODE.cs" />
     <Compile Include="Models\M_ITEM.cs" />
     <Compile Include="Models\M_ITEMPLISTDTL.cs" />
     <Compile Include="Models\M_ITEMPLIST_ADD.cs" />
