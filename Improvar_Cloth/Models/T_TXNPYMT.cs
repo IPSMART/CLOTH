@@ -39,10 +39,15 @@ namespace Improvar.Models
         [StringLength(8)]
         public string GLCD { get; set; }
 
-        public decimal AMT { get; set; }
+         public double AMT { get; set; }
 
         [StringLength(16)]
         public string CARDNO { get; set; }
+
+        [StringLength(10)]
+        public string INSTNO { get; set; }
+
+        public DateTime? INSTDT { get; set; }
 
         [StringLength(100)]
         public string PYMTREM { get; set; }

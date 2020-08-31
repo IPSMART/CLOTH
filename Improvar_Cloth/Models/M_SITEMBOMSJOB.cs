@@ -45,16 +45,16 @@ namespace Improvar.Models
         [StringLength(5)]
         public string SJOBCD { get; set; }
 
-        public decimal? JOBRT { get; set; }
+         public double? JOBRT { get; set; }
 
         [StringLength(3)]
         public string SEQORDNO { get; set; }
 
-        public decimal? LENCM { get; set; }
+         public double? LENCM { get; set; }
 
-        public decimal? SMV { get; set; }
+         public double? SMV { get; set; }
 
-        public decimal? TRATIO { get; set; }
+         public double? TRATIO { get; set; }
 
         [StringLength(6)]
         public string MCCD { get; set; }

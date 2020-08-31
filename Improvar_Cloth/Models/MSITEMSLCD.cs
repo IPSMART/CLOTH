@@ -35,7 +35,7 @@ namespace Improvar.Models
         [StringLength(30)]
         public string PDESIGN { get; set; }
 
-        public decimal? JOBRT { get; set; }
+         public double? JOBRT { get; set; }
         public string SRLNO { get; set; }
     }
 }

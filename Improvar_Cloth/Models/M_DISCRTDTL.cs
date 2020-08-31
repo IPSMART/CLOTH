@@ -35,8 +35,8 @@ namespace Improvar.Models
         [StringLength(6)]
         public string SCMITMGRPCD { get; set; }
 
-        public decimal DISCPER { get; set; }
+         public double DISCPER { get; set; }
 
-        public decimal DISCRATE { get; set; }
+         public double DISCRATE { get; set; }
     }
 }

@@ -47,9 +47,9 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 3)]
-        public decimal FROMRT { get; set; }
+         public double FROMRT { get; set; }
 
-        public decimal TORT { get; set; }
+         public double TORT { get; set; }
 
         public long M_AUTONO { get; set; }
         

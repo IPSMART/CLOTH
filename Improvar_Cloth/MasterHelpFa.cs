@@ -1122,7 +1122,7 @@ namespace Improvar
                 return bl;
             }
         }
-        public decimal slcdbal(string slcd, string glcd, string docdt = "", string class1cd = "", string skipautono = "")
+         public double slcdbal(string slcd, string glcd, string docdt = "", string class1cd = "", string skipautono = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO);
@@ -1141,13 +1141,13 @@ namespace Improvar
                 sql = sql + " and d.docdt <= to_date('" + docdt.Substring(0, 10) + "','dd/mm/yyyy') ";
             }
 
-            decimal lgbal = 0;
+            double lgbal = 0;
             DataTable rsTmp = SQLquery(sql);           
 
             if (rsTmp.Rows.Count > 0 && rsTmp.Rows[0]["BALAMT"].ToString() != "")
             {
-                if (class1cd != "") lgbal = Convert.ToDecimal(rsTmp.Rows[0]["class1amt"]);
-                else lgbal = Convert.ToDecimal(rsTmp.Rows[0]["balamt"]);
+                if (class1cd != "") lgbal = Convert.ToDouble(rsTmp.Rows[0]["class1amt"]);
+                else lgbal = Convert.ToDouble(rsTmp.Rows[0]["balamt"]);
             }
             return lgbal;
         }

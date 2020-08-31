@@ -38,13 +38,13 @@ namespace Improvar.Models
         [Column(Order = 2)]
         public byte SLNO { get; set; }
 
-        public decimal? MTRLCOST { get; set; }
+         public double? MTRLCOST { get; set; }
 
         [Required]
         [StringLength(2)]
         public string JOBCD { get; set; }
 
-        public decimal? JOBRT { get; set; }
+         public double? JOBRT { get; set; }
 
         [StringLength(50)]
         public string REMARK { get; set; }

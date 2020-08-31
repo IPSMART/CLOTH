@@ -118,5 +118,14 @@ namespace Improvar.Models
 
         [StringLength(4)]
         public string TAXGRPCD { get; set; }
+
+        [StringLength(3)]
+        public string TDSHD { get; set; }
+
+         public double? TDSON { get; set; }
+
+         public double? TDSPER { get; set; }
+
+         public double? TDSAMT { get; set; }
     }
 }

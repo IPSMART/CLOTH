@@ -35,7 +35,7 @@ namespace Improvar.Models
         [Column(Order = 2)]
         public DateTime EFFDT { get; set; }
 
-        public decimal JOBRT { get; set; }
+         public double JOBRT { get; set; }
 
         public long M_AUTONO { get; set; }
     }

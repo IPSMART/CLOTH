@@ -54,21 +54,21 @@ namespace Improvar.Models
 
         [StringLength(15)]
         public string SJOBNM { get; set; }
-        public decimal? JOBRT { get; set; }
+         public double? JOBRT { get; set; }
 
         [StringLength(3)]
         public string SEQORDNO { get; set; }
 
         [StringLength(50)]
         public string REMARK { get; set; }
-        public decimal? LENCM { get; set; }
-        public decimal? SMV { get; set; }
-        public decimal? TRATIO { get; set; }
+         public double? LENCM { get; set; }
+         public double? SMV { get; set; }
+         public double? TRATIO { get; set; }
         [StringLength(6)]
         public string MCCD { get; set; }
         public string MCNM { get; set; }
         public bool Checked { get; set; }
-        public decimal? STD_SJ_JOBRT { get; set; }
+         public double? STD_SJ_JOBRT { get; set; }
         [StringLength(20)]
         public string SJOBSTYLE { get; set; }
 

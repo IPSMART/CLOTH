@@ -35,9 +35,9 @@ namespace Improvar.Models
         [StringLength(25)]
         public string BARNO { get; set; }
 
-        public decimal RATE { get; set; }
+         public double RATE { get; set; }
 
-        public decimal? OLDRATE { get; set; }
+         public double? OLDRATE { get; set; }
 
         [Required]
         [StringLength(8)]

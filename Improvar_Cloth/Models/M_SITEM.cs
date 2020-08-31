@@ -76,7 +76,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string COLRWISEDTL { get; set; }
 
-        public decimal? MINPURQTY { get; set; }
+         public double? MINPURQTY { get; set; }
 
         public long M_AUTONO { get; set; }
 

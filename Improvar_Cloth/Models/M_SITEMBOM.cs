@@ -44,7 +44,7 @@ namespace Improvar.Models
         [StringLength(50)]
         public string REMARKS { get; set; }
 
-        public decimal? BASEQNTY { get; set; }
+         public double? BASEQNTY { get; set; }
 
         [StringLength(8)]
         public string SITCD { get; set; }

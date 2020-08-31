@@ -36,14 +36,14 @@ namespace Improvar.Models
         [StringLength(5)]
         public string SJOBCD { get; set; }
 
-        public decimal? JBRT { get; set; }
+         public double? JBRT { get; set; }
 
-        public decimal? JBRTEXT { get; set; }
+         public double? JBRTEXT { get; set; }
 
         [StringLength(3)]
         public string SEQORDNO { get; set; }
 
-        public decimal? SAMPPC { get; set; }
+         public double? SAMPPC { get; set; }
 
        
     }

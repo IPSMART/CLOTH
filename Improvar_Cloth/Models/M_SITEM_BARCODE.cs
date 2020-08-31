@@ -35,7 +35,7 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public decimal? STDRT { get; set; }
+         public double? STDRT { get; set; }
 
         [StringLength(1)]
         public string INACTIVE_TAG { get; set; }

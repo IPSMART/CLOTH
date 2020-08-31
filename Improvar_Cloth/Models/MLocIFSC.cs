@@ -23,7 +23,7 @@ namespace Improvar.Models
         
         [Key]
         [Column(Order = 0)]
-        public decimal SLNO { get; set; }
+         public double SLNO { get; set; }
 
         [Key]
         [Column(Order = 1)]

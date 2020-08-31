@@ -63,18 +63,18 @@ namespace Improvar.Models
         [StringLength(5)]
         public string SJOBCD { get; set; }
 
-        public decimal? CUTLENGTH { get; set; }
+         public double? CUTLENGTH { get; set; }
 
         [StringLength(1)]
         public string QNTYIN { get; set; }
 
-        public decimal? RATE { get; set; }
+         public double? RATE { get; set; }
 
-        public decimal? AMT { get; set; }
+         public double? AMT { get; set; }
 
-        public decimal? JOBEXTRATE { get; set; }
+         public double? JOBEXTRATE { get; set; }
 
-        public decimal? JOBEXTAMT { get; set; }
+         public double? JOBEXTAMT { get; set; }
 
         [StringLength(50)]
         public string ITREMARK { get; set; }

@@ -38,33 +38,33 @@ namespace Improvar.Models
         [StringLength(50)]
         public string AMTDESC { get; set; }
 
-        public decimal AMTRATE { get; set; }
+         public double AMTRATE { get; set; }
 
         [StringLength(8)]
         public string HSNCODE { get; set; }
 
-        public decimal? AMT { get; set; }
+         public double? AMT { get; set; }
 
-        public decimal? CURR_AMT { get; set; }
+         public double? CURR_AMT { get; set; }
 
-        public decimal? IGSTAMT { get; set; }
+         public double? IGSTAMT { get; set; }
 
-        public decimal? IGSTPER { get; set; }
+         public double? IGSTPER { get; set; }
 
-        public decimal? CGSTAMT { get; set; }
+         public double? CGSTAMT { get; set; }
 
-        public decimal? CGSTPER { get; set; }
+         public double? CGSTPER { get; set; }
 
-        public decimal? SGSTAMT { get; set; }
+         public double? SGSTAMT { get; set; }
 
-        public decimal? SGSTPER { get; set; }
+         public double? SGSTPER { get; set; }
 
-        public decimal? CESSAMT { get; set; }
+         public double? CESSAMT { get; set; }
 
-        public decimal? CESSPER { get; set; }
+         public double? CESSPER { get; set; }
 
-        public decimal? DUTYAMT { get; set; }
+         public double? DUTYAMT { get; set; }
 
-        public decimal? DUTYPER { get; set; }
+         public double? DUTYPER { get; set; }
     }
 }
