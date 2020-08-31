@@ -133,5 +133,10 @@ namespace Improvar.Models
         [StringLength(1)]
         public string STKTYPE { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? GSTPER { get; set; }
+        public List<DISC_TYPE> DISC_TYPE { get; set; }
+        public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
+        public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
     }
 }
