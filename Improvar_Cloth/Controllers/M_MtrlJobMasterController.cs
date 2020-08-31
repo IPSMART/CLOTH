@@ -198,11 +198,11 @@ namespace Improvar.Controllers
         //        return Content("0");
         //    }
         //}
-        public ActionResult GetGenLedger()
-        {
-            ImprovarDB DBfin = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            return PartialView("_Help2", Master_HelpFa.GLCD_help(DBfin));
-        }
+        //public ActionResult GetGenLedger()
+        //{
+        //    ImprovarDB DBfin = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+        //    return PartialView("_Help2", Master_HelpFa.GLCD_help(DBfin));
+        //}
         public ActionResult GetUOMDetails(string val)
         {
             try

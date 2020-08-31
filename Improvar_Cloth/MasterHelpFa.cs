@@ -336,24 +336,7 @@ namespace Improvar
             }
         }
 
-        public string GLCD_help(ImprovarDB DB)
-        {
-            var query = (from c in DB.M_GENLEG
-                         join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
-                         where i.INACTIVE_TAG == "N"
-                         select new
-                         {
-                             Code = c.GLCD,
-                             Description = c.GLNM
-                         }).ToList();
-            System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            for (int i = 0; i <= query.Count - 1; i++)
-            {
-                SB.Append("<tr ><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
-            }
-            var hdr = "Creditor Ledger Name" + Cn.GCS() + "Creditor Ledger Code";
-            return Generate_help(hdr, SB.ToString());
-        }
+      
         public string SLCD_help(ImprovarDB DB)
         {
             var query = (from c in DB.M_SUBLEG
@@ -2073,5 +2056,60 @@ namespace Improvar
                 }
             }
         }
+        public string GLCD_help(string val, string LINK_CD = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+          string  scmf = CommVar.FinSchema(UNQSNO);
+            string valsrch = val.ToUpper().Trim();
+            string linkcd = LINK_CD.retSqlformat();
+            string sql = "";
+            sql += "select c.GLCD,c.GLNM from " + scmf + ".M_GENLEG c," + scmf + ".M_CNTRL_HDR i where c.M_AUTONO= i.M_AUTONO(+) ";
+            sql += "and i.INACTIVE_TAG ='N' ";
+            if (valsrch.retStr() != "") sql += "and upper(c.GLCD) = '" + valsrch + "'  ";
+            if (linkcd != "") sql += " and c.linkcd in (" + linkcd + ") ";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["GLNM"] + "</td><td>" + tbl.Rows[i]["GLCD"] + " </td></tr>");
+                }
+                var hdr = "Creditor Ledger Name" + Cn.GCS() + "Creditor Ledger Code";
+                return (Generate_help(hdr, SB.ToString()));
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Ledger Code ! Please Enter a Valid Ledger Code !!";
+                }
+            }
+            
+        }
+     
+        //public string GLCD_help(ImprovarDB DB)
+        //{
+        //    var query = (from c in DB.M_GENLEG
+        //                 join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+        //                 where i.INACTIVE_TAG == "N"
+        //                 select new
+        //                 {
+        //                     Code = c.GLCD,
+        //                     Description = c.GLNM
+        //                 }).ToList();
+        //    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+        //    for (int i = 0; i <= query.Count - 1; i++)
+        //    {
+        //        SB.Append("<tr ><td>" + query[i].Description + "</td><td>" + query[i].Code + "</td></tr>");
+        //    }
+        //    var hdr = "Creditor Ledger Name" + Cn.GCS() + "Creditor Ledger Code";
+        //    return Generate_help(hdr, SB.ToString());
+        //}
     }
 }

@@ -21,6 +21,10 @@ namespace Improvar.Models
         [StringLength(1)]
         public string TTAG { get; set; }
 
+        [Required]
+        [StringLength(8)]
+        public string ITCD { get; set; }
+
         [Key]
         [Column(Order = 0)]
         [StringLength(4)]
