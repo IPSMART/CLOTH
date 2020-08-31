@@ -1948,6 +1948,43 @@ namespace Improvar
                 }
             }
         }
+        public string STKTYPE_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.STKTYPE,a.STKNAME ";
+            sql += "from " + scm + ".M_STKTYPE a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.STKTYPE) = '" + valsrch + "' ) ";
+            sql += "order by a.STKTYPE,a.STKNAME";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["STKNAME"] + "</td><td>" + tbl.Rows[i]["STKTYPE"] + " </td></tr>");
+                }
+                var hdr = "Stock Type Name" + Cn.GCS() + "Stock Type code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Stock Type ! Please Enter a Valid Stock Type !!";
+                }
+            }
+        }
         public List<DropDown_list_BARGENTYPE> BARGEN_TYPE()
         {
             List<DropDown_list_BARGENTYPE> DDL = new List<DropDown_list_BARGENTYPE>();

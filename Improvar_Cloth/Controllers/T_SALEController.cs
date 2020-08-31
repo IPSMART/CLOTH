@@ -988,6 +988,26 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetStockDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.STKTYPE_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         public ActionResult GetBarCodeData(string val)
         {
             TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();

@@ -78,6 +78,8 @@ namespace Improvar.ViewModels
         public string FABITNM { get; set; }
         [StringLength(1)]
         public string STKTYPE { get; set; }
+        [StringLength(15)]
+        public string STKNAME { get; set; }
         [StringLength(4)]
         public string PARTCD { get; set; }
         public string PARTNM { get; set; }
@@ -104,5 +106,6 @@ namespace Improvar.ViewModels
         public double? GSTPER { get; set; }
         [StringLength(4)]
         public string TAXGRPCD { get; set; }
+        public string PSTYLENO { get; set; }
     }
 }
