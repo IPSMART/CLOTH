@@ -99,7 +99,7 @@
 <script>
     function OpenAmount() {
         var AUTO_NO = document.getElementById("AUTONO").value;
-        var A_T_NOS = 0;// = document.getElementById("T_NOS").value;
+        var A_T_NOS = document.getElementById("T_NOS").value;
         var A_T_QNTY = document.getElementById("T_QNTY").value;
         var A_T_AMT = document.getElementById("T_AMT").value;
         var A_T_TAXABLE = document.getElementById("T_GROSS_AMT").value;
@@ -121,15 +121,15 @@
 
         var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0;
 
-        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        var GridRowMain = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
         for (i = 0; i <= GridRowMain - 1; i++) {
-            var IGST = document.getElementById("IGSTPER_" + i).value;
+            var IGST = document.getElementById("D_IGSTPER_" + i).value;
             if (IGST == "") { IGST = parseFloat(0); } else { IGST = parseFloat(IGST); }
-            var CGST = document.getElementById("CGSTPER_" + i).value;
+            var CGST = document.getElementById("D_CGSTPER_" + i).value;
             if (CGST == "") { CGST = parseFloat(0); } else { CGST = parseFloat(CGST); }
-            var SGST = document.getElementById("SGSTPER_" + i).value;
+            var SGST = document.getElementById("D_SGSTPER_" + i).value;
             if (SGST == "") { SGST = parseFloat(0); } else { SGST = parseFloat(SGST); }
-            var CESS = document.getElementById("CESSPER_" + i).value;
+            var CESS = document.getElementById("D_CESSPER_" + i).value;
             if (CESS == "") { CESS = parseFloat(0); } else { CESS = parseFloat(CESS); }
             if (IGST > IGST_PER) {
                 IGST_PER = IGST;
@@ -176,26 +176,42 @@
     }
 </script>
 <script>
-    function BarCodeData() {
-        var barcd = $("#BARCODE").val();
-        if (barcd != "") {
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("GetBarCodeData", PageControllerName)",
-                data: {
-                    val: barcd
-                },
-                success: function (result) {
-                    $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
-                    $("#partialdivDocument").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
+    function Fill_BarCodeData() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillBarCodeData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivBarCodeTab").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function Fill_DetailData() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillDetailData", PageControllerName)",
+            data: $('form').serialize(),
+        success: function (result) {
+            //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+            $("#partialdivDetail").html(result);
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(3)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
         }
+    });
     }
 </script>
 <script>
@@ -363,7 +379,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Only for View", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Only for View", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
                     <div class="col-md-1" style="width:auto;">
@@ -856,7 +872,7 @@
                                             @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Only for View", @placeholder = "Shade" } })
                                         </div>
                                     </div>
-                                   
+
                                 </div>
                                 <div class="row">
                                     <div class="col-md-8">
@@ -903,12 +919,12 @@
                                         </div>
                                     </div>
                                     <div class="col-md-1" style="width:auto;">
-                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="R" value="Add Row(R)" title="Click to Fill Data in Product Details" onclick="BARCODEGRID_FILL()"/>
+                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="R" value="Add Row(R)" title="Click to Fill Data in Product Details" onclick="Fill_BarCodeData()" />
                                     </div>
                                 </div>
                                                                                         }
                             <div>
-                                <div id="partialdivBarCodeTab">
+                                <div id="partialdivBarCodeTab" style="margin-top:4px;">
                                     @Html.Partial("_T_SALE_PRODUCT")
                                 </div>
                             </div>
