@@ -3,8 +3,9 @@
     ViewBag.Title = "Group Master";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-
+@{
+    string PageControllerName = "M_GrpMast";
+}
 
 <script src="~/Scripts/jquery.min.js"></script>
 <script type="text/javascript">
@@ -169,9 +170,7 @@
         $("#btnprint").click();
     }
 </script>
-@{
-    string PageControllerName = "M_GrpMast";
-}
+
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -358,6 +357,28 @@
                                 </div>
                             </div>
                         </div>
+                    <div id="CLASS1" class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Class 1")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @*@Html.EditorFor(model => model.M_GROUP.CLASS1CD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CLASS1CD", onkeyup = "GetHelp('" + @Url.Action("GetClass1Details", PageControllerName) + "','CLASS1CD/CLASS1NM','1/0','Class 1 Details','CLASS1CD')", onblur = "SelectClass1(this.value,'CLASS1CD','CLASS1NM');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetClass1Details", PageControllerName)','CLASS1CD/CLASS1NM','1/0','Class 1 Details','CLASS1CD')" />*@
+
+                                @Html.EditorFor(model => model.M_GROUP.CLASS1CD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CLASS1CD", onkeydown = "GetHelpBlur('" + @Url.Action("GetClass1Details", PageControllerName) + "','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetClass1Details", PageControllerName)','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.CLASS1NM, new { htmlAttributes = new { @class = "form-control", id = "CLASS1NM", maxlength = 40, @title = "Only for View", @placeholder = "Class 1 Name", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="editor-label" style="margin-top: 6px;">
