@@ -27,9 +27,11 @@ namespace Improvar.ViewModels
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public List<Database_Combo3> Database_Combo3 { get; set; }
+        public List<BL_TYPE> BL_TYPE { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
         public List<DropDown_list_BARGENTYPE> DropDown_list_BARGENTYPE { get; set; }
         public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
+        public List<DISC_TYPE> DISC_TYPE { get; set; }
         public string SLNM { get; set; }
         public string SLAREA { get; set; }
         public string GSTNO { get; set; }
@@ -63,7 +65,7 @@ namespace Improvar.ViewModels
         public string TRANSLNM { get; set; }
         public string CRSLNM { get; set; }
         public string BARCODE { get; set; }
-        public short TXNSLNO { get; set; }
+        public short? TXNSLNO { get; set; }
         [StringLength(4)]
         public string ITGRPCD { get; set; }
         public string ITGRPNM { get; set; }
@@ -99,7 +101,7 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public double? DISCPER { get; set; }
+        public double? DISCRATE { get; set; }
         [StringLength(8)]
         public string HSNCODE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
@@ -107,7 +109,7 @@ namespace Improvar.ViewModels
         [StringLength(4)]
         public string TAXGRPCD { get; set; }
         public string PSTYLENO { get; set; }
-        public double BALSTOCK { get; set; }
+        public double? BALSTOCK { get; set; }
         public double? FLAGMTR { get; set; }
         [StringLength(1)]
         public string DISCTYPE { get; set; }

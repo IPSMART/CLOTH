@@ -82,6 +82,10 @@ namespace Improvar.Models
         public string Value { get; set; }
         public string Text { get; set; }
     }
+    public class BL_TYPE
+    {
+        public string FIELD_VALUE { get; set; }
+    }
 
     public class PAY_TAG
     {
