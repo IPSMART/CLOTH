@@ -147,6 +147,20 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", Master_HelpFa.Generate_SearchPannel(hdr, SB.ToString(),"0"));
         }
+        public ActionResult CheckTaxCode(string val)
+        {
+            string VALUE = val.ToUpper();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO).ToString());
+            var query = (from c in DB.M_TAXGRP where (c.TAXGRPCD == VALUE) select c);
+            if (query.Any())
+            {
+                return Content("1");
+            }
+            else
+            {
+                return Content("0");
+            }
+        }
         public ActionResult SAVE(FormCollection FC, TaxGroupEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -166,29 +180,29 @@ namespace Improvar.Controllers
                             MTAXGRP.EMD_NO = 0;
                             MTAXGRP.M_AUTONO = Cn.M_AUTONO(CommVar.FinSchema(UNQSNO));
 
-                            var MAXJOBCD = DB.M_TAXGRP.Where(a => a.TAXGRPCD.Substring(0, 1) == NAME_CHAR).Max(a => a.TAXGRPCD);
-                            if (MAXJOBCD == null)
-                            {
-                                string R = NAME_CHAR + "001";
-                                MTAXGRP.TAXGRPCD = R.ToString();
-                            }
-                            else
-                            {
-                                string s = MAXJOBCD;
-                                string digits = new string(s.Where(char.IsDigit).ToArray());
-                                string letters = new string(s.Where(char.IsLetter).ToArray());
-                                int number;
-                                if (!int.TryParse(digits, out number))                   //int.Parse would do the job since only digits are selected
-                                {
-                                    Console.WriteLine("Something weired happened");
-                                }
-                                string newStr = letters + (++number).ToString("D3");
-                                MTAXGRP.TAXGRPCD = newStr.ToString();
-                            }
+                            //var MAXJOBCD = DB.M_TAXGRP.Where(a => a.TAXGRPCD.Substring(0, 1) == NAME_CHAR).Max(a => a.TAXGRPCD);
+                            //if (MAXJOBCD == null)
+                            //{
+                            //    string R = NAME_CHAR + "001";
+                            //    MTAXGRP.TAXGRPCD = R.ToString();
+                            //}
+                            //else
+                            //{
+                            //    string s = MAXJOBCD;
+                            //    string digits = new string(s.Where(char.IsDigit).ToArray());
+                            //    string letters = new string(s.Where(char.IsLetter).ToArray());
+                            //    int number;
+                            //    if (!int.TryParse(digits, out number))                   //int.Parse would do the job since only digits are selected
+                            //    {
+                            //        Console.WriteLine("Something weired happened");
+                            //    }
+                            //    string newStr = letters + (++number).ToString("D3");
+                            //    MTAXGRP.TAXGRPCD = newStr.ToString();
+                            //}
                         }
                         else
                         {
-                            MTAXGRP.TAXGRPCD = VE.M_TAXGRP.TAXGRPCD;
+                            //MTAXGRP.TAXGRPCD = VE.M_TAXGRP.TAXGRPCD;
                             MTAXGRP.M_AUTONO = VE.M_TAXGRP.M_AUTONO;
                             var MAXEMDNO = (from p in DB.M_CNTRL_HDR where p.M_AUTONO == MTAXGRP.M_AUTONO select p.EMD_NO).Max();
                             if (MAXEMDNO == null)
@@ -200,6 +214,7 @@ namespace Improvar.Controllers
                                 MTAXGRP.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
                         }
+                        MTAXGRP.TAXGRPCD = VE.M_TAXGRP.TAXGRPCD.ToUpper();
                         MTAXGRP.TAXGRPNM = VE.M_TAXGRP.TAXGRPNM;
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_TAXGRP", MTAXGRP.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
                         if (VE.DefaultAction == "A")
