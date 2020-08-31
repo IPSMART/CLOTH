@@ -37,6 +37,6 @@ namespace Improvar.Models
         [StringLength(30)]
         public string AUTONO { get; set; }
 
-        public decimal? RATE { get; set; }
+         public double? RATE { get; set; }
     }
 }

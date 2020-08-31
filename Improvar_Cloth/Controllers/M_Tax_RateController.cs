@@ -139,10 +139,10 @@ namespace Improvar.Controllers
                     //dt = Convert.ToDateTime(aa[1].Remove(10)).AddDays(1);
                 }
                 var prodggrpcd = aa[0].Trim();
-                decimal rate = aa[2].retDcml();
+                double rate = aa[2].retDbl();
                 sl = DB.M_PRODTAX.Where(e=>e.PRODGRPCD == prodggrpcd&&e.EFFDT==dt&&e.FROMRT== rate).First();
-                if (sl.FROMRT == .01.retDcml()) { VE.FROMRT = ""; } else { VE.FROMRT = sl.FROMRT.retStr(); }
-                if (sl.TORT == 999999999.99.retDcml()) { VE.TORT = ""; } else { VE.TORT = sl.TORT.retStr(); }
+                if (sl.FROMRT == .01.retDbl()) { VE.FROMRT = ""; } else { VE.FROMRT = sl.FROMRT.retStr(); }
+                if (sl.TORT == 999999999.99.retDbl()) { VE.TORT = ""; } else { VE.TORT = sl.TORT.retStr(); }
                 sGRP = DB.M_PRODGRP.Find(sl.PRODGRPCD);
                 sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                 if (sll.INACTIVE_TAG == "Y")
@@ -355,10 +355,10 @@ namespace Improvar.Controllers
                                     MPRODTAX_obj.CLCD = MPrdTax.CLCD;
                                     MPRODTAX_obj.EFFDT = MPrdTax.EFFDT;
                                     MPRODTAX_obj.PRODGRPCD = MPrdTax.PRODGRPCD;
-                                    if (VE.FROMRT.retDcml() == 0) { MPRODTAX_obj.FROMRT = ".01".retDcml(); }
-                                    else { MPRODTAX_obj.FROMRT = VE.FROMRT.retDcml(); }
-                                    if (VE.TORT.retDcml() == 0) { MPRODTAX_obj.TORT = "999999999.99".retDcml(); }
-                                    else { MPRODTAX_obj.TORT = VE.TORT.retDcml(); }
+                                    if (VE.FROMRT.retDcml() == 0) { MPRODTAX_obj.FROMRT = ".01".retDbl(); }
+                                    else { MPRODTAX_obj.FROMRT = VE.FROMRT.retDbl(); }
+                                    if (VE.TORT.retDcml() == 0) { MPRODTAX_obj.TORT = "999999999.99".retDbl(); }
+                                    else { MPRODTAX_obj.TORT = VE.TORT.retDbl(); }
                                     MPRODTAX_obj.TAXGRPCD = VE.MPRODTAX[i].TAXGRPCD;
                                     MPRODTAX_obj.IGSTPER = VE.MPRODTAX[i].IGSTPER;
                                     MPRODTAX_obj.CGSTPER = VE.MPRODTAX[i].CGSTPER;

@@ -55,12 +55,12 @@ namespace Improvar.Models
         [StringLength(4)]
         public string PARTCD { get; set; }
 
-        public decimal? CUTLENGTH { get; set; }
+         public double? CUTLENGTH { get; set; }
 
         [StringLength(1)]
         public string QNTYIN { get; set; }
 
-        public decimal? RATE { get; set; }
+         public double? RATE { get; set; }
 
         public byte? EXPCOMPLDAYS { get; set; }
 

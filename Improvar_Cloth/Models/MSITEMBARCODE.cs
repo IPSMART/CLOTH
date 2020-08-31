@@ -37,7 +37,7 @@ namespace Improvar.Models
         [StringLength(8)]
         public string HSNCODE { get; set; }
 
-        public decimal? STDRT { get; set; }
+         public double? STDRT { get; set; }
         public bool Checked { get; set; }
         public byte SRLNO { get; set; }
         [StringLength(10)]

@@ -31,7 +31,7 @@ namespace Improvar.Models
         [StringLength(4)]
         public string PARTCD { get; set; }
 
-        public decimal? JOBRT { get; set; }
+         public double? JOBRT { get; set; }
 
     }
 }

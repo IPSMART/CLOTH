@@ -194,14 +194,14 @@ namespace Improvar.Controllers
                             //MIC.SLNO = 1;
                             //ITEMCOLOR.Add(MIC);
                             //VE.MSITEMCOLOR = ITEMCOLOR;
-                            List<MSITEMCOLOR> ITEMCOLOR = new List<MSITEMCOLOR>();
-                            for (int i = 0; i < 5; i++)
-                            {
-                                MSITEMCOLOR MIC = new MSITEMCOLOR();
-                                MIC.SLNO = Convert.ToByte(i + 1);
-                                ITEMCOLOR.Add(MIC);
-                            }
-                            VE.MSITEMCOLOR = ITEMCOLOR;
+                            //List<MSITEMCOLOR> ITEMCOLOR = new List<MSITEMCOLOR>();
+                            //for (int i = 0; i < 5; i++)
+                            //{
+                            //    MSITEMCOLOR MIC = new MSITEMCOLOR();
+                            //    MIC.SLNO = Convert.ToByte(i + 1);
+                            //    ITEMCOLOR.Add(MIC);
+                            //}
+                            //VE.MSITEMCOLOR = ITEMCOLOR;
 
                             List<MSITEMPARTS> ITEMPARTS = new List<MSITEMPARTS>();
                             MSITEMPARTS MIP = new MSITEMPARTS();
@@ -377,14 +377,14 @@ namespace Improvar.Controllers
                     //                      IChecked = i.INACTIVE_TAG == "Y" ? true : false,
                     //                  }).OrderBy(s => s.SLNO).ToList();
 
-                    if (VE.MSITEMCOLOR.Count == 0)
-                    {
-                        List<MSITEMCOLOR> ITEMCOLOR = new List<MSITEMCOLOR>();
-                        MSITEMCOLOR MIC = new MSITEMCOLOR();
-                        MIC.SLNO = 1;
-                        ITEMCOLOR.Add(MIC);
-                        VE.MSITEMCOLOR = ITEMCOLOR;
-                    }
+                    //if (VE.MSITEMCOLOR.Count == 0)
+                    //{
+                    //    List<MSITEMCOLOR> ITEMCOLOR = new List<MSITEMCOLOR>();
+                    //    MSITEMCOLOR MIC = new MSITEMCOLOR();
+                    //    MIC.SLNO = 1;
+                    //    ITEMCOLOR.Add(MIC);
+                    //    VE.MSITEMCOLOR = ITEMCOLOR;
+                    //}
 
                     VE.MSITEMPARTS = (from i in DB.M_SITEM_PARTS
                                       join j in DB.M_PARTS on i.PARTCD equals (j.PARTCD)
@@ -1212,140 +1212,8 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        //public ActionResult AddRowCOLOR(ItemMasterEntry VE)
-        //{
-        //    try
-        //    {
-        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-
-        //        List<MSITEMCOLOR> ITEMCOLOR = new List<MSITEMCOLOR>();
-        //        if (VE.MSITEMCOLOR == null)
-        //        {
-        //            List<MSITEMCOLOR> SCMITMDTL1 = new List<MSITEMCOLOR>();
-        //            MSITEMCOLOR SCMIT = new MSITEMCOLOR();
-        //            SCMIT.SLNO = 1;
-        //            SCMITMDTL1.Add(SCMIT);
-        //            VE.MSITEMCOLOR = SCMITMDTL1;
-        //        }
-        //        else {
-        //            for (int i = 0; i <= VE.MSITEMCOLOR.Count - 1; i++)
-        //            {
-        //                MSITEMCOLOR MIC = new MSITEMCOLOR();
-        //                MIC = VE.MSITEMCOLOR[i];
-        //                ITEMCOLOR.Add(MIC);
-        //            }
-        //            MSITEMCOLOR MIC1 = new MSITEMCOLOR();
-        //            var max = VE.MSITEMCOLOR.Max(a => Convert.ToInt32(a.SLNO));
-        //            int SRLNO = Convert.ToInt32(max) + 1;
-        //            MIC1.SLNO = Convert.ToByte(SRLNO);
-        //            ITEMCOLOR.Add(MIC1);
-        //            VE.MSITEMCOLOR = ITEMCOLOR;
-        //        }
-        //        VE.DefaultView = true;
-        //        return PartialView("_M_FinProduct_COLOR", VE);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-
-        //}
-        public ActionResult AddRowCOLOR(ItemMasterEntry VE, int COUNT, string TAG)
-        {
-            try
-            {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                if (VE.MSITEMCOLOR == null)
-                {
-                    List<MSITEMCOLOR> MSITEMCOLOR_HEAD = new List<MSITEMCOLOR>();
-                    if (COUNT > 0 && TAG == "Y")
-                    {
-                        Int16 SERIAL = 0;
-                        for (int j = 0; j <= COUNT - 1; j++)
-                        {
-                            SERIAL++;
-                            MSITEMCOLOR DTL = new MSITEMCOLOR();
-                            DTL.SLNO = Convert.ToByte(SERIAL);
-                            MSITEMCOLOR_HEAD.Add(DTL);
-                            VE.MSITEMCOLOR = MSITEMCOLOR_HEAD;
-
-                        }
-                    }
-                    else
-                    {
-                        MSITEMCOLOR DTL = new MSITEMCOLOR();
-                        DTL.SLNO = 1;
-                        MSITEMCOLOR_HEAD.Add(DTL);
-                        VE.MSITEMCOLOR = MSITEMCOLOR_HEAD;
-                    }
-                }
-                else
-                {
-                    List<MSITEMCOLOR> MSITEMCOLOR_HEAD = new List<MSITEMCOLOR>();
-                    for (int i = 0; i <= VE.MSITEMCOLOR.Count - 1; i++)
-                    {
-                        MSITEMCOLOR MIB = new MSITEMCOLOR();
-                        MIB = VE.MSITEMCOLOR[i];
-                        MSITEMCOLOR_HEAD.Add(MIB);
-                    }
-                    if (COUNT > 0 && TAG == "Y")
-                    {
-                        Int16 SERIAL = Convert.ToInt16(VE.MSITEMCOLOR.Max(a => Convert.ToInt32(a.SLNO)));
-                        for (int j = 0; j <= COUNT - 1; j++)
-                        {
-                            SERIAL++;
-                            MSITEMCOLOR MIB = new MSITEMCOLOR();
-                            MIB.SLNO = Convert.ToByte(SERIAL);
-                            MSITEMCOLOR_HEAD.Add(MIB);
-                        }
-                    }
-                    else
-                    {
-                        MSITEMCOLOR MIB = new MSITEMCOLOR();
-                        MIB.SLNO = Convert.ToByte(Convert.ToByte(VE.MSITEMCOLOR.Max(a => Convert.ToInt32(a.SLNO))) + 1);
-                        MSITEMCOLOR_HEAD.Add(MIB);
-                    }
-                    VE.MSITEMCOLOR = MSITEMCOLOR_HEAD;
-                }
-                VE.DefaultView = true;
-                return PartialView("_M_FinProduct_COLOR", VE);
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult DeleteRowCOLOR(ItemMasterEntry VE)
-        {
-            try
-            {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                List<MSITEMCOLOR> ITEMCOLOR = new List<MSITEMCOLOR>();
-                int count = 0;
-                for (int i = 0; i <= VE.MSITEMCOLOR.Count - 1; i++)
-                {
-                    if (VE.MSITEMCOLOR[i].Checked == false)
-                    {
-                        count += 1;
-                        MSITEMCOLOR item = new MSITEMCOLOR();
-                        item = VE.MSITEMCOLOR[i];
-                        item.SLNO = Convert.ToByte(count);
-                        ITEMCOLOR.Add(item);
-                    }
-                }
-                VE.MSITEMCOLOR = ITEMCOLOR;
-                ModelState.Clear();
-                VE.DefaultView = true;
-                return PartialView("_M_FinProduct_COLOR", VE);
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
+ 
+ 
         public ActionResult AddRowPARTS(ItemMasterEntry VE)
         {
             try

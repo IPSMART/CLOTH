@@ -81,12 +81,12 @@ namespace Improvar.Models
         [StringLength(1)]
         public string COD { get; set; }
 
-        public decimal? APROXVAL { get; set; }
+         public double? APROXVAL { get; set; }
 
         [StringLength(300)]
         public string SPLNOTE { get; set; }
 
-        public decimal? RATEPER { get; set; }
+         public double? RATEPER { get; set; }
 
     }
 }

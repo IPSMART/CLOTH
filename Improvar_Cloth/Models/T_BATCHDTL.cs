@@ -55,30 +55,30 @@ namespace Improvar.Models
         [StringLength(1)]
         public string STKDRCR { get; set; }
 
-        public decimal? NOS { get; set; }
+         public double? NOS { get; set; }
 
-        public decimal? QNTY { get; set; }
+         public double? QNTY { get; set; }
 
-        public decimal? BLQNTY { get; set; }
+         public double? BLQNTY { get; set; }
 
-        public decimal? FLAGMTR { get; set; }
+         public double? FLAGMTR { get; set; }
 
         [StringLength(100)]
         public string ITREM { get; set; }
 
-        public decimal? RATE { get; set; }
+         public double? RATE { get; set; }
 
-        public decimal? DISCRATE { get; set; }
+         public double? DISCRATE { get; set; }
 
         [StringLength(1)]
         public string DISCTYPE { get; set; }
 
-        public decimal? SCMDISCRATE { get; set; }
+         public double? SCMDISCRATE { get; set; }
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
 
-        public decimal? TDDISCRATE { get; set; }
+         public double? TDDISCRATE { get; set; }
 
         [StringLength(1)]
         public string TDDISCTYPE { get; set; }
@@ -88,9 +88,9 @@ namespace Improvar.Models
 
         public short? ORDSLNO { get; set; }
 
-        public decimal? DIA { get; set; }
+         public double? DIA { get; set; }
 
-        public decimal? CUTLENGTH { get; set; }
+         public double? CUTLENGTH { get; set; }
 
         [StringLength(10)]
         public string LOCABIN { get; set; }

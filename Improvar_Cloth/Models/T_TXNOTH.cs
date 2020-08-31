@@ -122,10 +122,10 @@ namespace Improvar.Models
         [StringLength(3)]
         public string TDSHD { get; set; }
 
-        public decimal? TDSON { get; set; }
+         public double? TDSON { get; set; }
 
-        public decimal? TDSPER { get; set; }
+         public double? TDSPER { get; set; }
 
-        public decimal? TDSAMT { get; set; }
+         public double? TDSAMT { get; set; }
     }
 }

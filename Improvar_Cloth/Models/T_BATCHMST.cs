@@ -59,19 +59,19 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public decimal? NOS { get; set; }
+         public double? NOS { get; set; }
 
-        public decimal? QNTY { get; set; }
+         public double? QNTY { get; set; }
 
-        public decimal? RATE { get; set; }
+         public double? RATE { get; set; }
 
-        public decimal? AMT { get; set; }
+         public double? AMT { get; set; }
 
-        public decimal? FLAGMTR { get; set; }
+         public double? FLAGMTR { get; set; }
 
-        public decimal? MTRL_COST { get; set; }
+         public double? MTRL_COST { get; set; }
 
-        public decimal? OTH_COST { get; set; }
+         public double? OTH_COST { get; set; }
 
         [StringLength(100)]
         public string ITREM { get; set; }
@@ -87,9 +87,9 @@ namespace Improvar.Models
 
         public short? ORGBATCHSLNO { get; set; }
 
-        public decimal? DIA { get; set; }
+         public double? DIA { get; set; }
 
-        public decimal? CUTLENGTH { get; set; }
+         public double? CUTLENGTH { get; set; }
 
         [StringLength(10)]
         public string LOCABIN { get; set; }

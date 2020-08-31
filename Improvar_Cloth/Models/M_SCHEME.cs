@@ -35,7 +35,7 @@ namespace Improvar.Models
         [StringLength(6)]
         public string SCMITMGRPCD { get; set; }
 
-        public decimal SCMQNTY { get; set; }
+         public double SCMQNTY { get; set; }
 
         [Required]
         [StringLength(1)]

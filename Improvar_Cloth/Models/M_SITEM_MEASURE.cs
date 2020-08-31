@@ -34,7 +34,7 @@ namespace Improvar.Models
         [StringLength(30)]
         public string MDESC { get; set; }
 
-        public decimal MVAL { get; set; }
+         public double MVAL { get; set; }
 
         [StringLength(30)]
         public string REM { get; set; }

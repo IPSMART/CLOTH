@@ -51,7 +51,7 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public decimal RATE { get; set; }
+         public double RATE { get; set; }
 
         public bool Checked { get; set; }
         [StringLength(60)]

@@ -41,7 +41,7 @@ namespace Improvar.Models
         [Column(Order = 2)]
         public int SLNO { get; set; }
 
-        public decimal? MTRLCOST { get; set; }
+         public double? MTRLCOST { get; set; }
 
         [StringLength(15)]
         public string SJOBNM { get; set; }
@@ -51,7 +51,7 @@ namespace Improvar.Models
 
         [StringLength(2)]
         public string JOBCD { get; set; }
-        public decimal? JOBRT { get; set; }
+         public double? JOBRT { get; set; }
 
         [StringLength(50)]
         public string REMARK { get; set; }
@@ -78,7 +78,7 @@ namespace Improvar.Models
 
         [StringLength(45)]
         public string SLNM3 { get; set; }
-        public decimal? STD_SJ_JOBRT { get; set; }
+         public double? STD_SJ_JOBRT { get; set; }
 
         [StringLength(4)]
         public string SIZECD { get; set; }

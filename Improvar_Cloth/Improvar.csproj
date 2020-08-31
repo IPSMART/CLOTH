@@ -323,7 +323,6 @@
     <Compile Include="Models\MSITEMBOMSJOB.cs" />
     <Compile Include="Models\MSITEMBOMSUPLR.cs" />
     <Compile Include="Models\MSITEMBOM_PRINT.cs" />
-    <Compile Include="Models\MSITEMCOLOR.cs" />
     <Compile Include="Models\MSITEMMEASURE.cs" />
     <Compile Include="Models\MSITEMPARTS.cs" />
     <Compile Include="Models\MSITEMSLCD.cs" />

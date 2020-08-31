@@ -40,10 +40,10 @@ namespace Improvar.Models
 
         public short? ORDSLNO { get; set; }
 
-        public decimal? AMTTORECD { get; set; }
+         public double? AMTTORECD { get; set; }
 
-        public decimal? RECDAMT { get; set; }
+         public double? RECDAMT { get; set; }
 
-        public decimal? DUEAMT { get; set; }
+         public double? DUEAMT { get; set; }
     }
 }

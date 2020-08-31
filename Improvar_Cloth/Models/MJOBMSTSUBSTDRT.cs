@@ -35,7 +35,7 @@ namespace Improvar.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime EFFDT { get; set; }
 
-        public decimal JOBRT { get; set; }
+         public double JOBRT { get; set; }
 
         public long M_AUTONO { get; set; }
 
@@ -62,6 +62,6 @@ namespace Improvar.Models
 
         [StringLength(10)]
         public string SJOBMCHN { get; set; }
-        public decimal PREVIOUS_JOBRT { get; set; }
+         public double PREVIOUS_JOBRT { get; set; }
     }
 }

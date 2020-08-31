@@ -50,6 +50,6 @@ namespace Improvar.Models
         [StringLength(15)]
         public string SJOBATCH { get; set; }
 
-        public decimal? SJOBSAM { get; set; }
+         public double? SJOBSAM { get; set; }
     }
 }

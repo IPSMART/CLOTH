@@ -47,9 +47,9 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public decimal? QNTY { get; set; }
+         public double? QNTY { get; set; }
 
-        public decimal? MTRLRT { get; set; }
+         public double? MTRLRT { get; set; }
 
         [StringLength(50)]
         public string REMARK { get; set; }
