@@ -1966,39 +1966,12 @@ namespace Improvar
             try { 
             var UNQSNO = Cn.getQueryStringUNQSNO();
                 string scmf = CommVar.FinSchema(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
                 //var query = (from c in DB.M_CLASS1 select new { CLASS1CD = c.CLASS1CD, CLASS1NM = c.CLASS1NM }).ToList();
                 string sql = "";
                 sql += "select CLASS1CD,CLASS1NM from " + scmf + ".M_CLASS1 ";
-            DataTable tbl = SQLquery(sql);
-
-            //if (val.retStr() == "" || tbl.Rows.Count > 1)
-            // if (val == null)
-            //     {
-            //         System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            //         for (int i = 0; i <= query.Count - 1; i++)
-            //         {
-            //             SB.Append("<tr><td>" + query[i].CLASS1NM + "</td><td>" + query[i].CLASS1CD + "</td></tr>");
-            //         }
-            //         var hdr = "Class 1 Name" + Cn.GCS() + "Class 1 Code";
-            //         return Generate_help(hdr, SB.ToString());
-            //     }
-            //     else
-            //     {
-            //         query = query.Where(a => a.CLASS1CD == val).ToList();
-            //         if (query.Any())
-            //         {
-            //             string str = "";
-            //             foreach (var i in query)
-            //             {
-            //                 str = i.CLASS1CD + Cn.GCS() + i.CLASS1NM;
-            //             }
-            //             return str;
-            //         }
-            //         else
-            //         {
-            //             return "Invalid Class 1 Code ! Please Select / Enter a Valid Class 1 Code !!";
-            //         }
-            //     }
+                if (valsrch.retStr() != "") sql += "where upper(CLASS1CD) = '" + valsrch + "'  ";
+                DataTable tbl = SQLquery(sql);
             if (val.retStr() == "" || tbl.Rows.Count > 1)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();

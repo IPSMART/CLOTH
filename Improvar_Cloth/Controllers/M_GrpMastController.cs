@@ -189,6 +189,7 @@ namespace Improvar.Controllers
                 sll = new M_CNTRL_HDR();
                 sBRND = new M_BRAND();
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
 
                 if (VE.IndexKey.Count != 0)
@@ -205,6 +206,12 @@ namespace Improvar.Controllers
                     sl = DB.M_GROUP.Find(aa[0]);
                     sPROD = DB.M_PRODGRP.Find(sl.PRODGRPCD);
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
+                    string class1cd = sl.CLASS1CD.retStr();
+                    if (class1cd != "")
+                    {
+                        var classnm = (from a in DBF.M_CLASS1 where a.CLASS1CD == class1cd select new { a.CLASS1NM }).FirstOrDefault();
+                        VE.CLASS1NM = classnm.CLASS1NM;
+                    }
 
                     if (sll.INACTIVE_TAG == "Y")
                     {
@@ -308,26 +315,6 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
-        //public ActionResult GetClass1Details(string val)
-        //{
-        //    try
-        //    {
-        //        if (val == null)
-        //        {
-        //            return PartialView("_Help2", Master_Help.CLASS1(val));
-        //        }
-        //        else
-        //        {
-        //            string str = Master_Help.CLASS1(val);
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
         public ActionResult GetClass1Details(string val)
         {
             var str = Master_Help.CLASS1(val);
@@ -462,6 +449,7 @@ namespace Improvar.Controllers
                         MGROUP.PRODGRPCD = VE.M_GROUP.PRODGRPCD;
                         MGROUP.HSNCODE = VE.M_GROUP.HSNCODE;
                         MGROUP.BARGENTYPE = VE.M_GROUP.BARGENTYPE;
+                        MGROUP.CLASS1CD = VE.M_GROUP.CLASS1CD;
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_GROUP", MGROUP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {
