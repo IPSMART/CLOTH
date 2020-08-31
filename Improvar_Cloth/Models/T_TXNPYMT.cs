@@ -44,6 +44,11 @@ namespace Improvar.Models
         [StringLength(16)]
         public string CARDNO { get; set; }
 
+        [StringLength(10)]
+        public string INSTNO { get; set; }
+
+        public DateTime? INSTDT { get; set; }
+
         [StringLength(100)]
         public string PYMTREM { get; set; }
     }

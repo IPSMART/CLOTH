@@ -28,13 +28,8 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public short SLNO { get; set; }
-
         [StringLength(25)]
         public string MAINBARNO { get; set; }
-
-        public short? MAINSLNO { get; set; }
-
+        
     }
 }

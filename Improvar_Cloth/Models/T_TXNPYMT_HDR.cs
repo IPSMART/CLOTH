@@ -6,8 +6,8 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("T_TXNMEMO")]
-    public partial class T_TXNMEMO
+    [Table("T_TXNPYMT_HDR")]
+    public partial class T_TXNPYMT_HDR
     {
         public short? EMD_NO { get; set; }
 
@@ -28,16 +28,22 @@ namespace Improvar.Models
         [StringLength(8)]
         public string RTDEBCD { get; set; }
 
-        [StringLength(50)]
-        public string NM { get; set; }
+        [Required]
+        [StringLength(1)]
+        public string DRCR { get; set; }
 
-        [StringLength(12)]
-        public string MOBILE { get; set; }
+        [StringLength(2)]
+        public string VCHRTYPE { get; set; }
 
         [StringLength(30)]
-        public string CITY { get; set; }
+        public string ORDAUTONO { get; set; }
 
-        [StringLength(200)]
-        public string ADDR { get; set; }
+        public short? ORDSLNO { get; set; }
+
+        public decimal? AMTTORECD { get; set; }
+
+        public decimal? RECDAMT { get; set; }
+
+        public decimal? DUEAMT { get; set; }
     }
 }
