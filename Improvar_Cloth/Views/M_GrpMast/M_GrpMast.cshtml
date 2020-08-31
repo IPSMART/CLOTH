@@ -33,6 +33,9 @@
         if (!emptyFieldCheck("Enter Item Group Name", "ITGRPNM")) { return false; }
         var grptyp = $("#grptype").val();
         if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
+        if (!emptyFieldCheck("Enter Sales General Ledger Code", "SALGLCD")) { return false; }
+        if (!emptyFieldCheck("Enter Purchase General Ledger Code", "PURGLCD")) { return false; }
+        
         return true;
     }
 </script>
@@ -361,6 +364,7 @@
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Sales General Ledger Code")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -379,6 +383,7 @@
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Purchase General Ledger Code")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-6">
