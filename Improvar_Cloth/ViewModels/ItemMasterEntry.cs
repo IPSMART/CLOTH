@@ -13,7 +13,6 @@ namespace Improvar.ViewModels
         public M_SITEM M_SITEM { get; set; }
         public M_GROUP M_GROUP { get; set; }
         public M_BRAND M_BRAND { get; set; }
-        public M_COLOR M_COLOR { get; set; }
         public M_COLLECTION M_COLLECTION { get; set; }
         public M_SUBBRAND M_SUBBRAND { get; set; }
         public M_UOM M_UOM { get; set; }

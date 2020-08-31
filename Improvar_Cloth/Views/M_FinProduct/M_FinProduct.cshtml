@@ -1070,24 +1070,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Color")
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetColorDetails", PageControllerName) + "','COLRCD/COLRNM','1/0','Select Color Details','COLRCD');", onblur = "SelectColorCode(this.value,COLRCD,COLRNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetColorDetails", PageControllerName)','COLRCD/COLRNM','1/0','Select Color Details','COLRCD')" />
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_COLOR.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", maxlength = 20, @TabIndex = -1, @placeholder = "Color Name", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                             @*<div class="col-md-6">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Product Type")
@@ -1127,11 +1109,8 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="editor-field">
-
-                                    @Html.DropDownListFor(model => model.M_SITEM.GENDER, new SelectList(Model.Gender, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
-
-
-                                    @*<select id="gender" name="gender" class="form-control">
+                                    @Html.DropDownListFor(model => model.M_SITEM.GENDER, new SelectList(Model.Gender, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
+                                                                        @*<select id="gender" name="gender" class="form-control">
                                         <option value="0" selected="selected">====Select====</option>
                                         @foreach (var i in Model.Gender)
                                         {
