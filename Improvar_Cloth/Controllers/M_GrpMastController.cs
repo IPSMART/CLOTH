@@ -308,6 +308,38 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
+        //public ActionResult GetClass1Details(string val)
+        //{
+        //    try
+        //    {
+        //        if (val == null)
+        //        {
+        //            return PartialView("_Help2", Master_Help.CLASS1(val));
+        //        }
+        //        else
+        //        {
+        //            string str = Master_Help.CLASS1(val);
+        //            return Content(str);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message + ex.InnerException);
+        //    }
+        //}
+        public ActionResult GetClass1Details(string val)
+        {
+            var str = Master_Help.CLASS1(val);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
+            }
+        }
         public ActionResult AddDOCRow(GroupMasterEntry VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), "IMPROVAR");

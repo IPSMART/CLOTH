@@ -16,5 +16,6 @@ namespace Improvar.ViewModels
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
+        public string CLASS1NM{ get; set; }
     }
 }
