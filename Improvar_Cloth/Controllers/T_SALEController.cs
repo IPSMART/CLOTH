@@ -71,9 +71,9 @@ namespace Improvar.Controllers
 
                     VE.Database_Combo2 = (from n in DB.T_TXNOTH
                                           select new Database_Combo2() { FIELD_VALUE = n.DEALBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-                    VE.Database_Combo3 = (from n in DB.T_BATCHDTL
-                                          select new Database_Combo3() { FIELD_VALUE = n.HSNCODE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-                    VE.DropDown_list_BARGENTYPE = Master_Help.BARGEN_TYPE();
+                    VE.HSN_CODE = (from n in DBF.M_HSNCODE
+                                          select new HSN_CODE() { text = n.HSNDESCN,value=n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
+                    VE.BARGEN_TYPE = Master_Help.BARGEN_TYPE();
 
                     VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
                     foreach(var v in VE.DropDown_list_MTRLJOBCD)
@@ -96,6 +96,10 @@ namespace Improvar.Controllers
                     //VE.DropDown_list_StkType = (from n in DB.M_STKTYPE
                     //                            select new DropDown_list_StkType() { value = n.STKTYPE, text = n.STKNAME }).OrderBy(s => s.value).Distinct().ToList();
                     VE.DISC_TYPE = Master_Help.DISC_TYPE();
+                    VE.TDDISC_TYPE = (from n in DB.T_BATCHDTL
+                                          select new TDDISC_TYPE() { FIELD_VALUE = n.TDDISCTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.SCMDISC_TYPE = (from n in DB.T_BATCHDTL
+                                      select new SCMDISC_TYPE() { FIELD_VALUE = n.SCMDISCTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -1010,22 +1014,45 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetBarCodeData(string val)
+        public ActionResult GetLocationBinDetails(string val)
         {
-            TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
-            Cn.getQueryString(VE);
-            string scm = CommVar.FinSchema(UNQSNO);
-            string sql = "";
-            sql += "select a.PRCCD,a.PRCNM ";
-            sql += "from " + scm + ".M_PRCLST a, " + scm + ".M_CNTRL_HDR b ";
-            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
-            sql += "order by a.PRCCD,a.PRCNM";
-            DataTable tbl = Master_Help.SQLquery(sql);
-
-            VE.DefaultView = true;
-            ModelState.Clear();
-            return PartialView("_T_SALE_PRODUCT", VE);
-
+            try
+            {
+                var str = Master_Help.LOCABIN_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetBarCodeDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.BARCODE_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
         public ActionResult OPEN_AMOUNT(TransactionPackingSlipEntry VE, string AUTO_NO, int A_T_NOS, double A_T_QNTY, double A_T_AMT, double A_T_TAXABLE, double A_T_IGST_AMT, double A_T_CGST_AMT, double A_T_SGST_AMT, double A_T_CESS_AMT, double A_T_NET_AMT, double IGST_PER, double CGST_PER, double SGST_PER, double CESS_PER)
         {

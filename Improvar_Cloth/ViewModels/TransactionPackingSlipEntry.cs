@@ -26,12 +26,14 @@ namespace Improvar.ViewModels
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
-        public List<Database_Combo3> Database_Combo3 { get; set; }
+        public List<HSN_CODE> HSN_CODE { get; set; }
         public List<BL_TYPE> BL_TYPE { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
-        public List<DropDown_list_BARGENTYPE> DropDown_list_BARGENTYPE { get; set; }
+        public List<BARGEN_TYPE> BARGEN_TYPE { get; set; }
         public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
         public List<DISC_TYPE> DISC_TYPE { get; set; }
+        public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
+        public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
         public string SLNM { get; set; }
         public string SLAREA { get; set; }
         public string GSTNO { get; set; }
@@ -113,5 +115,17 @@ namespace Improvar.ViewModels
         public double? FLAGMTR { get; set; }
         [StringLength(1)]
         public string DISCTYPE { get; set; }
+        [StringLength(30)]
+        public string BALENO { get; set; }
+        public double? TDDISCRATE { get; set; }
+
+        [StringLength(1)]
+        public string TDDISCTYPE { get; set; }
+        public double? SCMDISCRATE { get; set; }
+
+        [StringLength(1)]
+        public string SCMDISCTYPE { get; set; }
+        [StringLength(10)]
+        public string LOCABIN { get; set; }
     }
 }
