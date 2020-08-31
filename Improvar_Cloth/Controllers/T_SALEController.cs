@@ -63,14 +63,16 @@ namespace Improvar.Controllers
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
 
-                    VE.Database_Combo1 = (from n in DB.M_BLTYPE
-                                          select new Database_Combo1() { FIELD_VALUE = n.BLTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.BL_TYPE = (from n in DB.M_BLTYPE
+                                          select new BL_TYPE() { FIELD_VALUE = n.BLTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+
+                    VE.Database_Combo1 = (from n in DB.T_TXNOTH
+                                          select new Database_Combo1() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
 
                     VE.Database_Combo2 = (from n in DB.T_TXNOTH
-                                          select new Database_Combo2() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-
-                    VE.Database_Combo3 = (from n in DB.T_TXNOTH
-                                          select new Database_Combo3() { FIELD_VALUE = n.DEALBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                                          select new Database_Combo2() { FIELD_VALUE = n.DEALBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.Database_Combo3 = (from n in DB.T_BATCHDTL
+                                          select new Database_Combo3() { FIELD_VALUE = n.HSNCODE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
                     VE.DropDown_list_BARGENTYPE = Master_Help.BARGEN_TYPE();
 
                     VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
@@ -91,9 +93,9 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-                    VE.DropDown_list_StkType = (from n in DB.M_STKTYPE
-                                                select new DropDown_list_StkType() { value = n.STKTYPE, text = n.STKNAME }).OrderBy(s => s.value).Distinct().ToList();
-
+                    //VE.DropDown_list_StkType = (from n in DB.M_STKTYPE
+                    //                            select new DropDown_list_StkType() { value = n.STKTYPE, text = n.STKNAME }).OrderBy(s => s.value).Distinct().ToList();
+                    VE.DISC_TYPE = Master_Help.DISC_TYPE();
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -973,6 +975,26 @@ namespace Improvar.Controllers
             try
             {
                 var str = Master_Help.SIZECD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetStockDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.STKTYPE_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
