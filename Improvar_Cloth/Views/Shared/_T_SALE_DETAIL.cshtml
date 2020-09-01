@@ -85,7 +85,8 @@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].MTRLJOBNM, new { id = "D_MTRLJOBNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].MTRLJOBCD, new { id = "D_MTRLJOBCD_" + i })</td>
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].MTRLJOBCD, new { id = "D_MTRLJOBCD_" + i })
+                                        </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].ITNM, new { id = "D_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].ITCD, new { id = "D_ITCD_" + i })
@@ -116,7 +117,8 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].AMT, new { htmlattributes = new { id = "D_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].DISCTYPE, new { id = "D_DISCTYPE_" + i, @class = " atextBoxFor " })
+                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].DISCTYPE_DESC, new { id = "D_DISCTYPE_DESC_" + i, @class = " atextBoxFor " })
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE, new { id = "D_DISCTYPE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].DISCRATE, new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right" })

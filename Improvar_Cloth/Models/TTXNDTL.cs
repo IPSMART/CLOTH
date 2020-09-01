@@ -177,5 +177,6 @@ namespace Improvar.Models
         public string MTRLJOBNM { get; set; }
         [StringLength(15)]
         public string STKNAME { get; set; }
+        public string DISCTYPE_DESC { get; set; }
     }
 }

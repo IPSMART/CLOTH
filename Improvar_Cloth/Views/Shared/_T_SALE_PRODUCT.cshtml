@@ -134,7 +134,10 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
+
+
 
 
                                             @*@Html.DropDownListFor(model => Model.TBATCHDTL[i].DISCTYPE, new SelectList(Model.TBATCHDTL[i].DISC_TYPE, "value", "text", Model.TBATCHDTL[i].DISCTYPE), new { id = "B_DISCTYPE" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })*@

@@ -61,6 +61,7 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string DISCTYPE { get; set; }
+        public string DISCTYPE_DESC { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SCMDISCRATE { get; set; }
 
