@@ -238,6 +238,7 @@
     <Compile Include="Controllers\DatalockController.cs" />
     <Compile Include="Controllers\DOCPASS_STRGYController.cs" />
     <Compile Include="Controllers\ImageData.cs" />
+    <Compile Include="Controllers\M_AmttypeController.cs" />
     <Compile Include="Controllers\M_BOMController.cs" />
     <Compile Include="Controllers\M_BrandController.cs" />
     <Compile Include="Controllers\M_CollectionController.cs" />

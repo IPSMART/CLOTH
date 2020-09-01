@@ -1287,6 +1287,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                            <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivDocument" style="margin-top:0px;">
+                                        @Html.Partial("_UPLOADDOCUMENTS")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     }
                     else if (Model.MENU_PARA == "OPR")
                     {
@@ -1299,8 +1308,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                            <div class="row" style="background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivDocument" style="margin-top:0px;">
+                                        @Html.Partial("_UPLOADDOCUMENTS")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     }
-                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                    else if (Model.MENU_PARA == "APRV")
+                    { <div id="Documents" class="tab-pane fade in active" style="margin-top: 10px;">
                         <div class="row" style="background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivDocument" style="margin-top:0px;">
@@ -1308,7 +1327,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>}
+                    
                 </div>
             </div>
         </div>

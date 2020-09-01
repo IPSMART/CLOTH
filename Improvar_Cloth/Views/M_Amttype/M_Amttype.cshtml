@@ -56,13 +56,14 @@
     {
         if (id == "")
         {
-            ClearAllTextBoxes((GLCD.id + "," + GLNM.id));
+            $("#" + GLCD.id).val("");
+            $("#" + GLNM.id).val("");
         }
         else
         {
             $.ajax({
                 type: 'GET',
-                url: "@Url.Action("GetGeneralLedgerDetails", PageControllerName)",
+                url: $("#urlnameGENLEG").val(),
                 data: { val: id },
                 success: function (result)
                 {
@@ -70,17 +71,15 @@
                     if (MSG >= 0)
                     {
                         $("#tempHDD").val(result);
-                        var findstr = $("#tempHDD").val();
-                        document.getElementById(GLCD.id).value = returncolvalue(findstr, "GLCD");
-                        document.getElementById(GLNM.id).value = returncolvalue(findstr, "GLNM");
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        $("#" + GLCD.id).val(str[0].toString());
+                        $("#" + GLNM.id).val(str[1].toString());
                     }
                     else
                     {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        ClearAllTextBoxes((GLCD.id + "," + GLNM.id));
-                        $("#btnok").focus();
-                        $("#msgbody_info").html(result);
+                        $("#" + GLCD.id).val("");
+                        $("#" + GLNM.id).val("");
+                        msgInfo(result);
                         message_value = GLCD.id;
                     }
                 },
@@ -93,6 +92,7 @@
         }
     }
 </script>
+<script></script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -102,6 +102,7 @@
         <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlnameGENLEG" value="@Url.Action("GetGeneralLedgerDetails", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_AMTTYPE.M_AUTONO)
@@ -113,7 +114,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.M_AMTTYPE.AMTCD, new { htmlAttributes = new { @class = "form-control ", id = "AMTCD", @placeholder = "Code", maxlength = 4, @readonly = "readonly" } })
+                        @Html.EditorFor(model => model.M_AMTTYPE.AMTCD, new { htmlAttributes = new { @class = "form-control ", id = "AMTCD", @placeholder = "Code", maxlength = 4, @TabIndex = -1, @readonly = "readonly" } })
                     </div>
                 </div>
             </div>
@@ -141,12 +142,14 @@
                 </div>
                 <div class="col-md-6">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.M_AMTTYPE.GLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GLCD", onkeyup = "GetHelp('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','GLCD/GLNM','1/0','General Ledger Details','GLCD');toUpper(this);", onblur = "SelectGeneralLedgerCode(this.value,GLCD,GLNM);", @placeholder = "Code", maxlength = 8 } })
-                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGeneralLedgerDetails", PageControllerName)','GLCD/GLNM','1/0','General Ledger Details','GLCD')" />
+                        @*@Html.EditorFor(model => model.M_AMTTYPE.GLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GLCD", onkeyup = "GetHelp('" + @Url.Action("GetGeneralLedgerDetails", PageControllerName) + "','GLCD/GLNM','1/0','General Ledger Details','GLCD');toUpper(this);", onblur = "SelectGeneralLedgerCode(this.value,GLCD,GLNM);", @placeholder = "Code", maxlength = 8 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGeneralLedgerDetails", PageControllerName)','GLCD/GLNM','1/0','General Ledger Details','GLCD')" />*@
+                        @Html.EditorFor(model => model.M_AMTTYPE.GLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','SAL Ledger Details','GLCD','GLCD=GLCD=1/GLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','General Ledger Details','GLCD','GLCD=GLCD=1/GLNM=GLNM=0');", @placeholder = "General Ledger Code", maxlength = 8 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','General Ledger Details','GLCD','GLCD=GLCD=1/GLNM=GLNM=0')" />
                         
                     </div>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-9">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.M_GENLEG.GLNM, new { htmlAttributes = new { @class = "form-control", id = "GLNM", @TabIndex = -1, @placeholder = "GLNM", maxlength = 45, @readonly = "readonly" } })
                     </div>

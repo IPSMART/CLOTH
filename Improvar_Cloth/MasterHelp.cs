@@ -2134,6 +2134,48 @@ namespace Improvar
                 }
             }
         }
+        public string INVENTORY_ITEM(string BH_CD = "", string SH_CD = "", string val = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
+            {
+                var query = (from c in DB.M_SITEM
+                             join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+                             where i.INACTIVE_TAG == "N"
+                             select new { ITCD = c.ITCD, ITDESCN = c.ITNM, UOM = c.UOMCD }).ToList();
+
+                //if (query != null && query.Count > 0 && BH_CD != "") { query = query.Where(a => a.BHCD == BH_CD).ToList(); }
+                //if (query != null && query.Count > 0 && SH_CD != "") { query = query.Where(a => a.SHCD == SH_CD).ToList(); }
+
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].ITDESCN + "</td><td>" + query[i].ITCD + "</td><td>" + query[i].UOM + "</td></tr>");
+                    }
+                    var hdr = "Item Description" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    query = query.Where(a => a.ITCD == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = i.ITCD + Cn.GCS() + i.ITDESCN + Cn.GCS() + i.UOM;
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "0";
+                    }
+                }
+            }
+        }
 
     }
 }
