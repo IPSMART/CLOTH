@@ -16,11 +16,11 @@ namespace Improvar.Models
             Database.SetInitializer<ImprovarDB>(null);
         }
         //public virtual DbSet<M_BATCH_IMG_HDR> M_BATCH_IMG_HDR { get; set; }
-        //public virtual DbSet<M_ITEMPLIST_ADD> M_ITEMPLIST_ADD { get; set; }
-        //public virtual DbSet<M_ITEMPLISTDTL> M_ITEMPLISTDTL { get; set; }
-        //public virtual DbSet<M_SITEM> M_SITEM { get; set; }
-        //public virtual DbSet<M_SITEM_BARCODE> M_SITEM_BARCODE { get; set; }
-        //public virtual DbSet<M_SITEM_SLCD> M_SITEM_SLCD { get; set; }
+        public virtual DbSet<M_BATCH_IMG_HDR_DTL> M_BATCH_IMG_HDR_DTL { get; set; }
+        public virtual DbSet<M_BATCH_IMG_HDR_LINK> M_BATCH_IMG_HDR_LINK { get; set; }
+        //public virtual DbSet<T_BATCH_IMG_HDR> T_BATCH_IMG_HDR { get; set; }
+        //public virtual DbSet<T_BATCH_IMG_HDR_DTL> T_BATCH_IMG_HDR_DTL { get; set; }
+        //public virtual DbSet<T_BATCH_IMG_HDR_LINK> T_BATCH_IMG_HDR_LINK { get; set; }
         public virtual DbSet<M_PAYMENT> M_PAYMENT { get; set; }
         public virtual DbSet<M_STKTYPE> M_STKTYPE { get; set; }
         public virtual DbSet<M_JOBPRCCD> M_JOBPRCCD { get; set; }

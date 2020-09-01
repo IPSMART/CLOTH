@@ -9,6 +9,7 @@ namespace Improvar.Models
     [Table("M_BATCH_IMG_HDR")]
     public partial class M_BATCH_IMG_HDR
     {
+       
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -42,6 +43,5 @@ namespace Improvar.Models
 
         [StringLength(300)]
         public string DOC_DESC { get; set; }
-        
     }
 }

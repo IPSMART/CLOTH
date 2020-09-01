@@ -1209,9 +1209,11 @@ namespace Improvar
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) ";
 
+
             return tbl;
 
         }
+
         public string retGstPer(string SearchStr, double rate = 0)
         {
             //Searchstr value like listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179))
@@ -1230,5 +1232,50 @@ namespace Improvar
             if (selrow != -1) rtval = mgstrate[2].retDbl().retStr() + "," + mgstrate[3].retDbl().retStr() + "," + mgstrate[4].retDbl().retStr();
             return rtval;
         }
+
+        public string retVchrUniqId(string doccd, string autono = "")
+        {
+            string rtval = "";
+            string sql = "", scm = CommVar.CurSchema(UNQSNO);
+            string dcdbarcode = "", unqno = "";
+            sql = "select a.docbarcode from " + scm + ".m_doctype_bar a where a.doccd='" + doccd + "' where docbarcode is not null";
+            DataTable tbl = SQLquery(sql);
+            if (tbl.Rows.Count == 1) dcdbarcode = tbl.Rows[0]["docbarcode"].retStr();
+
+            if (autono != "")
+            {
+                sql = "select b.doccd, max(a.uniqno) uniqno ";
+                sql += "from " + scm + ".t_cntrl_hdr_uniqno a, " + scm + ".t_cntrl_hdr b ";
+                sql += "where a.autono = b.autono(+) and a.autono='" + autono + "' ";
+                tbl = SQLquery(sql);
+                if (tbl.Rows.Count == 1) unqno = tbl.Rows[0]["uniqno"].retStr();
+            }
+            bool getuniqid = true;
+            if (autono != "" && unqno == "") getuniqid = true; else { getuniqid = false; }
+            if (dcdbarcode == "") getuniqid = false;
+            if (getuniqid == true)
+            {
+                sql = "select b.doccd, max(a.uniqno) uniqno ";
+                sql += "from " + scm + ".t_cntrl_hdr_uniqno a, " + scm + ".t_cntrl_hdr b ";
+                sql += "where a.autono = b.autono(+) and ";
+                sql += "a.uniqno like '" + dcdbarcode + "%' ";
+                sql += "group by b.doccd ";
+                tbl = SQLquery(sql);
+                unqno = tbl.Rows[0]["uniqno"].retStr();
+                double newno = 1;
+                if (unqno.retStr() != "")
+                {
+                    string aftval = unqno.Substring(dcdbarcode.Length);
+                    newno = Convert.ToDouble(aftval) + 1;
+                }
+                rtval = dcdbarcode + newno.ToString().PadLeft(5, '0');
+            }
+            else
+            {
+                rtval = unqno;
+            }
+            return rtval;
+        }
+
     }
 }

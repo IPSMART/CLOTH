@@ -255,7 +255,7 @@ namespace Improvar
             {
                 return "";
             }
-         
+
         }
         public static string FinEndDate(string unqsno)
         {
@@ -268,7 +268,7 @@ namespace Improvar
             catch { }
             try
             {
-                string str = System.Web.HttpContext.Current.Session["CompanyFinancial" ].ToString();
+                string str = System.Web.HttpContext.Current.Session["CompanyFinancial"].ToString();
                 string[] dt = str.Split('-');
                 return dt[1].ToString().Trim();
             }
@@ -276,7 +276,7 @@ namespace Improvar
             {
                 return "";
             }
-        
+
         }
         public static string CurrDate(string unqsno)
         {
@@ -307,7 +307,7 @@ namespace Improvar
             {
                 return "";
             }
-        
+
         }
         public static string SkipTrCd(string asSql = "Y", string BRSOpngtaken = "N", string SkipOpng = "N", string SkipProv = "Y", string SkipPrevBal = "Y")
         {
@@ -401,7 +401,7 @@ namespace Improvar
             catch
             {
                 return "";
-            }    
+            }
         }
         public static string nextSchema(string scm, string unqsno)
         {
@@ -415,7 +415,7 @@ namespace Improvar
             catch
             {
                 return "";
-            }            
+            }
         }
         public static string UserType()
         {
@@ -452,6 +452,10 @@ namespace Improvar
             rval = rval.ToUpper();
             if (LastYearSchema(unqsno) == "") rval = "";
             return rval;
+        }
+        public static string SaveFolderPath()
+        {
+            return "C://IPSMART";
         }
     }
 }

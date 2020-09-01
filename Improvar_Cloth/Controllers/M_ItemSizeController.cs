@@ -193,6 +193,7 @@ namespace Improvar.Controllers
                         {
                             MSIZE.DTAG = "E";
                             MSIZE.M_AUTONO = VE.M_SIZE.M_AUTONO;
+                            MSIZE.SZBARCODE = VE.M_SIZE.SZBARCODE;
                             var MAXEMDNO = (from p in DB.M_SIZE where p.M_AUTONO == VE.M_SIZE.M_AUTONO select p.EMD_NO).Max();
                             if (MAXEMDNO == null)
                             {

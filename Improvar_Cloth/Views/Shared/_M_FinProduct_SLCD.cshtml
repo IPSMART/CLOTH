@@ -15,7 +15,7 @@
                     <input type="text" id="search_size" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleItemSize');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
-                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Item Size Details</b></center>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Ledger tagging Details</b></center>
             </div>
 
             <table id="exampleItemSize" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
@@ -23,10 +23,10 @@
                     <tr style="height:30px;">
                         <th class="grid_th" style="width:27px;"></th>
                         <th class="grid_th" style="width:27px;">SL. No.</th>
-                        @*<th class="grid_th" style="width:75px;">SIZE CODE</th>
-                        <th class="grid_th" style="width:75px;">SIZE NAME</th>
-                        <th class="grid_th" style="width:100px">SIZE BAR CODE</th>
-                        <th class="grid_th" style="width:27px;">Inactive</th>*@
+                        <th class="grid_th" style="width:50px;">Ledger CODE</th>
+                        <th class="grid_th" style="width:100px;">Ledger NAME</th>
+                        <th class="grid_th" style="width:40px">Rate</th>
+                        <th class="grid_th" style="width:100px">PDESIGN</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,19 +41,23 @@
                                 <td class="grid_td">
                                     @Html.TextBoxFor(model => Model.MSITEMSLCD[i].SRLNO, new { id = "SSRLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                 </td>
-                                @*<td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].SIZECD, new { id = "SIZECD_" + i, maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetSizeDetails", "M_FinProduct") + "','" + "SIZECD_" + i + "/" + "SIZENM_" + i + "/" + "BARCODE_" + i + "','1/0/2','Size Details','" + "SIZECD_" + i + "')", onblur = "SelectSIZECODE(this.value," + "SIZECD_" + i + "," + "SIZENM_" + i + "," + "BARCODE_" + i + ");", @class = " atextBoxFor textbox_image" })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onclick="GetHelp('@Url.Action("GetSizeDetails", "M_FinProduct")','SIZECD_@i/SIZENM_@i/BARCODE_@i','1/0/2','Size Details','SIZECD_@i')" />
+                                <td class="grid_td">
+                                    @*@Html.TextBoxFor(model => Model.MSITEMSLCD[i].SLCD, new { id = "SLCD_" + i, maxlength = 4, onkeydown = "GetHelp('" + @Url.Action("GetRefLedgerDetails", "M_FinProduct") + "','" + "SIZECD_" + i + "/" + "SIZENM_" + i + "/" + "BARCODE_" + i + "','1/0/2','Size Details','" + "SIZECD_" + i + "')", onblur = "SelectSIZECODE(this.value," + "SIZECD_" + i + "," + "SIZENM_" + i + "," + "BARCODE_" + i + ");", @class = " atextBoxFor textbox_image" })
+                                    <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelp('@Url.Action("GetRefLedgerDetails", "M_FinProduct")','SIZECD_@i/SIZENM_@i/BARCODE_@i','1/0/2','Size Details','SIZECD_@i')" />*@
+
+                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].SLCD, new { id = "SLCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", "M_FinProduct") + "','SubLedger Details','" + "SLCD_" + i + "','" + "SLCD_" + i + "=SLCD=1/" + "SLNM_" + i + "=SLNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", "M_FinProduct") + "','SubLedger Details','" + "SLCD_" + i + "','" + "SLCD_" + i + "=SLCD=1/" + "SLNM_" + i + "=SLNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", "M_FinProduct")','SubLedger Details','SLCD_@i','SLCD_@i=SLCD=1/SLNM_@i=SLNM=0')" />
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].SIZENM, new { id = "SIZENM_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].SLNM, new { id = "SLNM_" + i, maxlength = 40, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].BARCODE, new { id = "BARCODE_" + i, maxlength = 3, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].JOBRT, new { id = "JOBRT_" + i, maxlength = 12, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", })
                                 </td>
-                                <td class="grid_td" style="padding-left:7px;padding-right:7px;">
-                                    @Html.CheckBoxFor(model => model.MSITEMSLCD[i].IChecked, new { htmlAttributes = new { id = "IChecked_" } })*@
-                                @*</td>*@
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.MSITEMSLCD[i].PDESIGN, new { id = "PDESIGN_" + i, maxlength = 30, @class = " atextBoxFor " })
+                                </td>
+                               
 
                             </tr>
                         }

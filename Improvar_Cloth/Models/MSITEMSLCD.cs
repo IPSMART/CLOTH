@@ -29,7 +29,7 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 1)]
-        [StringLength(4)]
+        [StringLength(8)]
         public string SLCD { get; set; }
 
         [StringLength(30)]
@@ -37,5 +37,6 @@ namespace Improvar.Models
 
          public double? JOBRT { get; set; }
         public string SRLNO { get; set; }
+        public string SLNM { get; set; }
     }
 }
