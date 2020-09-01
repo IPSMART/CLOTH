@@ -104,7 +104,6 @@ namespace Improvar
             }
             return rval;
         }
-
         public static string retErrmsg(Exception ex)
         {
             string errmsg = "";

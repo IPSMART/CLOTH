@@ -6,10 +6,9 @@ namespace Improvar.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("M_BATCH_IMG_HDR")]
-    public partial class M_BATCH_IMG_HDR
+    [Table("M_BATCH_IMG_HDR_DTL")]
+    public partial class M_BATCH_IMG_HDR_DTL
     {
-       
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -32,16 +31,13 @@ namespace Improvar.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public short SLNO { get; set; }
 
-        [StringLength(100)]
-        public string DOC_FLNAME { get; set; }
+        [Key]
+        [Column(Order = 2)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public short RSLNO { get; set; }
 
-        [StringLength(10)]
-        public string DOC_EXTN { get; set; }
-
-        [StringLength(15)]
-        public string DOC_CTG { get; set; }
-
-        [StringLength(300)]
-        public string DOC_DESC { get; set; }
+        [StringLength(4000)]
+        public string DOC_STRING { get; set; }
+        
     }
 }
