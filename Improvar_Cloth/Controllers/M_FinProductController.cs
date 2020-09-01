@@ -1178,7 +1178,7 @@ namespace Improvar.Controllers
                 VE.MSITEMSLCD = ITEMSIZE;
                 ModelState.Clear();
                 VE.DefaultView = true;
-                return PartialView("_M_FinProduct_SIZE", VE);
+                return PartialView("_M_FinProduct_SLCD", VE);
             }
             catch (Exception ex)
             {
