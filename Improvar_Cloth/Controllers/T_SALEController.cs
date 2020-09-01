@@ -328,12 +328,11 @@ namespace Improvar.Controllers
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
-                str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,i.ITCD,j.ITNM,j.UOMCD,i.STKTYPE,n.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
+                str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,i.ITCD,j.ITNM,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
                 str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
                 str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD ";
-                str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_MTRLJOBMST m, ";
-                str1 += Scm + ".M_STKTYPE n ";
-                str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=n.STKTYPE(+)  ";
+                str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_STKTYPE m ";
+                str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=m.STKTYPE(+)  ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
                 str1 += "order by i.SLNO ";
                 tbl = Master_Help.SQLquery(str1);
@@ -430,18 +429,36 @@ namespace Improvar.Controllers
         {
             try
             {
-                var agent = Code.Split(Convert.ToChar(Cn.GCS()));
-                if (agent.Count() > 1)
+
+                var code_data = Code.Split(Convert.ToChar(Cn.GCS()));
+                if (code_data.Count() > 1)
                 {
-                    if (agent[1] == "")
+                    if (code_data[0].retStr() == "Party")
                     {
-                        return Content("Please Select Agent !!");
+                        if (code_data[1] == "")
+                        {
+                            return Content("Please Select Document Date !!");
+                        }
+                        else
+                        {
+                            Code = "";
+                        }
                     }
                     else
                     {
-                        Code = agent[0];
+                        if (code_data[1] == "")
+                        {
+                            return Content("Please Select Agent !!");
+                        }
+                        else
+                        {
+                            Code = code_data[0];
+                        }
                     }
+
+
                 }
+
                 var str = Master_Help.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -449,7 +466,31 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    return Content(str);
+                    if (code_data[0].retStr() == "Party")
+                    {
+                        if (str.IndexOf(Cn.GCS()) > 0)
+                        {
+                            var party_data = salesfunc.GetSlcdDetails(val, code_data[1]);
+                            if (party_data != null && party_data.Rows.Count > 0)
+                            {
+                                str = Master_Help.ToReturnFieldValues("", party_data);
+                                return Content(str);
+                            }
+                            else
+                            {
+                                return Content("Invalid Ledger Code ! Please Enter a Valid Ledger Code !!");
+                            }
+                        }
+                        else
+                        {
+                            return Content(str);
+                        }
+                    }
+                    else
+                    {
+                        return Content(str);
+                    }
+
                 }
             }
             catch (Exception ex)
@@ -658,10 +699,15 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetBarCodeDetails(string val)
+        public ActionResult GetBarCodeDetails(string val, string Code)
         {
             try
             {
+                string[] hdr_data = Code.Split(Convert.ToChar(Cn.GCS()));
+                if (hdr_data[3].retStr() == "" || hdr_data[1].retStr() == "")
+                {
+                    return Content("Please Select Price Code or Tax Grp Code ");
+                }
                 var str = Master_Help.BARCODE_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -669,7 +715,26 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    return Content(str);
+                    //return Content(str);
+                    if (str.IndexOf(Cn.GCS()) > 0)
+                    {
+                        string itgrpcd = "", itcd = "", styleno = "";
+                        itgrpcd = str.retCompValue("ITGRPCD");
+                        itcd = str.retCompValue("ITCD");
+                        styleno = str.retCompValue("STYLENO");
+
+                        var stock_data = salesfunc.GetStock(hdr_data[0].retStr(), hdr_data[2].retStr().retSqlformat(), val.retSqlformat(), itcd.retSqlformat(), "'FS'", "", itgrpcd.retSqlformat(), styleno, hdr_data[3].retStr(), hdr_data[1].retStr());
+                        if (stock_data != null && stock_data.Rows.Count > 0)
+                        {
+                            str = Master_Help.ToReturnFieldValues("", stock_data);
+                        }
+                       
+                        return Content(str);
+                    }
+                    else
+                    {
+                        return Content(str);
+                    }
                 }
             }
             catch (Exception ex)
@@ -777,6 +842,27 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult DeleteBarCodeRow(TransactionPackingSlipEntry VE)
+        {
+
+            List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
+            int count = 0;
+            for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+            {
+                if (VE.TBATCHDTL[i].Checked == false)
+                {
+                    count += 1;
+                    TBATCHDTL IFSC = new TBATCHDTL();
+                    IFSC = VE.TBATCHDTL[i];
+                    TBATCHDTL.Add(IFSC);
+                }
+            }
+            VE.TBATCHDTL = TBATCHDTL;
+            ModelState.Clear();
+            VE.DefaultView = true;
+            return PartialView("_T_SALE_PRODUCT", VE);
+
+        }
         public ActionResult FillDetailData(TransactionPackingSlipEntry VE)
         {
             try
@@ -804,7 +890,7 @@ namespace Improvar.Controllers
                                   x.TDDISCRATE,
                                   x.GSTPER,
                                   x.FLAGMTR,
-                                  x.STKNAME
+                                  x.STKNAME,
                               } into P
                               select new TTXNDTL
                               {
@@ -821,7 +907,7 @@ namespace Improvar.Controllers
                                   UOM = P.Key.UOM,
                                   NOS = P.Sum(A => A.NOS),
                                   QNTY = P.Sum(A => A.QNTY),
-                                  FLAGMTR = P.Key.FLAGMTR,
+                                  FLAGMTR = P.Sum(A => A.FLAGMTR),
                                   BLQNTY = P.Sum(A => A.BLQNTY),
                                   RATE = P.Key.RATE,
                                   DISCTYPE = P.Key.DISCTYPE,
@@ -831,6 +917,7 @@ namespace Improvar.Controllers
                                   TDDISCTYPE = P.Key.TDDISCTYPE,
                                   SCMDISCRATE = P.Key.SCMDISCRATE,
                                   SCMDISCTYPE = P.Key.SCMDISCTYPE,
+                                  AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                               }).ToList();
                 //for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
                 //{
@@ -1293,7 +1380,7 @@ namespace Improvar.Controllers
                         switch (VE.MENU_PARA)
                         {
                             case "SBPCK":
-                                stkdrcr = "C"; break;
+                                stkdrcr = "N"; break;
                             case "SB":
                                 stkdrcr = "C"; break;
                             case "SBDIR":
@@ -1307,7 +1394,7 @@ namespace Improvar.Controllers
                             case "SBEXP":
                                 stkdrcr = "C"; break;
                             case "PI":
-                                stkdrcr = "C"; break;
+                                stkdrcr = "0"; break;
                             case "PB":
                                 stkdrcr = "D"; break;
                             case "PR":

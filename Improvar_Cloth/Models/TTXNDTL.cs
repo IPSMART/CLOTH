@@ -178,5 +178,6 @@ namespace Improvar.Models
         [StringLength(15)]
         public string STKNAME { get; set; }
         public string DISCTYPE_DESC { get; set; }
+        public double? TOTDISCAMT { get; set; }
     }
 }
