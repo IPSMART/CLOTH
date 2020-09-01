@@ -45,6 +45,8 @@ namespace Improvar.Controllers
                                           join j in DB.M_GROUP on n.ITGRPCD equals j.ITGRPCD
                                           where j.ITGRPTYPE == "F"
                                           select new Database_Combo1() { FIELD_VALUE = n.HSNCODE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.DropDown_list = (from i in DB.M_MTRLJOBMST select new DropDown_list() { value = i.RMTRLJOBCD, text = i.RMTRLJOBCD }).OrderBy(s => s.text).ToList();
+                    
 
                     if (op.Length != 0)
                     {

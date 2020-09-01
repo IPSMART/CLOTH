@@ -19,6 +19,7 @@ namespace Improvar.ViewModels
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public bool Deactive { get; set; }
         public M_MTRLJOBMST M_MTRLJOBMST { get; set; }
+        public List<DropDown_list> DropDown_list { get; set; }
 
     }
 }
