@@ -177,7 +177,7 @@ namespace Improvar.Controllers
                             for (int i = 0; i < 5; i++)
                             {
                                 MSITEMSLCD ITEMSIZE = new MSITEMSLCD();
-                                //ITEMSIZE.SRLNO = Convert.ToString(i + 1);
+                                ITEMSIZE.SRLNO = Convert.ToString(i + 1);
                                 MSITEMSLCD.Add(ITEMSIZE);
                             }
                             VE.MSITEMSLCD = MSITEMSLCD;
@@ -1148,7 +1148,7 @@ namespace Improvar.Controllers
                     VE.MSITEMSLCD = MSITEMSLCD_HEAD;
                 }
                 VE.DefaultView = true;
-                return PartialView("_M_FinProduct_SIZE", VE);
+                return PartialView("_M_FinProduct_SLCD", VE);
             }
             catch (Exception ex)
             {
