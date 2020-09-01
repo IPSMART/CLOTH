@@ -37,5 +37,6 @@ namespace Improvar.Models
 
          public double? JOBRT { get; set; }
         public string SRLNO { get; set; }
+        public string SLNM { get; set; }
     }
 }

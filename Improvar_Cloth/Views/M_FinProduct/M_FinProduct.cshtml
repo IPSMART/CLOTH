@@ -34,14 +34,15 @@
 <script>
     function requiredFieldValidator() {
         if ("@Model.MENU_PARA" == "F") {
-        if (!emptyFieldCheck("Enter Design", "STYLENO")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }}
+            if (!emptyFieldCheck("Enter Design", "STYLENO")) {
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:first-child").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                return false;
+            }
+        }
         if (!emptyFieldCheck("Enter Item Group Code", "ITGRPCD")) {
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
@@ -118,6 +119,27 @@
         pricestr = pricestr.slice(0, -1);
         $("#STRPRICES").val(pricestr);
         return true;
+
+
+        var GridRowMain = $("#FINPRODUCT_INVCD > tbody > tr").length;
+        var ISIZECD = ""; var ICOLRCD = ""; var flag = 0;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            ISIZECD = document.getElementById("ISIZECD_" + i).value;
+            ICOLRCD = document.getElementById("ICOLRCD_" + i).value;
+            if (ISIZECD != "" && ICOLRCD != "") {
+                if (ISIZECD == document.getElementById("ISIZECD_" + i).value && ICOLRCD == document.getElementById("ICOLRCD_" + i).value)
+                { flag = 1; }
+            }
+        }
+        if (flag == 1) {
+            msgInfo("Please enter only unique Size Code and Color Code in Color/Size Details!"); $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+
     }
 </script>
 
@@ -234,7 +256,7 @@
     }
 </script>
 <script>
-    function inputcolor(id, id1,id2) {
+    function inputcolor(id, id1, id2) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
         $("#" + id.id).val(str[0]);
         $("#" + id1.id).val(str[1].toString());
@@ -452,12 +474,32 @@
 </script>
 
 <script>
-    function AddRowINVCD(urlstring, id) {
+    @*function AddRowINVCD(urlstring, id) {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("AddRowINVCD", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
+                $("#partialdivINVCD").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivINVCD").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }*@
+    function AddRowINVCD(ID) {
+        debugger;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowINVCD", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
                 $("#partialdivINVCD").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivINVCD").html(result);
             },
@@ -845,13 +887,13 @@
             @Html.HiddenFor(a => a.STRPRICES)
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Standard">Standard</a></li>
-                <li><a data-toggle="tab" href="#Slcd">Slcd</a></li>
                 @*<li><a data-toggle="tab" href="#AssortedSize">Assorted Size</a></li>*@
                 @*<li><a data-toggle="tab" href="#Color">Color</a></li>*@
                 <li><a data-toggle="tab" href="#Parts">Parts</a></li>
                 <li><a data-toggle="tab" href="#BarCode">Bar Codes</a></li>
                 <li><a data-toggle="tab" href="#Measurement">Measurement</a></li>
                 <li><a data-toggle="tab" href="#PriceList">Price List</a></li>
+                <li><a data-toggle="tab" href="#Slcd">Ledger tagging</a></li>
                 <li><a data-toggle="tab" href="#Documents">Documents</a></li>
             </ul>
             <div class="tab-content">
@@ -875,7 +917,7 @@
                                     @Html.Label("", "Design No")
                                     @if (Model.MENU_PARA == "F")
                                     { <b style="color:Red;">*</b> }
-                                   
+
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -894,7 +936,7 @@
                                 <div class="col-md-6">
                                     <div class="editor-field">
                                         @*@Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')", onblur = "GetHelpBlur('" + @Url.Action("SearchItemData", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2');", @placeholder = "Code", maxlength = 8 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />*@
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("SearchItemData", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2')" />*@
                                         @Html.EditorFor(model => model.SEARCH_ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd');", @placeholder = "Code", maxlength = 8 } })
                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','SEARCH_ITCD','SEARCH_ITCD=itcd=2','fabitcdlinkcd')" />
                                     </div>
@@ -917,12 +959,12 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => Model.M_SITEM.ITGRPCD, new { id = "ITGRPCD", maxlength = 10, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPNM=itgrpnm=0/ITGRPCD=itgrpcd=1');", @class = "form-control textbox_image", onblur =  "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPNM=itgrpnm=0/ITGRPCD=itgrpcd=1');" })
+                                    @Html.TextBoxFor(model => Model.M_SITEM.ITGRPCD, new { id = "ITGRPCD", maxlength = 10, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPNM=itgrpnm=0/ITGRPCD=itgrpcd=1');", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPNM=itgrpnm=0/ITGRPCD=itgrpcd=1');" })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPNM=itgrpnm=0/ITGRPCD=itgrpcd=1')" />
 
 
                                     @*@Html.EditorFor(model => model.M_SITEM.ITGRPCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITGRPCD", maxlength = 4, onkeyup = "GetHelp('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD');", onblur = "SelectItemGroupCode(this.value,ITGRPCD,ITGRPNM,BRANDCD,BRANDNM);", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />*@
+                                        <img src="~/Image/search.png" style="margin-top: 5px;" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemGroupDetails", PageControllerName)','ITGRPCD/ITGRPNM/BRANDCD/BRANDNM','1/0/3/4','Select Group Details','ITGRPCD')" />*@
 
                                 </div>
                             </div>
@@ -1110,27 +1152,27 @@
                             <div class="col-md-7">
                                 <div class="editor-field">
                                     @Html.DropDownListFor(model => model.M_SITEM.GENDER, new SelectList(Model.Gender, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
-                                                                        @*<select id="gender" name="gender" class="form-control">
-                                        <option value="0" selected="selected">====Select====</option>
-                                        @foreach (var i in Model.Gender)
-                                        {
-                                            if (Model.DefaultAction == "A" && Model.M_SITEM == null)
+                                    @*<select id="gender" name="gender" class="form-control">
+                                            <option value="0" selected="selected">====Select====</option>
+                                            @foreach (var i in Model.Gender)
                                             {
-                                                <option value="@i.value">@i.text</option>
-                                            }
-                                            else
-                                            {
-                                                if (Model.M_SITEM.GENDER == i.value)
-                                                {
-                                                    <option value="@i.value" selected="selected">@i.text</option>
-                                                }
-                                                else
+                                                if (Model.DefaultAction == "A" && Model.M_SITEM == null)
                                                 {
                                                     <option value="@i.value">@i.text</option>
                                                 }
+                                                else
+                                                {
+                                                    if (Model.M_SITEM.GENDER == i.value)
+                                                    {
+                                                        <option value="@i.value" selected="selected">@i.text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i.value">@i.text</option>
+                                                    }
+                                                }
                                             }
-                                        }
-                                    </select>*@
+                                        </select>*@
                                 </div>
                             </div>
                         </div>
@@ -1239,67 +1281,67 @@
                                     {
                                         if (Model.UploadDOC[0].DOC_FILE != null)
                                         {
-                                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                                            <!-- Indicators -->
-                                            <ol class="carousel-indicators" style="bottom:0px;">
-                                                @if (Model.UploadDOC.Count != 0)
-                                                {
-                                                    for (int k = 0; k < Model.UploadDOC.Count; k++)
+                                            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                                                <!-- Indicators -->
+                                                <ol class="carousel-indicators" style="bottom:0px;">
+                                                    @if (Model.UploadDOC.Count != 0)
                                                     {
-                                                        if (k == 0)
+                                                        for (int k = 0; k < Model.UploadDOC.Count; k++)
                                                         {
-                                                            <li data-target="#myCarousel" data-slide-to="@k" class="active"></li>
-                                                        }
-                                                        else
-                                                        {
-                                                            <li data-target="#myCarousel" data-slide-to="@k"></li>
+                                                            if (k == 0)
+                                                            {
+                                                                <li data-target="#myCarousel" data-slide-to="@k" class="active"></li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li data-target="#myCarousel" data-slide-to="@k"></li>
+                                                            }
                                                         }
                                                     }
-                                                }
-                                            </ol>
+                                                </ol>
 
-                                            <!-- Wrapper for slides -->
-                                            <div class="carousel-inner">
-                                                @if (Model.UploadDOC.Count != 0)
-                                                {
-                                                    for (int k = 0; k < Model.UploadDOC.Count; k++)
+                                                <!-- Wrapper for slides -->
+                                                <div class="carousel-inner">
+                                                    @if (Model.UploadDOC.Count != 0)
                                                     {
-                                                        if (k == 0)
+                                                        for (int k = 0; k < Model.UploadDOC.Count; k++)
                                                         {
-                                                            <div class="item active " style="height:225px">
-                                                                <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
-                                                                <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
-                                                                    <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                            if (k == 0)
+                                                            {
+                                                                <div class="item active " style="height:225px">
+                                                                    <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
+                                                                    <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
+                                                                        <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        }
-                                                        else
-                                                        {
-                                                            <div class="item" style="height:225px">
-                                                                <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
-                                                                <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
-                                                                    <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="item" style="height:225px">
+                                                                    <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
+                                                                    <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
+                                                                        <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        }
+                                                            }
 
+                                                        }
                                                     }
-                                                }
+                                                </div>
+                                                <!-- Left and right controls -->
+                                                <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                                    <span class="sr-only">Previous</span>
+                                                </a>
+                                                <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                                    <span class="sr-only">Next</span>
+                                                </a>
                                             </div>
-                                            <!-- Left and right controls -->
-                                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                                                <span class="glyphicon glyphicon-chevron-left"></span>
-                                                <span class="sr-only">Previous</span>
-                                            </a>
-                                            <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                                                <span class="glyphicon glyphicon-chevron-right"></span>
-                                                <span class="sr-only">Next</span>
-                                            </a>
-                                        </div>
                                         }
                                         else
                                         {
-                                        <img src="~/Image/NoImage.jpg" id="emppic" width="190px" height="111px" style="margin-bottom: 2px;text-align:-webkit-center;" alt="No Image Found" />
+                                            <img src="~/Image/NoImage.jpg" id="emppic" width="190px" height="111px" style="margin-bottom: 2px;text-align:-webkit-center;" alt="No Image Found" />
                                         }
                                     }
                                 }
@@ -1307,13 +1349,7 @@
                         }
                     </div>
                 </div>
-                <div id="Slcd" class="tab-pane fade" style="margin-top: 10px;">
-                    <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
-                        <div id="partialdivSIZE">
-                            @Html.Partial("_M_FinProduct_SLCD")
-                        </div>
-                    </div>
-                </div>
+
                 <div id="Parts" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
                         <div id="partialdivPART">
@@ -1329,18 +1365,18 @@
                         <div class="col-lg-4">
                             @if (Model.DefaultAction != "A")
                             {
-                                <div class="row">
-                                    <div class="col-lg-3" style="width:auto">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Item Bar Code")
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-5">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.ITEM_BARCODE, new { htmlAttributes = new { @class = "form-control", id = "ITEM_BARCODE", @TabIndex = -1, @placeholder = "Item Bar Code", @readonly = "readonly" } })
-                                        </div>
+                            <div class="row">
+                                <div class="col-lg-3" style="width:auto">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Item Bar Code")
                                     </div>
                                 </div>
+                                <div class="col-lg-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.ITEM_BARCODE, new { htmlAttributes = new { @class = "form-control", id = "ITEM_BARCODE", @TabIndex = -1, @placeholder = "Item Bar Code", @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            </div>
                             }
                         </div>
                     </div>
@@ -1362,6 +1398,13 @@
                     </div>
                 </div>
 
+                <div id="Slcd" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivSIZE">
+                            @Html.Partial("_M_FinProduct_SLCD")
+                        </div>
+                    </div>
+                </div>
                 <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                     <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
                         <div id="partialdivDocument">
