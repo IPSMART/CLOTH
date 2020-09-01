@@ -231,7 +231,7 @@
                             </div>*@
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.GRPNM, new { htmlAttributes = new { @class = "form-control", id = "GRPNM", @placeholder = "Group Name", maxlength = 40, @list = "GRPNMlist" } })
+                                @Html.EditorFor(model => model.M_GROUP.GRPNM, new { htmlAttributes = new { @class = "form-control", id = "GRPNM", @placeholder = "Group Name", maxlength = 25, @list = "GRPNMlist" } })
                                 <datalist id="GRPNMlist">
                                     @foreach (var jg in Model.Database_Combo1)
                                     {
@@ -283,7 +283,7 @@
                         </div>
                         <div class="col-md-9">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Item Group Name", maxlength = 40 } })
+                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Item Group Name", maxlength = 30 } })
                             </div>
                         </div>
                         @*<div class="col-md-8">
@@ -363,13 +363,13 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Sales General Ledger Code")
+                                @Html.Label("", "Sales General Ledger")
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.SALGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SALGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','SAL Ledger Details','SALGLCD','SALGLCD=GLCD=1/SALGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','SAL Ledger Details','SALGLCD','SALGLCD=GLCD=1/SALGLNM=GLNM=0');", @placeholder = "Sales General Ledger Code", maxlength = 8 } })
+                                @Html.EditorFor(model => model.M_GROUP.SALGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SALGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','SAL Ledger Details','SALGLCD','SALGLCD=GLCD=1/SALGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','SAL Ledger Details','SALGLCD','SALGLCD=GLCD=1/SALGLNM=GLNM=0');", @placeholder = "SALGLCD", maxlength = 8 } })
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','SAL Ledger Details','SALGLCD','SALGLCD=GLCD=1/SALGLNM=GLNM=0')" />
                             </div>
                         </div>
@@ -382,14 +382,14 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Purchase General Ledger Code")
+                                @Html.Label("", "Purchase General Ledger")
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
                               
-                                @Html.EditorFor(model => model.M_GROUP.PURGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0');", @placeholder = "Purchase General Ledger Code", maxlength = 8 } })
+                                @Html.EditorFor(model => model.M_GROUP.PURGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0');", @placeholder = "PURGLCD", maxlength = 8 } })
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0')" />
                             </div>
                         </div>
@@ -402,12 +402,12 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Sales Return General Ledger Code")
+                                @Html.Label("", "Sales Return General Ledger")
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.SALRETGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SALRETGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','SALRETGLCD','SALRETGLCD=GLCD=1/SALRETGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','SALRETGLCD','SALRETGLCD=GLCD=1/SALRETGLNM=GLNM=0');", @placeholder = "SalesReturn General Ledger Code", maxlength = 8 } })
+                                @Html.EditorFor(model => model.M_GROUP.SALRETGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SALRETGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','SALRETGLCD','SALRETGLCD=GLCD=1/SALRETGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','SALRETGLCD','SALRETGLCD=GLCD=1/SALRETGLNM=GLNM=0');", @placeholder = "SALRETGLCD", maxlength = 8 } })
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','PUR Ledger Details','SALRETGLCD','SALRETGLCD=GLCD=1/SALRETGLNM=GLNM=0')" />
                             </div>
                         </div>
@@ -420,12 +420,12 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Purchase Return General Ledger Code")
+                                @Html.Label("", "Purchase Return General Ledger")
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.PURRETGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURRETGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURRETGLCD','PURRETGLCD=GLCD=1/PURRETGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURRETGLCD','PURRETGLCD=GLCD=1/PURRETGLNM=GLNM=0');", @placeholder = "PurchaseReturn General Ledger Code", maxlength = 8 } })
+                                @Html.EditorFor(model => model.M_GROUP.PURRETGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURRETGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURRETGLCD','PURRETGLCD=GLCD=1/PURRETGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURRETGLCD','PURRETGLCD=GLCD=1/PURRETGLNM=GLNM=0');", @placeholder = "PURRETGLCD", maxlength = 8 } })
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','PUR Ledger Details','PURRETGLCD','PURRETGLCD=GLCD=1/PURRETGLNM=GLNM=0')" />
                             </div>
                         </div>

@@ -6,6 +6,7 @@ using Improvar.ViewModels;
 using System.Data;
 using System.Collections.Generic;
 using Oracle.ManagedDataAccess.Client;
+using System.Data.Entity.Validation;
 
 
 namespace Improvar.Controllers
@@ -550,6 +551,15 @@ namespace Improvar.Controllers
                     {
                         return Content("");
                     }
+                }
+                catch (DbEntityValidationException ex)
+                {
+                    var errorMessages = ex.EntityValidationErrors
+                            .SelectMany(x => x.ValidationErrors)
+                            .Select(x => x.ErrorMessage);
+                    var fullErrorMessage = string.Join("&quot;", errorMessages);
+                    var exceptionMessage = string.Concat(ex.Message, "<br/> &quot; The validation errors are: &quot;", fullErrorMessage);
+                    throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
                 }
                 catch (Exception ex)
                 {
