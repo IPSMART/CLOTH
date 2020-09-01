@@ -304,23 +304,38 @@ namespace Improvar.Controllers
                     {
                         VE.Checked = false;
                     }
-                    VE.MSITEMSLCD = (from i in DB.M_SITEM_SLCD
-                                         join j in DB.M_SUBLEG on i.SLCD equals (j.SLCD)
-                                     where (i.ITCD == sl.ITCD)
-                                     //orderby j.PRINT_SEQ
+                    //VE.MSITEMSLCD = (from i in DB.M_SITEM_SLCD
+                    //                     join j in DB.M_SUBLEG on i.SLCD equals (j.SLCD)
+                    //                 where (i.ITCD == sl.ITCD)
+                    //                 //orderby j.PRINT_SEQ
+                    //                 select new MSITEMSLCD()
+                    //                 {
+                    //                     CLCD = i.CLCD,
+                    //                     ITCD = i.ITCD,
+                    //                     SLCD=i.SLCD,
+                    //                     SLNM=j.SLNM,
+                    //                     JOBRT=i.JOBRT,
+                    //                     PDESIGN=i.PDESIGN
+                    //                     //SIZECD = i.SIZECD,
+                    //                     //SIZENM = j.SIZENM,
+                    //                     //BARCODE = j.SZBARCODE,
+                    //                     //IChecked = i.INACTIVE_TAG == "Y" ? true : false,
+                    //                 }).ToList();
+                    string sql = "";
+                    sql += "select i.SLCD,j.SLNM,i.JOBRT,i.PDESIGN from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_SLCD i,";
+                    sql += CommVar.FinSchema(UNQSNO) + ".M_SUBLEG j where i.SLCD =j.SLCD and i.ITCD='" + sl.ITCD + "'";
+
+                    var MSITEMSLCD_DATA = Master_HelpFa.SQLquery(sql);
+
+                    VE.MSITEMSLCD = (from DataRow dr in MSITEMSLCD_DATA.Rows
                                      select new MSITEMSLCD()
                                      {
-                                         CLCD = i.CLCD,
-                                         ITCD = i.ITCD,
-                                         SLCD=i.SLCD,
-                                         SLNM=j.SLNM,
-                                         JOBRT=i.JOBRT,
-                                         PDESIGN=i.PDESIGN
-                                         //SIZECD = i.SIZECD,
-                                         //SIZENM = j.SIZENM,
-                                         //BARCODE = j.SZBARCODE,
-                                         //IChecked = i.INACTIVE_TAG == "Y" ? true : false,
+                                         SLCD = dr["SLCD"].retStr(),
+                                         SLNM = dr["SLNM"].retStr(),
+                                         JOBRT = dr["JOBRT"].retDbl(),
+                                         PDESIGN = dr["PDESIGN"].retStr()
                                      }).ToList();
+
 
                     if (VE.MSITEMSLCD.Count == 0)
                     {
@@ -1617,13 +1632,13 @@ namespace Improvar.Controllers
 
                             DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
-                            //if (VE.PRICES_EFFDT.retStr() != "")
-                            //{
-                            //    DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
-                            //    DB.M_ITEMPLISTDTL.Where(x => x.ITCD == VE.M_SITEM.ITCD && x.EFFDT == PRICES_EFFDT).ToList().ForEach(x => { x.DTAG = "E"; });
-                            //    DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => x.ITCD == VE.M_SITEM.ITCD && x.EFFDT == PRICES_EFFDT));
+                            if (VE.PRICES_EFFDT.retStr() != "")
+                            {
+                                DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
+                                DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT).ToList().ForEach(x => { x.DTAG = "E"; });
+                                DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT));
 
-                            //}
+                            }
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
@@ -1644,7 +1659,7 @@ namespace Improvar.Controllers
                         }
                         for (int i = 0; i <= VE.MSITEMSLCD.Count - 1; i++)
                         {
-                            if (VE.MSITEMSLCD[i].SRLNO != null)
+                            if (VE.MSITEMSLCD[i].SRLNO != null && VE.MSITEMSLCD[i].SLCD != null)
                             {
                                 M_SITEM_SLCD MIS = new M_SITEM_SLCD();
                                 MIS.CLCD = MSITEM.CLCD;
@@ -1653,7 +1668,7 @@ namespace Improvar.Controllers
                                 MIS.SLCD = VE.MSITEMSLCD[i].SLCD;
                                 MIS.JOBRT = VE.MSITEMSLCD[i].JOBRT;
                                 MIS.PDESIGN = VE.MSITEMSLCD[i].PDESIGN;
-                             
+
                                 //MIS.SIZECD = VE.MSITEMSLCD[i].SIZECD;
                                 //if (VE.MSITEMSLCD[i].IChecked == true)
                                 //{
@@ -1831,14 +1846,15 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
                         DB.M_SITEM_SLCD.RemoveRange(DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.SaveChanges();
+                        DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => abarno.Contains(x.BARNO)));
+                        DB.SaveChanges();
                         DB.M_SITEM_PARTS.RemoveRange(DB.M_SITEM_PARTS.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.SaveChanges();
                         DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.SaveChanges();
                         DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.SaveChanges();
-                        DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => abarno.Contains(x.BARNO)));
-                        DB.SaveChanges();
+                      
                         DB.M_SITEM.RemoveRange(DB.M_SITEM.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR.RemoveRange(DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
