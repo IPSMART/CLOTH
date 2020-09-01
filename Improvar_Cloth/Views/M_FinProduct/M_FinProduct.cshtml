@@ -121,24 +121,24 @@
         return true;
 
 
-        var GridRowMain = $("#FINPRODUCT_INVCD > tbody > tr").length;
-        var ISIZECD = ""; var ICOLRCD = ""; var flag = 0;
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            ISIZECD = document.getElementById("ISIZECD_" + i).value;
-            ICOLRCD = document.getElementById("ICOLRCD_" + i).value;
-            if (ISIZECD != "" && ICOLRCD != "") {
-                if (ISIZECD == document.getElementById("ISIZECD_" + i).value && ICOLRCD == document.getElementById("ICOLRCD_" + i).value)
-                { flag = 1; }
-            }
-        }
-        if (flag == 1) {
-            msgInfo("Please enter only unique Size Code and Color Code in Color/Size Details!"); $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }
+        //var GridRowMain = $("#FINPRODUCT_INVCD > tbody > tr").length;
+        //var ISIZECD = ""; var ICOLRCD = ""; var flag = 0;
+        //for (i = 0; i <= GridRowMain - 1; i++) {
+        //    ISIZECD = document.getElementById("ISIZECD_" + i).value;
+        //    ICOLRCD = document.getElementById("ICOLRCD_" + i).value;
+        //    if (ISIZECD != "" && ICOLRCD != "") {
+        //        if (ISIZECD == document.getElementById("ISIZECD_" + i).value && ICOLRCD == document.getElementById("ICOLRCD_" + i).value)
+        //        { flag = 1; }
+        //    }
+        //}
+        //if (flag == 1) {
+        //    msgInfo("Please enter only unique Size Code and Color Code in Color/Size Details!"); $("li").removeClass("active").addClass("");
+        //    $(".nav-tabs li:first-child").addClass('active');
+        //    //below set the  child sequence
+        //    $(".tab-content div").removeClass("active");
+        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //    return false;
+        //}
 
     }
 </script>
