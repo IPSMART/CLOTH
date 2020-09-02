@@ -1564,13 +1564,13 @@ namespace Improvar.Controllers
                             }
                             DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
-
-                            DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
+                            DB.SaveChanges();
 
                             DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)));
-
+                            DB.SaveChanges();
+                            DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
@@ -1613,41 +1613,7 @@ namespace Improvar.Controllers
                                 DB.M_SITEM_SLCD.Add(MIS);
                             }
                         }
-                        //for (int i = 0; i <= VE.MSITEMBOX.Count - 1; i++)
-                        //{
-                        //    if (VE.MSITEMBOX[i].SRLNO != null && VE.MSITEMBOX[i].SIZECDBOX != null)
-                        //    {
-                        //        M_SITEM_BOX MIB = new M_SITEM_BOX();
-                        //        MIB.CLCD = MSITEM.CLCD;
-                        //        MIB.EMD_NO = MSITEM.EMD_NO;
-                        //        MIB.ITCD = MSITEM.ITCD;
-                        //        MIB.SIZECD = VE.MSITEMBOX[i].SIZECDBOX;
-                        //        MIB.PCSQTY = VE.MSITEMBOX[i].PCSQTY;
-                        //        MIB.SIZEGRP = VE.MSITEMBOX[i].SIZEGRP;
-                        //        DB.M_SITEM_BOX.Add(MIB);
-                        //    }
-                        //}
-                        //for (int i = 0; i <= VE.MSITEMCOLOR.Count - 1; i++)
-                        //{
-                        //    if (VE.MSITEMCOLOR[i].SLNO != null && VE.MSITEMCOLOR[i].COLRCD != null)
-                        //    {
-                        //        M_SITEM_COLOR MIC = new M_SITEM_COLOR();
-                        //        MIC.CLCD = MSITEM.CLCD;
-                        //        MIC.EMD_NO = MSITEM.EMD_NO;
-                        //        MIC.ITCD = MSITEM.ITCD;
-                        //        MIC.SLNO = VE.MSITEMCOLOR[i].SLNO;
-                        //        MIC.COLRCD = VE.MSITEMCOLOR[i].COLRCD;
-                        //        if (VE.MSITEMCOLOR[i].IChecked == true)
-                        //        {
-                        //            MIC.INACTIVE_TAG = "Y";
-                        //        }
-                        //        else
-                        //        {
-                        //            MIC.INACTIVE_TAG = "N";
-                        //        }
-                        //        DB.M_SITEM_COLOR.Add(MIC);
-                        //    }
-                        //}
+                    
                         for (int i = 0; i <= VE.MSITEMPARTS.Count - 1; i++)
                         {
                             if (VE.MSITEMPARTS[i].SLNO != null && VE.MSITEMPARTS[i].PARTCD != null)
@@ -1829,7 +1795,7 @@ namespace Improvar.Controllers
                 {
                     transaction.Rollback();
                     Cn.SaveException(ex, "");
-                    return Content(ex.Message + ex.InnerException?.InnerException);
+                    return Content(ex.Message + ex.InnerException?.InnerException.Message);
                 }
             }
 
