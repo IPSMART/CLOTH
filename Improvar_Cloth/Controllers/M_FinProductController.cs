@@ -1161,7 +1161,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        
+
         public ActionResult AddRowPARTS(ItemMasterEntry VE)
         {
             try
@@ -1229,7 +1229,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        
+
         public ActionResult AddRowINVCD(ItemMasterEntry VE, int COUNT, string TAG)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -1559,17 +1559,17 @@ namespace Improvar.Controllers
                             if (VE.PRICES_EFFDT.retStr() != "")
                             {
                                 DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
-                                DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT&& arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                                DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                                 DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
                             }
-                            DB.M_BATCH_IMG_HDR.Where(x => x.BARNO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
+                            DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
 
-                            DB.M_BATCH_IMG_HDR_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
+                            DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)));
 
-                            DB.M_ba.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
+                            DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
@@ -1722,6 +1722,16 @@ namespace Improvar.Controllers
                             DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
                             DB.SaveChanges();
                             DB.M_BATCH_IMG_HDR_DTL.AddRange(barimg.Item2);
+
+                            foreach (var imgbar in barimg.Item1)
+                            {
+                                M_BATCH_IMG_HDR_LINK m_batchImglink = new M_BATCH_IMG_HDR_LINK();
+                                m_batchImglink.CLCD = MSITEM.CLCD;
+                                m_batchImglink.EMD_NO = MSITEM.EMD_NO;
+                                m_batchImglink.BARNO = imgbar.BARNO;
+                                m_batchImglink.MAINBARNO = imgbar.BARNO;
+                                DB.M_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
+                            }
                         }
                         DB.SaveChanges();
                         #region Price list Save
@@ -1791,7 +1801,7 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
                         DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.SaveChanges();
-                      
+
                         DB.M_SITEM.RemoveRange(DB.M_SITEM.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR.RemoveRange(DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
@@ -1898,7 +1908,7 @@ namespace Improvar.Controllers
                 return "";
             }
         }
-        public Tuple<List<M_BATCH_IMG_HDR>, List<M_BATCH_IMG_HDR_DTL>> SaveBarImage( List<UploadDOC> UploadDOC,string BARNO, short EMD)
+        public Tuple<List<M_BATCH_IMG_HDR>, List<M_BATCH_IMG_HDR_DTL>> SaveBarImage(List<UploadDOC> UploadDOC, string BARNO, short EMD)
         {
             List<M_BATCH_IMG_HDR> doc = new List<M_BATCH_IMG_HDR>();
             List<M_BATCH_IMG_HDR_DTL> doc1 = new List<M_BATCH_IMG_HDR_DTL>();
