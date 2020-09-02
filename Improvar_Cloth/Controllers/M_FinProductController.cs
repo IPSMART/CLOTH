@@ -1549,8 +1549,6 @@ namespace Improvar.Controllers
                             DB.M_SITEM_PARTS.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SITEM_PARTS.RemoveRange(DB.M_SITEM_PARTS.Where(x => x.ITCD == VE.M_SITEM.ITCD));
 
-                            DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
 
                             DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
@@ -1572,6 +1570,9 @@ namespace Improvar.Controllers
                             DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                             DB.SaveChanges();
+                            DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
 
@@ -1613,7 +1614,7 @@ namespace Improvar.Controllers
                                 DB.M_SITEM_SLCD.Add(MIS);
                             }
                         }
-                    
+
                         for (int i = 0; i <= VE.MSITEMPARTS.Count - 1; i++)
                         {
                             if (VE.MSITEMPARTS[i].SLNO != null && VE.MSITEMPARTS[i].PARTCD != null)
@@ -1689,8 +1690,8 @@ namespace Improvar.Controllers
                             DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
                             DB.SaveChanges();
                             DB.M_BATCH_IMG_HDR_DTL.AddRange(barimg.Item2);
-
-                            foreach (var imgbar in barimg.Item1)
+                            var disntImgHdr = barimg.Item1.Distinct().ToList();
+                            foreach (var imgbar in disntImgHdr)
                             {
                                 M_BATCH_IMG_HDR_LINK m_batchImglink = new M_BATCH_IMG_HDR_LINK();
                                 m_batchImglink.CLCD = MSITEM.CLCD;
