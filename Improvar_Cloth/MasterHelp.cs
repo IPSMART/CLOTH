@@ -1883,7 +1883,7 @@ namespace Improvar
             sql += "select a.COLRCD,a.COLRNM,a.CLRBARCODE ";
             sql += "from " + scm + ".M_COLOR a, " + scm + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
-            if (valsrch.retStr() != "") sql += "and ( upper(a.COLRCD) like '%" + valsrch + "%' or upper(a.COLRNM) like '%" + valsrch + "%' ) ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.COLRCD) = '" + valsrch + "' ) ";
             sql += "order by a.COLRCD,a.COLRNM";
             DataTable tbl = SQLquery(sql);
             if (val.retStr() == "" || tbl.Rows.Count > 1)

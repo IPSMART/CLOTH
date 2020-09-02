@@ -728,7 +728,7 @@ namespace Improvar.Controllers
                         {
                             str = Master_Help.ToReturnFieldValues("", stock_data);
                         }
-                       
+
                         return Content(str);
                     }
                     else
@@ -920,7 +920,7 @@ namespace Improvar.Controllers
                                   //AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                               }).ToList();
                 var tax_data = salesfunc.GetTax(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXNOTH.TAXGRPCD);
-                string tax= Master_Help.ToReturnFieldValues("", tax_data);
+                string tax = Master_Help.ToReturnFieldValues("", tax_data);
                 double igstper = tax.retCompValue("IGSTPER").retDbl();
                 double cgstper = tax.retCompValue("CGSTPER").retDbl();
                 double sgstper = tax.retCompValue("SGSTPER").retDbl();
@@ -1197,14 +1197,12 @@ namespace Improvar.Controllers
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             //Oracle Queries
-            string dberrmsg = "";
             OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
             OraCon.Open();
             OracleCommand OraCmd = OraCon.CreateCommand();
             OracleTransaction OraTrans;
-            string dbsql = "", postdt = "", weekrem = "", duedatecalcon = "", sql = "";
+            string dbsql = "";
             string[] dbsql1;
-            double dbDrAmt = 0, dbCrAmt = 0;
 
             OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
             OraCmd.Transaction = OraTrans;
@@ -1216,10 +1214,7 @@ namespace Improvar.Controllers
                 {
                     //DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
                     OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
-                    String query = "";
-                    string dr = ""; string cr = ""; int isl = 0; string strrem = "";
-                    double igst = 0; double cgst = 0; double sgst = 0; double cess = 0; double duty = 0; double dbqty = 0; double dbamt = 0; double dbcurramt = 0;
-                    Int32 z = 0; Int32 maxR = 0;
+
                     string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                     string ContentFlg = "";
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
@@ -1646,7 +1641,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        isl = 1;
+
                         if (VE.TTXNAMT != null)
                         {
                             for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
@@ -1780,13 +1775,6 @@ namespace Improvar.Controllers
                     {
                         return Content("");
                     }
-                    goto dbok;
-                dbnotsave:;
-                    transaction.Rollback();
-                    OraTrans.Rollback();
-                    OraCon.Dispose();
-                    return Content(dberrmsg);
-                dbok:;
                 }
                 catch (Exception ex)
                 {
