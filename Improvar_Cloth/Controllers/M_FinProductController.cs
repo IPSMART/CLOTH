@@ -1571,7 +1571,7 @@ namespace Improvar.Controllers
                             DB.SaveChanges();
                             DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
-
+                            DB.SaveChanges();
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
 
