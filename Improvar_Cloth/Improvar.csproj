@@ -282,7 +282,6 @@
     <Compile Include="Models\BOM.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\ControlHeader.cs" />
-    <Compile Include="Models\DailyTargetDropDowns.cs" />
     <Compile Include="Models\DateLockRight.cs" />
     <Compile Include="Models\DebitCreditType.cs" />
     <Compile Include="Models\DespatchDetails.cs" />
