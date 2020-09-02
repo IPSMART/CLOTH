@@ -1555,13 +1555,21 @@ namespace Improvar.Controllers
                             DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
 
+                            string sbarno = getbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
                             if (VE.PRICES_EFFDT.retStr() != "")
                             {
-                                string sbarno = getbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
                                 DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
                                 DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT&& arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                                 DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
                             }
+                            DB.M_BATCH_IMG_HDR.Where(x => x.BARNO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
+
+                            DB.M_BATCH_IMG_HDR_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
+
+                            DB.M_ba.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
@@ -1703,6 +1711,7 @@ namespace Improvar.Controllers
                             DB.Entry(MSITEM).State = System.Data.Entity.EntityState.Modified;
                             DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         }
+                        DB.SaveChanges();
                         if (VE.UploadDOC != null)
                         {
                             var img = Cn.SaveUploadImage("M_SITEM", VE.UploadDOC, MSITEM.M_AUTONO, MSITEM.EMD_NO.Value);
@@ -1711,6 +1720,7 @@ namespace Improvar.Controllers
 
                             var barimg = SaveBarImage(VE.UploadDOC, MSITEMBARCODE.BARNO, MSITEM.EMD_NO.retShort());
                             DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
+                            DB.SaveChanges();
                             DB.M_BATCH_IMG_HDR_DTL.AddRange(barimg.Item2);
                         }
                         DB.SaveChanges();

@@ -17,7 +17,7 @@ namespace Improvar.Models
         }
         public virtual DbSet<M_BATCH_IMG_HDR> M_BATCH_IMG_HDR { get; set; }
         public virtual DbSet<M_BATCH_IMG_HDR_DTL> M_BATCH_IMG_HDR_DTL { get; set; }
-        //public virtual DbSet<M_BATCH_IMG_HDR_LINK> M_BATCH_IMG_HDR_LINK { get; set; }
+        public virtual DbSet<M_BATCH_IMG_HDR_LINK> M_BATCH_IMG_HDR_LINK { get; set; }
         //public virtual DbSet<T_BATCH_IMG_HDR> T_BATCH_IMG_HDR { get; set; }
         //public virtual DbSet<T_BATCH_IMG_HDR_DTL> T_BATCH_IMG_HDR_DTL { get; set; }
         //public virtual DbSet<T_BATCH_IMG_HDR_LINK> T_BATCH_IMG_HDR_LINK { get; set; }
