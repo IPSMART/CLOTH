@@ -23,6 +23,7 @@ namespace Improvar.ViewModels
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TBATCHDTL> TBATCHDTL { get; set; }
+        public List<BARNO_DETAILS> BARNO_DETAILS { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
@@ -108,8 +109,6 @@ namespace Improvar.ViewModels
         public string HSNCODE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GSTPER { get; set; }
-        [StringLength(4)]
-        public string TAXGRPCD { get; set; }
         public string PSTYLENO { get; set; }
         public double? BALSTOCK { get; set; }
         public double? FLAGMTR { get; set; }

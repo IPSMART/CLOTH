@@ -279,6 +279,7 @@
     </Compile>
     <Compile Include="ListToDatatable.cs" />
     <Compile Include="Models\APPL_MENU.cs" />
+    <Compile Include="Models\BARNO_DETAILS.cs" />
     <Compile Include="Models\BOM.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\ControlHeader.cs" />
@@ -992,6 +993,7 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />
     <Content Include="Views\T_OUTISSPROCESS\_T_OUTISSPROCESS_DETAIL.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_DETAIL.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_BARNODETAIL.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -751,7 +751,7 @@ namespace Improvar.Controllers
                 {
                     List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
                     TBATCHDTL TBATCHDTL1 = new TBATCHDTL();
-                    TBATCHDTL1.SLNO = 1;
+                    //TBATCHDTL1.SLNO = 1;
                     TBATCHDTL1.TXNSLNO = VE.TXNSLNO.retShort();
                     TBATCHDTL1.ITGRPCD = VE.ITGRPCD;
                     TBATCHDTL1.ITGRPNM = VE.ITGRPNM;
@@ -796,9 +796,9 @@ namespace Improvar.Controllers
                     }
 
                     TBATCHDTL TBATCHDTL1 = new TBATCHDTL();
-                    var max = VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO));
-                    int SLNO = Convert.ToInt32(max) + 1;
-                    TBATCHDTL1.SLNO = Convert.ToSByte(SLNO);
+                    //var max = VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO));
+                    //int SLNO = Convert.ToInt32(max) + 1;
+                    //TBATCHDTL1.SLNO = Convert.ToSByte(SLNO);
                     TBATCHDTL1.TXNSLNO = VE.TXNSLNO.retShort();
                     TBATCHDTL1.ITGRPCD = VE.ITGRPCD;
                     TBATCHDTL1.ITGRPNM = VE.ITGRPNM;
@@ -833,6 +833,76 @@ namespace Improvar.Controllers
                     VE.TBATCHDTL = TBATCHDTL;
 
                 }
+                VE.TBATCHDTL = (from x in VE.TBATCHDTL
+                                group x by new
+                                {
+                                    x.TXNSLNO,
+                                    x.ITGRPCD,
+                                    x.ITGRPNM,
+                                    x.MTRLJOBCD,
+                                    x.MTRLJOBNM,
+                                    x.ITCD,
+                                    x.ITNM,
+                                    x.STYLENO,
+                                    x.STKTYPE,
+                                    x.STKNAME,
+                                    x.PARTCD,
+                                    x.PARTNM,
+                                    x.COLRCD,
+                                    x.COLRNM,
+                                    x.SIZECD,
+                                    x.SIZENM,
+                                    x.SHADE,
+                                    x.UOM,
+                                    x.RATE,
+                                    x.GSTPER,
+                                    x.DISCRATE,
+                                    x.DISCTYPE,
+                                    x.DISCTYPE_DESC,
+                                    x.TDDISCRATE,
+                                    x.TDDISCTYPE,
+                                    x.SCMDISCRATE,
+                                    x.SCMDISCTYPE,
+                                    x.BARNO,
+                                } into P
+                                select new TBATCHDTL
+                                {
+                                    TXNSLNO = P.Key.TXNSLNO,
+                                    ITGRPCD = P.Key.ITGRPCD,
+                                    ITGRPNM = P.Key.ITGRPNM,
+                                    MTRLJOBCD = P.Key.MTRLJOBCD,
+                                    MTRLJOBNM = P.Key.MTRLJOBNM,
+                                    ITCD = P.Key.ITCD,
+                                    ITNM = P.Key.ITNM,
+                                    STYLENO = P.Key.STYLENO,
+                                    STKTYPE = P.Key.STKTYPE,
+                                    STKNAME = P.Key.STKNAME,
+                                    PARTCD = P.Key.PARTCD,
+                                    PARTNM = P.Key.PARTNM,
+                                    COLRCD = P.Key.COLRCD,
+                                    COLRNM = P.Key.COLRNM,
+                                    SIZECD = P.Key.SIZECD,
+                                    SIZENM = P.Key.SIZENM,
+                                    SHADE = P.Key.SHADE,
+                                    QNTY = P.Sum(A => A.QNTY),
+                                    UOM = P.Key.UOM,
+                                    NOS = P.Sum(A => A.NOS),
+                                    RATE = P.Key.RATE,
+                                    GSTPER = P.Key.GSTPER,
+                                    DISCRATE = P.Key.DISCRATE,
+                                    DISCTYPE = P.Key.DISCTYPE,
+                                    DISCTYPE_DESC = P.Key.DISCTYPE == "P" ? "%" : P.Key.DISCTYPE == "N" ? "Nos" : P.Key.DISCTYPE == "Q" ? "Qnty" : "Fixed",
+                                    TDDISCRATE = P.Key.TDDISCRATE,
+                                    TDDISCTYPE = P.Key.TDDISCTYPE,
+                                    SCMDISCRATE = P.Key.SCMDISCRATE,
+                                    SCMDISCTYPE = P.Key.SCMDISCTYPE,
+                                    BARNO = P.Key.BARNO,
+                                }).OrderBy(b=>b.TXNSLNO).ToList();
+                for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
+                {
+                    VE.TBATCHDTL[p].SLNO = Convert.ToInt16(p + 1);
+                }
+                ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_PRODUCT", VE);
             }
@@ -842,14 +912,14 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult DeleteBarCodeRow(TransactionPackingSlipEntry VE)
+        public ActionResult DeleteBarCodeRow(TransactionPackingSlipEntry VE, int SLNO)
         {
 
             List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
             int count = 0;
             for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
             {
-                if (VE.TBATCHDTL[i].Checked == false)
+                if (VE.TBATCHDTL[i].SLNO != SLNO)
                 {
                     count += 1;
                     TBATCHDTL IFSC = new TBATCHDTL();
