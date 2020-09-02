@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Improvar.Models
 {
-    public class TPROGDTL
+    public class TPROGBOM
     {
         public short? EMD_NO { get; set; }
 
@@ -141,9 +141,13 @@ namespace Improvar.Models
         public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
         [StringLength(15)]
         public string STKNAME { get; set; }
+        public string ITREMARKS { get; set; }
         public bool CheckedSample { get; set; }
         public string BOMQNTY { get; set; }
         public string EXTRAQNTY { get; set; }
-        
+        public short RSLNO { get; set; }
+      
+
+
     }
 }

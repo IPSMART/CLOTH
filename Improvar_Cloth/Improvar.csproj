@@ -461,6 +461,7 @@
     <Compile Include="Models\TBATCHDTL.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
+    <Compile Include="Models\TPROGBOM.cs" />
     <Compile Include="Models\TPROGDTL.cs" />
     <Compile Include="Models\TSORDDTL.cs" />
     <Compile Include="Models\TSORDDTL_CANC.cs" />
@@ -991,6 +992,7 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />
     <Content Include="Views\T_OUTISSPROCESS\_T_OUTISSPROCESS_DETAIL.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_DETAIL.cshtml" />
+    <Content Include="Views\Shared\_T_OUTISSPROCESS_QtyRequirement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
