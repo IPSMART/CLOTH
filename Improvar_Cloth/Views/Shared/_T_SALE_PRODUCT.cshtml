@@ -21,7 +21,7 @@
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
-                    <b>Packing Slip Entry Product Details</b>
+                    <b>Bar Code Details</b>
                 </center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
@@ -128,7 +128,7 @@
                                         </td>
 
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTPER_", @onkeypress = "return numericOnly(this,2);", maxlength = 5 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTPER_"+i, @onkeypress = "return numericOnly(this,2);", maxlength = 5 } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })

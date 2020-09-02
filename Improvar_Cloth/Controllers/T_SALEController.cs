@@ -917,12 +917,29 @@ namespace Improvar.Controllers
                                   TDDISCTYPE = P.Key.TDDISCTYPE,
                                   SCMDISCRATE = P.Key.SCMDISCRATE,
                                   SCMDISCTYPE = P.Key.SCMDISCTYPE,
-                                  AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
+                                  //AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                               }).ToList();
-                //for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
-                //{
-                //    VE.TTXNDTL[p].SLNO = Convert.ToInt16(p + 1);
-                //}
+                var tax_data = salesfunc.GetTax(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXNOTH.TAXGRPCD);
+                string tax= Master_Help.ToReturnFieldValues("", tax_data);
+                double igstper = tax.retCompValue("IGSTPER").retDbl();
+                double cgstper = tax.retCompValue("CGSTPER").retDbl();
+                double sgstper = tax.retCompValue("SGSTPER").retDbl();
+                for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
+                {
+                    //VE.TTXNDTL[p].TXBLVAL = VE.TTXNDTL[p].AMT.retDbl()- VE.TTXNDTL[p].TOTDISCAMT.retDbl();
+                    VE.TTXNDTL[p].IGSTPER = igstper;
+                    VE.TTXNDTL[p].CGSTPER = cgstper;
+                    VE.TTXNDTL[p].SGSTPER = sgstper;
+                }
+                //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
+                //VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
+                //VE.T_AMT = VE.TTXNDTL.Select(a => a.AMT).Sum().retDbl();
+                //VE.T_GROSS_AMT = VE.TTXNDTL.Select(a => a.TXBLVAL).Sum().retDbl();
+                //VE.T_IGST_AMT = VE.TTXNDTL.Select(a => a.IGSTAMT).Sum().retDbl();
+                //VE.T_CGST_AMT = VE.TTXNDTL.Select(a => a.CGSTAMT).Sum().retDbl();
+                //VE.T_SGST_AMT = VE.TTXNDTL.Select(a => a.SGSTAMT).Sum().retDbl();
+                //VE.T_CESS_AMT = VE.TTXNDTL.Select(a => a.CESSAMT).Sum().retDbl();
+                //VE.T_NET_AMT = VE.TTXNDTL.Select(a => a.NETAMT).Sum().retDbl();
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_DETAIL", VE);
