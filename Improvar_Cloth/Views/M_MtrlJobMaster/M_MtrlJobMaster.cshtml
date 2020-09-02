@@ -11,6 +11,8 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
+            
+            $("#print_nav").hide();
             $("#JOBCD").attr("disabled", "true");
         }
         else if ("@Model.DefaultAction" == "E") {
