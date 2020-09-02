@@ -73,8 +73,8 @@
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter SalesMen", "CRSLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter SalesMen", "CRSLCD")) { return false; }
         return true;
     }
 </script>
@@ -256,6 +256,63 @@
         });
     }
 </script>
+<script>
+    function CalculateQNTY(i) {
+        if ("@Model.DefaultAction" != "V")
+        {
+            var QNTY_ = document.getElementById('B_QNTY_' + i).value;
+            var NOS_ = document.getElementById('B_NOS_' + i).value;
+            if ((NOS_ != 0 || NOS_ != null) && (QNTY_ != 0 || QNTY_ != null))
+            {
+                var qnty = (parseFloat(NOS_) * parseFloat(QNTY_));
+                document.getElementById('B_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
+            }
+
+        } CalculateTotal();
+    }
+
+    function CalculateTotal() {
+        debugger;
+        var T_NOS = 0; var T_QNTY = 0;var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
+        var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
+        var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var NOS = document.getElementById("B_NOS_" + i).value;
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseInt(0); }
+
+            var QNTY = document.getElementById("B_QNTY_" + i).value;
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
+            else { T_QNTY = T_QNTY + parseFloat(0); }
+
+           
+        }
+        document.getElementById("T_NOS").value = parseFloat(T_NOS).toFixed(0);
+        document.getElementById("T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
+        
+        
+    }
+
+    function CalculateTotalProgBomQnty()
+    {
+        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
+        var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+           
+            var BOMQNTY = document.getElementById("BOMQNTY_" + i).value;
+            if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
+            else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
+
+            var T_EXTRAQNTY = document.getElementById("T_EXTRAQNTY" + i).value;
+            if (T_EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(T_EXTRAQNTY); }
+            else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
+
+
+        } document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(6);
+        document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(6);
+    }
+
+
+</script>
 
 @using (Html.BeginForm())
 {
@@ -270,9 +327,10 @@
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
+        <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
-        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
+        @Html.HiddenFor(a => a.T_TXN.DOCNO)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         <div class="form-horizontal">
@@ -292,11 +350,11 @@
                         <div class="editor-field">
                             @if (Model.DefaultAction == "A")
                             {
-                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
                             }
                             else
                             {
-                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
                             }
                         </div>
                     </div>
@@ -308,7 +366,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -318,7 +376,7 @@
                     </div>
                     <div class="col-md-1">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                         </div>
                     </div>
                     <div class="col-md-1">
@@ -328,7 +386,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
+                            @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
                         </div>
                     </div>
@@ -391,7 +449,7 @@
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivQtyRequirement" style="margin-top:0px;">
-                                    @*@Html.Partial("_T_OUTISSPROCESS_Programme")*@
+                                    @Html.Partial("_T_OUTISSPROCESS_QtyRequirement")
                                 </div>
                             </div>
                         </div>

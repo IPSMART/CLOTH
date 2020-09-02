@@ -23,7 +23,7 @@ namespace Improvar.ViewModels
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TBATCHDTL> TBATCHDTL { get; set; }
         public List<TPROGDTL> TPROGDTL { get; set; }
-        
+        public List<TPROGBOM> TPROGBOM { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
@@ -147,5 +147,7 @@ namespace Improvar.ViewModels
         public double? T_CESS_AMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_NET_AMT { get; set; }
+        public string T_BOMQNTY { get; set; }
+        public string T_EXTRAQNTY { get; set; }
     }
 }
