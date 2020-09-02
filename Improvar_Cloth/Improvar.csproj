@@ -279,7 +279,6 @@
     </Compile>
     <Compile Include="ListToDatatable.cs" />
     <Compile Include="Models\APPL_MENU.cs" />
-    <Compile Include="Models\BARNO_DETAILS.cs" />
     <Compile Include="Models\BOM.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\ControlHeader.cs" />
@@ -462,6 +461,7 @@
     <Compile Include="Models\TBATCHDTL.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
+    <Compile Include="Models\TPROGBOM.cs" />
     <Compile Include="Models\TPROGDTL.cs" />
     <Compile Include="Models\TSORDDTL.cs" />
     <Compile Include="Models\TSORDDTL_CANC.cs" />
