@@ -1,0 +1,445 @@
+﻿@model Improvar.ViewModels.TransactionOutIssProcess
+@{
+    string PageControllerName = "T_OUTISSPROCESS";
+    ViewBag.Title = "Issue for Processing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@{
+    switch (Model.MENU_PARA)
+    {
+        case "DY":
+            ViewBag.Title = "Issue for Dyer"; break;
+        case "PR":
+            ViewBag.Title = "Issue for Printing"; break;
+        case "ST":
+            ViewBag.Title = "Issue for Stiching"; break;
+        case "EM":
+            ViewBag.Title = "Issue for Embroidery"; break;
+        case "JW":
+            ViewBag.Title = "Issue for Other Jobs"; break;
+        default: ViewBag.Title = ""; break;
+    }
+}
+<style>
+    .TextAreaRemarks {
+        height: 190px;
+    }
+</style>
+<script src="~/Scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<script type="text/javascript">
+    $("#WaitingMode").show();
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.T_CNTRL_HDR != null)
+        {
+            if (@Model.T_CNTRL_HDR.AUTONO != null)
+            {
+                mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter SalesMen", "CRSLCD")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+            $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        }
+    });
+</script>
+<script>
+    function OpenAmount() {
+        var AUTO_NO = document.getElementById("AUTONO").value;
+        var A_T_NOS = document.getElementById("T_NOS").value;
+        var A_T_QNTY = document.getElementById("T_QNTY").value;
+        var A_T_AMT = document.getElementById("T_AMT").value;
+        var A_T_TAXABLE = document.getElementById("T_GROSS_AMT").value;
+        var A_T_IGST_AMT = document.getElementById("T_IGST_AMT").value;
+        var A_T_CGST_AMT = document.getElementById("T_CGST_AMT").value;
+        var A_T_SGST_AMT = document.getElementById("T_SGST_AMT").value;
+        var A_T_CESS_AMT = document.getElementById("T_CESS_AMT").value;
+        var A_T_NET_AMT = document.getElementById("T_NET_AMT").value;
+
+        if (A_T_NOS == "") { A_T_NOS = parseInt(0) } else { A_T_NOS = parseInt(A_T_NOS) }
+        if (A_T_QNTY == "") { A_T_QNTY = parseFloat(0) } else { A_T_QNTY = parseFloat(A_T_QNTY) }
+        if (A_T_AMT == "") { A_T_AMT = parseFloat(0) } else { A_T_AMT = parseFloat(A_T_AMT) }
+        if (A_T_TAXABLE == "") { A_T_TAXABLE = parseFloat(0) } else { A_T_TAXABLE = parseFloat(A_T_TAXABLE) }
+        if (A_T_IGST_AMT == "") { A_T_IGST_AMT = parseFloat(0) } else { A_T_IGST_AMT = parseFloat(A_T_IGST_AMT) }
+        if (A_T_CGST_AMT == "") { A_T_CGST_AMT = parseFloat(0) } else { A_T_CGST_AMT = parseFloat(A_T_CGST_AMT) }
+        if (A_T_SGST_AMT == "") { A_T_SGST_AMT = parseFloat(0) } else { A_T_SGST_AMT = parseFloat(A_T_SGST_AMT) }
+        if (A_T_CESS_AMT == "") { A_T_CESS_AMT = parseFloat(0) } else { A_T_CESS_AMT = parseFloat(A_T_CESS_AMT) }
+        if (A_T_NET_AMT == "") { A_T_NET_AMT = parseFloat(0) } else { A_T_NET_AMT = parseFloat(A_T_NET_AMT) }
+
+        var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0;
+
+        var GridRowMain = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            var IGST = document.getElementById("D_IGSTPER_" + i).value;
+            if (IGST == "") { IGST = parseFloat(0); } else { IGST = parseFloat(IGST); }
+            var CGST = document.getElementById("D_CGSTPER_" + i).value;
+            if (CGST == "") { CGST = parseFloat(0); } else { CGST = parseFloat(CGST); }
+            var SGST = document.getElementById("D_SGSTPER_" + i).value;
+            if (SGST == "") { SGST = parseFloat(0); } else { SGST = parseFloat(SGST); }
+            var CESS = document.getElementById("D_CESSPER_" + i).value;
+            if (CESS == "") { CESS = parseFloat(0); } else { CESS = parseFloat(CESS); }
+            if (IGST > IGST_PER) {
+                IGST_PER = IGST;
+            }
+            if (CGST > CGST_PER) {
+                CGST_PER = CGST;
+            }
+            if (SGST > SGST_PER) {
+                SGST_PER = SGST;
+            }
+            if (CESS > CESS_PER) {
+                CESS_PER = CESS;
+            }
+        }
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("OPEN_AMOUNT", PageControllerName)",
+            data: $('form').serialize() + "&AUTO_NO=" + AUTO_NO + "&A_T_NOS=" + A_T_NOS + "&A_T_QNTY=" + A_T_QNTY + "&A_T_AMT=" + A_T_AMT + "&A_T_TAXABLE=" + A_T_TAXABLE
+                                        + "&A_T_IGST_AMT=" + A_T_IGST_AMT + "&A_T_CGST_AMT=" + A_T_CGST_AMT + "&A_T_SGST_AMT=" + A_T_SGST_AMT + "&A_T_CESS_AMT=" + A_T_CESS_AMT
+                                        + "&A_T_NET_AMT=" + A_T_NET_AMT + "&IGST_PER=" + IGST_PER + "&CGST_PER=" + CGST_PER + "&SGST_PER=" + SGST_PER + "&CESS_PER=" + CESS_PER,
+            success: function (result) {
+                $('#partialdivAmounts').html(result);
+                $("#AMTRATE_0").focus();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function CalulateTareWt(GRWT, NTWT, TRWT) {
+        var GROSS = document.getElementById(GRWT.id).value;
+        if (GROSS == "") {
+            GROSS = parseFloat(0);
+        }
+        var NET = document.getElementById(NTWT.id).value;
+        if (NET == "") {
+            NET = parseFloat(0);
+        }
+        var TARE = GROSS - NET;
+        document.getElementById(TRWT.id).value = TARE.toFixed(3);
+    }
+</script>
+<script>
+    function Fill_BarCodeData() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillBarCodeData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivBarCodeTab").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function Fill_DetailData() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillDetailData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDetail").html(result);
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(3)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function pageprinting() {
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="partylinkcd" value="D" />
+        <input type="hidden" id="agentlinkcd" value="A" />
+        <input type="hidden" id="courierlinkcd" value="U" />
+        <input type="hidden" id="trnsportlinkcd" value="T" />
+        @Html.HiddenFor(s => s.DefaultAction)
+        @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        <div class="form-horizontal">
+            @if (Model.DefaultAction == "V")
+            {
+                @Html.Partial("_FilteredSearch")
+            }
+            <div class="row" style="margin-top: 5px;">
+                <div class="row">
+                    <div class="col-md-5" style="margin-top: 6px;">
+                        <div class="editor-label">
+                            @Html.Label("", "Document Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field">
+                            @if (Model.DefaultAction == "A")
+                            {
+                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document No.")
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Job")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Party Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/DISTRICT=statecd=4/GSTNO=gstno=2')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/DISTRICT=statecd=4/GSTNO=gstno=2');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/DISTRICT=statecd=4/GSTNO=gstno=2')" />
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Only for View", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </div>
+            <div class="row" style="margin-top:5px;">
+                <ul class="nav nav-tabs">
+                    <li id="Programme_LI4" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme</a></li>
+                    <li id="QtyRequird_LI4" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement</a></li>
+                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
+                    <li id="MtrlIssue_LI" class=""><a data-toggle="tab" href="#MtrlIssue" accesskey="M">Material Issue</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="Programme" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivProgramme" style="margin-top:0px;">
+                                    @Html.Partial("_T_OUTISSPROCESS_Programme")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="QtyRequirement" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivQtyRequirement" style="margin-top:0px;">
+                                    @*@Html.Partial("_T_OUTISSPROCESS_Programme")*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivDetail" style="margin-top:0px;">
+                                    @Html.Partial("_T_OUTISSPROCESS_DETAIL")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="MtrlIssue" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivMtrlIssue" style="margin-top:0px;">
+                                    @*@Html.Partial("_T_OUTISSPROCESS_Programme")*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivAmounts" style="margin-top:0px;">
+                                    @Html.Partial("_T_SALE_AMOUNT")
+                                </div>
+                            </div>
+                        </div>
+                    </div>*@
+                   
+                    @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
+
+                        </div>*@
+                </div>
+
+            </div>
+        </div>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            @ViewBag.ErrorMessage
+                                                                                        }
+
+                                                                                        <div class="container">
+                                                                                            <div id="helpDIV">
+
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        }

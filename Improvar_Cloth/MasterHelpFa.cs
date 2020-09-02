@@ -267,13 +267,13 @@ namespace Improvar
         public string USER_ID_help(string val)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-           
-                var query = (from c in DB.USER_APPL
-                             select new
-                             {
-                                 USER_ID = c.USER_ID,
-                                 USER_NAME = c.USER_NAME
-                             }).ToList();
+
+            var query = (from c in DB.USER_APPL
+                         select new
+                         {
+                             USER_ID = c.USER_ID,
+                             USER_NAME = c.USER_NAME
+                         }).ToList();
             if (val == null)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -336,7 +336,7 @@ namespace Improvar
             }
         }
 
-      
+
         public string SLCD_help(ImprovarDB DB)
         {
             var query = (from c in DB.M_SUBLEG
@@ -360,7 +360,7 @@ namespace Improvar
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
             {
-                string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string[] linkcode = LINK_CD.Split(',');
                 string sql = "";
                 string linkcd = LINK_CD.retSqlformat();
@@ -515,7 +515,7 @@ namespace Improvar
         public string filc(string chr)
         {
             if (chr == null || chr == "") chr = "null";
-            else chr = "'" + chr.Replace("'","''") + "'";
+            else chr = "'" + chr.Replace("'", "''") + "'";
             return chr;
         }
         public string filnd(double? chr)
@@ -547,7 +547,7 @@ namespace Improvar
                 case "S":
                     scmf = CommVar.SaleSchema(UNQSNO); break;
                 case "P":
-                    scmf =CommVar.PaySchema(UNQSNO); break;
+                    scmf = CommVar.PaySchema(UNQSNO); break;
             }
             string sql = "";
             sql = "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where autono in (" + autono + ") ";
@@ -689,8 +689,8 @@ namespace Improvar
         }
 
         public string InsVch_Bl(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, string drcr, string glcd, string slcd, string conslcd,
-            string agslcd, string class1cd, short slno, double amt, string blno, string bldt, string refno, string duedt, string vchtype, double crdays = 0, double itamt=0,
-            string ordno="", string orddt="", double blamt = 0, string lrno="", string lrdt="", string transnm="", string flag="")
+            string agslcd, string class1cd, short slno, double amt, string blno, string bldt, string refno, string duedt, string vchtype, double crdays = 0, double itamt = 0,
+            string ordno = "", string orddt = "", double blamt = 0, string lrno = "", string lrdt = "", string transnm = "", string flag = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
@@ -699,7 +699,7 @@ namespace Improvar
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string clcd = CommVar.ClientCode(UNQSNO);
                 string sql = "";
-                if (blamt == 0) blamt = amt; 
+                if (blamt == 0) blamt = amt;
 
                 sql = "insert into " + scmf + ".t_vch_bl (emd_no, clcd, dtag, ttag, autono, doccd, docno, docdt, drcr, glcd, slcd, conslcd, agslcd, class1cd, ";
                 sql = sql + "slno, amt, blno, bldt, refno, duedt, crdays, itamt, vchtype, blamt, ordno, orddt, lrno, lrdt, transnm, flag) values (";
@@ -746,7 +746,7 @@ namespace Improvar
             }
         }
 
-        public string InsVch_Bl_Adj(string autono, short emd_no, string dtag, short slno, string i_autono, short i_slno, double i_amt, string r_autono, short r_slno, double r_amt, double adj_amt, string flag="")
+        public string InsVch_Bl_Adj(string autono, short emd_no, string dtag, short slno, string i_autono, short i_slno, double i_amt, string r_autono, short r_slno, double r_amt, double adj_amt, string flag = "")
         {
             string bl = ""; var UNQSNO = Cn.getQueryStringUNQSNO();
             try
@@ -786,7 +786,7 @@ namespace Improvar
             string blno, string bldt, string hsncode, string itnm, double qnty, string uom, double amt, double igstper, double igstamt, double cgstper, double cgstamt, double sgstper, double sgstamt, double cessper, double cessamt,
             string salpur, double roamt, double blamt, double othramt = 0, string invtypecd = "", string pos = "", string agstdocno = "", string agstdocdt = "", string dncncd = "",
             string gstslnm = "", string gstno = "", string expcd = "", string shipdocno = "", string shipdocdt = "", string portcd = "", string dncnsalpur = "",
-            string conslcd = "", string exemptedtype = "", double appltaxrate = 0, string expglcd="", string inptclaim="", string good_serv="", string lutno="", string lutdt="")
+            string conslcd = "", string exemptedtype = "", double appltaxrate = 0, string expglcd = "", string inptclaim = "", string good_serv = "", string lutno = "", string lutdt = "")
         {
             string bl = ""; var UNQSNO = Cn.getQueryStringUNQSNO();
             try
@@ -864,7 +864,7 @@ namespace Improvar
         }
 
         public string InsVch_TdsTxn(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, string blno, string bldt, string glcd, string slcd, string tdscode,
-            short slno, double blamt, double tdson, double tdsper, double tdsamt, string tdsdt, string low_tds, string class1cd, string tdstcs="")
+            short slno, double blamt, double tdson, double tdsper, double tdsamt, string tdsdt, string low_tds, string class1cd, string tdstcs = "")
         {
             string bl = ""; var UNQSNO = Cn.getQueryStringUNQSNO();
             try
@@ -915,7 +915,7 @@ namespace Improvar
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
-            string LOC =  CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
             string[] fin = CommVar.FinPeriod(UNQSNO).Split('-');
             string YEARCD = fin[0].Substring(6).Trim();
             string uid = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
@@ -1011,14 +1011,14 @@ namespace Improvar
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
-            string LOC =  CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
             string[] fin = CommVar.FinPeriod(UNQSNO).Split('-');
             string YEARCD = fin[0].Substring(6).Trim();
             string uid = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
             string uIP = Cn.GetIp();
             try
             {
-                string scmf =  CommVar.CurSchema(UNQSNO);
+                string scmf = CommVar.CurSchema(UNQSNO);
                 switch (modcd)
                 {
                     case "F":
@@ -1105,7 +1105,7 @@ namespace Improvar
                 return bl;
             }
         }
-         public double slcdbal(string slcd, string glcd, string docdt = "", string class1cd = "", string skipautono = "")
+        public double slcdbal(string slcd, string glcd, string docdt = "", string class1cd = "", string skipautono = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO);
@@ -1125,7 +1125,7 @@ namespace Improvar
             }
 
             double lgbal = 0;
-            DataTable rsTmp = SQLquery(sql);           
+            DataTable rsTmp = SQLquery(sql);
 
             if (rsTmp.Rows.Count > 0 && rsTmp.Rows[0]["BALAMT"].ToString() != "")
             {
@@ -1669,8 +1669,8 @@ namespace Improvar
             return msg;
         }
         public string InsITC4_Iss(string autono, string doccd, string docno, string docdt, short slno, string sheetnm, string proc_autono,
-                string slcd, string gstno, string chno, string chdt, string hsncode, string itnm, string uomcd, 
-                double qnty, double amt, double cgstper, double sgstper, double igstper, double cessper=0, double cessamt=0)
+                string slcd, string gstno, string chno, string chdt, string hsncode, string itnm, string uomcd,
+                double qnty, double amt, double cgstper, double sgstper, double igstper, double cessper = 0, double cessamt = 0)
         {
             string bl = ""; var UNQSNO = Cn.getQueryStringUNQSNO();
             try
@@ -1779,10 +1779,10 @@ namespace Improvar
                 case "S":
                     scmf = CommVar.SaleSchema(UNQSNO); break;
                 case "P":
-                    scmf =CommVar.PaySchema(UNQSNO); break;
+                    scmf = CommVar.PaySchema(UNQSNO); break;
             }
             string sql = "";
-            if (dtag=="D") sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where autono in (" + autono + ") " + "~";
+            if (dtag == "D") sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where autono in (" + autono + ") " + "~";
             sql += "delete from " + scmf + "." + tblname + " where autono in (" + autono + ") ";
 
             return sql;
@@ -1793,7 +1793,7 @@ namespace Improvar
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
-            string LOC =  CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
             string[] fin = CommVar.FinPeriod(UNQSNO).Split('-');
             string YEARCD = fin[0].Substring(6).Trim();
             string uid = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
@@ -1808,7 +1808,7 @@ namespace Improvar
                     case "I":
                         scmf = CommVar.InvSchema(UNQSNO); break;
                     case "S":
-                        scmf =  CommVar.CurSchema(UNQSNO); break;
+                        scmf = CommVar.CurSchema(UNQSNO); break;
                 }
                 string clcd = CommVar.ClientCode(UNQSNO);
                 string sql = "";
@@ -2059,7 +2059,7 @@ namespace Improvar
         public string GLCD_help(string val, string LINK_CD = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
-          string  scmf = CommVar.FinSchema(UNQSNO);
+            string scmf = CommVar.FinSchema(UNQSNO);
             string valsrch = val.ToUpper().Trim();
             string linkcd = LINK_CD.retSqlformat();
             string sql = "";
@@ -2090,9 +2090,9 @@ namespace Improvar
                     return "Invalid Ledger Code ! Please Enter a Valid Ledger Code !!";
                 }
             }
-            
+
         }
-     
+
         //public string GLCD_help(ImprovarDB DB)
         //{
         //    var query = (from c in DB.M_GENLEG
@@ -2111,5 +2111,41 @@ namespace Improvar
         //    var hdr = "Creditor Ledger Name" + Cn.GCS() + "Creditor Ledger Code";
         //    return Generate_help(hdr, SB.ToString());
         //}
+        public string JOBCD_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string scm = CommVar.CurSchema(UNQSNO);
+            string valsrch = val.ToUpper().Trim();
+            string sql = "";
+            sql += "select c.jobcd,c.jobnm from " + scm + ".M_JOBMST c," + scm + ".M_CNTRL_HDR i where c.M_AUTONO= i.M_AUTONO(+) ";
+            sql += "and i.INACTIVE_TAG ='N' ";
+            if (valsrch.retStr() != "") sql += "and upper(c.jobcd) = '" + valsrch + "'  ";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["jobnm"] + "</td><td>" + tbl.Rows[i]["jobcd"] + " </td></tr>");
+                }
+                var hdr = "Job Name" + Cn.GCS() + "Job Code";
+                return (Generate_help(hdr, SB.ToString()));
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Job Code ! Please Enter a Valid Job Code !!";
+                }
+            }
+
+        }
+
+       
     }
 }
