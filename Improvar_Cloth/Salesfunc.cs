@@ -11,7 +11,7 @@ namespace Improvar
         Connection Cn = new Connection();
         MasterHelpFa MasterHelpFa = new MasterHelpFa();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        public DataTable GetSlcdDetails(string slcd, string docdt, string linkcd = "", string brandcd = "")
+        public DataTable GetSlcdDetails(string slcd, string docdt, string linkcd = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
@@ -39,7 +39,7 @@ namespace Improvar
 
             sql += "(select b.slcd, b.agslcd ";
             sql += "from " + scm + ".m_subleg_brand b ";
-            sql += "where b.slcd='" + slcd + "' and b.brandcd='" + brandcd + "' and b.compcd='" + COM + "' ) c, ";
+            sql += "where b.slcd='" + slcd + "' and b.compcd='" + COM + "' ) c, ";
 
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc from ";
             //sql += "(select a.effdt, a.prccd, a.itmprccd, a.prcdesc, ";
@@ -454,7 +454,7 @@ namespace Improvar
 
             return tbl;
         }
-       public double Disc_Cal(string TYPE, double RATE, double QNTY, double BOX, double AMOUNT)
+        public double Disc_Cal(string TYPE, double RATE, double QNTY, double BOX, double AMOUNT)
         {
             double DISC_AMT = 0;
             if (TYPE == "Q") { DISC_AMT = RATE * QNTY; }
@@ -740,7 +740,7 @@ namespace Improvar
             glcd = tbl.Rows[0]["glcd"].retStr();
             return glcd;
         }
-              public DataTable retCutterBalFifo(string selslcd = "", string tdt = "", string curschema = "")
+        public DataTable retCutterBalFifo(string selslcd = "", string tdt = "", string curschema = "")
         {
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "", fdt = CommVar.FinStartDate(UNQSNO);
@@ -1106,6 +1106,8 @@ namespace Improvar
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
             sql += "d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode ";
+            sql += " ,''MTRLJOBNM,''SIZENM,''UOMCD,''STKNAME,''PARTNM,''PDESIGN,''UOM,0 QNTY,0 NOS,0 FLAGMTR,0 DISCRATE,''DISCTYPE,0 GSTPER, ";
+            sql += "''TDDISCTYPE,0TDDISCRATE,''SCMDISCTYPE,0 SCMDISCRATE,''LOCABIN ";
             sql += "from ";
             sql += "( ";
             sql += "select gocd, mtrljobcd, stktype, barno, itcd, partcd, colrcd, sizecd, shade, cutlength, dia, ";
@@ -1144,7 +1146,7 @@ namespace Improvar
             }
             sql += ") ";
             if (shownilstock == false) sql += "where nvl(balqnty,0) <> 0 ";
-            sql += "group by gocd, mtrljobcd, stktype, barno, itcd, partcd, colrcd, sizecd, shade ";
+            sql += "group by gocd, mtrljobcd, stktype, barno, itcd, partcd, colrcd, sizecd, shade,cutlength,dia ";
             sql += ") a, ";
 
             sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
@@ -1162,7 +1164,7 @@ namespace Improvar
             sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".m_sitem_barcode d ";
             sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and ";
             sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
-            sql += ") a where prccd='" + prccd + ") b, ";
+            sql += ") a where prccd='" + prccd + "') b, ";
 
             sql += "(select a.barno, ";
             sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
@@ -1209,7 +1211,7 @@ namespace Improvar
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) ";
 
-
+            tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
 
         }

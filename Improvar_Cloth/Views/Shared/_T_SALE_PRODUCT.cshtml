@@ -64,7 +64,7 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_chkid_" + i, @TabIndex = -1 })
+                                            @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })
                                         </td>
                                         <td class="">
@@ -215,7 +215,7 @@
     </div>
     <div class="row">
         <div class="col-md-1" style="width:auto;">
-            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="Fill_BarCodeData()" />
+            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="EditBarCodeRow()" />
         </div>
         <div class="col-md-1" style="width:auto;">
             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
