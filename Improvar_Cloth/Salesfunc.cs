@@ -1215,7 +1215,25 @@ namespace Improvar
             return tbl;
 
         }
-
+        public DataTable GetTax(string docdt, string taxgrpcd, string prodgrpcd = "", double rate = 0)
+        {
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            DataTable tbl = new DataTable();
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string sql = "";
+            sql += "select a.prodgrpcd, a.effdt, b.fromrt, b.tort, ";
+            sql += "b.igstper, b.cgstper, b.sgstper, ";
+            sql += "nvl(b.igstper, 0) + nvl(b.igstper, 0) + nvl(b.sgstper, 0) gstper from ";
+            sql += "(select prodgrpcd, effdt from ";
+            sql += "(select a.prodgrpcd, a.effdt, ";
+            sql += "row_number() over(partition by a.prodgrpcd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".m_prodtax a where a.effdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ) ";
+            sql += "where rn = 1 ) a, " + scm + ".m_prodtax b ";
+            sql += "where a.prodgrpcd = b.prodgrpcd(+) and a.effdt = b.effdt(+) and b.taxgrpcd = '" + taxgrpcd + "' ";
+            sql += "and 1000 between b.fromrt and b.tort ";
+            tbl = SQLquery(sql);
+            return tbl;
+        }
         public string retGstPer(string SearchStr, double rate = 0)
         {
             //Searchstr value like listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179))
@@ -1278,6 +1296,8 @@ namespace Improvar
             }
             return rtval;
         }
+
+
 
     }
 }
