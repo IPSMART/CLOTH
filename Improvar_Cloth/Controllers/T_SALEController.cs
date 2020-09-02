@@ -728,7 +728,7 @@ namespace Improvar.Controllers
                         {
                             str = Master_Help.ToReturnFieldValues("", stock_data);
                         }
-                       
+
                         return Content(str);
                     }
                     else
@@ -751,7 +751,7 @@ namespace Improvar.Controllers
                 {
                     List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
                     TBATCHDTL TBATCHDTL1 = new TBATCHDTL();
-                    TBATCHDTL1.SLNO = 1;
+                    //TBATCHDTL1.SLNO = 1;
                     TBATCHDTL1.TXNSLNO = VE.TXNSLNO.retShort();
                     TBATCHDTL1.ITGRPCD = VE.ITGRPCD;
                     TBATCHDTL1.ITGRPNM = VE.ITGRPNM;
@@ -796,9 +796,9 @@ namespace Improvar.Controllers
                     }
 
                     TBATCHDTL TBATCHDTL1 = new TBATCHDTL();
-                    var max = VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO));
-                    int SLNO = Convert.ToInt32(max) + 1;
-                    TBATCHDTL1.SLNO = Convert.ToSByte(SLNO);
+                    //var max = VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO));
+                    //int SLNO = Convert.ToInt32(max) + 1;
+                    //TBATCHDTL1.SLNO = Convert.ToSByte(SLNO);
                     TBATCHDTL1.TXNSLNO = VE.TXNSLNO.retShort();
                     TBATCHDTL1.ITGRPCD = VE.ITGRPCD;
                     TBATCHDTL1.ITGRPNM = VE.ITGRPNM;
@@ -833,6 +833,76 @@ namespace Improvar.Controllers
                     VE.TBATCHDTL = TBATCHDTL;
 
                 }
+                VE.TBATCHDTL = (from x in VE.TBATCHDTL
+                                group x by new
+                                {
+                                    x.TXNSLNO,
+                                    x.ITGRPCD,
+                                    x.ITGRPNM,
+                                    x.MTRLJOBCD,
+                                    x.MTRLJOBNM,
+                                    x.ITCD,
+                                    x.ITNM,
+                                    x.STYLENO,
+                                    x.STKTYPE,
+                                    x.STKNAME,
+                                    x.PARTCD,
+                                    x.PARTNM,
+                                    x.COLRCD,
+                                    x.COLRNM,
+                                    x.SIZECD,
+                                    x.SIZENM,
+                                    x.SHADE,
+                                    x.UOM,
+                                    x.RATE,
+                                    x.GSTPER,
+                                    x.DISCRATE,
+                                    x.DISCTYPE,
+                                    x.DISCTYPE_DESC,
+                                    x.TDDISCRATE,
+                                    x.TDDISCTYPE,
+                                    x.SCMDISCRATE,
+                                    x.SCMDISCTYPE,
+                                    x.BARNO,
+                                } into P
+                                select new TBATCHDTL
+                                {
+                                    TXNSLNO = P.Key.TXNSLNO,
+                                    ITGRPCD = P.Key.ITGRPCD,
+                                    ITGRPNM = P.Key.ITGRPNM,
+                                    MTRLJOBCD = P.Key.MTRLJOBCD,
+                                    MTRLJOBNM = P.Key.MTRLJOBNM,
+                                    ITCD = P.Key.ITCD,
+                                    ITNM = P.Key.ITNM,
+                                    STYLENO = P.Key.STYLENO,
+                                    STKTYPE = P.Key.STKTYPE,
+                                    STKNAME = P.Key.STKNAME,
+                                    PARTCD = P.Key.PARTCD,
+                                    PARTNM = P.Key.PARTNM,
+                                    COLRCD = P.Key.COLRCD,
+                                    COLRNM = P.Key.COLRNM,
+                                    SIZECD = P.Key.SIZECD,
+                                    SIZENM = P.Key.SIZENM,
+                                    SHADE = P.Key.SHADE,
+                                    QNTY = P.Sum(A => A.QNTY),
+                                    UOM = P.Key.UOM,
+                                    NOS = P.Sum(A => A.NOS),
+                                    RATE = P.Key.RATE,
+                                    GSTPER = P.Key.GSTPER,
+                                    DISCRATE = P.Key.DISCRATE,
+                                    DISCTYPE = P.Key.DISCTYPE,
+                                    DISCTYPE_DESC = P.Key.DISCTYPE == "P" ? "%" : P.Key.DISCTYPE == "N" ? "Nos" : P.Key.DISCTYPE == "Q" ? "Qnty" : "Fixed",
+                                    TDDISCRATE = P.Key.TDDISCRATE,
+                                    TDDISCTYPE = P.Key.TDDISCTYPE,
+                                    SCMDISCRATE = P.Key.SCMDISCRATE,
+                                    SCMDISCTYPE = P.Key.SCMDISCTYPE,
+                                    BARNO = P.Key.BARNO,
+                                }).OrderBy(b=>b.TXNSLNO).ToList();
+                for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
+                {
+                    VE.TBATCHDTL[p].SLNO = Convert.ToInt16(p + 1);
+                }
+                ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_PRODUCT", VE);
             }
@@ -842,14 +912,14 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult DeleteBarCodeRow(TransactionPackingSlipEntry VE)
+        public ActionResult DeleteBarCodeRow(TransactionPackingSlipEntry VE, int SLNO)
         {
 
             List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
             int count = 0;
             for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
             {
-                if (VE.TBATCHDTL[i].Checked == false)
+                if (VE.TBATCHDTL[i].SLNO != SLNO)
                 {
                     count += 1;
                     TBATCHDTL IFSC = new TBATCHDTL();
@@ -917,12 +987,29 @@ namespace Improvar.Controllers
                                   TDDISCTYPE = P.Key.TDDISCTYPE,
                                   SCMDISCRATE = P.Key.SCMDISCRATE,
                                   SCMDISCTYPE = P.Key.SCMDISCTYPE,
-                                  AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
+                                  //AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                               }).ToList();
-                //for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
-                //{
-                //    VE.TTXNDTL[p].SLNO = Convert.ToInt16(p + 1);
-                //}
+                var tax_data = salesfunc.GetTax(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXNOTH.TAXGRPCD);
+                string tax = Master_Help.ToReturnFieldValues("", tax_data);
+                double igstper = tax.retCompValue("IGSTPER").retDbl();
+                double cgstper = tax.retCompValue("CGSTPER").retDbl();
+                double sgstper = tax.retCompValue("SGSTPER").retDbl();
+                for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
+                {
+                    //VE.TTXNDTL[p].TXBLVAL = VE.TTXNDTL[p].AMT.retDbl()- VE.TTXNDTL[p].TOTDISCAMT.retDbl();
+                    VE.TTXNDTL[p].IGSTPER = igstper;
+                    VE.TTXNDTL[p].CGSTPER = cgstper;
+                    VE.TTXNDTL[p].SGSTPER = sgstper;
+                }
+                //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
+                //VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
+                //VE.T_AMT = VE.TTXNDTL.Select(a => a.AMT).Sum().retDbl();
+                //VE.T_GROSS_AMT = VE.TTXNDTL.Select(a => a.TXBLVAL).Sum().retDbl();
+                //VE.T_IGST_AMT = VE.TTXNDTL.Select(a => a.IGSTAMT).Sum().retDbl();
+                //VE.T_CGST_AMT = VE.TTXNDTL.Select(a => a.CGSTAMT).Sum().retDbl();
+                //VE.T_SGST_AMT = VE.TTXNDTL.Select(a => a.SGSTAMT).Sum().retDbl();
+                //VE.T_CESS_AMT = VE.TTXNDTL.Select(a => a.CESSAMT).Sum().retDbl();
+                //VE.T_NET_AMT = VE.TTXNDTL.Select(a => a.NETAMT).Sum().retDbl();
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_DETAIL", VE);
@@ -1180,14 +1267,12 @@ namespace Improvar.Controllers
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             //Oracle Queries
-            string dberrmsg = "";
             OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
             OraCon.Open();
             OracleCommand OraCmd = OraCon.CreateCommand();
             OracleTransaction OraTrans;
-            string dbsql = "", postdt = "", weekrem = "", duedatecalcon = "", sql = "";
+            string dbsql = "";
             string[] dbsql1;
-            double dbDrAmt = 0, dbCrAmt = 0;
 
             OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
             OraCmd.Transaction = OraTrans;
@@ -1199,10 +1284,7 @@ namespace Improvar.Controllers
                 {
                     //DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
                     OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
-                    String query = "";
-                    string dr = ""; string cr = ""; int isl = 0; string strrem = "";
-                    double igst = 0; double cgst = 0; double sgst = 0; double cess = 0; double duty = 0; double dbqty = 0; double dbamt = 0; double dbcurramt = 0;
-                    Int32 z = 0; Int32 maxR = 0;
+
                     string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                     string ContentFlg = "";
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
@@ -1629,7 +1711,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        isl = 1;
+
                         if (VE.TTXNAMT != null)
                         {
                             for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
@@ -1763,13 +1845,6 @@ namespace Improvar.Controllers
                     {
                         return Content("");
                     }
-                    goto dbok;
-                dbnotsave:;
-                    transaction.Rollback();
-                    OraTrans.Rollback();
-                    OraCon.Dispose();
-                    return Content(dberrmsg);
-                dbok:;
                 }
                 catch (Exception ex)
                 {

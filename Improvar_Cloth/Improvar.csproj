@@ -279,10 +279,10 @@
     </Compile>
     <Compile Include="ListToDatatable.cs" />
     <Compile Include="Models\APPL_MENU.cs" />
+    <Compile Include="Models\BARNO_DETAILS.cs" />
     <Compile Include="Models\BOM.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\ControlHeader.cs" />
-    <Compile Include="Models\DailyTargetDropDowns.cs" />
     <Compile Include="Models\DateLockRight.cs" />
     <Compile Include="Models\DebitCreditType.cs" />
     <Compile Include="Models\DespatchDetails.cs" />
@@ -351,6 +351,7 @@
     <Compile Include="Models\M_AREACD.cs" />
     <Compile Include="Models\M_BATCH_IMG_HDR.cs" />
     <Compile Include="Models\M_BATCH_IMG_HDR_DTL.cs" />
+    <Compile Include="Models\M_BATCH_IMG_HDR_LINK.cs" />
     <Compile Include="Models\M_BLTYPE.cs" />
     <Compile Include="Models\M_BRAND.cs" />
     <Compile Include="Models\M_CLASS1.cs" />
@@ -461,7 +462,6 @@
     <Compile Include="Models\TBATCHDTL.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
-    <Compile Include="Models\TPROGBOM.cs" />
     <Compile Include="Models\TPROGDTL.cs" />
     <Compile Include="Models\TSORDDTL.cs" />
     <Compile Include="Models\TSORDDTL_CANC.cs" />
@@ -992,7 +992,7 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />
     <Content Include="Views\T_OUTISSPROCESS\_T_OUTISSPROCESS_DETAIL.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_DETAIL.cshtml" />
-    <Content Include="Views\Shared\_T_OUTISSPROCESS_QtyRequirement.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_BARNODETAIL.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -176,7 +176,7 @@
     }
 </script>
 <script>
-    function ADD_BarCodeData() {
+    function Add_BarCodeRow() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillBarCodeData", PageControllerName)",
@@ -192,90 +192,51 @@
             }
         });
     }
-    function EditBarCodeRow() {
-        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-        var cnt_ebarcd = 0;
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            if (document.getElementById("B_Checked_" + i).checked == true) {
-                cnt_ebarcd++;
-            }
-        }
-        if (cnt_ebarcd == 0) {
-            msgInfo("Please Checked any row of Bar Code Details to edit !!");
-        }
-        else if (cnt_ebarcd > 1) {
-            msgInfo("Please Checked only one row of Bar Code Details to edit !!");
-        }
-        else {
-            for (i = 0; i <= GridRowMain - 1; i++) {
-                if (document.getElementById("B_Checked_" + i).checked == true) {
-                    $("#BARCODE").val($("#B_BARNO_" + i).val());
-                    $("#TXNSLNO").val($("#B_TXNSLNO_" + i).val());
-                    $("#ITGRPCD").val($("#B_ITGRPCD_" + i).val());
-                    $("#ITGRPNM").val($("#B_ITGRPNM_" + i).val());
-                    $("#MTRLJOBCD").val($("#B_MTRLJOBCD_" + i).val());
-                    $("#MTRLJOBNM").val($("#B_MTRLJOBNM_" + i).val());
-                    $("#ITCD").val($("#B_ITCD_" + i).val());
-                    $("#ITNM").val($("#B_ITNM_" + i).val());
-                    $("#STYLENO").val($("#B_STYLENO_" + i).val());
-                    $("#STKTYPE").val($("#B_STKTYPE_" + i).val());
-                    $("#STKNAME").val($("#B_STKNAME_" + i).val());
-                    $("#PARTCD").val($("#B_PARTCD_" + i).val());
-                    $("#PARTNM").val($("#B_PARTNM_" + i).val());
-                    $("#COLRCD").val($("#B_COLRCD_" + i).val());
-                    $("#COLRNM").val($("#B_COLRNM_" + i).val());
-                    $("#SIZECD").val($("#B_SIZECD_" + i).val());
-                    $("#SIZENM").val($("#B_SIZENM_" + i).val());
-                    //$("#PSTYLENO").val($("#B_TXNSLNO_" + i).val());
-                    //$("#BALSTOCK").val($("#B_TXNSLNO_" + i).val());
-                    $("#QNTY").val($("#B_QNTY_" + i).val());
-                    $("#UOM").val($("#B_UOM_" + i).val());
-                    $("#NOS").val($("#B_NOS_" + i).val());
-                    //$("#FLAGMTR").val($("#B_TXNSLNO_" + i).val());
-                    $("#RATE").val($("#B_RATE_" + i).val());
-                    $("#DISCRATE").val($("#B_DISCRATE_" + i).val());
-                    $("#DISCTYPE").val($("#B_DISCTYPE_" + i).val());
-                    //$("#HSNCODE").val($("#B_TXNSLNO_" + i).val());
-                    $("#GSTPER").val($("#B_GSTPER_" + i).val());
-                    $("#SHADE").val($("#B_SHADE_" + i).val());
-                    $("#TDDISCTYPE").val($("#B_TDDISCTYPE_" + i).val());
-                    $("#TDDISCRATE").val($("#B_TDDISCRATE_" + i).val());
-                    $("#SCMDISCTYPE").val($("#B_SCMDISCTYPE_" + i).val());
-                    $("#SCMDISCRATE").val($("#B_SCMDISCRATE_" + i).val());
-                    //$("#LOCABIN").val($("#B_TXNSLNO_" + i).val());
-                    break;
-                }
-            }
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("DeleteBarCodeRow", PageControllerName)",
-                data: $('form').serialize(),
-                success: function (result) {
-                    $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
-                    $("#partialdivBarCodeTab").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
+    function EditBarCodeRow(i) {
 
-    }
-    function Fill_DetailData() {
+        $("#BARCODE").val($("#B_BARNO_" + i).val());
+        $("#TXNSLNO").val($("#B_TXNSLNO_" + i).val());
+        $("#ITGRPCD").val($("#B_ITGRPCD_" + i).val());
+        $("#ITGRPNM").val($("#B_ITGRPNM_" + i).val());
+        $("#MTRLJOBCD").val($("#B_MTRLJOBCD_" + i).val());
+        $("#MTRLJOBNM").val($("#B_MTRLJOBNM_" + i).val());
+        $("#ITCD").val($("#B_ITCD_" + i).val());
+        $("#ITNM").val($("#B_ITNM_" + i).val());
+        $("#STYLENO").val($("#B_STYLENO_" + i).val());
+        $("#STKTYPE").val($("#B_STKTYPE_" + i).val());
+        $("#STKNAME").val($("#B_STKNAME_" + i).val());
+        $("#PARTCD").val($("#B_PARTCD_" + i).val());
+        $("#PARTNM").val($("#B_PARTNM_" + i).val());
+        $("#COLRCD").val($("#B_COLRCD_" + i).val());
+        $("#COLRNM").val($("#B_COLRNM_" + i).val());
+        $("#SIZECD").val($("#B_SIZECD_" + i).val());
+        $("#SIZENM").val($("#B_SIZENM_" + i).val());
+        //$("#PSTYLENO").val($("#B_TXNSLNO_" + i).val());
+        //$("#BALSTOCK").val($("#B_TXNSLNO_" + i).val());
+        $("#QNTY").val($("#B_QNTY_" + i).val());
+        $("#UOM").val($("#B_UOM_" + i).val());
+        $("#NOS").val($("#B_NOS_" + i).val());
+        //$("#FLAGMTR").val($("#B_TXNSLNO_" + i).val());
+        $("#RATE").val($("#B_RATE_" + i).val());
+        $("#DISCRATE").val($("#B_DISCRATE_" + i).val());
+        $("#DISCTYPE").val($("#B_DISCTYPE_" + i).val());
+        //$("#HSNCODE").val($("#B_TXNSLNO_" + i).val());
+        $("#GSTPER").val($("#B_GSTPER_" + i).val());
+        $("#SHADE").val($("#B_SHADE_" + i).val());
+        $("#TDDISCTYPE").val($("#B_TDDISCTYPE_" + i).val());
+        $("#TDDISCRATE").val($("#B_TDDISCRATE_" + i).val());
+        $("#SCMDISCTYPE").val($("#B_SCMDISCTYPE_" + i).val());
+        $("#SCMDISCRATE").val($("#B_SCMDISCRATE_" + i).val());
+        //$("#LOCABIN").val($("#B_TXNSLNO_" + i).val());
+
+        var slno = $("#B_SLNO_" + i).val();
         $.ajax({
             type: 'POST',
-            url: "@Url.Action("FillDetailData", PageControllerName)",
-            data: $('form').serialize(),
+            url: "@Url.Action("DeleteBarCodeRow", PageControllerName)",
+            data: $('form').serialize() + "&SLNO=" + slno,
             success: function (result) {
-                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivDetail").html(result);
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(3)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
+                $("#partialdivBarCodeTab").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -283,6 +244,7 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
+
     }
     function UpdateBarCodeRow(i) {
         var TXNSLNO = $("#D_SLNO_" + i).val();
@@ -313,6 +275,183 @@
             }
         }
     }
+    function Fill_DetailData() {
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("FillDetailData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDetail").html(result);
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(3)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    CalculateAmt_Details(i);
+                }
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+</script>
+<script>
+    function CalculateAmt_Details(i) {
+        var BLQNTY = $("#D_BLQNTY_" + i).val();
+        if (BLQNTY != "") { BLQNTY = parseFloat(BLQNTY); } else { BLQNTY = parseFloat(0); }
+
+        var QNTY = $("#D_QNTY_" + i).val();
+        if (QNTY != "") { QNTY = parseFloat(QNTY); } else { QNTY = parseFloat(0); }
+
+        var FLAGMTR = $("#D_FLAGMTR_" + i).val();
+        if (FLAGMTR != "") { FLAGMTR = parseFloat(FLAGMTR); } else { FLAGMTR = parseFloat(0); }
+
+        var RATE = $("#D_RATE_" + i).val();
+        if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
+
+        var TOTDISCAMT = $("#D_TOTDISCAMT_" + i).val();
+        if (TOTDISCAMT != "") { TOTDISCAMT = parseFloat(TOTDISCAMT); } else { TOTDISCAMT = parseFloat(0); }
+
+        var IGSTPER = $("#D_IGSTPER_" + i).val();
+        if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
+
+        var CGSTPER = $("#D_CGSTPER_" + i).val();
+        if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
+
+        var SGSTPER = $("#D_SGSTPER_" + i).val();
+        if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
+
+        var CESSPER = $("#D_CESSPER_" + i).val();
+        if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
+
+        //AMOUNT CALCULATION
+        var amount = 0;
+        if (BLQNTY == 0) {
+            amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
+        }
+        else {
+            amount = parseFloat(BLQNTY) * parseFloat(RATE);
+        }
+        amount = parseFloat(amount).toFixed(2);
+        $("#D_AMT_" + i).val(amount);
+
+        //TAXABLE CALCULATION
+        var taxbleamt = parseFloat(amount) - parseFloat(TOTDISCAMT);
+        taxbleamt = parseFloat(taxbleamt).toFixed(2);
+        $("#D_TXBLVAL_" + i).val(taxbleamt);
+        //IGST,CGST,SGST,CESS AMOUNT CALCULATION
+
+        var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
+
+        //IGST
+        if (IGSTPER == 0 || IGSTPER == "") {
+            IGSTPER = 0; IGST_AMT = 0;
+        }
+        else {
+            IGST_AMT = parseFloat((taxbleamt * IGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_IGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
+        }
+        $("#D_IGSTAMT_" + i).val(IGST_AMT);
+        //CGST
+        if (CGSTPER == "" || CGSTPER == 0) {
+            CGSTPER = 0; CGST_AMT = 0;
+        }
+        else {
+            CGST_AMT = parseFloat((taxbleamt * CGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_CGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
+        }
+        $("#D_CGSTAMT_" + i).val(CGST_AMT);
+        //SGST
+        if (SGSTPER == "" || SGSTPER == 0) {
+            SGSTPER = 0; SGST_AMT = 0;
+        }
+        else {
+            SGST_AMT = parseFloat((taxbleamt * SGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_SGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
+        }
+        $("#D_SGSTAMT_" + i).val(SGST_AMT);
+
+        //CESS
+        if (CESSPER == "" || CESSPER == 0) {
+            CESSPER = 0; CESS_AMT = 0;
+        }
+        else {
+            CESS_AMT = parseFloat((taxbleamt * CESSPER) / 100).toFixed(2);
+            chkAmt = $("#D_CESSAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
+        }
+        $("#D_CESSAMT_" + i).val(CESS_AMT);
+
+        var netamt = parseFloat(parseFloat(taxbleamt) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
+        $("#D_NETAMT_" + i).val(netamt);
+        CalculateTotal_Details();
+    }
+    function CalculateTotal_Details() {
+        var T_NOS = 0; var T_QNTY = 0; var T_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_NET_AMT = 0;
+
+        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var NOS = $("#D_NOS_" + i).val();
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseInt(0); }
+
+            var QNTY = $("#D_QNTY_" + i).val();
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseInt(0); }
+
+            var AMT = $("#D_AMT_" + i).val();
+            if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseInt(0); }
+
+            var GROSS_AMT = $("#D_TXBLVAL_" + i).val();
+            if (GROSS_AMT != "") { T_GROSS_AMT = T_GROSS_AMT + parseFloat(GROSS_AMT); } else { T_GROSS_AMT = T_GROSS_AMT + parseInt(0); }
+
+            var IGST_AMT = $("#D_IGSTAMT_" + i).val();
+            if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseInt(0); }
+
+            var CGST_AMT = $("#D_CGSTAMT_" + i).val();
+            if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT); } else { T_CGST_AMT = T_CGST_AMT + parseInt(0); }
+
+            var SGST_AMT = $("#D_SGSTAMT_" + i).val();
+            if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT); } else { T_SGST_AMT = T_SGST_AMT + parseInt(0); }
+
+            var CESS_AMT = $("#D_CESSAMT_" + i).val();
+            if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT); } else { T_CESS_AMT = T_CESS_AMT + parseInt(0); }
+
+            var NET_AMT = $("#D_NETAMT_" + i).val();
+            if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT); } else { T_NET_AMT = T_NET_AMT + parseInt(0); }
+        }
+        var totaltax = parseFloat(T_IGST_AMT) + parseFloat(T_CGST_AMT) + parseFloat(T_SGST_AMT) + parseFloat(T_CESS_AMT);
+        $("#T_NOS").val(parseFloat(T_NOS).toFixed(2));
+        $("#T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
+        $("#T_AMT").val(parseFloat(T_AMT).toFixed(2));
+        $("#T_GROSS_AMT").val(parseFloat(T_GROSS_AMT).toFixed(2));
+        $("#T_IGST_AMT").val(parseFloat(T_IGST_AMT).toFixed(2));
+        $("#T_CGST_AMT").val(parseFloat(T_CGST_AMT).toFixed(2));
+        $("#T_SGST_AMT").val(parseFloat(T_SGST_AMT).toFixed(2));
+        $("#T_CESS_AMT").val(parseFloat(T_CESS_AMT).toFixed(2));
+        $("#T_NET_AMT").val(parseFloat(T_NET_AMT).toFixed(2));
+
+        //main tab
+        //$("#TOTNOS").val(parseFloat(T_NOS).toFixed(2));
+        //$("#TOTQNTY").val(parseFloat(T_QNTY).toFixed(2));
+        //$("#TOTTAXVAL").val(parseFloat(T_GROSS_AMT).toFixed(2));
+        //$("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
+    }
+
 </script>
 <script>
     function AddDOCrow() {
@@ -745,8 +884,8 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/ITGRPCD=ITGRPCD/ITGRPNM=ITGRPNM/ITCD=ITCD/STYLENO=STYLENO/COLRCD=COLRCD/COLRNM=COLRNM/SIZECD=SIZECD/SIZENM=SIZENM/UOM=UOM/HSNCODE=HSNCODE/BALSTOCK=BALSTOCK','DOCDT/TAXGRPCD/GOCD/PRCCD')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/ITGRPCD=ITGRPCD/ITGRPNM=ITGRPNM/ITCD=ITCD/STYLENO=STYLENO/COLRCD=COLRCD/COLRNM=COLRNM/SIZECD=SIZECD/SIZENM=SIZENM/UOM=UOM/HSNCODE=HSNCODE/BALSTOCK=BALSTOCK','DOCDT/TAXGRPCD/GOCD/PRCCD');", @placeholder = "Bar Code", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/ITGRPCD=ITGRPCD/ITGRPNM=ITGRPNM/ITCD=ITCD/STYLENO=STYLENO/COLRCD=COLRCD/COLRNM=COLRNM/SIZECD=SIZECD/SIZENM=SIZENM/UOM=UOM/HSNCODE=HSNCODE/BALSTOCK=BALSTOCK','DOCDT/TAXGRPCD/GOCD/PRCCD')" />
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD');", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')" />
                                         </div>
                                     </div>
                                     @*<div class="col-md-8">
@@ -757,42 +896,42 @@
                                             @Html.Label("", "Material Job Code")
                                         </div>
                                     </div>
-                                    <div class="col-md-6" style="width:auto">
+                                    <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
                                         @*<div class="col-md-6" style="margin-top:5px;width:auto;height:161px; overflow:auto;">*@
                                         <div class="editor-field">
                                             <table id="exampleLT" border="1" style="width: auto;">
-                                                <thead>
-                                                    <tr>
-                                                        <th colspan="3">
-                                                            <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
-                                                        </th>
-                                                    </tr>
-                                                    <tr style="background-color:#808080;" class="grid_th">
-                                                        <th align="center"></th>
-                                                        <th align="center">
-                                                            Name
-                                                        </th>
-                                                        <th align="center">
-                                                            Code
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count(); i++)
-                                                    {
+                                                @*<thead>
                                                         <tr>
-                                                            @if (Model.DefaultAction == "V")
+                                                            <th colspan="3">
+                                                                <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
+                                                            </th>
+                                                        </tr>
+                                                        <tr style="background-color:#808080;" class="grid_th">
+                                                            <th align="center"></th>
+                                                            <th align="center">
+                                                                Name
+                                                            </th>
+                                                            <th align="center">
+                                                                Code
+                                                            </th>
+                                                        </tr>
+                                                    </thead>*@
+                                                @*<tbody>*@
+                                                @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count(); i++)
+                                                {
+                                                    <tr>
+                                                        @if (Model.DefaultAction == "V")
+                                                        {
+                                                            if (Model.DropDown_list_MTRLJOBCD[i].Checked == true)
                                                             {
-                                                                if (Model.DropDown_list_MTRLJOBCD[i].Checked == true)
-                                                                {
-                                                                    <td align="center">
-                                                                        @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
-                                                                    </td>
-                                                                    <td align="center">
-                                                                        @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                                                        @Html.DisplayFor(model => STRC1)
-                                                                        @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
-                                                                    </td>
+                                                                <td align="center">
+                                                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
+                                                                </td>
+                                                                <td align="center">
+                                                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                                                    @Html.DisplayFor(model => STRC1)
+                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
+                                                                </td>
                                                                     <td align="center">
                                                                         @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
                                                                         @Html.DisplayFor(model => STRC)
@@ -817,9 +956,9 @@
                                                                                 </td>
                                                                                         }
 
-                                                        </tr>
+                                                    </tr>
                                                                                         }
-                                                </tbody>
+                                                @*</tbody>*@
                                             </table>
                                         </div>
                                     </div>
@@ -1024,13 +1163,18 @@
                                         </div>
                                     </div>
                                     <div class="col-md-1" style="width:auto;">
-                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="ADD_BarCodeData()" />
+                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />
                                     </div>
                                 </div>
                                                                                         }
                             <div>
-                                <div id="partialdivBarCodeTab" style="margin-top:4px;">
+                                <div id="partialdivBarCodeTab" style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
                                     @Html.Partial("_T_SALE_PRODUCT")
+                                </div>
+                                <div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
+                                    </div>
                                 </div>
                             </div>
                             <div class="PopUp_Backround">

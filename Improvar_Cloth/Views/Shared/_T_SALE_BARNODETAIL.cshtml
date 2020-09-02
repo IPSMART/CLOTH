@@ -1,0 +1,119 @@
+﻿@model Improvar.ViewModels.TransactionPackingSlipEntry
+<script>
+    $("#popup").ready(function () { $("#dragclass").draggable({ cursor: "move" }); });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('T_Fix_Loca_History_GRID'));
+    });
+</script>
+<div id="dragclass" style="overflow-y:auto;max-height:500px;height:auto;overflow-x:hidden;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="PO_P_IN_FS" name="PO_P_IN_FS" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_Fix_Loca_History_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Assets change of hands History</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:381px;">
+                    <table id="T_Fix_Loca_History_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" width="100%">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width:27px;">SL No.</th>
+                                <th class="" style="width:132px;">Barcode</th>
+                                <th class="" style="width:80px;">Group</th>
+                                <th class="" style="width:72px;">Mtrl Status</th>
+                                <th class="" style="width:230px;">Item</th>
+                                <th class="" style="width:230px;">Design</th>
+                                <th class="" style="width:230px;">Part</th>
+                                <th class="" style="width:230px;">Color</th>
+                                <th class="" style="width:230px;">Size</th>
+                                <th class="" style="width:230px;">Party</th>
+                                <th class="" style="width:230px;">Uom</th>
+                                <th class="" style="width:230px;">Stk.Type</th>
+                                <th class="" style="width:230px;">Date</th>
+                                <th class="" style="width:230px;">Bal.Qnty</th>
+                                <th class="" style="width:230px;">Bal.Nos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i <= Model.BARNO_DETAILS.Count - 1; i++)
+                            {
+                                <tr style="font-size:12px; font-weight:bold;">
+                                    <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                        @Html.CheckBoxFor(model => model.BARNO_DETAILS[i].Checked, new { id = "Checked_STOCK_" + i })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].SLNO, new { id = "SLNO_STOCK_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].BARNO, new { id = "DOCNO_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.BARNO_DETAILS[i].ITGRPCD, new { id = "ITGRPCD_STOCK_" + i })
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].ITGRPNM, new { id = "DOCDT_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.BARNO_DETAILS[i].MTRLJOBNM, new { id = "MTRLJOBNM_STOCK_" + i })
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].MTRLJOBCD, new { id = "MTRLJOBCD_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.BARNO_DETAILS[i].ITNM, new { id = "ITNM_STOCK_" + i })
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].ITCD, new { id = "ITCD_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].STYLENO, new { id = "STYLENO_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.BARNO_DETAILS[i].PARTNM, new { id = "PARTNM_STOCK_" + i })
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].PARTCD, new { id = "PARTCD_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.BARNO_DETAILS[i].COLRCD, new { id = "COLRCD_STOCK_" + i })
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].COLRNM, new { id = "COLRNM_STOCK_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.BARNO_DETAILS[i].SIZENM, new { id = "SIZENM_STOCK_" + i })
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].SIZECD, new { id = "SIZECD_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.BARNO_DETAILS[i].SLNM, new { id = "SLNM_STOCK_" + i })
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].SLCD, new { id = "SLCD_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].UOM, new { id = "UOM_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.BARNO_DETAILS[i].STKNAME, new { id = "STKNAME_STOCK_" + i })
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].STKTYPE, new { id = "STKTYPE_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].DOCDT, new { id = "DOCDT_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].BALQNTY, new { id = "BALQNTY_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.BARNO_DETAILS[i].BALNOS, new { id = "BALNOS_STOCK_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+    </div>
+    <div class="row" style="padding:5px;text-align:center;">
+        <input type="button" class="btn btn-success" id="btnCancel" value="Close" style="padding: 2px 5px 2px 5px;" onclick="Close_History();" />
+        <input type="button" class="btn btn-danger" id="btnCancel" value="Close" style="padding: 2px 5px 2px 5px;" onclick="Close_History();" />
+    </div>
+</div>
