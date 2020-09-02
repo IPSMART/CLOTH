@@ -1690,7 +1690,7 @@ namespace Improvar.Controllers
                             DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
                             DB.SaveChanges();
                             DB.M_BATCH_IMG_HDR_DTL.AddRange(barimg.Item2);
-                            var disntImgHdr = barimg.Item1.Distinct().ToList();
+                            var disntImgHdr = barimg.Item1.GroupBy(u=>u.BARNO).Select(r=>r.First() ).ToList();
                             foreach (var imgbar in disntImgHdr)
                             {
                                 M_BATCH_IMG_HDR_LINK m_batchImglink = new M_BATCH_IMG_HDR_LINK();
