@@ -203,6 +203,28 @@
             }
         });
     }
+
+    function Fill_QtyRequirementData() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillQtyRequirementData", PageControllerName)",
+            data: $('form').serialize(),
+        success: function (result) {
+            //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+            $("#partialdivQtyRequirement").html(result);
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(3)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
 </script>
 <script>
     function AddDOCrow() {

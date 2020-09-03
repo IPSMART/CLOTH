@@ -902,6 +902,39 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult FillQtyRequirementData(TransactionOutIssProcess VE)
+        {
+            try
+            {
+                VE.TPROGBOM = (from x in VE.TPROGDTL
+                              group x by new
+                              {
+                                  x.SLNO,
+                                  x.ITNM,
+                                  x.UOM,
+                                  x.QNTY
+                              } into P
+                              select new TPROGBOM
+                              {
+                                  SLNO = P.Key.SLNO.retShort(),
+                                  ITNM = P.Key.ITNM,
+                                  UOM = P.Key.UOM,
+                                  QNTY = P.Sum(A => A.QNTY)
+                              }).ToList();
+                //for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
+                //{
+                //    VE.TTXNDTL[p].SLNO = Convert.ToInt16(p + 1);
+                //}
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_OUTISSPROCESS_QtyRequirement", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         public ActionResult OPEN_AMOUNT(TransactionOutIssProcess VE, string AUTO_NO, int A_T_NOS, double A_T_QNTY, double A_T_AMT, double A_T_TAXABLE, double A_T_IGST_AMT, double A_T_CGST_AMT, double A_T_SGST_AMT, double A_T_CESS_AMT, double A_T_NET_AMT, double IGST_PER, double CGST_PER, double SGST_PER, double CESS_PER)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());

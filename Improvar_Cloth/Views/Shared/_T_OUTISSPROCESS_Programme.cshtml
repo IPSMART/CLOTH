@@ -20,6 +20,9 @@
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PRODUCT_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
+                <div class="col-md-1" style="width:auto;">
+                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillQtyRequiremnt" value="Generate Qty Requirement" title="Click to Fill Data in Qty Requirement Tab" onclick="Fill_QtyRequirementData()" />
+                </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
                     <b>Genrate Qty Requirement</b>
                 </center>
@@ -31,14 +34,14 @@
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="" style="width: 55px;text-align:center;">SL No.</th>
-                                <th class=""style="width:177px;">Group</th>
-                                <th class=""style="width:115px;">Item Code</th>
-                                <th class=""style="width:177px;">Item Name</th>
+                                <th class="" style="width:177px;">Group</th>
+                                <th class="" style="width:115px;">Item Code</th>
+                                <th class="" style="width:177px;">Item Name</th>
                                 <th class="" style="width:47px;">UOM</th>
-                                <th class=""style="width:100px;">Part</th>
+                                <th class="" style="width:100px;">Part</th>
                                 <th class="" style="width: 81px;">Color Code</th>
-                                <th class=""style="width:100px;">Color Name</th>
-                                <th class=""style="width:107px;">Size</th>
+                                <th class="" style="width:100px;">Color Name</th>
+                                <th class="" style="width:107px;">Size</th>
                                 <th class="" style="width:111px;text-align:right;">Nos</th>
                                 <th class="" style="width:60px;text-align:right;">Length</th>
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
@@ -60,32 +63,32 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
-                                      
+
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITGRPNM, new { id = "P_ITGRPNM_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "P_ITGRPNM_" + i + "','" + "P_ITGRPNM_" + i + "=itgrpnm=0/" + "P_ITGRPCD_" + i + "=itgrpcd=1');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "P_ITGRPNM_" + i + "','" + "P_ITGRPNM_" + i + "=itgrpnm=0/" + "P_ITGRPCD_" + i + "=itgrpcd=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS")','Group Details','P_ITGRPNM_@i','P_ITGRPNM_@i=itgrpnm=0/P_ITGRPCD_@i=itgrpcd=1')" />
                                             @Html.HiddenFor(model => model.TPROGDTL[i].ITGRPCD, new { id = "P_ITGRPCD_" + i })
                                         </td>
-                                       
+
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITCD, new { id = "P_ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "P_ITCD_" + i + "','" + "P_ITCD_" + i + "=ITCD=2/" + "P_ITNM_" + i + "=ITNM=1/" + "P_UOM_" + i + "=UOM=3');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "P_ITCD_" + i + "','" + "P_ITCD_" + i + "=ITCD=2/" + "P_ITNM_" + i + "=ITNM=1/" + "P_UOM_" + i + "=UOM=3');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "T_OUTISSPROCESS")','Item Details','P_ITCD_@i','P_ITCD_@i=ITCD=2/P_ITNM_@i=ITNM=1/P_UOM_@i=UOM=3')" />
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITNM, new { id = "P_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                           
+
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].UOM, new { id = "P_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                          
+
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].PARTCD, new { id = "P_PARTCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "T_OUTISSPROCESS")','Part Details','P_PARTCD_@i','P_PARTCD_@i=PARTCD=1')" />
 
                                         </td>
                                         <td class="">
-                                          
+
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].COLRCD, new { id = "P_COLRCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_OUTISSPROCESS") + "','Color Details','" + "P_COLRCD_" + i + "','" + "P_COLRCD_" + i + "=COLRCD=1/" + "P_COLRNM_" + i + "=COLRNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_OUTISSPROCESS") + "','Color Details','" + "P_COLRCD_" + i + "','" + "P_COLRCD_" + i + "=COLRCD=1/" + "P_COLRNM_" + i + "=COLRNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "T_OUTISSPROCESS")','Color Details','P_COLRCD_@i','P_COLRCD_@i=COLRCD=1/P_COLRNM_@i=COLRNM=0')" />
                                         </td>
@@ -114,7 +117,7 @@
                                         <td class="">
                                             @Html.CheckBoxFor(model => model.TPROGDTL[i].CheckedSample, new { id = "P_CheckedSample_" + i })
                                         </td>
-                                     
+
                                     </tr>
                                 }
                             }
@@ -152,12 +155,12 @@
         }
     </div>
     @*<div class="row">
-        <div class="col-md-1" style="width:auto;">
-            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="Fill_BarCodeData()" />
-        </div>
-        <div class="col-md-1" style="width:auto;">
-            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
-        </div>
-    </div>*@
+            <div class="col-md-1" style="width:auto;">
+                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="Fill_BarCodeData()" />
+            </div>
+            <div class="col-md-1" style="width:auto;">
+                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
+            </div>
+        </div>*@
 </div>
 
