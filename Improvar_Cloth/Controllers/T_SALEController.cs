@@ -699,15 +699,11 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetBarCodeDetails(string val, string Code)
+        public ActionResult GetBarCodeDetails(string val, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
         {
             try
             {
-                string[] hdr_data = Code.Split(Convert.ToChar(Cn.GCS()));
-                if (hdr_data[3].retStr() == "" || hdr_data[1].retStr() == "")
-                {
-                    return Content("Please Select Price Code or Tax Grp Code ");
-                }
+                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
                 var str = Master_Help.BARCODE_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -723,13 +719,50 @@ namespace Improvar.Controllers
                         itcd = str.retCompValue("ITCD");
                         styleno = str.retCompValue("STYLENO");
 
-                        var stock_data = salesfunc.GetStock(hdr_data[0].retStr(), hdr_data[2].retStr().retSqlformat(), val.retSqlformat(), itcd.retSqlformat(), "'FS'", "", itgrpcd.retSqlformat(), styleno, hdr_data[3].retStr(), hdr_data[1].retStr());
-                        if (stock_data != null && stock_data.Rows.Count > 0)
+                        var stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr().retSqlformat(), val.retStr().retSqlformat(), itcd.retStr().retSqlformat(), MTRLJOBCD.retStr().retSqlformat(), "", itgrpcd.retStr().retSqlformat(), styleno.retStr(), PRCCD.retStr(), TAXGRPCD.retStr());
+                        if (stock_data != null && stock_data.Rows.Count > 1)
+                        {
+                            VE.TSALEBARNOPOPUP = (from DataRow dr in stock_data.Rows
+                                                  select new TSALEBARNOPOPUP
+                                                  {
+                                                      //SLNO=dr["slno"].retStr(),
+
+                                                      BARNO = dr["BARNO"].retStr(),
+                                                      ITGRPCD = dr["ITGRPCD"].retStr(),
+                                                      ITGRPNM = dr["ITGRPNM"].retStr(),
+                                                      MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                                      MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
+                                                      ITNM = dr["ITNM"].retStr(),
+                                                      ITCD = dr["ITCD"].retStr(),
+                                                      STYLENO = dr["STYLENO"].retStr(),
+                                                      PARTNM = dr["PARTNM"].retStr(),
+                                                      PARTCD = dr["PARTCD"].retStr(),
+                                                      COLRCD = dr["COLRCD"].retStr(),
+                                                      COLRNM = dr["COLRNM"].retStr(),
+                                                      SIZENM = dr["SIZENM"].retStr(),
+                                                      SIZECD = dr["SIZECD"].retStr(),
+                                                      SLNM = dr["SLNM"].retStr(),
+                                                      SLCD = dr["SLCD"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+                                                      //SLNO = dr["slno"].retStr(),
+
+                                                  }).ToList();
+                            VE.DefaultView = true;
+                            return PartialView("_T_SALE_BARNODETAIL", VE);
+                        }
+                        else
                         {
                             str = Master_Help.ToReturnFieldValues("", stock_data);
+                            return Content(str);
                         }
 
-                        return Content(str);
                     }
                     else
                     {
@@ -897,7 +930,7 @@ namespace Improvar.Controllers
                                     SCMDISCRATE = P.Key.SCMDISCRATE,
                                     SCMDISCTYPE = P.Key.SCMDISCTYPE,
                                     BARNO = P.Key.BARNO,
-                                }).OrderBy(b=>b.TXNSLNO).ToList();
+                                }).OrderBy(b => b.TXNSLNO).ToList();
                 for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
                 {
                     VE.TBATCHDTL[p].SLNO = Convert.ToInt16(p + 1);
