@@ -53,6 +53,10 @@ namespace Improvar.Controllers
 
                     //=================For Gender================//
                     List<Gender> G = new List<Gender>();
+                    Gender G7 = new Gender();
+                    G7.text = "";
+                    G7.value = "";
+                    G.Add(G7);
                     Gender G1 = new Gender();
                     G1.text = "Boys";
                     G1.value = "B";
@@ -77,6 +81,7 @@ namespace Improvar.Controllers
                     G6.text = "Unisex";
                     G6.value = "U";
                     G.Add(G6);
+                  
                     VE.Gender = G;
                     //=================For Gender================//
                     //=================For ProductType================//
