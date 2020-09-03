@@ -910,6 +910,7 @@ namespace Improvar.Controllers
                               group x by new
                               {
                                   x.SLNO,
+                                  x.ITCD,
                                   x.ITNM,
                                   x.UOM,
                                   x.QNTY
@@ -917,6 +918,7 @@ namespace Improvar.Controllers
                               select new TPROGBOM
                               {
                                   SLNO = P.Key.SLNO.retShort(),
+                                  ITCD = P.Key.ITCD,
                                   ITNM = P.Key.ITNM,
                                   UOM = P.Key.UOM,
                                   QNTY = P.Sum(A => A.QNTY)

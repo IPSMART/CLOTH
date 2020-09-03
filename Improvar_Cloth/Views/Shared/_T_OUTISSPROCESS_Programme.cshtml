@@ -103,7 +103,7 @@
                                             @Html.EditorFor(model => Model.TPROGDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnlyForNegative(this,4);", @style = "text-align:right;" })
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnly(this,4);", @style = "text-align:right;" })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPROGDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateQNTY('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })

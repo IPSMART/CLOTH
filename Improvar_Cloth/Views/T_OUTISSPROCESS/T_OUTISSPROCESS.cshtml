@@ -339,6 +339,17 @@
 
 
 </script>
+<script>
+    function CopyAboveRow_TPROGBOM(i) {
+        debugger;
+        i = parseInt(i);
+        if (event.key == "F8" && i > 0) {
+            var itnm = $("#RITNM1_" + (i - 1)).val();
+            $("#RITNM1_" + i).val(itnm);
+
+        }
+    }
+</script>
 
 @using (Html.BeginForm())
 {
