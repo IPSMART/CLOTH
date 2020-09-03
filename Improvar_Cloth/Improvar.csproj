@@ -992,7 +992,8 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />
     <Content Include="Views\T_OUTISSPROCESS\_T_OUTISSPROCESS_DETAIL.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_DETAIL.cshtml" />
-    <Content Include="Views\Shared\_T_SALE_BARNODETAIL.cshtml" />
+    <Content Include="Views\Shared\_T_OUTISSPROCESS_PRODUCT.cshtml" />
+    <Content Include="Views\Shared\_T_OUTISSPROCESS_QtyRequirement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
