@@ -103,40 +103,39 @@
         if ("@Model.DefaultAction" != "V") {
             debugger;
             if (id == "") {
-                ClearAllTextBoxes("FABITCD,FABITNM,FABUOMNM");
+                ClearAllTextBoxes("BARCODE");
             }
             else {
-                var linkcd = $("#fabitGrpcd").val();
+                var docdt = $("#DOCDT").val();
+                var taxgrpcd = $("#TAXGRPCD").val();
+                var gocd = $("#GOCD").val();
+                var prccd = $("#PRCCD").val();
+                var mtrljobcd = $("#MTRLJOBCD").val();
                 $.ajax({
                     type: 'POST',
                     beforesend: $("#WaitingMode").show(),
-                    url: "@Url.Action("GetItemDetails", PageControllerName)",
-                    data: "&Code=" + linkcd + "&val=" + id,
+                    url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
+                    data: "&val=" + id + "&DOCDT=" + docdt + "&TAXGRPCD=" + taxgrpcd + "&GOCD=" + gocd + "&PRCCD=" + prccd + "&MTRLJOBCD=" + mtrljobcd,
                     success: function (result) {
                         var MSG = result.indexOf('#helpDIV');
                         if (MSG >= 0) {
-                            ClearAllTextBoxes("FABITCD,FABITNM,FABUOMNM");
-                            $('#SearchFldValue').val("FABITCD");
+                            ClearAllTextBoxes("BARCODE");
+                            $('#SearchFldValue').val("BARCODE");
                             $('#helpDIV').html(result);
-                            $('#ReferanceFieldID').val("FABITCD/FABITNM/FABUOMNM");
-                            $('#ReferanceColumn').val("2/1/3");
+                            $('#ReferanceFieldID').val("BARCODE");
+                            $('#ReferanceColumn').val("0");
                             $('#helpDIV_Header').html("Facbric Item Details");
                         }
                         else {
                             var MSG = result.indexOf(String.fromCharCode(181));
                             if (MSG >= 0) {
-                                $("#FABITCD").val(returncolvalue(result, "itcd"));
-                                $("#FABITNM").val(returncolvalue(result, "itnm"));
-                                $("#FABUOMNM").val(returncolvalue(result, "uomcd"));
-                                if ($("#HSNCODE").val() == "") {
-                                    $("#HSNCODE").val(returncolvalue(result, "hsncode"));
-                                }
+                                $("#BARCODE").val(returncolvalue(result, "itcd"));
                             }
                             else {
                                 $('#helpDIV').html("");
                                 msgInfo("" + result + " !");
-                                ClearAllTextBoxes("FABITCD,FABITNM,FABUOMNM");
-                                message_value = "FABITCD";
+                                ClearAllTextBoxes("BARCODE");
+                                message_value = "BARCODE";
                             }
                         }
                         $("#WaitingMode").hide();
@@ -987,18 +986,18 @@
                                                                     @Html.DisplayFor(model => STRC1)
                                                                     @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
                                                                 </td>
-                                                                    <td align="center">
-                                                                        @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                                                        @Html.DisplayFor(model => STRC)
-                                                                        @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
-                                                                    </td>
-                                                                                }
+                                                                <td align="center">
+                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                                    @Html.DisplayFor(model => STRC)
+                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                                </td>
                                                                             }
-                                                                            else
-                                                                            {
-                                                                                <td align="center">
-                                                                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
-                                                                                </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td align="center">
+                                                                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
+                                                                            </td>
                                                                                 <td align="center">
                                                                                     @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
                                                                                     @Html.DisplayFor(model => STRC1)
