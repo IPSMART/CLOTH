@@ -374,7 +374,7 @@ namespace Improvar.Controllers
                 tbl = Master_Help.SQLquery(str1);
 
                 VE.TTXNDTL = (from DataRow dr in tbl.Rows
-                              select new TTXNDTL()
+                              select new TTXNDTL()//
                               {
                                   SLNO = dr["SLNO"].retShort(),
                                   ITGRPCD = dr["ITGRPCD"].retStr(),
