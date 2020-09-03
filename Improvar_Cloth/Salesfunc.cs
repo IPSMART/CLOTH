@@ -1122,7 +1122,7 @@ namespace Improvar
             if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
             if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
             if (skipautono.retStr() != "") sql += "a.autono not in ('" + skipautono + ") and ";
-            sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+            if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
             sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             if (pendpslipconsider == true)
@@ -1139,7 +1139,7 @@ namespace Improvar
                 if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
                 if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
                 if (skipautono.retStr() != "") sql += "a.autono not in ('" + skipautono + ") and ";
-                sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+                if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
                 sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
                 sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             }
@@ -1203,14 +1203,14 @@ namespace Improvar
 
             sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
-            sql += scm + ".m_mtrljobcd i, " + scm + ".m_parts j, " + scm + "m_stktype k ";
+            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
             if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
-            sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) ";
-            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stkrype=k.stktype(+) ";
+            sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
+            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
 
