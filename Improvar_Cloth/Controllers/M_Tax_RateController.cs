@@ -141,7 +141,7 @@ namespace Improvar.Controllers
                 var prodggrpcd = aa[0].Trim();
                 double rate = aa[2].retDbl();
                 sl = DB.M_PRODTAX.Where(e=>e.PRODGRPCD == prodggrpcd&&e.EFFDT==dt&&e.FROMRT== rate).First();
-                if (sl.FROMRT == .01.retDbl()) { VE.FROMRT = ""; } else { VE.FROMRT = sl.FROMRT.retStr(); }
+                if (sl.FROMRT == .00.retDbl()) { VE.FROMRT = ""; } else { VE.FROMRT = sl.FROMRT.retStr(); }
                 if (sl.TORT == 999999999.99.retDbl()) { VE.TORT = ""; } else { VE.TORT = sl.TORT.retStr(); }
                 sGRP = DB.M_PRODGRP.Find(sl.PRODGRPCD);
                 sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
@@ -355,7 +355,7 @@ namespace Improvar.Controllers
                                     MPRODTAX_obj.CLCD = MPrdTax.CLCD;
                                     MPRODTAX_obj.EFFDT = MPrdTax.EFFDT;
                                     MPRODTAX_obj.PRODGRPCD = MPrdTax.PRODGRPCD;
-                                    if (VE.FROMRT.retDcml() == 0) { MPRODTAX_obj.FROMRT = ".01".retDbl(); }
+                                    if (VE.FROMRT.retDcml() == 0) { MPRODTAX_obj.FROMRT = ".00".retDbl(); }
                                     else { MPRODTAX_obj.FROMRT = VE.FROMRT.retDbl(); }
                                     if (VE.TORT.retDcml() == 0) { MPRODTAX_obj.TORT = "999999999.99".retDbl(); }
                                     else { MPRODTAX_obj.TORT = VE.TORT.retDbl(); }
