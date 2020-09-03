@@ -88,18 +88,18 @@
             message_value = "protyp";
             return false;
         }
-        var comtype = $("#gender").val();
-        if (comtype == "0") {
-            msgInfo("Select Gender");
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            message_value = "gender";
-            return false;
-        }
-        //if (!emptyFieldCheck("Enter Pcs. Per Box ", "PCSPERBOX")) {
+        //var comtype = $("#gender").val();
+        //if (comtype == "0") {
+        //    msgInfo("Select Gender");
+        //    $("li").removeClass("active").addClass("");
+        //    $(".nav-tabs li:first-child").addClass('active');
+        //    //below set the  child sequence
+        //    $(".tab-content div").removeClass("active");
+        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //    message_value = "gender";
+        //    return false;
+        //}
+        //if (!emptyFieldCheck("Select Gender ", "gender")) {
         //    $("li").removeClass("active").addClass("");
         //    $(".nav-tabs li:first-child").addClass('active');
         //    //below set the  child sequence
@@ -1111,6 +1111,8 @@
                                 </div>
                             </div>
                         </div>
+                        @if (Model.MENU_PARA == "F")
+                        {
                         <div class="row">
                             @*<div class="col-md-6">
                                     <div class="editor-label" style="margin-top: 6px;">
@@ -1143,10 +1145,10 @@
                                         </select>
                                     </div>
                                 </div>*@
+                         
                             <div class="col-md-6" style="margin-right:-1px;">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Gender")
-                                    <b style="color:Red;">*</b>
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -1175,7 +1177,7 @@
                                         </select>*@
                                 </div>
                             </div>
-                        </div>
+                        </div>}
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">

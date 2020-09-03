@@ -53,6 +53,10 @@ namespace Improvar.Controllers
 
                     //=================For Gender================//
                     List<Gender> G = new List<Gender>();
+                    Gender G7 = new Gender();
+                    G7.text = "";
+                    G7.value = "";
+                    G.Add(G7);
                     Gender G1 = new Gender();
                     G1.text = "Boys";
                     G1.value = "B";
@@ -77,6 +81,7 @@ namespace Improvar.Controllers
                     G6.text = "Unisex";
                     G6.value = "U";
                     G.Add(G6);
+                  
                     VE.Gender = G;
                     //=================For Gender================//
                     //=================For ProductType================//
@@ -114,7 +119,7 @@ namespace Improvar.Controllers
                         VE.IndexKey = (from p in DB.M_SITEM
                                        join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD)
                                        where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE == itgrpcd)
-                                       select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
+                                       select new IndexKey() { Navikey = p.ITCD }).OrderByDescending(a => a.Navikey).ToList();
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
 
                         if (op == "E" || op == "D" || op == "V" || loadItem == "Y")
