@@ -213,10 +213,10 @@
             //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
             $("#partialdivQtyRequirement").html(result);
             $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:nth-child(3)").addClass('active');
+            $(".nav-tabs li:nth-child(2)").addClass('active');
             //below set the  child sequence
             $(".tab-content div").removeClass("active");
-            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -458,8 +458,8 @@
                 <ul class="nav nav-tabs">
                     <li id="Programme_LI4" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme</a></li>
                     <li id="QtyRequird_LI4" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement</a></li>
-                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="MtrlIssue_LI" class=""><a data-toggle="tab" href="#MtrlIssue" accesskey="M">Material Issue</a></li>
+                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="Programme" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
@@ -476,15 +476,6 @@
                             <div>
                                 <div id="partialdivQtyRequirement" style="margin-top:0px;">
                                     @Html.Partial("_T_OUTISSPROCESS_QtyRequirement")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivDetail" style="margin-top:0px;">
-                                    @Html.Partial("_T_OUTISSPROCESS_DETAIL")
                                 </div>
                             </div>
                         </div>
@@ -507,8 +498,8 @@
                                         </div>
                                     </div>
                                     @*<div class="col-md-8">
-                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBarCode" value="Get BarCode Detail" title="Click to Get BarCode Detail" />
-                    </div>*@
+                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBarCode" value="Get BarCode Detail" title="Click to Get BarCode Detail" />
+                        </div>*@
                                     <div class="col-md-4">
                                         <div class="editor-label" style="margin-top: 6px;">
                                             @Html.Label("", "Material Job Code")
@@ -519,21 +510,21 @@
                                         <div class="editor-field">
                                             <table id="exampleLT" border="1" style="width: auto;">
                                                 @*<thead>
-                                    <tr>
-                                        <th colspan="3">
-                                            <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
-                                        </th>
-                                    </tr>
-                                    <tr style="background-color:#808080;" class="grid_th">
-                                        <th align="center"></th>
-                                        <th align="center">
-                                            Name
-                                        </th>
-                                        <th align="center">
-                                            Code
-                                        </th>
-                                    </tr>
-                                </thead>*@
+                                        <tr>
+                                            <th colspan="3">
+                                                <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
+                                            </th>
+                                        </tr>
+                                        <tr style="background-color:#808080;" class="grid_th">
+                                            <th align="center"></th>
+                                            <th align="center">
+                                                Name
+                                            </th>
+                                            <th align="center">
+                                                Code
+                                            </th>
+                                        </tr>
+                                    </thead>*@
                                                 @*<tbody>*@
                                                 @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count(); i++)
                                                 {
@@ -567,15 +558,15 @@
                                                                                 @Html.DisplayFor(model => STRC1)
                                                                                 @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
                                                                             </td>
-                                                                                <td align="center">
-                                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                                                                    @Html.DisplayFor(model => STRC)
-                                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
-                                                                                </td>
-                                                                                        }
+                                                                            <td align="center">
+                                                                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                                                @Html.DisplayFor(model => STRC)
+                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                                            </td>
+                                                                                    }
 
                                                     </tr>
-                                                                                        }
+                                                                                    }
                                                 @*</tbody>*@
                                             </table>
                                         </div>
@@ -595,10 +586,10 @@
                                         </div>
                                     </div>
                                     @*<div class="col-md-7">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
-                        </div>
-                    </div>*@
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                            </div>
+                        </div>*@
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0');", @placeholder = "Material Job Code", maxlength = 2 } })
@@ -614,10 +605,10 @@
                                         </div>
                                     </div>
                                     @*<div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
-                        </div>
-                    </div>*@
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
+                            </div>
+                        </div>*@
                                     <div class="col-md-4">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", maxlength = 30, @title = "Only for View", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
@@ -625,11 +616,11 @@
                                     </div>
 
                                     @*<div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
-                            @Html.HiddenFor(model => model.FABITNM, new { id = "FABITNM" })
-                        </div>
-                    </div>*@
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
+                                @Html.HiddenFor(model => model.FABITNM, new { id = "FABITNM" })
+                            </div>
+                        </div>*@
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
@@ -734,14 +725,14 @@
 
                                 </div>
                                 <div class="row">
-                                    @if (Model.MENU_PARA == "PB")
-                                    {
+                                    @*@if (Model.MENU_PARA == "PB")
+                                    {*@
                                         <div class="col-md-8">
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO" } })
                                             </div>
                                         </div>
-                                    }
+                                    @*}*@
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.TDDISCTYPE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCTYPE", @placeholder = "TDDISCTYPE", maxlength = 1, @list = "TDDISCTYPE_List" } })
@@ -784,7 +775,7 @@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />
                                     </div>
                                 </div>
-                                                                                        }
+                                                                                    }
                             <div>
                                 <div id="partialdivBarCodeTab" style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
                                     @Html.Partial("_T_OUTISSPROCESS_PRODUCT")
@@ -801,13 +792,24 @@
                             </div>
                         </div>
                         @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                <div>
+                    <div id="partialdivMtrlIssue" style="margin-top:0px;">
+                        @Html.Partial("_T_OUTISSPROCESS_PRODUCT")
+                    </div>
+                </div>
+            </div>*@
+                    </div>
+
+                    <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
-                                <div id="partialdivMtrlIssue" style="margin-top:0px;">
-                                    @Html.Partial("_T_OUTISSPROCESS_PRODUCT")
+                                <div id="partialdivDetail" style="margin-top:0px;">
+                                    @Html.Partial("_T_OUTISSPROCESS_DETAIL")
                                 </div>
                             </div>
-                        </div>*@
+                        </div>
                     </div>
+                  
                     @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
