@@ -7,7 +7,7 @@ using System.Web;
 namespace Improvar.ViewModels
 {
     public class TransactionOutIssProcess : Permission
-    {
+    {//kk
         public T_TXN T_TXN { get; set; }
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_TXN_LINKNO T_TXN_LINKNO { get; set; }

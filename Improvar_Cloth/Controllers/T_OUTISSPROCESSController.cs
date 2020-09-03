@@ -276,7 +276,7 @@ namespace Improvar.Controllers
                     VE.DISTRICT = subleg.DISTRICT ;
                     VE.GSTNO = subleg.GSTNO;
                 }
-
+              
                 //VE.CONSLNM = TXN.CONSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXN.CONSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.AGSLNM = TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.SAGSLNM = TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -287,8 +287,24 @@ namespace Improvar.Controllers
                 //VE.CRSLNM = TXNTRN.CRSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.CRSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 //VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
+                string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0;
+                string str = "";
+                str += "select autono,slno,progautono,progslno,stkdrcr,nos,qnty from "+ Scm + ".T_PROGDTL  where autono='"+ TXN.AUTONO + "'";
+                DataTable Progdtltbl = Master_Help.SQLquery(str);
+                VE.TPROGDTL = (from DataRow dr in Progdtltbl.Rows
+                               select new TPROGDTL()
+                               { SLNO= dr["slno"].retShort(),
+                                 NOS= dr["nos"].retDbl(),
+                                 QNTY = dr["qnty"].retDbl(),
+                               }).ToList();
+                for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
+                {
+                    TOTAL_NOS = TOTAL_NOS + VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.Value;
+                   
+                }
+                VE.T_NOS = TOTAL_NOS.retInt();
 
-                string Scm = CommVar.CurSchema(UNQSNO);
+
                 string str1 = "";
                 str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,i.MTRLJOBCD,o.MTRLJOBNM,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,q.STKTYPE,r.STKNAME,i.BARNO, ";
                 str1 += "j.COLRCD,m.COLRNM,j.SIZECD,l.SIZENM,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE ";
