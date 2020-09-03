@@ -53,7 +53,7 @@ namespace Improvar.Models
         public double? FLAGMTR { get; set; }
 
         [StringLength(100)]
-        public string ITREM { get; set; }
+        public string ITREMARK { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
