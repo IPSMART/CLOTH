@@ -98,7 +98,6 @@
 </script>
 <script>
     debugger;
-    GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "', 'Bar Code Details', 'BARCODE', 'BARCODE=BARNO=0', 'DOCDT/TAXGRPCD/GOCD/PRCCD')
     function GetBarnoDetails(id) {
         if ("@Model.DefaultAction" != "V") {
             debugger;
@@ -106,6 +105,9 @@
                 ClearAllTextBoxes("BARCODE");
             }
             else {
+                if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+                if (!emptyFieldCheck("Please Select / Enter TaxGrp. Code", "TAXGRPCD")) { return false; }
+                if (!emptyFieldCheck("Please Select / Enter Price Code", "PRCCD")) { return false; }
                 var docdt = $("#DOCDT").val();
                 var taxgrpcd = $("#TAXGRPCD").val();
                 var gocd = $("#GOCD").val();
@@ -117,19 +119,16 @@
                     url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
                     data: "&val=" + id + "&DOCDT=" + docdt + "&TAXGRPCD=" + taxgrpcd + "&GOCD=" + gocd + "&PRCCD=" + prccd + "&MTRLJOBCD=" + mtrljobcd,
                     success: function (result) {
-                        var MSG = result.indexOf('#helpDIV');
+                        var MSG = result.indexOf('id="_T_SALE_BARNODETAIL_GRID"');
                         if (MSG >= 0) {
-                            ClearAllTextBoxes("BARCODE");
-                            $('#SearchFldValue').val("BARCODE");
-                            $('#helpDIV').html(result);
-                            $('#ReferanceFieldID').val("BARCODE");
-                            $('#ReferanceColumn').val("0");
-                            $('#helpDIV_Header').html("Facbric Item Details");
+                            $("#popup").animate({ marginTop: '-10px' }, 50);
+                            $("#popup").html(result);
+                            $("#WaitingMode").hide();
                         }
                         else {
                             var MSG = result.indexOf(String.fromCharCode(181));
                             if (MSG >= 0) {
-                                $("#BARCODE").val(returncolvalue(result, "itcd"));
+                                FillBarcodeArea(result);
                             }
                             else {
                                 $('#helpDIV').html("");
@@ -148,6 +147,119 @@
                 });
             }
         }
+    }
+    function FillBarcodeArea(str, Table, i) {
+        if (str != "") {
+            $("#TXNSLNO").val(returncolvalue(str, "TXNSLNO"));
+            $("#ITGRPCD").val(returncolvalue(str, "ITGRPCD"));
+            $("#ITGRPNM").val(returncolvalue(str, "ITGRPNM"));
+            $("#MTRLJOBCD").val(returncolvalue(str, "MTRLJOBCD"));
+            $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
+            $("#ITCD").val(returncolvalue(str, "ITCD"));
+            $("#ITNM").val(returncolvalue(str, "ITNM"));
+            $("#STYLENO").val(returncolvalue(str, "STYLENO"));
+            $("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
+            $("#PARTCD").val(returncolvalue(str, "PARTCD"));
+            $("#PARTNM").val(returncolvalue(str, "PARTNM"));
+            $("#COLRCD").val(returncolvalue(str, "COLRCD"));
+            $("#COLRNM").val(returncolvalue(str, "COLRNM"));
+            $("#SIZECD").val(returncolvalue(str, "SIZECD"));
+            $("#SIZENM").val(returncolvalue(str, "SIZENM"));
+            $("#PSTYLENO").val(returncolvalue(str, "PSTYLENO"));
+            $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
+            $("#QNTY").val(returncolvalue(str, "QNTY"));
+            $("#UOM").val(returncolvalue(str, "UOM"));
+            $("#NOS").val(returncolvalue(str, "NOS"));
+            $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
+            $("#RATE").val(returncolvalue(str, "RATE"));
+            $("#DISCRATE").val(returncolvalue(str, "DISCRATE"));
+            $("#DISCTYPE").val(returncolvalue(str, "DISCTYPE"));
+            $("#HSNCODE").val(returncolvalue(str, "HSNCODE"));
+            $("#GSTPER").val(returncolvalue(str, "GSTPER"));
+            $("#SHADE").val(returncolvalue(str, "SHADE"));
+            if ("@Model.MENU_PARA" == "PB") {
+                $("#BALENO").val(returncolvalue(str, "BALENO"));
+            }
+            $("#TDDISCTYPE").val(returncolvalue(str, "TDDISCTYPE"));
+            $("#TDDISCRATE").val(returncolvalue(str, "TDDISCRATE"));
+            $("#SCMDISCTYPE").val(returncolvalue(str, "SCMDISCTYPE"));
+            $("#SCMDISCRATE").val(returncolvalue(str, "SCMDISCRATE"));
+            $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
+        }
+        else {
+            var id = "";
+            if (Table == "_T_SALE_BARNODETAIL_GRID") {
+                var GridRowMain = $("#_T_SALE_BARNODETAIL_GRID > tbody > tr").length;
+                var cnt = 0;
+                for (j = 0; j <= GridRowMain - 1; j++) {
+                    if (document.getElementById("STOCK_Checked_" + j).checked == true) {
+                        i = j;
+                        cnt++;
+                    }
+                }
+                if (cnt == 0) {
+                    msgInfo("Please Select row from stock details !");
+                    return false;
+                }
+                else if (cnt != 1) {
+                    msgInfo("Please Select only one row from stock details !");
+                    return false;
+                }
+                else {
+                    id = "#STOCK_";
+                }
+            }
+            else {
+                id = "#B_";
+            }
+            if (Table != "_T_SALE_BARNODETAIL_GRID") {
+
+                $("#SLNO").val($(id + "SLNO_" + i).val());
+                $("#TXNSLNO").val($(id + "TXNSLNO_" + i).val());
+                $("#STKNAME").val($(id + "STKNAME_" + i).val());
+                $("#PSTYLENO").val($(id + "PSTYLENO_" + i).val());
+                $("#QNTY").val($(id + "QNTY_" + i).val());
+                $("#NOS").val($(id + "NOS_" + i).val());
+                $("#FLAGMTR").val($(id + "FLAGMTR_" + i).val());
+                $("#RATE").val($(id + "RATE_" + i).val());
+                $("#DISCRATE").val($(id + "DISCRATE_" + i).val());
+                $("#DISCTYPE").val($(id + "DISCTYPE_" + i).val());
+                $("#HSNCODE").val($("HSNCODE_" + i).val());
+                $("#GSTPER").val($(id + "GSTPER_" + i).val());
+                $("#SHADE").val($(id + "SHADE_" + i).val());
+                $("#TDDISCTYPE").val($(id + "TDDISCTYPE_" + i).val());
+                $("#TDDISCRATE").val($(id + "TDDISCRATE_" + i).val());
+                $("#SCMDISCTYPE").val($(id + "SCMDISCTYPE_" + i).val());
+                $("#SCMDISCRATE").val($(id + "SCMDISCRATE_" + i).val());
+                $("#LOCABIN").val($(id + "LOCABIN_" + i).val());
+            }
+            $("#BARCODE").val($(id + "BARNO_" + i).val());
+            $("#ITGRPCD").val($(id + "ITGRPCD_" + i).val());
+            $("#ITGRPNM").val($(id + "ITGRPNM_" + i).val());
+            $("#MTRLJOBCD").val($(id + "MTRLJOBCD_" + i).val());
+            $("#MTRLJOBNM").val($(id + "MTRLJOBNM_" + i).val());
+            $("#ITCD").val($(id + "ITCD_" + i).val());
+            $("#ITNM").val($(id + "ITNM_" + i).val());
+            $("#STYLENO").val($(id + "STYLENO_" + i).val());
+            $("#STKTYPE").val($(id + "STKTYPE_" + i).val());
+            $("#PARTCD").val($(id + "PARTCD_" + i).val());
+            $("#PARTNM").val($(id + "PARTNM_" + i).val());
+            $("#COLRCD").val($(id + "COLRCD_" + i).val());
+            $("#COLRNM").val($(id + "COLRNM_" + i).val());
+            $("#SIZECD").val($(id + "SIZECD_" + i).val());
+            $("#SIZENM").val($(id + "SIZENM_" + i).val());
+            if (Table == "_T_SALE_BARNODETAIL_GRID") {
+                $("#BALSTOCK").val($(id + "BALQNTY_" + i).val());
+            }
+            $("#UOM").val($(id + "UOM_" + i).val());
+            if (Table == "_T_SALE_BARNODETAIL_GRID") {
+                CloseBarnoPopup();
+            }
+        }
+
+    }
+    function CloseBarnoPopup() {
+        $("#popup").html("");
     }
 </script>
 <script>
@@ -938,7 +1050,7 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD');GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')" />
                                         </div>
                                     </div>
@@ -998,20 +1110,20 @@
                                                                             <td align="center">
                                                                                 @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
                                                                             </td>
-                                                                                <td align="center">
-                                                                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                                                                    @Html.DisplayFor(model => STRC1)
-                                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
-                                                                                </td>
-                                                                                <td align="center">
-                                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                                                                    @Html.DisplayFor(model => STRC)
-                                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
-                                                                                </td>
-                                                                                        }
+                                                                            <td align="center">
+                                                                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                                                                @Html.DisplayFor(model => STRC1)
+                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
+                                                                            </td>
+                                                                            <td align="center">
+                                                                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                                                @Html.DisplayFor(model => STRC)
+                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                                            </td>
+                                                                                    }
 
                                                     </tr>
-                                                                                        }
+                                                                                    }
                                                 @*</tbody>*@
                                             </table>
                                         </div>
@@ -1020,6 +1132,7 @@
                                 <div class="row">
                                     <div class="col-md-1">
                                         <div class="editor-field">
+                                            @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
                                             @Html.EditorFor(model => model.TXNSLNO, new { htmlAttributes = new { @class = "form-control", id = "TXNSLNO", maxlength = 4, @onkeypress = "return numericOnly(this);", @placeholder = "Bill Sl" } })
                                         </div>
                                     </div>
@@ -1220,21 +1333,22 @@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />
                                     </div>
                                 </div>
-                                                                                        }
-                            <div>
-                                <div id="partialdivBarCodeTab" style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
+                                                                                    }
+                            <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
+                                <div id="partialdivBarCodeTab">
                                     @Html.Partial("_T_SALE_PRODUCT")
                                 </div>
                                 <div>
-                                    <div class="col-md-1" style="width:auto;">
-                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
+                                    <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
                                     </div>
                                 </div>
                             </div>
-                            <div class="PopUp_Backround">
-                                <div id="popup" class="row" style="margin-top: 11px;top:40%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
+                            <div>
+                                <div class="col-md-1" style="width:auto;">
+                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
                                 </div>
                             </div>
+
                         </div>
                     </div>
                     <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
@@ -1416,15 +1530,15 @@
 
             </div>
         </div>
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            @ViewBag.ErrorMessage
-                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        @ViewBag.ErrorMessage
+                                                                                    }
 
-                                                                                        <div class="container">
-                                                                                            <div id="helpDIV">
+                                                                                    <div class="container">
+                                                                                        <div id="helpDIV">
 
-                                                                                            </div>
                                                                                         </div>
-                                                                                        }
+                                                                                    </div>
+                                                                                    }

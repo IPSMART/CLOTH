@@ -71,7 +71,9 @@ namespace Improvar.Models
         public string SLCD { get; set; }
         public string SLNM { get; set; }
         public string DOCDT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double BALQNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double BALNOS { get; set; }
         public bool Checked { get; set; }
     }

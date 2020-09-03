@@ -1759,7 +1759,13 @@ namespace Improvar.Controllers
                         DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.SaveChanges();
-
+                        
+                        DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB.SaveChanges();
+                        DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB.SaveChanges();
+                        DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
@@ -1768,9 +1774,8 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
                         DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
-                        DB.M_SITEM_PARTS.RemoveRange(DB.M_SITEM_PARTS.Where(x => x.ITCD == VE.M_SITEM.ITCD));
-                        DB.SaveChanges();
                         DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+                        DB.M_SITEM_PARTS.RemoveRange(DB.M_SITEM_PARTS.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.SaveChanges();
                         DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.SaveChanges();

@@ -144,5 +144,6 @@ namespace Improvar.ViewModels
         public double? T_CESS_AMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_NET_AMT { get; set; }
+        public short SLNO { get; set; }
     }
 }
