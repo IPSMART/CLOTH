@@ -464,13 +464,323 @@
                         </div>
                     </div>
                     <div id="MtrlIssue" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                        <div class="row">
+                            @if (Model.DefaultAction != "V")
+                            {
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Bar Code")
+                                            <b style="color:Red;">*</b>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD');GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')" />
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-8">
+                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBarCode" value="Get BarCode Detail" title="Click to Get BarCode Detail" />
+                    </div>*@
+                                    <div class="col-md-4">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Material Job Code")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
+                                        @*<div class="col-md-6" style="margin-top:5px;width:auto;height:161px; overflow:auto;">*@
+                                        <div class="editor-field">
+                                            <table id="exampleLT" border="1" style="width: auto;">
+                                                @*<thead>
+                                    <tr>
+                                        <th colspan="3">
+                                            <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
+                                        </th>
+                                    </tr>
+                                    <tr style="background-color:#808080;" class="grid_th">
+                                        <th align="center"></th>
+                                        <th align="center">
+                                            Name
+                                        </th>
+                                        <th align="center">
+                                            Code
+                                        </th>
+                                    </tr>
+                                </thead>*@
+                                                @*<tbody>*@
+                                                @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count(); i++)
+                                                {
+                                                    <tr>
+                                                        @if (Model.DefaultAction == "V")
+                                                        {
+                                                            if (Model.DropDown_list_MTRLJOBCD[i].Checked == true)
+                                                            {
+                                                                <td align="center">
+                                                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
+                                                                </td>
+                                                                <td align="center">
+                                                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                                                    @Html.DisplayFor(model => STRC1)
+                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
+                                                                </td>
+                                                                <td align="center">
+                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                                    @Html.DisplayFor(model => STRC)
+                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                                </td>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td align="center">
+                                                                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
+                                                                            </td>
+                                                                            <td align="center">
+                                                                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                                                                @Html.DisplayFor(model => STRC1)
+                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
+                                                                            </td>
+                                                                                <td align="center">
+                                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                                                    @Html.DisplayFor(model => STRC)
+                                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                                                </td>
+                                                                                        }
+
+                                                    </tr>
+                                                                                        }
+                                                @*</tbody>*@
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.TXNSLNO, new { htmlAttributes = new { @class = "form-control", id = "TXNSLNO", maxlength = 4, @onkeypress = "return numericOnly(this);", @placeholder = "Bill Sl" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0');", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0');", @placeholder = "Item Group Code" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0')" />
+                                            @Html.HiddenFor(model => model.ITGRPNM, new { id = "ITGRPNM" })
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-7">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                        </div>
+                    </div>*@
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0');", @placeholder = "Material Job Code", maxlength = 2 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')" />
+                                            @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0','ITGRPCD')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0','ITGRPCD');", @placeholder = "Item Code", maxlength = 8 } })
+                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0','ITGRPCD')" />
+                                            @Html.HiddenFor(model => model.ITNM, new { id = "ITNM" })
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
+                        </div>
+                    </div>*@
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", maxlength = 30, @title = "Only for View", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
+                                        </div>
+                                    </div>
+
+                                    @*<div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
+                            @Html.HiddenFor(model => model.FABITNM, new { id = "FABITNM" })
+                        </div>
+                    </div>*@
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetStockDetails", PageControllerName)','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')" />
+                                            @Html.HiddenFor(model => model.STKNAME, new { id = "STKNAME" })
+                                            @*@Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text"), new { @class = "form-control", id = "STKTYPE" })*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0');", @placeholder = "Part Code", maxlength = 4 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0')" />
+                                            @Html.HiddenFor(model => model.PARTNM, new { id = "PARTNM" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0');", @placeholder = "Color Code", maxlength = 4 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0')" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @title = "Only for View", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0');", @placeholder = "Size Code", maxlength = 4 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0')" />
+                                            @Html.HiddenFor(model => model.SIZENM, new { id = "SIZENM" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.PSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "PSTYLENO", @placeholder = "pdesign" } })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.BALSTOCK, new { htmlAttributes = new { @class = "form-control", id = "BALSTOCK", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Stock", @readonly = "readonly", @TabIndex = -1 } })
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "Only for View", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Only for View", @placeholder = "Rate" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-field">
+                                            @Html.DropDownListFor(model => model.HSNCODE, new SelectList(Model.HSN_CODE, "Value", "Text"), new { @class = "form-control", id = "HSNCODE" })
+
+
+                                            @*@Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 30, @title = "Only for View", @placeholder = "Hsncode", @readonly = "readonly", @TabIndex = -1 } })*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.GSTPER, new { htmlAttributes = new { @class = "form-control", id = "GSTPER", @onkeypress = "return numericOnly(this,2);", maxlength = 5, @placeholder = "GSTPER" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Only for View", @placeholder = "Shade" } })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    @if (Model.MENU_PARA == "PB")
+                                    {
+                                        <div class="col-md-8">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO" } })
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.TDDISCTYPE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCTYPE", @placeholder = "TDDISCTYPE", maxlength = 1, @list = "TDDISCTYPE_List" } })
+                                            <datalist id="TDDISCTYPE_List">
+                                                @foreach (var jg in Model.TDDISC_TYPE)
+                                                {
+                                                    <option value="@jg.FIELD_VALUE" />
+                                                }
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.TDDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "TDDISCRATE" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SCMDISCTYPE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCTYPE", @placeholder = "SCMDISCTYPE", maxlength = 8, @list = "SCMDISCTYPE_List" } })
+                                            <datalist id="SCMDISCTYPE_List">
+                                                @foreach (var jg in Model.SCMDISC_TYPE)
+                                                {
+                                                    <option value="@jg.FIELD_VALUE" />
+                                                }
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetLocationBinDetails", PageControllerName)','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />
+                                    </div>
+                                </div>
+                                                                                        }
+                            <div>
+                                <div id="partialdivBarCodeTab" style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
+                                    @Html.Partial("_T_OUTISSPROCESS_PRODUCT")
+                                </div>
+                                <div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="PopUp_Backround">
+                                <div id="popup" class="row" style="margin-top: 11px;top:40%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivMtrlIssue" style="margin-top:0px;">
                                     @Html.Partial("_T_OUTISSPROCESS_PRODUCT")
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
                     </div>
                     @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
