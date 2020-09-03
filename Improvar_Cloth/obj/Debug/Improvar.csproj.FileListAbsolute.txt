@@ -110,7 +110,6 @@ D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\System.Web.WebPages.xml
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\System.Web.WebPages.Deployment.xml
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\System.Web.WebPages.Razor.xml
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\System.Web.Optimization.xml
-D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAssemblyReference.cache
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csproj.ResolveComReference.cache
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.dll
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.pdb
