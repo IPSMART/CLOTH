@@ -592,7 +592,6 @@
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
     <Compile Include="ViewModels\TransactionPackingSlipEntry.cs" />
-    <Compile Include="ViewModels\TSALEBARNOPOPUP.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
     <Compile Include="ViewModels\UserGroupLinkDetails.cs" />
     <Compile Include="ViewModels\UserGuideImprovar.cs" />
