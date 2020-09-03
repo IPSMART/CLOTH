@@ -119,7 +119,7 @@ namespace Improvar.Controllers
                         VE.IndexKey = (from p in DB.M_SITEM
                                        join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD)
                                        where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE == itgrpcd)
-                                       select new IndexKey() { Navikey = p.ITCD }).OrderByDescending(a => a.Navikey).ToList();
+                                       select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
 
                         if (op == "E" || op == "D" || op == "V" || loadItem == "Y")
