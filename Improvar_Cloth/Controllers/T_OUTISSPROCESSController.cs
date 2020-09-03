@@ -921,10 +921,10 @@ namespace Improvar.Controllers
                                   UOM = P.Key.UOM,
                                   QNTY = P.Sum(A => A.QNTY)
                               }).ToList();
-                //for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
-                //{
-                //    VE.TTXNDTL[p].SLNO = Convert.ToInt16(p + 1);
-                //}
+                for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
+                {
+                    VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);
+                }
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_OUTISSPROCESS_QtyRequirement", VE);
