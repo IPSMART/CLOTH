@@ -7,7 +7,7 @@ using System.Web;
 namespace Improvar.Models
 {
     public class TSALEBARNOPOPUP
-    {//
+    {//k
         public short SLNO { get; set; }
         public string BARNO { get; set; }
         public short? TXNSLNO { get; set; }
