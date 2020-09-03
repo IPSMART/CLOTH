@@ -1037,6 +1037,205 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
+        public ActionResult AddRow(TransactionOutIssProcess VE, int COUNT, string TAG)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Cn.getQueryString(VE);
+            //ViewBag.formname = formnamebydoccd(VE.DOC_CODE);
+
+            //List<DebitCreditType> DCT = new List<DebitCreditType>();
+            //DebitCreditType DCT1 = new DebitCreditType(); DCT1.text = "DR"; DCT1.value = "D"; DCT.Add(DCT1);
+            //DebitCreditType DCT2 = new DebitCreditType(); DCT2.text = "CR"; DCT2.value = "C"; DCT.Add(DCT2); VE.DebitCreditType = DCT;
+            //VE.Database_Combo2 = (from i in DB.T_VCH_DET select new Database_Combo2() { FIELD_VALUE = i.BANK_NAME }).DistinctBy(a => a.FIELD_VALUE).ToList();
+            //VE.Database_Combo3 = (from i in DB.T_VCH_DET select new Database_Combo3() { FIELD_VALUE = i.T_REM }).DistinctBy(a => a.FIELD_VALUE).ToList();
+            //VE.DropDown_list_TDS = INT_TDS();
+            if (VE.TPROGDTL == null)
+            {
+                List<TPROGDTL> TPROGDTL1 = new List<TPROGDTL>();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = 0;
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TPROGDTL MBILLDET = new TPROGDTL();
+                        MBILLDET.SLNO = SERIAL.retShort();
+                        TPROGDTL1.Add(MBILLDET);
+                    }
+                }
+                else
+                {
+                    TPROGDTL MBILLDET = new TPROGDTL();
+                    MBILLDET.SLNO = 1;
+                    TPROGDTL1.Add(MBILLDET);
+                }
+                VE.TPROGDTL = TPROGDTL1;
+            }
+            else
+            {
+                List<TPROGDTL> TPROGDTL = new List<TPROGDTL>();
+                for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
+                {
+                    TPROGDTL MBILLDET = new TPROGDTL();
+                    MBILLDET = VE.TPROGDTL[i];
+                    TPROGDTL.Add(MBILLDET);
+                }
+                TPROGDTL MBILLDET1 = new TPROGDTL();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = Convert.ToInt32(VE.TPROGDTL.Max(a => Convert.ToInt32(a.SLNO)));
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TPROGDTL OPENING_BL = new TPROGDTL();
+                        OPENING_BL.SLNO = SERIAL.retShort();
+                        TPROGDTL.Add(OPENING_BL);
+                    }
+                }
+                else
+                {
+                    MBILLDET1.SLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGDTL.Max(a => Convert.ToInt32(a.SLNO))) + 1);
+                    TPROGDTL.Add(MBILLDET1);
+                }
+                VE.TPROGDTL = TPROGDTL;
+            }
+            //VE.TPROGDTL.ForEach(a => a.DRCRTA = masterHelp.DR_CR().OrderByDescending(s => s.text).ToList());
+            VE.DefaultView = true;
+            return PartialView("_T_OUTISSPROCESS_Programme", VE);
+        }
+        public ActionResult DeleteRow(TransactionOutIssProcess VE)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                List<TPROGDTL> ITEMSIZE = new List<TPROGDTL>();
+                int count = 0;
+                for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
+                {
+                    if (VE.TPROGDTL[i].Checked == false)
+                    {
+                        count += 1;
+                        TPROGDTL item = new TPROGDTL();
+                        item = VE.TPROGDTL[i];
+                        item.SLNO = count.retShort();
+                        ITEMSIZE.Add(item);
+                    }
+
+                }
+                VE.TPROGDTL = ITEMSIZE;
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_OUTISSPROCESS_Programme", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult AddRowQTY(TransactionOutIssProcess VE, int COUNT, string TAG)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Cn.getQueryString(VE);
+            //ViewBag.formname = formnamebydoccd(VE.DOC_CODE);
+
+            //List<DebitCreditType> DCT = new List<DebitCreditType>();
+            //DebitCreditType DCT1 = new DebitCreditType(); DCT1.text = "DR"; DCT1.value = "D"; DCT.Add(DCT1);
+            //DebitCreditType DCT2 = new DebitCreditType(); DCT2.text = "CR"; DCT2.value = "C"; DCT.Add(DCT2); VE.DebitCreditType = DCT;
+            //VE.Database_Combo2 = (from i in DB.T_VCH_DET select new Database_Combo2() { FIELD_VALUE = i.BANK_NAME }).DistinctBy(a => a.FIELD_VALUE).ToList();
+            //VE.Database_Combo3 = (from i in DB.T_VCH_DET select new Database_Combo3() { FIELD_VALUE = i.T_REM }).DistinctBy(a => a.FIELD_VALUE).ToList();
+            //VE.DropDown_list_TDS = INT_TDS();
+            if (VE.TPROGBOM == null)
+            {
+                List<TPROGBOM> TPROGBOM1 = new List<TPROGBOM>();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = 0, rslno = 0;
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        rslno = rslno + 1;
+                        TPROGBOM MBILLDET = new TPROGBOM();
+                        MBILLDET.SLNO = SERIAL.retShort();
+                        MBILLDET.RSLNO = rslno.retShort();
+                        TPROGBOM1.Add(MBILLDET);
+                    }
+                }
+                else
+                {
+                    TPROGBOM MBILLDET = new TPROGBOM();
+                    MBILLDET.SLNO = 1;
+                    MBILLDET.RSLNO = 1;
+                    TPROGBOM1.Add(MBILLDET);
+                }
+                VE.TPROGBOM = TPROGBOM1;
+            }
+            else
+            {
+                List<TPROGBOM> TPROGBOM = new List<TPROGBOM>();
+                for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
+                {
+                    TPROGBOM MBILLDET = new TPROGBOM();
+                    MBILLDET = VE.TPROGBOM[i];
+                    TPROGBOM.Add(MBILLDET);
+                }
+                TPROGBOM MBILLDET1 = new TPROGBOM();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = Convert.ToInt32(VE.TPROGBOM.Max(a => Convert.ToInt32(a.SLNO)));
+                    int rslno = Convert.ToInt32(VE.TPROGBOM.Max(a => Convert.ToInt32(a.RSLNO)));
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        rslno = rslno + 1;
+                        TPROGBOM OPENING_BL = new TPROGBOM();
+                        OPENING_BL.SLNO = SERIAL.retShort();
+                        OPENING_BL.RSLNO = rslno.retShort();
+                        TPROGBOM.Add(OPENING_BL);
+                    }
+                }
+                else
+                {
+                    MBILLDET1.SLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGBOM.Max(a => Convert.ToInt32(a.SLNO))) + 1);
+                    MBILLDET1.RSLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGBOM.Max(a => Convert.ToInt32(a.RSLNO))) + 1);
+                    TPROGBOM.Add(MBILLDET1);
+                }
+                VE.TPROGBOM = TPROGBOM;
+            }
+            //VE.TPROGDTL.ForEach(a => a.DRCRTA = masterHelp.DR_CR().OrderByDescending(s => s.text).ToList());
+            VE.DefaultView = true;
+            return PartialView("_T_OUTISSPROCESS_QtyRequirement", VE);
+        }
+        public ActionResult DeleteRowQTY(TransactionOutIssProcess VE)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                List<TPROGBOM> ITEMSIZE = new List<TPROGBOM>();
+                int count = 0;
+                for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
+                {
+                    if (VE.TPROGBOM[i].Checked == false)
+                    {
+                        count += 1;
+                        TPROGBOM item = new TPROGBOM();
+                        item = VE.TPROGBOM[i];
+                        item.SLNO = count.retShort();
+                        ITEMSIZE.Add(item);
+                    }
+
+                }
+                VE.TPROGBOM = ITEMSIZE;
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_OUTISSPROCESS_QtyRequirement", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         public ActionResult AddDOCRow(TransactionOutIssProcess VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);

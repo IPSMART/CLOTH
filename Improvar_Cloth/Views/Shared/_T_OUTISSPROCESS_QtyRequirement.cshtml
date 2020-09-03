@@ -13,9 +13,12 @@
         {
             @Html.ValidationSummary(true)
             <div class="grid_title">
-                @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
-                @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />
-                    <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="HelB_image_buttonAddRemove" onclick="DeleteRow()" />*@
+                @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
+                {
+                    <input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
+                    <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddrowQTY('AddRowsMain')" />
+                    <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRowQTY()" />
+                }
                 <div class="col-md-8">
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PRODUCT_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
