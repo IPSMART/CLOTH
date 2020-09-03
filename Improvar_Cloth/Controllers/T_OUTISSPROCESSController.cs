@@ -1346,20 +1346,20 @@ namespace Improvar.Controllers
                         int COUNTER = 0;
                         string stkdrcr = "C";
                         string mtrljobcd = "";
-                        string stktype = "";
+                        string stktype = "F";
 
                         switch (VE.MENU_PARA)
                         {
                             case "DY":
-                                stkdrcr = "C"; mtrljobcd = "DY"; stktype = "D"; break;
+                                stkdrcr = "C"; mtrljobcd = "DY";  break;
                             case "PR":
-                                stkdrcr = "C"; mtrljobcd = "PR"; stktype = "P"; break;
+                                stkdrcr = "C"; mtrljobcd = "PR";  break;
                             case "ST":
-                                stkdrcr = "C"; mtrljobcd = "ST"; stktype = "S"; break;
+                                stkdrcr = "C"; mtrljobcd = "ST";  break;
                             case "EM":
-                                stkdrcr = "C"; mtrljobcd = "EM"; stktype = "E"; break;
+                                stkdrcr = "C"; mtrljobcd = "EM";  break;
                             case "JW":
-                                stkdrcr = "C"; mtrljobcd = "JW"; stktype = "J"; break;
+                                stkdrcr = "C"; mtrljobcd = "JW"; break;
                         }
 
                         for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
@@ -1411,7 +1411,7 @@ namespace Improvar.Controllers
                         }
                         for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
                         {
-                            if (VE.TPROGBOM[i].SLNO != 0 && VE.TPROGBOM[i].RSLNO != 0)
+                            if (VE.TPROGBOM[i].SLNO != 0 && VE.TPROGBOM[i].RSLNO != 0 && VE.TPROGBOM[i].ITCD != null)
                             {
                                 COUNTER = COUNTER + 1;
                                 T_PROGBOM TPROGBOM = new T_PROGBOM();
@@ -1428,7 +1428,8 @@ namespace Improvar.Controllers
                                 TPROGBOM.BOMQNTY = VE.TPROGBOM[i].BOMQNTY.retDcml();
                                 TPROGBOM.EXTRAQNTY = VE.TPROGBOM[i].EXTRAQNTY.retDcml();
                                 TPROGBOM.QNTY = VE.TPROGBOM[i].QNTY.retDcml();
-                                if(VE.TPROGBOM[i].CheckedSample==true) TPROGBOM.SAMPLE ="Y";
+                                TPROGBOM.MTRLJOBCD = mtrljobcd;
+                                if (VE.TPROGBOM[i].CheckedSample==true) TPROGBOM.SAMPLE ="Y";
                                 dbsql = MasterHelpFa.RetModeltoSql(TPROGBOM);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                
