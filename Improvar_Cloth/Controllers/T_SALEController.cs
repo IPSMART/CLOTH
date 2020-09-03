@@ -714,50 +714,53 @@ namespace Improvar.Controllers
                     //return Content(str);
                     if (str.IndexOf(Cn.GCS()) > 0)
                     {
-                        string itgrpcd = "", itcd = "", styleno = "";
-                        itgrpcd = str.retCompValue("ITGRPCD");
-                        itcd = str.retCompValue("ITCD");
-                        styleno = str.retCompValue("STYLENO");
+                        //string itgrpcd = "", itcd = "", styleno = "";
+                        //itgrpcd = str.retCompValue("ITGRPCD");
+                        //itcd = str.retCompValue("ITCD");
+                        //styleno = str.retCompValue("STYLENO");
+                        //var stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr().retSqlformat(), val.retStr().retSqlformat(), itcd.retStr().retSqlformat(), MTRLJOBCD.retStr().retSqlformat(), "", itgrpcd.retStr().retSqlformat(), styleno.retStr(), PRCCD.retStr(), TAXGRPCD.retStr());
 
-                        var stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr().retSqlformat(), val.retStr().retSqlformat(), itcd.retStr().retSqlformat(), MTRLJOBCD.retStr().retSqlformat(), "", itgrpcd.retStr().retSqlformat(), styleno.retStr(), PRCCD.retStr(), TAXGRPCD.retStr());
-                        if (stock_data != null && stock_data.Rows.Count > 1)
+                        var stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr().retSqlformat(), val.retStr().retSqlformat(), "", MTRLJOBCD.retStr().retSqlformat(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+                        if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
+                        {
+                            return Content(str);
+                        }
+                        else if (stock_data != null && stock_data.Rows.Count >= 1)//if stock return more then one row then open popup
                         {
                             VE.TSALEBARNOPOPUP = (from DataRow dr in stock_data.Rows
                                                   select new TSALEBARNOPOPUP
                                                   {
-                                                      //SLNO=dr["slno"].retStr(),
-
+                                                      //SLNO = dr["slno"].retShort(),
                                                       BARNO = dr["BARNO"].retStr(),
                                                       ITGRPCD = dr["ITGRPCD"].retStr(),
                                                       ITGRPNM = dr["ITGRPNM"].retStr(),
-                                                      MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                                      //MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
                                                       MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
                                                       ITNM = dr["ITNM"].retStr(),
                                                       ITCD = dr["ITCD"].retStr(),
                                                       STYLENO = dr["STYLENO"].retStr(),
-                                                      PARTNM = dr["PARTNM"].retStr(),
+                                                      //PARTNM = dr["PARTNM"].retStr(),
                                                       PARTCD = dr["PARTCD"].retStr(),
                                                       COLRCD = dr["COLRCD"].retStr(),
                                                       COLRNM = dr["COLRNM"].retStr(),
-                                                      SIZENM = dr["SIZENM"].retStr(),
+                                                      //SIZENM = dr["SIZENM"].retStr(),
                                                       SIZECD = dr["SIZECD"].retStr(),
                                                       SLNM = dr["SLNM"].retStr(),
                                                       SLCD = dr["SLCD"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-                                                      //SLNO = dr["slno"].retStr(),
-
+                                                      UOM = dr["uomcd"].retStr(),
+                                                      STKTYPE = dr["STKTYPE"].retStr(),
+                                                      DOCDT = dr["DOCDT"].retStr().Remove(10),
+                                                      BALQNTY = dr["BALQNTY"].retDbl(),
+                                                      BALNOS = dr["BALNOS"].retDbl()
                                                   }).ToList();
+                            for (int p = 0; p <= VE.TSALEBARNOPOPUP.Count - 1; p++)
+                            {
+                                VE.TSALEBARNOPOPUP[p].SLNO = Convert.ToInt16(p + 1);
+                            }
                             VE.DefaultView = true;
                             return PartialView("_T_SALE_BARNODETAIL", VE);
                         }
-                        else
+                        else//stock return one row then return as blur
                         {
                             str = Master_Help.ToReturnFieldValues("", stock_data);
                             return Content(str);
