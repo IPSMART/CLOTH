@@ -1344,7 +1344,7 @@ namespace Improvar.Controllers
                             case "ST":
                                 stkdrcr = "C"; break;
                             case "EM":
-                                stkdrcr = "D"; break;
+                                stkdrcr = "C"; break;
                             case "JW":
                                 stkdrcr = "C"; break;
                         }
@@ -1354,7 +1354,26 @@ namespace Improvar.Controllers
                             if (VE.TPROGDTL[i].SLNO != 0 && VE.TPROGDTL[i].ITCD != null)
                             {
                                 COUNTER = COUNTER + 1;
+                                T_PROGMAST TPROGMAST = new T_PROGMAST();
                                 T_PROGDTL TPROGDTL = new T_PROGDTL();
+                                TPROGMAST.CLCD = TTXN.CLCD;
+                                TPROGMAST.AUTONO = TTXN.AUTONO;
+                                TPROGMAST.SLNO = VE.TPROGDTL[i].SLNO;
+                                TPROGMAST.SLCD = TTXN.SLCD;
+                                //TPROGMAST.MTRLJOBCD = VE.TTXNDTL[i].MTRLJOBCD;
+                                //TPROGMAST.STKTYPE = VE.TTXNDTL[i].STKTYPE;
+                                TPROGMAST.ITCD = VE.TPROGDTL[i].ITCD;
+                                TPROGMAST.PARTCD = VE.TPROGDTL[i].PARTCD;
+                                TPROGMAST.COLRCD = VE.TPROGDTL[i].COLRCD;
+                                TPROGMAST.SIZECD = VE.TPROGDTL[i].SIZECD;
+                                TPROGMAST.NOS = VE.TPROGDTL[i].NOS.retDcml();
+                                TPROGMAST.QNTY = VE.TPROGDTL[i].QNTY.retDcml();
+                                TPROGMAST.ITREMARK = VE.TPROGDTL[i].ITREMARK;
+                                TPROGMAST.SHADE = VE.TPROGDTL[i].SHADE;
+                                TPROGMAST.CUTLENGTH = VE.TPROGDTL[i].CUTLENGTH.retDcml();
+                                TPROGMAST.JOBCD = TTXN.JOBCD;
+                                TPROGMAST.PROGUNIQNO = "";
+                                if (VE.TPROGDTL[i].Checked == true) TPROGMAST.SAMPLE = "Y";
                                 TPROGDTL.CLCD = TTXN.CLCD;
                                 TPROGDTL.EMD_NO = TTXN.EMD_NO;
                                 TPROGDTL.DTAG = TTXN.DTAG;
@@ -1368,7 +1387,8 @@ namespace Improvar.Controllers
                                 TPROGDTL.STKDRCR = stkdrcr;
                                 TPROGDTL.NOS = VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.retDcml();
                                 TPROGDTL.QNTY = VE.TPROGDTL[i].QNTY.retDcml();
-                             
+                                dbsql = MasterHelpFa.RetModeltoSql(TPROGMAST);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 dbsql = MasterHelpFa.RetModeltoSql(TPROGDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -1419,7 +1439,7 @@ namespace Improvar.Controllers
                                 TTXNDTL.STKDRCR = stkdrcr;
                                 TTXNDTL.STKTYPE = VE.TTXNDTL[i].STKTYPE;
                                 TTXNDTL.HSNCODE = VE.TTXNDTL[i].HSNCODE;
-                                TTXNDTL.ITREM = VE.TPROGDTL[i].ITREM;
+                                TTXNDTL.ITREM = VE.TPROGDTL[i].ITREMARK;
                                 TTXNDTL.PCSREM = VE.TTXNDTL[i].PCSREM;
                                 TTXNDTL.FREESTK = VE.TTXNDTL[i].FREESTK;
                                 TTXNDTL.BATCHNO = VE.TTXNDTL[i].BATCHNO;
