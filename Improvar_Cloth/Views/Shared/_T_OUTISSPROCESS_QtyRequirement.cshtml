@@ -55,15 +55,14 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TPROGBOM[i].Checked, new { id = "chkid_" + i, @TabIndex = -1})
+                                            @Html.CheckBoxFor(model => model.TPROGBOM[i].Checked, new { id = "chkid_" + i, @TabIndex = -1 })
                                             @*@Html.HiddenFor(model => model.TPROGBOM[i].BARNO, new { id = "BARNO_" + i })*@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "ITNM1_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "RITNM1_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].UOM, new { id = "UOM1_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -72,7 +71,7 @@
                                             @Html.EditorFor(model => Model.TPROGBOM[i].QNTY, new { htmlAttributes = new { id = "QNTY1_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly", onkeydown = "CopyAboveRow_TPROGBOM('" + i + "')" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPNM, new { id = "ITGRPNM_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "ITGRPNM_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "ITGRPNM_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
@@ -110,10 +109,10 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_OUTISSPROCESS")','Size Details','SIZECD_@i','SIZECD_@i=SIZECD=1')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BOMQNTY, new { id = "BOMQNTY_" + i, @class = " atextBoxFor ",@style = "text-align: right;",@onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();" , maxlength = 12 })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BOMQNTY, new { id = "BOMQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { id = "EXTRAQNTY_" + i, @class = " atextBoxFor ",@style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { id = "EXTRAQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
                                         </td>
                                         <td class="" style="padding-left:14px;">
                                             @Html.CheckBoxFor(model => model.TPROGBOM[i].CheckedSample, new { id = "CheckedSample_" + i })
@@ -165,4 +164,3 @@
             </div>
         </div>*@
 </div>
-
