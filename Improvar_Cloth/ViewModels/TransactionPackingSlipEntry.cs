@@ -23,7 +23,7 @@ namespace Improvar.ViewModels
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TBATCHDTL> TBATCHDTL { get; set; }
-        public List<BARNO_DETAILS> BARNO_DETAILS { get; set; }
+        public List<TSALEBARNOPOPUP> TSALEBARNOPOPUP { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
