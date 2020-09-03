@@ -260,12 +260,14 @@
     function CalculateQNTY(i) {
         if ("@Model.DefaultAction" != "V")
         {
-            var QNTY_ = document.getElementById('B_QNTY_' + i).value;
-            var NOS_ = document.getElementById('B_NOS_' + i).value;
+            var QNTY_ = document.getElementById('P_QNTY_' + i).value;
+            if (QNTY_ == "") { QNTY_ = parseInt(0) } else { QNTY_ = parseInt(QNTY_) }
+            var NOS_ = document.getElementById('P_NOS_' + i).value;
+            if (NOS_ == "") { NOS_ = parseInt(0) } else { NOS_ = parseInt(NOS_) }
             if ((NOS_ != 0 || NOS_ != null) && (QNTY_ != 0 || QNTY_ != null))
             {
                 var qnty = (parseFloat(NOS_) * parseFloat(QNTY_));
-                document.getElementById('B_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
+                document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
             }
 
         } CalculateTotal();
@@ -277,10 +279,10 @@
         var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
         var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
-            var NOS = document.getElementById("B_NOS_" + i).value;
+            var NOS = document.getElementById("P_NOS_" + i).value;
             if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseInt(0); }
 
-            var QNTY = document.getElementById("B_QNTY_" + i).value;
+            var QNTY = document.getElementById("P_QNTY_" + i).value;
             if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
             else { T_QNTY = T_QNTY + parseFloat(0); }
 
@@ -299,11 +301,13 @@
         for (var i = 0; i <= GridRow - 1; i++) {
            
             var BOMQNTY = document.getElementById("BOMQNTY_" + i).value;
+            if (BOMQNTY == "") { BOMQNTY = parseInt(0) } else { BOMQNTY = parseInt(BOMQNTY) }
             if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
             else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
 
-            var T_EXTRAQNTY = document.getElementById("T_EXTRAQNTY" + i).value;
-            if (T_EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(T_EXTRAQNTY); }
+            var EXTRAQNTY = document.getElementById("EXTRAQNTY" + i).value;
+            if (EXTRAQNTY == "") { EXTRAQNTY = parseInt(0) } else { EXTRAQNTY = parseInt(EXTRAQNTY) }
+            if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
             else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
 
 
