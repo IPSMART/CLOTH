@@ -26,7 +26,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="__T_OUTISSPROCESS_QtyRequirement_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2775px;">
+                    <table id="__T_OUTISSPROCESS_QtyRequirement_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1487px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
@@ -43,9 +43,9 @@
                                 <th class="" style="width: 59px;">Color Code</th>
                                 <th class="">Color Name</th>
                                 <th class="">Size</th>
-                                <th class="" style="width: 177px;">Bom Quantity</th>
-                                <th class="" style="width:65px;">Extra Quantity</th>
-                                <th class="" style="">Sample</th>
+                                <th class="" style="width:111px;text-align:right;">Bom Quantity</th>
+                                <th class="" style="width:111px;text-align:right;">Extra Quantity</th>
+                                <th class="" style="text-align:center;width: 27px;">Sample</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,8 +62,7 @@
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "ITNM1_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "RITNM1_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].UOM, new { id = "UOM1_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -72,7 +71,7 @@
                                             @Html.EditorFor(model => Model.TPROGBOM[i].QNTY, new { htmlAttributes = new { id = "QNTY1_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly", onkeydown = "CopyAboveRow_TPROGBOM('" + i + "')" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPNM, new { id = "ITGRPNM_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "ITGRPNM_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "ITGRPNM_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
@@ -110,12 +109,12 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_OUTISSPROCESS")','Size Details','SIZECD_@i','SIZECD_@i=SIZECD=1')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BOMQNTY, new { id = "BOMQNTY_" + i, @class = " atextBoxFor ",@onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();" , maxlength = 12 })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BOMQNTY, new { id = "BOMQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { id = "EXTRAQNTY_" + i, @class = " atextBoxFor ", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { id = "EXTRAQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
                                         </td>
-                                        <td class="">
+                                        <td class="" style="padding-left:14px;">
                                             @Html.CheckBoxFor(model => model.TPROGBOM[i].CheckedSample, new { id = "CheckedSample_" + i })
                                         </td>
 
@@ -165,4 +164,3 @@
             </div>
         </div>*@
 </div>
-

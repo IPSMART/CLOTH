@@ -24,7 +24,7 @@
                     <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillQtyRequiremnt" value="Generate Qty Requirement" title="Click to Fill Data in Qty Requirement Tab" onclick="Fill_QtyRequirementData()" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
-                    <b>Genrate Qty Requirement</b>
+                    <b>Programme Details</b>
                 </center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
@@ -103,7 +103,7 @@
                                             @Html.EditorFor(model => Model.TPROGDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnlyForNegative(this,4);", @style = "text-align:right;" })
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnly(this,4);", @style = "text-align:right;" })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPROGDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateQNTY('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })
@@ -114,7 +114,7 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITREMARK, new { id = "P_ITREMARK_" + i, @class = " atextBoxFor " })
                                         </td>
-                                        <td class="">
+                                        <td class=""style="padding-left:14px;">
                                             @Html.CheckBoxFor(model => model.TPROGDTL[i].CheckedSample, new { id = "P_CheckedSample_" + i })
                                         </td>
 

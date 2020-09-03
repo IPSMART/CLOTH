@@ -209,21 +209,21 @@
             type: 'POST',
             url: "@Url.Action("FillQtyRequirementData", PageControllerName)",
             data: $('form').serialize(),
-        success: function (result) {
-            //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-            $("#partialdivQtyRequirement").html(result);
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:nth-child(3)").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $("#WaitingMode").hide();
-            msgError(XMLHttpRequest.responseText);
-            $("body span h1").remove(); $("#msgbody_error style").remove();
-        }
-    });
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivQtyRequirement").html(result);
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
     }
 </script>
 <script>
@@ -280,14 +280,12 @@
 </script>
 <script>
     function CalculateQNTY(i) {
-        if ("@Model.DefaultAction" != "V")
-        {
+        if ("@Model.DefaultAction" != "V") {
             var QNTY_ = document.getElementById('P_QNTY_' + i).value;
             if (QNTY_ == "") { QNTY_ = parseInt(0) } else { QNTY_ = parseInt(QNTY_) }
             var NOS_ = document.getElementById('P_NOS_' + i).value;
             if (NOS_ == "") { NOS_ = parseInt(0) } else { NOS_ = parseInt(NOS_) }
-            if ((NOS_ != 0 || NOS_ != null) && (QNTY_ != 0 || QNTY_ != null))
-            {
+            if ((NOS_ != 0 || NOS_ != null) && (QNTY_ != 0 || QNTY_ != null)) {
                 var qnty = (parseFloat(NOS_) * parseFloat(QNTY_));
                 document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
             }
@@ -297,7 +295,7 @@
 
     function CalculateTotal() {
         debugger;
-        var T_NOS = 0; var T_QNTY = 0;var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
+        var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
         var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
         var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
@@ -308,20 +306,19 @@
             if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
             else { T_QNTY = T_QNTY + parseFloat(0); }
 
-           
+
         }
         document.getElementById("T_NOS").value = parseFloat(T_NOS).toFixed(0);
         document.getElementById("T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
-        
-        
+
+
     }
 
-    function CalculateTotalProgBomQnty()
-    {
+    function CalculateTotalProgBomQnty() {
         var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
         var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
-           
+
             var BOMQNTY = document.getElementById("BOMQNTY_" + i).value;
             if (BOMQNTY == "") { BOMQNTY = parseInt(0) } else { BOMQNTY = parseInt(BOMQNTY) }
             if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
@@ -338,6 +335,17 @@
     }
 
 
+</script>
+<script>
+    function CopyAboveRow_TPROGBOM(i) {
+        debugger;
+        i = parseInt(i);
+        if (event.key == "F8" && i > 0) {
+            var itnm = $("#RITNM1_" + (i - 1)).val();
+            $("#RITNM1_" + i).val(itnm);
+
+        }
+    }
 </script>
 
 @using (Html.BeginForm())
@@ -450,7 +458,7 @@
                             @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Only for View", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
-                    
+
                 </div>
 
             </div>
@@ -458,8 +466,10 @@
                 <ul class="nav nav-tabs">
                     <li id="Programme_LI4" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme</a></li>
                     <li id="QtyRequird_LI4" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement</a></li>
-                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="MtrlIssue_LI" class=""><a data-toggle="tab" href="#MtrlIssue" accesskey="M">Material Issue</a></li>
+                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
+                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
+                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="Programme" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
@@ -476,15 +486,6 @@
                             <div>
                                 <div id="partialdivQtyRequirement" style="margin-top:0px;">
                                     @Html.Partial("_T_OUTISSPROCESS_QtyRequirement")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivDetail" style="margin-top:0px;">
-                                    @Html.Partial("_T_OUTISSPROCESS_DETAIL")
                                 </div>
                             </div>
                         </div>
@@ -507,8 +508,8 @@
                                         </div>
                                     </div>
                                     @*<div class="col-md-8">
-                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBarCode" value="Get BarCode Detail" title="Click to Get BarCode Detail" />
-                    </div>*@
+                                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBarCode" value="Get BarCode Detail" title="Click to Get BarCode Detail" />
+                                        </div>*@
                                     <div class="col-md-4">
                                         <div class="editor-label" style="margin-top: 6px;">
                                             @Html.Label("", "Material Job Code")
@@ -519,21 +520,21 @@
                                         <div class="editor-field">
                                             <table id="exampleLT" border="1" style="width: auto;">
                                                 @*<thead>
-                                    <tr>
-                                        <th colspan="3">
-                                            <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
-                                        </th>
-                                    </tr>
-                                    <tr style="background-color:#808080;" class="grid_th">
-                                        <th align="center"></th>
-                                        <th align="center">
-                                            Name
-                                        </th>
-                                        <th align="center">
-                                            Code
-                                        </th>
-                                    </tr>
-                                </thead>*@
+                                                        <tr>
+                                                            <th colspan="3">
+                                                                <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
+                                                            </th>
+                                                        </tr>
+                                                        <tr style="background-color:#808080;" class="grid_th">
+                                                            <th align="center"></th>
+                                                            <th align="center">
+                                                                Name
+                                                            </th>
+                                                            <th align="center">
+                                                                Code
+                                                            </th>
+                                                        </tr>
+                                                    </thead>*@
                                                 @*<tbody>*@
                                                 @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count(); i++)
                                                 {
@@ -567,15 +568,15 @@
                                                                                 @Html.DisplayFor(model => STRC1)
                                                                                 @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
                                                                             </td>
-                                                                                <td align="center">
-                                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                                                                    @Html.DisplayFor(model => STRC)
-                                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
-                                                                                </td>
-                                                                                        }
+                                                                            <td align="center">
+                                                                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                                                @Html.DisplayFor(model => STRC)
+                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                                            </td>
+                                                                                    }
 
                                                     </tr>
-                                                                                        }
+                                                                                    }
                                                 @*</tbody>*@
                                             </table>
                                         </div>
@@ -595,10 +596,10 @@
                                         </div>
                                     </div>
                                     @*<div class="col-md-7">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
-                        </div>
-                    </div>*@
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                                            </div>
+                                        </div>*@
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0');", @placeholder = "Material Job Code", maxlength = 2 } })
@@ -614,10 +615,10 @@
                                         </div>
                                     </div>
                                     @*<div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
-                        </div>
-                    </div>*@
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
+                                            </div>
+                                        </div>*@
                                     <div class="col-md-4">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", maxlength = 30, @title = "Only for View", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
@@ -625,11 +626,11 @@
                                     </div>
 
                                     @*<div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
-                            @Html.HiddenFor(model => model.FABITNM, new { id = "FABITNM" })
-                        </div>
-                    </div>*@
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
+                                                @Html.HiddenFor(model => model.FABITNM, new { id = "FABITNM" })
+                                            </div>
+                                        </div>*@
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
@@ -734,14 +735,14 @@
 
                                 </div>
                                 <div class="row">
-                                    @if (Model.MENU_PARA == "PB")
-                                    {
-                                        <div class="col-md-8">
-                                            <div class="editor-field">
-                                                @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO" } })
-                                            </div>
+                                    @*@if (Model.MENU_PARA == "PB")
+                                        {*@
+                                    <div class="col-md-8">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO" } })
                                         </div>
-                                    }
+                                    </div>
+                                    @*}*@
                                     <div class="col-md-1">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.TDDISCTYPE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCTYPE", @placeholder = "TDDISCTYPE", maxlength = 1, @list = "TDDISCTYPE_List" } })
@@ -784,7 +785,7 @@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="AddRow" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />
                                     </div>
                                 </div>
-                                                                                        }
+                                                                                    }
                             <div>
                                 <div id="partialdivBarCodeTab" style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
                                     @Html.Partial("_T_OUTISSPROCESS_PRODUCT")
@@ -800,24 +801,45 @@
                                 </div>
                             </div>
                         </div>
-                        @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivMtrlIssue" style="margin-top:0px;">
-                                    @Html.Partial("_T_OUTISSPROCESS_PRODUCT")
-                                </div>
-                            </div>
-                        </div>*@
                     </div>
-                    @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+
+                    <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
-                                <div id="partialdivAmounts" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_AMOUNT")
+                                <div id="partialdivDetail" style="margin-top:0px;">
+                                    @Html.Partial("_T_OUTISSPROCESS_DETAIL")
                                 </div>
                             </div>
                         </div>
-                    </div>*@
-                   
+                    </div>
+                    <div id="Remarks" class="tab-pane fade">
+                        <div class="row">
+                            <div>
+                                <div id="partialdivRemarks">
+                                    @Html.Partial("_TRANSACTIONREMARKS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                            <div>
+                                <div id="partialdivDocument" style="margin-top:0px;">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivAmounts" style="margin-top:0px;">
+                                        @Html.Partial("_T_SALE_AMOUNT")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+
                     @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
 
                         </div>*@
@@ -825,15 +847,15 @@
 
             </div>
         </div>
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            @ViewBag.ErrorMessage
-                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        @ViewBag.ErrorMessage
+                                                                                    }
 
-                                                                                        <div class="container">
-                                                                                            <div id="helpDIV">
+                                                                                    <div class="container">
+                                                                                        <div id="helpDIV">
 
-                                                                                            </div>
                                                                                         </div>
-                                                                                        }
+                                                                                    </div>
+                                                                                    }

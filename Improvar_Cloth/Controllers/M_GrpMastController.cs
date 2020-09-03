@@ -225,17 +225,17 @@ namespace Improvar.Controllers
                     }
                     if (purglcd != "")
                     {
-                        var purglnm = (from a in DBF.M_GENLEG where a.GLCD == salglcd select new { a.GLNM }).FirstOrDefault();
+                        var purglnm = (from a in DBF.M_GENLEG where a.GLCD == purglcd select new { a.GLNM }).FirstOrDefault();
                         VE.PURGLNM = purglnm.GLNM;
                     }
                     if (salretglcd != "")
                     {
-                        var salretglnm = (from a in DBF.M_GENLEG where a.GLCD == salglcd select new { a.GLNM }).FirstOrDefault();
+                        var salretglnm = (from a in DBF.M_GENLEG where a.GLCD == salretglcd select new { a.GLNM }).FirstOrDefault();
                         VE.SALRETGLNM = salretglnm.GLNM;
                     }
                     if (purretglcd != "")
                     {
-                        var purretglnm = (from a in DBF.M_GENLEG where a.GLCD == salglcd select new { a.GLNM }).FirstOrDefault();
+                        var purretglnm = (from a in DBF.M_GENLEG where a.GLCD == purretglcd select new { a.GLNM }).FirstOrDefault();
                         VE.PURRETGLNM = purretglnm.GLNM;
                     }
 
