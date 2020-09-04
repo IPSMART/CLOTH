@@ -419,12 +419,12 @@
         if (event.key == "F8" && i > 0) {
             //var itnm = $("#Q_RITNM1_" + (i - 1)).val();
             //$("#Q_RITNM1_" + i).val(itnm);
-            var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+            //var TAG = ""; var COUNT = document.getElementById(i).value;
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("CopyAboveRow", PageControllerName)",
                 beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&i=" + i,
+                data: $('form').serialize() + "&i=" + i,
             success: function (result) {
                 $("#WaitingMode").hide();
                 $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
