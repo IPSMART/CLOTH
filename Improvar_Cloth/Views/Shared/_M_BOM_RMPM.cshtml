@@ -29,7 +29,7 @@
                 </div>
                 <div class="col-md-1">
                     <div class="editor-label">
-                        @Html.Label("", "Size Code",new { style = "font-weight: bold;color:#fff;" })
+                        @Html.Label("", "Size Code", new { style = "font-weight: bold;color:#fff;" })
                     </div>
                 </div>
                 <div class="col-md-1">
@@ -63,6 +63,12 @@
                                     <th class="" style="width: 27px;">SL No.</th>
                                     <th class="" style="width:100px;">Item Code</th>
                                     <th class="" style="width:300px;">Item Name</th>
+                                    <th class="" style="width: 81px;">Material Job Code</th>
+                                    <th class="" style="width:100px;">Material Job Name</th>
+                                    <th class="" style="width:100px;">Part</th>
+                                    <th class="" style="width: 81px;">Color Code</th>
+                                    <th class="" style="width:100px;">Color Name</th>
+                                    <th class="" style="width:107px;">Size</th>
                                     <th class="" style="width:100px;text-align:right;">Quantity</th>
                                     <th class="" style="width:75px;">UOM</th>
                                     <th class="" style="width:75px;">Size LinkUp</th>
@@ -89,6 +95,32 @@
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.MSITEMBOMMTRL_RMPM[i].ITNM, new { id = "ITNMM_RMPM_" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.MSITEMBOMMTRL_RMPM[i].MTRLJOBCD, new { id = "MTRLJOBCD_RMPM_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "M_BOM") + "','Material Job Details','" + "MTRLJOBCD_RMPM_" + i + "','" + "MTRLJOBCD_RMPM_" + i + "=MTRLJOBCD=1/" + "MTRLJOBNM_RMPM_" + i + "=MTRLJOBNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "M_BOM") + "','Material Job Details','" + "MTRLJOBCD_RMPM_" + i + "','" + "MTRLJOBCD_RMPM_" + i + "=MTRLJOBCD=1/" + "MTRLJOBNM_RMPM_" + i + "=MTRLJOBNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", "M_BOM")','Material Job Details','MTRLJOBCD_RMPM_@i','MTRLJOBCD_RMPM_@i=MTRLJOBCD=1/MTRLJOBNM_RMPM_@i=MTRLJOBNM=0')" />
+
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.MSITEMBOMMTRL_RMPM[i].MTRLJOBNM, new { id = "MTRLJOBNM_RMPM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+
+                                                @Html.TextBoxFor(model => Model.MSITEMBOMMTRL_RMPM[i].PARTCD, new { id = "PARTCD_RMPM_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "M_BOM") + "','Part Details','" + "PARTCD_RMPM_" + i + "','" + "PARTCD_RMPM_" + i + "=PARTCD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", "M_BOM") + "','Part Details','" + "PARTCD_RMPM_" + i + "','" + "PARTCD_RMPM_" + i + "=PARTCD=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "M_BOM")','Part Details','PARTCD_RMPM_@i','PARTCD_RMPM_@i=PARTCD=1')" />
+
+                                            </td>
+                                            <td class="">
+
+                                                @Html.TextBoxFor(model => Model.MSITEMBOMMTRL_RMPM[i].COLRCD, new { id = "COLRCD_RMPM_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "M_BOM") + "','Color Details','" + "COLRCD_RMPM_" + i + "','" + "COLRCD_RMPM_" + i + "=COLRCD=1/" + "COLRNM_RMPM_" + i + "=COLRNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "M_BOM") + "','Color Details','" + "COLRCD_RMPM_" + i + "','" + "COLRCD_RMPM_" + i + "=COLRCD=1/" + "COLRNM_RMPM_" + i + "=COLRNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "M_BOM")','Color Details','COLRCD_RMPM_@i','COLRCD_RMPM_@i=COLRCD=1/COLRNM_RMPM_@i=COLRNM=0')" />
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.MSITEMBOMMTRL_RMPM[i].COLRNM, new { id = "COLRNM_RMPM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.MSITEMBOMMTRL_RMPM[i].SIZECD, new { id = "SIZECD_RMPM_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "M_BOM") + "','Size Details','" + "SIZECD_RMPM_" + i + "','" + "SIZECD_RMPM_" + i + "=SIZECD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "M_BOM") + "','Size Details','" + "SIZECD_RMPM_" + i + "','" + "SIZECD_RMPM_" + i + "=SIZECD=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "M_BOM")','Size Details','SIZECD_RMPM_@i','SIZECD_RMPM_@i=SIZECD=1')" />
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.MSITEMBOMMTRL_RMPM[i].QNTY, new { id = "QNTYM_RMPM_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", maxlength = 12 })

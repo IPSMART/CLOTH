@@ -610,18 +610,38 @@ namespace Improvar.Controllers
                 return Content(e.Message);
             }
         }
-        public ActionResult GetSizeDetails(string val, string Code)
+        public ActionResult GetSizeDetails(string val)
         {
             try
             {
-                if (Code == null) { Code = ""; }
-                if (val == null)
+                var str = Master_Help.SIZECD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", Master_Help.SIZE(val, Code));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.SIZE(val, Code);
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+       
+        public ActionResult GetPartDetails(string val, string Code)
+        {
+            try
+            {
+                var str = Master_Help.PARTCD_help(val, Code);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
                     return Content(str);
                 }
             }
@@ -635,34 +655,13 @@ namespace Improvar.Controllers
         {
             try
             {
-                if (val == null)
+                var str = Master_Help.COLRCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", Master_Help.COLOR(val));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.COLOR(val);
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetPartDetails(string val, string Code)
-        {
-            try
-            {
-                if (Code == null) { Code = ""; }
-                if (val == null)
-                {
-                    return PartialView("_Help2", Master_Help.PARTS(val, Code));
-                }
-                else
-                {
-                    string str = Master_Help.PARTS(val, Code);
                     return Content(str);
                 }
             }
@@ -2169,6 +2168,26 @@ namespace Improvar.Controllers
                 else
                 {
                     return Content("0");
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetMaterialDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.MTRLJOBCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
                 }
             }
             catch (Exception ex)

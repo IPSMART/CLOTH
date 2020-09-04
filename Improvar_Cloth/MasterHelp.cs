@@ -1837,9 +1837,8 @@ namespace Improvar
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
-            string sql = "";
-            string valsrch = val.ToUpper().Trim();
-
+            string sql = ""; 
+            string valsrch = val.retStr().ToUpper().Trim();
             sql = "";
             sql += "select a.PARTCD,a.PARTNM ";
             sql += "from " + scm + ".M_PARTS a, " + scm + ".M_CNTRL_HDR b ";

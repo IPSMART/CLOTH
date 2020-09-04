@@ -102,5 +102,7 @@ namespace Improvar.Models
 
         [StringLength(12)]
         public string STYLENO { get; set; }
+        public string MTRLJOBCD { get; set; }
+        public string MTRLJOBNM { get; set; }
     }
 }
