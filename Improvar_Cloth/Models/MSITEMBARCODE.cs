@@ -26,7 +26,7 @@ namespace Improvar.Models
 
         [Key]
         [StringLength(20)]
-        public string BARCODE { get; set; }
+        public string BARNO { get; set; }
 
         [StringLength(4)]
         public string SIZECD { get; set; }
