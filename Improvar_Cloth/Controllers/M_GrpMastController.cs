@@ -563,8 +563,9 @@ namespace Improvar.Controllers
                 }
                 catch (Exception ex)
                 {
+                    transaction.Rollback();
                     Cn.SaveException(ex, "");
-                    return Content(ex.Message);
+                    return Content(ex.Message + ex.InnerException?.InnerException.Message);
                 }
             }
         }
