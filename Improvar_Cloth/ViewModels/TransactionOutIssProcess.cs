@@ -147,7 +147,12 @@ namespace Improvar.ViewModels
         public double? T_CESS_AMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_NET_AMT { get; set; }
-        public string T_BOMQNTY { get; set; }
-        public string T_EXTRAQNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
+        public double T_BOMQNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
+        public double T_EXTRAQNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
+        public double T_QQNTY { get; set; }
+
     }
 }

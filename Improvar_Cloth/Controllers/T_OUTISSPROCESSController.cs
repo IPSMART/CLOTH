@@ -946,13 +946,15 @@ namespace Improvar.Controllers
                                    SLNO = P.Key.SLNO.retShort(),
                                    QITNM = P.Key.ITNM,
                                    QUOM = P.Key.UOM,
-                                   //QQNTY = P.Sum(A => A.QNTY)
-                                   QQNTY = P.Key.QNTY
+                                   QQNTY = P.Key.QNTY,
+                                  //qnty = P.Sum(A => A.QNTY)
                                }).ToList();
                 for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
                 {
                     VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);
+                    
                 }
+                VE.T_QQNTY = VE.TPROGBOM.Sum(a => a.QQNTY).retDbl();
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_OUTISSPROCESS_QtyRequirement", VE);
@@ -1318,7 +1320,7 @@ namespace Improvar.Controllers
             return PartialView("_UPLOADDOCUMENTS", VE);
 
         }
-        public ActionResult CopyAboveRow(TransactionOutIssProcess VE, int i)
+        public ActionResult RepeatAboveRow(TransactionOutIssProcess VE, int RowIndex)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             Cn.getQueryString(VE);
@@ -1327,7 +1329,7 @@ namespace Improvar.Controllers
             for (int k = 0; k <= VE.TPROGBOM.Count; k++)
             {
                 TPROGBOM MBILLDET = new TPROGBOM();
-                if (i == k || copied == true)
+                if (RowIndex == k || copied == true)
                 {
                     foreach (PropertyInfo propA in VE.TPROGBOM[k - 1].GetType().GetProperties())
                     {

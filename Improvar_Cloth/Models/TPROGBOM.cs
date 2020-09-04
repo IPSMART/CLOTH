@@ -147,6 +147,7 @@ namespace Improvar.Models
         public string BOMQNTY { get; set; }
         public string EXTRAQNTY { get; set; }
         public short RSLNO { get; set; }
+
       
 
 

@@ -413,7 +413,7 @@
     }
 </script>
 <script>
-    function CopyAboveRow_TPROGBOM(i) {
+    function RepeatAboveRow_TPROGBOM(i) {
         debugger;
         i = parseInt(i);
         if (event.key == "F8" && i > 0) {
@@ -422,9 +422,9 @@
             //var TAG = ""; var COUNT = document.getElementById(i).value;
             $.ajax({
                 type: 'POST',
-                url: "@Url.Action("CopyAboveRow", PageControllerName)",
+                url: "@Url.Action("RepeatAboveRow", PageControllerName)",
                 beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&i=" + i,
+                data: $('form').serialize() + "&RowIndex=" + i,
             success: function (result) {
                 $("#WaitingMode").hide();
                 $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
