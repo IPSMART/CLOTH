@@ -48,7 +48,7 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? QNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double? BLQNTY { get; set; }
+        public double? QQNTY { get; set; }
 
         public double? FLAGMTR { get; set; }
 
@@ -119,7 +119,7 @@ namespace Improvar.Models
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }
         public string FABITCD { get; set; }
-        public string FABITNM { get; set; }
+        public string QITNM { get; set; }
         public string STYLENO { get; set; }
         [StringLength(4)]
         public string PARTCD { get; set; }
@@ -131,6 +131,7 @@ namespace Improvar.Models
         public string SIZECD { get; set; }
         public string SIZENM { get; set; }
         public string UOM { get; set; }
+        public string QUOM { get; set; }
         [StringLength(1)]
         public string STKTYPE { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }

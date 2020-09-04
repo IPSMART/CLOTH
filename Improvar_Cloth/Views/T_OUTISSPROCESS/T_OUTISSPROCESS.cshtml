@@ -417,8 +417,25 @@
         debugger;
         i = parseInt(i);
         if (event.key == "F8" && i > 0) {
-            var itnm = $("#RITNM1_" + (i - 1)).val();
-            $("#RITNM1_" + i).val(itnm);
+            //var itnm = $("#Q_RITNM1_" + (i - 1)).val();
+            //$("#Q_RITNM1_" + i).val(itnm);
+            var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("CopyAboveRow", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&i=" + i,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivQtyRequirement").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
 
         }
     }

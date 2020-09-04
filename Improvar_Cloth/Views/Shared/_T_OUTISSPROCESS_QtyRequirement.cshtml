@@ -68,13 +68,13 @@
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].SLNO, new { id = "Q_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "Q_RITNM1_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].QITNM, new { id = "Q_RITNM1_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].UOM, new { id = "Q_UOM1" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].QUOM, new { id = "Q_UOM1" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TPROGBOM[i].QNTY, new { htmlAttributes = new { id = "Q_QNTY1_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                            @Html.EditorFor(model => Model.TPROGBOM[i].QQNTY, new { htmlAttributes = new { id = "Q_QNTY1_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "Q_RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly", onkeydown = "CopyAboveRow_TPROGBOM('" + i + "')" })
