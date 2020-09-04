@@ -15,8 +15,8 @@
             <div class="grid_title">
                 @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
                 {
-                    <input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
-                    <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddrowQTY('AddRowsMain')" />
+                    <input type="text" id="AddRowsQTY" name="AddRowsQTY" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
+                    <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddrowQTY('AddRowsQTY')" />
                     <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRowQTY()" />
                 }
                 <div class="col-md-8">
@@ -41,14 +41,14 @@
                                 <th class="" style="width:81px;">Group Code</th>
                                 <th class="" style="width:177px;">Group Name</th>
                                 <th class=""style="width:77px;">Item Code</th>
-                                <th class="" style="width:80px;">Item Name</th>
+                                <th class="" style="width:106px;">Item Name</th>
                                 <th class="" style="width:47px;">UOM</th>
                                 <th class="" style="width: 81px;">Material Job Code</th>
                                 <th class="" style="width:100px;">Material Job Name</th>
                                 <th class=""style="width:69px;">Part</th>
                                 <th class="" style="width: 59px;">Color Code</th>
                                 <th class=""style="width:100px;">Color Name</th>
-                                <th class=""style="width:50px;">Size</th>
+                                <th class=""style="width:62px;">Size</th>
                                 <th class="" style="width:111px;text-align:right;">Bom Quantity</th>
                                 <th class="" style="width:111px;text-align:right;">Extra Quantity</th>
                                 <th class="" style="text-align:center;width: 27px;">Sample</th>
@@ -61,81 +61,81 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TPROGBOM[i].Checked, new { id = "chkid_" + i, @TabIndex = -1 })
+                                            @Html.CheckBoxFor(model => model.TPROGBOM[i].Checked, new { id = "Q_chkid_" + i, @TabIndex = -1 })
                                             @*@Html.HiddenFor(model => model.TPROGBOM[i].BARNO, new { id = "BARNO_" + i })*@
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].SLNO, new { id = "Q_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "RITNM1_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "Q_RITNM1_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].UOM, new { id = "UOM1_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].UOM, new { id = "Q_UOM1" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TPROGBOM[i].QNTY, new { htmlAttributes = new { id = "QNTY1_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                            @Html.EditorFor(model => Model.TPROGBOM[i].QNTY, new { htmlAttributes = new { id = "Q_QNTY1_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly", onkeydown = "CopyAboveRow_TPROGBOM('" + i + "')" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "Q_RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly", onkeydown = "CopyAboveRow_TPROGBOM('" + i + "')" })
                                         </td>
                                         @*<td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPNM, new { id = "ITGRPNM_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "ITGRPNM_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "ITGRPNM_" + i + "','" + "ITGRPNM_" + i + "=itgrpnm=0/" + "ITGRPCD_" + i + "=itgrpcd=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS")','Group Details','ITGRPNM_@i','ITGRPNM_@i=itgrpnm=0/ITGRPCD_@i=itgrpcd=1')" />
-                                            @Html.HiddenFor(model => model.TPROGBOM[i].ITGRPCD, new { id = "ITGRPCD_" + i })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPNM, new { id = "Q_ITGRPNM_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPNM_" + i + "','" + "Q_ITGRPNM_" + i + "=itgrpnm=0/" + "Q_ITGRPCD_" + i + "=itgrpcd=1');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPNM_" + i + "','" + "Q_ITGRPNM_" + i + "=itgrpnm=0/" + "Q_ITGRPCD_" + i + "=itgrpcd=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS")','Group Details','Q_ITGRPNM_@i','Q_ITGRPNM_@i=itgrpnm=0/Q_ITGRPCD_@i=itgrpcd=1')" />
+                                            @Html.HiddenFor(model => model.TPROGBOM[i].ITGRPCD, new { id = "Q_ITGRPCD_" + i })
                                         </td>*@
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPCD, new { id = "ITGRPCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "ITGRPCD_" + i + "','" + "ITGRPCD_" + i + "=itgrpcd=1/" + "ITGRPNM_" + i + "=itgrpnm=0');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "ITGRPCD_" + i + "','" + "ITGRPCD_" + i + "=itgrpcd=1/" + "ITGRPNM_" + i + "=itgrpnm=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS")','Group Details','ITGRPCD_@i','ITGRPCD_@i=itgrpcd=1/ITGRPNM_@i=itgrpnm=0')" />
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPCD, new { id = "Q_ITGRPCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPCD_" + i + "','" + "Q_ITGRPCD_" + i + "=itgrpcd=1/" + "Q_ITGRPNM_" + i + "=itgrpnm=0');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPCD_" + i + "','" + "Q_ITGRPCD_" + i + "=itgrpcd=1/" + "Q_ITGRPNM_" + i + "=itgrpnm=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS")','Group Details','Q_ITGRPCD_@i','Q_ITGRPCD_@i=itgrpcd=1/Q_ITGRPNM_@i=itgrpnm=0')" />
 
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPNM, new { id = "ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPNM, new { id = "Q_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
 
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITCD, new { id = "ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=ITCD=2/" + "ITNM_" + i + "=ITNM=1/" + "UOM_" + i + "=UOM=3/" + "ITNM_" + i + "=ITSTYLE/" + "ITGRPCD_" + i + "=ITGRPCD=5/" + "ITGRPNM_" + i + "=ITGRPNM=4','ITGRPCD_" + i + " ');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=ITCD=2/" + "ITNM_" + i + "=ITNM=1/" + "UOM_" + i + "=UOM=3/" + "ITNM_" + i + "=ITSTYLE/" + "ITGRPCD_" + i + "=ITGRPCD=5/" + "ITGRPNM_" + i + "=ITGRPNM=4','ITGRPCD_" + i + " ');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "T_OUTISSPROCESS")','Item Details','ITCD_@i','ITCD_@i=ITCD=2/ITNM_@i=ITNM=1/UOM_@i=UOM=3/ITNM_@i=ITSTYLE/ITGRPCD_@i=ITGRPCD=5/ITGRPNM_@i=ITGRPNM=4','ITGRPCD_@i')" />
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITCD, new { id = "Q_ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOM=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOM=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "T_OUTISSPROCESS")','Item Details','Q_ITCD_@i','Q_ITCD_@i=ITCD=2/Q_ITNM_@i=ITNM=1/Q_UOM_@i=UOM=3/Q_ITNM_@i=ITSTYLE/Q_ITGRPCD_@i=ITGRPCD=5/Q_ITGRPNM_@i=ITGRPNM=4','Q_ITGRPCD_@i')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "Q_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
 
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].UOM, new { id = "UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].UOM, new { id = "Q_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].MTRLJOBCD, new { id = "MTRLJOBCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS") + "','Material Job Details','" + "MTRLJOBCD_" + i + "','" + "MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "MTRLJOBNM_" + i + "=MTRLJOBNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS") + "','Material Job Details','" + "MTRLJOBCD_" + i + "','" + "MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "MTRLJOBNM_" + i + "=MTRLJOBNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", "T_OUTISSPROCESS")','Material Job Details','MTRLJOBCD_@i','MTRLJOBCD_@i=MTRLJOBCD=1/MTRLJOBNM_@i=MTRLJOBNM=0')" />
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].MTRLJOBCD, new { id = "Q_MTRLJOBCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS") + "','Material Job Details','" + "Q_MTRLJOBCD_" + i + "','" + "Q_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "Q_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS") + "','Material Job Details','" + "Q_MTRLJOBCD_" + i + "','" + "Q_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "Q_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", "T_OUTISSPROCESS")','Material Job Details','Q_MTRLJOBCD_@i','Q_MTRLJOBCD_@i=MTRLJOBCD=1/Q_MTRLJOBNM_@i=MTRLJOBNM=0')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].MTRLJOBNM, new { id = "MTRLJOBNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].MTRLJOBNM, new { id = "Q_MTRLJOBNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].PARTCD, new { id = "PARTCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "PARTCD_" + i + "','" + "PARTCD_" + i + "=PARTCD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Part Details','" + "PARTCD_" + i + "','" + "PARTCD_" + i + "=PARTCD=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "T_OUTISSPROCESS")','Part Details','PARTCD_@i','PARTCD_@i=PARTCD=1')" />
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].PARTCD, new { id = "Q_PARTCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "Q_PARTCD_" + i + "','" + "Q_PARTCD_" + i + "=PARTCD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "Q_PARTCD_" + i + "','" + "Q_PARTCD_" + i + "=PARTCD=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "T_OUTISSPROCESS")','Part Details','Q_PARTCD_@i','Q_PARTCD_@i=PARTCD=1')" />
 
                                         </td>
                                         <td class="">
 
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].COLRCD, new { id = "COLRCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_OUTISSPROCESS") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_OUTISSPROCESS") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "T_OUTISSPROCESS")','Color Details','COLRCD_@i','COLRCD_@i=COLRCD=1/COLRNM_@i=COLRNM=0')" />
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].COLRCD, new { id = "Q_COLRCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_OUTISSPROCESS") + "','Color Details','" + "Q_COLRCD_" + i + "','" + "Q_COLRCD_" + i + "=COLRCD=1/" + "Q_COLRNM_" + i + "=COLRNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_OUTISSPROCESS") + "','Color Details','" + "Q_COLRCD_" + i + "','" + "Q_COLRCD_" + i + "=COLRCD=1/" + "Q_COLRNM_" + i + "=COLRNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "T_OUTISSPROCESS")','Color Details','Q_COLRCD_@i','Q_COLRCD_@i=COLRCD=1/Q_COLRNM_@i=COLRNM=0')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].COLRNM, new { id = "COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].COLRNM, new { id = "Q_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].SIZECD, new { id = "SIZECD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_OUTISSPROCESS") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_OUTISSPROCESS") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_OUTISSPROCESS")','Size Details','SIZECD_@i','SIZECD_@i=SIZECD=1')" />
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].SIZECD, new { id = "Q_SIZECD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_OUTISSPROCESS") + "','Size Details','" + "Q_SIZECD_" + i + "','" + "Q_SIZECD_" + i + "=SIZECD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_OUTISSPROCESS") + "','Size Details','" + "Q_SIZECD_" + i + "','" + "Q_SIZECD_" + i + "=SIZECD=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_OUTISSPROCESS")','Size Details','Q_SIZECD_@i','Q_SIZECD_@i=SIZECD=1')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BOMQNTY, new { id = "BOMQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BOMQNTY, new { id = "Q_BOMQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { id = "EXTRAQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { id = "Q_EXTRAQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
                                         </td>
                                         <td class="" style="padding-left:14px;">
-                                            @Html.CheckBoxFor(model => model.TPROGBOM[i].CheckedSample, new { id = "CheckedSample_" + i })
+                                            @Html.CheckBoxFor(model => model.TPROGBOM[i].CheckedSample, new { id = "Q_CheckedSample_" + i })
                                         </td>
 
                                     </tr>
@@ -155,6 +155,7 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> @*RATE*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

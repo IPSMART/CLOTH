@@ -173,6 +173,8 @@ namespace Improvar.Controllers
                             {
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                var jobcd = (from i in DB.M_JOBMST where i.JOBCD==VE.MENU_PARA select new{ JOBCD = i.JOBCD, JOBNM = i.JOBNM }).OrderBy(s => s.JOBNM).FirstOrDefault();
+                                if (jobcd != null) TTXN.JOBCD = jobcd.JOBCD;VE.JOBNM = jobcd.JOBNM;
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;

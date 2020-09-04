@@ -300,7 +300,7 @@
         var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
             var NOS = document.getElementById("P_NOS_" + i).value;
-            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseInt(0); }
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
 
             var QNTY = document.getElementById("P_QNTY_" + i).value;
             if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
@@ -319,13 +319,13 @@
         var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
 
-            var BOMQNTY = document.getElementById("BOMQNTY_" + i).value;
-            if (BOMQNTY == "") { BOMQNTY = parseInt(0) } else { BOMQNTY = parseInt(BOMQNTY) }
+            var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
+            if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
             if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
             else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
 
-            var EXTRAQNTY = document.getElementById("EXTRAQNTY" + i).value;
-            if (EXTRAQNTY == "") { EXTRAQNTY = parseInt(0) } else { EXTRAQNTY = parseInt(EXTRAQNTY) }
+            var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
+            if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
             if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
             else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
 
@@ -500,7 +500,7 @@
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
                         </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-8">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
                         </div>
