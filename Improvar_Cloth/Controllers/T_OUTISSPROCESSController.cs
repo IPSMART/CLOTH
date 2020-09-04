@@ -1356,21 +1356,21 @@ namespace Improvar.Controllers
                 if (COUNT > 0)
                 {
                     int SERIAL = Convert.ToInt32(VE.TPROGBOM.Max(a => Convert.ToInt32(a.SLNO)));
-                    int rslno = Convert.ToInt32(VE.TPROGBOM.Max(a => Convert.ToInt32(a.RSLNO)));
+                    //int rslno = Convert.ToInt32(VE.TPROGBOM.Max(a => Convert.ToInt32(a.RSLNO)));
                     for (int j = 0; j <= COUNT - 1; j++)
                     {
                         SERIAL = SERIAL + 1;
-                        rslno = rslno + 1;
+                        //rslno = rslno + 1;
                         TPROGBOM OPENING_BL = new TPROGBOM();
                         OPENING_BL.SLNO = SERIAL.retShort();
-                        OPENING_BL.RSLNO = rslno.retShort();
+                        //OPENING_BL.RSLNO = rslno.retShort();
                         TPROGBOM.Add(OPENING_BL);
                     }
                 }
                 else
                 {
                     MBILLDET1.SLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGBOM.Max(a => Convert.ToInt32(a.SLNO))) + 1);
-                    MBILLDET1.RSLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGBOM.Max(a => Convert.ToInt32(a.RSLNO))) + 1);
+                    //MBILLDET1.RSLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGBOM.Max(a => Convert.ToInt32(a.RSLNO))) + 1);
                     TPROGBOM.Add(MBILLDET1);
                 }
                 VE.TPROGBOM = TPROGBOM;
