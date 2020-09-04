@@ -34,21 +34,21 @@
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="" style="width: 55px;text-align:center;">SL No.</th>
-                                <th class="">Item Name</th>
+                                <th class=""style="width:80px;">Item Name</th>
                                 <th class="" style="width:47px;">UOM</th>
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
                                 <th class="" style="width: 55px;text-align:center;">RSL No.</th>
                                 <th class="" style="width:81px;">Group Code</th>
                                 <th class="" style="width:177px;">Group Name</th>
-                                <th class="">Item Code</th>
-                                <th class="">Item Name</th>
+                                <th class=""style="width:77px;">Item Code</th>
+                                <th class="" style="width:80px;">Item Name</th>
                                 <th class="" style="width:47px;">UOM</th>
                                 <th class="" style="width: 81px;">Material Job Code</th>
                                 <th class="" style="width:100px;">Material Job Name</th>
-                                <th class="">Part</th>
+                                <th class=""style="width:69px;">Part</th>
                                 <th class="" style="width: 59px;">Color Code</th>
-                                <th class="">Color Name</th>
-                                <th class="">Size</th>
+                                <th class=""style="width:100px;">Color Name</th>
+                                <th class=""style="width:50px;">Size</th>
                                 <th class="" style="width:111px;text-align:right;">Bom Quantity</th>
                                 <th class="" style="width:111px;text-align:right;">Extra Quantity</th>
                                 <th class="" style="text-align:center;width: 27px;">Sample</th>
@@ -94,8 +94,8 @@
 
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITCD, new { id = "ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=ITCD=2/" + "ITNM_" + i + "=ITNM=1/" + "UOM_" + i + "=UOM=3','ITGRPCD_" + i + " ');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=ITCD=2/" + "ITNM_" + i + "=ITNM=1/" + "UOM_" + i + "=UOM=3','ITGRPCD_" + i + " ');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "T_OUTISSPROCESS")','Item Details','ITCD_@i','ITCD_@i=ITCD=2/ITNM_@i=ITNM=1/UOM_@i=UOM=3','ITGRPCD_@i')" />
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITCD, new { id = "ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=ITCD=2/" + "ITNM_" + i + "=ITNM=1/" + "UOM_" + i + "=UOM=3/" + "ITNM_" + i + "=ITSTYLE/" + "ITGRPCD_" + i + "=ITGRPCD=5/" + "ITGRPNM_" + i + "=ITGRPNM=4','ITGRPCD_" + i + " ');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=ITCD=2/" + "ITNM_" + i + "=ITNM=1/" + "UOM_" + i + "=UOM=3/" + "ITNM_" + i + "=ITSTYLE/" + "ITGRPCD_" + i + "=ITGRPCD=5/" + "ITGRPNM_" + i + "=ITGRPNM=4','ITGRPCD_" + i + " ');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "T_OUTISSPROCESS")','Item Details','ITCD_@i','ITCD_@i=ITCD=2/ITNM_@i=ITNM=1/UOM_@i=UOM=3/ITNM_@i=ITSTYLE/ITGRPCD_@i=ITGRPCD=5/ITGRPNM_@i=ITGRPNM=4','ITGRPCD_@i')" />
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].ITNM, new { id = "ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
