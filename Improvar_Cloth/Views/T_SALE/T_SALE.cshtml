@@ -345,11 +345,13 @@
     function Add_BarCodeRow() {
         $.ajax({
             type: 'POST',
+            beforesend: $("#WaitingMode").show(),
             url: "@Url.Action("FillBarCodeData", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
                 //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivBarCodeTab").html(result);
+                $("#WaitingMode").hide();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
