@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Validation;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -81,7 +82,7 @@ namespace Improvar.Controllers
                     G6.text = "Unisex";
                     G6.value = "U";
                     G.Add(G6);
-                  
+
                     VE.Gender = G;
                     //=================For Gender================//
                     //=================For ProductType================//
@@ -1640,7 +1641,7 @@ namespace Improvar.Controllers
                         DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
                         {
-                            if (VE.MSITEMBARCODE[i].SIZECD != null && VE.MSITEMBARCODE[i].COLRCD != null)
+                            if (VE.MSITEMBARCODE[i].SIZECD != null || VE.MSITEMBARCODE[i].COLRCD != null)
                             {
                                 M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
                                 MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
@@ -1695,7 +1696,7 @@ namespace Improvar.Controllers
                             DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
                             DB.SaveChanges();
                             DB.M_BATCH_IMG_HDR_DTL.AddRange(barimg.Item2);
-                            var disntImgHdr = barimg.Item1.GroupBy(u=>u.BARNO).Select(r=>r.First() ).ToList();
+                            var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
                             foreach (var imgbar in disntImgHdr)
                             {
                                 M_BATCH_IMG_HDR_LINK m_batchImglink = new M_BATCH_IMG_HDR_LINK();
@@ -1715,18 +1716,25 @@ namespace Improvar.Controllers
                             var prcCols = prcRows[i].Split(',');
                             for (int j = 4; j < prcCols.Length; j++)
                             {
-                                //if (i==0||(prcCols[0] != "" && prcCols[1] != ""))
-                                //{
+                                string colorbarno = prcCols[3];
+                                string sizebarno = prcCols[1];
+                                string colorcd = prcCols[2];
+                                string sizecd = prcCols[0];
+                                var varcode = VE.MSITEMBARCODE.Where(d => d.COLRCD == colorcd && d.SIZECD == sizecd).FirstOrDefault();
+                                if (varcode == null&& colorcd!=""&& sizecd!="")
+                                {
+                                    transaction.Rollback();
+                                    return Content("Color:" + colorcd + " Sizecd:" + sizecd + " not in barcode Tab. Please refresh pricelist. ");
+                                }
                                 var PRCCD = DTPRICES.Columns[j].ColumnName;
                                 M_ITEMPLISTDTL MIP = new M_ITEMPLISTDTL();
                                 MIP.EMD_NO = MSITEM.EMD_NO;
                                 MIP.CLCD = MSITEM.CLCD;
                                 MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
                                 MIP.PRCCD = PRCCD;
-                                MIP.BARNO = MSITEMBARCODE.BARNO + prcCols[3] + prcCols[1];
+                                MIP.BARNO = MSITEMBARCODE.BARNO + colorcd + sizecd;
                                 MIP.RATE = prcCols[j].retDbl();
                                 DB.M_ITEMPLISTDTL.Add(MIP);
-                                //}
                             }
                         }
                         #endregion
@@ -1759,7 +1767,7 @@ namespace Improvar.Controllers
                         DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.SaveChanges();
-                        
+
                         DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
                         DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)));
@@ -1895,7 +1903,6 @@ namespace Improvar.Controllers
             {
                 if (ss.DOC_FILE != null)
                 {
-
                     sl += 1;
                     M_BATCH_IMG_HDR mdoc = new M_BATCH_IMG_HDR();
                     mdoc.DOC_CTG = ss.docID;
@@ -1951,6 +1958,15 @@ namespace Improvar.Controllers
                             doc1.Add(mdoct);
                         }
                     }
+                    var extension = Path.GetExtension(mdoc.DOC_FLNAME);
+                    string path = CommVar.SaveFolderPath() + "/ItemImages";
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+
+                    // Try to create the directory.
+                    Cn.SaveBase64toDrive(ss.DOC_FILE, path + "/" + BARNO + "" + extension);
                 }
             }
             var result = Tuple.Create(doc, doc1);

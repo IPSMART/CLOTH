@@ -989,7 +989,6 @@
     <Content Include="Views\Shared\_T_SALE_PRODUCT.cshtml" />
     <Content Include="Views\Shared\_T_SALE_DETAIL.cshtml" />
     <Content Include="Views\T_OUTISSPROCESS\T_OUTISSPROCESS.cshtml" />
-    <Content Include="Views\T_OUTISSPROCESS\_T_PROGRAMME_DETAIL.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_DETAIL.cshtml" />
     <Content Include="Views\Shared\_T_SALE_BARNODETAIL.cshtml" />
