@@ -1101,7 +1101,7 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-            <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
+            <input type="hidden" id="itgrptype" value="F" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEMBOM.M_AUTONO)
             @Html.HiddenFor(a => a.M_SITEMBOM.BOMCD)
@@ -1150,8 +1150,8 @@
                             <div class="editor-field">
                                 @*@Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','C','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Code" } })
                                     <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="ITCD_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','C')" />*@
-                                @Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0');", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0')" />
+                                @Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype')" />
                                 @*@Html.HiddenFor(a => a.M_SITEMBOM.ITCD)*@
                             </div>
                         </div>
