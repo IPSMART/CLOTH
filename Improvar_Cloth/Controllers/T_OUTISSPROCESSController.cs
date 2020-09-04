@@ -598,13 +598,14 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = Master_Help.ITCD_help(val,"");
+                var str = Master_Help.ITCD_help(val,"", Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
                 }
                 else
                 {
+                   
                     return Content(str);
                 }
             }
@@ -639,6 +640,26 @@ namespace Improvar.Controllers
             try
             {
                 var str = Master_Help.COLRCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetMaterialDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.MTRLJOBCD_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
