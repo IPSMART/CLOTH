@@ -1167,7 +1167,7 @@ namespace Improvar
             var result = Tuple.Create(TCDP);
             return result;
         }
-        public Tuple<List<T_CNTRL_HDR_DOC>, List<T_CNTRL_HDR_DOC_DTL>> SaveUploadImageTransaction(List<UploadDOC> UploadDOC, string autono, int EMD, int slno=0)
+        public Tuple<List<T_CNTRL_HDR_DOC>, List<T_CNTRL_HDR_DOC_DTL>> SaveUploadImageTransaction(List<UploadDOC> UploadDOC, string autono, int EMD, int slno = 0)
         {
             var UNQSNO = getQueryStringUNQSNO();
             List<T_CNTRL_HDR_DOC> doc = new List<T_CNTRL_HDR_DOC>();
@@ -1480,7 +1480,7 @@ namespace Improvar
                 return false;
             }
         }
-        public string SaveBase64toDrive(string DBImgString, string ImgPath)
+        public string SaveBase64toDrive(string DBImgString, string path)
         {
             try
             {
@@ -1488,23 +1488,14 @@ namespace Improvar
                 {
                     DBImgString = DBImgString.Substring(DBImgString.IndexOf(',') + 1);
                 }
-                var sPath = System.Web.Hosting.HostingEnvironment.MapPath(ImgPath);
-                //String path = @"c:/IPSMART";
-                if (System.IO.File.Exists(sPath))
+                if (System.IO.File.Exists(path))
                 {
-                    try
-                    {
-                        System.IO.File.Delete(sPath);
-                    }
-                    catch
-                    {
-                        return sPath;
-                    }
-                    System.IO.File.Delete(sPath); //Delete file if it  exist
+                    System.IO.File.Delete(path); //Delete file if it  exist
                 }
+                string imgPath = Path.Combine(path, "");
                 byte[] imageBytes = Convert.FromBase64String(DBImgString);
-                System.IO.File.WriteAllBytes(sPath, imageBytes);
-                return sPath;
+                File.WriteAllBytes(imgPath, imageBytes); ;
+                return path;
             }
             catch (Exception ex)
             {
@@ -1512,13 +1503,13 @@ namespace Improvar
                 return "";
             }
         }
-        public double Roundoff(double amt, int dec=2)
+        public double Roundoff(double amt, int dec = 2)
         {
             double ramt = 0;
             ramt = Math.Round(amt, dec, MidpointRounding.AwayFromZero);
             return ramt;
         }
-        
+
         public string Indian_Number_format(string number, string cellstyle)
         {
             int i = cellstyle.IndexOf('.');
@@ -1747,9 +1738,9 @@ namespace Improvar
             string[] financialyeardate = CommVar.FinPeriod(UNQSNO).Split('-');
             financialyeardate[0] = financialyeardate[0].Trim(); financialyeardate[1] = financialyeardate[1].Trim();
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string YRCD = CommVar.YearCode(UNQSNO);
-            string scm =  CommVar.CurSchema(UNQSNO);
+            string scm = CommVar.CurSchema(UNQSNO);
             System.Reflection.PropertyInfo pi = ViewClass.GetType().GetProperty("MenuID");
             String menuname = (String)(pi.GetValue(ViewClass, null));
 
@@ -1802,7 +1793,7 @@ namespace Improvar
                 var start = convstr2date(mindate);
                 var end = convstr2date(maxdate);
                 string str = "select max(docdt)docdt, to_char(max(docdt), 'mmyyyy') monthcode ";
-                str += "from " +  CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
+                str += "from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
                 str += "where doccd = '" + doccd + "' and compcd='" + COM + "' and loccd='" + LOC + "' and ";
                 str += "docdt >= to_date('" + mindate + "', 'dd/mm/yyyy') and docdt <= to_date('" + maxdate + "', 'dd/mm/yyyy') ";
                 str += "group by to_char(docdt, 'mmyyyy') order by docdt";
@@ -1852,14 +1843,14 @@ namespace Improvar
                 string lastDT = DateTime.DaysInMonth(start.Year, start.Month).ToString() + "/" + start.Month.ToString().PadLeft(2, '0') + "/" + start.Year.ToString();
 
                 string sql = "select * from (select to_char(max(docdt),'dd/mm/yyyy') mindate ";
-                sql += "from " +  CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
+                sql += "from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
                 sql += "where doccd = '" + doccd + "' and compcd='" + COM + "' and loccd='" + LOC + "' and ";
                 sql += "docdt < to_date('" + docdt + "', 'dd/mm/yyyy') and docdt >= to_date('" + startDT + "', 'dd/mm/yyyy')) a, ";
-                sql += "(select to_char(min(docdt),'dd/mm/yyyy') maxdate from " +  CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
+                sql += "(select to_char(min(docdt),'dd/mm/yyyy') maxdate from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
                 sql += "where doccd = '" + doccd + "' and compcd='" + COM + "' and loccd='" + LOC + "' and ";
                 sql += "docdt > to_date('" + docdt + "', 'dd/mm/yyyy') and docdt<= to_date('" + lastDT + "', 'dd/mm/yyyy')) b, ";
                 sql += "(select count(autono) total_entry ";
-                sql += "from " +  CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
+                sql += "from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr ";
                 sql += "where doccd = '" + doccd + "' and compcd='" + COM + "' and loccd='" + LOC + "' and ";
                 sql += "docdt =to_date('" + docdt + "', 'dd/mm/yyyy')) c ";
                 DataTable DT = MH.SQLquery(sql);
@@ -2160,7 +2151,7 @@ namespace Improvar
                 return "";
             }
         }
-    
+
         //public String getdocmaxmindate(string doccd, string docdt, string action, string docno, object ViewClass, bool opening = false, string AUTONO = "")
         //{
         //    try
@@ -2730,7 +2721,7 @@ namespace Improvar
             if (YR_CD == "") yrcd = CommVar.YearCode(UNQSNO); else yrcd = YR_CD;
 
             MasterHelp MasterHelp = new MasterHelp();
-            string sql = "", scm =  CommVar.CurSchema(UNQSNO);
+            string sql = "", scm = CommVar.CurSchema(UNQSNO);
 
             sql += "select nvl(b.maxdocno,0) maxdocno from ";
 
@@ -2746,7 +2737,7 @@ namespace Improvar
             sql += "( select a.mnthcd, max(a.vchrno) maxdocno ";
             sql += "from " + scm + ".t_cntrl_hdr a ";
             sql += "where a.doccd='" + doc_cd + "' and ";
-            sql += "a.compcd='" + CommVar.Compcd(UNQSNO) + "' and a.loccd='" +  CommVar.Loccd(UNQSNO) + "' and a.yr_cd='" + yrcd + "' ";
+            sql += "a.compcd='" + CommVar.Compcd(UNQSNO) + "' and a.loccd='" + CommVar.Loccd(UNQSNO) + "' and a.yr_cd='" + yrcd + "' ";
             sql += "group by a.mnthcd) b ";
 
             sql += "where a.mnthcd=b.mnthcd(+) ";
@@ -2839,7 +2830,7 @@ namespace Improvar
             MasterHelp MasterHelp = new MasterHelp();
             Models.T_CNTRL_HDR TCH = new Models.T_CNTRL_HDR();
             string scm = DB.CacheKey;
-            string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             if (modcd.retStr() == "") modcd = Module.Module_Code.Substring(0, 1);
             if (yrcd.retStr() == "") yrcd = CommVar.YearCode(UNQSNO);
 
@@ -2919,8 +2910,8 @@ namespace Improvar
         public void SaveUploadDocumentTransaction(ImprovarDB DB, string schema, string CLCD, string EMD, List<UploadDOC> UploadDOC, string autono)
         {
             var UNQSNO = getQueryStringUNQSNO();
-            DB.Database.ExecuteSqlCommand("delete from " +  CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr_doc where autono=:autono ", new OracleParameter("autono", OracleDbType.Varchar2, 30, autono, ParameterDirection.Input));
-            DB.Database.ExecuteSqlCommand("delete from " +  CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr_doc_dtl where autono=:autono ", new OracleParameter("autono", OracleDbType.Varchar2, 30, autono, ParameterDirection.Input));
+            DB.Database.ExecuteSqlCommand("delete from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr_doc where autono=:autono ", new OracleParameter("autono", OracleDbType.Varchar2, 30, autono, ParameterDirection.Input));
+            DB.Database.ExecuteSqlCommand("delete from " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr_doc_dtl where autono=:autono ", new OracleParameter("autono", OracleDbType.Varchar2, 30, autono, ParameterDirection.Input));
             int slno = 0; string sql = "";
             foreach (var ss in UploadDOC)
             {

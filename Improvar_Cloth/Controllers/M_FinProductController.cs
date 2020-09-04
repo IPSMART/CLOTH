@@ -398,7 +398,7 @@ namespace Improvar.Controllers
                                             SZBARCODE = k.SZBARCODE,
                                             COLRCD = i.COLRCD,
                                             COLRNM = j.COLRNM,
-                                            BARCODE = i.BARNO,
+                                            BARNO = i.BARNO,
                                             CLRBARCODE = j.CLRBARCODE
                                         }).ToList();
 
@@ -417,7 +417,7 @@ namespace Improvar.Controllers
                             VE.MSITEMBARCODE[i].SRLNO = Convert.ToByte((i + 1));
                             if (VE.DefaultAction == "A")
                             {
-                                VE.MSITEMBARCODE[i].BARCODE = null;
+                                VE.MSITEMBARCODE[i].BARNO = null;
                             }
                         }
 
@@ -543,54 +543,6 @@ namespace Improvar.Controllers
         {
             try
             {
-                //string sql = "select rate,sizecd,colrcd,prccd from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') order by EFFDT desc";
-                //DataTable dt_prcrt = masterHelp.SQLquery(sql);
-                //ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                //var M_PRCLST = (from p in DBF.M_PRCLST
-                //                select new
-                //                {
-                //                    PRCCD = p.PRCCD,
-                //                    PRCNM = p.PRCNM
-                //                }).ToList();
-
-
-                //DataTable dt = new DataTable();
-                //DataColumn column;
-                //column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
-                //column = dt.Columns.Add("SZBARCODE", typeof(string)); column.Caption = "SZBARCODE";
-                //column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
-                //column = dt.Columns.Add("CLRBARCODE", typeof(string)); column.Caption = "CLRBARCODE";
-
-                //foreach (var plist in M_PRCLST)
-                //{
-                //    column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
-                //}
-
-                //dt.Rows.Add("");
-                //dt.Rows[0]["SIZECD"] = "";//Add blank row
-                //dt.Rows[0]["COLRCD"] = "";
-                //dt.Rows[0]["SZBARCODE"] = "";
-                //dt.Rows[0]["CLRBARCODE"] = "";
-
-                //var MSITEMBARCODE = VE.MSITEMBARCODE.Where(r => r.COLRCD != null || r.SIZECD != null).ToList();
-                //foreach (MSITEMBARCODE bar in MSITEMBARCODE)
-                //{
-                //    dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
-                //    dt.Rows[rNo]["SIZECD"] = bar.SIZECD;
-                //    dt.Rows[rNo]["COLRCD"] = bar.COLRCD;
-                //    dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
-                //    dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
-                //    if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
-                //    {
-                //        foreach (var plist in M_PRCLST)
-                //        {
-                //            string rate = (from DataRow dr in dt_prcrt.Rows
-                //                           where dr["sizecd"].retStr() == bar.SIZECD && dr["colrcd"].retStr() == bar.COLRCD && dr["prccd"].retStr() == plist.PRCCD
-                //                           select dr["rate"].retStr()).FirstOrDefault();
-                //            dt.Rows[rNo][plist.PRCCD] = rate;
-                //        }
-                //    }
-                //}
                 VE.DTPRICES = GetPrices(VE);
                 TempData["DTPRICES"] = VE.DTPRICES;
                 VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
@@ -663,10 +615,13 @@ namespace Improvar.Controllers
 
 
                 DataColumn column;
-                column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
-                column = dt.Columns.Add("SZBARCODE", typeof(string)); column.Caption = "SZBARCODE";
                 column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
+                column = dt.Columns.Add("COLRNM", typeof(string)); column.Caption = "COLRNM";
                 column = dt.Columns.Add("CLRBARCODE", typeof(string)); column.Caption = "CLRBARCODE";
+                column = dt.Columns.Add("SIZECD", typeof(string)); column.Caption = "SIZECD";
+                column = dt.Columns.Add("SIZENM", typeof(string)); column.Caption = "SIZENM";
+                column = dt.Columns.Add("SZBARCODE", typeof(string)); column.Caption = "SZBARCODE";
+                column = dt.Columns.Add("BARNO", typeof(string)); column.Caption = "BARNO";
 
                 foreach (var plist in M_PRCLST)
                 {
@@ -689,11 +644,15 @@ namespace Improvar.Controllers
                 var MSITEMBARCODE = VE.MSITEMBARCODE.Where(r => r.COLRCD != null || r.SIZECD != null).ToList();
                 foreach (MSITEMBARCODE bar in MSITEMBARCODE)
                 {
-                    dt.Rows.Add(""); int rNo = dt.Rows.Count - 1;
+                    dt.Rows.Add("");
+                    int rNo = dt.Rows.Count - 1;
                     dt.Rows[rNo]["SIZECD"] = bar.SIZECD;
-                    dt.Rows[rNo]["COLRCD"] = bar.COLRCD;
+                    dt.Rows[rNo]["SIZENM"] = bar.SIZENM;
                     dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
+                    dt.Rows[rNo]["COLRCD"] = bar.COLRCD;
+                    dt.Rows[rNo]["COLRNM"] = bar.COLRNM;
                     dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
+                    dt.Rows[rNo]["BARNO"] = bar.BARNO;
                     if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
                     {
                         foreach (var plist in M_PRCLST)
@@ -1714,14 +1673,14 @@ namespace Improvar.Controllers
                         for (int i = 0; i <= prcRows.Length - 1; i++)
                         {
                             var prcCols = prcRows[i].Split(',');
-                            for (int j = 4; j < prcCols.Length; j++)
+                            for (int j = 7; j < prcCols.Length; j++)
                             {
-                                string colorbarno = prcCols[3];
-                                string sizebarno = prcCols[1];
-                                string colorcd = prcCols[2];
-                                string sizecd = prcCols[0];
+                                string colorbarno = prcCols[2];
+                                string sizebarno = prcCols[5];
+                                string colorcd = prcCols[0];
+                                string sizecd = prcCols[3];
                                 var varcode = VE.MSITEMBARCODE.Where(d => d.COLRCD == colorcd && d.SIZECD == sizecd).FirstOrDefault();
-                                if (varcode == null&& colorcd!=""&& sizecd!="")
+                                if (varcode == null && colorcd != "" && sizecd != "")
                                 {
                                     transaction.Rollback();
                                     return Content("Color:" + colorcd + " Sizecd:" + sizecd + " not in barcode Tab. Please refresh pricelist. ");
@@ -1732,7 +1691,7 @@ namespace Improvar.Controllers
                                 MIP.CLCD = MSITEM.CLCD;
                                 MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
                                 MIP.PRCCD = PRCCD;
-                                MIP.BARNO = MSITEMBARCODE.BARNO + colorcd + sizecd;
+                                MIP.BARNO = MSITEMBARCODE.BARNO + colorbarno + sizebarno;
                                 MIP.RATE = prcCols[j].retDbl();
                                 DB.M_ITEMPLISTDTL.Add(MIP);
                             }
@@ -1772,6 +1731,19 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
                         DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
+
+                        var DOCFLNAMEs = DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).Select(e => new
+                        DropDown_list
+                        { text = e.DOC_FLNAME, value = e.BARNO }).ToList();
+                        foreach (var DOC_FLNAME in DOCFLNAMEs)
+                        {
+                            var extension = Path.GetExtension(DOC_FLNAME.text);
+                            string path = CommVar.SaveFolderPath() + "/ItemImages/" + DOC_FLNAME.value + extension;
+                            if (System.IO.File.Exists(path))
+                            {
+                                System.IO.File.Delete(path); //Delete file if it  exist  
+                            }
+                        }
                         DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
@@ -1899,76 +1871,80 @@ namespace Improvar.Controllers
             List<M_BATCH_IMG_HDR> doc = new List<M_BATCH_IMG_HDR>();
             List<M_BATCH_IMG_HDR_DTL> doc1 = new List<M_BATCH_IMG_HDR_DTL>();
             int sl = 0;
-            foreach (var ss in UploadDOC)
+            try
             {
-                if (ss.DOC_FILE != null)
+                foreach (var ss in UploadDOC)
                 {
-                    sl += 1;
-                    M_BATCH_IMG_HDR mdoc = new M_BATCH_IMG_HDR();
-                    mdoc.DOC_CTG = ss.docID;
-                    mdoc.DOC_DESC = ss.DOC_DESC;
-                    mdoc.BARNO = BARNO;
-                    mdoc.CLCD = CommVar.ClientCode(UNQSNO);
-                    mdoc.EMD_NO = EMD;
-                    //mdoc.M_TBLNM = table_name;
-                    mdoc.DOC_FLNAME = ss.DOC_FILE_NAME;
-                    mdoc.DOC_EXTN = "NA";
+                    if (ss.DOC_FILE != null)
+                    {
+                        sl += 1;
+                        M_BATCH_IMG_HDR mdoc = new M_BATCH_IMG_HDR();
+                        mdoc.DOC_CTG = ss.docID;
+                        mdoc.DOC_DESC = ss.DOC_DESC;
+                        mdoc.BARNO = BARNO;
+                        mdoc.CLCD = CommVar.ClientCode(UNQSNO);
+                        mdoc.EMD_NO = EMD;
+                        //mdoc.M_TBLNM = table_name;
+                        mdoc.DOC_FLNAME = ss.DOC_FILE_NAME;
+                        mdoc.DOC_EXTN = "NA";
 
-                    mdoc.SLNO = Convert.ToByte(sl);
-                    doc.Add(mdoc);
-                    if (ss.DOC_FILE.Length <= 2000)
-                    {
-                        M_BATCH_IMG_HDR_DTL mdoct = new M_BATCH_IMG_HDR_DTL();
-                        mdoct.BARNO = BARNO;
-                        mdoct.CLCD = CommVar.ClientCode(UNQSNO);
-                        mdoct.EMD_NO = EMD;
-                        mdoct.SLNO = Convert.ToByte(sl);
-                        mdoct.RSLNO = 1;
-                        mdoct.DOC_STRING = ss.DOC_FILE;
-                        doc1.Add(mdoct);
-                    }
-                    else
-                    {
-                        long length = ss.DOC_FILE.Length;
-                        long count = length / 2000;
-                        int index = 0;
-                        for (int i = 0; i <= count - 1; i++)
+                        mdoc.SLNO = Convert.ToByte(sl);
+                        doc.Add(mdoc);
+                        if (ss.DOC_FILE.Length <= 2000)
                         {
                             M_BATCH_IMG_HDR_DTL mdoct = new M_BATCH_IMG_HDR_DTL();
                             mdoct.BARNO = BARNO;
                             mdoct.CLCD = CommVar.ClientCode(UNQSNO);
                             mdoct.EMD_NO = EMD;
-                            mdoct.SLNO = Convert.ToInt16(sl);
-                            mdoct.DOC_STRING = ss.DOC_FILE.Substring(index, 2000);
-                            mdoct.RSLNO = Convert.ToInt16(i + 1);
-                            index += 2000;
+                            mdoct.SLNO = Convert.ToByte(sl);
+                            mdoct.RSLNO = 1;
+                            mdoct.DOC_STRING = ss.DOC_FILE;
                             doc1.Add(mdoct);
                         }
-                        if (index < ss.DOC_FILE.Length)
+                        else
                         {
-                            int rest = ss.DOC_FILE.Length - index;
-                            M_BATCH_IMG_HDR_DTL mdoct = new M_BATCH_IMG_HDR_DTL();
-                            mdoct.BARNO = BARNO;
-                            mdoct.CLCD = CommVar.ClientCode(UNQSNO);
-                            mdoct.EMD_NO = EMD;
-                            mdoct.SLNO = Convert.ToInt16(sl);
-                            mdoct.DOC_STRING = ss.DOC_FILE.Substring(index, rest);
-                            mdoct.RSLNO = Convert.ToInt16(count + 1);
-                            index += rest;
-                            doc1.Add(mdoct);
+                            long length = ss.DOC_FILE.Length;
+                            long count = length / 2000;
+                            int index = 0;
+                            for (int i = 0; i <= count - 1; i++)
+                            {
+                                M_BATCH_IMG_HDR_DTL mdoct = new M_BATCH_IMG_HDR_DTL();
+                                mdoct.BARNO = BARNO;
+                                mdoct.CLCD = CommVar.ClientCode(UNQSNO);
+                                mdoct.EMD_NO = EMD;
+                                mdoct.SLNO = Convert.ToInt16(sl);
+                                mdoct.DOC_STRING = ss.DOC_FILE.Substring(index, 2000);
+                                mdoct.RSLNO = Convert.ToInt16(i + 1);
+                                index += 2000;
+                                doc1.Add(mdoct);
+                            }
+                            if (index < ss.DOC_FILE.Length)
+                            {
+                                int rest = ss.DOC_FILE.Length - index;
+                                M_BATCH_IMG_HDR_DTL mdoct = new M_BATCH_IMG_HDR_DTL();
+                                mdoct.BARNO = BARNO;
+                                mdoct.CLCD = CommVar.ClientCode(UNQSNO);
+                                mdoct.EMD_NO = EMD;
+                                mdoct.SLNO = Convert.ToInt16(sl);
+                                mdoct.DOC_STRING = ss.DOC_FILE.Substring(index, rest);
+                                mdoct.RSLNO = Convert.ToInt16(count + 1);
+                                index += rest;
+                                doc1.Add(mdoct);
+                            }
                         }
-                    }
-                    var extension = Path.GetExtension(mdoc.DOC_FLNAME);
-                    string path = CommVar.SaveFolderPath() + "/ItemImages";
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
+                        var extension = Path.GetExtension(mdoc.DOC_FLNAME);
+                        string path = CommVar.SaveFolderPath() + "/ItemImages";
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
 
-                    // Try to create the directory.
-                    Cn.SaveBase64toDrive(ss.DOC_FILE, path + "/" + BARNO + "" + extension);
+                        // Try to create the directory.
+                        Cn.SaveBase64toDrive(ss.DOC_FILE, path + "/" + BARNO + "" + extension);
+                    }
                 }
             }
+            catch { }
             var result = Tuple.Create(doc, doc1);
             return result;
         }
