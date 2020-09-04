@@ -43,31 +43,31 @@ namespace Improvar.Models
         [Required]
         [StringLength(1)]
         public string STKDRCR { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? NOS { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? QNTY { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double? BLQNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? QQNTY { get; set; }
 
         public double? FLAGMTR { get; set; }
 
         [StringLength(100)]
         public string ITREM { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? DISCRATE { get; set; }
 
         [StringLength(1)]
         public string DISCTYPE { get; set; }
         public string DISCTYPE_DESC { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? SCMDISCRATE { get; set; }
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? TDDISCRATE { get; set; }
 
         [StringLength(1)]
@@ -119,7 +119,7 @@ namespace Improvar.Models
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }
         public string FABITCD { get; set; }
-        public string FABITNM { get; set; }
+        public string QITNM { get; set; }
         public string STYLENO { get; set; }
         [StringLength(4)]
         public string PARTCD { get; set; }
@@ -131,6 +131,7 @@ namespace Improvar.Models
         public string SIZECD { get; set; }
         public string SIZENM { get; set; }
         public string UOM { get; set; }
+        public string QUOM { get; set; }
         [StringLength(1)]
         public string STKTYPE { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }

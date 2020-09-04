@@ -281,15 +281,11 @@
 <script>
     function CalculateQNTY(i) {
         if ("@Model.DefaultAction" != "V") {
-            var QNTY_ = document.getElementById('P_QNTY_' + i).value;
-            if (QNTY_ == "") { QNTY_ = parseInt(0) } else { QNTY_ = parseInt(QNTY_) }
             var NOS_ = document.getElementById('P_NOS_' + i).value;
-            if (NOS_ == "") { NOS_ = parseInt(0) } else { NOS_ = parseInt(NOS_) }
-
+            if (NOS_ == "") { NOS_ = parseFloat(0) } else { NOS_ = parseFloat(NOS_) }
             var CUTLENGTH_ = document.getElementById('P_CUTLENGTH_' + i).value;
-            if (CUTLENGTH_ == "") { CUTLENGTH_ = parseInt(0) } else { CUTLENGTH_ = parseInt(CUTLENGTH_) }
-
-            if ((NOS_ > 0 || NOS_ != null) && (CUTLENGTH_ > 0 || CUTLENGTH_ != null)) {
+            if (CUTLENGTH_ == "") { CUTLENGTH_ = parseFloat(0) } else { CUTLENGTH_ = parseFloat(CUTLENGTH_) }
+            if (NOS_ > 0  && CUTLENGTH_ > 0 ) {
                 var qnty = (parseFloat(NOS_) * parseFloat(CUTLENGTH_));
                 document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
             }
@@ -304,7 +300,7 @@
         var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
             var NOS = document.getElementById("P_NOS_" + i).value;
-            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseInt(0); }
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
 
             var QNTY = document.getElementById("P_QNTY_" + i).value;
             if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
@@ -323,13 +319,13 @@
         var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
 
-            var BOMQNTY = document.getElementById("BOMQNTY_" + i).value;
-            if (BOMQNTY == "") { BOMQNTY = parseInt(0) } else { BOMQNTY = parseInt(BOMQNTY) }
+            var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
+            if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
             if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
             else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
 
-            var EXTRAQNTY = document.getElementById("EXTRAQNTY" + i).value;
-            if (EXTRAQNTY == "") { EXTRAQNTY = parseInt(0) } else { EXTRAQNTY = parseInt(EXTRAQNTY) }
+            var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
+            if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
             if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
             else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
 
@@ -421,8 +417,25 @@
         debugger;
         i = parseInt(i);
         if (event.key == "F8" && i > 0) {
-            var itnm = $("#RITNM1_" + (i - 1)).val();
-            $("#RITNM1_" + i).val(itnm);
+            //var itnm = $("#Q_RITNM1_" + (i - 1)).val();
+            //$("#Q_RITNM1_" + i).val(itnm);
+            //var TAG = ""; var COUNT = document.getElementById(i).value;
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("CopyAboveRow", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&i=" + i,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivQtyRequirement").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
 
         }
     }
@@ -504,7 +517,7 @@
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
                         </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-8">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
                         </div>
@@ -544,12 +557,12 @@
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Programme_LI4" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme</a></li>
-                    <li id="QtyRequird_LI4" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement</a></li>
-                    <li id="MtrlIssue_LI" class=""><a data-toggle="tab" href="#MtrlIssue" accesskey="M">Material Issue</a></li>
+                    <li id="Programme_LI4" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
+                    <li id="QtyRequird_LI4" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement(Q)</a></li>
+                    <li id="MtrlIssue_LI" class=""><a data-toggle="tab" href="#MtrlIssue" accesskey="M">Material Issue(M)</a></li>
                     <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
-                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
-                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
+                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents"accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="Programme" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
