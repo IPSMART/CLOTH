@@ -85,5 +85,7 @@ namespace Improvar.Models
 
         [StringLength(10)]
         public string SIZENM { get; set; }
+        public string COLRCD { get; set; }
+        public string COLRNM { get; set; }
     }
 }
