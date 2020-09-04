@@ -1480,6 +1480,38 @@ namespace Improvar
                 return false;
             }
         }
+        public string SaveBase64toDrive(string DBImgString, string ImgPath)
+        {
+            try
+            {
+                if (DBImgString != "" || DBImgString.IndexOf(',') > 1)
+                {
+                    DBImgString = DBImgString.Substring(DBImgString.IndexOf(',') + 1);
+                }
+                var sPath = System.Web.Hosting.HostingEnvironment.MapPath(ImgPath);
+                //String path = @"c:/IPSMART";
+                if (System.IO.File.Exists(sPath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(sPath);
+                    }
+                    catch
+                    {
+                        return sPath;
+                    }
+                    System.IO.File.Delete(sPath); //Delete file if it  exist
+                }
+                byte[] imageBytes = Convert.FromBase64String(DBImgString);
+                System.IO.File.WriteAllBytes(sPath, imageBytes);
+                return sPath;
+            }
+            catch (Exception ex)
+            {
+                SaveException(ex, "");
+                return "";
+            }
+        }
         public double Roundoff(double amt, int dec=2)
         {
             double ramt = 0;
