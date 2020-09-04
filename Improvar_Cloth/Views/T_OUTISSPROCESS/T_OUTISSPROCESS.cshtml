@@ -281,15 +281,11 @@
 <script>
     function CalculateQNTY(i) {
         if ("@Model.DefaultAction" != "V") {
-            var QNTY_ = document.getElementById('P_QNTY_' + i).value;
-            if (QNTY_ == "") { QNTY_ = parseInt(0) } else { QNTY_ = parseInt(QNTY_) }
             var NOS_ = document.getElementById('P_NOS_' + i).value;
-            if (NOS_ == "") { NOS_ = parseInt(0) } else { NOS_ = parseInt(NOS_) }
-
+            if (NOS_ == "") { NOS_ = parseFloat(0) } else { NOS_ = parseFloat(NOS_) }
             var CUTLENGTH_ = document.getElementById('P_CUTLENGTH_' + i).value;
-            if (CUTLENGTH_ == "") { CUTLENGTH_ = parseInt(0) } else { CUTLENGTH_ = parseInt(CUTLENGTH_) }
-
-            if ((NOS_ > 0 || NOS_ != null) && (CUTLENGTH_ > 0 || CUTLENGTH_ != null)) {
+            if (CUTLENGTH_ == "") { CUTLENGTH_ = parseFloat(0) } else { CUTLENGTH_ = parseFloat(CUTLENGTH_) }
+            if (NOS_ > 0  && CUTLENGTH_ > 0 ) {
                 var qnty = (parseFloat(NOS_) * parseFloat(CUTLENGTH_));
                 document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
             }
