@@ -260,7 +260,7 @@ namespace Improvar.Controllers
                     string slcd = TXN.SLCD;
                     var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO }).FirstOrDefault();
                     VE.SLNM = subleg.SLNM;
-                    VE.SLNM = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
+                    VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                     VE.GSTNO = subleg.GSTNO;
                 }
 
@@ -376,50 +376,54 @@ namespace Improvar.Controllers
                                   GLCD = dr["GLCD"].retStr()
                               }).OrderBy(s => s.SLNO).ToList();
 
+                VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
+                VE.T_NOS = VE.TTXNDTL.Sum(a => a.NOS).retDbl();
+                VE.T_QNTY = VE.TTXNDTL.Sum(a => a.QNTY).retDbl();
+                VE.T_AMT = VE.TTXNDTL.Sum(a => a.AMT).retDbl();
+                VE.T_GROSS_AMT = VE.TTXNDTL.Sum(a => a.TXBLVAL).retDbl();
+                VE.T_IGST_AMT = VE.TTXNDTL.Sum(a => a.IGSTAMT).retDbl();
+                VE.T_CGST_AMT = VE.TTXNDTL.Sum(a => a.CGSTAMT).retDbl();
+                VE.T_SGST_AMT = VE.TTXNDTL.Sum(a => a.SGSTAMT).retDbl();
+                VE.T_CESS_AMT = VE.TTXNDTL.Sum(a => a.CESSAMT).retDbl();
+                VE.T_NET_AMT = VE.TTXNDTL.Sum(a => a.NETAMT).retDbl();
+                foreach (var v in VE.TBATCHDTL)
+                {
+                    v.GSTPER = VE.TTXNDTL.Where(a =>a.SLNO == v.TXNSLNO).Sum(b=>b.IGSTPER+b.CGSTPER+b.SGSTPER).retDbl();
+                }
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             return VE;
         }
-        //public ActionResult SearchPannelData(TransactionPackingSlipEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
-        //{
-        //    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO);
-        //    Cn.getQueryString(VE);
+        public ActionResult SearchPannelData(TransactionPackingSlipEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
+        {
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO);
+            Cn.getQueryString(VE);
+            List<DocumentType> DocumentType = new List<DocumentType>();
+            DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
+            string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
+            string sql = "";
 
-        //    string MNUP = VE.MENU_PARA;
-        //    string[] XYZ = new string[200];
-        //    switch (MNUP)
-        //    {
-        //        case "SB": XYZ = (string[])TempData["SB"]; break;
-        //        case "SR": XYZ = (string[])TempData["SR"]; break;
-        //        case "SOTH": XYZ = (string[])TempData["SOTH"]; break;
-        //        case "SBEXP": XYZ = (string[])TempData["SBEXP"]; break;
-        //    }
-        //    TempData.Keep();
+            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt ";
+            sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ";
+            sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
+            if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
+            if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
+            if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
+            if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
+            sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
+            sql += "order by docdt, docno ";
+            DataTable tbl = Master_Help.SQLquery(sql);
 
-        //    string doccd = XYZ.retSqlfromStrarray();
-        //    string sql = "";
-
-        //    sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt ";
-        //    sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ";
-        //    sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
-        //    if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
-        //    if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
-        //    if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
-        //    if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
-        //    sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
-        //    sql += "order by docdt, docno ";
-        //    DataTable tbl = Master_Help.SQLquery(sql);
-
-        //    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-        //    var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
-        //    for (int j = 0; j <= tbl.Rows.Count - 1; j++)
-        //    {
-        //        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
-        //    }
-        //    return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
-        //}
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
+            for (int j = 0; j <= tbl.Rows.Count - 1; j++)
+            {
+                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+            }
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
+        }
         public ActionResult GetSubLedgerDetails(string val, string Code)
         {
             try
@@ -1063,10 +1067,10 @@ namespace Improvar.Controllers
                                   ALL_GSTPER = P.Key.ALL_GSTPER,
                                   //AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                               }).ToList();
-                
+
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
                 {
-                    if(VE.TTXNDTL[p].ALL_GSTPER.retStr() != "")
+                    if (VE.TTXNDTL[p].ALL_GSTPER.retStr() != "")
                     {
                         var tax_data = VE.TTXNDTL[p].ALL_GSTPER.Split(',').ToList();
                         VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl();
