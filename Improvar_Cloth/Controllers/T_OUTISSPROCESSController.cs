@@ -292,16 +292,16 @@ namespace Improvar.Controllers
                 //VE.CRSLNM = TXNTRN.CRSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.CRSLCD).Select(b => b.SLNM).FirstOrDefault();
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
-                string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0;
+                string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0; double TOTAL_BOMQNTY = 0; double TOTAL_EXTRAQNTY = 0; double TOTAL_QQNTY = 0;
                 string str = "";
                 str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
                 str += "a.itremark,a.shade,a.cutlength,a.sample from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
-                str +=  Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
                 str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
                 str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
-                str +=" a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
-                str += "order by a.SLNO ";
+                str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
+                str += "order by a.slno ";
 
                 DataTable Progdtltbl = Master_Help.SQLquery(str);
                 VE.TPROGDTL = (from DataRow dr in Progdtltbl.Rows
@@ -325,15 +325,65 @@ namespace Improvar.Controllers
                                    ITREMARK = dr["itremark"].retStr(),
                                    SHADE = dr["shade"].retStr(),
                                    CUTLENGTH = dr["cutlength"].retDbl(),
-                                   SAMPLE= dr["sample"].retStr()
+                                   SAMPLE = dr["sample"].retStr()
                                }).OrderBy(s => s.SLNO).ToList();
                 for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
-                {if (VE.TPROGDTL[i].SAMPLE == "Y") VE.TPROGDTL[i].CheckedSample = true;
+                {
+                    if (VE.TPROGDTL[i].SAMPLE == "Y") VE.TPROGDTL[i].CheckedSample = true;
                     TOTAL_NOS = TOTAL_NOS + VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.Value;
                     TOTAL_QNTY = TOTAL_QNTY + VE.TPROGDTL[i].QNTY == null ? 0 : VE.TPROGDTL[i].QNTY.Value;
                 }
                 VE.T_NOS = TOTAL_NOS.retInt();
                 VE.T_QNTY = TOTAL_QNTY.retInt();
+
+
+                string str2 = "";
+                str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm, ";
+                str2 += " k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd,b.qnty qntyMst, ";
+                str2 += "a.sample from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
+                str2 += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
+                str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+)  ";
+                str2 += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                str2 += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
+                str2 += "order by a.slno ";
+
+                DataTable Progbom = Master_Help.SQLquery(str2);
+                VE.TPROGBOM = (from DataRow dr in Progbom.Rows
+                               select new TPROGBOM()
+                               {
+                                   SLNO = Convert.ToInt16(dr["slno"]),
+                                   RSLNO = Convert.ToInt16(dr["rslno"]),
+                                   QQNTY= dr["qntyMst"].retDbl(),
+                                   QNTY = dr["qnty"].retDbl(),
+                                   ITGRPCD = dr["itgrpcd"].ToString(),
+                                   ITGRPNM = dr["itgrpnm"].ToString(),
+                                   ITCD = dr["itcd"].ToString(),
+                                   ITNM = dr["itnm"].ToString(),
+                                   SIZECD = dr["sizecd"].retStr(),
+                                   SIZENM = dr["sizenm"].retStr(),
+                                   PARTCD = dr["partcd"].retStr(),
+                                   PARTNM = dr["partnm"].retStr(),
+                                   COLRCD = dr["colrcd"].retStr(),
+                                   COLRNM = dr["colrnm"].retStr(),
+                                   MTRLJOBCD = dr["mtrljobcd"].retStr(),
+                                   MTRLJOBNM = dr["mtrljobnm"].retStr(),
+                                   UOM = dr["uomcd"].retStr(),
+                                   BOMQNTY = dr["bomqnty"].retDbl(),
+                                   EXTRAQNTY = dr["extraqnty"].retDbl(),
+                                   Q_SAMPLE = dr["sample"].retStr()
+                               }).OrderBy(s => s.SLNO).ToList();
+                for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
+                {
+                    if (VE.TPROGBOM[i].Q_SAMPLE == "Y") VE.TPROGBOM[i].Q_CheckedSample = true;
+                    TOTAL_QQNTY = TOTAL_QQNTY + VE.TPROGBOM[i].QQNTY == null ? 0 : VE.TPROGBOM[i].QQNTY.Value;
+                    TOTAL_BOMQNTY = TOTAL_BOMQNTY + VE.TPROGBOM[i].BOMQNTY == null ? 0 : VE.TPROGBOM[i].BOMQNTY.Value;
+                    TOTAL_EXTRAQNTY = TOTAL_EXTRAQNTY + VE.TPROGBOM[i].EXTRAQNTY == null ? 0 : VE.TPROGBOM[i].EXTRAQNTY.Value;
+                }
+                VE.T_QQNTY= TOTAL_QQNTY.retInt();
+                VE.T_BOMQNTY = TOTAL_BOMQNTY.retInt();
+                VE.T_EXTRAQNTY = TOTAL_EXTRAQNTY.retInt();
+                
 
 
                 string str1 = "";
@@ -962,12 +1012,12 @@ namespace Improvar.Controllers
                                    QITNM = P.Key.ITNM,
                                    QUOM = P.Key.UOM,
                                    QQNTY = P.Key.QNTY,
-                                  //qnty = P.Sum(A => A.QNTY)
+                                   //qnty = P.Sum(A => A.QNTY)
                                }).ToList();
                 for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
                 {
                     VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);
-                    
+
                 }
                 VE.T_QQNTY = VE.TPROGBOM.Sum(a => a.QQNTY).retDbl();
                 ModelState.Clear();
@@ -1737,8 +1787,8 @@ namespace Improvar.Controllers
                                 TPROGBOM.EXTRAQNTY = VE.TPROGBOM[i].EXTRAQNTY.retDcml();
                                 TPROGBOM.QNTY = VE.TPROGBOM[i].QNTY.retDcml();
                                 TPROGBOM.MTRLJOBCD = VE.TPROGBOM[i].MTRLJOBCD;
-                                if (VE.TPROGBOM[i].CheckedSample == true) TPROGBOM.SAMPLE = "Y"; else TPROGBOM.SAMPLE = "N";
-                                 dbsql = MasterHelpFa.RetModeltoSql(TPROGBOM);
+                                if (VE.TPROGBOM[i].Q_CheckedSample == true) TPROGBOM.SAMPLE = "Y"; else TPROGBOM.SAMPLE = "N";
+                                dbsql = MasterHelpFa.RetModeltoSql(TPROGBOM);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
 

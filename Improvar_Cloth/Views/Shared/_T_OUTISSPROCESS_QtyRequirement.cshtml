@@ -40,7 +40,7 @@
                                 <th class="" style="width: 55px;text-align:center;">RSL No.</th>
                                 <th class="" style="width:81px;">Group Code</th>
                                 <th class="" style="width:177px;">Group Name</th>
-                                <th class=""style="width:77px;">Item Code</th>
+                                <th class=""style="width:94px;">Item Code</th>
                                 <th class="" style="width:106px;">Item Name</th>
                                 <th class="" style="width:47px;">UOM</th>
                                 <th class="" style="width: 81px;">Material Job Code</th>
@@ -135,7 +135,7 @@
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].EXTRAQNTY, new { id = "Q_EXTRAQNTY_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalProgBomQnty();", maxlength = 12 })
                                         </td>
                                         <td class="" style="padding-left:14px;">
-                                            @Html.CheckBoxFor(model => model.TPROGBOM[i].CheckedSample, new { id = "Q_CheckedSample_" + i })
+                                            @Html.CheckBoxFor(model => model.TPROGBOM[i].Q_CheckedSample, new { id = "Q_CheckedSample_" + i })
                                         </td>
 
                                     </tr>
