@@ -281,7 +281,7 @@ namespace Improvar.Controllers
                     VE.DISTRICT = subleg.DISTRICT;
                     VE.GSTNO = subleg.GSTNO;
                 }
-
+                VE.JOBNM = TXN.JOBCD.retStr() == "" ? "" : DB.M_JOBMST.Where(a => a.JOBCD == TXN.JOBCD).Select(b => b.JOBNM).FirstOrDefault();
                 //VE.CONSLNM = TXN.CONSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXN.CONSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.AGSLNM = TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.SAGSLNM = TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -294,9 +294,15 @@ namespace Improvar.Controllers
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0;
                 string str = "";
-                str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ";
-                str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.autono='" + TXN.AUTONO + "'";
+                str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
+                str += "a.itremark,a.shade,a.cutlength,a.sample from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                str +=  Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
+                str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
+                str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                str +=" a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
+                str += "order by a.SLNO ";
+
                 DataTable Progdtltbl = Master_Help.SQLquery(str);
                 VE.TPROGDTL = (from DataRow dr in Progdtltbl.Rows
                                select new TPROGDTL()
@@ -304,10 +310,18 @@ namespace Improvar.Controllers
                                    SLNO = Convert.ToInt16(dr["slno"]),
                                    NOS = dr["nos"].retDbl(),
                                    QNTY = dr["qnty"].retDbl(),
+                                   ITGRPCD = dr["itgrpcd"].ToString(),
+                                   ITGRPNM = dr["itgrpnm"].ToString(),
                                    ITCD = dr["itcd"].ToString(),
+                                   ITNM = dr["itnm"].ToString(),
                                    SIZECD = dr["sizecd"].retStr(),
+                                   SIZENM = dr["sizenm"].retStr(),
                                    PARTCD = dr["partcd"].retStr(),
+                                   PARTNM = dr["partnm"].retStr(),
                                    COLRCD = dr["colrcd"].retStr(),
+                                   COLRNM = dr["colrnm"].retStr(),
+                                   MTRLJOBCD = dr["mtrljobcd"].retStr(),
+                                   MTRLJOBNM = dr["mtrljobnm"].retStr(),
                                    ITREMARK = dr["itremark"].retStr(),
                                    SHADE = dr["shade"].retStr(),
                                    CUTLENGTH = dr["cutlength"].retDbl(),
