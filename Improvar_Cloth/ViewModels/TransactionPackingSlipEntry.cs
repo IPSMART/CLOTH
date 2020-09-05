@@ -109,7 +109,8 @@ namespace Improvar.ViewModels
         public string HSNCODE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GSTPER { get; set; }
-        public string PSTYLENO { get; set; }
+        [StringLength(30)]
+        public string PDESIGN { get; set; }
         public double? BALSTOCK { get; set; }
         public double? FLAGMTR { get; set; }
         [StringLength(1)]
@@ -145,5 +146,7 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_NET_AMT { get; set; }
         public short SLNO { get; set; }
+        public string ALL_GSTPER { get; set; }
+        public double B_T_QNTY { get; set; }
     }
 }

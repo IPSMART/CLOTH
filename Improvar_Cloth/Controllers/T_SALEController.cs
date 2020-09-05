@@ -63,16 +63,15 @@ namespace Improvar.Controllers
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
 
-                    VE.BL_TYPE = (from n in DB.M_BLTYPE
-                                  select new BL_TYPE() { FIELD_VALUE = n.BLTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
+                    VE.BL_TYPE = Master_Help.BL_TYPE();
 
                     VE.Database_Combo1 = (from n in DB.T_TXNOTH
                                           select new Database_Combo1() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
 
                     VE.Database_Combo2 = (from n in DB.T_TXNOTH
                                           select new Database_Combo2() { FIELD_VALUE = n.DEALBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-                    VE.HSN_CODE = (from n in DBF.M_HSNCODE
-                                   select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
+                    //VE.HSN_CODE = (from n in DBF.M_HSNCODE
+                    //               select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
                     VE.BARGEN_TYPE = Master_Help.BARGEN_TYPE();
 
                     VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
@@ -93,13 +92,9 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-                    //VE.DropDown_list_StkType = (from n in DB.M_STKTYPE
-                    //                            select new DropDown_list_StkType() { value = n.STKTYPE, text = n.STKNAME }).OrderBy(s => s.value).Distinct().ToList();
+                    VE.DropDown_list_StkType = (from n in DB.M_STKTYPE
+                                                select new DropDown_list_StkType() { value = n.STKTYPE, text = n.STKNAME }).OrderBy(s => s.value).Distinct().ToList();
                     VE.DISC_TYPE = Master_Help.DISC_TYPE();
-                    VE.TDDISC_TYPE = (from n in DB.T_BATCHDTL
-                                      select new TDDISC_TYPE() { FIELD_VALUE = n.TDDISCTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-                    VE.SCMDISC_TYPE = (from n in DB.T_BATCHDTL
-                                       select new SCMDISC_TYPE() { FIELD_VALUE = n.SCMDISCTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -725,7 +720,7 @@ namespace Improvar.Controllers
                         {
                             return Content(str);
                         }
-                        else if (stock_data != null && stock_data.Rows.Count >= 1)//if stock return more then one row then open popup
+                        else if (stock_data != null && stock_data.Rows.Count > 1)//if stock return more then one row then open popup
                         {
                             VE.TSALEBARNOPOPUP = (from DataRow dr in stock_data.Rows
                                                   select new TSALEBARNOPOPUP
@@ -751,11 +746,27 @@ namespace Improvar.Controllers
                                                       STKTYPE = dr["STKTYPE"].retStr(),
                                                       DOCDT = dr["DOCDT"].retStr().Remove(10),
                                                       BALQNTY = dr["BALQNTY"].retDbl(),
-                                                      BALNOS = dr["BALNOS"].retDbl()
+                                                      BALNOS = dr["BALNOS"].retDbl(),
+
+                                                      PDESIGN = dr["PDESIGN"].retStr(),
+                                                      FLAGMTR = dr["FLAGMTR"].retDbl(),
+                                                      RATE = dr["RATE"].retDbl(),
+                                                      HSNCODE = dr["HSNCODE"].retStr(),
+                                                      PRODGRPGSTPER = dr["PRODGRPGSTPER"].retStr(),
+                                                      //ALL_GSTPER = dr["ALL_GSTPER"].retStr(),
+                                                      SHADE = dr["SHADE"].retStr(),
+                                                      LOCABIN = dr["LOCABIN"].retStr(),
                                                   }).ToList();
                             for (int p = 0; p <= VE.TSALEBARNOPOPUP.Count - 1; p++)
                             {
                                 VE.TSALEBARNOPOPUP[p].SLNO = Convert.ToInt16(p + 1);
+                                VE.TSALEBARNOPOPUP[p].ALL_GSTPER = salesfunc.retGstPer(VE.TSALEBARNOPOPUP[p].PRODGRPGSTPER, VE.TSALEBARNOPOPUP[p].RATE.retDbl());
+                                if (VE.TSALEBARNOPOPUP[p].ALL_GSTPER.retStr() != "")
+                                {
+                                    var gst = VE.TSALEBARNOPOPUP[p].ALL_GSTPER.Split(',').ToList();
+                                    VE.TSALEBARNOPOPUP[p].GSTPER = (from a in gst select a.retDbl()).Sum();
+                                }
+
                             }
                             VE.DefaultView = true;
                             return PartialView("_T_SALE_BARNODETAIL", VE);
@@ -763,6 +774,15 @@ namespace Improvar.Controllers
                         else//stock return one row then return as blur
                         {
                             str = Master_Help.ToReturnFieldValues("", stock_data);
+                            string all_gstper = salesfunc.retGstPer(stock_data.Rows[0]["PRODGRPGSTPER"].retStr(), stock_data.Rows[0]["RATE"].retDbl());
+                            double gst = 0;
+                            if (all_gstper.retStr() != "")
+                            {
+                                var gst_data = all_gstper.Split(',').ToList();
+                                gst = (from a in gst_data select a.retDbl()).Sum();
+                            }
+                            str += "^ALL_GSTPER=^" + all_gstper + Cn.GCS();
+                            str += "^GSTPER=^" + gst + Cn.GCS();
                             return Content(str);
                         }
 
@@ -787,7 +807,7 @@ namespace Improvar.Controllers
                 {
                     List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
                     TBATCHDTL TBATCHDTL1 = new TBATCHDTL();
-                    //TBATCHDTL1.SLNO = 1;
+                    TBATCHDTL1.SLNO = 1;
                     TBATCHDTL1.TXNSLNO = VE.TXNSLNO.retShort();
                     TBATCHDTL1.ITGRPCD = VE.ITGRPCD;
                     TBATCHDTL1.ITGRPNM = VE.ITGRPNM;
@@ -797,7 +817,6 @@ namespace Improvar.Controllers
                     TBATCHDTL1.ITNM = VE.ITNM;
                     TBATCHDTL1.STYLENO = VE.STYLENO;
                     TBATCHDTL1.STKTYPE = VE.STKTYPE;
-                    TBATCHDTL1.STKNAME = VE.STKNAME;
                     TBATCHDTL1.PARTCD = VE.PARTCD;
                     TBATCHDTL1.PARTNM = VE.PARTNM;
                     TBATCHDTL1.COLRCD = VE.COLRCD;
@@ -815,9 +834,17 @@ namespace Improvar.Controllers
                     TBATCHDTL1.DISCTYPE_DESC = VE.DISCTYPE == "P" ? "%" : VE.DISCTYPE == "N" ? "Nos" : VE.DISCTYPE == "Q" ? "Qnty" : "Fixed";
                     TBATCHDTL1.TDDISCRATE = VE.TDDISCRATE;
                     TBATCHDTL1.TDDISCTYPE = VE.TDDISCTYPE;
+                    TBATCHDTL1.TDDISCTYPE_DESC = VE.TDDISCTYPE == "P" ? "%" : VE.TDDISCTYPE == "N" ? "Nos" : VE.TDDISCTYPE == "Q" ? "Qnty" : "Fixed";
                     TBATCHDTL1.SCMDISCRATE = VE.SCMDISCRATE;
                     TBATCHDTL1.SCMDISCTYPE = VE.SCMDISCTYPE;
+                    TBATCHDTL1.SCMDISCTYPE_DESC = VE.SCMDISCTYPE == "P" ? "%" : VE.SCMDISCTYPE == "N" ? "Nos" : VE.SCMDISCTYPE == "Q" ? "Qnty" : "Fixed";
                     TBATCHDTL1.BARNO = VE.BARCODE;
+                    TBATCHDTL1.PDESIGN = VE.PDESIGN;
+                    TBATCHDTL1.FLAGMTR = VE.FLAGMTR;
+                    TBATCHDTL1.HSNCODE = VE.HSNCODE;
+                    TBATCHDTL1.BALENO = VE.BALENO;
+                    TBATCHDTL1.LOCABIN = VE.LOCABIN;
+                    TBATCHDTL1.ALL_GSTPER = VE.ALL_GSTPER;
                     TBATCHDTL.Add(TBATCHDTL1);
                     VE.TBATCHDTL = TBATCHDTL;
                 }
@@ -832,9 +859,9 @@ namespace Improvar.Controllers
                     }
 
                     TBATCHDTL TBATCHDTL1 = new TBATCHDTL();
-                    //var max = VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO));
-                    //int SLNO = Convert.ToInt32(max) + 1;
-                    //TBATCHDTL1.SLNO = Convert.ToSByte(SLNO);
+                    var max = VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO));
+                    int SLNO = Convert.ToInt32(max) + 1;
+                    TBATCHDTL1.SLNO = Convert.ToSByte(SLNO);
                     TBATCHDTL1.TXNSLNO = VE.TXNSLNO.retShort();
                     TBATCHDTL1.ITGRPCD = VE.ITGRPCD;
                     TBATCHDTL1.ITGRPNM = VE.ITGRPNM;
@@ -844,7 +871,6 @@ namespace Improvar.Controllers
                     TBATCHDTL1.ITNM = VE.ITNM;
                     TBATCHDTL1.STYLENO = VE.STYLENO;
                     TBATCHDTL1.STKTYPE = VE.STKTYPE;
-                    TBATCHDTL1.STKNAME = VE.STKNAME;
                     TBATCHDTL1.PARTCD = VE.PARTCD;
                     TBATCHDTL1.PARTNM = VE.PARTNM;
                     TBATCHDTL1.COLRCD = VE.COLRCD;
@@ -862,82 +888,90 @@ namespace Improvar.Controllers
                     TBATCHDTL1.DISCTYPE_DESC = VE.DISCTYPE == "P" ? "%" : VE.DISCTYPE == "N" ? "Nos" : VE.DISCTYPE == "Q" ? "Qnty" : "Fixed";
                     TBATCHDTL1.TDDISCRATE = VE.TDDISCRATE;
                     TBATCHDTL1.TDDISCTYPE = VE.TDDISCTYPE;
+                    TBATCHDTL1.TDDISCTYPE_DESC = VE.TDDISCTYPE == "P" ? "%" : VE.TDDISCTYPE == "N" ? "Nos" : VE.TDDISCTYPE == "Q" ? "Qnty" : "Fixed";
                     TBATCHDTL1.SCMDISCRATE = VE.SCMDISCRATE;
                     TBATCHDTL1.SCMDISCTYPE = VE.SCMDISCTYPE;
+                    TBATCHDTL1.SCMDISCTYPE_DESC = VE.SCMDISCTYPE == "P" ? "%" : VE.SCMDISCTYPE == "N" ? "Nos" : VE.SCMDISCTYPE == "Q" ? "Qnty" : "Fixed";
                     TBATCHDTL1.BARNO = VE.BARCODE;
+                    TBATCHDTL1.PDESIGN = VE.PDESIGN;
+                    TBATCHDTL1.FLAGMTR = VE.FLAGMTR;
+                    TBATCHDTL1.HSNCODE = VE.HSNCODE;
+                    TBATCHDTL1.BALENO = VE.BALENO;
+                    TBATCHDTL1.LOCABIN = VE.LOCABIN;
+                    TBATCHDTL1.ALL_GSTPER = VE.ALL_GSTPER;
                     TBATCHDTL.Add(TBATCHDTL1);
                     VE.TBATCHDTL = TBATCHDTL;
 
                 }
-                VE.TBATCHDTL = (from x in VE.TBATCHDTL
-                                group x by new
-                                {
-                                    x.TXNSLNO,
-                                    x.ITGRPCD,
-                                    x.ITGRPNM,
-                                    x.MTRLJOBCD,
-                                    x.MTRLJOBNM,
-                                    x.ITCD,
-                                    x.ITNM,
-                                    x.STYLENO,
-                                    x.STKTYPE,
-                                    x.STKNAME,
-                                    x.PARTCD,
-                                    x.PARTNM,
-                                    x.COLRCD,
-                                    x.COLRNM,
-                                    x.SIZECD,
-                                    x.SIZENM,
-                                    x.SHADE,
-                                    x.UOM,
-                                    x.RATE,
-                                    x.GSTPER,
-                                    x.DISCRATE,
-                                    x.DISCTYPE,
-                                    x.DISCTYPE_DESC,
-                                    x.TDDISCRATE,
-                                    x.TDDISCTYPE,
-                                    x.SCMDISCRATE,
-                                    x.SCMDISCTYPE,
-                                    x.BARNO,
-                                } into P
-                                select new TBATCHDTL
-                                {
-                                    TXNSLNO = P.Key.TXNSLNO,
-                                    ITGRPCD = P.Key.ITGRPCD,
-                                    ITGRPNM = P.Key.ITGRPNM,
-                                    MTRLJOBCD = P.Key.MTRLJOBCD,
-                                    MTRLJOBNM = P.Key.MTRLJOBNM,
-                                    ITCD = P.Key.ITCD,
-                                    ITNM = P.Key.ITNM,
-                                    STYLENO = P.Key.STYLENO,
-                                    STKTYPE = P.Key.STKTYPE,
-                                    STKNAME = P.Key.STKNAME,
-                                    PARTCD = P.Key.PARTCD,
-                                    PARTNM = P.Key.PARTNM,
-                                    COLRCD = P.Key.COLRCD,
-                                    COLRNM = P.Key.COLRNM,
-                                    SIZECD = P.Key.SIZECD,
-                                    SIZENM = P.Key.SIZENM,
-                                    SHADE = P.Key.SHADE,
-                                    QNTY = P.Sum(A => A.QNTY),
-                                    UOM = P.Key.UOM,
-                                    NOS = P.Sum(A => A.NOS),
-                                    RATE = P.Key.RATE,
-                                    GSTPER = P.Key.GSTPER,
-                                    DISCRATE = P.Key.DISCRATE,
-                                    DISCTYPE = P.Key.DISCTYPE,
-                                    DISCTYPE_DESC = P.Key.DISCTYPE == "P" ? "%" : P.Key.DISCTYPE == "N" ? "Nos" : P.Key.DISCTYPE == "Q" ? "Qnty" : "Fixed",
-                                    TDDISCRATE = P.Key.TDDISCRATE,
-                                    TDDISCTYPE = P.Key.TDDISCTYPE,
-                                    SCMDISCRATE = P.Key.SCMDISCRATE,
-                                    SCMDISCTYPE = P.Key.SCMDISCTYPE,
-                                    BARNO = P.Key.BARNO,
-                                }).OrderBy(b => b.TXNSLNO).ToList();
-                for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
-                {
-                    VE.TBATCHDTL[p].SLNO = Convert.ToInt16(p + 1);
-                }
+                //VE.TBATCHDTL = (from x in VE.TBATCHDTL
+                //                group x by new
+                //                {
+                //                    x.TXNSLNO,
+                //                    x.ITGRPCD,
+                //                    x.ITGRPNM,
+                //                    x.MTRLJOBCD,
+                //                    x.MTRLJOBNM,
+                //                    x.ITCD,
+                //                    x.ITNM,
+                //                    x.STYLENO,
+                //                    x.STKTYPE,
+                //                    x.STKNAME,
+                //                    x.PARTCD,
+                //                    x.PARTNM,
+                //                    x.COLRCD,
+                //                    x.COLRNM,
+                //                    x.SIZECD,
+                //                    x.SIZENM,
+                //                    x.SHADE,
+                //                    x.UOM,
+                //                    x.RATE,
+                //                    x.GSTPER,
+                //                    x.DISCRATE,
+                //                    x.DISCTYPE,
+                //                    x.DISCTYPE_DESC,
+                //                    x.TDDISCRATE,
+                //                    x.TDDISCTYPE,
+                //                    x.SCMDISCRATE,
+                //                    x.SCMDISCTYPE,
+                //                    x.BARNO,
+                //                } into P
+                //                select new TBATCHDTL
+                //                {
+                //                    TXNSLNO = P.Key.TXNSLNO,
+                //                    ITGRPCD = P.Key.ITGRPCD,
+                //                    ITGRPNM = P.Key.ITGRPNM,
+                //                    MTRLJOBCD = P.Key.MTRLJOBCD,
+                //                    MTRLJOBNM = P.Key.MTRLJOBNM,
+                //                    ITCD = P.Key.ITCD,
+                //                    ITNM = P.Key.ITNM,
+                //                    STYLENO = P.Key.STYLENO,
+                //                    STKTYPE = P.Key.STKTYPE,
+                //                    STKNAME = P.Key.STKNAME,
+                //                    PARTCD = P.Key.PARTCD,
+                //                    PARTNM = P.Key.PARTNM,
+                //                    COLRCD = P.Key.COLRCD,
+                //                    COLRNM = P.Key.COLRNM,
+                //                    SIZECD = P.Key.SIZECD,
+                //                    SIZENM = P.Key.SIZENM,
+                //                    SHADE = P.Key.SHADE,
+                //                    QNTY = P.Sum(A => A.QNTY),
+                //                    UOM = P.Key.UOM,
+                //                    NOS = P.Sum(A => A.NOS),
+                //                    RATE = P.Key.RATE,
+                //                    GSTPER = P.Key.GSTPER,
+                //                    DISCRATE = P.Key.DISCRATE,
+                //                    DISCTYPE = P.Key.DISCTYPE,
+                //                    DISCTYPE_DESC = P.Key.DISCTYPE == "P" ? "%" : P.Key.DISCTYPE == "N" ? "Nos" : P.Key.DISCTYPE == "Q" ? "Qnty" : "Fixed",
+                //                    TDDISCRATE = P.Key.TDDISCRATE,
+                //                    TDDISCTYPE = P.Key.TDDISCTYPE,
+                //                    SCMDISCRATE = P.Key.SCMDISCRATE,
+                //                    SCMDISCTYPE = P.Key.SCMDISCTYPE,
+                //                    BARNO = P.Key.BARNO,
+                //                }).OrderBy(b => b.TXNSLNO).ToList();
+                //for (int p = 0; p <= VE.TBATCHDTL.Count - 1; p++)
+                //{
+                //    VE.TBATCHDTL[p].SLNO = Convert.ToInt16(p + 1);
+                //}
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_PRODUCT", VE);
@@ -948,27 +982,27 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult DeleteBarCodeRow(TransactionPackingSlipEntry VE, int SLNO)
-        {
+        //public ActionResult DeleteBarCodeRow(TransactionPackingSlipEntry VE, int SLNO)
+        //{
 
-            List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
-            int count = 0;
-            for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
-            {
-                if (VE.TBATCHDTL[i].SLNO != SLNO)
-                {
-                    count += 1;
-                    TBATCHDTL IFSC = new TBATCHDTL();
-                    IFSC = VE.TBATCHDTL[i];
-                    TBATCHDTL.Add(IFSC);
-                }
-            }
-            VE.TBATCHDTL = TBATCHDTL;
-            ModelState.Clear();
-            VE.DefaultView = true;
-            return PartialView("_T_SALE_PRODUCT", VE);
+        //    List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
+        //    int count = 0;
+        //    for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+        //    {
+        //        if (VE.TBATCHDTL[i].SLNO != SLNO)
+        //        {
+        //            count += 1;
+        //            TBATCHDTL IFSC = new TBATCHDTL();
+        //            IFSC = VE.TBATCHDTL[i];
+        //            TBATCHDTL.Add(IFSC);
+        //        }
+        //    }
+        //    VE.TBATCHDTL = TBATCHDTL;
+        //    ModelState.Clear();
+        //    VE.DefaultView = true;
+        //    return PartialView("_T_SALE_PRODUCT", VE);
 
-        }
+        //}
         public ActionResult FillDetailData(TransactionPackingSlipEntry VE)
         {
             try
@@ -987,7 +1021,9 @@ namespace Improvar.Controllers
                                   x.DISCTYPE,
                                   x.DISCTYPE_DESC,
                                   x.TDDISCTYPE,
+                                  x.TDDISCTYPE_DESC,
                                   x.SCMDISCTYPE,
+                                  x.SCMDISCTYPE_DESC,
                                   x.UOM,
                                   x.STKTYPE,
                                   x.RATE,
@@ -995,8 +1031,8 @@ namespace Improvar.Controllers
                                   x.SCMDISCRATE,
                                   x.TDDISCRATE,
                                   x.GSTPER,
+                                  x.ALL_GSTPER,
                                   x.FLAGMTR,
-                                  x.STKNAME,
                               } into P
                               select new TTXNDTL
                               {
@@ -1009,7 +1045,6 @@ namespace Improvar.Controllers
                                   ITNM = P.Key.STYLENO + "" + P.Key.ITNM,
                                   STYLENO = P.Key.STYLENO,
                                   STKTYPE = P.Key.STKTYPE,
-                                  STKNAME = P.Key.STKNAME,
                                   UOM = P.Key.UOM,
                                   NOS = P.Sum(A => A.NOS),
                                   QNTY = P.Sum(A => A.QNTY),
@@ -1021,21 +1056,23 @@ namespace Improvar.Controllers
                                   DISCRATE = P.Key.DISCRATE,
                                   TDDISCRATE = P.Key.TDDISCRATE,
                                   TDDISCTYPE = P.Key.TDDISCTYPE,
+                                  TDDISCTYPE_DESC = P.Key.TDDISCTYPE_DESC,
                                   SCMDISCRATE = P.Key.SCMDISCRATE,
                                   SCMDISCTYPE = P.Key.SCMDISCTYPE,
+                                  SCMDISCTYPE_DESC = P.Key.SCMDISCTYPE_DESC,
+                                  ALL_GSTPER = P.Key.ALL_GSTPER,
                                   //AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                               }).ToList();
-                var tax_data = salesfunc.GetTax(VE.T_TXN.DOCDT.retDateStr(), VE.T_TXNOTH.TAXGRPCD);
-                string tax = Master_Help.ToReturnFieldValues("", tax_data);
-                double igstper = tax.retCompValue("IGSTPER").retDbl();
-                double cgstper = tax.retCompValue("CGSTPER").retDbl();
-                double sgstper = tax.retCompValue("SGSTPER").retDbl();
+                
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
                 {
-                    //VE.TTXNDTL[p].TXBLVAL = VE.TTXNDTL[p].AMT.retDbl()- VE.TTXNDTL[p].TOTDISCAMT.retDbl();
-                    VE.TTXNDTL[p].IGSTPER = igstper;
-                    VE.TTXNDTL[p].CGSTPER = cgstper;
-                    VE.TTXNDTL[p].SGSTPER = sgstper;
+                    if(VE.TTXNDTL[p].ALL_GSTPER.retStr() != "")
+                    {
+                        var tax_data = VE.TTXNDTL[p].ALL_GSTPER.Split(',').ToList();
+                        VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl();
+                        VE.TTXNDTL[p].CGSTPER = tax_data[1].retDbl();
+                        VE.TTXNDTL[p].SGSTPER = tax_data[2].retDbl();
+                    }
                 }
                 //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
                 //VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
@@ -1154,6 +1191,35 @@ namespace Improvar.Controllers
                 VE.DefaultDay = 0;
                 ViewBag.ErrorMessage = ex.Message + ex.InnerException;
                 return View(VE);
+            }
+        }
+        public ActionResult DeleteRow(TransactionPackingSlipEntry VE)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
+                int count = 0;
+                for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+                {
+                    if (VE.TBATCHDTL[i].Checked == false)
+                    {
+                        count += 1;
+                        TBATCHDTL item = new TBATCHDTL();
+                        item = VE.TBATCHDTL[i];
+                        item.SLNO = Convert.ToSByte(count);
+                        TBATCHDTL.Add(item);
+                    }
+                }
+                VE.TBATCHDTL = TBATCHDTL;
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_SALE_PRODUCT", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult AddDOCRow(TransactionPackingSlipEntry VE)

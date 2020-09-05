@@ -141,6 +141,7 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
+        public string SCMDISCTYPE_DESC { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? TDDISCAMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
@@ -148,6 +149,7 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string TDDISCTYPE { get; set; }
+        public string TDDISCTYPE_DESC { get; set; }
 
         [StringLength(30)]
         public string AGSTCHAUTONO { get; set; }
@@ -179,5 +181,6 @@ namespace Improvar.Models
         public string STKNAME { get; set; }
         public string DISCTYPE_DESC { get; set; }
         public double? TOTDISCAMT { get; set; }
+        public string ALL_GSTPER { get; set; }
     }
 }

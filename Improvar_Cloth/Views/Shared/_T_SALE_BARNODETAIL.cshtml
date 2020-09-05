@@ -103,6 +103,14 @@
                                     </td>
                                     <td class="">
                                         @Html.EditorFor(model => Model.TSALEBARNOPOPUP[i].BALNOS, new { htmlattributes = new { id = "STOCK_BALNOS_" + i, @class = " atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].PDESIGN, new { id = "STOCK_PDESIGN_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].FLAGMTR, new { id = "STOCK_FLAGMTR_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].RATE, new { id = "STOCK_RATE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].HSNCODE, new { id = "STOCK_HSNCODE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].GSTPER, new { id = "STOCK_GSTPER_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].ALL_GSTPER, new { id = "STOCK_ALL_GSTPER_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].SHADE, new { id = "STOCK_SHADE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].LOCABIN, new { id = "STOCK_LOCABIN_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                     </td>
                                 </tr>
                             }

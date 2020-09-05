@@ -76,5 +76,10 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double BALNOS { get; set; }
         public bool Checked { get; set; }
+        [StringLength(30)]
+        public string PDESIGN { get; set; }
+        public string ALL_GSTPER { get; set; }
+        public string PRODGRPGSTPER { get; set; }
+
     }
 }

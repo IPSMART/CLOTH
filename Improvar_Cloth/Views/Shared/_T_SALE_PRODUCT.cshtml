@@ -14,8 +14,8 @@
             @Html.ValidationSummary(true)
             <div class="grid_title">
                 @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
-                @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />
-                    <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="HelB_image_buttonAddRemove" onclick="DeleteRow()" />*@
+                @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />*@
+                    <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
                 <div class="col-md-8">
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PRODUCT_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
@@ -54,7 +54,7 @@
                                 <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
                                 <th class="" style="width:50px;">Disc-2</th>
                                 <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>
-                                <th class="" >Image Upload</th>
+                                <th class="">Image Upload</th>
                                 @if (Model.DefaultAction != "V")
                                 {
                                     <th class="sticky-cell-opposite" style="width:40px;"></th>
@@ -70,6 +70,11 @@
                                         <td class="sticky-cell">
                                             @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].FLAGMTR, new { id = "B_FLAGMTR_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].HSNCODE, new { id = "B_HSNCODE_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].LOCABIN, new { id = "B_LOCABIN_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:20px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -82,28 +87,29 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ITGRPCD, new { id = "B_ITGRPCD_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].MTRLJOBNM, new { id = "B_MTRLJOBNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLJOBNM, new { id = "B_MTRLJOBNM_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITNM, new { id = "B_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i })
                                         </td>
                                         @*<td class="">
                                                 @Html.TextBoxFor(model => Model.TBATCHDTL[i].FABITNM, new { id = "B_FABITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].FABITCD, new { id = "B_FABITCD_" + i })
                                             </td>*@
                                         @*<td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>*@
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>*@
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].STKNAME, new { id = "B_STKNAME_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @*@Html.HiddenFor(model => model.TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i })*@
                                             @*@Html.DropDownListFor(model => Model.TBATCHDTL[i].STKTYPE, new SelectList(Model.TBATCHDTL[i].DropDown_list1, "value", "text", Model.TBATCHDTL[i].STKTYPE), new { id = "B_STKTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })*@
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].PARTNM, new { id = "B_PARTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].PARTCD, new { id = "B_PARTCD_" + i })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].PARTCD, new { id = "B_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].PARTNM, new { id = "B_PARTNM_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRCD, new { id = "B_COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -112,8 +118,8 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRNM, new { id = "B_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].SIZENM, new { id = "B_SIZENM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].SIZECD, new { id = "B_SIZECD_" + i })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].SIZECD, new { id = "B_SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].SIZENM, new { id = "B_SIZENM_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -133,21 +139,19 @@
 
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTPER_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 5 } })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].ALL_GSTPER, new { id = "B_ALL_GSTPER_" + i })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
-
-
-
-
-                                            @*@Html.DropDownListFor(model => Model.TBATCHDTL[i].DISCTYPE, new SelectList(Model.TBATCHDTL[i].DISC_TYPE, "value", "text", Model.TBATCHDTL[i].DISCTYPE), new { id = "B_DISCTYPE" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })*@
-                                        </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })
+
+
 
 
                                             @*@Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_TDDISCTYPE", maxlength = 1, @list = "TDDISCTYPE_List1" } })
@@ -162,7 +166,10 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].SCMDISCTYPE, new { id = "B_SCMDISCTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].SCMDISCTYPE_DESC, new { id = "B_SCMDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].SCMDISCTYPE, new { id = "B_SCMDISCTYPE_" + i })
+
+
 
 
                                             @*@Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_SCMDISCTYPE", maxlength = 1, @list = "SCMDISCTYPE_List1" } })
@@ -182,7 +189,7 @@
                                         @if (Model.DefaultAction != "V")
                                         {
                                             <td class="sticky-cell-opposite">
-                                                <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="EditBarCodeRow(@i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
+                                                <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea('', '_T_SALE_PRODUCT_GRID', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </td>
                                         }
                                     </tr>
@@ -228,8 +235,8 @@
         }
     </div>
     @*<div class="row">
-        <div class="col-md-1" style="width:auto;">
-                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="EditBarCodeRow()" />
-            </div>
-    </div>*@
+            <div class="col-md-1" style="width:auto;">
+                    <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="EditBarCodeRow()" />
+                </div>
+        </div>*@
 </div>

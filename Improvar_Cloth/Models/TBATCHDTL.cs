@@ -141,5 +141,12 @@ namespace Improvar.Models
         public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
         [StringLength(15)]
         public string STKNAME { get; set; }
+        [StringLength(30)]
+        public string PDESIGN { get; set; }
+        public string ALL_GSTPER { get; set; }
+        [StringLength(30)]
+        public string BALENO { get; set; }
+        public string SCMDISCTYPE_DESC { get; set; }
+        public string TDDISCTYPE_DESC { get; set; }
     }
 }
