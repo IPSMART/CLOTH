@@ -439,6 +439,14 @@ namespace Improvar.Controllers
                         var javaScriptSerializer2 = new System.Web.Script.Serialization.JavaScriptSerializer();
                         string JR2 = javaScriptSerializer2.Serialize(VE.MSITEMBOMMTRL_RMPM);
                         i.ChildData_RMPM = JR2;
+                        if (VE.MSITEMBOMMTRL_RMPM.Count > 0)
+                        {
+                            i.RMPMDTL = "Y";
+                        }
+                        else if (VE.MSITEMBOMMTRL_RMPM.Count <= 0)
+                        {
+                            i.RMPMDTL = "N";
+                        }
                     }
                     if (VE.MSITEMBOMPART.Count == 0)
                     {

@@ -291,8 +291,8 @@ namespace Improvar.Controllers
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0; double TOTAL_BOMQNTY = 0; double TOTAL_EXTRAQNTY = 0; double TOTAL_QQNTY = 0;
                 string str = "";
-                str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
+                str += "a.itremark,a.shade,a.cutlength,a.sample, k.itnm||' '||k.styleno itstyle from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
                 str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
                 str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
@@ -310,7 +310,8 @@ namespace Improvar.Controllers
                                    ITGRPCD = dr["itgrpcd"].ToString(),
                                    ITGRPNM = dr["itgrpnm"].ToString(),
                                    ITCD = dr["itcd"].ToString(),
-                                   ITNM = dr["itnm"].ToString(),
+                                   ITNM = dr["itstyle"].ToString(),
+                                   UOM = dr["uomcd"].ToString(),
                                    SIZECD = dr["sizecd"].retStr(),
                                    SIZENM = dr["sizenm"].retStr(),
                                    PARTCD = dr["partcd"].retStr(),
@@ -337,7 +338,7 @@ namespace Improvar.Controllers
                 string str2 = "";
                 str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm, ";
                 str2 += " k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd,b.qnty qntyMst, ";
-                str2 += "a.sample from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
+                str2 += "a.sample,k.itnm||' '||k.styleno itstyle from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
                 str2 += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
                 str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+)  ";
@@ -356,7 +357,7 @@ namespace Improvar.Controllers
                                    ITGRPCD = dr["itgrpcd"].ToString(),
                                    ITGRPNM = dr["itgrpnm"].ToString(),
                                    ITCD = dr["itcd"].ToString(),
-                                   ITNM = dr["itnm"].ToString(),
+                                   ITNM = dr["itstyle"].ToString(),
                                    SIZECD = dr["sizecd"].retStr(),
                                    SIZENM = dr["sizenm"].retStr(),
                                    PARTCD = dr["partcd"].retStr(),
