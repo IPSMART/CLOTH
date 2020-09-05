@@ -141,9 +141,10 @@ namespace Improvar.Models
         public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
         [StringLength(15)]
         public string STKNAME { get; set; }
-        public bool CheckedSample { get; set; }
+        public bool  CheckedSample { get; set; }
         public string BOMQNTY { get; set; }
         public string EXTRAQNTY { get; set; }
-        
+        public string SAMPLE { get; set; }
+
     }
 }
