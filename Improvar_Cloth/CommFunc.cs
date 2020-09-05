@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -177,6 +178,12 @@ namespace Improvar
         {
             Connection Cn = new Connection();
             return Cn.Encrypt_URL(UNQSNO);
+        }
+        public static IEnumerable<TSource> DistinctBy<TSource>(
+         this IEnumerable<TSource> source, Func<TSource, object> predicate)
+        {
+            // TODO: Null-check arguments
+            return from item in source.GroupBy(predicate) select item.First();
         }
     }
 }

@@ -262,6 +262,9 @@ namespace Improvar.Controllers
                                         join l in DB.M_JOBMST on i.JOBCD equals l.JOBCD
                                         join m in DB.M_SIZE on i.SIZECD equals m.SIZECD into y
                                         from m in y.DefaultIfEmpty()
+                                        join e in DB.M_COLOR on i.COLRCD equals e.COLRCD into z
+                                        from e in z.DefaultIfEmpty()
+                                      
                                         where (i.BOMCD == sl.BOMCD && i.EFFDT == sl.EFFDT)
                                         select new MSITEMBOMPART()
                                         {
@@ -272,6 +275,8 @@ namespace Improvar.Controllers
                                             PARTNM = j.PARTNM,
                                             JOBCD = i.JOBCD,
                                             JOBNM = l.JOBNM,
+                                            COLRCD = i.COLRCD,
+                                            COLRNM = e.COLRNM,
                                             SIZECD = i.SIZECD,
                                             SIZENM = m.SIZENM,
                                             JOBRT = i.JOBRT,
@@ -391,6 +396,16 @@ namespace Improvar.Controllers
                         string JR1 = javaScriptSerializer1.Serialize(VE.MSITEMBOMMTRL);
                         i.ChildData = JR1;
                         VE.MSITEMBOMMTRL_RMPM = (from a in DB.M_SITEMBOMMTRL
+                                                 join b in DB.M_SITEM on a.ITCD equals b.ITCD into xx
+                                                 from b in xx.DefaultIfEmpty()
+                                                 join c in DB.M_PARTS on a.PARTCD equals c.PARTCD into x
+                                                 from c in x.DefaultIfEmpty()
+                                                 join d in DB.M_SIZE on a.SIZECD equals d.SIZECD into y
+                                                 from d in y.DefaultIfEmpty()
+                                                 join e in DB.M_COLOR on a.COLRCD equals e.COLRCD into z
+                                                 from e in z.DefaultIfEmpty()
+                                                 join f in DB.M_MTRLJOBMST on a.MTRLJOBCD equals f.MTRLJOBCD into s
+                                                 from f in s.DefaultIfEmpty()
                                                  where (a.BOMCD == sl.BOMCD && a.EFFDT == sl.EFFDT && a.SLNO == i.SLNO)
                                                  select new MSITEMBOMMTRL_RMPM()
                                                  {
@@ -398,6 +413,15 @@ namespace Improvar.Controllers
                                                      EFFDT = a.EFFDT,
                                                      PSLNO = a.RSLNO,
                                                      ITCD = a.ITCD,
+                                                     ITNM = b.ITNM,
+                                                     MTRLJOBCD =a.MTRLJOBCD,
+                                                     MTRLJOBNM = f.MTRLJOBNM,
+                                                     PARTCD = a.PARTCD,
+                                                     PARTNM = c.PARTNM,
+                                                     SIZECD = a.SIZECD,
+                                                     SIZENM = d.SIZENM,
+                                                     COLRCD = a.COLRCD,
+                                                     COLRNM = e.COLRNM,
                                                      QNTY = a.QNTY,
                                                      MTRLRT = a.MTRLRT,
                                                      REMARK = a.REMARK,
@@ -1445,6 +1469,7 @@ namespace Improvar.Controllers
                                     ITEMBOMPART.SLNO = Convert.ToByte(VE.MSITEMBOMPART[i].SLNO);
                                     ITEMBOMPART.JOBCD = VE.MSITEMBOMPART[i].JOBCD;
                                     ITEMBOMPART.PARTCD = VE.MSITEMBOMPART[i].PARTCD;
+                                    ITEMBOMPART.COLRCD = VE.MSITEMBOMPART[i].COLRCD;
                                     ITEMBOMPART.SIZECD = VE.MSITEMBOMPART[i].SIZECD;
                                     ITEMBOMPART.MTRLCOST = VE.MSITEMBOMPART[i].MTRLCOST;
                                     ITEMBOMPART.JOBRT = VE.MSITEMBOMPART[i].JOBRT;
@@ -1496,9 +1521,11 @@ namespace Improvar.Controllers
                                     if (VE.MSITEMBOMPART[i].ChildData_RMPM != null)
                                     {
                                         string data = VE.MSITEMBOMPART[i].ChildData_RMPM;
-                                        var helpM = new List<Improvar.Models.MSITEMBOMMTRL>();
+                                        //var helpM = new List<Improvar.Models.MSITEMBOMMTRL>();
+                                        var helpM = new List<Improvar.Models.MSITEMBOMMTRL_RMPM>();
                                         var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                                        helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.MSITEMBOMMTRL>>(data);
+                                        //helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.MSITEMBOMMTRL>>(data);
+                                        helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.MSITEMBOMMTRL_RMPM>>(data);
                                         for (int j = 0; j <= helpM.Count - 1; j++)
                                         {
                                             if (helpM[j].PSLNO != 0 && helpM[j].ITCD != null)
@@ -1509,8 +1536,10 @@ namespace Improvar.Controllers
                                                 ITEMBOMMTRL.BOMCD = ITEMBOM.BOMCD;
                                                 ITEMBOMMTRL.EFFDT = ITEMBOM.EFFDT;
                                                 ITEMBOMMTRL.SLNO = ITEMBOMPART.SLNO;
-                                                ITEMBOMMTRL.RSLNO = helpM[j].PSLNO;
+                                                //ITEMBOMMTRL.RSLNO = helpM[j].PSLNO;
+                                                ITEMBOMMTRL.RSLNO = Convert.ToByte(helpM[j].PSLNO);
                                                 ITEMBOMMTRL.ITCD = helpM[j].ITCD;
+                                                ITEMBOMMTRL.MTRLJOBCD = helpM[j].MTRLJOBCD;
                                                 ITEMBOMMTRL.PARTCD = helpM[j].PARTCD;
                                                 ITEMBOMMTRL.SIZECD = helpM[j].SIZECD;
                                                 ITEMBOMMTRL.COLRCD = helpM[j].COLRCD;
@@ -1580,6 +1609,10 @@ namespace Improvar.Controllers
                                                 //INV_ITEMBOMMTRL.SLNO = ITEMBOMPART.SLNO;
                                                 //INV_ITEMBOMMTRL.RSLNO = Convert.ToByte(helpM[j].PSLNO);
                                                 //INV_ITEMBOMMTRL.ITCD = helpM[j].ITCD;
+                                                //INV_ITEMBOMMTRL.MTRLJOBCD = helpM[j].MTRLJOBCD;
+                                                //INV_ITEMBOMMTRL.PARTCD = helpM[j].PARTCD;
+                                                //INV_ITEMBOMMTRL.COLRCD = helpM[j].COLRCD;
+                                                //INV_ITEMBOMMTRL.SIZECD = helpM[j].SIZECD;
                                                 //INV_ITEMBOMMTRL.QNTY = helpM[j].QNTY;
                                                 //INV_ITEMBOMMTRL.MTRLRT = helpM[j].MTRLRT;
                                                 //INV_ITEMBOMMTRL.SIZE_LNK = helpM[j].SIZE_LNK;

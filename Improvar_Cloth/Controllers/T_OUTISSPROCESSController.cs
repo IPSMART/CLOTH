@@ -117,6 +117,7 @@ namespace Improvar.Controllers
 
                         VE.IndexKey = (from p in DB.T_TXN
                                        join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
+                                       //join s in DB.T_PROGMAST on p.AUTONO equals (s.AUTONO)
                                        orderby p.DOCDT, p.DOCNO
                                        where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
                                        select new IndexKey() { Navikey = p.AUTONO }).ToList();
@@ -280,7 +281,7 @@ namespace Improvar.Controllers
                     VE.DISTRICT = subleg.DISTRICT;
                     VE.GSTNO = subleg.GSTNO;
                 }
-
+                VE.JOBNM = TXN.JOBCD.retStr() == "" ? "" : DB.M_JOBMST.Where(a => a.JOBCD == TXN.JOBCD).Select(b => b.JOBNM).FirstOrDefault();
                 //VE.CONSLNM = TXN.CONSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXN.CONSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.AGSLNM = TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.SAGSLNM = TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -291,34 +292,98 @@ namespace Improvar.Controllers
                 //VE.CRSLNM = TXNTRN.CRSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.CRSLCD).Select(b => b.SLNM).FirstOrDefault();
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
-                string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0;
+                string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0; double TOTAL_BOMQNTY = 0; double TOTAL_EXTRAQNTY = 0; double TOTAL_QQNTY = 0;
                 string str = "";
-                str += "select a.autono,a.slno,a.progautono,a.progslno,a.stkdrcr,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ";
-                str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.autono='" + TXN.AUTONO + "'";
+                str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
+                str += "a.itremark,a.shade,a.cutlength,a.sample from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
+                str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
+                str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
+                str += "order by a.slno ";
+
                 DataTable Progdtltbl = Master_Help.SQLquery(str);
                 VE.TPROGDTL = (from DataRow dr in Progdtltbl.Rows
                                select new TPROGDTL()
                                {
-                                   SLNO = dr["slno"].retShort(),
+                                   SLNO = Convert.ToInt16(dr["slno"]),
                                    NOS = dr["nos"].retDbl(),
                                    QNTY = dr["qnty"].retDbl(),
-                                   ITCD = dr["itcd"].retStr(),
+                                   ITGRPCD = dr["itgrpcd"].ToString(),
+                                   ITGRPNM = dr["itgrpnm"].ToString(),
+                                   ITCD = dr["itcd"].ToString(),
+                                   ITNM = dr["itnm"].ToString(),
                                    SIZECD = dr["sizecd"].retStr(),
+                                   SIZENM = dr["sizenm"].retStr(),
                                    PARTCD = dr["partcd"].retStr(),
+                                   PARTNM = dr["partnm"].retStr(),
                                    COLRCD = dr["colrcd"].retStr(),
+                                   COLRNM = dr["colrnm"].retStr(),
+                                   MTRLJOBCD = dr["mtrljobcd"].retStr(),
+                                   MTRLJOBNM = dr["mtrljobnm"].retStr(),
                                    ITREMARK = dr["itremark"].retStr(),
                                    SHADE = dr["shade"].retStr(),
                                    CUTLENGTH = dr["cutlength"].retDbl(),
-                                   CheckedSample = Convert.ToBoolean(dr["sample"]),
-                               }).ToList();
-                for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
+                                   SAMPLE = dr["sample"].retStr()
+                               }).OrderBy(s => s.SLNO).ToList();
+                foreach (var q in VE.TPROGDTL)
                 {
-                    TOTAL_NOS = TOTAL_NOS + VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.Value;
-                    TOTAL_QNTY = TOTAL_QNTY + VE.TPROGDTL[i].QNTY == null ? 0 : VE.TPROGDTL[i].QNTY.Value;
+                    if (q.SAMPLE == "Y") q.CheckedSample = true;
+                    TOTAL_NOS = TOTAL_NOS + (q.NOS == null ? 0 : q.NOS.Value);
+                    TOTAL_QNTY = TOTAL_QNTY + (q.QNTY == null ? 0 : q.QNTY.Value);
                 }
                 VE.T_NOS = TOTAL_NOS.retInt();
                 VE.T_QNTY = TOTAL_QNTY.retInt();
+
+
+                string str2 = "";
+                str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm, ";
+                str2 += " k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd,b.qnty qntyMst, ";
+                str2 += "a.sample from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
+                str2 += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
+                str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+)  ";
+                str2 += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                str2 += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
+                str2 += "order by a.slno ";
+
+                DataTable Progbom = Master_Help.SQLquery(str2);
+                VE.TPROGBOM = (from DataRow dr in Progbom.Rows
+                               select new TPROGBOM()
+                               {
+                                   SLNO = Convert.ToInt16(dr["slno"]),
+                                   RSLNO = Convert.ToInt16(dr["rslno"]),
+                                   QQNTY= dr["qntyMst"].retDbl(),
+                                   QNTY = dr["qnty"].retDbl(),
+                                   ITGRPCD = dr["itgrpcd"].ToString(),
+                                   ITGRPNM = dr["itgrpnm"].ToString(),
+                                   ITCD = dr["itcd"].ToString(),
+                                   ITNM = dr["itnm"].ToString(),
+                                   SIZECD = dr["sizecd"].retStr(),
+                                   SIZENM = dr["sizenm"].retStr(),
+                                   PARTCD = dr["partcd"].retStr(),
+                                   PARTNM = dr["partnm"].retStr(),
+                                   COLRCD = dr["colrcd"].retStr(),
+                                   COLRNM = dr["colrnm"].retStr(),
+                                   MTRLJOBCD = dr["mtrljobcd"].retStr(),
+                                   MTRLJOBNM = dr["mtrljobnm"].retStr(),
+                                   UOM = dr["uomcd"].retStr(),
+                                   BOMQNTY = dr["bomqnty"].retDbl(),
+                                   EXTRAQNTY = dr["extraqnty"].retDbl(),
+                                   Q_SAMPLE = dr["sample"].retStr()
+                               }).OrderBy(s => s.SLNO).ToList();
+                foreach (var q in VE.TPROGBOM)
+                {
+                    if (q.Q_SAMPLE == "Y") q.Q_CheckedSample = true;
+                    TOTAL_QQNTY = TOTAL_QQNTY + (q.QQNTY == null ? 0 : q.QQNTY.Value);
+                    TOTAL_BOMQNTY = TOTAL_BOMQNTY + (q.BOMQNTY == null ? 0 : q.BOMQNTY.Value);
+                    TOTAL_EXTRAQNTY = TOTAL_EXTRAQNTY + (q.EXTRAQNTY == null ? 0 : q.EXTRAQNTY.Value);
+                }
+                VE.T_QQNTY= TOTAL_QQNTY.retInt();
+                VE.T_BOMQNTY = TOTAL_BOMQNTY.retInt();
+                VE.T_EXTRAQNTY = TOTAL_EXTRAQNTY.retInt();
+                
 
 
                 string str1 = "";
@@ -947,12 +1012,12 @@ namespace Improvar.Controllers
                                    QITNM = P.Key.ITNM,
                                    QUOM = P.Key.UOM,
                                    QQNTY = P.Key.QNTY,
-                                  //qnty = P.Sum(A => A.QNTY)
+                                   //qnty = P.Sum(A => A.QNTY)
                                }).ToList();
                 for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
                 {
                     VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);
-                    
+
                 }
                 VE.T_QQNTY = VE.TPROGBOM.Sum(a => a.QQNTY).retDbl();
                 ModelState.Clear();
@@ -1523,17 +1588,19 @@ namespace Improvar.Controllers
 
                         if (VE.DefaultAction == "E")
                         {
-                            dbsql = MasterHelpFa.TblUpdt("t_progmast", TTXN.AUTONO, "E");
+                            dbsql = MasterHelpFa.TblUpdt("t_progbom", TTXN.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                             dbsql = MasterHelpFa.TblUpdt("t_progdtl", TTXN.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("t_progbom", TTXN.AUTONO, "E");
+                            dbsql = MasterHelpFa.TblUpdt("t_progmast", TTXN.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("t_batchmst", TTXN.AUTONO, "E");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("t_txndtl", TTXN.AUTONO, "E");
+                           
+                          
+                            //dbsql = MasterHelpFa.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
+                            //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            //dbsql = MasterHelpFa.TblUpdt("t_batchmst", TTXN.AUTONO, "E");
+                            //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            //dbsql = MasterHelpFa.TblUpdt("t_txndtl", TTXN.AUTONO, "E");
                             //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                             //dbsql = MasterHelpFa.TblUpdt("t_txn_linkno", TTXN.AUTONO, "E");
                             //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -1644,15 +1711,15 @@ namespace Improvar.Controllers
                         switch (VE.MENU_PARA)
                         {
                             case "DY":
-                                stkdrcr = "C"; mtrljobcd = "DY"; break;
+                                stkdrcr = "C"; break;
                             case "PR":
-                                stkdrcr = "C"; mtrljobcd = "PR"; break;
+                                stkdrcr = "C"; break;
                             case "ST":
-                                stkdrcr = "C"; mtrljobcd = "ST"; break;
+                                stkdrcr = "C";  break;
                             case "EM":
-                                stkdrcr = "C"; mtrljobcd = "EM"; break;
+                                stkdrcr = "C";  break;
                             case "JW":
-                                stkdrcr = "C"; mtrljobcd = "JW"; break;
+                                stkdrcr = "C";  break;
                         }
 
                         for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
@@ -1665,7 +1732,7 @@ namespace Improvar.Controllers
                                 TPROGMAST.AUTONO = TTXN.AUTONO;
                                 TPROGMAST.SLNO = VE.TPROGDTL[i].SLNO;
                                 TPROGMAST.SLCD = TTXN.SLCD;
-                                TPROGMAST.MTRLJOBCD = mtrljobcd;
+                                TPROGMAST.MTRLJOBCD = VE.TPROGDTL[i].MTRLJOBCD;
                                 TPROGMAST.STKTYPE = stktype;
                                 TPROGMAST.ITCD = VE.TPROGDTL[i].ITCD;
                                 TPROGMAST.PARTCD = VE.TPROGDTL[i].PARTCD;
@@ -1678,7 +1745,7 @@ namespace Improvar.Controllers
                                 TPROGMAST.CUTLENGTH = VE.TPROGDTL[i].CUTLENGTH.retDcml();
                                 TPROGMAST.JOBCD = TTXN.JOBCD;
                                 TPROGMAST.PROGUNIQNO = "1";
-                                if (VE.TPROGDTL[i].Checked == true) TPROGMAST.SAMPLE = "Y";
+                                if (VE.TPROGDTL[i].CheckedSample == true) TPROGMAST.SAMPLE = "Y"; else TPROGMAST.SAMPLE = "N";
                                 dbsql = MasterHelpFa.RetModeltoSql(TPROGMAST);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -1721,166 +1788,166 @@ namespace Improvar.Controllers
                                 TPROGBOM.BOMQNTY = VE.TPROGBOM[i].BOMQNTY.retDcml();
                                 TPROGBOM.EXTRAQNTY = VE.TPROGBOM[i].EXTRAQNTY.retDcml();
                                 TPROGBOM.QNTY = VE.TPROGBOM[i].QNTY.retDcml();
-                                TPROGBOM.MTRLJOBCD = mtrljobcd;
-                                if (VE.TPROGBOM[i].CheckedSample == true) TPROGBOM.SAMPLE = "Y";
+                                TPROGBOM.MTRLJOBCD = VE.TPROGBOM[i].MTRLJOBCD;
+                                if (VE.TPROGBOM[i].Q_CheckedSample == true) TPROGBOM.SAMPLE = "Y"; else TPROGBOM.SAMPLE = "N";
                                 dbsql = MasterHelpFa.RetModeltoSql(TPROGBOM);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
 
                             }
                         }
-                        for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
-                        {
-                            if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null)
-                            {
-                                COUNTER = COUNTER + 1;
-                                T_TXNDTL TTXNDTL = new T_TXNDTL();
-                                TTXNDTL.CLCD = TTXN.CLCD;
-                                TTXNDTL.EMD_NO = TTXN.EMD_NO;
-                                TTXNDTL.DTAG = TTXN.DTAG;
-                                TTXNDTL.AUTONO = TTXN.AUTONO;
-                                TTXNDTL.SLNO = VE.TPROGDTL[i].SLNO;
-                                TTXNDTL.MTRLJOBCD = VE.TTXNDTL[i].MTRLJOBCD;
-                                TTXNDTL.ITCD = VE.TTXNDTL[i].ITCD;
-                                TTXNDTL.PARTCD = VE.TTXNDTL[i].PARTCD;
-                                TTXNDTL.COLRCD = VE.TTXNDTL[i].COLRCD;
-                                TTXNDTL.SIZECD = VE.TTXNDTL[i].SIZECD;
-                                TTXNDTL.STKDRCR = stkdrcr;
-                                TTXNDTL.STKTYPE = VE.TTXNDTL[i].STKTYPE;
-                                TTXNDTL.HSNCODE = VE.TTXNDTL[i].HSNCODE;
-                                TTXNDTL.ITREM = VE.TPROGDTL[i].ITREMARK;
-                                TTXNDTL.PCSREM = VE.TTXNDTL[i].PCSREM;
-                                TTXNDTL.FREESTK = VE.TTXNDTL[i].FREESTK;
-                                TTXNDTL.BATCHNO = VE.TTXNDTL[i].BATCHNO;
-                                //TTXNDTL.BALEYR = VE.TTXNDTL[i].BALEYR;
-                                TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
-                                TTXNDTL.GOCD = "aa";
-                                TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
-                                TTXNDTL.NOS = VE.TTXNDTL[i].NOS == null ? 0 : VE.TTXNDTL[i].NOS;
-                                TTXNDTL.QNTY = VE.TTXNDTL[i].QNTY;
-                                TTXNDTL.BLQNTY = VE.TTXNDTL[i].BLQNTY;
-                                TTXNDTL.RATE = VE.TTXNDTL[i].RATE;
-                                TTXNDTL.AMT = VE.TTXNDTL[i].AMT;
-                                TTXNDTL.FLAGMTR = VE.TTXNDTL[i].FLAGMTR;
-                                TTXNDTL.TOTDISCAMT = VE.TTXNDTL[i].TOTDISCAMT;
-                                TTXNDTL.TXBLVAL = VE.TTXNDTL[i].TXBLVAL;
-                                TTXNDTL.IGSTPER = VE.TTXNDTL[i].IGSTPER;
-                                TTXNDTL.CGSTPER = VE.TTXNDTL[i].CGSTPER;
-                                TTXNDTL.SGSTPER = VE.TTXNDTL[i].SGSTPER;
-                                TTXNDTL.CESSPER = VE.TTXNDTL[i].CESSPER;
-                                TTXNDTL.DUTYPER = VE.TTXNDTL[i].DUTYPER;
-                                TTXNDTL.IGSTAMT = VE.TTXNDTL[i].IGSTAMT;
-                                TTXNDTL.CGSTAMT = VE.TTXNDTL[i].CGSTAMT;
-                                TTXNDTL.SGSTAMT = VE.TTXNDTL[i].SGSTAMT;
-                                TTXNDTL.CESSAMT = VE.TTXNDTL[i].CESSAMT;
-                                TTXNDTL.DUTYAMT = VE.TTXNDTL[i].DUTYAMT;
-                                TTXNDTL.NETAMT = VE.TTXNDTL[i].NETAMT;
-                                //TTXNDTL.OTHRAMT = VE.TTXNDTL[i].OTHRAMT;
-                                //TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGSTDOCNO;
-                                //TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGSTDOCDT;
-                                TTXNDTL.SHORTQNTY = VE.TTXNDTL[i].SHORTQNTY;
-                                TTXNDTL.DISCTYPE = VE.TTXNDTL[i].DISCTYPE;
-                                TTXNDTL.DISCRATE = VE.TTXNDTL[i].DISCRATE;
-                                TTXNDTL.DISCAMT = VE.TTXNDTL[i].DISCAMT;
-                                TTXNDTL.SCMDISCTYPE = VE.TTXNDTL[i].SCMDISCTYPE;
-                                TTXNDTL.SCMDISCRATE = VE.TTXNDTL[i].SCMDISCRATE;
-                                TTXNDTL.SCMDISCAMT = VE.TTXNDTL[i].SCMDISCAMT;
-                                TTXNDTL.TDDISCTYPE = VE.TTXNDTL[i].TDDISCTYPE;
-                                TTXNDTL.TDDISCRATE = VE.TTXNDTL[i].TDDISCRATE;
-                                TTXNDTL.TDDISCAMT = VE.TTXNDTL[i].TDDISCAMT;
-                                TTXNDTL.PRCCD = VE.T_TXNOTH.PRCCD;
-                                //TTXNDTL.PRCEFFDT = VE.T_TXN.PRCEFFDT;
-                                TTXNDTL.BARNO = VE.TTXNDTL[i].BARNO;
-                                TTXNDTL.GLCD = VE.TTXNDTL[i].GLCD;
-                                //TTXNDTL.CLASS1CD = VE.TTXNDTL[i].CLASS1CD;
-                                dbsql = MasterHelpFa.RetModeltoSql(TTXNDTL);
-                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        //for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
+                        //{
+                        //    if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null)
+                        //    {
+                        //        COUNTER = COUNTER + 1;
+                        //        T_TXNDTL TTXNDTL = new T_TXNDTL();
+                        //        TTXNDTL.CLCD = TTXN.CLCD;
+                        //        TTXNDTL.EMD_NO = TTXN.EMD_NO;
+                        //        TTXNDTL.DTAG = TTXN.DTAG;
+                        //        TTXNDTL.AUTONO = TTXN.AUTONO;
+                        //        TTXNDTL.SLNO = VE.TPROGDTL[i].SLNO;
+                        //        TTXNDTL.MTRLJOBCD = VE.TTXNDTL[i].MTRLJOBCD;
+                        //        TTXNDTL.ITCD = VE.TTXNDTL[i].ITCD;
+                        //        TTXNDTL.PARTCD = VE.TTXNDTL[i].PARTCD;
+                        //        TTXNDTL.COLRCD = VE.TTXNDTL[i].COLRCD;
+                        //        TTXNDTL.SIZECD = VE.TTXNDTL[i].SIZECD;
+                        //        TTXNDTL.STKDRCR = stkdrcr;
+                        //        TTXNDTL.STKTYPE = VE.TTXNDTL[i].STKTYPE;
+                        //        TTXNDTL.HSNCODE = VE.TTXNDTL[i].HSNCODE;
+                        //        TTXNDTL.ITREM = VE.TPROGDTL[i].ITREMARK;
+                        //        TTXNDTL.PCSREM = VE.TTXNDTL[i].PCSREM;
+                        //        TTXNDTL.FREESTK = VE.TTXNDTL[i].FREESTK;
+                        //        TTXNDTL.BATCHNO = VE.TTXNDTL[i].BATCHNO;
+                        //        //TTXNDTL.BALEYR = VE.TTXNDTL[i].BALEYR;
+                        //        TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
+                        //        TTXNDTL.GOCD = "aa";
+                        //        TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
+                        //        TTXNDTL.NOS = VE.TTXNDTL[i].NOS == null ? 0 : VE.TTXNDTL[i].NOS;
+                        //        TTXNDTL.QNTY = VE.TTXNDTL[i].QNTY;
+                        //        TTXNDTL.BLQNTY = VE.TTXNDTL[i].BLQNTY;
+                        //        TTXNDTL.RATE = VE.TTXNDTL[i].RATE;
+                        //        TTXNDTL.AMT = VE.TTXNDTL[i].AMT;
+                        //        TTXNDTL.FLAGMTR = VE.TTXNDTL[i].FLAGMTR;
+                        //        TTXNDTL.TOTDISCAMT = VE.TTXNDTL[i].TOTDISCAMT;
+                        //        TTXNDTL.TXBLVAL = VE.TTXNDTL[i].TXBLVAL;
+                        //        TTXNDTL.IGSTPER = VE.TTXNDTL[i].IGSTPER;
+                        //        TTXNDTL.CGSTPER = VE.TTXNDTL[i].CGSTPER;
+                        //        TTXNDTL.SGSTPER = VE.TTXNDTL[i].SGSTPER;
+                        //        TTXNDTL.CESSPER = VE.TTXNDTL[i].CESSPER;
+                        //        TTXNDTL.DUTYPER = VE.TTXNDTL[i].DUTYPER;
+                        //        TTXNDTL.IGSTAMT = VE.TTXNDTL[i].IGSTAMT;
+                        //        TTXNDTL.CGSTAMT = VE.TTXNDTL[i].CGSTAMT;
+                        //        TTXNDTL.SGSTAMT = VE.TTXNDTL[i].SGSTAMT;
+                        //        TTXNDTL.CESSAMT = VE.TTXNDTL[i].CESSAMT;
+                        //        TTXNDTL.DUTYAMT = VE.TTXNDTL[i].DUTYAMT;
+                        //        TTXNDTL.NETAMT = VE.TTXNDTL[i].NETAMT;
+                        //        //TTXNDTL.OTHRAMT = VE.TTXNDTL[i].OTHRAMT;
+                        //        //TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGSTDOCNO;
+                        //        //TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGSTDOCDT;
+                        //        TTXNDTL.SHORTQNTY = VE.TTXNDTL[i].SHORTQNTY;
+                        //        TTXNDTL.DISCTYPE = VE.TTXNDTL[i].DISCTYPE;
+                        //        TTXNDTL.DISCRATE = VE.TTXNDTL[i].DISCRATE;
+                        //        TTXNDTL.DISCAMT = VE.TTXNDTL[i].DISCAMT;
+                        //        TTXNDTL.SCMDISCTYPE = VE.TTXNDTL[i].SCMDISCTYPE;
+                        //        TTXNDTL.SCMDISCRATE = VE.TTXNDTL[i].SCMDISCRATE;
+                        //        TTXNDTL.SCMDISCAMT = VE.TTXNDTL[i].SCMDISCAMT;
+                        //        TTXNDTL.TDDISCTYPE = VE.TTXNDTL[i].TDDISCTYPE;
+                        //        TTXNDTL.TDDISCRATE = VE.TTXNDTL[i].TDDISCRATE;
+                        //        TTXNDTL.TDDISCAMT = VE.TTXNDTL[i].TDDISCAMT;
+                        //        TTXNDTL.PRCCD = VE.T_TXNOTH.PRCCD;
+                        //        //TTXNDTL.PRCEFFDT = VE.T_TXN.PRCEFFDT;
+                        //        TTXNDTL.BARNO = VE.TTXNDTL[i].BARNO;
+                        //        TTXNDTL.GLCD = VE.TTXNDTL[i].GLCD;
+                        //        //TTXNDTL.CLASS1CD = VE.TTXNDTL[i].CLASS1CD;
+                        //        dbsql = MasterHelpFa.RetModeltoSql(TTXNDTL);
+                        //        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                            }
-                        }
+                        //    }
+                        //}
 
-                        var BATCHMST = (from x in VE.TBATCHDTL
-                                        group x by new
-                                        {
-                                            //x.SLNO,
-                                            x.MTRLJOBCD,
-                                            x.ITCD,
-                                            x.STKTYPE,
-                                            x.RATE,
-                                            x.FLAGMTR,
-                                            x.BARNO,
-                                            x.PARTCD,
-                                            x.SIZECD,
-                                            x.COLRCD,
-                                            x.SHADE,
-                                        } into P
-                                        select new
-                                        {
-                                            //SLNO = P.Key.SLNO.retShort(),
-                                            MTRLJOBCD = P.Key.MTRLJOBCD,
-                                            ITCD = P.Key.ITCD,
-                                            STKTYPE = P.Key.STKTYPE,
-                                            NOS = P.Sum(A => A.NOS),
-                                            QNTY = P.Sum(A => A.QNTY),
-                                            FLAGMTR = P.Key.FLAGMTR,
-                                            BLQNTY = P.Sum(A => A.BLQNTY),
-                                            RATE = P.Key.RATE,
-                                            BARNO = P.Key.BARNO,
-                                            PARTCD = P.Key.PARTCD,
-                                            SIZECD = P.Key.SIZECD,
-                                            COLRCD = P.Key.COLRCD,
-                                            SHADE = P.Key.SHADE,
-                                        }).ToList();
-                        COUNTER = 0;
-                        if (BATCHMST != null && BATCHMST.Count > 0)
-                        {
-                            for (int i = 0; i <= BATCHMST.Count - 1; i++)
-                            {
-                                if (BATCHMST[i].STKTYPE != null && BATCHMST[i].BARNO != null && BATCHMST[i].MTRLJOBCD != null && BATCHMST[i].ITCD != null)
-                                {
-                                    COUNTER = COUNTER + 1;
-                                    T_BATCHMST TBATCHMST = new T_BATCHMST();
-                                    TBATCHMST.EMD_NO = TTXN.EMD_NO;
-                                    TBATCHMST.CLCD = TTXN.CLCD;
-                                    TBATCHMST.DTAG = TTXN.DTAG;
-                                    TBATCHMST.TTAG = TTXN.TTAG;
-                                    TBATCHMST.BARNO = BATCHMST[i].BARNO;
-                                    TBATCHMST.AUTONO = TTXN.AUTONO;
-                                    TBATCHMST.SLNO = COUNTER.retShort();
-                                    TBATCHMST.SLCD = TTXN.SLCD;
-                                    TBATCHMST.MTRLJOBCD = BATCHMST[i].MTRLJOBCD;
-                                    TBATCHMST.STKTYPE = BATCHMST[i].STKTYPE;
-                                    TBATCHMST.JOBCD = TTXN.JOBCD;
-                                    TBATCHMST.ITCD = BATCHMST[i].ITCD;
-                                    TBATCHMST.PARTCD = BATCHMST[i].PARTCD;
-                                    TBATCHMST.SIZECD = BATCHMST[i].SIZECD;
-                                    TBATCHMST.COLRCD = BATCHMST[i].COLRCD;
-                                    TBATCHMST.NOS = BATCHMST[i].NOS;
-                                    TBATCHMST.QNTY = BATCHMST[i].QNTY;
-                                    TBATCHMST.RATE = BATCHMST[i].RATE;
-                                    //TBATCHMST.AMT = BATCHMST[i].AMT;
-                                    TBATCHMST.FLAGMTR = BATCHMST[i].FLAGMTR;
-                                    //TBATCHMST.MTRL_COST = BATCHMST[i].MTRL_COST;
-                                    //TBATCHMST.OTH_COST = BATCHMST[i].OTH_COST;
-                                    //TBATCHMST.ITREM = BATCHMST[i].ITREM;
-                                    //TBATCHMST.PDESIGN = BATCHMST[i].PDESIGN;
-                                    //TBATCHMST.HSNCODE = BATCHMST[i].HSNCODE;
-                                    //TBATCHMST.ORGBATCHAUTONO = BATCHMST[i].ORGBATCHAUTONO;
-                                    //TBATCHMST.ORGBATCHSLNO = BATCHMST[i].ORGBATCHSLNO;
-                                    //TBATCHMST.DIA = BATCHMST[i].DIA;
-                                    //TBATCHMST.CUTLENGTH = BATCHMST[i].CUTLENGTH;
-                                    //TBATCHMST.LOCABIN = BATCHMST[i].LOCABIN;
-                                    TBATCHMST.SHADE = BATCHMST[i].SHADE;
-                                    //TBATCHMST.MILLNM = BATCHMST[i].MILLNM;
-                                    //TBATCHMST.BATCHNO = BATCHMST[i].BATCHNO;
-                                    //TBATCHMST.ORDAUTONO = BATCHMST[i].ORDAUTONO;
-                                    //TBATCHMST.ORDSLNO = BATCHMST[i].ORDSLNO;
-                                    dbsql = MasterHelpFa.RetModeltoSql(TBATCHMST);
-                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        //var BATCHMST = (from x in VE.TBATCHDTL
+                        //                group x by new
+                        //                {
+                        //                    //x.SLNO,
+                        //                    x.MTRLJOBCD,
+                        //                    x.ITCD,
+                        //                    x.STKTYPE,
+                        //                    x.RATE,
+                        //                    x.FLAGMTR,
+                        //                    x.BARNO,
+                        //                    x.PARTCD,
+                        //                    x.SIZECD,
+                        //                    x.COLRCD,
+                        //                    x.SHADE,
+                        //                } into P
+                        //                select new
+                        //                {
+                        //                    //SLNO = P.Key.SLNO.retShort(),
+                        //                    MTRLJOBCD = P.Key.MTRLJOBCD,
+                        //                    ITCD = P.Key.ITCD,
+                        //                    STKTYPE = P.Key.STKTYPE,
+                        //                    NOS = P.Sum(A => A.NOS),
+                        //                    QNTY = P.Sum(A => A.QNTY),
+                        //                    FLAGMTR = P.Key.FLAGMTR,
+                        //                    BLQNTY = P.Sum(A => A.BLQNTY),
+                        //                    RATE = P.Key.RATE,
+                        //                    BARNO = P.Key.BARNO,
+                        //                    PARTCD = P.Key.PARTCD,
+                        //                    SIZECD = P.Key.SIZECD,
+                        //                    COLRCD = P.Key.COLRCD,
+                        //                    SHADE = P.Key.SHADE,
+                        //                }).ToList();
+                        //COUNTER = 0;
+                        //if (BATCHMST != null && BATCHMST.Count > 0)
+                        //{
+                        //    for (int i = 0; i <= BATCHMST.Count - 1; i++)
+                        //    {
+                        //        if (BATCHMST[i].STKTYPE != null && BATCHMST[i].BARNO != null && BATCHMST[i].MTRLJOBCD != null && BATCHMST[i].ITCD != null)
+                        //        {
+                        //            COUNTER = COUNTER + 1;
+                        //            T_BATCHMST TBATCHMST = new T_BATCHMST();
+                        //            TBATCHMST.EMD_NO = TTXN.EMD_NO;
+                        //            TBATCHMST.CLCD = TTXN.CLCD;
+                        //            TBATCHMST.DTAG = TTXN.DTAG;
+                        //            TBATCHMST.TTAG = TTXN.TTAG;
+                        //            TBATCHMST.BARNO = BATCHMST[i].BARNO;
+                        //            TBATCHMST.AUTONO = TTXN.AUTONO;
+                        //            TBATCHMST.SLNO = COUNTER.retShort();
+                        //            TBATCHMST.SLCD = TTXN.SLCD;
+                        //            TBATCHMST.MTRLJOBCD = BATCHMST[i].MTRLJOBCD;
+                        //            TBATCHMST.STKTYPE = BATCHMST[i].STKTYPE;
+                        //            TBATCHMST.JOBCD = TTXN.JOBCD;
+                        //            TBATCHMST.ITCD = BATCHMST[i].ITCD;
+                        //            TBATCHMST.PARTCD = BATCHMST[i].PARTCD;
+                        //            TBATCHMST.SIZECD = BATCHMST[i].SIZECD;
+                        //            TBATCHMST.COLRCD = BATCHMST[i].COLRCD;
+                        //            TBATCHMST.NOS = BATCHMST[i].NOS;
+                        //            TBATCHMST.QNTY = BATCHMST[i].QNTY;
+                        //            TBATCHMST.RATE = BATCHMST[i].RATE;
+                        //            //TBATCHMST.AMT = BATCHMST[i].AMT;
+                        //            TBATCHMST.FLAGMTR = BATCHMST[i].FLAGMTR;
+                        //            //TBATCHMST.MTRL_COST = BATCHMST[i].MTRL_COST;
+                        //            //TBATCHMST.OTH_COST = BATCHMST[i].OTH_COST;
+                        //            //TBATCHMST.ITREM = BATCHMST[i].ITREM;
+                        //            //TBATCHMST.PDESIGN = BATCHMST[i].PDESIGN;
+                        //            //TBATCHMST.HSNCODE = BATCHMST[i].HSNCODE;
+                        //            //TBATCHMST.ORGBATCHAUTONO = BATCHMST[i].ORGBATCHAUTONO;
+                        //            //TBATCHMST.ORGBATCHSLNO = BATCHMST[i].ORGBATCHSLNO;
+                        //            //TBATCHMST.DIA = BATCHMST[i].DIA;
+                        //            //TBATCHMST.CUTLENGTH = BATCHMST[i].CUTLENGTH;
+                        //            //TBATCHMST.LOCABIN = BATCHMST[i].LOCABIN;
+                        //            TBATCHMST.SHADE = BATCHMST[i].SHADE;
+                        //            //TBATCHMST.MILLNM = BATCHMST[i].MILLNM;
+                        //            //TBATCHMST.BATCHNO = BATCHMST[i].BATCHNO;
+                        //            //TBATCHMST.ORDAUTONO = BATCHMST[i].ORDAUTONO;
+                        //            //TBATCHMST.ORDSLNO = BATCHMST[i].ORDSLNO;
+                        //            dbsql = MasterHelpFa.RetModeltoSql(TBATCHMST);
+                        //            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                                }
-                            }
-                        }
+                        //        }
+                        //    }
+                        //}
                         //COUNTER = 0;
                         //if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
                         //{
@@ -2065,11 +2132,11 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         dbsql = MasterHelpFa.TblUpdt("t_progdtl", VE.T_TXN.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("t_txndtl", VE.T_TXN.AUTONO, "D");
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D");
+                        //dbsql = MasterHelpFa.TblUpdt("t_txndtl", VE.T_TXN.AUTONO, "D");
+                        //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        //dbsql = MasterHelpFa.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
+                        //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        //dbsql = MasterHelpFa.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         dbsql = MasterHelpFa.TblUpdt("t_progmast", VE.T_TXN.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }

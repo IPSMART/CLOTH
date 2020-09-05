@@ -80,8 +80,6 @@ namespace Improvar.Models
 
         public double? DIA { get; set; }
 
-        public double? CUTLENGTH { get; set; }
-
         [StringLength(10)]
         public string LOCABIN { get; set; }
 
@@ -143,13 +141,13 @@ namespace Improvar.Models
         [StringLength(15)]
         public string STKNAME { get; set; }
         public string ITREMARKS { get; set; }
-        public bool CheckedSample { get; set; }
-        public string BOMQNTY { get; set; }
-        public string EXTRAQNTY { get; set; }
+        public bool Q_CheckedSample { get; set; }
+        public double? BOMQNTY { get; set; }
+        public double? EXTRAQNTY { get; set; }
         public short RSLNO { get; set; }
 
-      
-
+        public string Q_SAMPLE { get; set; }
+        
 
     }
 }

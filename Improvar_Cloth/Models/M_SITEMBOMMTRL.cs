@@ -60,6 +60,8 @@ namespace Improvar.Models
 
         [StringLength(50)]
         public string REMARK { get; set; }
-        
+        [StringLength(2)]
+        public string MTRLJOBCD { get; set; }
+
     }
 }
