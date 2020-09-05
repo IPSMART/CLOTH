@@ -55,9 +55,6 @@ namespace Improvar.Controllers
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
 
-                    VE.BL_TYPE = (from n in DB.M_BLTYPE
-                                  select new BL_TYPE() { FIELD_VALUE = n.BLTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-
                     VE.Database_Combo1 = (from n in DB.T_TXNOTH
                                           select new Database_Combo1() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
 
