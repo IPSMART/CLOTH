@@ -327,11 +327,11 @@ namespace Improvar.Controllers
                                    CUTLENGTH = dr["cutlength"].retDbl(),
                                    SAMPLE = dr["sample"].retStr()
                                }).OrderBy(s => s.SLNO).ToList();
-                for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
+                foreach (var q in VE.TPROGDTL)
                 {
-                    if (VE.TPROGDTL[i].SAMPLE == "Y") VE.TPROGDTL[i].CheckedSample = true;
-                    TOTAL_NOS = TOTAL_NOS + VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.Value;
-                    TOTAL_QNTY = TOTAL_QNTY + VE.TPROGDTL[i].QNTY == null ? 0 : VE.TPROGDTL[i].QNTY.Value;
+                    if (q.SAMPLE == "Y") q.CheckedSample = true;
+                    TOTAL_NOS = TOTAL_NOS + (q.NOS == null ? 0 : q.NOS.Value);
+                    TOTAL_QNTY = TOTAL_QNTY + (q.QNTY == null ? 0 : q.QNTY.Value);
                 }
                 VE.T_NOS = TOTAL_NOS.retInt();
                 VE.T_QNTY = TOTAL_QNTY.retInt();
@@ -373,12 +373,12 @@ namespace Improvar.Controllers
                                    EXTRAQNTY = dr["extraqnty"].retDbl(),
                                    Q_SAMPLE = dr["sample"].retStr()
                                }).OrderBy(s => s.SLNO).ToList();
-                for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
+                foreach (var q in VE.TPROGBOM)
                 {
-                    if (VE.TPROGBOM[i].Q_SAMPLE == "Y") VE.TPROGBOM[i].Q_CheckedSample = true;
-                    TOTAL_QQNTY = TOTAL_QQNTY + VE.TPROGBOM[i].QQNTY == null ? 0 : VE.TPROGBOM[i].QQNTY.Value;
-                    TOTAL_BOMQNTY = TOTAL_BOMQNTY + VE.TPROGBOM[i].BOMQNTY == null ? 0 : VE.TPROGBOM[i].BOMQNTY.Value;
-                    TOTAL_EXTRAQNTY = TOTAL_EXTRAQNTY + VE.TPROGBOM[i].EXTRAQNTY == null ? 0 : VE.TPROGBOM[i].EXTRAQNTY.Value;
+                    if (q.Q_SAMPLE == "Y") q.Q_CheckedSample = true;
+                    TOTAL_QQNTY = TOTAL_QQNTY + (q.QQNTY == null ? 0 : q.QQNTY.Value);
+                    TOTAL_BOMQNTY = TOTAL_BOMQNTY + (q.BOMQNTY == null ? 0 : q.BOMQNTY.Value);
+                    TOTAL_EXTRAQNTY = TOTAL_EXTRAQNTY + (q.EXTRAQNTY == null ? 0 : q.EXTRAQNTY.Value);
                 }
                 VE.T_QQNTY= TOTAL_QQNTY.retInt();
                 VE.T_BOMQNTY = TOTAL_BOMQNTY.retInt();
