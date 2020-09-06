@@ -14,8 +14,8 @@ namespace Improvar.Controllers
 {
     public class T_SALEController : Controller
     {
-        Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp(); 
- Salesfunc salesfunc = new Salesfunc();  DataTable DTNEW = new DataTable();
+        Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
+        Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
         T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR;
         SMS SMS = new SMS();
@@ -389,7 +389,7 @@ namespace Improvar.Controllers
                 VE.T_NET_AMT = VE.TTXNDTL.Sum(a => a.NETAMT).retDbl();
                 foreach (var v in VE.TBATCHDTL)
                 {
-                    v.GSTPER = VE.TTXNDTL.Where(a =>a.SLNO == v.TXNSLNO).Sum(b=>b.IGSTPER+b.CGSTPER+b.SGSTPER).retDbl();
+                    v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                 }
 
             }
@@ -1484,13 +1484,7 @@ namespace Improvar.Controllers
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                         }
-                        //
-                        string sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='"+TTXN.DOCCD+"'" ;
-                        DataTable dt = masterHelp.SQLquery(sql);
-                        if(dt!=null && dt.Rows.Count > 0)
-                        {
 
-                        }
                         //-------------------------Transport--------------------------//
                         TXNTRANS.AUTONO = TTXN.AUTONO;
                         TXNTRANS.EMD_NO = TTXN.EMD_NO;
@@ -1564,10 +1558,24 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         dbsql = masterHelp.RetModeltoSql(TTXNOTH);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                        //dbsql = masterHelp.RetModeltoSql(TVCHGST,"A",CommVar.FinSchema(UNQSNO));
-                        //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
 
+                        // sAVE T_CNTRL_HDR_UNIQNO
+                        string transactionBarcode = ""; string docbarcode = "";
+                        string sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='" + TTXN.DOCCD + "'";
+                        DataTable dt = masterHelp.SQLquery(sql);
+                        if (dt != null && dt.Rows.Count > 0)
+                        {
+                            docbarcode = dt.Rows[0]["docbarcode"].retStr();
+                            T_CNTRL_HDR_UNIQNO TCHUNIQNO = new T_CNTRL_HDR_UNIQNO();
+                            TCHUNIQNO.CLCD = TTXN.CLCD;
+                            TCHUNIQNO.AUTONO = TTXN.AUTONO;
+                            TCHUNIQNO.UNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO);
+                            dbsql = masterHelp.RetModeltoSql(TCHUNIQNO);
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            transactionBarcode = TranBarcodeGenerate(TTXN.DOCCD, docbarcode, TCHUNIQNO.UNIQNO, 1);
+                        }
+                        //END SAVING 
 
                         int COUNTER = 0;
                         string stkdrcr = "C";
@@ -1741,7 +1749,7 @@ namespace Improvar.Controllers
                                     //TBATCHMST.MILLNM = BATCHMST[i].MILLNM;
                                     //TBATCHMST.BATCHNO = BATCHMST[i].BATCHNO;
                                     //TBATCHMST.ORDAUTONO = BATCHMST[i].ORDAUTONO;
-                                    //TBATCHMST.ORDSLNO = BATCHMST[i].ORDSLNO;
+                                    //TBATCHMST.BARNO = BATCHMST[i].ORDSLN6O;
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMST);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -1969,7 +1977,27 @@ namespace Improvar.Controllers
                 }
             }
         }
-
-
+        private string TranBarcodeGenerate(string doccd, string docbarcode, string UNIQNO, int slno)
+        {//YRCODE	2,lbatchini	2,DOCCD	2,TXN UNIQ NO	7,SLNO	4
+            var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2); string lbatchini = "";
+            string sql = "select lbatchini from " + CommVar.CurSchema(UNQSNO) + ".m_loca where loccd='" + CommVar.Loccd(UNQSNO) + "' and compcd='" + CommVar.Compcd(UNQSNO) + "'";
+            DataTable dt = masterHelp.SQLquery(sql);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                lbatchini = dt.Rows[0]["dt"].retStr();
+            }
+            return yrcd + lbatchini + doccd + UNIQNO + slno.ToString().PadLeft(4, '0');
+        }
+        private string CommonBarcodeGenerate(string itgrpcd, string itcd, string mtrlbarcode, string prtbarcode, string clrbarcode, string szbarcode)
+        {
+            //itgrpcd last 3  3
+            //itcd last 7  7
+            //mtrljobcd mtrlbarcode 1
+            //partcode prtbarcode  1
+            //color clrbarcode  4
+            //size szbarcode   3
+        
+            return itgrpcd + itcd + mtrlbarcode + prtbarcode + clrbarcode+ szbarcode;
+        }
     }
 }
