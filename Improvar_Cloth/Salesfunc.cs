@@ -1145,7 +1145,7 @@ namespace Improvar
             }
             sql += ") ";
             if (shownilstock == false) sql += "where nvl(balqnty,0) <> 0 ";
-            sql += "group by gocd, mtrljobcd, stktype, barno, itcd, partcd, colrcd, sizecd, shade,cutlength,dia ";
+            sql += "group by gocd, mtrljobcd, stktype, barno, itcd, partcd, colrcd, sizecd, shade, cutlength, dia ";
             sql += ") a, ";
 
             sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
@@ -1297,7 +1297,114 @@ namespace Improvar
             return rtval;
         }
 
+        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false)
+        {
+            //showbatchno = true;
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            DataTable tbl = new DataTable();
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string sql = "";
+            if (curschema != "") scm = curschema;
+            if (finschema != "") scmf = finschema;
+            string itcdqry = "a.itcd ", itcdpipe = "a.itcd";
+            if (mergeitem == true)
+            {
+                itcdqry = "nvl(e.linkitcd,a.itcd) ";
+                itcdpipe = "nvl(e.linkitcd,a.itcd)";
+            }
 
+            sql = "";
 
+            sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
+            sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
+            sql += "d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
+            sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
+            sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos ";
+            sql += "from ";
+            sql += "( ";
+            //sql += "select distinct '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
+            //sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
+            //sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
+            //sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
+            //if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
+            //if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
+            //if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+            //sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+            //sql += "union ";
+            sql += "select '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, '' partcd, a.colrcd, a.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
+            sql += "from " + scm + ".m_sitem_barcode a, " + scm + ".m_sitem b, " + scm + ".m_cntrl_hdr c, " + scm + ".m_cntrl_loca d ";
+            sql += "where a.itcd=b.itcd(+) and b.m_autono=c.m_autono(+) and b.m_autono=d.m_autono(+) and ";
+            sql += "nvl(a.inactive_tag,'N')='N' and nvl(c.inactive_tag,'N')='N' and ";
+            if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
+            if (itcd.retStr() != "") sql += "a.itcd in (" + itcd + ") and ";
+            sql += "(d.compcd = '" + COM + "' or d.compcd is null) and (d.loccd='" + LOC + "' or d.loccd is null) ";
+            sql += ") a, ";
+
+            sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
+            sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+            sql += "(select a.barno, a.prccd, a.effdt, ";
+            sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".m_itemplistdtl a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+            sql += ") a, " + scm + ".m_itemplistdtl b, " + scm + ".m_sitem_barcode c ";
+            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 ";
+            sql += "union all ";
+            sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+            sql += "(select a.barno, a.prccd, a.effdt, ";
+            sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) ";
+            sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".m_sitem_barcode d ";
+            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and ";
+            sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
+            sql += ") a where prccd='" + prccd + "') b, ";
+
+            sql += "(select a.barno, ";
+            sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
+            sql += "within group (order by a.barno) as barimage from ";
+            sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+            sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
+            sql += "from " + scm + ".m_batch_img_hdr a ";
+            sql += "union ";
+            sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
+            sql += "from " + scm + ".m_batch_img_hdr_link a, " + scm + ".m_batch_img_hdr b ";
+            sql += "where a.mainbarno=b.barno(+) ) a, ";
+            sql += "" + scm + ".m_batch_img_hdr b ";
+            sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
+            sql += "union ";
+            sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+            sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
+            sql += "from " + scm + ".t_batch_img_hdr a ";
+            sql += "union ";
+            sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
+            sql += "from " + scm + ".t_batch_img_hdr_link a, " + scm + ".t_batch_img_hdr b ";
+            sql += "where a.mainbarno=b.barno(+) ) a, ";
+            sql += "" + scm + ".t_batch_img_hdr b ";
+            sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
+            sql += "group by a.barno ) y, ";
+
+            sql += "(select a.prodgrpcd, ";
+            sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
+            sql += "from ";
+            sql += "(select prodgrpcd, effdt from ";
+            sql += "(select a.prodgrpcd, a.effdt, ";
+            sql += "row_number() over (partition by a.prodgrpcd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".m_prodtax a where a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) ";
+            sql += "where rn=1 ) a, " + scm + ".m_prodtax b ";
+            sql += "where a.prodgrpcd=b.prodgrpcd(+) and a.effdt=b.effdt(+) and b.taxgrpcd='" + taxgrpcd + "' ";
+            sql += "group by a.prodgrpcd ) z, ";
+
+            sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
+            sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
+            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k ";
+            sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
+            sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
+            if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
+            if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
+            if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
+            sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
+            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) ";
+            tbl = MasterHelpFa.SQLquery(sql);
+            return tbl;
+        }
     }
 }
