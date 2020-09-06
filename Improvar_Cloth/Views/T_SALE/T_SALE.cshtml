@@ -1099,232 +1099,197 @@
                                     @*<div class="col-md-8">
                                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBarCode" value="Get BarCode Detail" title="Click to Get BarCode Detail" />
                                         </div>*@
-                                    <div class="col-md-4">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Material Job Code")
+                                    @*<div class="col-md-4">
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                @Html.Label("", "Material Job Code")
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
+
+                                        </div>*@
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-11">
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
+                                                    @Html.EditorFor(model => model.TXNSLNO, new { htmlAttributes = new { @class = "form-control", id = "TXNSLNO", maxlength = 4, @onkeypress = "return numericOnly(this);", @placeholder = "Bill Sl" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0');", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0');", @placeholder = "Item Group Code" })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0')" />
+                                                    @Html.HiddenFor(model => model.ITGRPNM, new { id = "ITGRPNM" })
+                                                </div>
+                                            </div>
+                                            @*<div class="col-md-7">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                                                    </div>
+                                                </div>*@
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0');", @placeholder = "Material Job Code", maxlength = 2 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')" />
+                                                    @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD');", @placeholder = "Item Code", maxlength = 8 } })
+                                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD')" />
+                                                    @Html.HiddenFor(model => model.ITNM, new { id = "ITNM" })
+                                                </div>
+                                            </div>
+                                            @*<div class="col-md-8">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
+                                                    </div>
+                                                </div>*@
+                                            <div class="col-md-4">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", maxlength = 30, @title = "Only for View", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
+                                                </div>
+                                            </div>
+
+                                            @*<div class="col-md-3">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
+                                                        @Html.HiddenFor(model => model.FABITNM, new { id = "FABITNM" })
+                                                    </div>
+                                                </div>*@
+                                            <div class="col-md-3">
+                                                <div class="editor-field">
+                                                    @*@Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
+                                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetStockDetails", PageControllerName)','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')" />
+                                                        @Html.HiddenFor(model => model.STKNAME, new { id = "STKNAME" })*@
+                                                    @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text"), new { @class = "form-control", id = "STKTYPE" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0');", @placeholder = "Part Code", maxlength = 4 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0')" />
+                                                    @Html.HiddenFor(model => model.PARTNM, new { id = "PARTNM" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0');", @placeholder = "Color Code", maxlength = 4 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0')" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @title = "Only for View", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0');", @placeholder = "Size Code", maxlength = 4 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0')" />
+                                                    @Html.HiddenFor(model => model.SIZENM, new { id = "SIZENM" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign" } })
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.BALSTOCK, new { htmlAttributes = new { @class = "form-control", id = "BALSTOCK", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Stock", @readonly = "readonly", @TabIndex = -1 } })
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-md-4">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "Only for View", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Only for View", @placeholder = "Rate" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="editor-field">
+                                                    @*@Html.DropDownListFor(model => model.HSNCODE, new SelectList(Model.HSN_CODE, "Value", "Text"), new { @class = "form-control", id = "HSNCODE" })*@
+                                                    @Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 30, @title = "Hsncode", @placeholder = "Hsncode" } })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.GSTPER, new { htmlAttributes = new { @class = "form-control", id = "GSTPER", @onkeypress = "return numericOnly(this,2);", maxlength = 5, @placeholder = "GSTPER", @readonly = "readonly", @TabIndex = -1 } })
+                                                    @Html.HiddenFor(model => model.ALL_GSTPER, new { id = "ALL_GSTPER" })
+
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Only for View", @placeholder = "Shade" } })
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
-                                        @*<div class="col-md-6" style="margin-top:5px;width:auto;height:161px; overflow:auto;">*@
-                                        <div class="editor-field">
+                                    <div class="col-lg-1">
+                                        <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
                                             <table id="exampleLT" border="1" style="width: auto;">
-                                                @*<thead>
-                                                        <tr>
-                                                            <th colspan="3">
-                                                                <input type="text" value="" placeholder="Search" style="width:100px;border:none;outline:none" onkeyup="filterTable(event, 'exampleLT');" />
-                                                            </th>
-                                                        </tr>
-                                                        <tr style="background-color:#808080;" class="grid_th">
-                                                            <th align="center"></th>
-                                                            <th align="center">
-                                                                Name
-                                                            </th>
-                                                            <th align="center">
-                                                                Code
-                                                            </th>
-                                                        </tr>
-                                                    </thead>*@
-                                                @*<tbody>*@
-                                                @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count(); i++)
+                                                @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
                                                 {
                                                     <tr>
-                                                        @if (Model.DefaultAction == "V")
-                                                        {
-                                                            if (Model.DropDown_list_MTRLJOBCD[i].Checked == true)
-                                                            {
-                                                                <td align="center">
-                                                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
-                                                                </td>
-                                                                <td align="center">
-                                                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                                                    @Html.DisplayFor(model => STRC1)
-                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
-                                                                </td>
-                                                                <td align="center">
-                                                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                                                    @Html.DisplayFor(model => STRC)
-                                                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
-                                                                </td>
-                                                                            }
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <td align="center">
-                                                                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
-                                                                            </td>
-                                                                            <td align="center">
-                                                                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
-                                                                                @Html.DisplayFor(model => STRC1)
-                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM)
-                                                                            </td>
-                                                                            <td align="center">
-                                                                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
-                                                                                @Html.DisplayFor(model => STRC)
-                                                                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
-                                                                            </td>
-                                                                                    }
-
+                                                        <td align="center">
+                                                            @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
+                                                        </td>
+                                                        <td align="center">
+                                                            @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                                            @Html.DisplayFor(model => STRC)
+                                                            @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                        </td>
+                                                        <td align="center">
+                                                            @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                                            @Html.DisplayFor(model => STRC1)
+                                                        </td>
                                                     </tr>
-                                                                                    }
-                                                @*</tbody>*@
+                                                                }
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
-                                            @Html.EditorFor(model => model.TXNSLNO, new { htmlAttributes = new { @class = "form-control", id = "TXNSLNO", maxlength = 4, @onkeypress = "return numericOnly(this);", @placeholder = "Bill Sl" } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0');", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0');", @placeholder = "Item Group Code" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0')" />
-                                            @Html.HiddenFor(model => model.ITGRPNM, new { id = "ITGRPNM" })
-                                        </div>
-                                    </div>
-                                    @*<div class="col-md-7">
-                                            <div class="editor-field">
-                                                @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Only for View", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
-                                            </div>
-                                        </div>*@
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0');", @placeholder = "Material Job Code", maxlength = 2 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')" />
-                                            @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD');", @placeholder = "Item Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Facbric Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD')" />
-                                            @Html.HiddenFor(model => model.ITNM, new { id = "ITNM" })
-                                        </div>
-                                    </div>
-                                    @*<div class="col-md-8">
-                                            <div class="editor-field">
-                                                @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", maxlength = 30, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
-                                            </div>
-                                        </div>*@
-                                    <div class="col-md-4">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", maxlength = 30, @title = "Only for View", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
-                                        </div>
-                                    </div>
-
-                                    @*<div class="col-md-3">
-                                            <div class="editor-field">
-                                                @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", maxlength = 8, @title = "Only for View", @placeholder = "Fabric Item Code", @readonly = "readonly", @TabIndex = -1 } })
-                                                @Html.HiddenFor(model => model.FABITNM, new { id = "FABITNM" })
-                                            </div>
-                                        </div>*@
-                                    <div class="col-md-3">
-                                        <div class="editor-field">
-                                            @*@Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
-                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetStockDetails", PageControllerName)','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')" />
-                                                @Html.HiddenFor(model => model.STKNAME, new { id = "STKNAME" })*@
-                                            @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text"), new { @class = "form-control", id = "STKTYPE" })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0');", @placeholder = "Part Code", maxlength = 4 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0')" />
-                                            @Html.HiddenFor(model => model.PARTNM, new { id = "PARTNM" })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0');", @placeholder = "Color Code", maxlength = 4 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0')" />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @title = "Only for View", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0');", @placeholder = "Size Code", maxlength = 4 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0')" />
-                                            @Html.HiddenFor(model => model.SIZENM, new { id = "SIZENM" })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign" } })
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.BALSTOCK, new { htmlAttributes = new { @class = "form-control", id = "BALSTOCK", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Stock", @readonly = "readonly", @TabIndex = -1 } })
-                                        </div>
-                                    </div>
 
 
-                                    <div class="col-md-4">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity" } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "Only for View", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos" } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR" } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Only for View", @placeholder = "Rate" } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate" } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE" })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="editor-field">
-                                            @*@Html.DropDownListFor(model => model.HSNCODE, new SelectList(Model.HSN_CODE, "Value", "Text"), new { @class = "form-control", id = "HSNCODE" })*@
-                                            @Html.EditorFor(model => model.HSNCODE, new { htmlAttributes = new { @class = "form-control", id = "HSNCODE", maxlength = 30, @title = "Hsncode", @placeholder = "Hsncode" } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.GSTPER, new { htmlAttributes = new { @class = "form-control", id = "GSTPER", @onkeypress = "return numericOnly(this,2);", maxlength = 5, @placeholder = "GSTPER", @readonly = "readonly", @TabIndex = -1 } })
-                                            @Html.HiddenFor(model => model.ALL_GSTPER, new { id = "ALL_GSTPER" })
-
-
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Only for View", @placeholder = "Shade" } })
-                                        </div>
-                                    </div>
-
-                                </div>
                                 <div class="row">
                                     @if (Model.MENU_PARA == "PB")
                                     {
@@ -1367,7 +1332,7 @@
 
                                     </div>
                                 </div>
-                                                                                    }
+                                                                }
                             <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
                                 <div id="partialdivBarCodeTab">
                                     @Html.Partial("_T_SALE_PRODUCT")
@@ -1567,115 +1532,115 @@
 
             </div>
         </div>
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        @ViewBag.ErrorMessage
-                                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    @ViewBag.ErrorMessage
+                                                                }
 
-                                                                                    <div class="container">
-                                                                                        <div id="helpDIV">
+                                                                <div class="container">
+                                                                    <div id="helpDIV">
 
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    }
+                                                                    </div>
+                                                                </div>
+                                                                }
 <script>
     function AddBarCodeGrid() {
         var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-        var tr="";
-        tr+= ' <tr style="font-size:12px; font-weight:bold;">';
-        tr+= '    <td class="sticky-cell">';
+        var tr = "";
+        tr += ' <tr style="font-size:12px; font-weight:bold;">';
+        tr += '    <td class="sticky-cell">';
         tr += '        <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="B_Checked_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].Checked" type="checkbox" value="true"><input name="TBATCHDTL[' + rowindex + '].Checked" type="hidden" value="false">';
-        tr+= '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="0050000001">';
-        tr+= '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="">';
-        tr+= '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="">';
-        tr+= '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="">';
-        tr+= '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="">';
-        tr+= '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="sticky-cell" style="left:20px;">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="1">';
-        tr+= '    </td>';
-        tr+= '    <td class="sticky-cell" style="left:40px" title="0">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].TXNSLNO" readonly="readonly" style="text-align:center;" type="text" value="0">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="FABRIC">';
-        tr+= '        <input id="B_ITGRPCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPCD" type="hidden" value="F005">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="">';
-        tr+= '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="" title="CHANDERI">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " id="B_ITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITNM" readonly="readonly" type="text" value="CHANDERI">';
-        tr+= '        <input data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_ITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITCD" type="hidden" value="C0000001">';
-        tr+= '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="">';
-        tr+= '    </td>         ';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="S">';
-        tr+= '     </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_PARTCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTCD" readonly="readonly" type="text" value="">';
-        tr+= '        <input id="B_PARTNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTNM" type="hidden" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field COLRCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_COLRCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRCD" readonly="readonly" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SIZECD must be a string with a maximum length of 4." data-val-length-max="4" id="B_SIZECD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZECD" readonly="readonly" type="text" value="">';
-        tr+= '        <input id="B_SIZENM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZENM" type="hidden" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SHADE" readonly="readonly" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="MTR">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="">';
-        tr+= '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="" title="">';
-        tr+= '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
-        tr+= '        <input id="B_ALL_GSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ALL_GSTPER" type="hidden" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="" title="">';
-        tr+= '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="" title="%">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="%">';
-        tr+= '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="P">';
-        tr+= '    </td><td class="" title="%">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="%">';
-        tr+= '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="P">';
-        tr+= '                              </td>';
-        tr+= '    <td class="" title="">';
-        tr+= '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="" title="%">';
-        tr+= '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="%">';
-        tr+= '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="P">';
-        tr+= '    </td>';
-        tr+= '    <td class="" title="">';
-        tr+= '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
-        tr+= '    </td>';
-        tr+= '    <td class="" title="">';
-        tr+= '        <input type="file" class="atextBoxFor" name="ImageData_' + rowindex + '" id="B_ImageData_' + rowindex + '" onchange="fileCheck(this,0);">';
-        tr+= '    </td>';
-        tr+= '        <td class="sticky-cell-opposite">';
-        tr+= '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', 0);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
-        tr+= '        </td>';
-        tr+= '                         </tr>';
+        tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="0050000001">';
+        tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="">';
+        tr += '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="">';
+        tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="">';
+        tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="">';
+        tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="">';
+        tr += '    </td>';
+        tr += '    <td class="sticky-cell" style="left:20px;">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="1">';
+        tr += '    </td>';
+        tr += '    <td class="sticky-cell" style="left:40px" title="0">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].TXNSLNO" readonly="readonly" style="text-align:center;" type="text" value="0">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="FABRIC">';
+        tr += '        <input id="B_ITGRPCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPCD" type="hidden" value="F005">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="">';
+        tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="">';
+        tr += '    </td>';
+        tr += '    <td class="" title="CHANDERI">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITNM" readonly="readonly" type="text" value="CHANDERI">';
+        tr += '        <input data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_ITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITCD" type="hidden" value="C0000001">';
+        tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="">';
+        tr += '    </td>         ';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="S">';
+        tr += '     </td>';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_PARTCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTCD" readonly="readonly" type="text" value="">';
+        tr += '        <input id="B_PARTNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTNM" type="hidden" value="">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field COLRCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_COLRCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRCD" readonly="readonly" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SIZECD must be a string with a maximum length of 4." data-val-length-max="4" id="B_SIZECD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZECD" readonly="readonly" type="text" value="">';
+        tr += '        <input id="B_SIZENM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZENM" type="hidden" value="">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SHADE" readonly="readonly" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="MTR">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="" title="">';
+        tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '        <input id="B_ALL_GSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ALL_GSTPER" type="hidden" value="">';
+        tr += '    </td>';
+        tr += '    <td class="" title="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="" title="%">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="%">';
+        tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="P">';
+        tr += '    </td><td class="" title="%">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="%">';
+        tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="P">';
+        tr += '                              </td>';
+        tr += '    <td class="" title="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="" title="%">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="%">';
+        tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="P">';
+        tr += '    </td>';
+        tr += '    <td class="" title="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '    </td>';
+        tr += '    <td class="" title="">';
+        tr += '        <input type="file" class="atextBoxFor" name="ImageData_' + rowindex + '" id="B_ImageData_' + rowindex + '" onchange="fileCheck(this,0);">';
+        tr += '    </td>';
+        tr += '        <td class="sticky-cell-opposite">';
+        tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', 0);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
+        tr += '        </td>';
+        tr += '                         </tr>';
 
-   $("#_T_SALE_PRODUCT_GRID tbody").append(tr);     
+        $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
     }
-    </script>
+</script>

@@ -483,6 +483,7 @@
     <Compile Include="Models\T_CNTRL_HDR_DOC.cs" />
     <Compile Include="Models\T_CNTRL_HDR_DOC_DTL.cs" />
     <Compile Include="Models\T_CNTRL_HDR_REM.cs" />
+    <Compile Include="Models\T_CNTRL_HDR_UNIQNO.cs" />
     <Compile Include="Models\T_DLYTARACH.cs" />
     <Compile Include="Models\T_DLYTARACH_DTL.cs" />
     <Compile Include="Models\T_DLYTARACH_DTL_ITM.cs" />

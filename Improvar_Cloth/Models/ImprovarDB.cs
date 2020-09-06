@@ -15,14 +15,12 @@ namespace Improvar.Models
         {
             Database.SetInitializer<ImprovarDB>(null);
         }
-        
+
+        public virtual DbSet<T_CNTRL_HDR_UNIQNO> T_CNTRL_HDR_UNIQNO { get; set; }
         public virtual DbSet<T_PROGMAST> T_PROGMAST { get; set; }
         public virtual DbSet<M_BATCH_IMG_HDR> M_BATCH_IMG_HDR { get; set; }
         public virtual DbSet<M_BATCH_IMG_HDR_DTL> M_BATCH_IMG_HDR_DTL { get; set; }
         public virtual DbSet<M_BATCH_IMG_HDR_LINK> M_BATCH_IMG_HDR_LINK { get; set; }
-        //public virtual DbSet<T_BATCH_IMG_HDR> T_BATCH_IMG_HDR { get; set; }
-        //public virtual DbSet<T_BATCH_IMG_HDR_DTL> T_BATCH_IMG_HDR_DTL { get; set; }
-        //public virtual DbSet<T_BATCH_IMG_HDR_LINK> T_BATCH_IMG_HDR_LINK { get; set; }
         public virtual DbSet<M_PAYMENT> M_PAYMENT { get; set; }
         public virtual DbSet<M_STKTYPE> M_STKTYPE { get; set; }
         public virtual DbSet<M_JOBPRCCD> M_JOBPRCCD { get; set; }
