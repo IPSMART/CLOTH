@@ -179,6 +179,12 @@ namespace Improvar.Controllers
                             {
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+                                if (TempData["LASTGOCD" + VE.MENU_PARA].retStr() != "")
+                                {
+                                    VE.GONM = DB.M_GODOWN.Where(a => a.GOCD == TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
+                                }
+                                TempData.Keep();
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
@@ -1076,7 +1082,7 @@ namespace Improvar.Controllers
                                   SCMDISCRATE = P.Key.SCMDISCRATE,
                                   SCMDISCTYPE = P.Key.SCMDISCTYPE,
                                   SCMDISCTYPE_DESC = P.Key.SCMDISCTYPE_DESC,
-                                  ALL_GSTPER = P.Key.ALL_GSTPER,
+                                  ALL_GSTPER = P.Key.ALL_GSTPER.retStr() == "" ? P.Key.GSTPER.retStr() : P.Key.ALL_GSTPER,
                                   //AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                               }).ToList();
 
@@ -1085,9 +1091,19 @@ namespace Improvar.Controllers
                     if (VE.TTXNDTL[p].ALL_GSTPER.retStr() != "")
                     {
                         var tax_data = VE.TTXNDTL[p].ALL_GSTPER.Split(',').ToList();
-                        VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl();
-                        VE.TTXNDTL[p].CGSTPER = tax_data[1].retDbl();
-                        VE.TTXNDTL[p].SGSTPER = tax_data[2].retDbl();
+                        if (tax_data.Count == 1)
+                        {
+                            VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl() / 3;
+                            VE.TTXNDTL[p].CGSTPER = tax_data[0].retDbl() / 3;
+                            VE.TTXNDTL[p].SGSTPER = tax_data[0].retDbl() / 3;
+                        }
+                        else
+                        {
+                            VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl();
+                            VE.TTXNDTL[p].CGSTPER = tax_data[1].retDbl();
+                            VE.TTXNDTL[p].SGSTPER = tax_data[2].retDbl();
+                        }
+
                     }
                 }
                 //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
@@ -1425,6 +1441,7 @@ namespace Improvar.Controllers
                         auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TTXN.DOCNO, TTXN.DOCCD, Ddate);
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
+                        TempData["LASTGOCD"+VE.MENU_PARA] = VE.T_TXN.GOCD;
                     }
                     else
                     {
@@ -1614,7 +1631,7 @@ namespace Improvar.Controllers
 
                     for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
                     {
-                        if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null)
+                        if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null && VE.TTXNDTL[i].MTRLJOBCD != null && VE.TTXNDTL[i].STKTYPE != null)
                         {
                             COUNTER = COUNTER + 1;
                             T_TXNDTL TTXNDTL = new T_TXNDTL();
@@ -1974,7 +1991,7 @@ namespace Improvar.Controllers
 
                     if (VE.DefaultAction == "A")
                     {
-                        ContentFlg = "1" + " (Voucher No. " + TTXN.DOCNO + ")~" + TTXN.AUTONO;
+                        ContentFlg = "1" + " (Voucher No. " + DOCPATTERN + ")~" + TTXN.AUTONO;
                     }
                     else if (VE.DefaultAction == "E")
                     {
