@@ -1326,8 +1326,8 @@
                                         </div>
                                     </div>
                                     <div class="col-md-1" style="width:auto;">
-                                        @*<input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />*@
-                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Barcode Details" onclick="AddBarCodeGrid()" />
+                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />
+                                        @*<input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Barcode Details" onclick="AddBarCodeGrid()" />*@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="UpdateRow_Barcode" accesskey="P" value="Update Row(P)" title="Click to Update Data in Barcode Details" onclick="UpdateBarCodeRow()" />
 
                                     </div>
@@ -1571,6 +1571,7 @@
         tr += '    <td class="">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="">';
         tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="">';
+        tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="">';
         tr += '    </td>';
         tr += '    <td class="" title="CHANDERI">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITNM" readonly="readonly" type="text" value="CHANDERI">';
@@ -1583,9 +1584,11 @@
         tr += '    <td class="">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_PARTCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTCD" readonly="readonly" type="text" value="">';
         tr += '        <input id="B_PARTNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTNM" type="hidden" value="">';
+        tr += '        <input id="B_PRTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CLRBARCODE" type="hidden" value="">';
         tr += '    </td>';
         tr += '    <td class="">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field COLRCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_COLRCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRCD" readonly="readonly" type="text" value="">';
+        tr += '     <input id="B_PRTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CLRBARCODE" type="hidden" value="">';
         tr += '    </td>';
         tr += '    <td class="">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="">';
@@ -1593,6 +1596,7 @@
         tr += '    <td class="">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SIZECD must be a string with a maximum length of 4." data-val-length-max="4" id="B_SIZECD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZECD" readonly="readonly" type="text" value="">';
         tr += '        <input id="B_SIZENM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZENM" type="hidden" value="">';
+        tr += '        <input id="B_SZBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SZBARCODE" type="hidden" value="">';
         tr += '    </td>';
         tr += '    <td class="">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SHADE" readonly="readonly" type="text" value="">';
