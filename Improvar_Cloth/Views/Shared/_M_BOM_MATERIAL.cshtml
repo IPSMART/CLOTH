@@ -79,15 +79,13 @@
                                     {
                                         <tr style="font-size:12px; font-weight:bold;">
                                             <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                                @Html.CheckBoxFor(model => model.MSITEMBOMMTRL[i].Checked, new { id = "chkid" })
+                                                @Html.CheckBoxFor(model => model.MSITEMBOMMTRL[i].Checked, new { id = "chkid_" + i })
                                                 @Html.HiddenFor(model => model.MSITEMBOMMTRL[i].ParentSerialNo)
                                             </td>
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.MSITEMBOMMTRL[i].PSLNO, new { id = "SLNOM_" + i, @class = " atextBoxFor ", style = "width:25px", maxlength = 2, @readonly = "readonly" })
                                             </td>
                                             <td class="">
-                                                @*@Html.TextBoxFor(model => Model.MSITEMBOMMTRL[i].ITCD, new { id = "ITCDM_" + i, onkeyup = "GetHelp('" + @Url.Action("GetMaterialItemDetails", "M_BOM") + "','" + "ITCDM_" + i + "/" + "ITNMM_" + i + "/" + "UOMNM_" + i + "','2/1/3','Item Details','" + "ITCDM_" + i + "')", onblur = "SelectMaterialItemCode(this.value," + "ITCDM_" + i + "," + "ITNMM_" + i + "," + "UOMNM_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 10 })
-                                                    <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetMaterialItemDetails", "M_BOM")','ITCDM_@i/ITNMM_@i/UOMNM_@i','2/1/3','Item Details','ITCDM_@i')" />*@
                                                 @Html.TextBoxFor(model => Model.MSITEMBOMMTRL[i].ITCD, new { id = "ITCDM_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "M_BOM") + "','Item Details','" + "ITCDM_" + i + "','" + "ITCDM_" + i + "=itcd=2/" + "ITNMM_" + i + "=itnm=1/" + "UOMNM_" + i + "=uomcd=3','itgrptype');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "M_BOM") + "','Item Details','" + "ITCDM_" + i + "','" + "ITCDM_" + i + "=itcd=2/" + "ITNMM_" + i + "=itnm=1/" + "UOMNM_" + i + "=uomcd=3','itgrptype');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
                                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "M_BOM")','Item Details','ITCDM_@i','ITCDM_@i=itcd=2/ITNMM_@i=itnm=1/UOMNM_@i=uomcd=3','itgrptype')" />
                                             </td>
