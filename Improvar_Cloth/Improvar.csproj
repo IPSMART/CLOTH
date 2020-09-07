@@ -269,6 +269,7 @@
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
+    <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
@@ -459,6 +460,7 @@
     <Compile Include="Models\SubLedgerDetails.cs" />
     <Compile Include="Models\SubLedgerMaster.cs" />
     <Compile Include="Models\TBATCHDTL.cs" />
+    <Compile Include="Models\TBILTY.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
     <Compile Include="Models\TPROGBOM.cs" />
@@ -477,6 +479,8 @@
     <Compile Include="Models\T_BATCH_IMG_HDR.cs" />
     <Compile Include="Models\T_BATCH_IMG_HDR_DTL.cs" />
     <Compile Include="Models\T_BATCH_IMG_HDR_LINK.cs" />
+    <Compile Include="Models\T_BILTY.cs" />
+    <Compile Include="Models\T_BILTY_HDR.cs" />
     <Compile Include="Models\T_CNTRL_AUTH.cs" />
     <Compile Include="Models\T_CNTRL_DOC_PASS.cs" />
     <Compile Include="Models\T_CNTRL_HDR.cs" />
@@ -591,6 +595,7 @@
     <Compile Include="ViewModels\SubLedgerSDdtlMasterEntry.cs" />
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
+    <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
     <Compile Include="ViewModels\TransactionPackingSlipEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
@@ -997,6 +1002,9 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_MATTERIAL_ISSUE.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_PRODUCT.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_QtyRequirement.cshtml" />
+    <Content Include="Views\T_BiltyG_Mutia\T_BiltyG_Mutia.cshtml" />
+    <Content Include="Views\T_BiltyG_Mutia\_T_BiltyG_Mutia_Main.cshtml" />
+    <Content Include="Views\Shared\_T_BiltyG_Mutia_Main.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
