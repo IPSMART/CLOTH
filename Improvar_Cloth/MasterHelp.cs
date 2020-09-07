@@ -1804,7 +1804,7 @@ namespace Improvar
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
-            sql += "select a.MTRLJOBCD,a.MTRLJOBNM ";
+            sql += "select a.MTRLJOBCD,a.MTRLJOBNM,a.MTBARCODE ";
             sql += "from " + scm + ".M_MTRLJOBMST a, " + scm + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
             if (valsrch.retStr() != "") sql += "and ( upper(a.MTRLJOBCD) like '%" + valsrch + "%' or upper(a.MTRLJOBNM) like '%" + valsrch + "%' ) ";
@@ -1840,7 +1840,7 @@ namespace Improvar
             string sql = ""; 
             string valsrch = val.retStr().ToUpper().Trim();
             sql = "";
-            sql += "select a.PARTCD,a.PARTNM ";
+            sql += "select a.PARTCD,a.PARTNM,a.PRTBARCODE ";
             sql += "from " + scm + ".M_PARTS a, " + scm + ".M_CNTRL_HDR b ";
             if (itcd.retStr() != "") sql += ", " + scm + ".M_SITEM_PARTS c ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
@@ -2115,7 +2115,7 @@ namespace Improvar
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
-            sql += "select c.BARNO,a.ITGRPCD,d.ITGRPNM,a.ITCD,a.ITNM,a.STYLENO,c.COLRCD,e.COLRNM,c.SIZECD,f.SIZENM,a.UOMCD,a.HSNCODE ";
+            sql += "select c.BARNO,a.ITGRPCD,d.ITGRPNM,a.ITCD,a.ITNM,a.STYLENO,c.COLRCD,e.COLRNM,e.CLRBARCODE,c.SIZECD,f.SIZENM,f.SZBARCODE,a.UOMCD,a.HSNCODE ";
             sql += "from " + scm + ".M_SITEM a, " + scm + ".M_CNTRL_HDR b, " + scm + ".M_SITEM_BARCODE c, " + scm + ".M_GROUP d, " + scm + ".M_COLOR e, " + scm + ".M_SIZE f ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N'and a.ITCD=c.ITCD(+) and a.ITGRPCD=d.ITGRPCD(+) and c.COLRCD=e.COLRCD(+) and c.SIZECD=f.SIZECD(+) ";
             if (valsrch.retStr() != "") sql += "and ( upper(c.BARNO) = '" + valsrch + "' ) ";

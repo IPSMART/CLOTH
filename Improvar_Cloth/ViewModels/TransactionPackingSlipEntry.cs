@@ -148,5 +148,9 @@ namespace Improvar.ViewModels
         public short SLNO { get; set; }
         public string ALL_GSTPER { get; set; }
         public double B_T_QNTY { get; set; }
+        public string MTBARCODE { get; set; }
+        public string PRTBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }
+        public string SZBARCODE { get; set; }
     }
 }
