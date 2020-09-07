@@ -129,7 +129,7 @@ namespace Improvar.ViewModels
         public string LOCABIN { get; set; }
         public double? T_NOS { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? T_QNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_AMT { get; set; }
@@ -147,6 +147,7 @@ namespace Improvar.ViewModels
         public double? T_NET_AMT { get; set; }
         public short SLNO { get; set; }
         public string ALL_GSTPER { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double B_T_QNTY { get; set; }
         public string MTBARCODE { get; set; }
         public string PRTBARCODE { get; set; }
