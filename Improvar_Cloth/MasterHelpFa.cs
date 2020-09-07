@@ -2023,7 +2023,7 @@ namespace Improvar
                 else if (LINK_CD == "E") { CAPTION = "Employee"; } else { CAPTION = "Subledger"; }
             }
             sql = "";
-            sql += "select distinct a.slcd, a.slnm, a.gstno, nvl(a.slarea,a.district) slarea,a.statecd,a.district ";
+            sql += "select distinct a.slcd, a.slnm, a.gstno, nvl(a.slarea,a.district) slarea,a.statecd,a.district,a.regmobile ";
             sql += "from " + scmf + ".m_subleg a, " + scmf + ".m_subleg_link b, " + scmf + ".m_cntrl_hdr c, " + scmf + ".m_cntrl_loca d , " + scmf + ".m_subleg_gl f ";
             sql += "where a.slcd=b.slcd(+) and a.m_autono=c.m_autono(+) and a.m_autono=d.m_autono(+) and a.slcd=f.slcd(+) and ";
             if (valsrch.retStr() != "") sql += "( upper(a.slcd) like '%" + valsrch + "%' or upper(a.slnm) like '%" + valsrch + "%' or upper(a.gstno) like '%" + valsrch + "%' or upper(nvl(a.slarea,a.district)) like '%" + valsrch + "%' ) and ";

@@ -42,19 +42,19 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
-                    //=================For Issue================//
-                    //List<DropDownList1> ISSUE = new List<DropDownList1>();
-                    //DropDownList1 ISSUE1 = new DropDownList1();
-                    //ISSUE1.text = "";
-                    //ISSUE1.Value = "";
-                    //ISSUE.Add(ISSUE1);
-                    //DropDownList1 ISSUE2 = new DropDownList1();
-                    //ISSUE2.text = "Boys";
-                    //ISSUE2.value = "B";
-                    //ISSUE.Add(ISSUE2);
-                    //VE.DropDownList1 = ISSUE;
-                    //=================For Issue================//
-                    string[] autoEntryWork = ThirdParty.Split('~');// for zooming
+                    //================= For Issue ================//
+                     List <DropDown_list1> ISSUE = new List<DropDown_list1>();
+                    DropDown_list1 ISSUE1 = new DropDown_list1();
+                    ISSUE1.text = "";
+                    ISSUE1.value = "";
+                    ISSUE.Add(ISSUE1);
+                    DropDown_list1 ISSUE2 = new DropDown_list1();
+                    ISSUE2.text = "Boys";
+                    ISSUE2.value = "B";
+                    ISSUE.Add(ISSUE2);
+                    VE.DropDown_list1 = ISSUE;
+                   // ================= For Issue ================//
+                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
                         autoEntryWork[2] = autoEntryWork[2].Replace("$$$$$$$$", "&");
@@ -138,6 +138,7 @@ namespace Improvar.Controllers
                             {
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                                 TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                VE.T_CNTRL_HDR = TCH;
                                 //var jobcd = (from i in DB.M_JOBMST where i.JOBCD == VE.MENU_PARA select new { JOBCD = i.JOBCD, JOBNM = i.JOBNM }).OrderBy(s => s.JOBNM).FirstOrDefault();
                                 //if (jobcd != null) TTXN.JOBCD = jobcd.JOBCD; VE.JOBNM = jobcd.JOBNM;
                                 //VE.T_BILTY_HDR = TTXN;
@@ -237,17 +238,17 @@ namespace Improvar.Controllers
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0; double TOTAL_BOMQNTY = 0; double TOTAL_EXTRAQNTY = 0; double TOTAL_QQNTY = 0;
-                string str = "";
-                str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample, k.itnm||' '||k.styleno itstyle from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
-                str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
-                str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
-                str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
-                str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
-                str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TBH.AUTONO + "'";
-                str += "order by a.slno ";
+                //string str = "";
+                //str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
+                //str += "a.itremark,a.shade,a.cutlength,a.sample, k.itnm||' '||k.styleno itstyle from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                //str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                //str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
+                //str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
+                //str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                //str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TBH.AUTONO + "'";
+                //str += "order by a.slno ";
 
-                DataTable Progdtltbl = Master_Help.SQLquery(str);
+                //DataTable Progdtltbl = Master_Help.SQLquery(str);
                 //VE.TPROGDTL = (from DataRow dr in Progdtltbl.Rows
                 //               select new TPROGDTL()
                 //               {
@@ -282,18 +283,18 @@ namespace Improvar.Controllers
                 //VE.T_QNTY = TOTAL_QNTY.retInt();
 
 
-                string str2 = "";
-                str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm, ";
-                str2 += " k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd,b.qnty qntyMst, ";
-                str2 += "a.sample,k.itnm||' '||k.styleno itstyle from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
-                str2 += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
-                str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
-                str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+)  ";
-                str2 += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
-                str2 += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TBH.AUTONO + "'";
-                str2 += "order by a.slno ";
+                //string str2 = "";
+                //str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm, ";
+                //str2 += " k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd,b.qnty qntyMst, ";
+                //str2 += "a.sample,k.itnm||' '||k.styleno itstyle from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
+                //str2 += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                //str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
+                //str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+)  ";
+                //str2 += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                //str2 += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TBH.AUTONO + "'";
+                //str2 += "order by a.slno ";
 
-                DataTable Progbom = Master_Help.SQLquery(str2);
+                //DataTable Progbom = Master_Help.SQLquery(str2);
                 //VE.TPROGBOM = (from DataRow dr in Progbom.Rows
                 //               select new TPROGBOM()
                 //               {
@@ -331,16 +332,16 @@ namespace Improvar.Controllers
 
 
 
-                string str1 = "";
-                str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,i.MTRLJOBCD,o.MTRLJOBNM,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,q.STKTYPE,r.STKNAME,i.BARNO, ";
-                str1 += "j.COLRCD,m.COLRNM,j.SIZECD,l.SIZENM,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE ";
-                str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".M_SITEM_BARCODE j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
-                str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".T_BATCHMST q," + Scm + ".M_STKTYPE r ";
-                str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
-                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.BARNO=q.BARNO(+) and q.STKTYPE=r.STKTYPE(+) ";
-                str1 += "and i.AUTONO = '" + TBH.AUTONO + "' ";
-                str1 += "order by i.SLNO ";
-                DataTable tbl = Master_Help.SQLquery(str1);
+                //string str1 = "";
+                //str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,i.MTRLJOBCD,o.MTRLJOBNM,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,q.STKTYPE,r.STKNAME,i.BARNO, ";
+                //str1 += "j.COLRCD,m.COLRNM,j.SIZECD,l.SIZENM,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE ";
+                //str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".M_SITEM_BARCODE j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                //str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".T_BATCHMST q," + Scm + ".M_STKTYPE r ";
+                //str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
+                //str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.BARNO=q.BARNO(+) and q.STKTYPE=r.STKTYPE(+) ";
+                //str1 += "and i.AUTONO = '" + TBH.AUTONO + "' ";
+                //str1 += "order by i.SLNO ";
+                //DataTable tbl = Master_Help.SQLquery(str1);
 
                 //VE.TBATCHDTL = (from DataRow dr in tbl.Rows
                 //                select new TBATCHDTL()
@@ -377,16 +378,16 @@ namespace Improvar.Controllers
                 //                    BARNO = dr["BARNO"].retStr(),
                 //                }).OrderBy(s => s.SLNO).ToList();
 
-                str1 = "";
-                str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,i.ITCD,j.ITNM,j.UOMCD,i.STKTYPE,n.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
-                str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
-                str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD ";
-                str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_MTRLJOBMST m, ";
-                str1 += Scm + ".M_STKTYPE n ";
-                str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=n.STKTYPE(+)  ";
-                str1 += "and i.AUTONO = '" + TBH.AUTONO + "' ";
-                str1 += "order by i.SLNO ";
-                tbl = Master_Help.SQLquery(str1);
+                //str1 = "";
+                //str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,i.ITCD,j.ITNM,j.UOMCD,i.STKTYPE,n.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
+                //str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
+                //str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD ";
+                //str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_MTRLJOBMST m, ";
+                //str1 += Scm + ".M_STKTYPE n ";
+                //str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=n.STKTYPE(+)  ";
+                //str1 += "and i.AUTONO = '" + TBH.AUTONO + "' ";
+                //str1 += "order by i.SLNO ";
+                //tbl = Master_Help.SQLquery(str1);
 
                 //    VE.TTXNDTL = (from DataRow dr in tbl.Rows
                 //                  select new TTXNDTL()//
@@ -499,253 +500,11 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetSubLedgerDetails(string val)
+        public ActionResult GetSubLedgerDetails(string val,string code)
         {
             try
             {
-                var str = Master_Help.SLCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-
-        public ActionResult GetGodownDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.GOCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetPriceDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.PRCCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetItemGroupDetails(string val)
-        {
-            try
-            {
-                string str = Master_Help.ITGRPCD_help(val, "");
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetMaterialJobDetails(string val)
-        {
-            try
-            {
-                string str = Master_Help.MTRLJOBCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetItemDetails(string val, string Code)
-        {
-            try
-            {
-                var str = Master_Help.ITCD_help(val, "", Code);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetPartDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.PARTCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetColorDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.COLRCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetMaterialDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.MTRLJOBCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetSizeDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.SIZECD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetStockDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.STKTYPE_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetLocationBinDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.LOCABIN_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetBarCodeDetails(string val)
-        {
-            try
-            {
-                var str = Master_Help.BARCODE_help(val);
+                var str = Master_Help.SLCD_help(val, code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -773,9 +532,10 @@ namespace Improvar.Controllers
                                        {
                                            BLAUTONO = dr["autono"].retStr(),
                                            LRNO = dr["lrno"].retStr(),
-                                           LRDT = Convert.ToDateTime(dr["lrdt"].retDateStr()),
+                                           LRDT = dr["lrdt"].retDateStr(),
                                            BALENO = dr["baleno"].retStr(),
                                            PREFNO = dr["prefno"].retStr(),
+                                           PREFDT = dr["prefdt"].retDateStr(),
 
                                        }).ToList();
                     for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
@@ -794,6 +554,89 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        //public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, FormCollection FC)
+        //{
+        //    try
+        //    {
+
+        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+        //        List<TBILTY_POPUP> BOMMTRL = new List<TBILTY_POPUP>();
+        //        BOMMTRL = VE.TBILTY_POPUP.Where(A => A.ITCD != null).ToList();
+        //        if (BOMMTRL != null)
+        //        {
+        //            int srl = BOMMTRL[0].ParentSerialNo;
+        //            MSITEMBOMPART query = (from c in VE.MSITEMBOMPART where (c.SLNO == srl) select c).SingleOrDefault();
+        //            if (query != null)
+        //            {
+        //                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        //                string JR = javaScriptSerializer.Serialize(BOMMTRL);
+        //                query.ChildData_RMPM = JR;
+        //            }
+
+        //            if (VE.APPLY_TO_ALL_SIZE == true)
+        //            {
+        //                var SIZE_COUNT = (from c in DB.M_SIZE
+        //                                  join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO
+        //                                  where (c.M_AUTONO == i.M_AUTONO && i.INACTIVE_TAG == "N")
+        //                                  select new { SIZECD = c.SIZECD, SIZENM = c.SIZENM }).ToList();
+        //                if (SIZE_COUNT != null && SIZE_COUNT.Count > 0)
+        //                {
+        //                    List<MSITEMBOMPART> BOMPART = new List<MSITEMBOMPART>(); for (int i = 0; i <= VE.MSITEMBOMPART.Count - 1; i++) { if (VE.MSITEMBOMPART[i].JOBCD != null && VE.MSITEMBOMPART[i].SIZECD != null) { MSITEMBOMPART ITEMBOMPART = new MSITEMBOMPART(); ITEMBOMPART = VE.MSITEMBOMPART[i]; BOMPART.Add(ITEMBOMPART); } }
+
+        //                    var SIZE_CODE = query.SIZECD;
+
+        //                    int SL_NO = 0;
+        //                    if (BOMPART != null && BOMPART.Count > 0)
+        //                    {
+        //                        SIZE_CODE = SIZE_CODE + "," + string.Join(",", from x in BOMPART where x.ChildData_RMPM != null select x.SIZECD);
+        //                        SL_NO = BOMPART.Count;
+        //                        SIZE_COUNT = SIZE_COUNT.Where(X => !SIZE_CODE.Contains(X.SIZECD)).ToList();
+        //                    }
+        //                    for (int i = 0; i <= SIZE_COUNT.Count - 1; i++)
+        //                    {
+        //                        MSITEMBOMPART BOM_PART = new MSITEMBOMPART();
+        //                        BOM_PART.ChildData_RMPM = query.ChildData_RMPM;
+        //                        BOM_PART.PARTCD = query.PARTCD;
+        //                        BOM_PART.PARTNM = query.PARTNM;
+        //                        BOM_PART.JOBCD = query.JOBCD;
+        //                        BOM_PART.JOBNM = query.JOBNM;
+        //                        BOM_PART.JOBRT = query.JOBRT;
+        //                        BOM_PART.MTRLCOST = query.MTRLCOST;
+        //                        BOM_PART.REMARK = query.REMARK;
+        //                        BOM_PART.SLCD1 = query.SLCD1;
+        //                        BOM_PART.SLCD2 = query.SLCD2;
+        //                        BOM_PART.SLCD3 = query.SLCD3;
+        //                        BOM_PART.SLNM1 = query.SLNM1;
+        //                        BOM_PART.SLNM2 = query.SLNM2;
+        //                        BOM_PART.SLNM3 = query.SLNM3;
+        //                        BOM_PART.SLNO = ++SL_NO;
+        //                        BOM_PART.SIZECD = SIZE_COUNT[i].SIZECD;
+        //                        BOM_PART.SIZENM = SIZE_COUNT[i].SIZENM;
+        //                        BOMPART.Add(BOM_PART);
+        //                    }
+        //                    VE.MSITEMBOMPART = BOMPART;
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            int srl = Convert.ToInt32(FC["hiddensrl"]);
+        //            MSITEMBOMPART query = (from c in VE.MSITEMBOMPART where (c.SLNO == srl) select c).SingleOrDefault();
+        //            if (query != null)
+        //            {
+        //                query.ChildData_RMPM = null;
+        //            }
+        //        }
+        //        ModelState.Clear();
+        //        VE.DefaultView = true;
+        //        return PartialView("_M_BOM_MAIN", VE);
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        Cn.SaveException(Ex, "");
+        //        return Content(Ex.Message + Ex.InnerException);
+        //    }
+        //}
         //public ActionResult FillDetailData(TransactionBiltyGMutiaEntry VE)
         //{
         //    try
@@ -1191,6 +1034,79 @@ namespace Improvar.Controllers
         //        return Content(ex.Message + ex.InnerException);
         //    }
         //}
+        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE)
+        {
+            Cn.getQueryString(VE);
+            VE.MENU_PARA = VE.MENU_PARA;
+            try
+            {
+                List<TBILTY> GRNDTL = new List<TBILTY>();
+                for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                {
+                    if (VE.TBILTY[i].BLAUTONO != null)
+                    {
+                        TBILTY MIB = new TBILTY();
+                        MIB = VE.TBILTY[i];
+                        GRNDTL.Add(MIB);
+                    }
+                }
+                string GC = Cn.GCS();
+                foreach (var i in VE.TBILTY_POPUP)
+                {
+                    if (i.Checked == true)
+                    {
+                        TBILTY PORDTL = new TBILTY();
+                        PORDTL.BLAUTONO = i.BLAUTONO;
+                        PORDTL.LRNO = i.LRNO;
+                        PORDTL.LRDT = Convert.ToDateTime(i.LRDT);
+                        PORDTL.BALENO = i.BALENO;
+                        PORDTL.PREFNO = i.PREFNO;
+                        PORDTL.PREFDT = i.PREFDT;
+                      
+                        GRNDTL.Add(PORDTL);
+                    }
+                }
+                VE.TBILTY = GRNDTL;
+                for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                {
+                    VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
+                }
+                //string refno = "";
+                //if (CommVar.ClientCode(UNQSNO) == "ADHU")
+                //{
+                //    var chkref = VE.TBILTY_POPUP.Where(a => a.Checked == true).Select(b => b.LRNO).ToList();
+                //    if (chkref.Count() != 0)
+                //    {
+                //        refno = chkref.FirstOrDefault();
+                //    }
+                //}
+                ModelState.Clear();
+                VE.DefaultView = true;
+                var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyG_Mutia_Main", VE);
+                return Content(GRN_MAIN);
+                //return PartialView("_I_GRN_Main", VE);
+            }
+            catch (Exception ex)
+            {
+                VE.DefaultView = false;
+                VE.DefaultDay = 0;
+                ViewBag.ErrorMessage = ex.Message + ex.InnerException;
+                Cn.SaveException(ex, "");
+                return View(VE);
+            }
+        }
+        public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
+        {
+            controllerContext.Controller.ViewData.Model = model;
+            using (var stringWriter = new StringWriter())
+            {
+                var viewResult = ViewEngines.Engines.FindPartialView(controllerContext, viewName);
+                var viewContext = new ViewContext(controllerContext, viewResult.View, controllerContext.Controller.ViewData, controllerContext.Controller.TempData, stringWriter);
+                viewResult.View.Render(viewContext, stringWriter);
+                viewResult.ViewEngine.ReleaseView(controllerContext, viewResult.View);
+                return stringWriter.GetStringBuilder().ToString();
+            }
+        }
         public ActionResult AddDOCRow(TransactionBiltyGMutiaEntry VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);

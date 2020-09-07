@@ -92,6 +92,9 @@
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].PREFNO, new { id = "PREFNO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].PREFDT, new { id = "PREFDT_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>
                                         </tr>
                                     }
                                 }
@@ -109,8 +112,8 @@
         </div>
         <div class="col-md-7">
             <div class="editor-label" style="margin-top: 6px;">
-                <input type="button" class="btn btn-success" id="btnCloseRMPM" value="Procced" onclick="ClosePOPUP();" />
-                <input type="button" class="btn btn-danger" id="btnCancelRMPM" value="Cancel" onclick="CancelPOPUP();" />
+                <input type="button" class="btn btn-success" id="btnCloseRMPM" value="Procced" onclick="SelectPendingLRNO();" />
+                <input type="button" class="btn btn-danger" id="btnCancelRMPM" value="Cancel" onclick="CancelLRNO();" />
             </div>
         </div>
     </div>

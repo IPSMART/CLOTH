@@ -1258,13 +1258,13 @@ namespace Improvar
             string rtval = "";
             string sql = "", scm = CommVar.CurSchema(UNQSNO);
             string dcdbarcode = "", unqno = "";
-            sql = "select a.docbarcode from " + scm + ".m_doctype_bar a where a.doccd='" + doccd + "' where docbarcode is not null";
+            sql = "select a.docbarcode from " + scm + ".m_doctype_bar a where a.doccd='" + doccd + "' and docbarcode is not null";
             DataTable tbl = SQLquery(sql);
             if (tbl.Rows.Count == 1) dcdbarcode = tbl.Rows[0]["docbarcode"].retStr();
 
             if (autono != "")
             {
-                sql = "select b.doccd, max(a.uniqno) uniqno ";
+                sql = "select  max(a.uniqno) uniqno ";
                 sql += "from " + scm + ".t_cntrl_hdr_uniqno a, " + scm + ".t_cntrl_hdr b ";
                 sql += "where a.autono = b.autono(+) and a.autono='" + autono + "' ";
                 tbl = SQLquery(sql);
@@ -1281,7 +1281,7 @@ namespace Improvar
                 sql += "a.uniqno like '" + dcdbarcode + "%' ";
                 sql += "group by b.doccd ";
                 tbl = SQLquery(sql);
-                unqno = tbl.Rows[0]["uniqno"].retStr();
+                if (tbl.Rows.Count == 1) unqno = tbl.Rows[0]["uniqno"].retStr();
                 double newno = 1;
                 if (unqno.retStr() != "")
                 {
