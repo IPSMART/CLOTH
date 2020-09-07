@@ -1104,9 +1104,9 @@ namespace Improvar
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
-            sql += "d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
+            sql += "d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, f.colrnm,f.clrbarcode, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
-            sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos ";
+            sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode ";
             sql += "from ";
             sql += "( ";
             sql += "select gocd, mtrljobcd, stktype, barno, itcd, partcd, colrcd, sizecd, shade, cutlength, dia, ";
@@ -1203,14 +1203,14 @@ namespace Improvar
 
             sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
-            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k ";
+            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
             if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
-            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) ";
+            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+)and a.sizecd=l.sizecd(+) ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
 
@@ -1403,6 +1403,34 @@ namespace Improvar
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) ";
+            tbl = MasterHelpFa.SQLquery(sql);
+            return tbl;
+        }
+        public DataTable getPendBiltytoIssue(string docdt, string skipautono = "", string schema = "")
+        {
+            //showbatchno = true;
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            DataTable tbl = new DataTable();
+            string scm = CommVar.CurSchema(UNQSNO),  COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string sql = "";
+            sql = "";
+            sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
+            sql += " d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos from ";
+            sql += "  (select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+            sql += "  from "+ scm + ".t_txn a, " + scm + ".t_txndtl b, " + scm + ".t_cntrl_hdr d ";
+            sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+            sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
+            sql += "  a.doctag in ('PB') and b.baleno is not null ) a, ";
+            sql += "(select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
+            sql += "sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos ";
+            sql += " from " + scm + ".t_bilty a, " + scm + ".t_bilty_hdr b, " + scm + ".t_cntrl_hdr d ";
+            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) ";
+            sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
+            sql += "" + scm + ".t_txntrans c, " + scm + ".t_txn d ";
+            sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
+            sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null and ";
+            sql += "1 - nvl(b.bnos, 0) > 0 ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }

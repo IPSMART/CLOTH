@@ -1,0 +1,117 @@
+﻿@model Improvar.ViewModels.TransactionBiltyGMutiaEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $(".sl_bom_grid").prop("disabled", false);
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            // $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_M_BOM_RMPM'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<script>
+    $("#popup").ready(function () { $("#dragclass").draggable({ cursor: "move" }); if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") { modeView(); } });
+</script>
+<div id="dragclass" style="overflow-y:auto;max-height:330px;height:auto;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;left:5%;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Plus.png" id="btnAddRMPM" title="Add Row" style="height: 20px;width:20px;margin-top: 1px;" class="Help_image_buttonAddRemove" onclick="AddRowRMPM()" />
+                <img src="~/Image/Minus.png" id="btnDeleteRMPM" title="Delete Row" style="height: 20px;width:20px;margin-top: 1px;" class="Help_image_buttonAddRemove" onclick="DeleteRowRMPM()" />
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_M_BOM_RMPM');" />
+                    <img src="~/Image/search.png" title="Help" style="height: 20px;width:20px;margin-top: 1px;" />
+                </div>
+                @*<div class="col-md-1">
+                    <div class="editor-label">
+                        @Html.Label("", "Size Code", new { style = "font-weight: bold;color:#fff;" })
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    @Html.TextBoxFor(model => Model.COPY_SIZE, new { id = "COPY_SIZE", onblur = "Check_Size(this.value,ParentSerialNo_POPUP0.value);", @class = "grid_title_box", @placeholder = "Code", @style = "height:21px;", maxlength = 4 })
+                </div>*@
+                @*<div class="col-md-2">
+                    <input type="button" class="btn btn-info" id="btnCopySize" value="Copy" style="padding: 1px 7px 1px 7px;height: 20px;font-size: 11px;font-weight: bold;margin-top: 1px;" title="Click to Copy Item Data from Particular Size" onclick="CopyData('COPY_SIZE',ParentSerialNo_POPUP0.value);" />
+                </div>*@
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height:22px;"><b>Pending Details</b></center>
+            </div>
+            //if (Model.MSITEMBOMPART != null)
+            //{
+            //    Improvar.Models.MSITEMBOMPART query = (from c in Model.MSITEMBOMPART where (c.SLNO == Model.SERIAL) select c).SingleOrDefault();
+            //    if (query != null)
+            //    {
+            //        var helpM = new List<Improvar.Models.TBILTY_POPUP>();
+            //        var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            //        helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.TBILTY_POPUP>>(query.ChildData_RMPM);
+            //        if (Model.TBILTY_POPUP != null)
+            //        {
+            //            Model.TBILTY_POPUP.Clear();
+            //        }
+            //        Model.TBILTY_POPUP = helpM;
+            //    }
+                <div class="sticky-table sticky-ltr-cells">
+                    <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:205px;">
+                        <table id="T_BiltyG_Mutia_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1250px;">
+                            <thead>
+                                <tr class="sticky-header" style="height:30px;">
+                                    <th class="sticky-cell" style="width: 27px;"></th>
+                                    <th class="" style="width: 27px;">SL No.</th>
+                                    <th class="" style="width:100px;">LR No</th>
+                                    <th class="" style="width:300px;">Bale No</th>
+                                    <th class="" style="width: 81px;">Bill No</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.TBILTY_POPUP != null)
+                                {
+                                    for (int i = 0; i <= Model.TBILTY_POPUP.Count - 1; i++)
+                                    {
+                                        <tr style="font-size:12px; font-weight:bold;">
+                                            <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                                @Html.CheckBoxFor(model => model.TBILTY_POPUP[i].Checked, new { id = "chkid_POPUP_" + i })
+                                                @Html.HiddenFor(model => model.TBILTY_POPUP[i].BLAUTONO, new { id = "BLAUTONO_POPUP_" + i })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].SLNO, new { id = "SLNO_POPUP" + i, @class = " atextBoxFor ", style = "width:25px", maxlength = 2, @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].LRNO, new { id = "LRNO_POPUP" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].LRDT, new { id = "LRDT_POPUP" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].BALENO, new { id = "BALENO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].PREFNO, new { id = "PREFNO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="row" style="padding:5px;text-align:center;">
+        <div class="col-md-10">
+            <div class="editor-label" style="margin-top: 6px;">
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-label" style="margin-top: 6px;">
+                <input type="button" class="btn btn-success" id="btnCloseRMPM" value="Procced" onclick="ClosePOPUP();" />
+                <input type="button" class="btn btn-danger" id="btnCancelRMPM" value="Cancel" onclick="CancelPOPUP();" />
+            </div>
+        </div>
+    </div>
+</div>

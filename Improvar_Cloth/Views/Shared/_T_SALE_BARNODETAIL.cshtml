@@ -65,7 +65,8 @@
                                     <td class="">
                                         @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].MTRLJOBNM, new { id = "STOCK_MTRLJOBNM_" + i })
                                         @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].MTRLJOBCD, new { id = "STOCK_MTRLJOBCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                    </td>
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].MTBARCODE, new { id = "STOCK_MTBARCODE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                      </td>
                                     <td class="">
                                         @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].ITNM, new { id = "STOCK_ITNM_" + i })
                                         @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].ITCD, new { id = "STOCK_ITCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -75,14 +76,17 @@
                                     </td>
                                     <td class="">
                                         @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].PARTNM, new { id = "STOCK_PARTNM_" + i })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].PRTBARCODE, new { id = "STOCK_PRTBARCODE_" + i })
                                         @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].PARTCD, new { id = "STOCK_PARTCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                     </td>
                                     <td class="">
                                         @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].COLRCD, new { id = "STOCK_COLRCD_" + i })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].CLRBARCODE, new { id = "STOCK_CLRBARCODE_" + i })
                                         @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].COLRNM, new { id = "STOCK_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                     </td>
                                     <td class="">
                                         @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].SIZENM, new { id = "STOCK_SIZENM_" + i })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].SZBARCODE, new { id = "STOCK_SZBARCODE_" + i })
                                         @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].SIZECD, new { id = "STOCK_SIZECD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                     </td>
                                     <td class="">

@@ -159,7 +159,7 @@
                 $("#partialdivBarCodeTab").html(result);
                 CalculateTotal_Barno();
                 $("#WaitingMode").hide();
-                ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,ITCD,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,COLRCD,COLRNM,SIZECD,SIZENM,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
+                ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
                 if ("@Model.MENU_PARA" == "PB") {
                     $("#BALENO").val("");
                 }
@@ -181,16 +181,20 @@
             $("#ITGRPNM").val(returncolvalue(str, "ITGRPNM"));
             $("#MTRLJOBCD").val(returncolvalue(str, "MTRLJOBCD"));
             $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
+            $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
             $("#ITCD").val(returncolvalue(str, "ITCD"));
             $("#ITNM").val(returncolvalue(str, "ITNM"));
             $("#STYLENO").val(returncolvalue(str, "STYLENO"));
             $("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
             $("#PARTCD").val(returncolvalue(str, "PARTCD"));
             $("#PARTNM").val(returncolvalue(str, "PARTNM"));
+            $("#PRTBARCODE").val(returncolvalue(str, "PRTBARCODE"));
             $("#COLRCD").val(returncolvalue(str, "COLRCD"));
             $("#COLRNM").val(returncolvalue(str, "COLRNM"));
+            $("#CLRBARCODE").val(returncolvalue(str, "CLRBARCODE"));
             $("#SIZECD").val(returncolvalue(str, "SIZECD"));
             $("#SIZENM").val(returncolvalue(str, "SIZENM"));
+            $("#SZBARCODE").val(returncolvalue(str, "SZBARCODE"));
             $("#PDESIGN").val(returncolvalue(str, "PDESIGN"));
             $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
             $("#QNTY").val(returncolvalue(str, "QNTY"));
@@ -259,16 +263,19 @@
             $("#ITGRPNM").val($(id + "ITGRPNM_" + i).val());
             $("#MTRLJOBCD").val($(id + "MTRLJOBCD_" + i).val());
             $("#MTRLJOBNM").val($(id + "MTRLJOBNM_" + i).val());
+            $("#MTBARCODE").val($(id + "MTBARCODE_" + i).val());
             $("#ITCD").val($(id + "ITCD_" + i).val());
             $("#ITNM").val($(id + "ITNM_" + i).val());
             $("#STYLENO").val($(id + "STYLENO_" + i).val());
             $("#STKTYPE").val($(id + "STKTYPE_" + i).val());
             $("#PARTCD").val($(id + "PARTCD_" + i).val());
-            $("#PARTNM").val($(id + "PARTNM_" + i).val());
+            $("#PRTBARCODE").val($(id + "PRTBARCODE_" + i).val());
             $("#COLRCD").val($(id + "COLRCD_" + i).val());
             $("#COLRNM").val($(id + "COLRNM_" + i).val());
+            $("#CLRBARCODE").val($(id + "CLRBARCODE_" + i).val());
             $("#SIZECD").val($(id + "SIZECD_" + i).val());
             $("#SIZENM").val($(id + "SIZENM_" + i).val());
+            $("#SZBARCODE").val($(id + "SZBARCODE_" + i).val());
             $("#PDESIGN").val($(id + "PDESIGN_" + i).val());
             $("#FLAGMTR").val($(id + "FLAGMTR_" + i).val());
             $("#RATE").val($(id + "RATE_" + i).val());
@@ -276,6 +283,9 @@
             $("#GSTPER").val($(id + "GSTPER_" + i).val());
             $("#ALL_GSTPER").val($(id + "ALL_GSTPER" + i).val());
             $("#SHADE").val($(id + "SHADE_" + i).val());
+            if ("@Model.MENU_PARA" == "PB") {
+                $("#BALENO").val($(id + "BALENO_" + i).val());
+            }
             $("#LOCABIN").val($(id + "LOCABIN_" + i).val());
 
             if (Table == "_T_SALE_BARNODETAIL_GRID") {
@@ -307,16 +317,20 @@
                 $("#B_ITGRPNM_" + j).val($("#ITGRPNM").val());
                 $("#B_MTRLJOBCD_" + j).val($("#MTRLJOBCD").val());
                 $("#B_MTRLJOBNM_" + j).val($("#MTRLJOBNM").val());
+                $("#B_MTBARCODE_" + j).val($("#MTBARCODE").val());
                 $("#B_ITCD_" + j).val($("#ITCD").val());
                 $("#B_ITNM_" + j).val($("#ITNM").val());
                 $("#B_STYLENO_" + j).val($("#STYLENO").val());
                 $("#B_STKTYPE_" + j).val($("#STKTYPE").val());
                 $("#B_PARTCD_" + j).val($("#PARTCD").val());
                 $("#B_PARTNM_" + j).val($("#PARTNM").val());
+                $("#B_PRTBARCODE_" + j).val($("#PRTBARCODE").val());
                 $("#B_COLRCD_" + j).val($("#COLRCD").val());
                 $("#B_COLRNM_" + j).val($("#COLRNM").val());
+                $("#B_CLRBARCODE_" + j).val($("#CLRBARCODE").val());
                 $("#B_SIZECD_" + j).val($("#SIZECD").val());
                 $("#B_SIZENM_" + j).val($("#SIZENM").val());
+                $("#B_SZBARCODE_" + j).val($("#SZBARCODE").val());
                 $("#B_PDESIGN_" + j).val($("#PDESIGN").val());
                 $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
                 $("#B_QNTY_" + j).val($("#QNTY").val());
@@ -348,7 +362,13 @@
             }
         }
         CalculateTotal_Barno();
-        ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,ITCD,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,COLRCD,COLRNM,SIZECD,SIZENM,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
+        ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
+        if ("@Model.MENU_PARA" == "PB") {
+                        $("#BALENO").val("");
+                    }
+                $("#DISCTYPE").val("P");
+                $("#TDDISCTYPE").val("P");
+                $("#SCMDISCTYPE").val("P");
         $("#AddRow_Barcode").show();
         $("#UpdateRow_Barcode").hide();
     }
@@ -1131,9 +1151,10 @@
                                                 </div>*@
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0');", @placeholder = "Material Job Code", maxlength = 2 } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0')" />
+                                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');", @placeholder = "Material Job Code", maxlength = 2 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')" />
                                                     @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
+                                                    @Html.HiddenFor(model => model.MTBARCODE, new { id = "MTBARCODE" })
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
@@ -1170,27 +1191,30 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0');", @placeholder = "Part Code", maxlength = 4 } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0')" />
+                                                    @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE');", @placeholder = "Part Code", maxlength = 4 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE')" />
                                                     @Html.HiddenFor(model => model.PARTNM, new { id = "PARTNM" })
+                                                    @Html.HiddenFor(model => model.PRTBARCODE, new { id = "PRTBARCODE" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0');", @placeholder = "Color Code", maxlength = 4 } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0')" />
+                                                    @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE');", @placeholder = "Color Code", maxlength = 4 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE')" />
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @title = "Only for View", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
+                                                    @Html.HiddenFor(model => model.CLRBARCODE, new { id = "CLRBARCODE" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0');", @placeholder = "Size Code", maxlength = 4 } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0')" />
+                                                    @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE');", @placeholder = "Size Code", maxlength = 4 } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE')" />
                                                     @Html.HiddenFor(model => model.SIZENM, new { id = "SIZENM" })
+                                                    @Html.HiddenFor(model => model.SZBARCODE, new { id = "SZBARCODE" })
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -1546,105 +1570,159 @@
                                                                 }
 <script>
     function AddBarCodeGrid() {
+        var BARCODE = $("#BARCODE").val();
+        var TXNSLNO = $("#TXNSLNO").val();
+        var ITGRPCD = $("#ITGRPCD").val();
+        var ITGRPNM = $("#ITGRPNM").val();
+        var MTRLJOBCD = $("#MTRLJOBCD").val();
+        var MTRLJOBNM = $("#MTRLJOBNM").val();
+        var MTBARCODE = $("#MTBARCODE").val();
+        var ITCD = $("#ITCD").val();
+        var ITNM = $("#ITNM").val();
+        var STYLENO = $("#STYLENO").val();
+        var STKTYPE = $("#STKTYPE").val();
+        var PARTCD = $("#PARTCD").val();
+        var PARTNM = $("#PARTNM").val();
+        var PRTBARCODE = $("#PRTBARCODE").val();
+        var COLRCD = $("#COLRCD").val();
+        var COLRNM = $("#COLRNM").val();
+        var CLRBARCODE = $("#CLRBARCODE").val();
+        var SIZECD = $("#SIZECD").val();
+        var SIZENM = $("#SIZENM").val();
+        var SZBARCODE = $("#SZBARCODE").val();
+        var PDESIGN = $("#PDESIGN").val();
+        var BALSTOCK = $("#BALSTOCK").val();
+        var QNTY = $("#QNTY").val();
+        var UOM = $("#UOM").val();
+        var NOS = $("#NOS").val();
+        var FLAGMTR = $("#FLAGMTR").val();
+        var RATE = $("#RATE").val();
+        var DISCRATE = $("#DISCRATE").val();
+        var DISCTYPE = $("#DISCTYPE").val();
+        var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" : "Fixed";
+        var HSNCODE = $("#HSNCODE").val();
+        var GSTPER = $("#GSTPER").val();
+        var ALL_GSTPER = $("#ALL_GSTPER").val();
+        var SHADE = $("#SHADE").val();
+        if ("@Model.MENU_PARA" == "PB") {
+            var BALENO = $("#BALENO").val();
+        }
+        var TDDISCTYPE = $("#TDDISCTYPE").val();
+        var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : "Fixed";
+        var TDDISCRATE = $("#TDDISCRATE").val();
+        var SCMDISCTYPE = $("#SCMDISCTYPE").val();
+        var SCMDISCTYPE_DESC = SCMDISCTYPE == "P" ? "%" : SCMDISCTYPE == "N" ? "Nos" : SCMDISCTYPE == "Q" ? "Qnty" : "Fixed";
+        var SCMDISCRATE = $("#SCMDISCRATE").val();
+        var LOCABIN = $("#LOCABIN").val();
+
         var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        var SLNO = rowindex + 1;
         var tr = "";
         tr += ' <tr style="font-size:12px; font-weight:bold;">';
         tr += '    <td class="sticky-cell">';
         tr += '        <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="B_Checked_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].Checked" type="checkbox" value="true"><input name="TBATCHDTL[' + rowindex + '].Checked" type="hidden" value="false">';
-        tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="0050000001">';
-        tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="">';
-        tr += '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="">';
-        tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="">';
-        tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="">';
-        tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="">';
+        tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="' + BARCODE + '">';
+        tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
+        tr += '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="' + FLAGMTR + '">';
+        tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
+        tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
+        tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
         tr += '    </td>';
         tr += '    <td class="sticky-cell" style="left:20px;">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="1">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
         tr += '    </td>';
         tr += '    <td class="sticky-cell" style="left:40px" title="0">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].TXNSLNO" readonly="readonly" style="text-align:center;" type="text" value="0">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].TXNSLNO" readonly="readonly" style="text-align:center;" type="text" value="' + TXNSLNO + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="FABRIC">';
-        tr += '        <input id="B_ITGRPCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPCD" type="hidden" value="F005">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="' + ITGRPNM + '">';
+        tr += '        <input id="B_ITGRPCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPCD" type="hidden" value="' + ITGRPCD + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="">';
-        tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="">';
-        tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="' + MTRLJOBCD + '">';
+        tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
+        tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="CHANDERI">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITNM" readonly="readonly" type="text" value="CHANDERI">';
-        tr += '        <input data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_ITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITCD" type="hidden" value="C0000001">';
-        tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITNM" readonly="readonly" type="text" value="' + ITNM + '">';
+        tr += '        <input data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_ITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITCD" type="hidden" value="' + ITCD + '">';
+        tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
         tr += '    </td>         ';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="S">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';
         tr += '     </td>';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_PARTCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTCD" readonly="readonly" type="text" value="">';
-        tr += '        <input id="B_PARTNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTNM" type="hidden" value="">';
-        tr += '        <input id="B_PRTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CLRBARCODE" type="hidden" value="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_PARTCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTCD" readonly="readonly" type="text" value="' + PARTCD + '">';
+        tr += '        <input id="B_PARTNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PARTNM" type="hidden" value="' + PARTNM + '">';
+        tr += '        <input id="B_PRTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRTBARCODE" type="hidden" value="' + PRTBARCODE + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field COLRCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_COLRCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRCD" readonly="readonly" type="text" value="">';
-        tr += '     <input id="B_PRTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CLRBARCODE" type="hidden" value="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field COLRCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_COLRCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRCD" readonly="readonly" type="text" value="' + COLRCD + '">';
+        tr += '     <input id="B_CLRBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].CLRBARCODE" type="hidden" value="' + CLRBARCODE + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="' + COLRNM + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SIZECD must be a string with a maximum length of 4." data-val-length-max="4" id="B_SIZECD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZECD" readonly="readonly" type="text" value="">';
-        tr += '        <input id="B_SIZENM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZENM" type="hidden" value="">';
-        tr += '        <input id="B_SZBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SZBARCODE" type="hidden" value="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SIZECD must be a string with a maximum length of 4." data-val-length-max="4" id="B_SIZECD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZECD" readonly="readonly" type="text" value="' + SIZECD + '">';
+        tr += '        <input id="B_SIZENM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZENM" type="hidden" value="' + SIZENM + '">';
+        tr += '        <input id="B_SZBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SZBARCODE" type="hidden" value="' + SZBARCODE + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SHADE" readonly="readonly" type="text" value="">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SHADE" readonly="readonly" type="text" value="' + SHADE + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateTotal_Barno();" value="' + QNTY + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="MTR">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
         tr += '    </td>';
         tr += '    <td class="">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="">';
-        tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
-        tr += '        <input id="B_ALL_GSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ALL_GSTPER" type="hidden" value="">';
+        tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + GSTPER + '">';
+        tr += '        <input id="B_ALL_GSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ALL_GSTPER" type="hidden" value="' + ALL_GSTPER + '">';
         tr += '    </td>';
         tr += '    <td class="" title="">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + DISCRATE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="%">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="%">';
-        tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="P">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="' + DISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
         tr += '    </td><td class="" title="%">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="%">';
-        tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="P">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="' + TDDISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
         tr += '                              </td>';
         tr += '    <td class="" title="">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + TDDISCRATE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="%">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="%">';
-        tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="P">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="' + SCMDISCTYPE_DESC + '">';
+        tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + SCMDISCRATE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="">';
         tr += '        <input type="file" class="atextBoxFor" name="ImageData_' + rowindex + '" id="B_ImageData_' + rowindex + '" onchange="fileCheck(this,0);">';
         tr += '    </td>';
         tr += '        <td class="sticky-cell-opposite">';
-        tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', 0);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
+        tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
         tr += '        </td>';
         tr += '                         </tr>';
 
         $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
+        CalculateTotal_Barno();
+        ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
+        if ("@Model.MENU_PARA" == "PB") {
+            $("#BALENO").val("");
+        }
+        $("#DISCTYPE").val("P");
+        $("#TDDISCTYPE").val("P");
+        $("#SCMDISCTYPE").val("P");
     }
 </script>
