@@ -80,6 +80,10 @@ namespace Improvar.Models
         public string PDESIGN { get; set; }
         public string ALL_GSTPER { get; set; }
         public string PRODGRPGSTPER { get; set; }
+        public string MTBARCODE { get; set; }
+        public string PRTBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }
+        public string SZBARCODE { get; set; }
 
     }
 }
