@@ -461,6 +461,7 @@
     <Compile Include="Models\SubLedgerMaster.cs" />
     <Compile Include="Models\TBATCHDTL.cs" />
     <Compile Include="Models\TBILTY.cs" />
+    <Compile Include="Models\TBILTY_POPUP.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
     <Compile Include="Models\TPROGBOM.cs" />
@@ -1005,6 +1006,7 @@
     <Content Include="Views\T_BiltyG_Mutia\T_BiltyG_Mutia.cshtml" />
     <Content Include="Views\T_BiltyG_Mutia\_T_BiltyG_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyG_Mutia_Main.cshtml" />
+    <Content Include="Views\Shared\_T_BiltyG_Mutia_PopUp.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

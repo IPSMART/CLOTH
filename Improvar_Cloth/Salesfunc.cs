@@ -1258,13 +1258,13 @@ namespace Improvar
             string rtval = "";
             string sql = "", scm = CommVar.CurSchema(UNQSNO);
             string dcdbarcode = "", unqno = "";
-            sql = "select a.docbarcode from " + scm + ".m_doctype_bar a where a.doccd='" + doccd + "' where docbarcode is not null";
+            sql = "select a.docbarcode from " + scm + ".m_doctype_bar a where a.doccd='" + doccd + "' and docbarcode is not null";
             DataTable tbl = SQLquery(sql);
             if (tbl.Rows.Count == 1) dcdbarcode = tbl.Rows[0]["docbarcode"].retStr();
 
             if (autono != "")
             {
-                sql = "select b.doccd, max(a.uniqno) uniqno ";
+                sql = "select  max(a.uniqno) uniqno ";
                 sql += "from " + scm + ".t_cntrl_hdr_uniqno a, " + scm + ".t_cntrl_hdr b ";
                 sql += "where a.autono = b.autono(+) and a.autono='" + autono + "' ";
                 tbl = SQLquery(sql);
@@ -1281,7 +1281,7 @@ namespace Improvar
                 sql += "a.uniqno like '" + dcdbarcode + "%' ";
                 sql += "group by b.doccd ";
                 tbl = SQLquery(sql);
-                unqno = tbl.Rows[0]["uniqno"].retStr();
+                if (tbl.Rows.Count == 1) unqno = tbl.Rows[0]["uniqno"].retStr();
                 double newno = 1;
                 if (unqno.retStr() != "")
                 {
@@ -1403,6 +1403,35 @@ namespace Improvar
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) ";
+            tbl = MasterHelpFa.SQLquery(sql);
+            return tbl;
+        }
+        public DataTable getPendBiltytoIssue(string docdt, string skipautono = "", string schema = "")
+        {
+            //showbatchno = true;
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            DataTable tbl = new DataTable();
+            string scm = CommVar.CurSchema(UNQSNO),  COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            if (schema != "") scm = schema;
+            string sql = "";
+            sql = "";
+            sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
+            sql += " d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos from ";
+            sql += "  (select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
+            sql += "  from "+ scm + ".t_txn a, " + scm + ".t_txndtl b, " + scm + ".t_cntrl_hdr d ";
+            sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+            sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
+            sql += "  a.doctag in ('PB') and b.baleno is not null ) a, ";
+            sql += "(select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
+            sql += "sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos ";
+            sql += " from " + scm + ".t_bilty a, " + scm + ".t_bilty_hdr b, " + scm + ".t_cntrl_hdr d ";
+            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) ";
+            sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
+            sql += "" + scm + ".t_txntrans c, " + scm + ".t_txn d ";
+            sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
+            sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null and ";
+            sql += "1 - nvl(b.bnos, 0) > 0 ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }

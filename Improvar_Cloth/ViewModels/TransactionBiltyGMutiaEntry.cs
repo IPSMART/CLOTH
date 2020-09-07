@@ -13,8 +13,9 @@ namespace Improvar.ViewModels
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_BILTY T_BILTY { get; set; }
         public List<TBILTY> TBILTY { get; set; }
+        public List<TBILTY_POPUP> TBILTY_POPUP { get; set; }
         public List<DocumentType> DocumentType { get; set; }
-        public List<DropDown_list> DropDown_list { get; set; }
+        public List<DropDown_list1> DropDown_list1 { get; set; }
         public string DRCR { get; set; }
         public string SLNM { get; set; }
         public string REGMOBILE { get; set; }

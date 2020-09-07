@@ -22,7 +22,8 @@
             $(".sl_bom_grid").prop("disabled", false);
             $(".image_button_grid_AddRemove").hide();
         }
-        else if ("@Model.DefaultAction" == "E") {
+        else if ("@Model.DefaultAction" == "E") {            
+            $("#EFFDT").attr("readonly", "readonly");
             $("#ITCD").attr("readonly", "readonly");
             $("#STYLE_HELP").hide();
             $("#ITCD_HELP").hide();
@@ -299,28 +300,7 @@
         });
     }
 </script>
-<script>
-    function fileCheck(id, index) {
-        var fileUpload = $(id).get(0);
-        var filesSelected = fileUpload.files;
-        if (filesSelected.length > 0) {
-            var fileToLoad = filesSelected[0];
-            var fname = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE_NAME");
-            fname.value = fileToLoad.name;
-            var fileReader = new FileReader();
 
-            fileReader.onload = function (fileLoadedEvent) {
-                var textAreaFileContents = document.getElementById("UploadDOC_" + index.toString() + "__DOC_FILE");
-
-                textAreaFileContents.value = fileLoadedEvent.target.result;
-                $("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
-            };
-
-            fileReader.readAsDataURL(fileToLoad);
-        }
-    }
-
-</script>
 <script>
     function input443(id, id1, id2) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
@@ -364,42 +344,6 @@
                 }
             });
         }
-    }
-</script>
-<script type="text/javascript">
-    var specialKeys = new Array();
-    specialKeys.push(8); //Backspace
-    function numericOnlyForNegative(elementRef, position) {
-        var keyCodeEntered = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
-        if ((keyCodeEntered >= 48) && (keyCodeEntered <= 57) || (keyCodeEntered == 45)) {
-            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
-                var aa = elementRef.value;
-                var ab = aa.indexOf('.');
-                var ac = aa.toString().substring(ab);
-                if (ac.length <= position) {
-                    return true; n
-                }
-                else {
-                    return false;
-                }
-
-            }
-            return true;
-        }
-            // '.' decimal point...
-        else if (keyCodeEntered == 46) {
-            // Allow only 1 decimal point ('.')...
-            if ((elementRef.value) && (elementRef.value.indexOf('.') >= 0)) {
-
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-
-        return false;
-
     }
 </script>
 <script>
@@ -818,50 +762,6 @@
     }*@
 </script>
 <script>
-    function SelectSimilarItemCode(id, STYLENUMBER, ITEM_CODE, ITEM_NAME, UOM_CODE) {
-        if (id == "") {
-            $("#" + STYLENO.id).val("");
-            $("#" + ITCD.id).val("");
-            $("#" + ITNM.id).val("");
-            $("#" + UOMNM.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: "@Url.Action("GetItemDetails", PageControllerName)",
-                data: { val: id, },
-                success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#msg_ok_info").focus();
-                        $("#" + STYLENO.id).val("");
-                        $("#" + ITCD.id).val("");
-                        $("#" + ITNM.id).val("");
-                        $("#" + UOMNM.id).val("");
-                        $("#msgbody_info").html("Invalid Item Code ! Please Enter a Valid Code !! ");
-                        message_value = STYLENO.id;
-                        return false;
-                    }
-                    else {
-                        $("#tempHDD").val(result);
-                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                        document.getElementById(STYLENO.id).value = str[0].toString();
-                        document.getElementById(ITCD.id).value = str[1].toString();
-                        document.getElementById(ITNM.id).value = str[2].toString();
-                        document.getElementById(UOMNM.id).value = str[3].toString();
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    }
-</script>
-<script>
     function SelectMachineCode(id, MCCD, MCNM) {
         if (id == "") {
             $("#" + MCCD.id).val("");
@@ -941,81 +841,7 @@
         }
     }
 </script>
-<script>
-    function SelectMaterialItemCode(id, ITCD, ITNM, UOMNM) {
-        if (id == "") {
-            $("#" + ITCD.id).val("");
-            $("#" + ITNM.id).val("");
-            $("#" + UOMNM.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: "@Url.Action("GetMaterialItemDetails", PageControllerName)",
-                data: {
-                    val: id
-                },
-                success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + ITCD.id).val("");
-                        $("#" + ITNM.id).val("");
-                        $("#" + UOMNM.id).val("");
-                        $("#msgbody_info").html("Invalid Item Code ! Please Enter a Valid Code !! ");
-                        message_value = ITCD.id;
-                    }
-                    else {
-                        $("#tempHDD").val(result);
-                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                        document.getElementById(ITCD.id).value = str[1].toString();
-                        document.getElementById(ITNM.id).value = str[2].toString();
-                        document.getElementById(UOMNM.id).value = str[3].toString();
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    }
-</script>
-<script language="javascript">
-    document.onkeyup = KeyCheck;
-    function KeyCheck(e) {
-        var KeyID = (window.event) ? event.keyCode : e.keyCode;
-        if (KeyID == 118) {
-            var GridRowOperation = $("#M_BOM_OPERATION > tbody > tr").length;
-            var LST_PART_CD = "";
-            var LST_PART_NM = "";
-            var LST_SEQ_ORD = "";
-            for (i = 0; i <= GridRowOperation - 1; i++) {
-                var PART_CD = document.getElementById("PARTCDO_" + i).value;
-                var PART_NAME = document.getElementById("PARTNMO_" + i).value;
-                var SEQ_ORD = document.getElementById("SEQORDNOO_" + i).value;
-                if (PART_CD != "") {
-                    LST_PART_CD = PART_CD;
-                    LST_PART_NM = PART_NAME;
-                    if (SEQ_ORD != "") {
-                        LST_SEQ_ORD = SEQ_ORD;
-                    }
-                }
 
-                if (document.getElementById("PARTCDO_" + i).value == "") {
-                    document.getElementById("PARTCDO_" + i).value = LST_PART_CD;
-                    document.getElementById("PARTNMO_" + i).value = LST_PART_NM;
-                    var SEQ = parseInt(LST_SEQ_ORD) + 1;
-                    var pad = "00"
-                    var ans = pad.substring(0, pad.length - SEQ.toString().length) + SEQ
-                    document.getElementById("SEQORDNOO_" + i).value = ans;
-                    return false;
-                }
-            }
-        }
-    }
-</script>
 <script>
     function pageprinting() {
         $("#btnprint").click();
@@ -1138,22 +964,11 @@
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        @*<div class="col-md-7">*@
-                            @*<div class="editor-field">*@
-                                @*@Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','A','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Style Number" } })
-                                    <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="STYLE_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','A')" />*@
-                                @*@Html.EditorFor(model => model.M_SITEM.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3');", @placeholder = "Design Number", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" id="STYLE_HELP" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','STYLENO','STYLENO=styleno=0/ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3')" />*@
-                            @*</div>*@
-                        @*</div>*@
                         <div class="col-md-7">
                             <div class="editor-field">
-                                @*@Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD')", onblur = "SelectArticleItemCode(this.value,'STYLENO','ITCD','ITNM','UOMNM','C','');CheckArticleItem('ITCD','STYLENO','ITNM','UOMNM');", @placeholder = "Code" } })
-                                    <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" id="ITCD_HELP" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENO/ITNM/ITCD/UOMNM','0/1/2/3','ArticleWise Item Details','ITCD','C')" />*@
-                                @Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype');", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype')" />
-                                @*@Html.HiddenFor(a => a.M_SITEMBOM.ITCD)*@
-                            </div>
+                             @Html.EditorFor(model => model.M_SITEMBOM.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" id="ITCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOMNM=uomcd=3/STYLENO=styleno=0','itgrptype')" />
+                             </div>
                         </div>
                         <div class="col-md-7">
                             <div class="editor-field">
@@ -1223,7 +1038,7 @@
             </div>
             @if (Model.DefaultAction == "A" && Model.MENU_PARA == "OPR")
             {
-                <div class="row">
+                @*<div class="row">
                     <div class="col-md-6">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Copy From Other Item")
@@ -1232,19 +1047,14 @@
                     </div>
                     <div class="col-md-6">
                         <div class="editor-field">
-                            @*@Html.EditorFor(model => model.STYLENUMBER, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENUMBER", maxlength = 12, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','A')", onblur = "SelectArticleItemCode(this.value,'STYLENUMBER','ITEM_CODE','ITEM_NAME','UOM_CODE','A','SIMILAR');", @placeholder = "Style Number" } })
-                                <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','A')" />*@
-                            @Html.EditorFor(model => model.STYLENUMBER, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENUMBER", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','STYLENUMBER','STYLENUMBER=styleno=0/ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3')", onblur = "SelectArticleItemCode(this.value,'STYLENUMBER');", @placeholder = "Design Number", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','STYLENUMBER','STYLENUMBER=styleno=0/ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3')" />
+                            @Html.EditorFor(model => model.ITEM_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITEM_CODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')", onblur = "SelectArticleItemCode(this.value,'ITEM_CODE');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')" />
+
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-10">
                         <div class="editor-field">
-                            @*@Html.EditorFor(model => model.ITEM_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITEM_CODE", maxlength = 10, onkeyup = "GetHelp('" + @Url.Action("GetItemDetails", PageControllerName) + "','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','C')", onblur = "SelectArticleItemCode(this.value,'STYLENUMBER','ITEM_CODE','ITEM_NAME','UOM_CODE','C','SIMILAR');", @placeholder = "Code" } })
-                                <img src="~/Image/search.png" width="20px" style="margin-top:5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetItemDetails", PageControllerName)','STYLENUMBER/ITEM_NAME/ITEM_CODE/UOM_CODE','0/1/2/3','ArticleWise Item Details','ITEM_CODE','C')" />*@
-                            @Html.EditorFor(model => model.ITEM_CODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITEM_CODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')", onblur = "SelectArticleItemCode(this.value,'ITEM_CODE');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','DesignWise Item Details','ITEM_CODE','ITEM_CODE=itcd=2/ITEM_NAME=itnm=1/UOM_CODE=uomcd=3/STYLENUMBER=styleno=0')" />
-
+                            @Html.EditorFor(model => model.STYLENUMBER, new { htmlAttributes = new { @class = "form-control", id = "STYLENUMBER", maxlength = 60, @TabIndex = -1, @title = "Only for View", @placeholder = "Item Name", @readonly = "readonly" } })
                         </div>
                     </div>
                     <div class="col-md-10">
@@ -1257,7 +1067,7 @@
                             @Html.EditorFor(model => model.UOM_CODE, new { htmlAttributes = new { @class = "form-control", id = "UOM_CODE", @placeholder = "UOM", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
                         </div>
                     </div>
-                </div>
+                </div>*@
             }
             <div class="row">
                 <ul class="nav nav-tabs">
@@ -1287,15 +1097,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
-                            <div class="row" style="background-color:#c4b9b9;border:5px groove;">
-                                <div>
-                                    <div id="partialdivDocument" style="margin-top:0px;">
-                                        @Html.Partial("_UPLOADDOCUMENTS")
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     }
                     else if (Model.MENU_PARA == "OPR")
                     {
@@ -1308,18 +1109,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
-                            <div class="row" style="background-color:#c4b9b9;border:5px groove;">
-                                <div>
-                                    <div id="partialdivDocument" style="margin-top:0px;">
-                                        @Html.Partial("_UPLOADDOCUMENTS")
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     }
                     else if (Model.MENU_PARA == "APRV")
-                    { <div id="Documents" class="tab-pane fade in active" style="margin-top: 10px;">
+                    {}
+                    <div id="Documents" class="tab-pane fade " style="margin-top: 10px;">
                         <div class="row" style="background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivDocument" style="margin-top:0px;">
@@ -1327,8 +1120,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>}
-                    
+                    </div>
                 </div>
             </div>
         </div>
