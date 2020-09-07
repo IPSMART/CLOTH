@@ -126,8 +126,6 @@ namespace Improvar.Controllers
                                 }
                             }
                             VE.T_BILTY_HDR = TBH;
-                            //VE.T_TXNTRANS = TXNTRN;
-                            //VE.T_TXNOTH = TXNOTH;
                             VE.T_CNTRL_HDR = TCH;
                             VE.T_CNTRL_HDR_REM = SLR;
                             if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
@@ -139,15 +137,6 @@ namespace Improvar.Controllers
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                                 TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 VE.T_CNTRL_HDR = TCH;
-                                //List<TBILTY> TBILTY = new List<TBILTY>();
-                                //for (int i = 0; i <= 0; i++)
-                                //{
-                                //    TBILTY BILTY = new TBILTY();
-                                //    BILTY.SLNO = Convert.ToByte(i + 1);
-                                //    TBILTY.Add(BILTY);
-                                //    VE.TBILTY = TBILTY;
-                                //}
-                                //VE.TBILTY = TBILTY;
                                 List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                                 UploadDOC UPL = new UploadDOC();
                                 UPL.DocumentType = Cn.DOC_TYPE();
@@ -171,7 +160,7 @@ namespace Improvar.Controllers
                     }
                     string docdt = "";
                     if (TCH != null) if (TCH.DOCDT != null) docdt = TCH.DOCDT.ToString().Remove(10);
-                    Cn.getdocmaxmindate(VE.T_CNTRL_HDR.DOCCD, docdt, VE.DefaultAction, VE.T_CNTRL_HDR.DOCNO, VE);
+                    Cn.getdocmaxmindate(VE.T_CNTRL_HDR.DOCCD, docdt, VE.DefaultAction, VE.T_CNTRL_HDR.DOCONLYNO, VE);
                     return View(VE);
                 }
             }
@@ -220,8 +209,8 @@ namespace Improvar.Controllers
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO); 
                 string str = "";
-                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrtd,a.lrno,a.baleyr,a.baleno,";
-                str += " from " + Scm + ".T_BILTY a,";
+                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno ";
+                str += " from " + Scm + ".T_BILTY a ";
                 str += " where  a.autono='" + TBH.AUTONO + "'  ";
                 str += "order by a.slno ";
 
@@ -232,7 +221,7 @@ namespace Improvar.Controllers
                                    SLNO = Convert.ToInt16(dr["slno"]),
                                    BLAUTONO = dr["blautono"].retStr(),
                                    DRCR = dr["drcr"].retStr()==""?"": dr["drcr"].retStr(),
-                                   LRDT = Convert.ToDateTime(dr["lrtd"]),
+                                   LRDT = dr["lrdt"].retDateStr(),
                                    LRNO = dr["lrno"].retStr(),
                                    BALENO = dr["baleno"].retStr(),
                                }).OrderBy(s => s.SLNO).ToList();
@@ -257,9 +246,9 @@ namespace Improvar.Controllers
             string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
             string sql = "";
 
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district,c.gstno,a.jobcd,d.jobnm, nvl(a.blamt,0) blamt ";
-            sql += "from " + scm + ".T_BILTY_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ," + scm + ".m_jobmst d ";
-            sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and a.jobcd=d.jobcd(+) and b.doccd in (" + doccd + ") and ";
+            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.mutslcd, c.slnm, c.district,c.regmobile ";
+            sql += "from " + scm + ".T_BILTY_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c  ";
+            sql += "where a.autono=b.autono and a.mutslcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
             if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
@@ -269,10 +258,10 @@ namespace Improvar.Controllers
             DataTable tbl = Master_Help.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Job Name" + Cn.GCS() + "AUTO NO";
+            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Registered Mobile No." + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
-                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "][" + tbl.Rows[j]["gstno"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td>" + tbl.Rows[j]["jobnm"] + "(" + tbl.Rows[j]["jobcd"] + ") </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["mutslcd"] + ") </td><td>" + tbl.Rows[j]["regmobile"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
         }
@@ -333,19 +322,19 @@ namespace Improvar.Controllers
         public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE)
         {
             Cn.getQueryString(VE);
-            VE.MENU_PARA = VE.MENU_PARA;
+            //VE.MENU_PARA = VE.MENU_PARA;
             try
             {
                 List<TBILTY> GRNDTL = new List<TBILTY>();
-                for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                {
-                    if (VE.TBILTY[i].BLAUTONO != null)
-                    {
-                        TBILTY MIB = new TBILTY();
-                        MIB = VE.TBILTY[i];
-                        GRNDTL.Add(MIB);
-                    }
-                }
+                //for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                //{
+                //    if (VE.TBILTY[i].BLAUTONO != null)
+                //    {
+                //        TBILTY MIB = new TBILTY();
+                //        MIB = VE.TBILTY[i];
+                //        GRNDTL.Add(MIB);
+                //    }
+                //}
                 string GC = Cn.GCS();
                 foreach (var i in VE.TBILTY_POPUP)
                 {
@@ -354,7 +343,7 @@ namespace Improvar.Controllers
                         TBILTY PORDTL = new TBILTY();
                         PORDTL.BLAUTONO = i.BLAUTONO;
                         PORDTL.LRNO = i.LRNO;
-                        PORDTL.LRDT = Convert.ToDateTime(i.LRDT);
+                        PORDTL.LRDT = i.LRDT.retDateStr();
                         PORDTL.BALENO = i.BALENO;
                         PORDTL.PREFNO = i.PREFNO;
                         PORDTL.PREFDT = i.PREFDT;
@@ -657,7 +646,7 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, TBHDR.MUTSLCD);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, null, null, null, null, TBHDR.MUTSLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -666,7 +655,7 @@ namespace Improvar.Controllers
 
                         for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
                         {
-                            if (VE.TBILTY[i].SLNO != 0)
+                            if (VE.TBILTY[i].SLNO != 0 && VE.TBILTY[i].Checked==true)
                             {
                                 COUNTER = COUNTER + 1;
                                 T_BILTY TBILTY = new T_BILTY();
@@ -675,10 +664,10 @@ namespace Improvar.Controllers
                                 TBILTY.SLNO = VE.TBILTY[i].SLNO;
                                 TBILTY.BLAUTONO = VE.TBILTY[i].BLAUTONO;
                                 TBILTY.DRCR = VE.DRCR;
-                                TBILTY.LRDT = VE.TBILTY[i].LRDT;
+                                TBILTY.LRDT = Convert.ToDateTime(VE.TBILTY[i].LRDT);
                                 TBILTY.LRNO = VE.TBILTY[i].LRNO;
-                                TBILTY.BALEYR = "";
-                                TBILTY.BALENO = VE.TBILTY[i].BALENO;
+                                TBILTY.BALEYR = "2020";
+                                TBILTY.BALENO = "123"/*VE.TBILTY[i].BALENO*/;
                                 dbsql = MasterHelpFa.RetModeltoSql(TBILTY);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

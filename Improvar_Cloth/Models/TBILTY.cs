@@ -38,8 +38,8 @@ namespace Improvar.Models
         [Required]
         [StringLength(30)]
         public string BLAUTONO { get; set; }
-
-        public DateTime? LRDT { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public string LRDT { get; set; }
 
         [Required]
         [StringLength(15)]
@@ -54,6 +54,7 @@ namespace Improvar.Models
         public string BALENO { get; set; }
         public bool Checked { get; set; }
         public string PREFNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string PREFDT { get; set; }
 
     }

@@ -346,7 +346,8 @@
     }
 </script>
 <script>
-     function SelectPendingLRNO(id) {
+    function SelectPendingLRNO(id) {
+        debugger;
         var Count = 0;
         var GridPendingPO = $("#T_BiltyG_Mutia_PopUp > tbody > tr").length;
         for (var i = 0; i <= GridPendingPO - 1; i++) {
@@ -365,7 +366,7 @@
                     //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
 
                     $("#partialdivMain").animate({ marginTop: '0px' }, 50);
-                    $("#partialdivQtyRequirement").html(result);
+                    $("#partialdivMain").html(result);
                     $("#WaitingMode").hide();
                     @*$('#partialdivMain').html(res[0]);
                     if ("@Session["CLIENT_CODE"]" == "ADHU") {
@@ -403,7 +404,7 @@
         <input type="hidden" id="partylinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_BILTY_HDR.AUTONO, new { id = "AUTONO" })
-        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
+        @*@Html.HiddenFor(a => a.T_CNTRL_HDR.DOCONLYNO)*@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         <div class="form-horizontal">
@@ -447,7 +448,7 @@
                             @Html.Label("", "Document No.")
                         </div>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.T_CNTRL_HDR.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                         </div>
