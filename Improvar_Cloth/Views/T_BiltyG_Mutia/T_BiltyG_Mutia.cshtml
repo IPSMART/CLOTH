@@ -152,13 +152,14 @@
 </script>
 <script>
     function GetPendingData() {
+        debugger;
         if ("@Model.DefaultAction" != "V") {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
             var docdt = $("#DOCDT").val();
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("GetPendingData", PageControllerName)",
-                data: $('form').serialize(),"&DOCDT=" : docdt ,
+                data: "&DOCDT=" + docdt ,
                 success: function (result) {
                     $("#popup").animate({ marginTop: '-10px' }, 50);
                     $("#popup").html(result);
@@ -326,72 +327,15 @@
 
 </script>
 <script>
-    function Addrow(ID) {
-        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddRow", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivProgramme").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-
+ 
     function DeleteRow() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("DeleteRow", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
-                $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
-                $("#partialdivProgramme").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
-    function AddrowQTY(ID) {
-        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddRowQTY", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivQtyRequirement").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-
-    function DeleteRowQTY() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteRowQTY", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
-                $("#partialdivQtyRequirement").html(result);
+                $("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                $("#partialdivMain").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -457,10 +401,6 @@
         <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="T" />
-        <input type="hidden" id="agentlinkcd" value="A" />
-        <input type="hidden" id="courierlinkcd" value="U" />
-        <input type="hidden" id="trnsportlinkcd" value="T" />
-        <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_BILTY_HDR.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
@@ -526,7 +466,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-1">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Mutia")
                             <b style="color:Red;">*</b>
@@ -534,7 +474,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_BILTY_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd');", @placeholder = "MUTSLCD", maxlength = 8 } })
+                            @Html.EditorFor(model => model.T_BILTY_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=SLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd');", @placeholder = "MUTSLCD", maxlength = 8 } })
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','MUTSLCD','MUTSLCD=slcd=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')" />
                         </div>
                     </div>
@@ -560,7 +500,7 @@
                             @Html.EditorFor(model => model.T_BILTY_HDR.TREM, new { htmlAttributes = new { @class = "form-control", id = "TREM", @placeholder = "Remarks", maxlength = 100 } })
                         </div>
                     </div>
-                    @if (Model.DefaultAction == "A")
+                    @if (Model.DefaultAction != "V")
                     {
 
                         <div class="col-md-7">
@@ -581,7 +521,7 @@
                 </div>
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div>
                                 <div id="partialdivMain" style="margin-top:0px;">
                                     @Html.Partial("_T_BiltyG_Mutia_Main")
