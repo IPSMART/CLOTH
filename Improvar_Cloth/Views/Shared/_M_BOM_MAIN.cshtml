@@ -58,7 +58,7 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.MSITEMBOMPART[i].Checked, new { id = "chkid" })
+                                            @Html.CheckBoxFor(model => model.MSITEMBOMPART[i].Checked, new { id = "chkid_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:27px;">
                                             @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", style = "width:25px", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })

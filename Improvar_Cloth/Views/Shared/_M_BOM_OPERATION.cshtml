@@ -61,7 +61,7 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="grid_td" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.MSITEMBOMSJOB[i].Checked, new { id = "chkid" })
+                                            @Html.CheckBoxFor(model => model.MSITEMBOMSJOB[i].Checked, new { id = "chkid_" + i })
                                             @Html.HiddenFor(model => model.MSITEMBOMSJOB[i].BOMCD)
                                             @Html.HiddenFor(model => model.MSITEMBOMSJOB[i].EFFDT)
                                         </td>

@@ -23,10 +23,17 @@
 <script>
    function requiredFieldValidator()
    {
+       
        if (!emptyFieldCheck("Enter Sub  Job Name", "SJOBNM")) {
            $("li").removeClass("active").addClass("");
            $(".nav-tabs li:first-child").addClass('active');
-           //below set the  child sequence
+           $(".tab-content div").removeClass("active");
+           $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+           return false;
+       }
+       if (!emptyFieldCheck("Enter JOBCD", "JOBCD")) {
+           $("li").removeClass("active").addClass("");
+           $(".nav-tabs li:first-child").addClass('active');
            $(".tab-content div").removeClass("active");
            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
            return false;
@@ -345,7 +352,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Job Code")
+                                @Html.Label("", "Job Code*")
                             </div>
                         </div>
                         <div class="col-md-3">
