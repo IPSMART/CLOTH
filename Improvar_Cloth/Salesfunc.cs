@@ -1412,6 +1412,7 @@ namespace Improvar
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
             string scm = CommVar.CurSchema(UNQSNO),  COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            if (schema != "") scm = schema;
             string sql = "";
             sql = "";
             sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
