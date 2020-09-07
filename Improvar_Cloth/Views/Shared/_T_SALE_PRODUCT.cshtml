@@ -15,7 +15,7 @@
             <div class="grid_title">
                 @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
                 @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />*@
-                    <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
+                <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
                 <div class="col-md-8">
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PRODUCT_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
@@ -89,19 +89,13 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLJOBNM, new { id = "B_MTRLJOBNM_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].MTBARCODE, new { id = "B_MTBARCODE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITNM, new { id = "B_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i })
                                         </td>
-                                        @*<td class="">
-                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].FABITNM, new { id = "B_FABITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                                @Html.HiddenFor(model => model.TBATCHDTL[i].FABITCD, new { id = "B_FABITCD_" + i })
-                                            </td>*@
-                                        @*<td class="">
-                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @*@Html.HiddenFor(model => model.TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i })*@
@@ -110,9 +104,11 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].PARTCD, new { id = "B_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].PARTNM, new { id = "B_PARTNM_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].PRTBARCODE, new { id = "B_PRTBARCODE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRCD, new { id = "B_COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].CLRBARCODE, new { id = "B_PRTBARCODE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRNM, new { id = "B_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -120,6 +116,7 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SIZECD, new { id = "B_SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].SIZENM, new { id = "B_SIZENM_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].SZBARCODE, new { id = "B_SZBARCODE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })

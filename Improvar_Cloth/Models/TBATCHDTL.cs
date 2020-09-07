@@ -148,5 +148,9 @@ namespace Improvar.Models
         public string BALENO { get; set; }
         public string SCMDISCTYPE_DESC { get; set; }
         public string TDDISCTYPE_DESC { get; set; }
+        public string MTBARCODE { get; set; }
+        public string PRTBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }
+        public string SZBARCODE { get; set; }
     }
 }
