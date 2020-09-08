@@ -1411,14 +1411,14 @@ namespace Improvar
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
-            string scm = CommVar.CurSchema(UNQSNO),  COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string scm = CommVar.CurSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             if (schema != "") scm = schema;
             string sql = "";
             sql = "";
             sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
             sql += " d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos from ";
             sql += "  (select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
-            sql += "  from "+ scm + ".t_txn a, " + scm + ".t_txndtl b, " + scm + ".t_cntrl_hdr d ";
+            sql += "  from " + scm + ".t_txn a, " + scm + ".t_txndtl b, " + scm + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
             sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
             sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
@@ -1432,6 +1432,26 @@ namespace Improvar
             sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
             sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null and ";
             sql += "1 - nvl(b.bnos, 0) > 0 ";
+            tbl = MasterHelpFa.SQLquery(sql);
+            return tbl;
+        }
+
+        public DataTable getPendingPackslip(string docdt, string skipautono = "")
+        {
+            DataTable tbl;
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string sql = "";
+            sql = "";
+
+            sql += "select a.autono, c.docno, c.docdt, c.slcd, g.slnm, nvl(g.slarea,g.district) district ";
+            sql += "from " + scm + ".t_txn a, " + scm + "t_cntrl_hdr c, ";
+            sql += scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scmf + ".m_subleg g ";
+            sql += "where a.autono=c.autono(+) and c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.slcd=g.slcd(+) and ";
+            sql += "a.autono=e.linkautono(+) and e.autono is null and ";
+            if (skipautono.retStr() != "") sql += "e.autono not in (" + skipautono + ") and ";
+            sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and ";
+            sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
