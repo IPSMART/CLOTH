@@ -74,9 +74,9 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].FLAGMTR, new { id = "B_FLAGMTR_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].HSNCODE, new { id = "B_HSNCODE_" + i })
-                                                                                        @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
-                                                                                                                                    @Html.HiddenFor(model => model.TBATCHDTL[i].LOCABIN, new { id = "B_LOCABIN_" + i })
-                                                                                                                                    @Html.HiddenFor(model => model.TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].LOCABIN, new { id = "B_LOCABIN_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:20px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -136,7 +136,7 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');" } })
                                         </td>
 
                                         <td class="">
