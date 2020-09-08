@@ -659,39 +659,52 @@
 </script>
 <script>
     function GetGstPer(i, FieldidStarting) {
-        var prodgrpgstper = "";
+        var prodgrpgstper = "", itcd = "", mtrljobcd = "";
         var rate = 0;
         if (i == "") {
             prodgrpgstper = $("#PRODGRPGSTPER").val();
             rate = parseFloat($("#RATE").val());
+            mtrljobcd = parseFloat($("#MTRLJOBCD").val());
+            itcd = parseFloat($("#ITCD").val());
         }
         else {
             prodgrpgstper = $(FieldidStarting + "PRODGRPGSTPER_").val();
             rate = parseFloat($(FieldidStarting + "RATE_").val());
+            mtrljobcd = parseFloat($(FieldidStarting + "MTRLJOBCD_").val());
+            itcd = parseFloat($(FieldidStarting + "ITCD_").val());
         }
+        var docdt = $("#DOCDT").val();
+        var taxgrpcd = $("#TAXGRPCD").val();
+        var gocd = $("#GOCD").val();
+        var prccd = $("#PRCCD").val();
         $.ajax({
             type: 'POST',
             url: "@Url.Action("GetAllGstper", PageControllerName)",
-            data: "&PRODGRPGSTPER=" + prodgrpgstper + "&RATE=" + rate,
+            data: "&PRODGRPGSTPER=" + prodgrpgstper + "&RATE=" + rate + "&ITCD=" + itcd + "&DOCDT=" + docdt + "&TAXGRPCD=" + taxgrpcd + "&GOCD=" + gocd + "&PRCCD=" + prccd + "&MTRLJOBCD=" + mtrljobcd,
             success: function (result) {
                 var str = result.split(',');
-                var sumgst = parseFloat(parseFloat(str[0]) + parseFloat(str[1]) + parseFloat(str[2])).toFixed(2);
-                if (FieldidStarting == "") {
-                    $("#GSTPER").val(sumgst);
-                    $("#ALL_GSTPER").val(result);
-                }
-                else if (FieldidStarting == "B_") {
+                if (str.length > 0) {
+                    var sumgst = parseFloat(parseFloat(str[0]) + parseFloat(str[1]) + parseFloat(str[2])).toFixed(2);
+                    if (FieldidStarting == "") {
+                        $("#GSTPER").val(sumgst);
+                        $("#ALL_GSTPER").val(result);
+                    }
+                    else if (FieldidStarting == "#B_") {
 
-                    $(FieldidStarting + "GSTPER_").val(sumgst);
-                    $(FieldidStarting + "ALL_GSTPER_").val(result);
+                        $(FieldidStarting + "GSTPER_").val(sumgst);
+                        $(FieldidStarting + "ALL_GSTPER_").val(result);
+                    }
+                    else {
+                        $(FieldidStarting + "IGSTPER_").val(parseFloat(str[0]).toFixed(2));
+                        $(FieldidStarting + "CGSTPER_").val(parseFloat(str[1]).toFixed(2));
+                        $(FieldidStarting + "SGSTPER_").val(parseFloat(str[2]).toFixed(2));
+                        $(FieldidStarting + "ALL_GSTPER_").val(result);
+                    }
                 }
-                else {
-                    $(FieldidStarting + "IGSTPER_").val(parseFloat(str[0]).toFixed(2));
-                    $(FieldidStarting + "CGSTPER_").val(parseFloat(str[1]).toFixed(2));
-                    $(FieldidStarting + "SGSTPER_").val(parseFloat(str[2]).toFixed(2));
-                    $(FieldidStarting + "ALL_GSTPER_").val(result);
+                if (FieldidStarting == "#D_") {
+                    UpdateBarCodeRow_FrmDet(i);
+                    CalculateAmt_Details(i);
                 }
-
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -1385,7 +1398,7 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Rate", @placeholder = "Rate" } })
+                                                    @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Rate", @placeholder = "Rate", @onchange = "GetGstPer('','');" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -1832,7 +1845,7 @@
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + RATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '" onchange="GetGstPer("' + rowindex + '","#B_");">';
         tr += '    </td>';
         tr += '    <td class="" title="' + GSTPER + '">';
         tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
