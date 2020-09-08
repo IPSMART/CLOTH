@@ -220,15 +220,14 @@ namespace Improvar.Controllers
                              {
                                  SLNO = Convert.ToInt16(dr["slno"]),
                                  BLAUTONO = dr["blautono"].retStr(),
-                                 DRCR = dr["drcr"].retStr() == "" ? "" : dr["drcr"].retStr(),
                                  LRDT = dr["lrdt"].retDateStr(),
                                  LRNO = dr["lrno"].retStr(),
                                  BALENO = dr["baleno"].retStr(),
+                                 BALEYR = dr["baleyr"].retStr(),
                              }).OrderBy(s => s.SLNO).ToList();
-                foreach (var q in VE.TBILTYR)
+                for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
                 {
-                    VE.DRCR = q.DRCR;
-
+                    VE.TBILTYR[i].RSLNO = (VE.STRTNO + Convert.ToInt32(i + 1)).retInt();
                 }
 
             }
@@ -285,28 +284,29 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetPendingData(TransactionBiltyRMutiaEntry VE, string DOCDT)
+        public ActionResult GetPendingData(TransactionBiltyRMutiaEntry VE, string DOCDT,string MUTSLCD)
         {
             try
             {
-                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT);
+                var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD);
                 if (GetPendig_Data != null)
                 {
+                    DataView dv = new DataView(GetPendig_Data);
+                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
+                    GetPendig_Data = dv.ToTable(true, COL);
                     VE.TBILTYR_POPUP = (from DataRow dr in GetPendig_Data.Rows
                                        select new TBILTYR_POPUP
                                        {
-                                           BLAUTONO = dr["autono"].retStr(),
+                                           BLAUTONO = dr["blautono"].retStr(),
                                            LRNO = dr["lrno"].retStr(),
                                            LRDT = dr["lrdt"].retDateStr(),
                                            BALENO = dr["baleno"].retStr(),
                                            PREFNO = dr["prefno"].retStr(),
-                                           PREFDT = dr["prefdt"].retDateStr(),
-
-                                       }).ToList();
+                                           PREFDT = dr["prefdt"].retDateStr()
+                                       }).Distinct().ToList();
                     for (int p = 0; p <= VE.TBILTYR_POPUP.Count - 1; p++)
                     {
                         VE.TBILTYR_POPUP[p].SLNO = Convert.ToInt16(p + 1);
-
                     }
                 }
 
@@ -319,57 +319,50 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult SelectPendingLRNO(TransactionBiltyRMutiaEntry VE)
+        public ActionResult SelectPendingLRNO(TransactionBiltyRMutiaEntry VE, string DOCDT, string MUTSLCD)
         {
             Cn.getQueryString(VE);
-            //VE.MENU_PARA = VE.MENU_PARA;
             try
             {
-                List<TBILTYR> GRNDTL = new List<TBILTYR>();
-                //for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
-                //{
-                //    if (VE.TBILTYR[i].BLAUTONO != null)
-                //    {
-                //        TBILTYR MIB = new TBILTYR();
-                //        MIB = VE.TBILTYR[i];
-                //        GRNDTL.Add(MIB);
-                //    }
-                //}
                 string GC = Cn.GCS();
+                List<string> blautonos = new List<string>();
                 foreach (var i in VE.TBILTYR_POPUP)
                 {
                     if (i.Checked == true)
                     {
-                        TBILTYR PORDTL = new TBILTYR();
-                        PORDTL.BLAUTONO = i.BLAUTONO;
-                        PORDTL.LRNO = i.LRNO;
-                        PORDTL.LRDT = i.LRDT.retDateStr();
-                        PORDTL.BALENO = i.BALENO;
-                        PORDTL.PREFNO = i.PREFNO;
-                        PORDTL.PREFDT = i.PREFDT;
-
-                        GRNDTL.Add(PORDTL);
+                        blautonos.Add(i.BLAUTONO);
                     }
                 }
-                VE.TBILTYR = GRNDTL;
+                var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
+                var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD, sqlbillautonos);
+              
+                VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
+                                    select new TBILTYR
+                                    {
+                                        BLAUTONO = dr["blautono"].retStr(),
+                                        ITCD= dr["itcd"].retStr(),
+                                        ITNM = dr["itstyle"].retStr(),
+                                        NOS = dr["nos"].retStr(),
+                                        QNTY = dr["qnty"].retStr(),
+                                        UOMCD = dr["uomcd"].retStr(),
+                                        SHADE = dr["shade"].retStr(),
+                                        BALENO = dr["baleno"].retStr(),
+                                        PAGENO = dr["pageno"].retStr(),
+                                        LRNO = dr["lrno"].retStr(),
+                                        LRDT = dr["lrdt"].retStr(),
+                                        BALEYR = dr["baleyr"].retStr(),
+                                        BLSLNO = dr["blslno"].retStr()
+                                    }).Distinct().ToList();
+              
                 for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
                 {
                     VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
+                    VE.TBILTYR[i].RSLNO = (VE.STRTNO+Convert.ToInt32(i + 1)).retInt();
                 }
-                //string refno = "";
-                //if (CommVar.ClientCode(UNQSNO) == "ADHU")
-                //{
-                //    var chkref = VE.TBILTYR_POPUP.Where(a => a.Checked == true).Select(b => b.LRNO).ToList();
-                //    if (chkref.Count() != 0)
-                //    {
-                //        refno = chkref.FirstOrDefault();
-                //    }
-                //}
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyR_Mutia_Main", VE);
                 return Content(GRN_MAIN);
-                //return PartialView("_I_GRN_Main", VE);
             }
             catch (Exception ex)
             {
@@ -646,7 +639,7 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, null, null, null, null, TBHDR.MUTSLCD);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, TBHDR.MUTSLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -663,11 +656,11 @@ namespace Improvar.Controllers
                                 TBILTYR.AUTONO = TBHDR.AUTONO;
                                 TBILTYR.SLNO = VE.TBILTYR[i].SLNO;
                                 TBILTYR.BLAUTONO = VE.TBILTYR[i].BLAUTONO;
-                                TBILTYR.DRCR = VE.DRCR;
+                                TBILTYR.DRCR = "C";
                                 TBILTYR.LRDT = Convert.ToDateTime(VE.TBILTYR[i].LRDT);
                                 TBILTYR.LRNO = VE.TBILTYR[i].LRNO;
-                                TBILTYR.BALEYR = "2020";
-                                TBILTYR.BALENO = "123"/*VE.TBILTYR[i].BALENO*/;
+                                TBILTYR.BALEYR = VE.TBILTYR[i].BALEYR;
+                                TBILTYR.BALENO = VE.TBILTYR[i].BALENO;
                                 dbsql = MasterHelpFa.RetModeltoSql(TBILTYR);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

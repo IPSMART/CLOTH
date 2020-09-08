@@ -119,7 +119,7 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].BLQNTY, new { htmlAttributes = new { id = "D_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#D_');"} })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].AMT, new { htmlattributes = new { id = "D_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })

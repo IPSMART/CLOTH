@@ -285,28 +285,29 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetPendingData(TransactionBiltyGMutiaEntry VE, string DOCDT)
+        public ActionResult GetPendingData(TransactionBiltyGMutiaEntry VE, string DOCDT, string MUTSLCD)
         {
             try
             {
                 var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT);
                 if (GetPendig_Data != null)
                 {
+                    DataView dv = new DataView(GetPendig_Data);
+                    string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
+                    GetPendig_Data = dv.ToTable(true, COL);
                     VE.TBILTY_POPUP = (from DataRow dr in GetPendig_Data.Rows
-                                       select new TBILTY_POPUP
-                                       {
-                                           BLAUTONO = dr["autono"].retStr(),
-                                           LRNO = dr["lrno"].retStr(),
-                                           LRDT = dr["lrdt"].retDateStr(),
-                                           BALENO = dr["baleno"].retStr(),
-                                           PREFNO = dr["prefno"].retStr(),
-                                           PREFDT = dr["prefdt"].retDateStr(),
-
-                                       }).ToList();
+                                        select new TBILTY_POPUP
+                                        {
+                                            BLAUTONO = dr["autono"].retStr(),
+                                            LRNO = dr["lrno"].retStr(),
+                                            LRDT = dr["lrdt"].retDateStr(),
+                                            BALENO = dr["baleno"].retStr(),
+                                            PREFNO = dr["prefno"].retStr(),
+                                            PREFDT = dr["prefdt"].retDateStr()
+                                        }).Distinct().ToList();
                     for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
                     {
                         VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
-
                     }
                 }
 
@@ -319,57 +320,45 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE)
+        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT, string MUTSLCD)
         {
             Cn.getQueryString(VE);
-            //VE.MENU_PARA = VE.MENU_PARA;
             try
             {
-                List<TBILTY> GRNDTL = new List<TBILTY>();
-                //for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                //{
-                //    if (VE.TBILTY[i].BLAUTONO != null)
-                //    {
-                //        TBILTY MIB = new TBILTY();
-                //        MIB = VE.TBILTY[i];
-                //        GRNDTL.Add(MIB);
-                //    }
-                //}
                 string GC = Cn.GCS();
+                List<string> blautonos = new List<string>();
                 foreach (var i in VE.TBILTY_POPUP)
                 {
                     if (i.Checked == true)
                     {
-                        TBILTY PORDTL = new TBILTY();
-                        PORDTL.BLAUTONO = i.BLAUTONO;
-                        PORDTL.LRNO = i.LRNO;
-                        PORDTL.LRDT = i.LRDT.retDateStr();
-                        PORDTL.BALENO = i.BALENO;
-                        PORDTL.PREFNO = i.PREFNO;
-                        PORDTL.PREFDT = i.PREFDT;
-                      
-                        GRNDTL.Add(PORDTL);
+                        blautonos.Add(i.BLAUTONO);
                     }
                 }
-                VE.TBILTY = GRNDTL;
+                var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
+                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos);
+             
+                VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
+                              select new TBILTY
+                              {
+                                  BLAUTONO = dr["blautono"].retStr(),
+                                  BALENO = dr["baleno"].retStr(),
+                                  LRNO = dr["lrno"].retStr(),
+                                  LRDT = dr["lrdt"].retStr(),
+                                  PREFNO = dr["prefno"].retStr(),
+                                  PREFDT = dr["prefdt"].retStr(),
+                                  BALEYR = dr["baleyr"].retStr()
+                              }).Distinct().ToList();
+
+              
                 for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
                 {
                     VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
                 }
-                //string refno = "";
-                //if (CommVar.ClientCode(UNQSNO) == "ADHU")
-                //{
-                //    var chkref = VE.TBILTY_POPUP.Where(a => a.Checked == true).Select(b => b.LRNO).ToList();
-                //    if (chkref.Count() != 0)
-                //    {
-                //        refno = chkref.FirstOrDefault();
-                //    }
-                //}
+             
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyG_Mutia_Main", VE);
                 return Content(GRN_MAIN);
-                //return PartialView("_I_GRN_Main", VE);
             }
             catch (Exception ex)
             {
@@ -380,6 +369,7 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
+
         public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
         {
             controllerContext.Controller.ViewData.Model = model;

@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.TransactionBiltyRMutiaEntry
 
-<div style="width: 600px;" overflow-y:auto;">
+<div style="width: 1000px;" overflow-y:auto;">
     <div class="table-responsive">
 
         @if (Model.DefaultView == true)
@@ -11,7 +11,7 @@
                 <img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeletePART" title="Delete Row" onclick="DeleteRow()" />
 
                 <div class="col-md-10">
-                    <input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_BiltyG_Mutia_Main');" />
+                    <input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_BiltyR_Mutia_Main');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bilty Details</b></center>
@@ -74,6 +74,9 @@
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTYR[i].UOMCD, new { id = "UOMCD_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                        </td>
+                                        <td class="grid_td">
+                                            @Html.TextBoxFor(model => Model.TBILTYR[i].SHADE, new { id = "SHADE_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTYR[i].BALENO, new { id = "BALENO_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
