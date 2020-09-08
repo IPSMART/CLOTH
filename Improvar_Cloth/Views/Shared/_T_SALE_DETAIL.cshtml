@@ -26,48 +26,49 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_SALE_DETAIL_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 3427px;">
+                    <table id="_T_SALE_DETAIL_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2256px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="" style="width: 30px;text-align:center;">SL No.</th>
-                                <th class="">ItmGrp</th>
+                                <th class=""  style="width: 100px;text-align:center;">ItmGrp</th>
                                 <th class="" style="width:45px;">Mtrl Type</th>
-                                <th class="">Item</th>
+                                <th class="" style="width:71px;">Item Code</th>
+                                <th class="" style="width:160px;">Item Design</th>
                                 <th class="" style="width: 34px;">Stock Type</th>
                                 <th class="" style="width:50px;">UOM</th>
-                                <th class="" style="width:71px;text-align:right;">Nos</th>
-                                <th class="" style="width:111px;text-align:right;">Quantity</th>
-                                <th class="" style="width:111px;text-align:right;">Flag</th>
-                                <th class="" style="width:111px;text-align:right;">Bill Qnty</th>
-                                <th class="" style="width:111px;text-align:right;">Rate</th>
-                                <th class="" style="width:111px;text-align:right;">Amount</th>
+                                <th class="" style="width:60px;text-align:right;">Nos</th>
+                                <th class="" style="width:50px;text-align:right;">Quantity</th>
+                                <th class="" style="width:50px;text-align:right;">Flag</th>
+                                <th class="" style="width:50px;text-align:right;">Bill Qnty</th>
+                                <th class="" style="width:50px;text-align:right;">Rate</th>
+                                <th class="" style="width:50px;text-align:right;">Amount</th>
                                 <th class="" style="width:50px;">Disc Type</th>
-                                <th class="" style="width:111px;text-align:right;">Disc Rate</th>
-                                <th class="" style="width:111px;text-align:right;">Disc Amt</th>
+                                <th class="" style="width:50px;text-align:right;">Disc Rate</th>
+                                <th class="" style="width:50px;text-align:right;">Disc Amt</th>
                                 <th class="" style="width:50px;">Disc-1</th>
-                                <th class="" style="width:111px;text-align:right;">Disc1 Rate</th>
-                                <th class="" style="width:111px;text-align:right;">Disc1 Amt</th>
+                                <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
+                                <th class="" style="width:50px;text-align:right;">Disc1 Amt</th>
                                 <th class="" style="width:50px;">Disc-2</th>
-                                <th class="" style="width:111px;text-align:right;">Disc2 Rate</th>
-                                <th class="" style="width:111px;text-align:right;">Disc2 Amt</th>
-                                <th class="" style="width:111px;text-align:right;">Taxable</th>
-                                <th class="" style="width:75px;text-align:right;">IGST %</th>
-                                <th class="" style="width:111px;text-align:right;">IGST Amt</th>
-                                <th class="" style="width:75px;text-align:right;">CGST %</th>
-                                <th class="" style="width:111px;text-align:right;">CGST Amt</th>
-                                <th class="" style="width:75px;text-align:right;">SGST %</th>
-                                <th class="" style="width:111px;text-align:right;">SGST Amt</th>
-                                <th class="" style="width:75px;text-align:right;">CESS %</th>
-                                <th class="" style="width:111px;text-align:right;">CESS Amt</th>
-                                <th class="" style="width:111px;text-align:right;">Net Amount</th>
-                                <th class="" style="width:109px;">Hsn Code</th>
+                                <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>
+                                <th class="" style="width:50px;text-align:right;">Disc2 Amt</th>
+                                <th class="" style="width:50px;text-align:right;">Taxable</th>
+                                <th class="" style="width:50px;text-align:right;">IGST %</th>
+                                <th class="" style="width:50px;text-align:right;">IGST Amt</th>
+                                <th class="" style="width:50px;text-align:right;">CGST %</th>
+                                <th class="" style="width:50px;text-align:right;">CGST Amt</th>
+                                <th class="" style="width:50px;text-align:right;">SGST %</th>
+                                <th class="" style="width:50px;text-align:right;">SGST Amt</th>
+                                <th class="" style="width:50px;text-align:right;">CESS %</th>
+                                <th class="" style="width:50px;text-align:right;">CESS Amt</th>
+                                <th class="" style="width:50px;text-align:right;">Net Amount</th>
+                                <th class="" style="width:60px;">Hsn Code</th>
                                 @if (Model.MENU_PARA == "PB")
                                 {
-                                    <th class="" style="width:165px;">Bale</th>
+                                    <th class="" style="width:103px;">Bale</th>
                                 }
-                                <th class="" style="width:109px;">glcd</th>
-                                <th class="" style="width:165px;">Image Upload</th>
+                                <th class="" style="width:71px;">glcd</th>
+                                <th class="" >Image Upload</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,8 +92,11 @@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].MTRLJOBNM, new { id = "D_MTRLJOBNM_" + i })
                                         </td>
                                         <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].ITCD, new { id = "D_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].ITSTYLE, new { id = "D_ITSTYLE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].ITCD, new { id = "D_ITCD_" + i })
+                                            @*@Html.HiddenFor(model => model.TTXNDTL[i].ITCD, new { id = "D_ITCD_" + i })*@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].STYLENO, new { id = "D_STYLENO_" + i })
                                         </td>
                                         <td class="">
@@ -155,6 +159,8 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].TXBLVAL, new { htmlattributes = new { id = "D_TXBLVAL_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].PRODGRPGSTPER, new { id = "D_PRODGRPGSTPER_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].ALL_GSTPER, new { id = "D_ALL_GSTPER_" + i })
                                             @Html.EditorFor(model => Model.TTXNDTL[i].IGSTPER, new { htmlattributes = new { id = "D_IGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                         </td>
                                         <td class="">
@@ -182,16 +188,16 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].NETAMT, new { htmlattributes = new { id = "D_NETAMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor  text-right", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         @if (Model.MENU_PARA == "PB")
                                         {
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor  text-right", maxlength = 12 } })
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 12 } })
                                             </td>
                                         }
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].GLCD, new { htmlattributes = new { id = "D_GLCD_" + i, @class = " atextBoxFor  text-right", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].GLCD, new { htmlattributes = new { id = "D_GLCD_" + i, @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
                                             <input type="file" class="atextBoxFor" name="ImageData_@i" id="D_ImageData_@i" onchange="fileCheck(this,@i);" />
@@ -203,6 +209,7 @@
                         <tfoot>
                             <tr class="sticky-footer">
                                 <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

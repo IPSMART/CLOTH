@@ -98,10 +98,10 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string BARGENTYPE { get; set; }
-
-         public double? WPPER { get; set; }
-
-         public double? RPPER { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? WPPER { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? RPPER { get; set; }
 
         [StringLength(50)]
         public string MENU_PARA { get; set; }

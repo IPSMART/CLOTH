@@ -183,5 +183,6 @@ namespace Improvar.Models
         public string DISCTYPE_DESC { get; set; }
         public double? TOTDISCAMT { get; set; }
         public string ALL_GSTPER { get; set; }
+        public string PRODGRPGSTPER { get; set; }
     }
 }
