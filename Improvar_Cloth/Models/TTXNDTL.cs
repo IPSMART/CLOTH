@@ -165,6 +165,7 @@ namespace Improvar.Models
         public string ITGRPCD { get; set; }
         public string ITGRPNM { get; set; }
         public string ITNM { get; set; }
+        public string ITSTYLE { get; set; }
         public string STYLENO { get; set; }
         public string FABITCD { get; set; }
         public string FABITNM { get; set; }

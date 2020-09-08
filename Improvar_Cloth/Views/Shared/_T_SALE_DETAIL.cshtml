@@ -91,7 +91,7 @@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].MTRLJOBNM, new { id = "D_MTRLJOBNM_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].ITNM, new { id = "D_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].ITSTYLE, new { id = "D_ITSTYLE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].ITCD, new { id = "D_ITCD_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].STYLENO, new { id = "D_STYLENO_" + i })
                                         </td>
@@ -125,7 +125,7 @@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE, new { id = "D_DISCTYPE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].DISCRATE, new { htmlAttributes = new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ")" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].DISCRATE, new { htmlAttributes = new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].DISCAMT, new { htmlAttributes = new { id = "D_DISCAMT_" + i, @class = " atextBoxFor text-right" } })
@@ -135,7 +135,7 @@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCTYPE, new { id = "D_TDDISCTYPE_" + i })
                                           </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "D_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ")" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "D_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCAMT, new { htmlAttributes = new { id = "D_TDDISCAMT_" + i, @class = " atextBoxFor text-right" } })
@@ -145,7 +145,7 @@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].SCMDISCTYPE, new { id = "D_SCMDISCTYPE_" + i })
                                          </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "D_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ")" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "D_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCAMT, new { htmlAttributes = new { id = "D_SCMDISCAMT_" + i, @class = " atextBoxFor text-right" } })

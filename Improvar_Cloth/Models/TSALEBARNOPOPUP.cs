@@ -20,6 +20,7 @@ namespace Improvar.Models
         [StringLength(8)]
         public string ITCD { get; set; }
         public string ITNM { get; set; }
+        public string ITSTYLE { get; set; }
         public string STYLENO { get; set; }
         public string FABITCD { get; set; }
         public string FABITNM { get; set; }

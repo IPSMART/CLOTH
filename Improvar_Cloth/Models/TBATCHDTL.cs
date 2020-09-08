@@ -115,6 +115,7 @@ namespace Improvar.Models
         [StringLength(8)]
         public string ITCD { get; set; }
         public string ITNM { get; set; }
+        public string ITSTYLE { get; set; }
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }

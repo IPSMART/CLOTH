@@ -164,7 +164,7 @@
                 $("#partialdivBarCodeTab").html(result);
                 CalculateTotal_Barno();
                 $("#WaitingMode").hide();
-                ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
+                ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
                 if ("@Model.MENU_PARA" == "PB") {
                     $("#BALENO").val("");
                 }
@@ -185,7 +185,7 @@
                 return true;
             }
             else {
-                i = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length-1;
+                i = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length - 1;
             }
         }
         if (str != "") {
@@ -196,7 +196,7 @@
             $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
             $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
             $("#ITCD").val(returncolvalue(str, "ITCD"));
-            $("#ITNM").val(returncolvalue(str, "ITNM"));
+            $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
             $("#STYLENO").val(returncolvalue(str, "STYLENO"));
             $("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
             $("#PARTCD").val(returncolvalue(str, "PARTCD"));
@@ -274,7 +274,7 @@
             $("#MTRLJOBNM").val($(FieldidStarting + "MTRLJOBNM_" + i).val());
             $("#MTBARCODE").val($(FieldidStarting + "MTBARCODE_" + i).val());
             $("#ITCD").val($(FieldidStarting + "ITCD_" + i).val());
-            $("#ITNM").val($(FieldidStarting + "ITNM_" + i).val());
+            $("#ITSTYLE").val($(FieldidStarting + "ITSTYLE_" + i).val());
             $("#STYLENO").val($(FieldidStarting + "STYLENO_" + i).val());
             $("#STKTYPE").val($(FieldidStarting + "STKTYPE_" + i).val());
             $("#PARTCD").val($(FieldidStarting + "PARTCD_" + i).val());
@@ -337,7 +337,7 @@
                 $("#B_MTRLJOBNM_" + j).val($("#MTRLJOBNM").val());
                 $("#B_MTBARCODE_" + j).val($("#MTBARCODE").val());
                 $("#B_ITCD_" + j).val($("#ITCD").val());
-                $("#B_ITNM_" + j).val($("#ITNM").val());
+                $("#B_ITSTYLE_" + j).val($("#ITSTYLE").val());
                 $("#B_STYLENO_" + j).val($("#STYLENO").val());
                 $("#B_STKTYPE_" + j).val($("#STKTYPE").val());
                 $("#B_PARTCD_" + j).val($("#PARTCD").val());
@@ -380,7 +380,7 @@
             }
         }
         CalculateTotal_Barno();
-        ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
+        ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
         if ("@Model.MENU_PARA" == "PB") {
             $("#BALENO").val("");
         }
@@ -467,14 +467,14 @@
         var QNTY = $("#D_QNTY_" + i).val();
         if (QNTY != "") { QNTY = parseFloat(QNTY); } else { QNTY = parseFloat(0); }
 
+        var NOS = $("#D_NOS_" + i).val();
+        if (NOS != "") { NOS = parseFloat(NOS); } else { NOS = parseFloat(0); }
+
         var FLAGMTR = $("#D_FLAGMTR_" + i).val();
         if (FLAGMTR != "") { FLAGMTR = parseFloat(FLAGMTR); } else { FLAGMTR = parseFloat(0); }
 
         var RATE = $("#D_RATE_" + i).val();
         if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
-
-        var TOTDISCAMT = $("#D_TOTDISCAMT_" + i).val();
-        if (TOTDISCAMT != "") { TOTDISCAMT = parseFloat(TOTDISCAMT); } else { TOTDISCAMT = parseFloat(0); }
 
         var IGSTPER = $("#D_IGSTPER_" + i).val();
         if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
@@ -488,6 +488,19 @@
         var CESSPER = $("#D_CESSPER_" + i).val();
         if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
 
+        var DISCTYPE = $("#D_DISCTYPE_" + i).val();
+        var DISCRATE = $("#D_DISCRATE_" + i).val();
+        if (DISCRATE != "") { DISCRATE = parseFloat(DISCRATE); } else { DISCRATE = parseFloat(0); }
+
+        var TDDISCTYPE = $("#D_TDDISCTYPE_" + i).val();
+        var TDDISCRATE = $("#D_TDDISCRATE_" + i).val();
+        if (TDDISCRATE != "") { TDDISCRATE = parseFloat(TDDISCRATE); } else { TDDISCRATE = parseFloat(0); }
+
+        var SCMDISCTYPE = $("#D_SCMDISCTYPE_" + i).val();
+        var SCMDISCRATE = $("#D_SCMDISCRATE_" + i).val();
+        if (SCMDISCRATE != "") { SCMDISCRATE = parseFloat(SCMDISCRATE); } else { SCMDISCRATE = parseFloat(0); }
+
+
         //AMOUNT CALCULATION
         var amount = 0;
         if (BLQNTY == 0) {
@@ -498,6 +511,40 @@
         }
         amount = parseFloat(amount).toFixed(2);
         $("#D_AMT_" + i).val(amount);
+
+        //DISCOUNT AMOUNT CALCULATION
+        var DISCAMT = 0;
+        if (DISCTYPE == "Q") { DISCAMT = DISCRATE * QNTY; }
+        else if (DISCTYPE == "N") { DISCAMT = DISCRATE * NOS; }
+        else if (DISCTYPE == "P") { DISCAMT = (amount * DISCRATE) / 100; }
+        else if (DISCTYPE == "F") { DISCAMT = DISCRATE; }
+        else { DISCAMT = 0; }
+        DISCAMT = parseFloat(DISCAMT).toFixed(2);
+        $("#D_DISCAMT_" + i).val(DISCAMT);
+
+        //TDDISCOUNT AMOUNT CALCULATION
+        var TDDISCAMT = 0;
+        if (TDDISCTYPE == "Q") { TDDISCAMT = TDDISCRATE * QNTY; }
+        else if (TDDISCTYPE == "N") { TDDISCAMT = TDDISCRATE * NOS; }
+        else if (TDDISCTYPE == "P") { TDDISCAMT = (amount * TDDISCRATE) / 100; }
+        else if (TDDISCTYPE == "F") { TDDISCAMT = TDDISCRATE; }
+        else { TDDISCAMT = 0; }
+        TDDISCAMT = parseFloat(TDDISCAMT).toFixed(2);
+        $("#D_TDDISCAMT_" + i).val(TDDISCAMT);
+
+        //SCMDISCOUNT AMOUNT CALCULATION
+        var SCMDISCAMT = 0;
+        if (SCMDISCTYPE == "Q") { SCMDISCAMT = SCMDISCRATE * QNTY; }
+        else if (SCMDISCTYPE == "N") { SCMDISCAMT = SCMDISCRATE * NOS; }
+        else if (SCMDISCTYPE == "P") { SCMDISCAMT = (amount * SCMDISCRATE) / 100; }
+        else if (SCMDISCTYPE == "F") { SCMDISCAMT = SCMDISCRATE; }
+        else { SCMDISCAMT = 0; }
+        SCMDISCAMT = parseFloat(SCMDISCAMT).toFixed(2);
+        $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
+
+        //TOTAL DISCOUNT AMOUNT CALCULATION
+        var TOTDISCAMT = parseFloat(DISCAMT + TDDISCAMT + SCMDISCAMT).toFixed(2);
+        $("#D_TOTDISCAMT_" + i).val(TOTDISCAMT);
 
         //TAXABLE CALCULATION
         var taxbleamt = parseFloat(amount) - parseFloat(TOTDISCAMT);
@@ -844,8 +891,8 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM','slcd_tag/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM','slcd_tag/DOCDT');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM','slcd_tag/DOCDT')" />
+                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays','slcd_tag/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays','slcd_tag/DOCDT');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays','slcd_tag/DOCDT')" />
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -908,10 +955,10 @@
                                 </div>
                             </div>
                             <div class="col-md-10">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
-                                    </div>
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-5">
@@ -927,10 +974,10 @@
                                 </div>
                             </div>
                             <div class="col-md-9">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.AGSLNM, new { htmlAttributes = new { @class = "form-control", id = "AGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
-                                    </div>
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.AGSLNM, new { htmlAttributes = new { @class = "form-control", id = "AGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
+                            </div>
                             <div class="col-md-1">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Sub Agent")
@@ -944,10 +991,10 @@
                                 </div>
                             </div>
                             <div class="col-md-9">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.SAGSLNM, new { htmlAttributes = new { @class = "form-control", id = "SAGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Sub Agent Name", @readonly = "readonly", tabindex = "-1" } })
-                                    </div>
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.SAGSLNM, new { htmlAttributes = new { @class = "form-control", id = "SAGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Sub Agent Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-5">
@@ -960,14 +1007,14 @@
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
-                                    @Html.HiddenFor(model => model.GONM, new { id = "GONM" })
+                                    @*@Html.HiddenFor(model => model.GONM, new { id = "GONM" })*@
                                 </div>
                             </div>
-                            @*<div class="col-md-9">
+                            <div class="col-md-9">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
                                     </div>
-                                </div>*@
+                                </div>
                             <div class="col-md-1">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Price Code")
@@ -1163,10 +1210,10 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
-                                                    <div class="editor-field">
-                                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Item Group Name", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
-                                                    </div>
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Item Group Name", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
                                                 </div>
+                                            </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');", @placeholder = "Material Job Code", maxlength = 2, @title = "Material Job Code" } })
@@ -1177,9 +1224,9 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
-                                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITNM=itnm=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD')" />
-                                                    @Html.HiddenFor(model => model.ITNM, new { id = "ITNM" })
+                                                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
+                                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4','ITGRPCD')" />
+                                                    @Html.HiddenFor(model => model.ITSTYLE, new { id = "ITSTYLE" })
                                                 </div>
                                             </div>
                                             @*<div class="col-md-8">
@@ -1189,7 +1236,7 @@
                                                 </div>*@
                                             <div class="col-md-4">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", maxlength = 30, @title = "Design", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1} })
+                                                    @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", maxlength = 30, @title = "Design", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
                                                 </div>
                                             </div>
 
@@ -1204,7 +1251,7 @@
                                                     @*@Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
                                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetStockDetails", PageControllerName)','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')" />
                                                         @Html.HiddenFor(model => model.STKNAME, new { id = "STKNAME" })*@
-                                                    @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text", "F"), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
+                                                    @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text"), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -1606,7 +1653,7 @@
         var MTRLJOBNM = $("#MTRLJOBNM").val();
         var MTBARCODE = $("#MTBARCODE").val();
         var ITCD = $("#ITCD").val();
-        var ITNM = $("#ITNM").val();
+        var ITSTYLE = $("#ITSTYLE").val();
         var STYLENO = $("#STYLENO").val();
         var STKTYPE = $("#STKTYPE").val();
         var PARTCD = $("#PARTCD").val();
@@ -1672,7 +1719,7 @@
         tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="CHANDERI">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITNM" readonly="readonly" type="text" value="' + ITNM + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
         tr += '        <input data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_ITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITCD" type="hidden" value="' + ITCD + '">';
         tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
         tr += '    </td>         ';
@@ -1745,7 +1792,7 @@
 
         $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
         CalculateTotal_Barno();
-        ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
+        ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
         if ("@Model.MENU_PARA" == "PB") {
             $("#BALENO").val("");
         }
