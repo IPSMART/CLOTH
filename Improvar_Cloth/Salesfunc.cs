@@ -1449,6 +1449,7 @@ namespace Improvar
             sql += scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scmf + ".m_subleg g ";
             sql += "where a.autono=c.autono(+) and c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.slcd=g.slcd(+) and ";
             sql += "a.autono=e.linkautono(+) and e.autono is null and ";
+            if (skipautono.retStr() != "") sql += "e.autono not in (" + skipautono + ") and ";
             sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and ";
             sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
             tbl = MasterHelpFa.SQLquery(sql);
