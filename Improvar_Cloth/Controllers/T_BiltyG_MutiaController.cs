@@ -644,7 +644,7 @@ namespace Improvar.Controllers
 
                         for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
                         {
-                            if (VE.TBILTY[i].SLNO != 0 && VE.TBILTY[i].Checked==true)
+                            if (VE.TBILTY[i].SLNO != 0)
                             {
                                 COUNTER = COUNTER + 1;
                                 T_BILTY TBILTY = new T_BILTY();
