@@ -403,6 +403,84 @@ namespace Improvar.Controllers
                 {
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                 }
+                string S_P = "";
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") { S_P = "P"; } else { S_P = "S"; }
+                string sql = "select a.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, a.amtdesc, ";
+                sql += "b.glcd, b.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, a.sgstper, a.sgstamt, ";
+                sql += "a.cgstper, a.cgstamt,a.cessper, a.cessamt, a.dutyper, a.dutyamt ";
+                sql += "from " + Scm + ".t_txnamt a, " + Scm + ".m_amttype b ";
+                sql += "where a.amtcd=b.amtcd(+) and b.salpur='" + S_P + "' and a.autono='" + TXN.AUTONO + "' ";
+                sql += "union ";
+                sql += "select b.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, '' amtdesc, ";
+                sql += "b.glcd, b.hsncode, 0 amtrate, 0 curr_amt, 0 amt,0 igstper, 0 igstamt, 0 sgstper, 0 sgstamt, ";
+                sql += "0 cgstper, 0 cgstamt, 0 CESSPER, 0 CESSAMT, 0 dutyper, 0 dutyamt ";
+                sql += "from " + Scm + ".m_amttype b, " + Scm + ".m_cntrl_hdr c ";
+                sql += "where b.m_autono=c.m_autono(+) and b.salpur='" + S_P + "'  and nvl(c.inactive_tag,'N') = 'N' and ";
+                sql += "b.amtcd not in (select amtcd from " + Scm + ".t_txnamt where autono='" + TXN.AUTONO + "') ";
+                var AMOUNT_DATA = masterHelp.SQLquery(sql);
+
+                VE.TTXNAMT = (from DataRow dr in AMOUNT_DATA.Rows
+                              select new TTXNAMT()
+                              {
+                                  AMTCD = dr["amtcd"].ToString(),
+                                  ADDLESS = dr["addless"].ToString(),
+                                  TAXCODE = dr["taxcode"].ToString(),
+                                  GLCD = dr["GLCD"].ToString(),
+                                  AMTNM = dr["amtnm"].ToString(),
+                                  CALCCODE = dr["calccode"].ToString(),
+                                  CALCTYPE = dr["CALCTYPE"].ToString(),
+                                  CALCFORMULA = dr["calcformula"].ToString(),
+                                  AMTDESC = dr["amtdesc"].ToString(),
+                                  HSNCODE = dr["hsncode"].ToString(),
+                                  AMTRATE = Convert.ToDouble(dr["amtrate"] == DBNull.Value ? null : dr["amtrate"].ToString()),
+                                  CURR_AMT = Convert.ToDouble(dr["curr_amt"] == DBNull.Value ? null : dr["curr_amt"].ToString()),
+                                  AMT = Convert.ToDouble(dr["amt"] == DBNull.Value ? null : dr["amt"].ToString()),
+                                  IGSTPER = Convert.ToDouble(dr["igstper"] == DBNull.Value ? null : dr["igstper"].ToString()),
+                                  IGSTPER_DESP = Convert.ToDouble(dr["igstper"] == DBNull.Value ? null : dr["igstper"].ToString()),
+                                  CGSTPER = Convert.ToDouble(dr["cgstper"] == DBNull.Value ? null : dr["cgstper"].ToString()),
+                                  CGSTPER_DESP = Convert.ToDouble(dr["cgstper"] == DBNull.Value ? null : dr["cgstper"].ToString()),
+                                  SGSTPER = Convert.ToDouble(dr["sgstper"] == DBNull.Value ? null : dr["sgstper"].ToString()),
+                                  SGSTPER_DESP = Convert.ToDouble(dr["sgstper"] == DBNull.Value ? null : dr["sgstper"].ToString()),
+                                  CESSPER = Convert.ToDouble(dr["CESSPER"] == DBNull.Value ? null : dr["CESSPER"].ToString()),
+                                  CESSPER_DESP = Convert.ToDouble(dr["CESSPER"] == DBNull.Value ? null : dr["CESSPER"].ToString()),
+                                  DUTYPER = Convert.ToDouble(dr["dutyper"] == DBNull.Value ? null : dr["dutyper"].ToString()),
+                                  IGSTAMT = Convert.ToDouble(dr["igstamt"] == DBNull.Value ? null : dr["igstamt"].ToString()),
+                                  IGSTAMT_DESP = Convert.ToDouble(dr["igstamt"] == DBNull.Value ? null : dr["igstamt"].ToString()),
+                                  CGSTAMT = Convert.ToDouble(dr["cgstamt"] == DBNull.Value ? null : dr["cgstamt"].ToString()),
+                                  CGSTAMT_DESP = Convert.ToDouble(dr["cgstamt"] == DBNull.Value ? null : dr["cgstamt"].ToString()),
+                                  SGSTAMT = Convert.ToDouble(dr["sgstamt"] == DBNull.Value ? null : dr["sgstamt"].ToString()),
+                                  SGSTAMT_DESP = Convert.ToDouble(dr["sgstamt"] == DBNull.Value ? null : dr["sgstamt"].ToString()),
+                                  CESSAMT = Convert.ToDouble(dr["CESSAMT"] == DBNull.Value ? null : dr["CESSAMT"].ToString()),
+                                  CESSAMT_DESP = Convert.ToDouble(dr["CESSAMT"] == DBNull.Value ? null : dr["CESSAMT"].ToString()),
+                                  DUTYAMT = Convert.ToDouble(dr["dutyamt"] == DBNull.Value ? null : dr["dutyamt"].ToString()),
+                              }).ToList();
+
+                double A_IGST_AMT = 0; double A_CGST_AMT = 0; double A_SGST_AMT = 0; double A_CESS_AMT = 0; double A_DUTY_AMT = 0; double A_TOTAL_CURR = 0; double A_TOTAL_AMOUNT = 0; double A_TOTAL_NETAMOUNT = 0;
+
+                //for (int p = 0; p <= VE.TTXNAMT.Count - 1; p++)
+                //{
+                //    VE.TTXNAMT[p].SLNO = Convert.ToInt16(p + 1);
+
+                //    if (VE.TTXNAMT[p].IGSTPER == 0) { VE.TTXNAMT[p].IGSTPER = IGST_PER; }
+                //    if (VE.TTXNAMT[p].IGSTPER_DESP == 0) { VE.TTXNAMT[p].IGSTPER_DESP = IGST_PER; }
+                //    if (VE.TTXNAMT[p].CGSTPER == 0) { VE.TTXNAMT[p].CGSTPER = CGST_PER; }
+                //    if (VE.TTXNAMT[p].CGSTPER_DESP == 0) { VE.TTXNAMT[p].CGSTPER_DESP = CGST_PER; }
+                //    if (VE.TTXNAMT[p].SGSTPER == 0) { VE.TTXNAMT[p].SGSTPER = SGST_PER; }
+                //    if (VE.TTXNAMT[p].SGSTPER_DESP == 0) { VE.TTXNAMT[p].SGSTPER_DESP = SGST_PER; }
+                //    if (VE.TTXNAMT[p].CESSPER == 0) { VE.TTXNAMT[p].CESSPER = CESS_PER; }
+                //    if (VE.TTXNAMT[p].CESSPER_DESP == 0) { VE.TTXNAMT[p].CESSPER_DESP = CESS_PER; }
+                //    if (VE.TTXNAMT[p].DUTYPER == 0) { VE.TTXNAMT[p].DUTYPER = DUTY_PER; }
+
+                //    A_TOTAL_CURR = A_TOTAL_CURR + VE.TTXNAMT[p].CURR_AMT.Value;
+                //    A_TOTAL_AMOUNT = A_TOTAL_AMOUNT + VE.TTXNAMT[p].AMT.Value;
+                //    A_IGST_AMT = A_IGST_AMT + VE.TTXNAMT[p].IGSTAMT.Value;
+                //    A_CGST_AMT = A_CGST_AMT + VE.TTXNAMT[p].CGSTAMT.Value;
+                //    A_SGST_AMT = A_SGST_AMT + VE.TTXNAMT[p].SGSTAMT.Value;
+                //    A_CESS_AMT = A_CESS_AMT + VE.TTXNAMT[p].CESSAMT.Value;
+                //    A_DUTY_AMT = A_DUTY_AMT + VE.TTXNAMT[p].DUTYAMT.Value;
+                //    VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.Value + VE.TTXNAMT[p].IGSTAMT.Value + VE.TTXNAMT[p].CGSTAMT.Value + VE.TTXNAMT[p].SGSTAMT.Value + VE.TTXNAMT[p].CESSAMT.Value + VE.TTXNAMT[p].DUTYAMT.Value;
+                //    A_TOTAL_NETAMOUNT = A_TOTAL_NETAMOUNT + VE.TTXNAMT[p].NETAMT.Value;
+                //}
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
@@ -1140,20 +1218,22 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetAllGstper(string PRODGRPGSTPER, double RATE,string ITCD, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
+        public ActionResult GetAllGstper(string PRODGRPGSTPER, double RATE, string ITCD, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
         {
             try
             {
-                if(PRODGRPGSTPER.retStr() == "")
+                string gstper = "";
+                if (PRODGRPGSTPER.retStr() != "")
                 {
-                   var tax_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr().retSqlformat(), ITCD.retStr().retSqlformat(), "", MTRLJOBCD.retStr().retSqlformat(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
-                    if(tax_data != null && tax_data.Rows.Count > 0)
+                    var tax_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr().retSqlformat(), ITCD.retStr().retSqlformat(), "", MTRLJOBCD.retStr().retSqlformat(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+                    if (tax_data != null && tax_data.Rows.Count > 0)
                     {
                         PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
 
                     }
+                    gstper = salesfunc.retGstPer(PRODGRPGSTPER.retStr(), RATE.retDbl());
                 }
-                var gstper = salesfunc.retGstPer(PRODGRPGSTPER.retStr(), RATE.retDbl());
+
                 return Content(gstper);
 
             }
@@ -1163,36 +1243,41 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult OPEN_AMOUNT(TransactionPackingSlipEntry VE, string AUTO_NO, int A_T_NOS, double A_T_QNTY, double A_T_AMT, double A_T_TAXABLE, double A_T_IGST_AMT, double A_T_CGST_AMT, double A_T_SGST_AMT, double A_T_CESS_AMT, double A_T_NET_AMT, double IGST_PER, double CGST_PER, double SGST_PER, double CESS_PER)
+        public ActionResult OPEN_AMOUNT(TransactionPackingSlipEntry VE, string AUTO_NO, int A_T_NOS, double A_T_QNTY, double A_T_CURR_AMT, double A_T_AMT, double A_T_TAXABLE, double A_T_IGST_AMT, double A_T_CGST_AMT, double A_T_SGST_AMT, double A_T_CESS_AMT, double A_T_DUTY_AMT, double A_T_NET_AMT, double IGST_PER, double CGST_PER, double SGST_PER, double CESS_PER, double DUTY_PER)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            string COM_CD = CommVar.Compcd(UNQSNO); string LOC_CD = CommVar.Loccd(UNQSNO);
-            string DATABASE = CommVar.CurSchema(UNQSNO).ToString();
-            string DATABASEF = CommVar.FinSchema(UNQSNO);
-            Cn.getQueryString(VE); string S_P = "";
-            S_P = "S";
-
-
-            ViewBag.NOS = A_T_NOS;
-            ViewBag.QNTY = A_T_QNTY;
-            ViewBag.TAXABLEAMT = A_T_TAXABLE;
-            ViewBag.NETAMT = A_T_NET_AMT;
-            ViewBag.IGSTAMT = A_T_IGST_AMT;
-            ViewBag.CGSTAMT = A_T_CGST_AMT;
-            ViewBag.SGSTAMT = A_T_SGST_AMT;
-            ViewBag.CESSAMT = A_T_CESS_AMT;
-            double A_CURR_AMT = 0; double A_TOTAL_AMT = 0; double A_IGST_AMT = 0; double A_CGST_AMT = 0; double A_SGST_AMT = 0; double A_CESS_AMT = 0; double A_DUTY_AMT = 0; double A_NET_AMT = 0;
             try
             {
-                string QUERY = "select a.amtcd, b.amtnm, b.calccode, b.addless, b.CALCTYPE,b.calcformula, a.amtdesc, b.glcd, b.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, a.sgstper, a.sgstamt, a.cgstper, a.cgstamt,a.CESSPER,";
-                QUERY = QUERY + " a.CESSAMT, a.dutyper, a.dutyamt from " + DATABASE + ".t_txnamt a, " + DATABASE + ".m_amttype b where a.amtcd=b.amtcd(+) and b.salpur='" + S_P + "' and a.autono='" + AUTO_NO + "' ";
-                QUERY = QUERY + " union select b.amtcd, b.amtnm, b.calccode, b.addless,b.CALCTYPE, b.calcformula, '' amtdesc, b.glcd, b.hsncode, 0 amtrate, 0 curr_amt, 0 amt,0 igstper, 0 igstamt, 0 sgstper, 0 sgstamt, 0 cgstper, 0 cgstamt, ";
-                QUERY = QUERY + " 0 CESSPER, 0 CESSAMT, 0 dutyper, 0 dutyamt from " + DATABASE + ".m_amttype b, " + DATABASE + ".m_cntrl_hdr c where b.m_autono=c.m_autono(+) and b.salpur='" + S_P + "'  and nvl(c.inactive_tag,'N') = 'N' ";
-                QUERY = QUERY + "and b.amtcd not in (select amtcd from " + DATABASE + ".t_txnamt where autono='" + AUTO_NO + "')";
+                string sql = "", scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+                Cn.getQueryString(VE);
+                string S_P = "";
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") { S_P = "P"; } else { S_P = "S"; }
 
-                var AMOUNT_DATA = masterHelp.SQLquery(QUERY);
+                ViewBag.NOS = A_T_NOS;
+                ViewBag.QNTY = A_T_QNTY;
+                ViewBag.TAXABLEAMT = A_T_TAXABLE;
+                ViewBag.NETAMT = A_T_NET_AMT;
+                ViewBag.CURRAMT = A_T_CURR_AMT;
+                ViewBag.IGSTAMT = A_T_IGST_AMT;
+                ViewBag.CGSTAMT = A_T_CGST_AMT;
+                ViewBag.SGSTAMT = A_T_SGST_AMT;
+                ViewBag.CESSAMT = A_T_CESS_AMT;
+                ViewBag.DUTYAMT = A_T_DUTY_AMT;
+                double A_CURR_AMT = 0; double A_TOTAL_AMT = 0; double A_IGST_AMT = 0; double A_CGST_AMT = 0; double A_SGST_AMT = 0; double A_CESS_AMT = 0; double A_DUTY_AMT = 0; double A_NET_AMT = 0;
 
-                //ModelState.Clear();
+                sql = "";
+                sql += "select a.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, ";
+                sql += "a.amtdesc, b.glcd, b.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, ";
+                sql += "a.sgstper, a.sgstamt, a.cgstper, a.cgstamt,a.cessper, a.cessamt, a.dutyper, a.dutyamt ";
+                sql += "from " + scm + ".t_txnamt a, " + scm + ".m_amttype b ";
+                sql += "where a.amtcd=b.amtcd(+) and b.salpur='" + S_P + "' and a.autono='" + AUTO_NO + "' ";
+                sql += "union ";
+                sql += "select b.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, ";
+                sql += "'' amtdesc, b.glcd, b.hsncode, 0 amtrate, 0 curr_amt, 0 amt,0 igstper, 0 igstamt, ";
+                sql += "0 sgstper, 0 sgstamt, 0 cgstper, 0 cgstamt, 0 cessper, 0 cessamt, 0 dutyper, 0 dutyamt ";
+                sql += "from " + scm + ".m_amttype b, " + scm + ".m_cntrl_hdr c ";
+                sql += "where b.m_autono=c.m_autono(+) and b.salpur='" + S_P + "'  and nvl(c.inactive_tag,'N') = 'N' ";
+                sql += "and b.amtcd not in (select amtcd from " + scm + ".t_txnamt where autono='" + AUTO_NO + "')";
+                var AMOUNT_DATA = masterHelp.SQLquery(sql);
 
                 if (VE.TTXNAMT == null)
                 {
@@ -1201,6 +1286,7 @@ namespace Improvar.Controllers
                                   {
                                       AMTCD = dr["amtcd"].ToString(),
                                       ADDLESS = dr["addless"].ToString(),
+                                      TAXCODE = dr["taxcode"].ToString(),
                                       GLCD = dr["GLCD"].ToString(),
                                       AMTNM = dr["amtnm"].ToString(),
                                       CALCCODE = dr["calccode"].ToString(),
@@ -1215,10 +1301,11 @@ namespace Improvar.Controllers
                                       CGSTPER = CGST_PER,
                                       SGSTPER = SGST_PER,
                                       CESSPER = CESS_PER,
+                                      DUTYPER = DUTY_PER,
                                       IGSTAMT = Convert.ToDouble(dr["igstamt"].ToString()),
                                       CGSTAMT = Convert.ToDouble(dr["cgstamt"].ToString()),
                                       SGSTAMT = Convert.ToDouble(dr["sgstamt"].ToString()),
-                                      CESSAMT = Convert.ToDouble(dr["CESSAMT"].ToString()),
+                                      CESSAMT = Convert.ToDouble(dr["cessamt"].ToString()),
                                       DUTYAMT = Convert.ToDouble(dr["dutyamt"].ToString()),
                                   }).ToList();
                 }
@@ -1227,20 +1314,19 @@ namespace Improvar.Controllers
                 {
                     VE.TTXNAMT[p].SLNO = Convert.ToInt16(p + 1);
 
-                    VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT == null ? 0 : VE.TTXNAMT[p].AMT.Value +
-                                            VE.TTXNAMT[p].IGSTAMT == null ? 0 : VE.TTXNAMT[p].IGSTAMT.Value +
-                                            VE.TTXNAMT[p].CGSTAMT == null ? 0 : VE.TTXNAMT[p].CGSTAMT.Value +
-                                            VE.TTXNAMT[p].SGSTAMT == null ? 0 : VE.TTXNAMT[p].SGSTAMT.Value +
-                                            VE.TTXNAMT[p].CESSAMT == null ? 0 : VE.TTXNAMT[p].CESSAMT.Value +
-                                           VE.TTXNAMT[p].DUTYAMT == null ? 0 : VE.TTXNAMT[p].DUTYAMT.Value;
-
-                    A_CURR_AMT = A_CURR_AMT + VE.TTXNAMT[p].CURR_AMT == null ? 0 : VE.TTXNAMT[p].CURR_AMT.Value;
-                    A_TOTAL_AMT = A_TOTAL_AMT + VE.TTXNAMT[p].AMT == null ? 0 : VE.TTXNAMT[p].AMT.Value;
-                    A_IGST_AMT = A_IGST_AMT + VE.TTXNAMT[p].IGSTAMT == null ? 0 : VE.TTXNAMT[p].IGSTAMT.Value;
-                    A_CGST_AMT = A_CGST_AMT + VE.TTXNAMT[p].CGSTAMT == null ? 0 : VE.TTXNAMT[p].CGSTAMT.Value;
-                    A_SGST_AMT = A_SGST_AMT + VE.TTXNAMT[p].SGSTAMT == null ? 0 : VE.TTXNAMT[p].SGSTAMT.Value;
-                    A_CESS_AMT = A_CESS_AMT + VE.TTXNAMT[p].CESSAMT == null ? 0 : VE.TTXNAMT[p].CESSAMT.Value;
-                    A_NET_AMT = A_NET_AMT + A_TOTAL_AMT + A_IGST_AMT + A_CGST_AMT + A_SGST_AMT + A_CESS_AMT;
+                    VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.Value + VE.TTXNAMT[p].IGSTAMT.Value + VE.TTXNAMT[p].CGSTAMT.Value + VE.TTXNAMT[p].SGSTAMT.Value + VE.TTXNAMT[p].CESSAMT.Value + VE.TTXNAMT[p].DUTYAMT.Value;
+                    VE.TTXNAMT[p].IGSTPER = IGST_PER;
+                    VE.TTXNAMT[p].CGSTPER = CGST_PER;
+                    VE.TTXNAMT[p].SGSTPER = SGST_PER;
+                    VE.TTXNAMT[p].CESSPER = CESS_PER;
+                    A_CURR_AMT = A_CURR_AMT + VE.TTXNAMT[p].CURR_AMT.Value;
+                    A_TOTAL_AMT = A_TOTAL_AMT + VE.TTXNAMT[p].AMT.Value;
+                    A_IGST_AMT = A_IGST_AMT + VE.TTXNAMT[p].IGSTAMT.Value;
+                    A_CGST_AMT = A_CGST_AMT + VE.TTXNAMT[p].CGSTAMT.Value;
+                    A_SGST_AMT = A_SGST_AMT + VE.TTXNAMT[p].SGSTAMT.Value;
+                    A_CESS_AMT = A_CESS_AMT + VE.TTXNAMT[p].CESSAMT.Value;
+                    A_DUTY_AMT = A_DUTY_AMT + VE.TTXNAMT[p].DUTYAMT.Value;
+                    A_NET_AMT = A_NET_AMT + A_TOTAL_AMT + A_IGST_AMT + A_CGST_AMT + A_SGST_AMT + A_CESS_AMT + A_DUTY_AMT;
                 }
                 VE.A_T_CURR = A_CURR_AMT;
                 VE.A_T_AMOUNT = A_TOTAL_AMT;
@@ -1250,13 +1336,13 @@ namespace Improvar.Controllers
                 VE.A_T_CESS = A_CESS_AMT;
                 VE.A_T_DUTY = A_DUTY_AMT;
                 VE.A_T_NET = A_NET_AMT;
-                ModelState.Clear();
+
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_AMOUNT", VE);
-
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 VE.DefaultView = false;
                 VE.DefaultDay = 0;
                 ViewBag.ErrorMessage = ex.Message + ex.InnerException;
