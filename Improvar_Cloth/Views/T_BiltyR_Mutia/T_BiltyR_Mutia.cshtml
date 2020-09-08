@@ -18,6 +18,7 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
+            $(".sl_bom_grid").prop("disabled", false);
         }
         else if ("@Model.DefaultAction" == "E") {
 
@@ -150,72 +151,7 @@
         document.getElementById(TRWT.id).value = TARE.toFixed(3);
     }
 </script>
-<script>
-    function GetPendingData() {
-        debugger;
-        if ("@Model.DefaultAction" != "V") {
-            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-            var docdt = $("#DOCDT").val();
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("GetPendingData", PageControllerName)",
-                data: "&DOCDT=" + docdt ,
-                success: function (result) {
-                    $("#popup").animate({ marginTop: '-10px' }, 50);
-                    $("#popup").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    }
-    function Fill_DetailData() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("FillDetailData", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivDetail").html(result);
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(3)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
 
-    function Fill_QtyRequirementData() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("FillQtyRequirementData", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivQtyRequirement").html(result);
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(2)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
 <script>
     function AddDOCrow() {
         $.ajax({
@@ -346,12 +282,58 @@
     }
 </script>
 <script>
-    function SelectPendingLRNO(id) {
+    function GetPendingData() {
         debugger;
+        if ("@Model.DefaultAction" != "V") {
+            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            var mutslcd = "";
+            var docdt = $("#DOCDT").val();
+            if ($("#MUTSLCD").val() != "") mutslcd = $("#MUTSLCD").val();
+
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("GetPendingData", PageControllerName)",
+                data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
+                success: function (result) {
+                    $("#popup").animate({ marginTop: '-10px' }, 50);
+                    $("#popup").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+
+</script>
+<script>
+    function SelectMatchingCheckBoxes() {
+        debugger;;
+        var arr = new Array();
+        var GridRowMain = $("#T_BiltyR_Mutia_PopUp > tbody > tr").length;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            var chkbox = document.getElementById("chkid_R_POPUP_" + i);
+            if (chkbox.checked) { arr.push(document.getElementById("BLAUTONO_R_POPUP_" + i)); }
+
+        }
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            if (arr.indexOf(document.getElementById("BLAUTONO_R_POPUP_" + i)) != -1) {
+                document.getElementById("chkid_R_POPUP_" + i).checked = true;
+            }
+        }
+
+    }
+    function SelectPendingLRNO() {
+        debugger;
+        var mutslcd = "";
+        var docdt = $("#DOCDT").val();
+        if ($("#MUTSLCD").val() != "") mutslcd = $("#MUTSLCD").val();
         var Count = 0;
-        var GridPendingPO = $("#T_BiltyG_Mutia_PopUp > tbody > tr").length;
+        var GridPendingPO = $("#T_BiltyR_Mutia_PopUp > tbody > tr").length;
         for (var i = 0; i <= GridPendingPO - 1; i++) {
-            var Check = document.getElementById("chkid_POPUP_" + i).checked;
+            var Check = document.getElementById("chkid_R_POPUP_" + i).checked;
             if (Check == true) {
                 Count = Count + 1;
             }
@@ -361,7 +343,7 @@
                 type: 'post',
                 url: "@Url.Action("SelectPendingLRNO", PageControllerName )",
                 beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize(),
+                data: $('form').serialize()+"&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
 
@@ -448,14 +430,14 @@
                             @Html.Label("", "Document No.")
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.T_CNTRL_HDR.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-1">
+                    <div class="col-md-5">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Mutia")
                             <b style="color:Red;">*</b>
@@ -493,9 +475,9 @@
                             @Html.Label("", "Starting No")
                         </div>
                     </div>
-                    <div class="col-md-10">
+                    <div class="col-md-5">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.STRTNO, new { htmlAttributes = new { @class = "form-control", id = "STRTNO", @placeholder = "Start No.", maxlength = 100 } })
+                            @Html.EditorFor(model => model.STRTNO, new { htmlAttributes = new { @class = "form-control", id = "STRTNO", @placeholder = "Start No.", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4} })
                         </div>
                     </div>
                   
