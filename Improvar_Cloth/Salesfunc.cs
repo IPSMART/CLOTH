@@ -1234,7 +1234,7 @@ namespace Improvar
             tbl = SQLquery(sql);
             return tbl;
         }
-        public string retGstPer(string SearchStr, double rate = 0)
+        public string retGstPer(string prodgrpgstper, double rate = 0)
         {
             //Searchstr value like listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179))
             double fromrt = 0, tort = 0; int selrow = -1;
@@ -1242,7 +1242,7 @@ namespace Improvar
             string rtval = "0,0,0"; //igstper,cgst,sgst
             char SP = ((char)179);
 
-            string[] mrates = SearchStr.Split(Convert.ToChar(SP)).ToArray();
+            string[] mrates = prodgrpgstper.Split(Convert.ToChar(SP)).ToArray();
             for (int x = 0; x <= mrates.Count() - 1; x++)
             {
                 mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
@@ -1411,27 +1411,118 @@ namespace Improvar
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
-            string scm = CommVar.CurSchema(UNQSNO),  COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
-            if (schema != "") scm = schema;
+            string scm = CommVar.CurSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            if (schema == "") schema = scm;
             string sql = "";
             sql = "";
             sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
             sql += " d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos from ";
             sql += "  (select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
-            sql += "  from "+ scm + ".t_txn a, " + scm + ".t_txndtl b, " + scm + ".t_cntrl_hdr d ";
+            sql += "  from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
             sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
             sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
             sql += "  a.doctag in ('PB') and b.baleno is not null ) a, ";
             sql += "(select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
             sql += "sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos ";
-            sql += " from " + scm + ".t_bilty a, " + scm + ".t_bilty_hdr b, " + scm + ".t_cntrl_hdr d ";
+            sql += " from " + schema + ".t_bilty a, " + scm + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) ";
             sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
-            sql += "" + scm + ".t_txntrans c, " + scm + ".t_txn d ";
+            sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ";
             sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
             sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null and ";
             sql += "1 - nvl(b.bnos, 0) > 0 ";
+            tbl = MasterHelpFa.SQLquery(sql);
+            return tbl;
+        }
+
+        public DataTable getPendingPackslip(string docdt, string skipautono = "")
+        {
+            DataTable tbl;
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string sql = "";
+            sql = "";
+
+            sql += "select a.autono, c.docno, c.docdt, c.slcd, g.slnm, nvl(g.slarea,g.district) district ";
+            sql += "from " + scm + ".t_txn a, " + scm + "t_cntrl_hdr c, ";
+            sql += scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scmf + ".m_subleg g ";
+            sql += "where a.autono=c.autono(+) and c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.slcd=g.slcd(+) and ";
+            sql += "a.autono=e.linkautono(+) and e.autono is null and ";
+            if (skipautono.retStr() != "") sql += "e.autono not in (" + skipautono + ") and ";
+            sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and ";
+            sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
+            tbl = MasterHelpFa.SQLquery(sql);
+            return tbl;
+        }
+        public DataTable getPendRecfromMutia(string docdt,string mutslcd="", string skipautono = "", string schema = "")
+        {
+            //showbatchno = true;
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            DataTable tbl = new DataTable();
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            if (schema == "") schema = scm;
+            string sql = "";
+            sql = "";
+            sql += " select a.blautono, a.mutslcd, a.trem, j.slnm mutianm, j.regmobile, a.baleno, a.baleyr, e.lrno, e.lrdt,	 ";
+            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.slno blslno, g.nos, g.qnty,	";
+            sql += " '' shade, g.pageno, g.pageslno, ";
+            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos from ";
+            sql += " (select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
+            sql += "  from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
+            sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and  ";
+            sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ) a, ";								
+            sql += " (select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr,	";
+            sql += " sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos  ";
+            sql += " from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
+            sql += " where a.autono = b.autono(+) and a.autono = d.autono(+)  ";
+            sql += " group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b,  ";
+            sql += " (select a.blautono, a.baleyr || a.baleno balenoyr,  ";
+            sql += " sum(case a.drcr when 'C' then 1 when 'D' then - 1 end) bnos  ";
+            sql += " from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d  ";
+            sql += " where a.autono = b.autono(+) and a.autono = d.autono(+) and b.txtag = 'RC' and nvl(d.cancel, 'N')= 'N'  ";
+            sql += " group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) c,	";	
+            sql += " " + schema + ".t_txntrans e, " + schema + ".t_txn f, " + schema + ".t_txndtl g,  ";
+            sql += " " + schema + ".m_sitem h, " + schema + ".m_group i, " + scmf + ".m_subleg j  ";
+            sql += " where a.blautono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and  ";
+            sql += " a.blautono = c.blautono(+) and a.balenoyr = c.balenoyr(+) and  ";
+            sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and b.blautono = g.autono(+) and  ";
+            sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and a.mutslcd = j.slcd(+) ";
+            if (mutslcd.retStr() != "") sql += " and a.mutslcd in (" + mutslcd + ")  ";
+            sql += " and nvl(b.bnos, 0) > 0 ";
+            tbl = MasterHelpFa.SQLquery(sql);
+            return tbl;
+        }
+        public DataTable getPendKhasra(string docdt, string skipautono = "", string schema = "")
+        {
+            //showbatchno = true;
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            DataTable tbl = new DataTable();
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            if (schema == "") schema = scm;
+            string sql = "";
+            sql = "";
+            sql += " select a.autono, a.docno, a.docdt, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
+            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty, ";
+            sql += " '' shade, g.pageno, g.pageslno, ";
+            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos from ";
+            sql += "  (select distinct a.autono, d.docdt, d.docno, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
+            sql += "  from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d ";
+            sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and b.txtag = 'RC' and nvl(d.cancel, 'N') = 'N' and ";
+            sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
+            sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ) a, ";
+            sql += " (select a.blautono, a.blslno, a.baleyr || a.baleno balenoyr, ";
+            sql += " sum(case a.drcr when 'C' then 1 when 'D' then - 1 end) bnos ";
+            sql += "  from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d ";
+            sql += " where a.autono = b.autono(+) and a.autono = d.autono(+) and b.txtag = 'KH' and nvl(d.cancel, 'N')= 'N' ";
+            sql += " group by a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
+            sql += " " + schema + ".t_txntrans e, " + schema + ".t_txn f, " + schema + ".t_txndtl g, ";
+            sql += " " + schema + ".m_sitem h, " + schema + ".m_group i, " + scmf + ".m_subleg j ";
+            sql += " where a.blautono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
+            sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and ";
+            sql += " a.blautono = g.autono(+) and a.blslno = g.slno(+) and ";
+            sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and nvl(b.bnos, 0) > 0 ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }

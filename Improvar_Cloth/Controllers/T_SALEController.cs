@@ -1702,7 +1702,7 @@ namespace Improvar.Controllers
                             //TTXNDTL.PRCEFFDT = VE.T_TXN.PRCEFFDT;
                             if (VE.MENU_PARA == "PB" && VE.T_TXN.BARGENTYPE == "E")
                             {
-                                var BARGENTYPE = DB.M_GROUP.Where(r => r.ITGRPCD == VE.TBATCHDTL[i].ITGRPCD).Select(r => r.BARGENTYPE).FirstOrDefault();
+                                var BARGENTYPE = "E"; // DB.M_GROUP.Where(r => r.ITGRPCD == VE.TBATCHDTL[i].ITGRPCD).Select(r => r.BARGENTYPE).FirstOrDefault();
                                 if (BARGENTYPE == "E")
                                 {
                                     TTXNDTL.BARNO = transactionBarcode;
@@ -2022,13 +2022,13 @@ namespace Improvar.Controllers
         private string TranBarcodeGenerate(string doccd, string docbarcode, string UNIQNO, int slno)
         {//YRCODE	2,lbatchini	2,DOCCD	2,TXN UNIQ NO	7,SLNO	4
             var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2); string lbatchini = "";
-            string sql = "select lbatchini from " + CommVar.CurSchema(UNQSNO) + ".m_loca where loccd='" + CommVar.Loccd(UNQSNO) + "' and compcd='" + CommVar.Compcd(UNQSNO) + "'";
+            string sql = "select lbatchini from " + CommVar.FinSchema(UNQSNO) + ".m_loca where loccd='" + CommVar.Loccd(UNQSNO) + "' and compcd='" + CommVar.Compcd(UNQSNO) + "'";
             DataTable dt = masterHelp.SQLquery(sql);
             if (dt != null && dt.Rows.Count > 0)
             {
-                lbatchini = dt.Rows[0]["dt"].retStr();
+                lbatchini = dt.Rows[0]["lbatchini"].retStr();
             }
-            return yrcd + lbatchini + doccd + UNIQNO + slno.ToString().PadLeft(4, '0');
+            return yrcd + lbatchini + UNIQNO + slno.ToString().PadLeft(4, '0');
         }
         private string CommonBarcodeGenerate(string itgrpcd, string itcd, string MTBARCODE, string PRTBARCODE, string CLRBARCODE, string SZBARCODE)
         {
