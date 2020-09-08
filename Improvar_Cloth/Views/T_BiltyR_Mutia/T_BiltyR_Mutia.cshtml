@@ -1,0 +1,555 @@
+﻿@model Improvar.ViewModels.TransactionBiltyRMutiaEntry
+@{
+    string PageControllerName = "T_BiltyR_Mutia";
+    ViewBag.Title = "Receive from Mutia";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<style>
+    .TextAreaRemarks {
+        height: 190px;
+    }
+</style>
+<script src="~/Scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<script type="text/javascript">
+    $("#WaitingMode").show();
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.T_CNTRL_HDR != null)
+        {
+            if (@Model.T_CNTRL_HDR.AUTONO != null)
+            {
+                mldauto = Model.T_CNTRL_HDR.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party", "MUTSLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter SalesMen", "CRSLCD")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+            $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        }
+    });
+</script>
+<script>
+    function OpenAmount() {
+        var AUTO_NO = document.getElementById("AUTONO").value;
+        var A_T_NOS = document.getElementById("T_NOS").value;
+        var A_T_QNTY = document.getElementById("T_QNTY").value;
+        var A_T_AMT = document.getElementById("T_AMT").value;
+        var A_T_TAXABLE = document.getElementById("T_GROSS_AMT").value;
+        var A_T_IGST_AMT = document.getElementById("T_IGST_AMT").value;
+        var A_T_CGST_AMT = document.getElementById("T_CGST_AMT").value;
+        var A_T_SGST_AMT = document.getElementById("T_SGST_AMT").value;
+        var A_T_CESS_AMT = document.getElementById("T_CESS_AMT").value;
+        var A_T_NET_AMT = document.getElementById("T_NET_AMT").value;
+
+        if (A_T_NOS == "") { A_T_NOS = parseInt(0) } else { A_T_NOS = parseInt(A_T_NOS) }
+        if (A_T_QNTY == "") { A_T_QNTY = parseFloat(0) } else { A_T_QNTY = parseFloat(A_T_QNTY) }
+        if (A_T_AMT == "") { A_T_AMT = parseFloat(0) } else { A_T_AMT = parseFloat(A_T_AMT) }
+        if (A_T_TAXABLE == "") { A_T_TAXABLE = parseFloat(0) } else { A_T_TAXABLE = parseFloat(A_T_TAXABLE) }
+        if (A_T_IGST_AMT == "") { A_T_IGST_AMT = parseFloat(0) } else { A_T_IGST_AMT = parseFloat(A_T_IGST_AMT) }
+        if (A_T_CGST_AMT == "") { A_T_CGST_AMT = parseFloat(0) } else { A_T_CGST_AMT = parseFloat(A_T_CGST_AMT) }
+        if (A_T_SGST_AMT == "") { A_T_SGST_AMT = parseFloat(0) } else { A_T_SGST_AMT = parseFloat(A_T_SGST_AMT) }
+        if (A_T_CESS_AMT == "") { A_T_CESS_AMT = parseFloat(0) } else { A_T_CESS_AMT = parseFloat(A_T_CESS_AMT) }
+        if (A_T_NET_AMT == "") { A_T_NET_AMT = parseFloat(0) } else { A_T_NET_AMT = parseFloat(A_T_NET_AMT) }
+
+        var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0;
+
+        var GridRowMain = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            var IGST = document.getElementById("D_IGSTPER_" + i).value;
+            if (IGST == "") { IGST = parseFloat(0); } else { IGST = parseFloat(IGST); }
+            var CGST = document.getElementById("D_CGSTPER_" + i).value;
+            if (CGST == "") { CGST = parseFloat(0); } else { CGST = parseFloat(CGST); }
+            var SGST = document.getElementById("D_SGSTPER_" + i).value;
+            if (SGST == "") { SGST = parseFloat(0); } else { SGST = parseFloat(SGST); }
+            var CESS = document.getElementById("D_CESSPER_" + i).value;
+            if (CESS == "") { CESS = parseFloat(0); } else { CESS = parseFloat(CESS); }
+            if (IGST > IGST_PER) {
+                IGST_PER = IGST;
+            }
+            if (CGST > CGST_PER) {
+                CGST_PER = CGST;
+            }
+            if (SGST > SGST_PER) {
+                SGST_PER = SGST;
+            }
+            if (CESS > CESS_PER) {
+                CESS_PER = CESS;
+            }
+        }
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("OPEN_AMOUNT", PageControllerName)",
+            data: $('form').serialize() + "&AUTO_NO=" + AUTO_NO + "&A_T_NOS=" + A_T_NOS + "&A_T_QNTY=" + A_T_QNTY + "&A_T_AMT=" + A_T_AMT + "&A_T_TAXABLE=" + A_T_TAXABLE
+                                        + "&A_T_IGST_AMT=" + A_T_IGST_AMT + "&A_T_CGST_AMT=" + A_T_CGST_AMT + "&A_T_SGST_AMT=" + A_T_SGST_AMT + "&A_T_CESS_AMT=" + A_T_CESS_AMT
+                                        + "&A_T_NET_AMT=" + A_T_NET_AMT + "&IGST_PER=" + IGST_PER + "&CGST_PER=" + CGST_PER + "&SGST_PER=" + SGST_PER + "&CESS_PER=" + CESS_PER,
+            success: function (result) {
+                $('#partialdivAmounts').html(result);
+                $("#AMTRATE_0").focus();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function CalulateTareWt(GRWT, NTWT, TRWT) {
+        var GROSS = document.getElementById(GRWT.id).value;
+        if (GROSS == "") {
+            GROSS = parseFloat(0);
+        }
+        var NET = document.getElementById(NTWT.id).value;
+        if (NET == "") {
+            NET = parseFloat(0);
+        }
+        var TARE = GROSS - NET;
+        document.getElementById(TRWT.id).value = TARE.toFixed(3);
+    }
+</script>
+<script>
+    function GetPendingData() {
+        debugger;
+        if ("@Model.DefaultAction" != "V") {
+            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            var docdt = $("#DOCDT").val();
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("GetPendingData", PageControllerName)",
+                data: "&DOCDT=" + docdt ,
+                success: function (result) {
+                    $("#popup").animate({ marginTop: '-10px' }, 50);
+                    $("#popup").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    function Fill_DetailData() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillDetailData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDetail").html(result);
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(3)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+    function Fill_QtyRequirementData() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillQtyRequirementData", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivQtyRequirement").html(result);
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function pageprinting() {
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function CalculateQNTY(i) {
+        if ("@Model.DefaultAction" != "V") {
+            var NOS_ = document.getElementById('P_NOS_' + i).value;
+            if (NOS_ == "") { NOS_ = parseFloat(0) } else { NOS_ = parseFloat(NOS_) }
+            var CUTLENGTH_ = document.getElementById('P_CUTLENGTH_' + i).value;
+            if (CUTLENGTH_ == "") { CUTLENGTH_ = parseFloat(0) } else { CUTLENGTH_ = parseFloat(CUTLENGTH_) }
+            if (NOS_ > 0 && CUTLENGTH_ > 0) {
+                var qnty = (parseFloat(NOS_) * parseFloat(CUTLENGTH_));
+                document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
+            }
+
+        } CalculateTotal();
+    }
+
+    function CalculateTotal() {
+        debugger;
+        var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
+        var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
+        var GridRow = $("#_T_BiltyG_Mutia_Programme_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var NOS = document.getElementById("P_NOS_" + i).value;
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+
+            var QNTY = document.getElementById("P_QNTY_" + i).value;
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
+            else { T_QNTY = T_QNTY + parseFloat(0); }
+
+
+        }
+        document.getElementById("T_NOS").value = parseFloat(T_NOS).toFixed(0);
+        document.getElementById("T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
+
+
+    }
+
+    function CalculateTotalProgBomQnty() {
+        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
+        var GridRow = $("#__T_BiltyG_Mutia_QtyRequirement_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+
+            var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
+            if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
+            if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
+            else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
+
+            var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
+            if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
+            if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
+            else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
+
+
+        } document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(6);
+        document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(6);
+    }
+
+
+</script>
+<script>
+
+    function DeleteRow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                $("#partialdivMain").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function SelectPendingLRNO(id) {
+        debugger;
+        var Count = 0;
+        var GridPendingPO = $("#T_BiltyG_Mutia_PopUp > tbody > tr").length;
+        for (var i = 0; i <= GridPendingPO - 1; i++) {
+            var Check = document.getElementById("chkid_POPUP_" + i).checked;
+            if (Check == true) {
+                Count = Count + 1;
+            }
+        }
+        if (Count > 0) {
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("SelectPendingLRNO", PageControllerName )",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+
+                    $("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivMain").html(result);
+                    $("#WaitingMode").hide();
+                    @*$('#partialdivMain').html(res[0]);
+                    if ("@Session["CLIENT_CODE"]" == "ADHU") {
+                        $("#OTHREFNO").val(res[1]);
+                    }*@
+                    $('#popup').html("");
+                    $('.PopUp_Backround').fadeOut();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+
+    }
+
+    function CancelLRNO() {
+        $('#popup').html("");
+        $('.PopUp_Backround').fadeOut();
+    }
+</script>
+<script></script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="partylinkcd" value="T" />
+        @Html.HiddenFor(s => s.DefaultAction)
+        @Html.HiddenFor(a => a.T_BILTY_HDR.AUTONO, new { id = "AUTONO" })
+        @*@Html.HiddenFor(a => a.T_CNTRL_HDR.DOCONLYNO)*@
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        <div class="form-horizontal">
+            @if (Model.DefaultAction == "V")
+            {
+                @Html.Partial("_FilteredSearch")
+            }
+            <div class="row" style="margin-top: 5px;">
+                <div class="row">
+                    <div class="col-md-5" style="margin-top: 6px;">
+                        <div class="editor-label">
+                            @Html.Label("", "Document Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field">
+                            @if (Model.DefaultAction == "A")
+                            {
+                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document No.")
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Mutia")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_BILTY_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=SLCD=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd');", @placeholder = "MUTSLCD", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','MUTSLCD','MUTSLCD=slcd=1/SLNM=slnm=0/REGMOBILE=regmobile','partylinkcd')" />
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.REGMOBILE, new { htmlAttributes = new { @class = "form-control", id = "REGMOBILE", @title = "Only for View", @placeholder = "REGMOBILE", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                    @if (Model.DefaultAction != "V")
+                    {
+
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 2px;">
+                                <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Pending Data " onclick="GetPendingData()" />
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Starting No")
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.STRTNO, new { htmlAttributes = new { @class = "form-control", id = "STRTNO", @placeholder = "Start No.", maxlength = 100 } })
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
+            <div class="row" style="margin-top:5px;">
+                <ul class="nav nav-tabs">
+                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
+                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
+                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
+                </ul>
+                <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                </div>
+                <div class="tab-content">
+                    <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                            <div>
+                                <div id="partialdivMain" style="margin-top:0px;">
+                                    @Html.Partial("_T_BiltyR_Mutia_Main")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Remarks" class="tab-pane fade">
+                        <div class="row">
+                            <div>
+                                <div id="partialdivRemarks">
+                                    @Html.Partial("_TRANSACTIONREMARKS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                            <div>
+                                <div id="partialdivDocument" style="margin-top:0px;">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
