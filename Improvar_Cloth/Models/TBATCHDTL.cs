@@ -115,6 +115,7 @@ namespace Improvar.Models
         [StringLength(8)]
         public string ITCD { get; set; }
         public string ITNM { get; set; }
+        public string ITSTYLE { get; set; }
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }
@@ -144,13 +145,15 @@ namespace Improvar.Models
         [StringLength(30)]
         public string PDESIGN { get; set; }
         public string ALL_GSTPER { get; set; }
+        public string PRODGRPGSTPER { get; set; }
         [StringLength(30)]
         public string BALENO { get; set; }
         public string SCMDISCTYPE_DESC { get; set; }
         public string TDDISCTYPE_DESC { get; set; }
         public string MTBARCODE { get; set; }
         public string PRTBARCODE { get; set; }
-        public string CLRBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }        
         public string SZBARCODE { get; set; }
+        public string BARGENTYPE { get; set; }
     }
 }

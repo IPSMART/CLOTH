@@ -165,6 +165,7 @@ namespace Improvar.Models
         public string ITGRPCD { get; set; }
         public string ITGRPNM { get; set; }
         public string ITNM { get; set; }
+        public string ITSTYLE { get; set; }
         public string STYLENO { get; set; }
         public string FABITCD { get; set; }
         public string FABITNM { get; set; }
@@ -182,5 +183,6 @@ namespace Improvar.Models
         public string DISCTYPE_DESC { get; set; }
         public double? TOTDISCAMT { get; set; }
         public string ALL_GSTPER { get; set; }
+        public string PRODGRPGSTPER { get; set; }
     }
 }

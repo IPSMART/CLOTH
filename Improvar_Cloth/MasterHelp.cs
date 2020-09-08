@@ -169,7 +169,6 @@ namespace Improvar
                 string valsrch = ITGRPCD.ToUpper().Trim();
                 string sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_GROUP where 1=1";
                 if (GRPTYPE.retStr() != "") sql += " and ITGRPTYPE in (" + GRPTYPE.retSqlformat() + ") ";
-                //if (ITGRPCD.retStr() != "") sql += " and ITGRPCD ='" + ITGRPCD + "' ";
                 if (valsrch.retStr() != "") sql += "and ( upper(ITGRPCD) like '%" + valsrch + "%' or upper(ITGRPNM) like '%" + valsrch + "%' ) ";
 
                 DataTable dt = SQLquery(sql);
@@ -2107,6 +2106,17 @@ namespace Improvar
                           select new BL_TYPE() { Text = dr["BLTYPE"].retStr(), Value = dr["BLTYPE"].retStr() }).OrderBy(s => s.Text).Distinct().ToList();
             return BL_TYPE_list;
         }
+        public List<DropDown_list_StkType> STK_TYPE()
+        {
+            string scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            sql += "select STKTYPE,STKNAME from "+scm+".M_stktype ORDER BY case when STKTYPE = 'F' then 1 else 2  end  ";
+            DataTable dt = SQLquery(sql);
+            List<DropDown_list_StkType> DropDown_list_StkType = new List<DropDown_list_StkType>();
+            DropDown_list_StkType = (from DataRow dr in dt.Rows
+                            select new DropDown_list_StkType() { text = dr["STKNAME"].retStr(), value = dr["STKTYPE"].retStr() }).OrderBy(s => s.text).Distinct().ToList();
+            return DropDown_list_StkType;
+        }
         public string BARCODE_help(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
@@ -2115,7 +2125,7 @@ namespace Improvar
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
-            sql += "select c.BARNO,a.ITGRPCD,d.ITGRPNM,a.ITCD,a.ITNM,a.STYLENO,c.COLRCD,e.COLRNM,e.CLRBARCODE,c.SIZECD,f.SIZENM,f.SZBARCODE,a.UOMCD,a.HSNCODE ";
+            sql += "select c.BARNO,a.ITGRPCD,d.ITGRPNM,a.ITCD,a.ITNM,a.STYLENO,c.COLRCD,e.COLRNM,e.CLRBARCODE,c.SIZECD,f.SIZENM,f.SZBARCODE,a.UOMCD,a.HSNCODE,a.itnm||' '||a.styleno itstyle ";
             sql += "from " + scm + ".M_SITEM a, " + scm + ".M_CNTRL_HDR b, " + scm + ".M_SITEM_BARCODE c, " + scm + ".M_GROUP d, " + scm + ".M_COLOR e, " + scm + ".M_SIZE f ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N'and a.ITCD=c.ITCD(+) and a.ITGRPCD=d.ITGRPCD(+) and c.COLRCD=e.COLRCD(+) and c.SIZECD=f.SIZECD(+) ";
             if (valsrch.retStr() != "") sql += "and ( upper(c.BARNO) = '" + valsrch + "' ) ";
@@ -2126,7 +2136,7 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["itstyle"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td></tr>");
                 }
                 var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code";
                 return Generate_help(hdr, SB.ToString());

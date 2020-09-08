@@ -78,6 +78,7 @@ namespace Improvar.ViewModels
         [StringLength(8)]
         public string ITCD { get; set; }
         public string ITNM { get; set; }
+        public string ITSTYLE { get; set; }
         public string STYLENO { get; set; }
         public string FABITCD { get; set; }
         public string FABITNM { get; set; }
@@ -147,6 +148,7 @@ namespace Improvar.ViewModels
         public double? T_NET_AMT { get; set; }
         public short SLNO { get; set; }
         public string ALL_GSTPER { get; set; }
+        public string PRODGRPGSTPER { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double B_T_QNTY { get; set; }
         public string MTBARCODE { get; set; }
