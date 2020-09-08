@@ -1510,7 +1510,7 @@ namespace Improvar
             sql += "  (select distinct a.autono, d.docdt, d.docno, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
             sql += "  from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and b.txtag = 'RC' and nvl(d.cancel, 'N') = 'N' and ";
-            sql += "  d.compcd = 'DIWH' and d.loccd = 'KOLK' and nvl(d.cancel, 'N') = 'N' and ";
+            sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
             sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ) a, ";
             sql += " (select a.blautono, a.blslno, a.baleyr || a.baleno balenoyr, ";
             sql += " sum(case a.drcr when 'C' then 1 when 'D' then - 1 end) bnos ";
