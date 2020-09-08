@@ -270,6 +270,7 @@
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
+    <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
@@ -461,6 +462,8 @@
     <Compile Include="Models\SubLedgerMaster.cs" />
     <Compile Include="Models\TBATCHDTL.cs" />
     <Compile Include="Models\TBILTY.cs" />
+    <Compile Include="Models\TBILTYR.cs" />
+    <Compile Include="Models\TBILTYR_POPUP.cs" />
     <Compile Include="Models\TBILTY_POPUP.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
@@ -597,6 +600,7 @@
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
     <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
+    <Compile Include="ViewModels\TransactionBiltyRMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
     <Compile Include="ViewModels\TransactionPackingSlipEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
@@ -1007,6 +1011,10 @@
     <Content Include="Views\T_BiltyG_Mutia\_T_BiltyG_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyG_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyG_Mutia_PopUp.cshtml" />
+    <Content Include="Views\T_BiltyR_Mutia\T_BiltyR_Mutia.cshtml" />
+    <Content Include="Views\T_BiltyR_Mutia\_T_BiltyR_Mutia_Main.cshtml" />
+    <Content Include="Views\Shared\_T_BiltyR_Mutia_Main.cshtml" />
+    <Content Include="Views\Shared\_T_BiltyR_Mutia_PopUp.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
