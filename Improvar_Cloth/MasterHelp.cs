@@ -169,7 +169,6 @@ namespace Improvar
                 string valsrch = ITGRPCD.ToUpper().Trim();
                 string sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_GROUP where 1=1";
                 if (GRPTYPE.retStr() != "") sql += " and ITGRPTYPE in (" + GRPTYPE.retSqlformat() + ") ";
-                //if (ITGRPCD.retStr() != "") sql += " and ITGRPCD ='" + ITGRPCD + "' ";
                 if (valsrch.retStr() != "") sql += "and ( upper(ITGRPCD) like '%" + valsrch + "%' or upper(ITGRPNM) like '%" + valsrch + "%' ) ";
 
                 DataTable dt = SQLquery(sql);

@@ -1269,8 +1269,9 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0'),FillBarcodeArea('', 'COPYLROW')", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0');", @placeholder = "Item Group Code", @title = "Item Group Code" })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0')" />
+                                                    @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0/BARGENTYPETEMP=BARGENTYPE'),FillBarcodeArea('', 'COPYLROW')", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0/BARGENTYPETEMP=BARGENTYPE');", @placeholder = "Item Group Code", @title = "Item Group Code" })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=itgrpcd=1/ITGRPNM=itgrpnm=0/BARGENTYPETEMP=BARGENTYPE')" />
+                                                    <input type="hidden" id="BARGENTYPETEMP" value="" />
                                                     @*@Html.HiddenFor(model => model.ITGRPNM, new { id = "ITGRPNM" })*@
                                                 </div>
                                             </div>
@@ -1774,6 +1775,7 @@
         tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
         tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
         tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
+        tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + '' + '">';
         tr += '    </td>';
         tr += '    <td class="sticky-cell" style="left:20px;" title="' + SLNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
@@ -1795,7 +1797,6 @@
         tr += '    </td>';
         tr += '    <td class="" title="' + ITSTYLE + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
-        //tr += '        <input data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_ITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITCD" type="hidden" value="' + ITCD + '">';
         tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
         tr += '    </td>         ';
         tr += '    <td class="" title="' + STKTYPE + '">';
@@ -1864,7 +1865,7 @@
         tr += '        <td class="sticky-cell-opposite">';
         tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
         tr += '        </td>';
-        tr += '                         </tr>';
+        tr += ' </tr>';
 
         $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
         CalculateTotal_Barno();

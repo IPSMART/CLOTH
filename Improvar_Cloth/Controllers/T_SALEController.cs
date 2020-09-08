@@ -2048,7 +2048,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        private string TranBarcodeGenerate(string doccd, string docbarcode, string UNIQNO, int slno)
+        private string TranBarcodeGenerate(string doccd, string lbatchini, string docbarcode, string UNIQNO, int slno)
         {//YRCODE	2,lbatchini	2,DOCCD	2,TXN UNIQ NO	7,SLNO	4
             var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2); string lbatchini = "";
             string sql = "select lbatchini from " + CommVar.FinSchema(UNQSNO) + ".m_loca where loccd='" + CommVar.Loccd(UNQSNO) + "' and compcd='" + CommVar.Compcd(UNQSNO) + "'";

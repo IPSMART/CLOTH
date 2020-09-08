@@ -152,7 +152,8 @@ namespace Improvar.Models
         public string TDDISCTYPE_DESC { get; set; }
         public string MTBARCODE { get; set; }
         public string PRTBARCODE { get; set; }
-        public string CLRBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }        
         public string SZBARCODE { get; set; }
+        public string BARGENTYPE { get; set; }
     }
 }
