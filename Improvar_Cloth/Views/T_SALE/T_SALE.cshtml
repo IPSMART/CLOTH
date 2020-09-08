@@ -902,7 +902,7 @@
 
         $.ajax({
             type: 'post',
-            url: $("#urlnameAMOUNTOPEN").val(),
+            url: "@Url.Action("OPEN_AMOUNT", PageControllerName)",
             data: $('form').serialize() + "&AUTO_NO=" + AUTO_NO + "&A_T_NOS=" + A_T_NOS + "&A_T_QNTY=" + A_T_QNTY + "&A_T_CURR_AMT=" + A_T_CURR_AMT + "&A_T_AMT=" + A_T_AMT + "&A_T_TAXABLE=" + A_T_TAXABLE
                                         + "&A_T_IGST_AMT=" + A_T_IGST_AMT + "&A_T_CGST_AMT=" + A_T_CGST_AMT + "&A_T_SGST_AMT=" + A_T_SGST_AMT + "&A_T_CESS_AMT=" + A_T_CESS_AMT + "&A_T_DUTY_AMT=" + A_T_DUTY_AMT
                                         + "&A_T_NET_AMT=" + A_T_NET_AMT + "&IGST_PER=" + IGST_PER + "&CGST_PER=" + CGST_PER + "&SGST_PER=" + SGST_PER + "&CESS_PER=" + CESS_PER + "&DUTY_PER=" + DUTY_PER,
