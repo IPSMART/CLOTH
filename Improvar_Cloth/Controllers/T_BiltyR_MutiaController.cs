@@ -595,26 +595,25 @@ namespace Improvar.Controllers
                         TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
                         string Ddate = Convert.ToString(TCH.DOCDT);
                         TBHDR.CLCD = CommVar.ClientCode(UNQSNO);
-                        string auto_no = ""; string Month = "";
+                        string auto_no = ""; string Month = "", DOCNO = "", DOCCD = "";
                         if (VE.DefaultAction == "A")
                         {
                             TBHDR.EMD_NO = 0;
-                            TCH.DOCCD = VE.T_CNTRL_HDR.DOCCD;
-                            TCH.DOCNO = Cn.MaxDocNumber(TCH.DOCCD, Ddate);
-                            //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
-                            DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TCH.DOCNO), TCH.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
-                            auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TCH.DOCNO, TCH.DOCCD, Ddate);
+                            DOCCD = VE.T_CNTRL_HDR.DOCCD;
+                            DOCNO = Cn.MaxDocNumber(DOCCD, Ddate);
+                            DOCPATTERN = Cn.DocPattern(Convert.ToInt32(DOCNO), DOCCD, CommVar.CurSchema(UNQSNO), CommVar.FinSchema(UNQSNO), Ddate);
+                            auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), DOCNO, DOCCD, Ddate);
                             TBHDR.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                             Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                         }
                         else
                         {
-                            TCH.DOCCD = VE.T_CNTRL_HDR.DOCCD;
-                            TCH.DOCNO = VE.T_CNTRL_HDR.DOCNO;
+                            DOCCD = VE.T_CNTRL_HDR.DOCCD;
+                            DOCNO = VE.T_CNTRL_HDR.DOCONLYNO;
                             TBHDR.AUTONO = VE.T_BILTY_HDR.AUTONO;
                             Month = VE.T_CNTRL_HDR.MNTHCD;
-                            TBHDR.EMD_NO = Convert.ToByte((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
-                            DOCPATTERN = VE.T_CNTRL_HDR.DOCNO;
+                            var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_BILTY_HDR.AUTONO select p.EMD_NO).Max();
+                            if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToByte(MAXEMDNO + 1); }
                         }
 
                         TBHDR.MUTSLCD = VE.T_BILTY_HDR.MUTSLCD;
@@ -639,7 +638,7 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, TBHDR.MUTSLCD);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month,DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -648,7 +647,7 @@ namespace Improvar.Controllers
 
                         for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
                         {
-                            if (VE.TBILTYR[i].SLNO != 0 && VE.TBILTYR[i].Checked == true)
+                            if (VE.TBILTYR[i].SLNO != 0)
                             {
                                 COUNTER = COUNTER + 1;
                                 T_BILTY TBILTYR = new T_BILTY();
