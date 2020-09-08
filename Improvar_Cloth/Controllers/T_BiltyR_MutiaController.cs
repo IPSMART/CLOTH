@@ -322,19 +322,8 @@ namespace Improvar.Controllers
         public ActionResult SelectPendingLRNO(TransactionBiltyRMutiaEntry VE, string DOCDT, string MUTSLCD)
         {
             Cn.getQueryString(VE);
-            //VE.MENU_PARA = VE.MENU_PARA;
             try
             {
-                //List<TBILTYR> GRNDTL = new List<TBILTYR>();
-                //for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
-                //{
-                //    if (VE.TBILTYR[i].BLAUTONO != null)
-                //    {
-                //        TBILTYR MIB = new TBILTYR();
-                //        MIB = VE.TBILTYR[i];
-                //        GRNDTL.Add(MIB);
-                //    }
-                //}
                 string GC = Cn.GCS();
                 List<string> blautonos = new List<string>();
                 foreach (var i in VE.TBILTYR_POPUP)
@@ -346,24 +335,7 @@ namespace Improvar.Controllers
                 }
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD, sqlbillautonos);
-
-                //foreach (var i in VE.TBILTYR_POPUP)
-                //{
-                //    if (blautonos.Contains(i.BLAUTONO))
-                //    {
-                //        TBILTYR PORDTL = new TBILTYR();
-                //        PORDTL.BLAUTONO = i.BLAUTONO;
-                //        PORDTL.BALENO = i.BALENO;
-                //        PORDTL.BALEYR = i.BALEYR;
-                //        PORDTL.LRNO = i.LRNO;
-                //        PORDTL.LRDT = i.LRDT.retDateStr();
-                //        PORDTL.BALENO = i.BALENO;
-                //        PORDTL.PREFNO = i.PREFNO;
-                //        PORDTL.PREFDT = i.PREFDT;
-
-                //        GRNDTL.Add(PORDTL);
-                //    }
-                //}
+              
                 VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
                                     select new TBILTYR
                                     {
@@ -381,27 +353,16 @@ namespace Improvar.Controllers
                                         BALEYR = dr["baleyr"].retStr(),
                                         BLSLNO = dr["blslno"].retStr()
                                     }).Distinct().ToList();
-
-                //VE.TBILTYR = GRNDTL;
+              
                 for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
                 {
                     VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
                     VE.TBILTYR[i].RSLNO = (VE.STRTNO+Convert.ToInt32(i + 1)).retInt();
                 }
-                //string refno = "";
-                //if (CommVar.ClientCode(UNQSNO) == "ADHU")
-                //{
-                //    var chkref = VE.TBILTYR_POPUP.Where(a => a.Checked == true).Select(b => b.LRNO).ToList();
-                //    if (chkref.Count() != 0)
-                //    {
-                //        refno = chkref.FirstOrDefault();
-                //    }
-                //}
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyR_Mutia_Main", VE);
                 return Content(GRN_MAIN);
-                //return PartialView("_I_GRN_Main", VE);
             }
             catch (Exception ex)
             {

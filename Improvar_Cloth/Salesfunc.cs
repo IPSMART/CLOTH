@@ -1406,7 +1406,7 @@ namespace Improvar
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendBiltytoIssue(string docdt, string skipautono = "", string schema = "")
+        public DataTable getPendBiltytoIssue(string docdt, string blautono = "", string skipautono = "", string schema = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1431,6 +1431,7 @@ namespace Improvar
             sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ";
             sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
             sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null and ";
+            if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")";
             sql += "1 - nvl(b.bnos, 0) > 0 ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
