@@ -1421,9 +1421,9 @@ namespace Improvar
             sql += "  from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
             sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
-            sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') and ";
-            sql += "  a.doctag in ('PB') and b.baleno is not null ) a, ";
-            sql += "(select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
+            sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
+            sql += " and a.doctag in ('PB') and b.baleno is not null  ";
+            sql += ") a, (select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
             sql += "sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos ";
             sql += " from " + schema + ".t_bilty a, " + scm + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) ";
@@ -1443,7 +1443,6 @@ namespace Improvar
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "";
             sql = "";
-
             sql += "select a.autono, c.docno, c.docdt, c.slcd, g.slnm, nvl(g.slarea,g.district) district ";
             sql += "from " + scm + ".t_txn a, " + scm + "t_cntrl_hdr c, ";
             sql += scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scmf + ".m_subleg g ";
@@ -1455,7 +1454,7 @@ namespace Improvar
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendRecfromMutia(string docdt,string mutslcd="", string skipautono = "", string schema = "")
+        public DataTable getPendRecfromMutia(string docdt,string mutslcd="", string blautono = "", string skipautono = "", string schema = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1467,7 +1466,7 @@ namespace Improvar
             sql += " select a.blautono, a.mutslcd, a.trem, j.slnm mutianm, j.regmobile, a.baleno, a.baleyr, e.lrno, e.lrdt,	 ";
             sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.slno blslno, g.nos, g.qnty,	";
             sql += " '' shade, g.pageno, g.pageslno, ";
-            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos from ";
+            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos,h.itnm||' '||h.styleno itstyle from ";
             sql += " (select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
             sql += "  from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
@@ -1489,7 +1488,8 @@ namespace Improvar
             sql += " a.blautono = c.blautono(+) and a.balenoyr = c.balenoyr(+) and  ";
             sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and b.blautono = g.autono(+) and  ";
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and a.mutslcd = j.slcd(+) ";
-            if (mutslcd.retStr() != "") sql += " and a.mutslcd in (" + mutslcd + ")  ";
+            if (mutslcd.retStr() != "") sql += " and a.mutslcd in ('" + mutslcd + "')  ";
+            if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
             sql += " and nvl(b.bnos, 0) > 0 ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;

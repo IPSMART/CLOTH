@@ -58,7 +58,7 @@ namespace Improvar.Models
         public string PREFDT { get; set; }
         public string BLSLNO { get; set; }
         public string NOS { get; set; }
-        public string RSLNO { get; set; }
+        public int RSLNO { get; set; }
         public string ITCD { get; set; }
         public string ITNM { get; set; }
         public string QNTY { get; set; }
@@ -66,7 +66,9 @@ namespace Improvar.Models
         public string PAGENO { get; set; }
         public string PBLNO { get; set; }
         public string PBLDT { get; set; }
+        public string SHADE { get; set; }
         
+
 
 
 
