@@ -1234,7 +1234,7 @@ namespace Improvar
             tbl = SQLquery(sql);
             return tbl;
         }
-        public string retGstPer(string SearchStr, double rate = 0)
+        public string retGstPer(string prodgrpgstper, double rate = 0)
         {
             //Searchstr value like listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179))
             double fromrt = 0, tort = 0; int selrow = -1;
@@ -1242,7 +1242,7 @@ namespace Improvar
             string rtval = "0,0,0"; //igstper,cgst,sgst
             char SP = ((char)179);
 
-            string[] mrates = SearchStr.Split(Convert.ToChar(SP)).ToArray();
+            string[] mrates = prodgrpgstper.Split(Convert.ToChar(SP)).ToArray();
             for (int x = 0; x <= mrates.Count() - 1; x++)
             {
                 mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
