@@ -8,7 +8,7 @@
         else if ("@Model.DefaultAction" == "A") {
             // $('form :input:enabled:visible:not([readonly]):first').focus();
         }
-        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_M_BOM_RMPM'));
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('T_BiltyG_Mutia_PopUp'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
     });
 </script>
@@ -22,7 +22,7 @@
             @Html.ValidationSummary(true)
             <div class="grid_title">
                 <div class="col-md-8">
-                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_M_BOM_RMPM');" />
+                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_BiltyG_Mutia_PopUp');" />
                     <img src="~/Image/search.png" title="Help" style="height: 20px;width:20px;margin-top: 1px;" />
                 </div>
                  <center style="font-size:11px;color:darkmagenta;border:1px inset;height:22px;"><b>Pending Details</b></center>
@@ -49,7 +49,7 @@
                                     {
                                         <tr style="font-size:12px; font-weight:bold;">
                                             <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                                @Html.CheckBoxFor(model => model.TBILTY_POPUP[i].Checked, new { id = "chkid_POPUP_" + i })
+                                                @Html.CheckBoxFor(model => model.TBILTY_POPUP[i].Checked, new { id = "chkid_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes();" })
                                                 @Html.HiddenFor(model => model.TBILTY_POPUP[i].BLAUTONO, new { id = "BLAUTONO_POPUP_" + i })
                                             </td>
                                             <td class="">
