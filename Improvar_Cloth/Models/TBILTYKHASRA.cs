@@ -56,7 +56,7 @@ namespace Improvar.Models
         public string PREFNO { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string PREFDT { get; set; }
-        public string BLSLNO { get; set; }
+        public short BLSLNO { get; set; }
         public string NOS { get; set; }
         public int RSLNO { get; set; }
         public string ITCD { get; set; }

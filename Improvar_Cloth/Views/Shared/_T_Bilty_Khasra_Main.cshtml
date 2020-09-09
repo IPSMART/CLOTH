@@ -23,7 +23,6 @@
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="grid_th" style="width:27px;">SL. No.</th>
-                                <th class="grid_th" style="width:27px;">RSL. No.</th>
                                 <th class="" style="width:110px;">Item Code</th>
                                 <th class="" style="width:180px;">Item Name</th>
                                 <th class="" style="width:111px;text-align:right;">Nos</th>
@@ -54,9 +53,6 @@
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].SLNO, new { id = "SLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
-                                        </td>
-                                        <td class="grid_td">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].RSLNO, new { id = "RSLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].ITCD, new { id = "ITCD_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
