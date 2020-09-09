@@ -696,7 +696,7 @@ namespace Improvar.Controllers
 
                         if (VE.DefaultAction == "A")
                         {
-                            ContentFlg = "1" + " (Issue No. " + TCH.DOCNO + ")~" + TBHDR.AUTONO;
+                            ContentFlg = "1" + " (Issue No. " + DOCNO + ")~" + TBHDR.AUTONO;
                         }
                         else if (VE.DefaultAction == "E")
                         {
