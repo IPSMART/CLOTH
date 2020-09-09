@@ -9,7 +9,7 @@ namespace Improvar.ViewModels
 {
     public class TransactionKhasraEntry : Permission
     {
-        public T_BILTY_HDR T_BILTY_HDR { get; set; }
+        public T_BALE_HDR T_BALE_HDR { get; set; }
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_BILTY T_BILTY { get; set; }
         public List<TBILTYKHASRA> TBILTYKHASRA { get; set; }
