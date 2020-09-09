@@ -1510,7 +1510,7 @@ namespace Improvar
             string sql = "";
             sql = "";
             sql += " select a.autono, a.docno, a.docdt, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
-            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty, ";
+            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty,h.itnm||' '||h.styleno itstyle ";
             sql += " '' shade, g.pageno, g.pageslno, ";
             sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos from ";
             sql += "  (select distinct a.autono, d.docdt, d.docno, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";

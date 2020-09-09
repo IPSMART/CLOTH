@@ -208,9 +208,10 @@ namespace Improvar.Controllers
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str = "";
-                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno  ";
-                str += " from " + Scm + ".T_BALE a ";
-                str += " where a.autono='" + TBH.AUTONO + "'  ";
+                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno, ";
+                str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,c.itnm||' '||c.styleno itstyle,d.prefno,d.prefdt  ";
+                str += " from " + Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d  ";
+                str += " where a.blautono=b.autono(+) and b.itcd=c.itcd(+) and a.blautono=d.autono(+) and a.autono='" + TBH.AUTONO + "'  ";
                 str += "order by a.slno ";
 
                 DataTable TBILTYRtbl = Master_Help.SQLquery(str);
@@ -219,12 +220,20 @@ namespace Improvar.Controllers
                              {
                                  SLNO = Convert.ToInt16(dr["slno"]),
                                  BLAUTONO = dr["blautono"].retStr(),
+                                 ITCD = dr["itcd"].retStr(),
+                                 ITNM = dr["itstyle"].retStr(),
+                                 UOMCD = dr["uomcd"].retStr(),
+                                 NOS = dr["nos"].retStr(),
+                                 QNTY = dr["qnty"].retStr(),
+                                 PAGENO = dr["pageno"].retStr(),
                                  LRDT = dr["lrdt"].retDateStr(),
                                  LRNO = dr["lrno"].retStr(),
                                  BALENO = dr["baleno"].retStr(),
                                  BALEYR = dr["baleyr"].retStr(),
                                  BLSLNO = dr["blslno"].retShort(),
                                  RSLNO = dr["rslno"].retShort(),
+                                 PREFNO= dr["prefno"].retStr(),
+                                 PREFDT = dr["prefdt"].retDateStr()
                              }).OrderBy(s => s.SLNO).ToList();
                 //for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
                 //{
@@ -351,9 +360,11 @@ namespace Improvar.Controllers
                                         BALENO = dr["baleno"].retStr(),
                                         PAGENO = dr["pageno"].retStr(),
                                         LRNO = dr["lrno"].retStr(),
-                                        LRDT = dr["lrdt"].retStr(),
+                                        LRDT = dr["lrdt"].retDateStr(),
                                         BALEYR = dr["baleyr"].retStr(),
-                                        BLSLNO = dr["blslno"].retShort()
+                                        BLSLNO = dr["blslno"].retShort(),
+                                        PREFNO = dr["prefno"].retStr(),
+                                        PREFDT = dr["prefdt"].retDateStr(),
                                     }).Distinct().ToList();
               
                 for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
@@ -672,7 +683,6 @@ namespace Improvar.Controllers
                                 TBILTYR.LRNO = VE.TBILTYR[i].LRNO;
                                 TBILTYR.BALEYR = VE.TBILTYR[i].BALEYR;
                                 TBILTYR.BALENO = VE.TBILTYR[i].BALENO;
-                                TBILTYR.GOCD = "DH";
                                 dbsql = MasterHelpFa.RetModeltoSql(TBILTYR);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 
