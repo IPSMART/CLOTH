@@ -320,7 +320,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT, string MUTSLCD)
+        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT)
         {
             Cn.getQueryString(VE);
             try
@@ -340,12 +340,12 @@ namespace Improvar.Controllers
                 VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
                               select new TBILTY
                               {
-                                  BLAUTONO = dr["blautono"].retStr(),
+                                  BLAUTONO = dr["autono"].retStr(),
                                   BALENO = dr["baleno"].retStr(),
                                   LRNO = dr["lrno"].retStr(),
-                                  LRDT = dr["lrdt"].retStr(),
+                                  LRDT = dr["lrdt"].retDateStr(),
                                   PREFNO = dr["prefno"].retStr(),
-                                  PREFDT = dr["prefdt"].retStr(),
+                                  PREFDT = dr["prefdt"].retDateStr(),
                                   BALEYR = dr["baleyr"].retStr()
                               }).Distinct().ToList();
 
@@ -597,7 +597,7 @@ namespace Improvar.Controllers
                         {
                             TBHDR.EMD_NO = 0;
                             DOCCD = VE.T_CNTRL_HDR.DOCCD;
-                            DOCNO = Cn.MaxDocNumber(TCH.DOCCD, Ddate);
+                            DOCNO = Cn.MaxDocNumber(DOCCD, Ddate);
                             DOCPATTERN = Cn.DocPattern(Convert.ToInt32(DOCNO), DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
                             auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), DOCNO, DOCCD, Ddate);
                             TBHDR.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
@@ -635,7 +635,7 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(),DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(),DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);

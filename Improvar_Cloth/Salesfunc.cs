@@ -1435,9 +1435,9 @@ namespace Improvar
             sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
             sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ";
             sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
-            sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null and ";
-            if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")";
-            sql += "1 - nvl(b.bnos, 0) > 0 ";
+            sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null  ";
+            if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")  ";
+            sql += " and 1 - nvl(b.bnos, 0) > 0 ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }

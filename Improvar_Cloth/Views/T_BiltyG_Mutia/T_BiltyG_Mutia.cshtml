@@ -186,7 +186,6 @@
         debugger;
         var mutslcd = "";
         var docdt = $("#DOCDT").val();
-        if ($("#MUTSLCD").val() != "") mutslcd = $("#MUTSLCD").val();
         var Count = 0;
         var GridPendingPO = $("#T_BiltyG_Mutia_PopUp > tbody > tr").length;
         for (var i = 0; i <= GridPendingPO - 1; i++) {
@@ -200,7 +199,7 @@
                 type: 'post',
                 url: "@Url.Action("SelectPendingLRNO", PageControllerName )",
                 beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
+                data: $('form').serialize() + "&DOCDT=" + docdt ,
                 success: function (result) {
                     //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
 

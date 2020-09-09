@@ -10,6 +10,8 @@ namespace Improvar.ViewModels
     public class TransactionBiltyRMutiaEntry :Permission
     {
         public T_BILTY_HDR T_BILTY_HDR { get; set; }
+        public T_BALE_HDR T_BALE_HDR { get; set; }
+        
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_BILTY T_BILTY { get; set; }
         public List<TBILTYR> TBILTYR { get; set; }
@@ -19,9 +21,8 @@ namespace Improvar.ViewModels
         public string DRCR { get; set; }
         public string SLNM { get; set; }
         public string REGMOBILE { get; set; }
-        public string STRTNO { get; set; }
-       
-
+        public short STARTNO { get; set; }
+        
 
 
 

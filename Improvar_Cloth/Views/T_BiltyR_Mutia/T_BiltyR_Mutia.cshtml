@@ -336,7 +336,8 @@
                     </div>
                     <div class="col-md-5">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.STRTNO, new { htmlAttributes = new { @class = "form-control", id = "STRTNO", @placeholder = "Start No.", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4} })
+                            @*@Html.EditorFor(model => model.T_BALE_HDR.STARTNO, new { htmlAttributes = new { @class = "form-control", id = "STRTNO", @placeholder = "Start No.", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4} })*@
+                            @Html.EditorFor(model => model.STARTNO, new { htmlAttributes = new { @class = "form-control", id = "STRTNO", @placeholder = "Start No.", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4 } })
                         </div>
                     </div>
                   
