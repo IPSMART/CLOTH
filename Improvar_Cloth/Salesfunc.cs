@@ -1495,7 +1495,7 @@ namespace Improvar
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendKhasra(string docdt, string skipautono = "", string schema = "")
+        public DataTable getPendKhasra(string docdt, string blautono = "", string skipautono = "", string schema = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1524,6 +1524,7 @@ namespace Improvar
             sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and ";
             sql += " a.blautono = g.autono(+) and a.blslno = g.slno(+) and ";
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and nvl(b.bnos, 0) > 0 ";
+            if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
