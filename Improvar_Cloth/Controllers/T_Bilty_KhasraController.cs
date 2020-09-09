@@ -599,27 +599,30 @@ namespace Improvar.Controllers
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
                         T_BALE_HDR TBHDR = new T_BALE_HDR();
+                        T_BILTY_HDR TBLTHDR = new T_BILTY_HDR();
                         T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                         string DOCPATTERN = "";
                         TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
                         string Ddate = Convert.ToString(TCH.DOCDT);
-                        TBHDR.CLCD = CommVar.ClientCode(UNQSNO);
+                        TBHDR.CLCD = CommVar.ClientCode(UNQSNO); TBLTHDR.CLCD = CommVar.ClientCode(UNQSNO);
                         string auto_no = ""; string Month = "", DOCNO = "", DOCCD = "";
                         if (VE.DefaultAction == "A")
                         {
-                            TBHDR.EMD_NO = 0;
+                            TBHDR.EMD_NO = 0; TBLTHDR.EMD_NO = 0;
                             DOCCD = VE.T_CNTRL_HDR.DOCCD;
                             DOCNO = Cn.MaxDocNumber(DOCCD, Ddate);
                             DOCPATTERN = Cn.DocPattern(Convert.ToInt32(DOCNO), DOCCD, CommVar.CurSchema(UNQSNO), CommVar.FinSchema(UNQSNO), Ddate);
                             auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), DOCNO, DOCCD, Ddate);
                             TBHDR.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                             Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
+                            TBLTHDR.AUTONO = TBHDR.AUTONO;
                         }
                         else
                         {
                             DOCCD = VE.T_CNTRL_HDR.DOCCD;
                             DOCNO = VE.T_CNTRL_HDR.DOCONLYNO;
                             TBHDR.AUTONO = VE.T_BALE_HDR.AUTONO;
+                            TBLTHDR.AUTONO = VE.T_BALE_HDR.AUTONO;
                             Month = VE.T_CNTRL_HDR.MNTHCD;
                             var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_BALE_HDR.AUTONO select p.EMD_NO).Max();
                             if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToByte(MAXEMDNO + 1); }
@@ -651,6 +654,8 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        dbsql = MasterHelpFa.RetModeltoSql(TBLTHDR, VE.DefaultAction);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         int COUNTER = 0;
 
@@ -710,7 +715,7 @@ namespace Improvar.Controllers
 
                         if (VE.DefaultAction == "A")
                         {
-                            ContentFlg = "1" + " (Issue No. " + TCH.DOCNO + ")~" + TBHDR.AUTONO;
+                            ContentFlg = "1" + " (Issue No. " + DOCNO + ")~" + TBHDR.AUTONO;
                         }
                         else if (VE.DefaultAction == "E")
                         {
@@ -732,6 +737,8 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                         dbsql = MasterHelpFa.TblUpdt("T_BALE", VE.T_BALE_HDR.AUTONO, "D");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        dbsql = MasterHelpFa.TblUpdt("T_BILTY_HDR", VE.T_BALE_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         dbsql = MasterHelpFa.TblUpdt("T_BALE_HDR", VE.T_BALE_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
