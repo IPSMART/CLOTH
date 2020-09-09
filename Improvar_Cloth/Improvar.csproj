@@ -271,6 +271,7 @@
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
+    <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
@@ -462,6 +463,8 @@
     <Compile Include="Models\SubLedgerMaster.cs" />
     <Compile Include="Models\TBATCHDTL.cs" />
     <Compile Include="Models\TBILTY.cs" />
+    <Compile Include="Models\TBILTYKHASRA.cs" />
+    <Compile Include="Models\TBILTYKHASRA_POPUP.cs" />
     <Compile Include="Models\TBILTYR.cs" />
     <Compile Include="Models\TBILTYR_POPUP.cs" />
     <Compile Include="Models\TBILTY_POPUP.cs" />
@@ -601,6 +604,7 @@
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
     <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionBiltyRMutiaEntry.cs" />
+    <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
     <Compile Include="ViewModels\TransactionPackingSlipEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
@@ -1015,6 +1019,9 @@
     <Content Include="Views\T_BiltyR_Mutia\_T_BiltyR_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyR_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyR_Mutia_PopUp.cshtml" />
+    <Content Include="Views\T_Bilty_Khasra\T_Bilty_Khasra.cshtml" />
+    <Content Include="Views\Shared\_T_Bilty_Khasra_Main.cshtml" />
+    <Content Include="Views\Shared\_T_Bilty_Khasra_PopUp.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
