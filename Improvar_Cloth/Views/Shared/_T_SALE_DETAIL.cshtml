@@ -125,34 +125,34 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].AMT, new { htmlattributes = new { id = "D_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].DISCTYPE_DESC, new { id = "D_DISCTYPE_DESC_" + i, @class = " atextBoxFor ", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ")" })
+                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].DISCTYPE_DESC, new { id = "D_DISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE, new { id = "D_DISCTYPE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].DISCRATE, new { htmlAttributes = new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].DISCRATE, new { htmlAttributes = new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].DISCAMT, new { htmlAttributes = new { id = "D_DISCAMT_" + i, @class = " atextBoxFor text-right" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].DISCAMT, new { htmlAttributes = new { id = "D_DISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].TDDISCTYPE_DESC, new { id = "D_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ")" })
+                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].TDDISCTYPE_DESC, new { id = "D_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCTYPE, new { id = "D_TDDISCTYPE_" + i })
                                           </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "D_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCAMT, new { htmlAttributes = new { id = "D_TDDISCAMT_" + i, @class = " atextBoxFor text-right" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCAMT, new { htmlAttributes = new { id = "D_TDDISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].SCMDISCTYPE_DESC, new { id = "D_SCMDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ")" })
+                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].SCMDISCTYPE_DESC, new { id = "D_SCMDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].SCMDISCTYPE, new { id = "D_SCMDISCTYPE_" + i })
                                          </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "D_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCAMT, new { htmlAttributes = new { id = "D_SCMDISCAMT_" + i, @class = " atextBoxFor text-right" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCAMT, new { htmlAttributes = new { id = "D_SCMDISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);" } })
                                         </td>
                                         <td class="">
                                             @Html.HiddenFor(model => model.TTXNDTL[i].TOTDISCAMT, new { id = "D_TOTDISCAMT_" + i })

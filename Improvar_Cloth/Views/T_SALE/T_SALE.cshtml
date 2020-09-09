@@ -336,10 +336,12 @@
         var QNTY = $("#QNTY").val();
 
         if (FLAGMTR != "") {
-            var flgmtr = parseFloat(FLAGMTR).toFixed(2);
-            var qnty = parseFloat(QNTY).toFixed(2);
+            var flgmtr = FLAGMTR;
+            if (flgmtr == "") { flgmtr = parseFloat(0); } else { flgmtr = parseFloat(flgmtr); }
+            var qnty = QNTY;
+            if (qnty == "") { qnty = parseFloat(0); } else { qnty = parseFloat(qnty); }
             if (flgmtr > qnty) {
-                msgInfo("FLAGMTR should be less than Quantity !");
+                msgInfo("FLAGMTR (" + flgmtr + ") should be less than Quantity (" + qnty + ") !");
                 message_value = "FLAGMTR";
                 return false;
             }
@@ -676,61 +678,65 @@
 </script>
 <script>
     function GetGstPer(i, FieldidStarting) {
-        var prodgrpgstper = "", itcd = "", mtrljobcd = "";
+        debugger;
+        var prodgrpgstper = "";
         var rate = 0;
-        if (i == "") {
+        if (FieldidStarting == "") {
             prodgrpgstper = $("#PRODGRPGSTPER").val();
-            rate = parseFloat($("#RATE").val());
-            mtrljobcd = $("#MTRLJOBCD").val();
-            itcd = $("#ITCD").val();
+            rate = $("#RATE").val();
+            if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
         }
         else {
-            prodgrpgstper = $(FieldidStarting + "PRODGRPGSTPER_").val();
-            rate = parseFloat($(FieldidStarting + "RATE_").val());
-            mtrljobcd = $(FieldidStarting + "MTRLJOBCD_").val();
-            itcd = $(FieldidStarting + "ITCD_").val();
+            prodgrpgstper = $(FieldidStarting + "PRODGRPGSTPER_"+i).val();
+            rate = $(FieldidStarting + "RATE_" + i).val();
+            if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
         }
-        var docdt = $("#DOCDT").val();
-        var taxgrpcd = $("#TAXGRPCD").val();
-        var gocd = $("#GOCD").val();
-        var prccd = $("#PRCCD").val();
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("GetAllGstper", PageControllerName)",
-            data: "&PRODGRPGSTPER=" + prodgrpgstper + "&RATE=" + rate + "&ITCD=" + itcd + "&DOCDT=" + docdt + "&TAXGRPCD=" + taxgrpcd + "&GOCD=" + gocd + "&PRCCD=" + prccd + "&MTRLJOBCD=" + mtrljobcd,
-            success: function (result) {
-                if (result != "") {
-                    var str = result.split(',');
-                    if (str.length > 0) {
-                        var sumgst = parseFloat(parseFloat(str[0]) + parseFloat(str[1]) + parseFloat(str[2])).toFixed(2);
-                        if (FieldidStarting == "") {
-                            $("#GSTPER").val(sumgst);
-                            $("#ALL_GSTPER").val(result);
-                        }
-                        else if (FieldidStarting == "#B_") {
+        var allgst = retGstPer(prodgrpgstper, rate);
+        if (allgst != "") {
+            var str = allgst.split(',');
+            if (str.length > 0) {
+                var sumgst = parseFloat(parseFloat(str[0]) + parseFloat(str[1]) + parseFloat(str[2])).toFixed(2);
+                if (FieldidStarting == "") {
+                    $("#GSTPER").val(sumgst);
+                    $("#ALL_GSTPER").val(allgst);
+                }
+                else if (FieldidStarting == "#B_") {
 
-                            $(FieldidStarting + "GSTPER_").val(sumgst);
-                            $(FieldidStarting + "ALL_GSTPER_").val(result);
-                        }
-                        else {
-                            $(FieldidStarting + "IGSTPER_").val(parseFloat(str[0]).toFixed(2));
-                            $(FieldidStarting + "CGSTPER_").val(parseFloat(str[1]).toFixed(2));
-                            $(FieldidStarting + "SGSTPER_").val(parseFloat(str[2]).toFixed(2));
-                            $(FieldidStarting + "ALL_GSTPER_").val(result);
-                        }
-                    }
+                    $(FieldidStarting + "GSTPER_"+i).val(sumgst);
+                    $(FieldidStarting + "ALL_GSTPER_"+i).val(allgst);
                 }
-                if (FieldidStarting == "#D_") {
-                    UpdateBarCodeRow_FrmDet(i);
-                    CalculateAmt_Details(i);
+                else {
+                    $(FieldidStarting + "IGSTPER_"+i).val(parseFloat(str[0]).toFixed(2));
+                    $(FieldidStarting + "CGSTPER_"+i).val(parseFloat(str[1]).toFixed(2));
+                    $(FieldidStarting + "SGSTPER_"+i).val(parseFloat(str[2]).toFixed(2));
+                    $(FieldidStarting + "ALL_GSTPER_"+i).val(allgst);
                 }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
             }
-        });
+        }
+        if (FieldidStarting == "#D_") {
+            UpdateBarCodeRow_FrmDet(i);
+            CalculateAmt_Details(i);
+        }
+    }
+    function retGstPer(prodgrpgstper, rate) {
+        //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
+
+        var fromrt = 0, tort = 0, selrow = -1;
+        var mgstrate = [5];
+        var rtval = "0,0,0"; //igstper,cgst,sgst
+        var SP = String.fromCharCode(179);
+
+        var mrates = prodgrpgstper.split(SP);
+        for (var x = 0; x <= mrates.length - 1; x++) {
+            //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+            mgstrate = mrates[x].split('~');
+
+            if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
+            if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
+            if (rate >= fromrt && rate <= tort) { selrow = x; break; }
+        }
+        if (selrow != -1) rtval = mgstrate[2] + "," + mgstrate[3] + "," + mgstrate[4];
+        return rtval;
     }
     function ItcdClr() {
         ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,HSNCODE");
@@ -818,6 +824,29 @@
             //GRID TOTAL CALCULATION
             AmountCalculateTotal();
         }
+    }
+    function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
+        var NEW_AMT = document.getElementById(id.id).value;
+        var PERCENTAGE = document.getElementById(PER.id).value;
+        var AMT = document.getElementById(AMOUNT.id).value;
+        var AMT_1 = document.getElementById(AMT1.id).value;
+        var AMT_2 = document.getElementById(AMT2.id).value;
+        var AMT_3 = document.getElementById(AMT3.id).value;
+        var AMT_4 = document.getElementById(AMT4.id).value;
+        if (PERCENTAGE != "") {
+            var CAL_ABET_AMT = parseFloat(AMT) * parseFloat(PERCENTAGE) / 100;
+            var BAL_AMT = Math.abs(parseFloat(NEW_AMT) - parseFloat(CAL_ABET_AMT));
+            if (BAL_AMT <= 1) {
+                document.getElementById(id.id).value = parseFloat(NEW_AMT).toFixed(2);
+                document.getElementById(NETAMT.id).value = parseFloat(parseFloat(NEW_AMT) + parseFloat(AMT) + parseFloat(AMT_1) + parseFloat(AMT_2) + parseFloat(AMT_3) + parseFloat(AMT_4)).toFixed(2);
+            }
+            else {
+                document.getElementById(id.id).value = parseFloat(CAL_ABET_AMT).toFixed(2);
+                document.getElementById(NETAMT.id).value = parseFloat(parseFloat(CAL_ABET_AMT) + parseFloat(AMT) + parseFloat(AMT_1) + parseFloat(AMT_2) + parseFloat(AMT_3) + parseFloat(AMT_4)).toFixed(2);
+            }
+        }
+        //GRID TOTAL CALCULATION
+        AmountCalculateTotal();
     }
     function AmountCalculateTotal() {
         var T_CURR_AMT = 0; var T_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_NET_AMT = 0;
@@ -1115,22 +1144,22 @@
                     </div>
                     <div class="col-md-9">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Party Name", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.SLAREA, new { htmlAttributes = new { @class = "form-control", id = "SLAREA", @title = "Only for View", @placeholder = "Area", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.SLAREA, new { htmlAttributes = new { @class = "form-control", id = "SLAREA", @title = "Area", @placeholder = "Area", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
                     <div class="col-md-7">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Only for View", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "GST No", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Only for View", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
                     <div class="col-md-1" style="width:auto;">
@@ -1174,7 +1203,7 @@
                             </div>
                             <div class="col-md-10">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Consignee Name", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
@@ -1193,7 +1222,7 @@
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.AGSLNM, new { htmlAttributes = new { @class = "form-control", id = "AGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
+                                    @Html.EditorFor(model => model.AGSLNM, new { htmlAttributes = new { @class = "form-control", id = "AGSLNM", maxlength = 45, @title = "Agent Name", @placeholder = "Agent Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -1210,7 +1239,7 @@
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.SAGSLNM, new { htmlAttributes = new { @class = "form-control", id = "SAGSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Sub Agent Name", @readonly = "readonly", tabindex = "-1" } })
+                                    @Html.EditorFor(model => model.SAGSLNM, new { htmlAttributes = new { @class = "form-control", id = "SAGSLNM", maxlength = 45, @title = "Sub Agent Name", @placeholder = "Sub Agent Name", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
                             </div>
                         </div>
@@ -1230,7 +1259,7 @@
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -1247,7 +1276,7 @@
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Only for View", @placeholder = "Price List Name", @readonly = "readonly" } })
+                                    @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Price List Name", @placeholder = "Price List Name", @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
@@ -1461,11 +1490,11 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
-                                                    <img src="~/Image/search.png"  width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE')" />
+                                                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE')" />
 
                                                     @*@Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
-                                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD')" />*@
+                                                        <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD')" />*@
                                                     @Html.HiddenFor(model => model.STYLENO, new { id = "STYLENO" })
                                                 </div>
                                             </div>
@@ -1900,10 +1929,12 @@
         var QNTY = $("#QNTY").val();
 
         if (FLAGMTR != "") {
-            var flgmtr = parseFloat(FLAGMTR).toFixed(2);
-            var qnty = parseFloat(QNTY).toFixed(2);
+            var flgmtr = FLAGMTR;
+            if (flgmtr == "") { flgmtr = parseFloat(0); } else { flgmtr = parseFloat(flgmtr); }
+            var qnty = QNTY;
+            if (qnty == "") { qnty = parseFloat(0); } else { qnty = parseFloat(qnty); }
             if (flgmtr > qnty) {
-                msgInfo("FLAGMTR should be less than Quantity !");
+                msgInfo("FLAGMTR (" + flgmtr + ") should be less than Quantity (" + qnty + ") !");
                 message_value = "FLAGMTR";
                 return false;
             }
@@ -2021,7 +2052,7 @@
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + RATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '" onchange="GetGstPer("' + rowindex + '","#B_");">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="GetGstPer(' + rowindex + ',\'#B_\');" value="' + RATE + '" >';
         tr += '    </td>';
         tr += '    <td class="" title="' + GSTPER + '">';
         tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
