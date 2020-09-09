@@ -669,17 +669,52 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        //public ActionResult GetItemDetails(string val, string Code)
+        //{
+        //    try
+        //    {
+        //        var str = masterHelp.ITCD_help(val, "", Code);
+        //        if (str.IndexOf("='helpmnu'") >= 0)
+        //        {
+        //            return PartialView("_Help2", str);
+        //        }
+        //        else
+        //        {
+        //            return Content(str);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message + ex.InnerException);
+        //    }
+        //}
         public ActionResult GetItemDetails(string val, string Code)
         {
             try
             {
-                var str = masterHelp.ITCD_help(val, "", Code);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string ITGRPCD = data[0].retStr() == "" ? "" : data[0].retStr().retSqlformat();
+                string DOCDT = data[1].retStr();
+                string TAXGRPCD = data[2].retStr();
+                string GOCD = data[3].retStr()==""?"": data[3].retStr().retSqlformat();
+                string PRCCD = data[4].retStr();
+                string MTRLJOBCD = data[5].retStr() == "" ? "" : data[5].retStr().retSqlformat();
+                string BARNO = data[6].retStr() == "" ? "" : data[6].retStr().retSqlformat();
+                var str = masterHelp.ITCD_help(val, "", ITGRPCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
                 }
                 else
                 {
+                    string PRODGRPGSTPER = "";
+                    var tax_data = salesfunc.GetBarHelp(DOCDT, GOCD, BARNO, val.retStr().retSqlformat(), MTRLJOBCD, "", ITGRPCD, "", PRCCD, TAXGRPCD);
+                    if(tax_data != null && tax_data.Rows.Count > 0)
+                    {
+                        PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                    }
+                    str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
                     return Content(str);
                 }
             }

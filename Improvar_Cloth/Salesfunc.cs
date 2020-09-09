@@ -1190,7 +1190,8 @@ namespace Improvar
             sql += "group by a.barno ) y, ";
 
             sql += "(select a.prodgrpcd, ";
-            sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
             sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
             sql += "from ";
             sql += "(select prodgrpcd, effdt from ";
@@ -1237,6 +1238,8 @@ namespace Improvar
         public string retGstPer(string prodgrpgstper, double rate = 0)
         {
             //Searchstr value like listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179))
+            //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
+
             double fromrt = 0, tort = 0; int selrow = -1;
             string[] mgstrate = new string[5];
             string rtval = "0,0,0"; //igstper,cgst,sgst
@@ -1245,7 +1248,8 @@ namespace Improvar
             string[] mrates = prodgrpgstper.Split(Convert.ToChar(SP)).ToArray();
             for (int x = 0; x <= mrates.Count() - 1; x++)
             {
-                mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+                //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+                mgstrate = mrates[x].Split('~').ToArray();
                 fromrt = mgstrate[0].retDbl(); tort = mgstrate[1].retDbl();
                 if (rate >= fromrt && rate <= tort) { selrow = x; break; }
             }
@@ -1382,7 +1386,8 @@ namespace Improvar
             sql += "group by a.barno ) y, ";
 
             sql += "(select a.prodgrpcd, ";
-            sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
             sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
             sql += "from ";
             sql += "(select prodgrpcd, effdt from ";
