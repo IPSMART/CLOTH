@@ -480,6 +480,8 @@
     <Compile Include="Models\TTXNAMT.cs" />
     <Compile Include="Models\TTXNDTL.cs" />
     <Compile Include="Models\TTXNDTL_SEARCHPANEL.cs" />
+    <Compile Include="Models\T_BALE.cs" />
+    <Compile Include="Models\T_BALE_HDR.cs" />
     <Compile Include="Models\T_BATCHDTL.cs" />
     <Compile Include="Models\T_BATCHMST.cs" />
     <Compile Include="Models\T_BATCHMST_PRICE.cs" />

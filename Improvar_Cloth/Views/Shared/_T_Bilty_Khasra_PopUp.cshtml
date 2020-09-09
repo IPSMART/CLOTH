@@ -8,7 +8,7 @@
         else if ("@Model.DefaultAction" == "A") {
             // $('form :input:enabled:visible:not([readonly]):first').focus();
         }
-        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('T_BiltyR_Mutia_PopUp'));
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('T_Bilty_Khasra_PopUp'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
     });
 </script>
@@ -22,14 +22,14 @@
             @Html.ValidationSummary(true)
             <div class="grid_title">
                 <div class="col-md-8">
-                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_BiltyR_Mutia_PopUp');" />
+                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_Bilty_Khasra_PopUp');" />
                     <img src="~/Image/search.png" title="Help" style="height: 20px;width:20px;margin-top: 1px;" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height:22px;"><b>Pending Details</b></center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:205px;">
-                    <table id="T_BiltyR_Mutia_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1000px;">
+                    <table id="T_Bilty_Khasra_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1000px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
@@ -49,9 +49,9 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes();" })
-                                            @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BLAUTONO, new { id = "BLAUTONO_R_POPUP_" + i })
-                                            @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BALEYR, new { id = "BALEY_R_POPUP_" + i })
+                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked, new { id = "chkid_K_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes();" })
+                                            @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BLAUTONO, new { id = "BLAUTONO_K_POPUP_" + i })
+                                            @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BALEYR, new { id = "BALEY_K_POPUP_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].SLNO, new { id = "SLNO_POPUP" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
