@@ -1732,7 +1732,7 @@ namespace Improvar
             sql += "select a.GOCD,a.GONM ";
             sql += "from " + scm + ".M_GODOWN a, " + scm + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
-            if (valsrch.retStr() != "") sql += "and ( upper(a.GOCD) like '%" + valsrch + "%' or upper(a.GONM) like '%" + valsrch + "%' ) ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.GOCD) = '" + valsrch + "' ) ";
             sql += "order by a.GOCD,a.GONM";
             DataTable tbl = SQLquery(sql);
             if (val.retStr() == "" || tbl.Rows.Count > 1)
@@ -2136,9 +2136,9 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["itstyle"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"] + " </td></tr>");
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code";
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No.";
                 return Generate_help(hdr, SB.ToString());
             }
             else
