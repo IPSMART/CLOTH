@@ -21,9 +21,6 @@ namespace Improvar.ViewModels
         public string DRCR { get; set; }
         public string SLNM { get; set; }
         public string REGMOBILE { get; set; }
-        public short STARTNO { get; set; }
-        
-
 
 
 
