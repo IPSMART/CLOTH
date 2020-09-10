@@ -1194,7 +1194,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
+         
         public ActionResult AddRowINVCD(ItemMasterEntry VE, int COUNT, string TAG)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -1374,6 +1374,7 @@ namespace Improvar.Controllers
             {
                 try
                 {
+                    System.Web.HttpPostedFileBase file = Request.Files["user_image_data"];
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
                         //checking bar code grid contain distinct value
@@ -1948,6 +1949,10 @@ namespace Improvar.Controllers
             var result = Tuple.Create(doc, doc1);
             return result;
         }
-
+        public ActionResult UploadImages(string ImageStr,string ImageName,string ImageDesc)
+        {
+            SA
+            return Content("Hook");
+        }
     }
 }
