@@ -184,5 +184,7 @@ namespace Improvar.Models
         public double? TOTDISCAMT { get; set; }
         public string ALL_GSTPER { get; set; }
         public string PRODGRPGSTPER { get; set; }
+        [StringLength(4)]
+        public string BALEYR { get; set; }
     }
 }

@@ -155,5 +155,7 @@ namespace Improvar.ViewModels
         public string PRTBARCODE { get; set; }
         public string CLRBARCODE { get; set; }
         public string SZBARCODE { get; set; }
+        [StringLength(4)]
+        public string BALEYR { get; set; }
     }
 }

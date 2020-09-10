@@ -322,6 +322,11 @@
             message_value = "TXNSLNO";
             return false;
         }
+        if ($("#ITGRPCD").val() == "") {
+            msgInfo("Please enter/select Item Group Code !");
+            message_value = "ITGRPCD";
+            return false;
+        }
         if ($("#MTRLJOBCD").val() == "") {
             msgInfo("Please enter Material Job Code !");
             message_value = "MTRLJOBCD";
@@ -330,6 +335,11 @@
         if ($("#ITCD").val() == "") {
             msgInfo("Please enter Item Code !");
             message_value = "ITCD";
+            return false;
+        }
+        if ($("#QNTY").val() == "0") {
+            msgInfo("Quantity should not be zero(0) !");
+            message_value = "QNTY";
             return false;
         }
         var FLAGMTR = $("#FLAGMTR").val();
@@ -345,6 +355,11 @@
                 message_value = "FLAGMTR";
                 return false;
             }
+        }
+        if ($("#HSNCODE").val() == "") {
+            msgInfo("Please enter HSN Code !");
+            message_value = "HSNCODE";
+            return false;
         }
         var SLNO = $("#SLNO").val();
         var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
@@ -1326,6 +1341,19 @@
                                     </datalist>
                                 </div>
                             </div>
+                            @if (Model.MENU_PARA == "PB")
+                            {
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", @title = "WPPER" } })
+                                    </div>
+                                </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.T_TXN.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", @title = "RPPER" } })
+                                        </div>
+                                    </div>
+                            }
                         </div>
 
                         <div class="row">
@@ -1430,19 +1458,7 @@
                                         </div>
                                     </div>
                                 }
-                                @if (Model.MENU_PARA == "PB")
-                                {
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.T_TXN.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", @title = "WPPER" } })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.T_TXN.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", @title = "RPPER" } })
-                                        </div>
-                                    </div>
-                                }
+                               
                                 @*<div class="col-md-8">
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBarCode" value="Get BarCode Detail" title="Click to Get BarCode Detail" />
                                     </div>*@
@@ -1655,7 +1671,8 @@
                                         <div class="col-md-8">
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
-                                            </div>
+                                                @Html.HiddenFor(model => model.BALEYR, new { id = "BALEYR" })
+                                             </div>
                                         </div>
                                     }
                                     <div class="col-md-1">
@@ -1915,6 +1932,11 @@
             message_value = "TXNSLNO";
             return false;
         }
+        if ($("#ITGRPCD").val() == "") {
+            msgInfo("Please enter/select Item Group Code !");
+            message_value = "ITGRPCD";
+            return false;
+        }
         if ($("#MTRLJOBCD").val() == "") {
             msgInfo("Please enter Material Job Code !");
             message_value = "MTRLJOBCD";
@@ -1923,6 +1945,11 @@
         if ($("#ITCD").val() == "") {
             msgInfo("Please enter Item Code !");
             message_value = "ITCD";
+            return false;
+        }
+        if ($("#QNTY").val() == "0") {
+            msgInfo("Quantity should not be zero(0) !");
+            message_value = "QNTY";
             return false;
         }
         var FLAGMTR = $("#FLAGMTR").val();
@@ -1938,6 +1965,11 @@
                 message_value = "FLAGMTR";
                 return false;
             }
+        }
+        if ($("#HSNCODE").val() == "") {
+            msgInfo("Please enter HSN Code !");
+            message_value = "HSNCODE";
+            return false;
         }
         var BARCODE = $("#BARCODE").val();
         var TXNSLNO = $("#TXNSLNO").val();
