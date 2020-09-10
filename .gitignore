@@ -3,4 +3,6 @@
 ################################################################################
 
 /.vs
+/.vs/Improvar_Cloth
 /packages
+/Improvar_Cloth/obj/Debug

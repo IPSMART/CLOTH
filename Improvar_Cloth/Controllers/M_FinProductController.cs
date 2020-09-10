@@ -1951,8 +1951,11 @@ namespace Improvar.Controllers
         }
         public ActionResult UploadImages(string ImageStr,string ImageName,string ImageDesc)
         {
-            SA
-            return Content("Hook");
+            var extension = Path.GetExtension(ImageName);
+            string filename ="I".retRepname()+ extension;
+            var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
+           
+            return Content(link);
         }
     }
 }

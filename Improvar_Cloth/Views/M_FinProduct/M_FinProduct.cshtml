@@ -1478,7 +1478,7 @@
                         data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + $('#ImageDesc').val(),
                         success: function (result) {
                             $("#WaitingMode").hide();
-                            var ty = 0;
+                            console.log(result);
                         },
                         error: function (XMLHttpRequest, textStatus, errorThrown) {
                             $("#WaitingMode").hide();
