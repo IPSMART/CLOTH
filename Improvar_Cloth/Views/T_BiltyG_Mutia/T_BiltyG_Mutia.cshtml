@@ -239,6 +239,7 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_BILTY_HDR.AUTONO, new { id = "AUTONO" })

@@ -480,45 +480,29 @@ namespace Improvar.Controllers
         {
             try
             {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 Cn.getQueryString(VE);
                 using (var transaction = DB.Database.BeginTransaction())
                 {
-                    DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
+                    DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
                     T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                     if (par1 == "*#*")
                     {
-                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO).ToString());
+                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO));
                     }
                     else
                     {
-                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO).ToString(), par1);
+                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO), par1);
                     }
                     DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
                     DB.SaveChanges();
                     transaction.Commit();
+                    return Content("1");
                 }
-                using (var transaction = DB.Database.BeginTransaction())
-                {
-                    DBF.Database.ExecuteSqlCommand("lock table " + CommVar.FinSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
-                    T_CNTRL_HDR TCH1 = new T_CNTRL_HDR();
-                    if (par1 == "*#*")
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.FinSchema(UNQSNO));
-                    }
-                    else
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.FinSchema(UNQSNO), par1);
-                    }
-                    DBF.Entry(TCH1).State = System.Data.Entity.EntityState.Modified;
-                    DBF.SaveChanges();
-                    transaction.Commit();
-                }
-                return Content("1");
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
         }
