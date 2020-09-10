@@ -67,7 +67,6 @@ namespace Improvar.Controllers
 
                         VE.IndexKey = (from p in DB.T_BALE_HDR
                                        join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                                       //join s in DB.T_PROGMAST on p.AUTONO equals (s.AUTONO)
                                        orderby q.DOCDT, q.DOCNO
                                        where XYZ.Contains(q.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
                                        select new IndexKey() { Navikey = p.AUTONO }).ToList();
@@ -198,10 +197,10 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str = "";
                 str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm  ";
-                str += " from " + Scm + ".T_BALE a," + Scm + ".M_GODOWN b ";
-                str += " where  a.autono='" + TBH.AUTONO + "' and a.gocd=b.gocd ";
+                str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.pageno,d.itnm||' '||d.styleno itstyle,e.prefno,e.prefdt  ";
+                str += " from " + Scm + ".T_BALE a," + Scm + ".M_GODOWN b " + Scm + ".T_TXNDTL c," + Scm + ".M_SITEM d," + Scm + ".T_TXN e  ";
+                str += " where a.blautono=c.autono(+) and c.itcd=d.itcd(+) and a.blautono=e.autono(+) a.autono='" + TBH.AUTONO + "' and a.gocd=b.gocd ";
                 str += "order by a.slno ";
-
                 DataTable TBILTYKHASRAtbl = Master_Help.SQLquery(str);
                 VE.TBILTYKHASRA = (from DataRow dr in TBILTYKHASRAtbl.Rows
                               select new TBILTYKHASRA()
@@ -216,10 +215,6 @@ namespace Improvar.Controllers
                                   GOCD = dr["gocd"].retStr(),
                                   GONM = dr["gonm"].retStr(),
                               }).OrderBy(s => s.SLNO).ToList();
-                //for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
-                //{
-                //    VE.TBILTYKHASRA[i].RSLNO = (VE.STRTNO + Convert.ToInt32(i + 1)).retInt();
-                //}
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
@@ -492,45 +487,29 @@ namespace Improvar.Controllers
         {
             try
             {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 Cn.getQueryString(VE);
                 using (var transaction = DB.Database.BeginTransaction())
                 {
-                    DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
+                    DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
                     T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                     if (par1 == "*#*")
                     {
-                        TCH = Cn.T_CONTROL_HDR(VE.T_BALE_HDR.AUTONO, CommVar.CurSchema(UNQSNO).ToString());
+                        TCH = Cn.T_CONTROL_HDR(VE.T_BALE_HDR.AUTONO, CommVar.CurSchema(UNQSNO));
                     }
                     else
                     {
-                        TCH = Cn.T_CONTROL_HDR(VE.T_BALE_HDR.AUTONO, CommVar.CurSchema(UNQSNO).ToString(), par1);
+                        TCH = Cn.T_CONTROL_HDR(VE.T_BALE_HDR.AUTONO, CommVar.CurSchema(UNQSNO), par1);
                     }
                     DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
                     DB.SaveChanges();
                     transaction.Commit();
+                    return Content("1");
                 }
-                using (var transaction = DB.Database.BeginTransaction())
-                {
-                    DBF.Database.ExecuteSqlCommand("lock table " + CommVar.FinSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
-                    T_CNTRL_HDR TCH1 = new T_CNTRL_HDR();
-                    if (par1 == "*#*")
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_BALE_HDR.AUTONO, CommVar.FinSchema(UNQSNO));
-                    }
-                    else
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_BALE_HDR.AUTONO, CommVar.FinSchema(UNQSNO), par1);
-                    }
-                    DBF.Entry(TCH1).State = System.Data.Entity.EntityState.Modified;
-                    DBF.SaveChanges();
-                    transaction.Commit();
-                }
-                return Content("1");
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
         }
@@ -715,7 +694,7 @@ namespace Improvar.Controllers
 
                         if (VE.DefaultAction == "A")
                         {
-                            ContentFlg = "1" + " (Issue No. " + DOCNO + ")~" + TBHDR.AUTONO;
+                            ContentFlg = "1" + " (Issue No. " + DOCCD + DOCNO + ")~" + TBHDR.AUTONO;
                         }
                         else if (VE.DefaultAction == "E")
                         {

@@ -1113,71 +1113,71 @@
                         </div>
                         @if (Model.MENU_PARA == "F")
                         {
-                        <div class="row">
-                            @*<div class="col-md-6">
+                            <div class="row">
+                                @*<div class="col-md-6">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Product Type")
+                                            <b style="color:Red;">*</b>
+                                        </div>
+                                    </div>*@
+                                @*<div class="col-md-7">
+                                        <div class="editor-field">
+                                            <select id="protyp" name="protyp" class="form-control">
+                                                <option value="0" selected="selected">====Select====</option>
+                                                @foreach (var i in Model.ProductType)
+                                                {
+                                                    if (Model.DefaultAction == "A" && Model.M_SITEM == null)
+                                                    {
+                                                        <option value="@i.value">@i.text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (Model.M_SITEM.PRODUCTTYPE == i.value)
+                                                        {
+                                                            <option value="@i.value" selected="selected">@i.text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@i.value">@i.text</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>*@
+
+                                <div class="col-md-6" style="margin-right:-1px;">
                                     <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Product Type")
-                                        <b style="color:Red;">*</b>
+                                        @Html.Label("", "Gender")
                                     </div>
-                                </div>*@
-                            @*<div class="col-md-7">
+                                </div>
+                                <div class="col-md-7">
                                     <div class="editor-field">
-                                        <select id="protyp" name="protyp" class="form-control">
-                                            <option value="0" selected="selected">====Select====</option>
-                                            @foreach (var i in Model.ProductType)
-                                            {
-                                                if (Model.DefaultAction == "A" && Model.M_SITEM == null)
+                                        @Html.DropDownListFor(model => model.M_SITEM.GENDER, new SelectList(Model.Gender, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
+                                        @*<select id="gender" name="gender" class="form-control">
+                                                <option value="0" selected="selected">====Select====</option>
+                                                @foreach (var i in Model.Gender)
                                                 {
-                                                    <option value="@i.value">@i.text</option>
-                                                }
-                                                else
-                                                {
-                                                    if (Model.M_SITEM.PRODUCTTYPE == i.value)
-                                                    {
-                                                        <option value="@i.value" selected="selected">@i.text</option>
-                                                    }
-                                                    else
+                                                    if (Model.DefaultAction == "A" && Model.M_SITEM == null)
                                                     {
                                                         <option value="@i.value">@i.text</option>
                                                     }
+                                                    else
+                                                    {
+                                                        if (Model.M_SITEM.GENDER == i.value)
+                                                        {
+                                                            <option value="@i.value" selected="selected">@i.text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@i.value">@i.text</option>
+                                                        }
+                                                    }
                                                 }
-                                            }
-                                        </select>
+                                            </select>*@
                                     </div>
-                                </div>*@
-                         
-                            <div class="col-md-6" style="margin-right:-1px;">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Gender")
                                 </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.M_SITEM.GENDER, new SelectList(Model.Gender, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
-                                    @*<select id="gender" name="gender" class="form-control">
-                                            <option value="0" selected="selected">====Select====</option>
-                                            @foreach (var i in Model.Gender)
-                                            {
-                                                if (Model.DefaultAction == "A" && Model.M_SITEM == null)
-                                                {
-                                                    <option value="@i.value">@i.text</option>
-                                                }
-                                                else
-                                                {
-                                                    if (Model.M_SITEM.GENDER == i.value)
-                                                    {
-                                                        <option value="@i.value" selected="selected">@i.text</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="@i.value">@i.text</option>
-                                                    }
-                                                }
-                                            }
-                                        </select>*@
-                                </div>
-                            </div>
-                        </div>}
+                            </div>}
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -1367,18 +1367,18 @@
                         <div class="col-lg-4">
                             @if (Model.DefaultAction != "A")
                             {
-                            <div class="row">
-                                <div class="col-lg-3" style="width:auto">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Item Bar Code")
+                                <div class="row">
+                                    <div class="col-lg-3" style="width:auto">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Item Bar Code")
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-5">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.ITEM_BARCODE, new { htmlAttributes = new { @class = "form-control", id = "ITEM_BARCODE", @TabIndex = -1, @placeholder = "Item Bar Code", @readonly = "readonly" } })
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-5">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.ITEM_BARCODE, new { htmlAttributes = new { @class = "form-control", id = "ITEM_BARCODE", @TabIndex = -1, @placeholder = "Item Bar Code", @readonly = "readonly" } })
-                                    </div>
-                                </div>
-                            </div>
                             }
                         </div>
                     </div>
@@ -1414,8 +1414,80 @@
                         </div>
                     </div>
                 </div>
-
             </div>
+            <div class="row" id="divUploadImage">
+                @if (Model.UploadImages != null)
+                {
+                    foreach (var v in Model.UploadImages)
+                    {
+                        <div class="col-lg-4">
+                            <div class="thumbnail">
+                                <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger">X</button>
+                                <a href="@v.DOC_FILE" target="_blank">
+                                    <img src="@v.DOC_FILE" alt="" style="width:100%">
+                                    <div class="caption">
+                                        @v.DOC_DESC
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+                @*<div class="col-lg-4">
+                    <div class="thumbnail">
+                        <a href="https://www.w3schools.com/w3images/lights.jpg" target="_blank">
+                            <img src="https://www.w3schools.com/w3images/lights.jpg" alt="Fjords" style="width:100%">
+                            <div class="caption">
+                                <p>Kurti</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>*@
+        
+            <div class="row">
+                <input type="hidden" id="ImageName" value="" />
+                <input type="hidden" id="ImageStr" value="" />
+                <div class="col-lg-1"><input type="text" id="ImageDesc" value="" /></div> 
+                <div class="col-lg-3"><input type="file" class="atextBoxFor" name="Imageupload" accept="image/*" onchange="fileCheck1(this);" /></div>
+                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadImage();"></div> 
+            </div>             
+            <script>
+                function fileCheck1(id) {
+                    debugger;
+                    var fileUpload = $(id).get(0);
+                    var filesSelected = fileUpload.files;
+                    if (filesSelected.length > 0) {
+                        var fileToLoad = filesSelected[0];
+                        document.getElementById("ImageName").value = fileToLoad.name;
+                        var fileReader = new FileReader();
+                        fileReader.onload = function (fileLoadedEvent) {
+                            document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
+                            //$("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
+                        };
+                        fileReader.readAsDataURL(fileToLoad);
+                        console.log(fileToLoad);
+                    }
+                }
+
+                function UploadImage() {
+                    $.ajax({
+                        type: 'POST',
+                        url: "@Url.Action("UploadImages", PageControllerName )",
+                        beforesend: $("#WaitingMode").show(),
+                        data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + $('#ImageDesc').val(),
+                        success: function (result) {
+                            $("#WaitingMode").hide();
+                            console.log(result);
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            $("#WaitingMode").hide();
+                            msgError(XMLHttpRequest.responseText);
+                            $("body span h1").remove(); $("#msgbody_error style").remove();
+                        }
+                    });
+                }
+            </script>
         </div>
 
     }
