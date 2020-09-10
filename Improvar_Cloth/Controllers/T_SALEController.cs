@@ -861,6 +861,14 @@ namespace Improvar.Controllers
             try
             {
                 TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                if (VE.MENU_PARA == "PB")
+                {
+                    //use barhelp
+                }
+                else
+                {
+                    //use getstock
+                }
                 var str = masterHelp.BARCODE_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -1798,16 +1806,15 @@ namespace Improvar.Controllers
                     string docbarcode = ""; string UNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO);
                     string sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='" + TTXN.DOCCD + "'";
                     DataTable dt = masterHelp.SQLquery(sql);
-                    if (dt != null && dt.Rows.Count > 0)
-                    {
-                        docbarcode = dt.Rows[0]["docbarcode"].retStr();
+                    if (dt != null && dt.Rows.Count > 0) docbarcode = dt.Rows[0]["docbarcode"].retStr();
+                    if (VE.DefaultAction == "A")
+                    { 
                         T_CNTRL_HDR_UNIQNO TCHUNIQNO = new T_CNTRL_HDR_UNIQNO();
                         TCHUNIQNO.CLCD = TTXN.CLCD;
                         TCHUNIQNO.AUTONO = TTXN.AUTONO;
                         TCHUNIQNO.UNIQNO = UNIQNO;
                         dbsql = masterHelp.RetModeltoSql(TCHUNIQNO);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                        //transactionBarcode = TranBarcodeGenerate(TTXN.DOCCD, docbarcode, TCHUNIQNO.UNIQNO, 1);
                     }
                     string lbatchini = "";
                     sql = "select lbatchini from " + CommVar.FinSchema(UNQSNO) + ".m_loca where loccd='" + CommVar.Loccd(UNQSNO) + "' and compcd='" + CommVar.Compcd(UNQSNO) + "'";
@@ -1928,11 +1935,8 @@ namespace Improvar.Controllers
                             //TTXNDTL.CLASS1CD = VE.TTXNDTL[i].CLASS1CD;
                             dbsql = masterHelp.RetModeltoSql(TTXNDTL);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
                         }
                     }
-
-
 
                     COUNTER = 0;
                     if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
@@ -1947,7 +1951,7 @@ namespace Improvar.Controllers
                                 TBATCHMST.DTAG = TTXN.DTAG;
                                 TBATCHMST.TTAG = TTXN.TTAG;
                                 TBATCHMST.SLNO = (COUNTER + 1).retShort();
-                                if (VE.MENU_PARA == "PB" && VE.T_TXN.BARGENTYPE == "E" && VE.TBATCHDTL[i].BARGENTYPE == "E")
+                                if (VE.MENU_PARA == "PB" && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
                                     TBATCHMST.BARNO = TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, TBATCHMST.SLNO);
                                 }
@@ -2022,7 +2026,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.MILLNM = VE.TBATCHDTL[i].MILLNM;
                                 TBATCHDTL.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
                                 //TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALEYR;
-                                //TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
+                                TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
                                 TBATCHDTL.RECPROGAUTONO = VE.TBATCHDTL[i].RECPROGAUTONO;
                                 TBATCHDTL.RECPROGLOTNO = VE.TBATCHDTL[i].RECPROGLOTNO;
                                 TBATCHDTL.RECPROGSLNO = VE.TBATCHDTL[i].RECPROGSLNO;
