@@ -1954,8 +1954,9 @@ namespace Improvar.Controllers
             var extension = Path.GetExtension(ImageName);
             string filename ="I".retRepname()+ extension;
             var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
-           
-            return Content(link);
+            //var link = Cn.SaveImage(ImageStr, "c://ipsmart/" + filename);
+
+            return Content("/UploadDocuments/" + filename);
         }
     }
 }

@@ -1434,7 +1434,7 @@
                     }
                 }
             </div>
-                @*<div class="col-lg-4">
+            @*<div class="col-lg-4">
                     <div class="thumbnail">
                         <a href="https://www.w3schools.com/w3images/lights.jpg" target="_blank">
                             <img src="https://www.w3schools.com/w3images/lights.jpg" alt="Fjords" style="width:100%">
@@ -1444,17 +1444,16 @@
                         </a>
                     </div>
                 </div>*@
-        
+
             <div class="row">
                 <input type="hidden" id="ImageName" value="" />
                 <input type="hidden" id="ImageStr" value="" />
-                <div class="col-lg-1"><input type="text" id="ImageDesc" value="" /></div> 
+                <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" /></div>
                 <div class="col-lg-3"><input type="file" class="atextBoxFor" name="Imageupload" accept="image/*" onchange="fileCheck1(this);" /></div>
-                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadImage();"></div> 
-            </div>             
+                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadImage();"></div>
+            </div>
             <script>
                 function fileCheck1(id) {
-                    debugger;
                     var fileUpload = $(id).get(0);
                     var filesSelected = fileUpload.files;
                     if (filesSelected.length > 0) {
@@ -1463,22 +1462,33 @@
                         var fileReader = new FileReader();
                         fileReader.onload = function (fileLoadedEvent) {
                             document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
-                            //$("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
                         };
                         fileReader.readAsDataURL(fileToLoad);
-                        console.log(fileToLoad);
                     }
                 }
 
                 function UploadImage() {
+                    var ImageDesc = $('#ImageDesc').val();
                     $.ajax({
                         type: 'POST',
                         url: "@Url.Action("UploadImages", PageControllerName )",
                         beforesend: $("#WaitingMode").show(),
-                        data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + $('#ImageDesc').val(),
+                        data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
                         success: function (result) {
                             $("#WaitingMode").hide();
-                            console.log(result);
+                            var htm = '';
+                            htm += '<div class="col-lg-4" id="y7">';
+                            htm += '       <div class="thumbnail">';
+                            htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick=$("#y7").remove() >X</button>';
+                            htm += '           <a href="' + result + '" target="_blank">';
+                            htm += '                <img src="' + result + '" alt="" style="width:100%">';
+                            htm += '                <div class="caption">';
+                            htm += '                   ' + ImageDesc;
+                            htm += '          </div>';
+                            htm += '      </a>';
+                            htm += '  </div>';
+                            htm += '</div>';
+                            $("#divUploadImage").append(htm);
                         },
                         error: function (XMLHttpRequest, textStatus, errorThrown) {
                             $("#WaitingMode").hide();

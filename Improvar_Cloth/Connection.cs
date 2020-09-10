@@ -3466,10 +3466,12 @@ namespace Improvar
                     {
                         return sPath;
                     }
-                    System.IO.File.Delete(sPath); //Delete file if it  exist
+                    System.IO.File.Delete(sPath);
                 }
+                //byte[] imageBytes = Encoding.ASCII.GetBytes(DBImgString);
+                DBImgString = DBImgString.Replace(" ", "+");
                 byte[] imageBytes = Convert.FromBase64String(DBImgString);
-                System.IO.File.WriteAllBytes(sPath, imageBytes);
+                File.WriteAllBytes(sPath, imageBytes);
                 return sPath;
             }
             catch (Exception ex)
