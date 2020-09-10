@@ -67,7 +67,6 @@ namespace Improvar.Controllers
 
                         VE.IndexKey = (from p in DB.T_BALE_HDR
                                        join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                                       //join s in DB.T_PROGMAST on p.AUTONO equals (s.AUTONO)
                                        orderby q.DOCDT, q.DOCNO
                                        where XYZ.Contains(q.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
                                        select new IndexKey() { Navikey = p.AUTONO }).ToList();
@@ -198,10 +197,10 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str = "";
                 str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm  ";
-                str += " from " + Scm + ".T_BALE a," + Scm + ".M_GODOWN b ";
-                str += " where  a.autono='" + TBH.AUTONO + "' and a.gocd=b.gocd ";
+                str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.pageno,d.itnm||' '||d.styleno itstyle,e.prefno,e.prefdt  ";
+                str += " from " + Scm + ".T_BALE a," + Scm + ".M_GODOWN b " + Scm + ".T_TXNDTL c," + Scm + ".M_SITEM d," + Scm + ".T_TXN e  ";
+                str += " where a.blautono=c.autono(+) and c.itcd=d.itcd(+) and a.blautono=e.autono(+) a.autono='" + TBH.AUTONO + "' and a.gocd=b.gocd ";
                 str += "order by a.slno ";
-
                 DataTable TBILTYKHASRAtbl = Master_Help.SQLquery(str);
                 VE.TBILTYKHASRA = (from DataRow dr in TBILTYKHASRAtbl.Rows
                               select new TBILTYKHASRA()
@@ -216,10 +215,6 @@ namespace Improvar.Controllers
                                   GOCD = dr["gocd"].retStr(),
                                   GONM = dr["gonm"].retStr(),
                               }).OrderBy(s => s.SLNO).ToList();
-                //for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
-                //{
-                //    VE.TBILTYKHASRA[i].RSLNO = (VE.STRTNO + Convert.ToInt32(i + 1)).retInt();
-                //}
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
@@ -715,7 +710,7 @@ namespace Improvar.Controllers
 
                         if (VE.DefaultAction == "A")
                         {
-                            ContentFlg = "1" + " (Issue No. " + DOCNO + ")~" + TBHDR.AUTONO;
+                            ContentFlg = "1" + " (Issue No. " + DOCCD + DOCNO + ")~" + TBHDR.AUTONO;
                         }
                         else if (VE.DefaultAction == "E")
                         {
