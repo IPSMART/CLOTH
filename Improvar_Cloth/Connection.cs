@@ -1372,7 +1372,25 @@ namespace Improvar
             //=============================================end cheking===================================================
             return ViewClass;
         }
-
+        public object CheckPark(object ViewClass, string MNUDET, string loc, string com, string schema, string path, string userid)
+        {
+            //=======================================park cheking=====================================================
+            INI Handel_ini = new INI();
+            var MenuID = MNUDET.Split('~')[0];
+            var Menuindex = MNUDET.Split('~')[1];
+            string[] keys = Handel_ini.GetEntryNames(userid, path);
+            if (keys.Length > 0)
+            {
+                if (keys[0].Length > 0)
+                {
+                    string id = MenuID + Menuindex + loc + com + schema;
+                    string i = Array.Find(keys, element => element.StartsWith(id, StringComparison.Ordinal));
+                    ViewClass.GetType().GetProperty("VisiblePark").SetValue(ViewClass, i == null ? false : true);
+                }
+            }
+            //=============================================end cheking===================================================
+            return ViewClass;
+        }
         public string ConvertNumbertoWords(long number)
         {
             if (number == 0) return "zero";

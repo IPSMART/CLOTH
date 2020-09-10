@@ -1,0 +1,96 @@
+﻿@model Improvar.ViewModels.TransactionKhasraEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $(".sl_bom_grid").prop("disabled", false);
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            // $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('T_Bilty_Khasra_PopUp'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<script>
+    $("#popup").ready(function () { $("#dragclass").draggable({ cursor: "move" }); if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") { modeView(); } });
+</script>
+<div id="dragclass" style="overflow-y:auto;max-height:330px;height:auto;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;left:5%;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" style="height: 20px;margin-top: 1px;" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_Bilty_Khasra_PopUp');" />
+                    <img src="~/Image/search.png" title="Help" style="height: 20px;width:20px;margin-top: 1px;" />
+                </div>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height:22px;"><b>Pending Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:205px;">
+                    <table id="T_Bilty_Khasra_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1000px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width: 27px;">SL No.</th>
+                                <th class="" style="width:100px;">LR No</th>
+                                <th class="" style="width:100px;">LR Date</th>
+                                <th class="" style="width:100px;">Bale No</th>
+                                <th class="" style="width: 100px;">Bill No</th>
+                                <th class="" style="width:55px;">Bill Date</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.TBILTYKHASRA_POPUP != null)
+                            {
+                                for (int i = 0; i <= Model.TBILTYKHASRA_POPUP.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked, new { id = "chkid_K_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes();" })
+                                            @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BLAUTONO, new { id = "BLAUTONO_K_POPUP_" + i })
+                                            @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BALEYR, new { id = "BALEY_K_POPUP_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].SLNO, new { id = "SLNO_POPUP" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].LRNO, new { id = "LRNO_POPUP" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].LRDT, new { id = "LRDT_POPUP" + i, @class = " atextBoxFor ", maxlength = 60, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].BALENO, new { id = "BALENO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].PREFNO, new { id = "PREFNO_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].PREFDT, new { id = "PREFDT_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+    </div>
+    <div class="row" style="padding:5px;text-align:center;">
+        <div class="col-md-10">
+            <div class="editor-label" style="margin-top: 6px;">
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-label" style="margin-top: 6px;">
+                <input type="button" class="btn btn-success" id="btnCloseRMPM" value="Procced" onclick="SelectPendingLRNO();" />
+                <input type="button" class="btn btn-danger" id="btnCancelRMPM" value="Cancel" onclick="CancelLRNO();" />
+            </div>
+        </div>
+    </div>
+</div>

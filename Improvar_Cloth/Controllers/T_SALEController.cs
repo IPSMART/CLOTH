@@ -212,7 +212,9 @@ namespace Improvar.Controllers
                                 INI INIF = new INI();
                                 INIF.DeleteKey(Session["UR_ID"].ToString(), parkID, Server.MapPath("~/Park.ini"));
                             }
-                            VE = (TransactionPackingSlipEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+                            //VE = (TransactionPackingSlipEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+                            VE = (TransactionPackingSlipEntry)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COM, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+
                         }
                     }
                     else
@@ -229,6 +231,7 @@ namespace Improvar.Controllers
             catch (Exception ex)
             {
                 TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                Cn.SaveException(ex, "");
                 VE.DefaultView = false;
                 VE.DefaultDay = 0;
                 ViewBag.ErrorMessage = ex.Message;
@@ -326,7 +329,9 @@ namespace Improvar.Controllers
                                     DISCTYPE = dr["DISCTYPE"].retStr(),
                                     DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
                                     TDDISCRATE = dr["TDDISCRATE"].retDbl(),
+                                    TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
                                     TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
+                                    SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
                                     SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
                                     SCMDISCRATE = dr["SCMDISCRATE"].retDbl(),
                                     STKTYPE = dr["STKTYPE"].retStr(),
@@ -368,9 +373,11 @@ namespace Improvar.Controllers
                                   DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
                                   DISCRATE = dr["DISCRATE"].retDbl(),
                                   DISCAMT = dr["DISCAMT"].retDbl(),
+                                  TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
                                   TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
                                   TDDISCRATE = dr["TDDISCRATE"].retDbl(),
                                   TDDISCAMT = dr["TDDISCAMT"].retDbl(),
+                                  SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
                                   SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
                                   SCMDISCRATE = dr["SCMDISCRATE"].retDbl(),
                                   SCMDISCAMT = dr["SCMDISCAMT"].retDbl(),
@@ -489,31 +496,39 @@ namespace Improvar.Controllers
         }
         public ActionResult SearchPannelData(TransactionPackingSlipEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
         {
-            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO);
-            Cn.getQueryString(VE);
-            List<DocumentType> DocumentType = new List<DocumentType>();
-            DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
-            string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
-            string sql = "";
-
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt ";
-            sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ";
-            sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
-            if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
-            if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
-            if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
-            if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
-            sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
-            sql += "order by docdt, docno ";
-            DataTable tbl = masterHelp.SQLquery(sql);
-
-            System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
-            for (int j = 0; j <= tbl.Rows.Count - 1; j++)
+            try
             {
-                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO);
+                Cn.getQueryString(VE);
+                List<DocumentType> DocumentType = new List<DocumentType>();
+                DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
+                string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
+                string sql = "";
+
+                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt ";
+                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ";
+                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
+                if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
+                if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
+                if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
+                if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
+                sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
+                sql += "order by docdt, docno ";
+                DataTable tbl = masterHelp.SQLquery(sql);
+
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
+                for (int j = 0; j <= tbl.Rows.Count - 1; j++)
+                {
+                    SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                }
+                return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
             }
-            return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
         public ActionResult GetSubLedgerDetails(string val, string Code)
         {
@@ -669,17 +684,69 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        //public ActionResult GetItemDetails(string val, string Code)
+        //{
+        //    try
+        //    {
+        //        var str = masterHelp.ITCD_help(val, "", Code);
+        //        if (str.IndexOf("='helpmnu'") >= 0)
+        //        {
+        //            return PartialView("_Help2", str);
+        //        }
+        //        else
+        //        {
+        //            return Content(str);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message + ex.InnerException);
+        //    }
+        //}
         public ActionResult GetItemDetails(string val, string Code)
         {
             try
             {
-                var str = masterHelp.ITCD_help(val, "", Code);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string ITGRPCD = data[0].retStr() == "" ? "" : data[0].retStr().retSqlformat();
+                string DOCDT = data[1].retStr();
+                if (DOCDT == "")
+                {
+                    return Content("Please Select Document Date");
+                }
+                string TAXGRPCD = data[2].retStr();
+                string GOCD = data[3].retStr() == "" ? "" : data[3].retStr().retSqlformat();
+                string PRCCD = data[4].retStr();
+                string MTRLJOBCD = data[5].retStr() == "" ? "" : data[5].retStr().retSqlformat();
+                string BARNO = data[6].retStr() == "" ? "" : data[6].retStr().retSqlformat();
+                double RATE = data[7].retDbl();
+                var str = masterHelp.ITCD_help(val, "", data[0].retStr());
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
                 }
                 else
                 {
+                    string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
+                    var tax_data = salesfunc.GetBarHelp(DOCDT, GOCD, BARNO, val.retStr().retSqlformat(), MTRLJOBCD, "", ITGRPCD, "", PRCCD, TAXGRPCD);
+                    if (tax_data != null && tax_data.Rows.Count > 0)
+                    {
+                        PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                        if (PRODGRPGSTPER != "")
+                        {
+                            ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE);
+                            if (ALL_GSTPER.retStr() != "")
+                            {
+                                var gst = ALL_GSTPER.Split(',').ToList();
+                                GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
+                            }
+                        }
+                    }
+
+                    str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
+                    str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
+                    str += "^GSTPER=^" + GSTPER + Cn.GCS();
                     return Content(str);
                 }
             }
@@ -794,6 +861,14 @@ namespace Improvar.Controllers
             try
             {
                 TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                if (VE.MENU_PARA == "PB")
+                {
+                    //use barhelp
+                }
+                else
+                {
+                    //use getstock
+                }
                 var str = masterHelp.BARCODE_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -1144,6 +1219,7 @@ namespace Improvar.Controllers
                                   x.FLAGMTR,
                                   x.HSNCODE,
                                   x.PRODGRPGSTPER,
+                                  x.BALENO,
                               } into P
                               select new TTXNDTL
                               {
@@ -1177,6 +1253,7 @@ namespace Improvar.Controllers
                                   //AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                                   HSNCODE = P.Key.HSNCODE,
                                   PRODGRPGSTPER = P.Key.PRODGRPGSTPER,
+                                  BALENO = P.Key.BALENO,
                               }).ToList();
 
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
@@ -1218,31 +1295,31 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetAllGstper(string PRODGRPGSTPER, double RATE, string ITCD, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
-        {
-            try
-            {
-                string gstper = "";
-                if (PRODGRPGSTPER.retStr() != "")
-                {
-                    var tax_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr().retSqlformat(), ITCD.retStr().retSqlformat(), "", MTRLJOBCD.retStr().retSqlformat(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
-                    if (tax_data != null && tax_data.Rows.Count > 0)
-                    {
-                        PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+        //public ActionResult GetAllGstper(string PRODGRPGSTPER, double RATE, string ITCD, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
+        //{
+        //    try
+        //    {
+        //        string gstper = "";
+        //        if (PRODGRPGSTPER.retStr() != "")
+        //        {
+        //            var tax_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr().retSqlformat(), ITCD.retStr().retSqlformat(), "", MTRLJOBCD.retStr().retSqlformat(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+        //            if (tax_data != null && tax_data.Rows.Count > 0)
+        //            {
+        //                PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
 
-                    }
-                    gstper = salesfunc.retGstPer(PRODGRPGSTPER.retStr(), RATE.retDbl());
-                }
+        //            }
+        //            gstper = salesfunc.retGstPer(PRODGRPGSTPER.retStr(), RATE.retDbl());
+        //        }
 
-                return Content(gstper);
+        //        return Content(gstper);
 
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message + ex.InnerException);
+        //    }
+        //}
         public ActionResult OPEN_AMOUNT(TransactionPackingSlipEntry VE, string AUTO_NO, int A_T_NOS, double A_T_QNTY, double A_T_CURR_AMT, double A_T_AMT, double A_T_TAXABLE, double A_T_IGST_AMT, double A_T_CGST_AMT, double A_T_SGST_AMT, double A_T_CESS_AMT, double A_T_DUTY_AMT, double A_T_NET_AMT, double IGST_PER, double CGST_PER, double SGST_PER, double CESS_PER, double DUTY_PER)
         {
             try
@@ -1380,67 +1457,81 @@ namespace Improvar.Controllers
         }
         public ActionResult AddDOCRow(TransactionPackingSlipEntry VE)
         {
-            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-            var doctP = (from i in DB1.MS_DOCCTG
-                         select new DocumentType()
-                         {
-                             value = i.DOC_CTG,
-                             text = i.DOC_CTG
-                         }).OrderBy(s => s.text).ToList();
-            if (VE.UploadDOC == null)
+            try
             {
-                List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
-                UploadDOC MLI = new UploadDOC();
-                MLI.DocumentType = doctP;
-                MLocIFSC1.Add(MLI);
-                VE.UploadDOC = MLocIFSC1;
-            }
-            else
-            {
-                List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
-                for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
+                ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                var doctP = (from i in DB1.MS_DOCCTG
+                             select new DocumentType()
+                             {
+                                 value = i.DOC_CTG,
+                                 text = i.DOC_CTG
+                             }).OrderBy(s => s.text).ToList();
+                if (VE.UploadDOC == null)
                 {
+                    List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
                     UploadDOC MLI = new UploadDOC();
-                    MLI = VE.UploadDOC[i];
                     MLI.DocumentType = doctP;
                     MLocIFSC1.Add(MLI);
+                    VE.UploadDOC = MLocIFSC1;
                 }
-                UploadDOC MLI1 = new UploadDOC();
-                MLI1.DocumentType = doctP;
-                MLocIFSC1.Add(MLI1);
-                VE.UploadDOC = MLocIFSC1;
+                else
+                {
+                    List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
+                    for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
+                    {
+                        UploadDOC MLI = new UploadDOC();
+                        MLI = VE.UploadDOC[i];
+                        MLI.DocumentType = doctP;
+                        MLocIFSC1.Add(MLI);
+                    }
+                    UploadDOC MLI1 = new UploadDOC();
+                    MLI1.DocumentType = doctP;
+                    MLocIFSC1.Add(MLI1);
+                    VE.UploadDOC = MLocIFSC1;
+                }
+                VE.DefaultView = true;
+                return PartialView("_UPLOADDOCUMENTS", VE);
             }
-            VE.DefaultView = true;
-            return PartialView("_UPLOADDOCUMENTS", VE);
-
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
         public ActionResult DeleteDOCRow(TransactionPackingSlipEntry VE)
         {
-            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-            var doctP = (from i in DB1.MS_DOCCTG
-                         select new DocumentType()
-                         {
-                             value = i.DOC_CTG,
-                             text = i.DOC_CTG
-                         }).OrderBy(s => s.text).ToList();
-            List<UploadDOC> LOCAIFSC = new List<UploadDOC>();
-            int count = 0;
-            for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
+            try
             {
-                if (VE.UploadDOC[i].chk == false)
+                ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                var doctP = (from i in DB1.MS_DOCCTG
+                             select new DocumentType()
+                             {
+                                 value = i.DOC_CTG,
+                                 text = i.DOC_CTG
+                             }).OrderBy(s => s.text).ToList();
+                List<UploadDOC> LOCAIFSC = new List<UploadDOC>();
+                int count = 0;
+                for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
                 {
-                    count += 1;
-                    UploadDOC IFSC = new UploadDOC();
-                    IFSC = VE.UploadDOC[i];
-                    IFSC.DocumentType = doctP;
-                    LOCAIFSC.Add(IFSC);
+                    if (VE.UploadDOC[i].chk == false)
+                    {
+                        count += 1;
+                        UploadDOC IFSC = new UploadDOC();
+                        IFSC = VE.UploadDOC[i];
+                        IFSC.DocumentType = doctP;
+                        LOCAIFSC.Add(IFSC);
+                    }
                 }
+                VE.UploadDOC = LOCAIFSC;
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_UPLOADDOCUMENTS", VE);
             }
-            VE.UploadDOC = LOCAIFSC;
-            ModelState.Clear();
-            VE.DefaultView = true;
-            return PartialView("_UPLOADDOCUMENTS", VE);
-
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
         public ActionResult cancelRecords(TransactionPackingSlipEntry VE, string par1)
         {
@@ -1485,25 +1576,32 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ParkRecord(FormCollection FC, TransactionPackingSlipEntry stream, string menuID, string menuIndex)
+        public ActionResult ParkRecord(FormCollection FC, TransactionPackingSlipEntry stream, string MNUDET, string UNQSNO)
         {
             try
             {
-                Connection cn = new Connection();
-                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO).ToString() + "*" + DateTime.Now;
+                if (stream.T_TXN.DOCCD.retStr() != "")
+                {
+                    stream.T_CNTRL_HDR.DOCCD = stream.T_TXN.DOCCD.retStr();
+                }
+                var menuID = MNUDET.Split('~')[0];
+                var menuIndex = MNUDET.Split('~')[1];
+                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
                 ID = ID.Replace(" ", "_");
                 string Userid = Session["UR_ID"].ToString();
                 INI Handel_ini = new INI();
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 string JR = javaScriptSerializer.Serialize(stream);
-                Handel_ini.IniWriteValue(Userid, ID, cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
+                Handel_ini.IniWriteValue(Userid, ID, Cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
                 return Content("1");
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message);
             }
         }
@@ -1516,6 +1614,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return ex.Message;
             }
         }
@@ -1707,16 +1806,15 @@ namespace Improvar.Controllers
                     string docbarcode = ""; string UNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO);
                     string sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='" + TTXN.DOCCD + "'";
                     DataTable dt = masterHelp.SQLquery(sql);
-                    if (dt != null && dt.Rows.Count > 0)
-                    {
-                        docbarcode = dt.Rows[0]["docbarcode"].retStr();
+                    if (dt != null && dt.Rows.Count > 0) docbarcode = dt.Rows[0]["docbarcode"].retStr();
+                    if (VE.DefaultAction == "A")
+                    { 
                         T_CNTRL_HDR_UNIQNO TCHUNIQNO = new T_CNTRL_HDR_UNIQNO();
                         TCHUNIQNO.CLCD = TTXN.CLCD;
                         TCHUNIQNO.AUTONO = TTXN.AUTONO;
                         TCHUNIQNO.UNIQNO = UNIQNO;
                         dbsql = masterHelp.RetModeltoSql(TCHUNIQNO);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                        //transactionBarcode = TranBarcodeGenerate(TTXN.DOCCD, docbarcode, TCHUNIQNO.UNIQNO, 1);
                     }
                     string lbatchini = "";
                     sql = "select lbatchini from " + CommVar.FinSchema(UNQSNO) + ".m_loca where loccd='" + CommVar.Loccd(UNQSNO) + "' and compcd='" + CommVar.Compcd(UNQSNO) + "'";
@@ -1837,11 +1935,8 @@ namespace Improvar.Controllers
                             //TTXNDTL.CLASS1CD = VE.TTXNDTL[i].CLASS1CD;
                             dbsql = masterHelp.RetModeltoSql(TTXNDTL);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
                         }
                     }
-
-
 
                     COUNTER = 0;
                     if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
@@ -1856,7 +1951,7 @@ namespace Improvar.Controllers
                                 TBATCHMST.DTAG = TTXN.DTAG;
                                 TBATCHMST.TTAG = TTXN.TTAG;
                                 TBATCHMST.SLNO = (COUNTER + 1).retShort();
-                                if (VE.MENU_PARA == "PB" && VE.T_TXN.BARGENTYPE == "E" && VE.TBATCHDTL[i].BARGENTYPE == "E")
+                                if (VE.MENU_PARA == "PB" && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
                                     TBATCHMST.BARNO = TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, TBATCHMST.SLNO);
                                 }
@@ -1931,7 +2026,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.MILLNM = VE.TBATCHDTL[i].MILLNM;
                                 TBATCHDTL.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
                                 //TBATCHDTL.BALEYR = VE.TBATCHDTL[i].BALEYR;
-                                //TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
+                                TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
                                 TBATCHDTL.RECPROGAUTONO = VE.TBATCHDTL[i].RECPROGAUTONO;
                                 TBATCHDTL.RECPROGLOTNO = VE.TBATCHDTL[i].RECPROGLOTNO;
                                 TBATCHDTL.RECPROGSLNO = VE.TBATCHDTL[i].RECPROGSLNO;
@@ -2096,6 +2191,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(ex.Message + ex.InnerException);

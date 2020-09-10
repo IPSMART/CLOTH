@@ -1190,7 +1190,8 @@ namespace Improvar
             sql += "group by a.barno ) y, ";
 
             sql += "(select a.prodgrpcd, ";
-            sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
             sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
             sql += "from ";
             sql += "(select prodgrpcd, effdt from ";
@@ -1237,6 +1238,8 @@ namespace Improvar
         public string retGstPer(string prodgrpgstper, double rate = 0)
         {
             //Searchstr value like listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179))
+            //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
+
             double fromrt = 0, tort = 0; int selrow = -1;
             string[] mgstrate = new string[5];
             string rtval = "0,0,0"; //igstper,cgst,sgst
@@ -1245,7 +1248,8 @@ namespace Improvar
             string[] mrates = prodgrpgstper.Split(Convert.ToChar(SP)).ToArray();
             for (int x = 0; x <= mrates.Count() - 1; x++)
             {
-                mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+                //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+                mgstrate = mrates[x].Split('~').ToArray();
                 fromrt = mgstrate[0].retDbl(); tort = mgstrate[1].retDbl();
                 if (rate >= fromrt && rate <= tort) { selrow = x; break; }
             }
@@ -1382,7 +1386,8 @@ namespace Improvar
             sql += "group by a.barno ) y, ";
 
             sql += "(select a.prodgrpcd, ";
-            sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            //sql += "listagg(b.fromrt||chr(181)||b.tort||chr(181)||b.igstper||chr(181)||b.cgstper||chr(181)||b.sgstper,chr(179)) ";
+            sql += "listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179)) ";
             sql += "within group (order by a.prodgrpcd) as prodgrpgstper ";
             sql += "from ";
             sql += "(select prodgrpcd, effdt from ";
@@ -1430,9 +1435,9 @@ namespace Improvar
             sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
             sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ";
             sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
-            sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null and ";
-            if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")";
-            sql += "1 - nvl(b.bnos, 0) > 0 ";
+            sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null  ";
+            if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")  ";
+            sql += " and 1 - nvl(b.bnos, 0) > 0 ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
@@ -1495,7 +1500,7 @@ namespace Improvar
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendKhasra(string docdt, string skipautono = "", string schema = "")
+        public DataTable getPendKhasra(string docdt, string blautono = "", string skipautono = "", string schema = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1505,7 +1510,7 @@ namespace Improvar
             string sql = "";
             sql = "";
             sql += " select a.autono, a.docno, a.docdt, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
-            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty, ";
+            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty,h.itnm||' '||h.styleno itstyle ";
             sql += " '' shade, g.pageno, g.pageslno, ";
             sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos from ";
             sql += "  (select distinct a.autono, d.docdt, d.docno, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
@@ -1524,6 +1529,7 @@ namespace Improvar
             sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and ";
             sql += " a.blautono = g.autono(+) and a.blslno = g.slno(+) and ";
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and nvl(b.bnos, 0) > 0 ";
+            if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }

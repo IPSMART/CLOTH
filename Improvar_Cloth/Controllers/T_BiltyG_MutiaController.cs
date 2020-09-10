@@ -320,7 +320,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT, string MUTSLCD)
+        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT)
         {
             Cn.getQueryString(VE);
             try
@@ -340,12 +340,12 @@ namespace Improvar.Controllers
                 VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
                               select new TBILTY
                               {
-                                  BLAUTONO = dr["blautono"].retStr(),
+                                  BLAUTONO = dr["autono"].retStr(),
                                   BALENO = dr["baleno"].retStr(),
                                   LRNO = dr["lrno"].retStr(),
-                                  LRDT = dr["lrdt"].retStr(),
+                                  LRDT = dr["lrdt"].retDateStr(),
                                   PREFNO = dr["prefno"].retStr(),
-                                  PREFDT = dr["prefdt"].retStr(),
+                                  PREFDT = dr["prefdt"].retDateStr(),
                                   BALEYR = dr["baleyr"].retStr()
                               }).Distinct().ToList();
 
@@ -480,45 +480,29 @@ namespace Improvar.Controllers
         {
             try
             {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 Cn.getQueryString(VE);
                 using (var transaction = DB.Database.BeginTransaction())
                 {
-                    DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
+                    DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
                     T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                     if (par1 == "*#*")
                     {
-                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO).ToString());
+                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO));
                     }
                     else
                     {
-                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO).ToString(), par1);
+                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO), par1);
                     }
                     DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
                     DB.SaveChanges();
                     transaction.Commit();
+                    return Content("1");
                 }
-                using (var transaction = DB.Database.BeginTransaction())
-                {
-                    DBF.Database.ExecuteSqlCommand("lock table " + CommVar.FinSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode");
-                    T_CNTRL_HDR TCH1 = new T_CNTRL_HDR();
-                    if (par1 == "*#*")
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.FinSchema(UNQSNO));
-                    }
-                    else
-                    {
-                        TCH1 = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.FinSchema(UNQSNO), par1);
-                    }
-                    DBF.Entry(TCH1).State = System.Data.Entity.EntityState.Modified;
-                    DBF.SaveChanges();
-                    transaction.Commit();
-                }
-                return Content("1");
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
         }
@@ -592,15 +576,14 @@ namespace Improvar.Controllers
                         TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
                         string Ddate = Convert.ToString(TCH.DOCDT);
                         TBHDR.CLCD = CommVar.ClientCode(UNQSNO);
-                        string auto_no = ""; string Month = "";
+                        string auto_no = ""; string Month = "", DOCNO = "", DOCCD = "";
                         if (VE.DefaultAction == "A")
                         {
                             TBHDR.EMD_NO = 0;
-                            TCH.DOCCD = VE.T_CNTRL_HDR.DOCCD;
-                            TCH.DOCNO = Cn.MaxDocNumber(TCH.DOCCD, Ddate);
-                            //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
-                            DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TCH.DOCNO), TCH.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
-                            auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TCH.DOCNO, TCH.DOCCD, Ddate);
+                            DOCCD = VE.T_CNTRL_HDR.DOCCD;
+                            DOCNO = Cn.MaxDocNumber(DOCCD, Ddate);
+                            DOCPATTERN = Cn.DocPattern(Convert.ToInt32(DOCNO), DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
+                            auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), DOCNO, DOCCD, Ddate);
                             TBHDR.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                             Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                         }
@@ -610,8 +593,8 @@ namespace Improvar.Controllers
                             TCH.DOCNO = VE.T_CNTRL_HDR.DOCNO;
                             TBHDR.AUTONO = VE.T_BILTY_HDR.AUTONO;
                             Month = VE.T_CNTRL_HDR.MNTHCD;
-                            TBHDR.EMD_NO = Convert.ToByte((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
-                            DOCPATTERN = VE.T_CNTRL_HDR.DOCNO;
+                            var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_BILTY_HDR.AUTONO select p.EMD_NO).Max();
+                            if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToByte(MAXEMDNO + 1); }
                         }
 
                         TBHDR.MUTSLCD = VE.T_BILTY_HDR.MUTSLCD;
@@ -636,7 +619,7 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), TCH.DOCNO, null, null, null, null, TBHDR.MUTSLCD);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(),DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -645,7 +628,7 @@ namespace Improvar.Controllers
 
                         for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
                         {
-                            if (VE.TBILTY[i].SLNO != 0 && VE.TBILTY[i].Checked==true)
+                            if (VE.TBILTY[i].SLNO != 0)
                             {
                                 COUNTER = COUNTER + 1;
                                 T_BILTY TBILTY = new T_BILTY();
@@ -697,7 +680,7 @@ namespace Improvar.Controllers
 
                         if (VE.DefaultAction == "A")
                         {
-                            ContentFlg = "1" + " (Issue No. " + TCH.DOCNO + ")~" + TBHDR.AUTONO;
+                            ContentFlg = "1" + " (Issue No. " + DOCCD + DOCNO + ")~" + TBHDR.AUTONO;
                         }
                         else if (VE.DefaultAction == "E")
                         {

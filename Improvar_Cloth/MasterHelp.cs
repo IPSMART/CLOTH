@@ -1732,7 +1732,7 @@ namespace Improvar
             sql += "select a.GOCD,a.GONM ";
             sql += "from " + scm + ".M_GODOWN a, " + scm + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
-            if (valsrch.retStr() != "") sql += "and ( upper(a.GOCD) like '%" + valsrch + "%' or upper(a.GONM) like '%" + valsrch + "%' ) ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.GOCD) = '" + valsrch + "' ) ";
             sql += "order by a.GOCD,a.GONM";
             DataTable tbl = SQLquery(sql);
             if (val.retStr() == "" || tbl.Rows.Count > 1)
@@ -2125,7 +2125,7 @@ namespace Improvar
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
-            sql += "select c.BARNO,a.ITGRPCD,d.ITGRPNM,a.ITCD,a.ITNM,a.STYLENO,c.COLRCD,e.COLRNM,e.CLRBARCODE,c.SIZECD,f.SIZENM,f.SZBARCODE,a.UOMCD,a.HSNCODE,a.itnm||' '||a.styleno itstyle ";
+            sql += "select c.BARNO,a.ITGRPCD,d.ITGRPNM,a.ITCD,a.ITNM,a.STYLENO,c.COLRCD,e.COLRNM,e.CLRBARCODE,c.SIZECD,f.SIZENM,f.SZBARCODE,a.UOMCD,NVL(D.HSNCODE,a.HSNCODE) HSNCODE,a.itnm||' '||a.styleno itstyle ";
             sql += "from " + scm + ".M_SITEM a, " + scm + ".M_CNTRL_HDR b, " + scm + ".M_SITEM_BARCODE c, " + scm + ".M_GROUP d, " + scm + ".M_COLOR e, " + scm + ".M_SIZE f ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N'and a.ITCD=c.ITCD(+) and a.ITGRPCD=d.ITGRPCD(+) and c.COLRCD=e.COLRCD(+) and c.SIZECD=f.SIZECD(+) ";
             if (valsrch.retStr() != "") sql += "and ( upper(c.BARNO) = '" + valsrch + "' ) ";
@@ -2136,9 +2136,9 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["itstyle"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"] + " </td></tr>");
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code";
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No.";
                 return Generate_help(hdr, SB.ToString());
             }
             else
