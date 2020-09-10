@@ -155,5 +155,7 @@ namespace Improvar.Models
         public string CLRBARCODE { get; set; }        
         public string SZBARCODE { get; set; }
         public string BARGENTYPE { get; set; }
+        [StringLength(4)]
+        public string BALEYR { get; set; }
     }
 }
