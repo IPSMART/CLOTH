@@ -1,5 +1,8 @@
-﻿using Improvar.Models;
+﻿using CrystalDecisions.CrystalReports.Engine;
+using Improvar.Models;
 using Improvar.ViewModels;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,6 +10,8 @@ using System.Data.Entity.Validation;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using iTextSharp.text.html;
+using iTextSharp.text.html.simpleparser;
 
 namespace Improvar.Controllers
 {
@@ -28,7 +33,53 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    Cn.GenerateBarcode("00100000490180015", "");
+                    var pgSize = new iTextSharp.text.Rectangle(210f, 297f);
+                    var doc = new iTextSharp.text.Document(pgSize, 0.1f, 0.1f, 0.1f, 0.1f);
+                    try
+                    {
+                        string pdfFilePath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments")  ;
+                        PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(pdfFilePath + "/Default.pdf", FileMode.Create));
+                        doc.Open();
+
+                        doc.NewPage();
+                        Paragraph paragraph = new Paragraph("Getting Started ITextSharp.");
+
+                        string imageURL = Server.MapPath(".") + "/image2.jpg";
+                        var rt = Cn.GenerateBarcode("2001PW00567009M", "image");
+                        iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(rt);
+                        //Resize image depend upon your need
+
+                        jpg.ScaleToFit(140f, 120f);
+                        //Give space before image
+
+                        jpg.SpacingBefore = 10f;
+                        //Give some space after the image
+
+                        jpg.SpacingAfter = 1f;
+                        jpg.Alignment = Element.ALIGN_LEFT;
+                        doc.Add(paragraph);
+
+                        doc.Add(jpg);
+
+                        doc.NewPage();
+                        doc.Add(new Paragraph("Hello World on a new page!"));
+
+
+                    }
+
+                    catch (Exception ex)
+
+                    { }
+
+                    finally
+
+                    {
+
+                        doc.Close();
+
+                    }
+
+                    Cn.GenerateBarcode("2001PW005670099", "string");
                     //ViewBag.formname = "Finish Product/Design Master";
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
