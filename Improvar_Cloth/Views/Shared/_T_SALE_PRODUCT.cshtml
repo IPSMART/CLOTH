@@ -82,7 +82,7 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="sticky-cell" style="left:40px">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITGRPNM, new { id = "B_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })

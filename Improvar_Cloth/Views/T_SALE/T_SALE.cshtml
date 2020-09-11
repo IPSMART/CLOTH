@@ -45,10 +45,19 @@
             modeView();
         }
         else if ("@Model.DefaultAction" == "E") {
-
+            if ('@Model.MENU_PARA' == "SB") {
+                $('#PACKSLIP_HELP').hide("");
+                $("#LINKDOCNO").attr("readonly", "readonly");
+            }
+            else {
+                GetAllMtrljobcd();
+            }
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
+            if ('@Model.MENU_PARA' != "SB") {
+                GetAllMtrljobcd();
+            }
         }
         $("#WaitingMode").hide();
     });
@@ -104,12 +113,29 @@
     });
 </script>
 <script>
+    function GetAllMtrljobcd() {
+        var GridRowMain = $("#exampleLT > tbody > tr").length;
+        var allcode = "";
+        for (j = 0; j <= GridRowMain - 1; j++) {
+            if (document.getElementById("MaterialJobChk_" + j).checked == true) {
+                if (allcode == "") {
+                    allcode += "'" + $("#MaterialJobCode_" + j).val() + "'";
+                }
+                else {
+                    allcode += ",'" + $("#MaterialJobCode_" + j).val() + "'";
+                }
+            }
+        }
+        $("#ALLMTRLJOBCD").val(allcode);
+    }
+</script>
+<script>
     debugger;
     function GetBarnoDetails(id) {
         if ("@Model.DefaultAction" != "V") {
             debugger;
             if (id == "") {
-                ClearAllTextBoxes("BARCODE");
+                ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
             }
             else {
                 if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -119,12 +145,13 @@
                 var taxgrpcd = $("#TAXGRPCD").val();
                 var gocd = $("#GOCD").val();
                 var prccd = $("#PRCCD").val();
-                var mtrljobcd = $("#MTRLJOBCD").val();
+                var mtrljobcd = $("#ALLMTRLJOBCD").val();
+                var code = docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + mtrljobcd;
                 $.ajax({
                     type: 'POST',
                     beforesend: $("#WaitingMode").show(),
                     url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
-                    data: "&val=" + id + "&DOCDT=" + docdt + "&TAXGRPCD=" + taxgrpcd + "&GOCD=" + gocd + "&PRCCD=" + prccd + "&MTRLJOBCD=" + mtrljobcd,
+                    data: "&val=" + id + "&Code=" + code,
                     success: function (result) {
                         var MSG = result.indexOf('id="_T_SALE_BARNODETAIL_GRID"');
                         if (MSG >= 0) {
@@ -140,7 +167,7 @@
                             else {
                                 $('#helpDIV').html("");
                                 msgInfo("" + result + " !");
-                                ClearAllTextBoxes("BARCODE");
+                                ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
                                 message_value = "BARCODE";
                             }
                         }
@@ -213,7 +240,7 @@
             $("#PDESIGN").val(returncolvalue(str, "PDESIGN"));
             $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
             $("#QNTY").val(returncolvalue(str, "QNTY"));
-            $("#UOM").val(returncolvalue(str, "UOM"));
+            $("#UOM").val(returncolvalue(str, "uomcd"));
             $("#NOS").val(returncolvalue(str, "NOS"));
             $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
             $("#RATE").val(returncolvalue(str, "RATE"));
@@ -474,6 +501,7 @@
         var TDDISCTYPE = $("#D_TDDISCTYPE_" + i).val();
         var SCMDISCRATE = $("#D_SCMDISCRATE_" + i).val();
         var SCMDISCTYPE = $("#D_SCMDISCTYPE_" + i).val();
+        var BALENO = $("#D_BALENO_" + i).val();
         var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         for (j = 0; j <= GridRowMain - 1; j++) {
             if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD && $("#B_MTRLJOBCD_" + j).val() == MTRLJOBCD && $("#B_ITCD_" + j).val() == ITCD && $("#B_STKTYPE_" + j).val() == STKTYPE) {
@@ -485,6 +513,7 @@
                 $("#B_TDDISCTYPE_" + j).val(TDDISCTYPE);
                 $("#B_SCMDISCRATE_" + j).val(SCMDISCRATE);
                 $("#B_SCMDISCTYPE_" + j).val(SCMDISCTYPE);
+                $("#B_BALENO_" + j).val(BALENO);
             }
         }
     }
@@ -998,6 +1027,27 @@
     }
 </script>
 <script>
+    function FillPackingSlip() {
+        if (!emptyFieldCheck("Please Select / Enter Packing Slip No. to get Packing Slip data", "LINKDOCNO")) { return false; }
+        var linkautono = $("#LINKAUTONO").val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("FillPacking_Slip", PageControllerName)",
+            data: $('form').serialize()+"&Autono=" + linkautono,
+            success: function (result) {
+                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                $("#partialdivBarCodeTab").html(res[0]);
+                $("#partialdivDetail").html(res[1]);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
     function DeleteRow() {
         $.ajax({
             type: 'POST',
@@ -1147,6 +1197,7 @@
                         </div>
 
                     </div>
+
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -1181,6 +1232,7 @@
                             @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
+
                     <div class="col-md-1" style="width:auto;">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Due Days")
@@ -1193,7 +1245,29 @@
                     </div>
 
                 </div>
-
+                @if (Model.MENU_PARA == "SB")
+                    {
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Packing Slip No.")
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.LINKDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LINKDOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetPackingSlip", PageControllerName) + "','Consignee Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetPackingSlip", PageControllerName) + "','Consignee Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD');", @placeholder = "No", maxlength = 30 } })
+                                <img src="~/Image/search.png" id="PACKSLIP_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPackingSlip", PageControllerName)','Consignee Details','LINKDOCNO','LINKDOCNO=docno=0/LINKAUTONO=autono=3','LINKAUTONO/DOCDT/SLCD')" />
+                                @Html.HiddenFor(model => model.T_TXN_LINKNO.LINKAUTONO, new { id = "LINKAUTONO" })
+                            </div>
+                        </div>
+                        @if (Model.DefaultAction == "A")
+                        {
+                        <div class="col-md-1" style="width:auto;">
+                            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetPackingSlip" value="Get Packing Slip" title="Click to Get Packing Slip" onclick="FillPackingSlip()" />
+                        </div>
+                        }
+                    </div>
+                }
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
@@ -1494,7 +1568,7 @@
                         <div class="row">
 
                             <div class="row">
-                                @if (Model.DefaultAction != "V")
+                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
                                     <div class="col-md-1">
                                         <div class="editor-label" style="margin-top: 6px;">
@@ -1504,8 +1578,8 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD')" />
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
                                         </div>
                                     </div>
                                 }
@@ -1523,7 +1597,7 @@
                                     </div>*@
                             </div>
 
-                            @if (Model.DefaultAction != "V")
+                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                             {
                                 <div class="row">
                                     <div class="col-lg-11">
@@ -1697,12 +1771,12 @@
                                                 {
                                                     <tr>
                                                         <td align="center">
-                                                            @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i })
+                                                            @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcd();" })
                                                         </td>
                                                         <td align="center">
                                                             @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
                                                             @Html.DisplayFor(model => STRC)
-                                                            @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD)
+                                                            @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
                                                         </td>
                                                         <td align="center">
                                                             @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
@@ -1712,6 +1786,9 @@
                                                                 }
                                             </table>
                                         </div>
+                                        @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
+
+
                                     </div>
                                 </div>
 
@@ -1769,7 +1846,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @if (Model.DefaultAction != "V")
+                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                             {
                                 <div>
                                     <div class="row">
@@ -2084,7 +2161,7 @@
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
         tr += '    </td>';
         tr += '    <td class="sticky-cell" style="left:40px" title="' + TXNSLNO + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].TXNSLNO" readonly="readonly" style="text-align:center;" type="text" value="' + TXNSLNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" type="text" value="' + TXNSLNO + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + ITGRPNM + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="' + ITGRPNM + '">';

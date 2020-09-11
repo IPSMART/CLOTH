@@ -18,6 +18,7 @@ namespace Improvar
     public class MasterHelp : MasterHelpFa
     {
         Connection Cn = new Connection();
+        Salesfunc salesfunc = new Salesfunc();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         public string ITCD_help(string val, string ITGTYPE, string ITGRPCD = "", string FABITCD = "", string DOC_EFF_DT = "", string JOB_CD = "")
         {
@@ -201,7 +202,7 @@ namespace Improvar
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
                 var query = (from c in DB.M_SIZE join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { SIZECD = c.SIZECD, SIZENM = c.SIZENM, SZBARCODE = c.SZBARCODE }).ToList();
-             
+
                 if (val == null)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -1836,7 +1837,7 @@ namespace Improvar
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
-            string sql = ""; 
+            string sql = "";
             string valsrch = val.retStr().ToUpper().Trim();
             sql = "";
             sql += "select a.PARTCD,a.PARTNM,a.PRTBARCODE ";
@@ -2035,8 +2036,9 @@ namespace Improvar
         }
         public string CLASS1(string val)
         {
-            try { 
-            var UNQSNO = Cn.getQueryStringUNQSNO();
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string valsrch = val.ToUpper().Trim();
                 //var query = (from c in DB.M_CLASS1 select new { CLASS1CD = c.CLASS1CD, CLASS1NM = c.CLASS1NM }).ToList();
@@ -2044,36 +2046,36 @@ namespace Improvar
                 sql += "select CLASS1CD,CLASS1NM from " + scmf + ".M_CLASS1 ";
                 if (valsrch.retStr() != "") sql += "where upper(CLASS1CD) = '" + valsrch + "'  ";
                 DataTable tbl = SQLquery(sql);
-            if (val.retStr() == "" || tbl.Rows.Count > 1)
-            {
-                System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                if (val.retStr() == "" || tbl.Rows.Count > 1)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["CLASS1NM"] + "</td><td>" + tbl.Rows[i]["CLASS1CD"] + "</td></tr>");
-                }
-                var hdr = "Class 1 Name" + Cn.GCS() + "Class 1 Code";
-                return Generate_help(hdr, SB.ToString());
-            }
-            else
-            {
-                string str = "";
-                if (tbl.Rows.Count > 0)
-                {
-                    str = ToReturnFieldValues("", tbl);
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["CLASS1NM"] + "</td><td>" + tbl.Rows[i]["CLASS1CD"] + "</td></tr>");
+                    }
+                    var hdr = "Class 1 Name" + Cn.GCS() + "Class 1 Code";
+                    return Generate_help(hdr, SB.ToString());
                 }
                 else
                 {
-                    str = "Invalid Class 1 Code ! Please Select / Enter a Valid Class 1 Code !!";
+                    string str = "";
+                    if (tbl.Rows.Count > 0)
+                    {
+                        str = ToReturnFieldValues("", tbl);
+                    }
+                    else
+                    {
+                        str = "Invalid Class 1 Code ! Please Select / Enter a Valid Class 1 Code !!";
+                    }
+                    return str;
                 }
-                return str;
             }
-        }
-                catch (Exception ex)
-                {
-                    return ex.Message + " " + ex.InnerException;
-                }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
 
-}
+        }
         public List<DISC_TYPE> DISC_TYPE()
         {
             List<DISC_TYPE> DTYP = new List<DISC_TYPE>();
@@ -2103,18 +2105,18 @@ namespace Improvar
             DataTable dt = SQLquery(sql);
             List<BL_TYPE> BL_TYPE_list = new List<BL_TYPE>();
             BL_TYPE_list = (from DataRow dr in dt.Rows
-                          select new BL_TYPE() { Text = dr["BLTYPE"].retStr(), Value = dr["BLTYPE"].retStr() }).OrderBy(s => s.Text).Distinct().ToList();
+                            select new BL_TYPE() { Text = dr["BLTYPE"].retStr(), Value = dr["BLTYPE"].retStr() }).OrderBy(s => s.Text).Distinct().ToList();
             return BL_TYPE_list;
         }
         public List<DropDown_list_StkType> STK_TYPE()
         {
             string scm = CommVar.CurSchema(UNQSNO);
             string sql = "";
-            sql += "select STKTYPE,STKNAME from "+scm+".M_stktype ORDER BY case when STKTYPE = 'F' then 1 else 2  end  ";
+            sql += "select STKTYPE,STKNAME from " + scm + ".M_stktype ORDER BY case when STKTYPE = 'F' then 1 else 2  end  ";
             DataTable dt = SQLquery(sql);
             List<DropDown_list_StkType> DropDown_list_StkType = new List<DropDown_list_StkType>();
             DropDown_list_StkType = (from DataRow dr in dt.Rows
-                            select new DropDown_list_StkType() { text = dr["STKNAME"].retStr(), value = dr["STKTYPE"].retStr() }).OrderBy(s => s.text).Distinct().ToList();
+                                     select new DropDown_list_StkType() { text = dr["STKNAME"].retStr(), value = dr["STKTYPE"].retStr() }).OrderBy(s => s.text).Distinct().ToList();
             return DropDown_list_StkType;
         }
         public string BARCODE_help(string val)
@@ -2219,6 +2221,75 @@ namespace Improvar
             string complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".png";
             if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".jpg";
             return complogo;
+        }
+        public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
+        {
+            DataTable tbl = new DataTable();
+            if (menupara == "PB")
+            {
+                val = val.retStr() == "" ? "" : val.retStr().retSqlformat();
+                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), val, "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+
+            }
+            else
+            {
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val, "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+
+            }
+
+
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"] + " </td></tr>");
+                }
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No.";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Bar Code ! Please Enter a Valid Bar Code !!";
+                }
+            }
+        }
+        public string PACKSLIPAUTONO_help(string val, string autono, string docdt, string slcd)
+        {
+
+            DataTable tbl = salesfunc.getPendingPackslip(docdt, slcd);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"].retStr().Remove(10) + " </td><td><b>" + tbl.Rows[i]["slnm"] + "</b> [" + tbl.Rows[i]["district"] + "] (" + tbl.Rows[i]["slcd"] + ") </td><td>" + tbl.Rows[i]["autono"] + " </td></tr>");
+                }
+                var hdr = "Packing Slip No." + Cn.GCS() + "Packing Slip Date" + Cn.GCS() + "Party" + Cn.GCS() + "Autono";
+                return Generate_help(hdr, SB.ToString(), "3");
+            }
+            else
+            {
+                string str1 = "";
+                if (autono.retStr() != "") str1 = "and autono = '" + autono + "' ";
+                tbl = tbl.Select("docno = '" + val + "'" + str1).CopyToDataTable();
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Packing Slip No. ! Please Enter a Valid Packing Slip No. !!";
+                }
+            }
         }
     }
 }

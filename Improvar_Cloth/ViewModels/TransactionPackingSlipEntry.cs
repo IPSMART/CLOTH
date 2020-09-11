@@ -161,5 +161,7 @@ namespace Improvar.ViewModels
         public string SZBARCODE { get; set; }
         [StringLength(4)]
         public string BALEYR { get; set; }
+        public string LINKDOCNO { get; set; }
+        public string ALLMTRLJOBCD { get; set; }
     }
 }
