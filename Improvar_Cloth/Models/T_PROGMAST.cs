@@ -38,6 +38,10 @@ namespace Improvar.Models
         public string SLCD { get; set; }
 
         [Required]
+        [StringLength(25)]
+        public string BARNO { get; set; }
+
+        [Required]
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
 
@@ -99,7 +103,6 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string SAMPLE { get; set; }
-
        
     }
 }

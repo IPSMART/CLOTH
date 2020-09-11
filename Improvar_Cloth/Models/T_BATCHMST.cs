@@ -79,6 +79,9 @@ namespace Improvar.Models
         [StringLength(30)]
         public string PDESIGN { get; set; }
 
+        [StringLength(30)]
+        public string OURDESIGN { get; set; }
+
         [StringLength(8)]
         public string HSNCODE { get; set; }
 

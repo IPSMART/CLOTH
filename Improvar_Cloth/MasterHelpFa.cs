@@ -12,6 +12,7 @@ namespace Improvar
     {
         string CS = null;
         Connection Cn = new Connection();
+        string UNQSNO = CommVar.getQueryStringUNQSNO();
 
         public string Generate_SearchPannel(string th, string tbody, string returnSEQ = "", string hiddenSEQ = "")
         {
@@ -335,8 +336,6 @@ namespace Improvar
                 }
             }
         }
-
-
         public string SLCD_help(ImprovarDB DB)
         {
             var query = (from c in DB.M_SUBLEG
@@ -558,7 +557,6 @@ namespace Improvar
         public string InsVch_Hdr(string autono, string doccd, string docno, string docdt, short emd_no = 0, string dtag = null, string class1cd = null, string class2cd = null, string autogen = null, string vl_dt = null,
                string trcd = "TR", string pay_by = null, string paid_to = null, string currcd = null, double currrt = 0, string bank_code = null, string revchg = null, string inptclaim = "Y")
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
             try
             {
@@ -604,7 +602,6 @@ namespace Improvar
         public string InsVch_Det(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, short slno, string drcr, string glcd, string slcd, double amt,
             string t_rem, string r_glcd = null, string r_slcd = null, double qty = 0, double curr_rate = 0, double curr_amt = 0, string postdt = "")
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
             try
             {
@@ -650,7 +647,6 @@ namespace Improvar
         public string InsVch_Class(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, short slno, short dslno,
             string refslcd, string class1cd, string class2cd, double amt, double curr_amt = 0, string rem1 = "")
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
             try
             {
@@ -689,10 +685,9 @@ namespace Improvar
         }
 
         public string InsVch_Bl(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, string drcr, string glcd, string slcd, string conslcd,
-            string agslcd, string class1cd, short slno, double amt, string blno, string bldt, string refno, string duedt, string vchtype, double crdays = 0, double itamt = 0,
-            string ordno = "", string orddt = "", double blamt = 0, string lrno = "", string lrdt = "", string transnm = "", string flag = "")
+                string agslcd, string class1cd, short slno, double amt, string blno, string bldt, string refno, string duedt, string vchtype, double crdays = 0, double itamt = 0,
+                string ordno = "", string orddt = "", double blamt = 0, string lrno = "", string lrdt = "", string transnm = "", string flag = "")
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
             try
             {
@@ -748,7 +743,7 @@ namespace Improvar
 
         public string InsVch_Bl_Adj(string autono, short emd_no, string dtag, short slno, string i_autono, short i_slno, double i_amt, string r_autono, short r_slno, double r_amt, double adj_amt, string flag = "")
         {
-            string bl = ""; var UNQSNO = Cn.getQueryStringUNQSNO();
+            string bl = "";
             try
             {
                 string scmf = CommVar.FinSchema(UNQSNO);
@@ -786,19 +781,20 @@ namespace Improvar
             string blno, string bldt, string hsncode, string itnm, double qnty, string uom, double amt, double igstper, double igstamt, double cgstper, double cgstamt, double sgstper, double sgstamt, double cessper, double cessamt,
             string salpur, double roamt, double blamt, double othramt = 0, string invtypecd = "", string pos = "", string agstdocno = "", string agstdocdt = "", string dncncd = "",
             string gstslnm = "", string gstno = "", string expcd = "", string shipdocno = "", string shipdocdt = "", string portcd = "", string dncnsalpur = "",
-            string conslcd = "", string exemptedtype = "", double appltaxrate = 0, string expglcd = "", string inptclaim = "", string good_serv = "", string lutno = "", string lutdt = "")
+            string conslcd = "", string exemptedtype = "", double appltaxrate = 0, string expglcd = "", string inptclaim = "")
         {
-            string bl = ""; var UNQSNO = Cn.getQueryStringUNQSNO();
+            string bl = "";
             try
             {
                 string scmf = CommVar.FinSchema(UNQSNO), clcd = CommVar.ClientCode(UNQSNO);
                 string sql = "";
 
                 string _itnm = itnm;
+                if (expcd.retStr() != "") exemptedtype = "";
 
                 sql = "insert into " + scmf + ".t_vch_gst (emd_no, clcd, dtag, ttag, autono, doccd, docno, docdt, dslno, slno, drcr, pcode, blno, bldt, hsncode, itnm, qnty, ";
                 sql = sql + "uom, amt, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, othramt, roamt, blamt, salpur, invtypecd, dncncd, agstdocno, agstdocdt, ";
-                sql = sql + "pos, gstslnm, gstno, expcd, shipdocno, shipdocdt, lutno, lutdt, portcd, dncnsalpur, conslcd, exemptedtype, appltaxrate, expglcd, inptclaim, good_serv) values (";
+                sql = sql + "pos, gstslnm, gstno, expcd, shipdocno, shipdocdt, portcd, dncnsalpur, conslcd, exemptedtype, appltaxrate, expglcd, inptclaim) values (";
                 sql = sql + emd_no;
                 sql = sql + "," + filc(clcd);
                 sql = sql + "," + filc(dtag);
@@ -840,8 +836,6 @@ namespace Improvar
                 sql = sql + "," + filc(expcd);
                 sql = sql + "," + filc(shipdocno);
                 sql = sql + "," + fild(shipdocdt);
-                sql = sql + "," + filc(lutno);
-                sql = sql + "," + fild(lutdt);
                 sql = sql + "," + filc(portcd);
                 sql = sql + "," + filc(dncnsalpur);
                 sql = sql + "," + filc(conslcd);
@@ -849,7 +843,6 @@ namespace Improvar
                 sql = sql + "," + appltaxrate;
                 sql = sql + "," + filc(expglcd);
                 sql = sql + "," + filc(inptclaim);
-                sql = sql + "," + filc(good_serv);
                 sql = sql + ")";
 
                 bl = sql;
@@ -866,7 +859,7 @@ namespace Improvar
         public string InsVch_TdsTxn(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, string blno, string bldt, string glcd, string slcd, string tdscode,
             short slno, double blamt, double tdson, double tdsper, double tdsamt, string tdsdt, string low_tds, string class1cd, string tdstcs = "")
         {
-            string bl = ""; var UNQSNO = Cn.getQueryStringUNQSNO();
+            string bl = "";
             try
             {
                 string scmf = CommVar.FinSchema(UNQSNO), clcd = CommVar.ClientCode(UNQSNO);
@@ -909,11 +902,11 @@ namespace Improvar
                 return bl;
             }
         }
+
         public string Instcntrl_hdr(string autono, string vchrmod, string modcd, string mnthcd, string doccd, string docno, string docdt, short emd_no, string dtag, string doconlyno, double vchrno,
-                string calauto = null, string vchrprefix = null, string glcd = null, string slcd = null, double docamt = 0)
+                string calauto = null, string vchrprefix = null, string glcd = null, string slcd = null, double docamt = 0, string cancel = null)
 
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
             string[] fin = CommVar.FinPeriod(UNQSNO).Split('-');
@@ -944,7 +937,7 @@ namespace Improvar
                 if (vchrmod == "A")
                 {
                     sql = "insert into " + scmf + ".t_cntrl_hdr (emd_no, clcd, dtag, ttag, autono, modcd, compcd, loccd, yr_cd, doccd, docno, docdt, doconlyno, vchrno, vchrsuffix, mnthcd, ";
-                    sql = sql + "calauto, glcd, slcd, docamt, usr_id, usr_entdt, usr_lip, usr_sip, usr_os, usr_mnm) values (";
+                    sql = sql + "calauto, glcd, slcd, docamt, cancel, usr_id, usr_entdt, usr_lip, usr_sip, usr_os, usr_mnm) values (";
                     sql = sql + emd_no;
                     sql = sql + "," + filc(clcd);
                     sql = sql + "," + filc(dtag);
@@ -965,6 +958,7 @@ namespace Improvar
                     sql = sql + "," + filc(glcd);
                     sql = sql + "," + filc(slcd);
                     sql = sql + "," + docamt;
+                    sql = sql + "," + filc(cancel);
                     sql = sql + "," + filc(uid);
                     sql = sql + ", SYSDATE ";
                     sql = sql + "," + filc(uIP);
@@ -988,79 +982,14 @@ namespace Improvar
                     sql = sql + ", glcd=" + filc(glcd);
                     sql = sql + ", slcd=" + filc(slcd);
                     sql = sql + ", docamt=" + docamt;
-                    sql = sql + ", lm_usr_id=" + filc(uid);
+                    sql = sql + ", lm_usr_id=" + filc(uIP);
                     sql = sql + ", lm_usr_entdt=SYSDATE";
                     sql = sql + ", lm_usr_lip=" + filc(uIP);
                     sql = sql + ", lm_usr_sip=" + filc(Cn.GetStaticIp());
                     sql = sql + ", lm_usr_os=" + filc(null);
                     sql = sql + ", lm_usr_mnm=" + filc(Cn.DetermineCompName(uIP));
+                    sql = sql + ", cancel=" + filc(cancel);
                     sql = sql + " where autono=" + filc(autono);
-                }
-
-                bl = sql;
-                return bl;
-            }
-
-            catch (Exception e)
-            {
-                bl = e.Message;
-                return bl;
-            }
-        }
-        public string Insmcntrl_hdr(long m_autono, string vchrmod, string modcd, string tblnm, short emd_no, string dtag, string inactive_tag)
-        {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
-            string bl = "";
-            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
-            string[] fin = CommVar.FinPeriod(UNQSNO).Split('-');
-            string YEARCD = fin[0].Substring(6).Trim();
-            string uid = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
-            string uIP = Cn.GetIp();
-            try
-            {
-                string scmf = CommVar.CurSchema(UNQSNO);
-                switch (modcd)
-                {
-                    case "F":
-                        scmf = CommVar.FinSchema(UNQSNO); break;
-                    case "I":
-                        scmf = CommVar.InvSchema(UNQSNO); break;
-                }
-                string clcd = CommVar.ClientCode(UNQSNO);
-                string sql = "";
-
-                if (vchrmod == "A")
-                {
-                    sql = "insert into " + scmf + ".m_cntrl_hdr (emd_no, clcd, dtag, ttag, m_autono, m_tblnm, inactive_tag, ";
-                    sql = sql + "usr_id, usr_entdt, usr_lip, usr_sip, usr_os, usr_mnm) values (";
-                    sql = sql + emd_no;
-                    sql = sql + "," + filc(clcd);
-                    sql = sql + "," + filc(dtag);
-                    sql = sql + "," + filc(null);
-                    sql = sql + "," + m_autono.ToString();
-                    sql = sql + "," + filc(tblnm);
-                    sql = sql + "," + filc(inactive_tag);
-                    sql = sql + "," + filc(uid);
-                    sql = sql + ", SYSDATE ";
-                    sql = sql + "," + filc(uIP);
-                    sql = sql + "," + filc(Cn.GetStaticIp());
-                    sql = sql + "," + filc(null);
-                    sql = sql + "," + filc(Cn.DetermineCompName(uIP));
-                    sql = sql + ")";
-                }
-                else
-                {
-                    sql = "update " + scmf + ".m_cntrl_hdr set ";
-                    sql = sql + "emd_no=" + emd_no;
-                    sql = sql + ", dtag=" + filc(dtag);
-                    sql = sql + ", inactive_tag=" + filc(inactive_tag);
-                    sql = sql + ", lm_usr_id=" + filc(uid);
-                    sql = sql + ", lm_usr_entdt=SYSDATE";
-                    sql = sql + ", lm_usr_lip=" + filc(uIP);
-                    sql = sql + ", lm_usr_sip=" + filc(Cn.GetStaticIp());
-                    sql = sql + ", lm_usr_os=" + filc(null);
-                    sql = sql + ", lm_usr_mnm=" + filc(Cn.DetermineCompName(uIP));
-                    sql = sql + " where m_autono=" + m_autono.ToString();
                 }
 
                 bl = sql;
@@ -1075,11 +1004,10 @@ namespace Improvar
         }
         public string InsTCntrlHdrDocPass(string autono, long slno = 1, long pass_level = 1, short emd_no = 0, string dtag = null, string authcd = null, string authrem = null)
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
             string bl = "";
             try
             {
-                string scm1 = CommVar.CurSchema(UNQSNO).ToString();
+                string scm1 = CommVar.CurSchema(UNQSNO);
                 string clcd = CommVar.ClientCode(UNQSNO);
                 string sql = "";
 
@@ -1105,32 +1033,39 @@ namespace Improvar
                 return bl;
             }
         }
-        public double slcdbal(string slcd, string glcd, string docdt = "", string class1cd = "", string skipautono = "")
+        public decimal slcdbal(string slcd = "", string glcd = "", string docdt = "", string class1cd = "", string skipautono = "")
         {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO);
             string scmf = CommVar.FinSchema(UNQSNO);
             string sql = "";
-            sql = sql + "select sum(case a.drcr when 'D' then a.amt when 'C' then a.amt*-1 end) balamt, ";
-            sql = sql + "sum(case a.drcr when 'D' then c.amt when 'C' then c.amt*-1 end) class1amt ";
-            sql = sql + "from " + scmf + ".t_vch_det a, " + scmf + ".t_vch_hdr b, " + scmf + ".t_vch_class c, " + scmf + ".t_cntrl_hdr d ";
-            sql = sql + "where a.autono=b.autono and a.autono=c.autono(+) and a.slno=c.dslno(+) and a.autono=d.autono and ";
-            sql = sql + "a.drcr in ('D','C') and  a.glcd='" + glcd + "' and a.slcd='" + slcd + "' and nvl(d.cancel,'N') = 'N' and ";
-            if (class1cd != "") sql = sql + "c.class1cd='" + class1cd + "' and ";
-            if (skipautono != "" && skipautono != null) sql = sql + "d.autono <> '" + skipautono + "' and ";
-            sql = sql + "d.compcd='" + COM + "' ";
-            if (docdt != null && docdt != "")
-            {
-                sql = sql + " and d.docdt <= to_date('" + docdt.Substring(0, 10) + "','dd/mm/yyyy') ";
-            }
 
-            double lgbal = 0;
+            if (glcd == null) glcd = "";
+            if (glcd != "") if (glcd.IndexOf("'") < 0) glcd = "'" + glcd + "'";
+            if (slcd == null) slcd = "";
+            if (slcd != "") if (slcd.IndexOf("'") < 0) slcd = "'" + slcd + "'";
+            if (class1cd == null) class1cd = "";
+            if (class1cd != "") if (class1cd.IndexOf("'") < 0) class1cd = "'" + class1cd + "'";
+
+            sql = "";
+            sql += "select sum(case a.drcr when 'D' then nvl(c.amt,a.amt) when 'C' then nvl(c.amt,a.amt)*-1 end) balamt, ";
+            sql += "sum(case a.drcr when 'D' then c.amt when 'C' then c.amt*-1 end) class1amt ";
+            sql += "from " + scmf + ".t_vch_det a, " + scmf + ".t_vch_hdr b, " + scmf + ".t_vch_class c, " + scmf + ".t_cntrl_hdr d ";
+            sql += "where a.autono=b.autono and a.autono=c.autono(+) and a.slno=c.dslno(+) and a.autono=d.autono and ";
+            sql += "a.drcr in ('D','C') and nvl(d.cancel,'N') = 'N' and ";
+            if (glcd != "") sql += "a.glcd in (" + glcd + ") and ";
+            if (slcd != "") sql += "a.slcd in (" + slcd + ") and ";
+            if (class1cd != "") sql += "c.class1cd in (" + class1cd + ") and ";
+            if (skipautono != "" && skipautono != null) sql += "d.autono <> '" + skipautono + "' and ";
+            if (docdt != null && docdt != "") sql += "d.docdt <= to_date('" + docdt.Substring(0, 10) + "','dd/mm/yyyy') and ";
+            sql += "d.compcd='" + COM + "' ";
+
+            decimal lgbal = 0;
             DataTable rsTmp = SQLquery(sql);
 
             if (rsTmp.Rows.Count > 0 && rsTmp.Rows[0]["BALAMT"].ToString() != "")
             {
-                if (class1cd != "") lgbal = Convert.ToDouble(rsTmp.Rows[0]["class1amt"]);
-                else lgbal = Convert.ToDouble(rsTmp.Rows[0]["balamt"]);
+                if (class1cd != "") lgbal = Convert.ToDecimal(rsTmp.Rows[0]["class1amt"]);
+                else lgbal = Convert.ToDecimal(rsTmp.Rows[0]["balamt"]);
             }
             return lgbal;
         }
