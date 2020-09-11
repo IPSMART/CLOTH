@@ -98,6 +98,8 @@
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
             $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#POREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
 </script>
@@ -702,7 +704,7 @@
             if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
         }
         else {
-            prodgrpgstper = $(FieldidStarting + "PRODGRPGSTPER_"+i).val();
+            prodgrpgstper = $(FieldidStarting + "PRODGRPGSTPER_" + i).val();
             rate = $(FieldidStarting + "RATE_" + i).val();
             if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
         }
@@ -717,14 +719,14 @@
                 }
                 else if (FieldidStarting == "#B_") {
 
-                    $(FieldidStarting + "GSTPER_"+i).val(sumgst);
-                    $(FieldidStarting + "ALL_GSTPER_"+i).val(allgst);
+                    $(FieldidStarting + "GSTPER_" + i).val(sumgst);
+                    $(FieldidStarting + "ALL_GSTPER_" + i).val(allgst);
                 }
                 else {
-                    $(FieldidStarting + "IGSTPER_"+i).val(parseFloat(str[0]).toFixed(2));
-                    $(FieldidStarting + "CGSTPER_"+i).val(parseFloat(str[1]).toFixed(2));
-                    $(FieldidStarting + "SGSTPER_"+i).val(parseFloat(str[2]).toFixed(2));
-                    $(FieldidStarting + "ALL_GSTPER_"+i).val(allgst);
+                    $(FieldidStarting + "IGSTPER_" + i).val(parseFloat(str[0]).toFixed(2));
+                    $(FieldidStarting + "CGSTPER_" + i).val(parseFloat(str[1]).toFixed(2));
+                    $(FieldidStarting + "SGSTPER_" + i).val(parseFloat(str[2]).toFixed(2));
+                    $(FieldidStarting + "ALL_GSTPER_" + i).val(allgst);
                 }
             }
         }
@@ -905,7 +907,7 @@
         //BillAmountCalculate();
 
     }
-   function OpenAmount() {
+    function OpenAmount() {
         var AUTO_NO = document.getElementById("AUTONO").value;
         var A_T_NOS = document.getElementById("T_NOS").value;
         var A_T_QNTY = document.getElementById("T_QNTY").value;
@@ -1350,11 +1352,11 @@
                                         @Html.EditorFor(model => model.T_TXN.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", @title = "WPPER" } })
                                     </div>
                                 </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.T_TXN.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", @title = "RPPER" } })
-                                        </div>
+                                <div class="col-md-1">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", @title = "RPPER" } })
                                     </div>
+                                </div>
                             }
                         </div>
 
@@ -1440,6 +1442,53 @@
                             </div>
 
                         </div>
+                        <div class="row">
+                            @if (Model.MENU_PARA == "PB")
+                            {
+                                <div class="col-md-5">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Purchase bill no")
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Purchase bill dt")
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "Party Order No")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.POREFNO, new { htmlAttributes = new { @class = "form-control", id = "POREFNO", maxlength = 30, @placeholder = "PREFNO" } })
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 6px;">
+                                    @Html.Label("", "Party Order dt")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.POREFDT, new { htmlAttributes = new { @class = "form-control", id = "POREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div id="BarCodeTab" class="tab-pane fade" style="margin-top: 5px;">
                         <div class="row">
@@ -1460,7 +1509,7 @@
                                         </div>
                                     </div>
                                 }
-                               
+
                                 @*<div class="col-md-8">
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetBarCode" value="Get BarCode Detail" title="Click to Get BarCode Detail" />
                                     </div>*@
@@ -1674,7 +1723,7 @@
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
                                                 @Html.HiddenFor(model => model.BALEYR, new { id = "BALEYR" })
-                                             </div>
+                                            </div>
                                         </div>
                                     }
                                     <div class="col-md-1">
