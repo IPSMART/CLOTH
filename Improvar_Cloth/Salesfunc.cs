@@ -1510,25 +1510,27 @@ namespace Improvar
             string sql = "";
             sql = "";
             sql += " select a.autono, a.docno, a.docdt, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
-            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty,h.itnm||' '||h.styleno itstyle ";
+            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty,h.itnm||' '||h.styleno itstyle, ";
             sql += " '' shade, g.pageno, g.pageslno, ";
             sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos from ";
+
             sql += "  (select distinct a.autono, d.docdt, d.docno, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
             sql += "  from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and b.txtag = 'RC' and nvl(d.cancel, 'N') = 'N' and ";
             sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and ";
             sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ) a, ";
+
             sql += " (select a.blautono, a.blslno, a.baleyr || a.baleno balenoyr, ";
             sql += " sum(case a.drcr when 'C' then 1 when 'D' then - 1 end) bnos ";
             sql += "  from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += " where a.autono = b.autono(+) and a.autono = d.autono(+) and b.txtag = 'KH' and nvl(d.cancel, 'N')= 'N' ";
             sql += " group by a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
             sql += " " + schema + ".t_txntrans e, " + schema + ".t_txn f, " + schema + ".t_txndtl g, ";
-            sql += " " + schema + ".m_sitem h, " + schema + ".m_group i, " + scmf + ".m_subleg j ";
+            sql += " " + schema + ".m_sitem h, " + schema + ".m_group i ";
             sql += " where a.blautono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
             sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and ";
             sql += " a.blautono = g.autono(+) and a.blslno = g.slno(+) and ";
-            sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and nvl(b.bnos, 0) > 0 ";
+            sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and 1-nvl(b.bnos, 0) > 0 ";
             if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;

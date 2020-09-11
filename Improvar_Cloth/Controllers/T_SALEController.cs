@@ -1759,7 +1759,6 @@ namespace Improvar.Controllers
                     //
                     _baldist = _amtdist; _baldistq = _amtdistq;
                     #endregion
-
                     if (VE.DefaultAction == "A")
                     {
                         TTXN.EMD_NO = 0;
@@ -2437,7 +2436,7 @@ namespace Improvar.Controllers
                         else
                         {
                             strbldt = TTXN.DOCDT.ToString();
-                            strblno = TCH.DOCNO;
+                            strblno = DOCPATTERN;
                         }
                         string blconslcd = TTXN.CONSLCD;
                         if (TTXN.SLCD != sslcd) blconslcd = TTXN.SLCD;
