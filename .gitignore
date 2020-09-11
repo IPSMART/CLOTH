@@ -4,3 +4,7 @@
 
 /.vs
 /packages
+/Improvar_Cloth/.vs
+/Improvar_Cloth/bin
+/Improvar_Cloth/obj/Debug
+/Improvar_Cloth/UploadDocuments
