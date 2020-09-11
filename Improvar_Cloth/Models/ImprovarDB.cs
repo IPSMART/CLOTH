@@ -15,6 +15,7 @@ namespace Improvar.Models
         {
             Database.SetInitializer<ImprovarDB>(null);
         }
+        public virtual DbSet<T_VCH_GST> T_VCH_GST { get; set; }
         public virtual DbSet<T_BALE> T_BALE { get; set; }
         public virtual DbSet<T_BALE_HDR> T_BALE_HDR { get; set; }
         public virtual DbSet<T_BILTY> T_BILTY { get; set; }

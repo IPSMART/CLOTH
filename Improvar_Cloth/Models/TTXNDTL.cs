@@ -176,6 +176,8 @@ namespace Improvar.Models
         public double? NETAMT { get; set; }
         [StringLength(8)]
         public string GLCD { get; set; }
+        [StringLength(8)]
+        public string CLASS1CD { get; set; }
         public short TXNSLNO { get; set; }
         public string MTRLJOBNM { get; set; }
         [StringLength(15)]
@@ -186,5 +188,6 @@ namespace Improvar.Models
         public string PRODGRPGSTPER { get; set; }
         [StringLength(4)]
         public string BALEYR { get; set; }
+        public double? GSTPER { get; set; }
     }
 }

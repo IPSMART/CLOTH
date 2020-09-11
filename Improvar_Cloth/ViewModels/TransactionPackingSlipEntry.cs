@@ -20,6 +20,7 @@ namespace Improvar.ViewModels
         public T_TXNPYMT T_TXNPYMT { get; set; }
         public T_TXNSTATUS T_TXNSTATUS { get; set; }
         public T_TXNTRANS T_TXNTRANS { get; set; }
+        public T_VCH_GST T_VCH_GST { get; set; }
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TBATCHDTL> TBATCHDTL { get; set; }
@@ -35,9 +36,11 @@ namespace Improvar.ViewModels
         public List<DISC_TYPE> DISC_TYPE { get; set; }
         public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
         public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
+        public string PSLCD { get; set; }
         public string SLNM { get; set; }
         public string SLAREA { get; set; }
         public string GSTNO { get; set; }
+        public string GSTSLNM { get; set; }
         public string CONSLNM { get; set; }
         public string AGSLNM { get; set; }
         public string SAGSLNM { get; set; }
@@ -48,7 +51,8 @@ namespace Improvar.ViewModels
         public bool RoundOff { get; set; }
         public string GONM { get; set; }
         public string PRCNM { get; set; }
-
+        public string TransporterName { get; set; }
+        public string POS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? A_T_CURR { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]

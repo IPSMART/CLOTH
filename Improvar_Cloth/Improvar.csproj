@@ -530,6 +530,7 @@
     <Compile Include="Models\T_TXNSTATUS.cs" />
     <Compile Include="Models\T_TXNTRANS.cs" />
     <Compile Include="Models\T_TXN_LINKNO.cs" />
+    <Compile Include="Models\T_VCH_GST.cs" />
     <Compile Include="Models\UploadDOC.cs" />
     <Compile Include="Models\USERGUIDE.cs" />
     <Compile Include="Models\USER_ACTIVITY.cs" />

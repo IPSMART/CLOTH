@@ -48,6 +48,10 @@ namespace Improvar.Models
         public string STKDRCR { get; set; }
 
         [Required]
+        [StringLength(25)]
+        public string BARNO { get; set; }
+
+        [Required]
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
 
@@ -77,9 +81,6 @@ namespace Improvar.Models
         public decimal? STKQNTY { get; set; }
 
         public decimal? RATE { get; set; }
-
-        [StringLength(25)]
-        public string BARNO { get; set; }
 
         [StringLength(1)]
         public string SAMPLE { get; set; }
