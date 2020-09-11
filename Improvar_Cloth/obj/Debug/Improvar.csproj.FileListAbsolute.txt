@@ -28,8 +28,6 @@ D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\roslyn\System.IO.FileSystem.Prim
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\roslyn\vbc.exe.config
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\roslyn\vbc.rsp
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Antlr3.Runtime.dll
-D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Bytescout.BarCode.dll
-D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Bytescout.BarCode.WPF.dll
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\ClosedXML.dll
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\CrystalDecisions.CrystalReports.Engine.dll
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\CrystalDecisions.ReportSource.dll
@@ -79,8 +77,6 @@ D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\CrystalDecisions.ReportAppServer
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\CrystalDecisions.ReportAppServer.CommonControls.dll
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\stdole.dll
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Antlr3.Runtime.pdb
-D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Bytescout.BarCode.xml
-D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\Bytescout.BarCode.WPF.xml
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\ClosedXML.pdb
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\ClosedXML.xml
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\DocumentFormat.OpenXml.xml
@@ -214,3 +210,5 @@ E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAsse
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csproj.ResolveComReference.cache
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.pdb
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAssemblyReference.cache
+D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\BarcodeLib.dll
