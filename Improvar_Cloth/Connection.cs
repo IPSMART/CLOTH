@@ -17,6 +17,8 @@ using System.Drawing;
 using Improvar.Models;
 using System.Net.Sockets;
 using Microsoft.VisualBasic;
+using BarcodeLib;
+using System.Drawing.Imaging;
 
 namespace Improvar
 {
@@ -3545,6 +3547,38 @@ namespace Improvar
             {
                 SaveException(ex, "");
                 return "";
+            }
+        }
+        public string GenerateBarcode(string Barcodestr, string Savepath = "")
+        {
+            try
+            {
+                int Length = 1000; int Height = 200; int FontSize = 40;
+                using (Barcode barcode = new Barcode())
+                {
+                    barcode.IncludeLabel = true;
+                    barcode.Alignment = AlignmentPositions.CENTER;
+                    barcode.LabelFont = new Font(FontFamily.GenericMonospace, FontSize, FontStyle.Regular);
+                    var barcodeImage = barcode.Encode(TYPE.CODE128, Barcodestr, Color.Black, Color.White, Length, Height);
+                    if (Savepath == "")
+                        Savepath = "c:/IPSMART/Barcode/" + Barcodestr + ".jpeg";
+                    if (!File.Exists(Savepath))
+                    {
+                        File.Create(Savepath).Dispose();
+                    }
+                    if (System.IO.File.Exists(Barcodestr))
+                    {
+                        System.IO.File.Delete(Barcodestr);
+                        GC.Collect();
+                    }
+                    barcodeImage.Save(Savepath, ImageFormat.Jpeg);
+                }
+                return Barcodestr;
+            }
+            catch (Exception ex)
+            {
+                SaveException(ex, "");
+                return ex.Message;
             }
         }
     }

@@ -28,6 +28,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    Cn.GenerateBarcode("00100000490180015", "");
                     //ViewBag.formname = "Finish Product/Design Master";
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
