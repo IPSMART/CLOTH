@@ -2080,7 +2080,201 @@ namespace Improvar
             }
 
         }
+        public DataTable getRepFormat(string reptype, string doccd = "", string itgrpcd = "")
+        {
+            try
+            {
+                string sql = "";
+                sql = "select a.repdesc text, a.formname value from " + CommVar.CurSchema(UNQSNO) + ".m_repformat a where a.reptype='" + reptype + "' and ";
+                if (itgrpcd != "") sql += "a.itgrpcd='" + itgrpcd + "' and ";
+                if (doccd != "") sql += "(a.itgrpcd in (select itgrpcd from " + CommVar.CurSchema(UNQSNO) + ".m_groupdoccd where doccd='" + doccd + "' ) or a.itgrpcd is null) and ";
+                sql += "(a.compcd='" + CommVar.Compcd(UNQSNO) + "' or a.compcd is null) ";
+                sql += "order by a.repdefault ";
+                DataTable tbl = SQLquery(sql);
+                return tbl;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public string retCompAddress(string gocd = "", string grpemailid = "")
+        {
+            string scm1 = CommVar.CurSchema(UNQSNO), Scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string str, sql, goadd = "";
+            string fssailicno = "";
+            if (gocd == null) gocd = "";
+            if (gocd != "")
+            {
+                sql = "select goadd1, goadd2, goadd3, gophno, gonm, fssailicno from " + scm1 + ".m_godown where gocd='" + gocd + "'";
+                DataTable tbl = SQLquery(sql);
+                if (tbl.Rows.Count > 0)
+                {
+                    goadd = tbl.Rows[0]["goadd1"].ToString() + " " + tbl.Rows[0]["goadd2"].ToString() + " " + tbl.Rows[0]["goadd3"].ToString();
+                    goadd = goadd.Trim();
+                    if (tbl.Rows[0]["gophno"].ToString() != "") goadd = goadd + " Phone : " + tbl.Rows[0]["gophno"].ToString();
+                    fssailicno = tbl.Rows[0]["fssailicno"].ToString();
+                }
+            }
 
-       
+            DataTable comptbl = retComptbl();
+
+            string compstat = "", compadd = "", locaadd = "", locastat = "", cregadd = "", stremail = "", legalname = "", corpadd = "";
+            string locacommu = "", compcommu = "", corpcommu = "";
+            string locaaddtype = "", regaddtype = "Regd Office", corpaddtype = "";
+            string mfld = "";
+            //Location Address
+            for (int f = 1; f <= 6; f++)
+            {
+                mfld = "ladd" + Convert.ToString(f).ToString();
+                if (comptbl.Rows[0][mfld].ToString() != "")
+                {
+                    compadd = compadd + comptbl.Rows[0][mfld].ToString() + " ";
+                }
+            }
+            //Registered Office Address
+            for (int f = 1; f <= 6; f++)
+            {
+                mfld = "add" + Convert.ToString(f).ToString();
+                if (comptbl.Rows[0][mfld].ToString() != "")
+                {
+                    cregadd = cregadd + comptbl.Rows[0][mfld].ToString() + " ";
+                }
+            }
+            cregadd = cregadd + " " + comptbl.Rows[0]["state"].ToString();
+            if (comptbl.Rows[0]["addtype"].retStr() != "") locaaddtype = comptbl.Rows[0]["addtype"].retStr();
+
+            //Corporate Office
+            if (comptbl.Rows[0]["linkloccd"].ToString() != "")
+            {
+                DataTable corpaddtbl = retComptbl(comptbl.Rows[0]["linkloccd"].ToString());
+                for (int f = 1; f <= 6; f++)
+                {
+                    mfld = "ladd" + Convert.ToString(f).ToString();
+                    if (corpaddtbl.Rows[0][mfld].ToString() != "")
+                    {
+                        corpadd = corpadd + corpaddtbl.Rows[0][mfld].ToString() + " ";
+                    }
+                }
+                corpadd += " " + corpaddtbl.Rows[0]["lstate"].ToString() + " [" + comptbl.Rows[0]["lstatecd"].ToString() + "]";
+                if (corpaddtbl.Rows[0]["addtype"].retStr() != "") corpaddtype = corpaddtbl.Rows[0]["addtype"].retStr();
+                corpadd = (corpaddtype == "" ? "" : corpaddtype + " : ") + corpadd;
+                corpadd = corpadd.Trim();
+
+                if (corpaddtbl.Rows[0]["phno1"].ToString() != "") corpcommu += "Phone : " + (corpaddtbl.Rows[0]["phno1std"].ToString() == "" ? "" : corpaddtbl.Rows[0]["phno1std"].ToString() + "-") + corpaddtbl.Rows[0]["phno1"].ToString();
+                if (corpaddtbl.Rows[0]["phno3"].ToString() != "") corpcommu += ", Fax : " + corpaddtbl.Rows[0]["phno3"].ToString();
+                if (corpaddtbl.Rows[0]["regemailid"].ToString() != "") corpcommu += ", email : " + corpaddtbl.Rows[0]["regemailid"].ToString();
+            }
+            //
+            if (grpemailid == "") stremail = comptbl.Rows[0]["regemailid"].ToString(); else stremail = grpemailid;
+            compadd += " " + comptbl.Rows[0]["lstate"].ToString() + " [" + comptbl.Rows[0]["lstatecd"].ToString() + "]";
+
+            if (comptbl.Rows[0]["phno1"].ToString() != "") locacommu += "Phone : " + (comptbl.Rows[0]["phno1std"].ToString() == "" ? "" : comptbl.Rows[0]["phno1std"].ToString() + "-") + comptbl.Rows[0]["phno1"].ToString();
+            if (comptbl.Rows[0]["phno3"].ToString() != "") locacommu += ", Fax : " + comptbl.Rows[0]["phno3"].ToString();
+            if (stremail != "") locacommu += ", email : " + stremail;
+
+            if (comptbl.Rows[0]["panno"].ToString() != "") compstat = "PAN # " + comptbl.Rows[0]["panno"].ToString() + " ";
+            if (comptbl.Rows[0]["cinno"].ToString() != "") compstat = compstat + "CIN # " + comptbl.Rows[0]["cinno"].ToString() + " ";
+
+            locastat = "GST # " + comptbl.Rows[0]["gstno"].ToString();
+            if (fssailicno != "") locastat = locastat + "   FSSAI LICENCE # " + fssailicno;
+
+            locaadd = (locaaddtype == "" ? "" : locaaddtype + " : ") + compadd;
+            compadd = (regaddtype == "" ? "" : regaddtype + " : ") + cregadd;
+            if (comptbl.Rows[0]["regdoffsame"].ToString() == "Y") { compadd = locaadd; compcommu = locacommu; locaadd = ""; locacommu = ""; }
+
+            if (goadd.retStr() != "") locaadd = "Godown : " + goadd;
+            if (comptbl.Rows[0]["regdoffsame"].ToString() == "Y" && goadd.retStr() == "") { compstat += " " + locastat; locastat = ""; }
+            if (comptbl.Rows[0]["propname"].ToString().retStr() != "") legalname = "Prop. " + comptbl.Rows[0]["propname"].ToString();
+
+            str = "";
+            str += "^COMPNM=^" + comptbl.Rows[0]["compnm"].ToString() + Cn.GCS();
+            str += "^COMPADD=^" + compadd + Cn.GCS();
+            str += "^COMPCOMMU=^" + compcommu + Cn.GCS();
+            str += "^COMPSTAT=^" + compstat + Cn.GCS();
+            str += "^LOCAADD=^" + locaadd + Cn.GCS();
+            str += "^LOCACOMMU=^" + locacommu + Cn.GCS();
+            str += "^LOCASTAT=^" + locastat + Cn.GCS();
+            str += "^LEGALNAME=^" + legalname + Cn.GCS();
+            str += "^EMAIL=^" + stremail + Cn.GCS();
+            str += "^CORPADD=^" + corpadd + Cn.GCS();
+            str += "^CORPCOMMU=^" + corpcommu + Cn.GCS();
+            return str;
+        }
+        public DataTable retComptbl(string loccd = "")
+        {
+            string sql = "", scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            if (loccd.retStr() != "") LOC = loccd;
+            sql += "select b.compnm, b.add1, b.add2, b.add3, b.add4, b.add5, b.add6, b.state, b.country, b.panno, b.cinno, b.propname, ";
+            sql += "nvl(a.regdoffsame,'Y') regdoffsame, a.addtype, a.linkloccd, ";
+            sql += "a.add1 ladd1, a.add2 ladd2, a.add3 ladd3, a.add4 ladd4, a.add5 ladd5, a.add6 ladd6, ";
+            sql += "a.state lstate, a.country lcountry, a.statecd lstatecd, a.phno3, a.phno1std, ";
+            sql += "a.gstno, a.phno1, a.phno2, a.regemailid ";
+            sql += "from " + scmf + ".m_loca a, " + scmf + ".m_comp b ";
+            sql += "where a.compcd='" + COM + "' and a.loccd='" + LOC + "' and a.compcd=b.compcd(+) ";
+            DataTable tbl = SQLquery(sql);
+            return tbl;
+        }
+        public DataTable retslcdCont(string slcd, string dept = "", bool getallEmailid = false)
+        {
+            string sql = "";
+            string scmf = CommVar.FinSchema(UNQSNO);
+            string sslcd = slcd;
+            string deptt = dept;
+            string modcd = CommVar.ModuleCode();
+
+            if (slcd.IndexOf(',') < 0) sslcd = "'" + slcd + "'";
+            if (dept == "")
+            {
+                if (modcd == "FIN") deptt = "F";
+                else if (modcd == "INV") deptt = "P";
+                else if (modcd == "PAY") deptt = "A";
+                else deptt = "S";
+            }
+
+            sql += "select a.slcd, nvl(c.fullname,c.slnm) slnm, nvl(b.persemail,a.regemailid) regemailid, ";
+            sql += "nvl(b.mobile1,a.regmobile) regmobile, c.gstno, c.panno, c.statecd, ";
+            sql += "c.add1, c.add2, c.add3, c.add4, c.add5, c.add6, c.add7, ";
+            sql += "c.district, c.pin, c.state, c.country, b.cperson, b.desig, ";
+            sql += "d.ifsccode, d.bankname, d.branch, d.address, d.bankactno from ";
+            sql += "(select a.slcd, a.regemailid, decode(nvl(a.regmobile,0),0,null,to_char(a.regmobile)) regmobile ";
+            sql += "from " + scmf + ".m_subleg a ) a, ";
+
+            sql += "(select a.slcd, a.cperson, a.desig, a.persemail, a.mobile1 from ";
+            sql += "(select a.slcd, a.cperson, a.desig, a.persemail, decode(nvl(a.mobile1,0),0,null,to_char(a.mobile1)) mobile1, ";
+            sql += "row_number() over (partition by a.slcd order by a.slno desc) as rn ";
+            sql += "from " + scmf + ".m_subleg_cont a ";
+            sql += "where a.dept='" + deptt + "') a ";
+            if (getallEmailid == false) sql += "where a.rn=1 ";
+            sql += ") b, ";
+
+            sql += "(select a.slcd, a.ifsccode, a.bankname, a.branch, a.address, a.bankactno from ";
+            sql += "(select a.slcd, a.ifsccode, a.bankname, a.branch, a.address, a.bankactno, ";
+            sql += "row_number() over (partition by a.slcd order by a.slno desc) as rn ";
+            sql += "from " + scmf + ".m_subleg_ifsc a ";
+            sql += "where a.defltbank='T') a ";
+            sql += "where a.rn=1 ) d, ";
+
+            sql += "" + scmf + ".m_subleg c ";
+            sql += "where a.slcd=b.slcd(+) and a.slcd=c.slcd(+) and a.slcd=d.slcd(+) ";
+            if (sslcd != "") sql += "and a.slcd in (" + sslcd + ") ";
+
+            DataTable tbl = SQLquery(sql);
+
+            return tbl;
+        }
+        public string retCompLogo()
+        {
+            string complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".png";
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".jpg";
+            return complogo;
+        }
+        public string retCompLogo1()
+        {
+            string complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "1.png";
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + "1.jpg";
+            if (!System.IO.File.Exists(complogo)) complogo = "";
+            return complogo;
+        }
     }
 }

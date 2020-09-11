@@ -269,6 +269,7 @@
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
+    <Compile Include="Controllers\T_BillPrintController.cs" />
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
@@ -1025,6 +1026,7 @@
     <Content Include="Views\T_Bilty_Khasra\T_Bilty_Khasra.cshtml" />
     <Content Include="Views\Shared\_T_Bilty_Khasra_Main.cshtml" />
     <Content Include="Views\Shared\_T_Bilty_Khasra_PopUp.cshtml" />
+    <Content Include="Views\T_BillPrint\T_BillPrint.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

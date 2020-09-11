@@ -2650,5 +2650,29 @@ namespace Improvar.Controllers
             //size szbarcode   3
             return itgrpcd.retStr() + itcd.retStr() + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
         }
+        public ActionResult Print(TransactionPackingSlipEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
+        {
+            try
+            {
+                ReportViewinHtml ind = new ReportViewinHtml();
+                ind.DOCCD = DOC_CD;
+                ind.FDOCNO = DOCNO;
+                ind.TDOCNO = DOCNO;
+                ind.FDT = DOCDT;
+                ind.TDT = DOCDT;
+                ind.MENU_PARA = "PB";
+                if (TempData["printparameter"] != null)
+                {
+                    TempData.Remove("printparameter");
+                }
+                TempData["printparameter"] = ind;
+                return Content("");
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
     }
 }

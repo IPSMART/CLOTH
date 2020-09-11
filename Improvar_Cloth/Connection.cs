@@ -1436,18 +1436,85 @@ namespace Improvar
             }
             return words;
         }
-
-        public string AmountInWords(string amount)
+        public string ConvertNumbertoWordsUSD(long number)
+        {
+            if (number == 0) return "zero";
+            if (number < 0) return "minus " + ConvertNumbertoWords(Math.Abs(number));
+            string words = "";
+            if ((number / 100000000) > 0)
+            {
+                words += ConvertNumbertoWords(number / 100000000) + " BILLION ";
+                number %= 100000000;
+            }
+            if ((number / 1000000) > 0)
+            {
+                words += ConvertNumbertoWords(number / 1000000) + " MILLION ";
+                number %= 1000000;
+            }
+            if ((number / 1000) > 0)
+            {
+                words += ConvertNumbertoWords(number / 1000) + " THOUSAND ";
+                number %= 1000;
+            }
+            if ((number / 100) > 0)
+            {
+                words += ConvertNumbertoWords(number / 100) + " HUNDRED ";
+                number %= 100;
+            }
+            if (number > 0)
+            {
+                if (words != "") words += "";
+                var unitsMap = new[]
+                {
+            "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN"
+              };
+                var tensMap = new[]
+                {
+            "ZERO", "TEN", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"
+                };
+                if (number < 20) words += unitsMap[number];
+                else
+                {
+                    words += tensMap[number / 10];
+                    if ((number % 10) > 0) words += " " + unitsMap[number % 10];
+                }
+            }
+            return words;
+        }
+        //public string AmountInWords(string amount)
+        //{
+        //    double m = Convert.ToInt64(Math.Floor(Convert.ToDouble(amount)));
+        //    double l = Convert.ToDouble(amount);
+        //    double j = (l - m) * 100;
+        //    var beforefloating = ConvertNumbertoWords(Convert.ToInt64(m));
+        //    var afterfloating = ConvertNumbertoWords(Convert.ToInt64(j));
+        //    string Content = beforefloating;
+        //    if (afterfloating != "") Content = Content + " and " + ' ' + afterfloating + ' ' + " Paise Only";
+        //    Content = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(Content.ToLower());
+        //    //Content = Content.ToUpperInvariant();
+        //    return Content;
+        //}
+        public string AmountInWords(string amount, string CURRCD = "")
         {
             double m = Convert.ToInt64(Math.Floor(Convert.ToDouble(amount)));
             double l = Convert.ToDouble(amount);
-            double j = (l - m) * 100;
-            var beforefloating = ConvertNumbertoWords(Convert.ToInt64(m));
-            var afterfloating = ConvertNumbertoWords(Convert.ToInt64(j));
-            string Content = beforefloating;
-            if (afterfloating != "") Content = Content + " and " + ' ' + afterfloating + ' ' + " Paise Only";
+            double j = (l - m) * 100; var beforefloating = ""; var afterfloating = ""; string Content = "";
+            if (CURRCD == "USD")
+            {
+                beforefloating = ConvertNumbertoWordsUSD(Convert.ToInt64(m));
+                afterfloating = ConvertNumbertoWordsUSD(Convert.ToInt64(j));
+                if (afterfloating != "") Content = beforefloating + " DOLLAR and " + ' ' + afterfloating + ' ' + " CENTS Only";
+                else Content = beforefloating + " DOLLAR Only";
+            }
+            else
+            {
+                beforefloating = ConvertNumbertoWords(Convert.ToInt64(m));
+                afterfloating = ConvertNumbertoWords(Convert.ToInt64(j));
+
+                if (afterfloating != "") Content = beforefloating + " Rupes and " + ' ' + afterfloating + ' ' + " Paise Only";
+                else Content = beforefloating + " Rupes Only";
+            }
             Content = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(Content.ToLower());
-            //Content = Content.ToUpperInvariant();
             return Content;
         }
         public DateTime getCurrentDate(string mindate, bool checkwithfinyr = true)

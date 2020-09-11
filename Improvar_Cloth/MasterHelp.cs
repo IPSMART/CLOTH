@@ -2196,6 +2196,29 @@ namespace Improvar
                 }
             }
         }
-
+        public string DOCNO_T_TXN_help(ImprovarDB DB, string doccd)
+        {
+            var query = (from c in DB.T_TXN
+                         orderby c.DOCNO, c.DOCDT
+                         where c.DOCCD == doccd
+                         select new
+                         {
+                             DOCNO = c.DOCNO,
+                             DOCDT = c.DOCDT
+                         }).ToList();
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+            for (int i = 0; i <= query.Count - 1; i++)
+            {
+                SB.Append("<tr><td>" + query[i].DOCDT + "</td><td>" + query[i].DOCNO + "</td></tr>");
+            }
+            var hdr = "Doc Date" + Cn.GCS() + "Doc No";
+            return Generate_help(hdr, SB.ToString());
+        }
+        public string retCompLogo()
+        {
+            string complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".png";
+            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".jpg";
+            return complogo;
+        }
     }
 }
