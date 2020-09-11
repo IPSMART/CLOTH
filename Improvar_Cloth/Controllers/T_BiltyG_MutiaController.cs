@@ -290,9 +290,7 @@ namespace Improvar.Controllers
             try
             {
                 var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT);
-                if (GetPendig_Data != null)
-                {
-                    DataView dv = new DataView(GetPendig_Data);
+                  DataView dv = new DataView(GetPendig_Data);
                     string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
                     GetPendig_Data = dv.ToTable(true, COL);
                     VE.TBILTY_POPUP = (from DataRow dr in GetPendig_Data.Rows
@@ -309,10 +307,15 @@ namespace Improvar.Controllers
                     {
                         VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
                     }
-                }
-
-                VE.DefaultView = true;
-                return PartialView("_T_BiltyG_Mutia_PopUp", VE);
+                    if (VE.TBILTY_POPUP.Count != 0)
+                    {
+                        VE.DefaultView = true;
+                        return PartialView("_T_BiltyG_Mutia_PopUp", VE);
+                    }
+                    else {
+                        VE.DefaultView = true;
+                        return Content("0");
+                    }
             }
             catch (Exception ex)
             {
