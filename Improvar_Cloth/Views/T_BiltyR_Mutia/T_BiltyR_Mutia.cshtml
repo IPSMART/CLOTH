@@ -155,6 +155,7 @@
                 url: "@Url.Action("GetPendingData", PageControllerName)",
                 data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
+                    if (result == 0) { return msgWarning("Record not Found! Please enter valid Document date and Mutia Name."); }
                     $("#popup").animate({ marginTop: '-10px' }, 50);
                     $("#popup").html(result);
                 },

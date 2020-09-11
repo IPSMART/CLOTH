@@ -196,10 +196,10 @@ namespace Improvar.Controllers
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str = "";
-                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm  ";
+                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm,  ";
                 str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.pageno,d.itnm||' '||d.styleno itstyle,e.prefno,e.prefdt  ";
-                str += " from " + Scm + ".T_BALE a," + Scm + ".M_GODOWN b " + Scm + ".T_TXNDTL c," + Scm + ".M_SITEM d," + Scm + ".T_TXN e  ";
-                str += " where a.blautono=c.autono(+) and c.itcd=d.itcd(+) and a.blautono=e.autono(+) a.autono='" + TBH.AUTONO + "' and a.gocd=b.gocd ";
+                str += " from " + Scm + ".T_BALE a," + Scm + ".M_GODOWN b, " + Scm + ".T_TXNDTL c," + Scm + ".M_SITEM d," + Scm + ".T_TXN e  ";
+                str += " where a.blautono=c.autono(+) and c.itcd=d.itcd(+) and a.blautono=e.autono(+) and a.autono='" + TBH.AUTONO + "' and a.gocd=b.gocd(+) ";
                 str += "order by a.slno ";
                 DataTable TBILTYKHASRAtbl = Master_Help.SQLquery(str);
                 VE.TBILTYKHASRA = (from DataRow dr in TBILTYKHASRAtbl.Rows
@@ -214,6 +214,15 @@ namespace Improvar.Controllers
                                   BLSLNO = dr["blslno"].retShort(),
                                   GOCD = dr["gocd"].retStr(),
                                   GONM = dr["gonm"].retStr(),
+                                  ITCD = dr["itcd"].retStr(),
+                                  ITNM = dr["itstyle"].retStr(),
+                                  UOMCD = dr["uomcd"].retStr(),
+                                  NOS = dr["nos"].retStr(),
+                                  QNTY = dr["qnty"].retStr(),
+                                  PAGENO = dr["pageno"].retStr(),
+                                  PBLNO = dr["prefno"].retStr(),
+                                  PBLDT = dr["prefdt"].retDateStr()
+
                               }).OrderBy(s => s.SLNO).ToList();
 
             }
@@ -295,11 +304,10 @@ namespace Improvar.Controllers
             try
             {
                 var GetPendig_Data = salesfunc.getPendKhasra(DOCDT);
-                if (GetPendig_Data != null)
-                {
                     DataView dv = new DataView(GetPendig_Data);
                     string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
                     GetPendig_Data = dv.ToTable(true, COL);
+
                     VE.TBILTYKHASRA_POPUP = (from DataRow dr in GetPendig_Data.Rows
                                         select new TBILTYKHASRA_POPUP
                                         {
@@ -309,14 +317,22 @@ namespace Improvar.Controllers
                                             BALENO = dr["baleno"].retStr(),
                                             PREFNO = dr["prefno"].retStr()
                                         }).Distinct().ToList();
+                   
                     for (int p = 0; p <= VE.TBILTYKHASRA_POPUP.Count - 1; p++)
                     {
                         VE.TBILTYKHASRA_POPUP[p].SLNO = Convert.ToInt16(p + 1);
                     }
-                }
+                    if(VE.TBILTYKHASRA_POPUP.Count!=0)
+                    {
+                        VE.DefaultView = true;
+                        return PartialView("_T_Bilty_Khasra_PopUp", VE);
 
-                VE.DefaultView = true;
-                return PartialView("_T_Bilty_Khasra_PopUp", VE);
+                    }
+                    else {
+                        VE.DefaultView = true;
+                        return Content("0");
+                    }
+                
             }
             catch (Exception ex)
             {
