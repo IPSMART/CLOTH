@@ -37,5 +37,6 @@ namespace Improvar.ViewModels
         public string PRICES_EFFDTDROP { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public List<UploadDOC> UploadImages { get; set; }
+        public string BarImages { get; set; }
     }
 }

@@ -1760,7 +1760,7 @@ namespace Improvar.Controllers
                     _baldist = _amtdist; _baldistq = _amtdistq;
                     #endregion
                     if (VE.DefaultAction == "A")
-                    {
+                   { 
                         TTXN.EMD_NO = 0;
                         TTXN.DOCCD = VE.T_TXN.DOCCD;
                         TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
@@ -1897,6 +1897,8 @@ namespace Improvar.Controllers
                     TTXNOTH.TDSON = VE.T_TXNOTH.TDSON;
                     TTXNOTH.TDSPER = VE.T_TXNOTH.TDSPER;
                     TTXNOTH.TDSAMT = VE.T_TXNOTH.TDSAMT;
+                    TTXNOTH.POREFNO = VE.T_TXNOTH.POREFNO;
+                    TTXNOTH.POREFDT = VE.T_TXNOTH.POREFDT;
                     //----------------------------------------------------------//
                     dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
