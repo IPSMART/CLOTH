@@ -1656,7 +1656,7 @@ namespace Improvar.Controllers
                     T_TXN TTXN = new T_TXN();
                     T_TXNTRANS TXNTRANS = new T_TXNTRANS();
                     T_TXNOTH TTXNOTH = new T_TXNOTH();
-                    T_CNTRL_HDR TCH = new T_CNTRL_HDR();
+                    //T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                     //T_VCH_GST TVCHGST = new T_VCH_GST();
                     //T_CNTRL_DOC_PASS TCDP = new T_CNTRL_DOC_PASS();
                     string DOCPATTERN = "";
@@ -1710,7 +1710,7 @@ namespace Improvar.Controllers
                     string slcdlink = "", slcdpara = VE.MENU_PARA;
                     if (VE.MENU_PARA == "PR") slcdpara = "PB";
                     string sql = "";
-                    sql = "select class1cd, " + parglcd + " glcd from " + CommVar.CurSchema(UNQSNO) + ".m_sys_cnfg ";
+                    sql = "select class1cd, " + parglcd + " glcd from " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg ";
                     DataTable tblsys = masfa.SQLquery(sql);
                     if (tblsys.Rows.Count == 0)
                     {
@@ -1718,28 +1718,18 @@ namespace Improvar.Controllers
                     }
 
                     sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
-                    sql += VE.TTXNDTL[0].GLCD.retStr() +  " prodglcd ";
+                    sql += "'" + VE.TTXNDTL[0].GLCD.retStr() +  "' prodglcd, ";
                     if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
                     else sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
                     if (slcdpara == "PB") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
                     sql += "igst_rvi, cgst_rvi, sgst_rvi, cess_rvi, igst_rvo, cgst_rvo, sgst_rvo, cess_rvo ";
                     sql += "from " + scm1 + ".m_syscnfg a, " + scmf + ".m_post b, " + scm1 + ".m_subleg_com c ";
-                    sql += "where itgrpcd=c.itgrpcd(+) and c.slcd in('" + VE.T_TXN.SLCD + "',null) and ";
-                    sql += "c.compcd in ('" + COM + "',null) and c.loccd in ('" + LOC + "',null) ";
+                    sql += "where c.slcd in('" + VE.T_TXN.SLCD + "',null) and ";
+                    sql += "c.compcd in ('" + COM + "',null) ";
                     DataTable tbl = masterHelp.SQLquery(sql);
 
-                    parglcd = tbl.Rows[0]["parglcd"].retStr(); parclass1cd = tblsys.Rows[0]["class1cd"].retStr();
+                    parglcd = tbl.Rows[0]["parglcd"].retStr(); parclass1cd = tbl.Rows[0]["class1cd"].retStr();
 
-                    // create header record in finschema
-                    if (blactpost == true || blgstpost == true)
-                    {
-                        dbsql = masfa.Instcntrl_hdr(TCH.AUTONO, VE.DefaultAction, "F", TCH.MNTHCD, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, TCH.DOCONLYNO, TCH.VCHRNO, "Y", TCH.VCHRSUFFIX, TCH.GLCD, TCH.SLCD, TCH.DOCAMT.Value, blactpost == true ? null : "Y");
-                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                        double currrt = 0;
-                        if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
-                        dbsql = masfa.InsVch_Hdr(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, null, null, "Y", null, trcd, "", "", TTXN.CURR_CD, currrt, "", revcharge);
-                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                    }
                     //Calculate Others Amount from amount tab to distrubute into txndtl table
                     double _amtdist = 0, _baldist = 0, _rpldist = 0, _mult = 1;
                     double _amtdistq = 0, _baldistq = 0, _rpldistq = 0;
@@ -1781,6 +1771,7 @@ namespace Improvar.Controllers
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                         TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
+                        TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
                     {
@@ -1918,7 +1909,7 @@ namespace Improvar.Controllers
                     dbsql = masterHelp.RetModeltoSql(TTXNOTH);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                    // SAVE T_CNTRL_HDR_UNIQNO
+                   // SAVE T_CNTRL_HDR_UNIQNO
                     string docbarcode = ""; string UNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO);
                     sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='" + TTXN.DOCCD + "'";
                     DataTable dt = masterHelp.SQLquery(sql);
@@ -1940,6 +1931,16 @@ namespace Improvar.Controllers
                         lbatchini = dt.Rows[0]["lbatchini"].retStr();
                     }
                     //END T_CNTRL_HDR_UNIQNO 
+                    // create header record in finschema
+                    if (blactpost == true || blgstpost == true)
+                    {
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        double currrt = 0;
+                        if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
+                        dbsql = masfa.InsVch_Hdr(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, null, null, "Y", null, trcd, "", "", TTXN.CURR_CD, currrt, "", revcharge);
+                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                    }
 
 
                     VE.BALEYR = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).Year.retStr();
@@ -2066,6 +2067,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.MTRLJOBCD = VE.TBATCHDTL[i].MTRLJOBCD;
                                     TBATCHMST.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                     TBATCHMST.JOBCD = TTXN.JOBCD;
+                                    TBATCHMST.BARNO = barno;
                                     TBATCHMST.ITCD = VE.TBATCHDTL[i].ITCD;
                                     TBATCHMST.PARTCD = VE.TBATCHDTL[i].PARTCD;
                                     TBATCHMST.SIZECD = VE.TBATCHDTL[i].SIZECD;
@@ -2158,8 +2160,11 @@ namespace Improvar.Controllers
                     }
                     if (dbqty == 0)
                     {
-                        dberrmsg = "Quantity not entered";
-                        goto dbnotsave;
+                        dberrmsg = "Quantity not entered"; goto dbnotsave;
+                    }
+                    if (VE.MENU_PARA == "PB" && VE.T_TXN.PREFNO == null)
+                    {
+                        dberrmsg = "Purchase Bill No not entered"; goto dbnotsave;
                     }
                     isl = 1;
 

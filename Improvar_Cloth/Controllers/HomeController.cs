@@ -351,7 +351,7 @@ namespace Improvar.Controllers
                     sql = "select * from all_objects a ";
                     sql += "where a.owner = '" + DatabaseSchemaName + "' and a.object_type = 'TABLE' and a.object_name = 'M_SYSCNFG'";
                     DataTable rstmp = masterHelp.SQLquery(sql);
-                    if (rstmp.Rows.Count > 0)
+                    if (rstmp.Rows.Count > 0 && CommVar.ModuleCode() == "SALESCHEM")
                     {
                         sql = "";
                         string pkgtype = "CHEM", prop1dsc = "prop1", prop2dsc = "prop2", prop3dsc = "prop3", prop4dsc = "prop4", prop5dsc = "prop5", prop6dsc = "prop6";
