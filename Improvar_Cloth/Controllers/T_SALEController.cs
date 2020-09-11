@@ -2662,7 +2662,7 @@ namespace Improvar.Controllers
                 ind.TDOCNO = DOCNO;
                 ind.FDT = DOCDT;
                 ind.TDT = DOCDT;
-                ind.MENU_PARA = "PB";
+                ind.MENU_PARA = "SALES";
                 if (TempData["printparameter"] != null)
                 {
                     TempData.Remove("printparameter");

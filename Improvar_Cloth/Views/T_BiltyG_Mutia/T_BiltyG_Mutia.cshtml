@@ -80,6 +80,7 @@
                 url: "@Url.Action("GetPendingData", PageControllerName)",
                 data: "&DOCDT=" + docdt ,
                 success: function (result) {
+                    if (result == 0) { return msgWarning("Record not Found! Please enter valid Document date."); }
                     $("#popup").animate({ marginTop: '-10px' }, 50);
                     $("#popup").html(result);
                 },

@@ -74,33 +74,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetDOCNO(FormCollection FC, string Code)
-        {
-            try
-            {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                return PartialView("_Help2", masterHelp.DOCNO_T_TXN_help(DB, Code));
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-
-        }
-        //public ActionResult GetItemGroupDetails(string val)
-        //{
-        //    try
-        //    {
-        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-        //        return PartialView("_Help2", masterHelp.ITGRPCD_help(val));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
         public ActionResult GetSubLedgerDetails(string val, string code)
         {
             try
@@ -121,31 +94,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ItemGroupDetails(string val)
-        {
-            try
-            {
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                var query = (from c in DB.M_GROUP where (c.ITGRPCD == val) select c);
-                if (query.Any())
-                {
-                    string str = "";
-                    foreach (var i in query)
-                    {
-                        str = i.ITGRPCD + Cn.GCS() + i.ITGRPNM;
-                    }
-                    return Content(str);
-                }
-                else
-                {
-                    return Content("0");
-                }
-            }
-            catch (Exception ex)
-            {
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
+     
 
         [HttpPost]
         public ActionResult T_BillPrint(ReportViewinHtml VE, FormCollection FC, string submitbutton)
