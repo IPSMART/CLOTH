@@ -21,6 +21,7 @@ namespace Improvar.ViewModels
         public T_TXNSTATUS T_TXNSTATUS { get; set; }
         public T_TXNTRANS T_TXNTRANS { get; set; }
         public T_VCH_GST T_VCH_GST { get; set; }
+        public T_STKTRNF T_STKTRNF { get; set; }
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TBATCHDTL> TBATCHDTL { get; set; }
@@ -161,5 +162,14 @@ namespace Improvar.ViewModels
         public string SZBARCODE { get; set; }
         [StringLength(4)]
         public string BALEYR { get; set; }
+        public string LINKDOCNO { get; set; }
+        public string ALLMTRLJOBCD { get; set; }
+        public string TGONM { get; set; }
+        public string SGONM { get; set; }
+        public string TLOCNM { get; set; }
+        public string SLOCNM { get; set; }
+        public string PORTNM { get; set; }
+        public List<INVTYPE_list> INVTYPE_list { get; set; }
+        public List<EXPCD_list> EXPCD_list { get; set; }
     }
 }

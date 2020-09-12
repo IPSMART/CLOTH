@@ -242,67 +242,6 @@ namespace Improvar
 
             return tbl;
         }
-        public DataTable GetPendPackSlip(string slcd = "", string pslipupto = "", string pslipautono = "", string ordautono = "", string txnupto = "", string skipautono = "", string brandcd = "", bool OnlyBal = true)
-        {
-            string UNQSNO = CommVar.getQueryStringUNQSNO();
-            DataTable tbl = new DataTable();
-            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
-
-            string doctype = "SPSLP";
-            brandcd = brandcd.retStr();
-
-            if (pslipupto == "") pslipupto = txnupto;
-
-            string sqlc = "";
-            sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and ";
-            if (slcd != null && slcd != "") sqlc += "c.slcd='" + slcd + "' and ";
-            if (skipautono.retStr() != "") sqlc += "a.autono <> '" + skipautono + "' and ";
-            sqlc += "nvl(b.cancel,'N')='N' ";
-
-            string sql = "";
-
-            sql += "select a.autono, a.doautono, a.ordautono, a.doccd, a.docno, a.docdt, a.ordno, a.orddt, nvl(a.stktype,'') stktype, nvl(a.freestk,'') freestk, nvl(a.rate,0) rate, ";
-            sql += "d.styleno, a.itcd, a.sizecd, a.colrcd, d.itnm, nvl(d.pcsperbox,0) pcsperbox, nvl(d.pcsperset,0) pcsperset, nvl(d.colrperset,0) colrperset, j.prccd, j.prceffdt, k.prcnm, ";
-            sql += "d.uomcd, g.uomnm, d.itgrpcd, h.itgrpnm, h.brandcd, i.brandnm, ";
-            sql += "e.sizenm, e.print_seq, f.colrnm, nvl(a.pslipqnty,0) pslipqnty, ";
-            sql += "nvl(a.pslipqnty,0) balqnty from ";
-            sql += "( select a.autono, a.doautono, a.ordautono, b.doccd, b.docno, b.docdt, e.docno ordno, e.docdt orddt, a.stktype, a.freestk, a.rate, ";
-            sql += "nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, ";
-            sql += "a.itcd, a.sizecd, a.colrcd, sum(a.qnty) pslipqnty ";
-            sql += "from " + scm + ".t_pslipdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_pslip c, " + scm + ".m_doctype d, " + scm + ".t_cntrl_hdr e ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and b.doccd=d.doccd and d.doctype = '" + doctype + "' and a.ordautono=e.autono(+) and ";
-            if (pslipautono != "") sql += "a.autono in (" + pslipautono + ") and ";
-            if (ordautono != "") sql += "a.ordautono in (" + ordautono + ") and ";
-            if (pslipupto != "") sql += "b.docdt <= to_date('" + pslipupto + "','dd/mm/yyyy') and ";
-            if (OnlyBal == true)
-            {
-                sql += "a.autono not in (";
-                sql += "select a.linkautono from " + scm + ".t_txn_linkno a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c ";
-                sql += "where a.autono=b.autono and a.autono=c.autono(+) and ";
-                sql += sqlc;
-                sql += " ) and ";
-            }
-            sql += sqlc;
-            sql += "group by a.autono, a.doautono, a.ordautono, b.doccd, b.docno, b.docdt, e.docno, e.docdt, a.stktype, a.freestk, a.rate, ";
-            sql += "nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,''), ";
-            sql += "a.itcd, a.sizecd, a.colrcd ) a, ";
-
-            sql += scm + ".m_sitem d, " + scm + ".m_size e, " + scm + ".m_color f, " + scmf + ".m_uom g, " + scm + ".m_group h, " + scm + ".m_brand i, " + scm + ".t_sord j, " + scmf + ".m_prclst k ";
-            sql += "where a.itcd=d.itcd(+) and a.sizecd=e.sizecd(+) and a.colrcd=f.colrcd(+) and d.uomcd=g.uomcd(+) and d.itgrpcd=h.itgrpcd(+) and h.brandcd=i.brandcd(+) and ";
-            if (brandcd != "") sql += "h.brandcd in (" + brandcd + ") and ";
-            sql += "nvl(a.pslipqnty,0) <> 0 and a.ordautono=j.autono(+) and j.prccd=k.prccd(+) ";
-            sql += "order by styleno, print_seq, sizenm";
-            tbl = SQLquery(sql);
-
-            return tbl;
-        }
-        public string retCompLogo()
-        {
-            string UNQSNO = CommVar.getQueryStringUNQSNO();
-            string complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".png";
-            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".jpg";
-            return complogo;
-        }
         public List<DropDown_list_DelvType> GetforDelvTypeSelection(string delvtype = "")
         {
             List<DropDown_list_DelvType> DropDown_list_desType = new List<DropDown_list_DelvType>();
@@ -492,72 +431,42 @@ namespace Improvar
             DataTable tbl = SQLquery(sql);
             return tbl;
         }
-        public DataTable getPendProg(string tdt, string txnupto = "", string slcd = "", string itcd = "", string jobcd = "", string skipautono = "", string progfromdt = "", string brandcd = "", string itgrpcd = "", string linecd = "", string curschema = "", string finschema = "", string stktype = "", string recslcd = "")
+        public DataTable getPendProg(string tdt, string txnupto = "", string slcd = "", string itcd = "", string jobcd = "", string skipautono = "", string progfromdt = "", string linecd = "", string curschema = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             if (curschema != "") scm = curschema;
-            if (finschema != "") scmf = finschema;
 
             string sql = "";
-            sql += "select a.autono, a.autono progautono, a.slno progslno, d.jobcd, l.jobnm, l.jobseq, d.batchno, a.docno, a.docdt, a.doconlyno, a.doccd, ";
-            sql += "d.slcd, d.linecd, e.slnm, e.propname, e.regmobile, k.linenm, f.itgrpcd, m.itgrpnm, m.brandcd, n.brandnm, ";
+            sql += "select a.progautono, a.progslno, a.progautoslno, d.slcd, i.slnm, nvl(i.slarea,i.district) slarea, ";
             sql += "d.slcd||nvl(d.linecd,'') repslcd, e.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
-            sql += "d.itcd||nvl(d.partcd,'') repitcd, nvl(f.styleno,f.itnm)||decode(h.partnm,null,'',' ['||h.partnm||']') repitnm, ";
-            sql += "d.itcd, d.stktype, f.itnm, f.styleno, nvl(f.pcsperbox,0) pcsperbox, nvl(f.pcsperset,0) pcsperset, f.uomcd, g.uomnm, d.partcd, h.partnm, d.sizecd, i.sizenm, i.print_seq, ";
-            sql += "d.dia, d.ll, d.gsm, d.texture, d.millnm, d.colrnm, d.mchnname, d.fabtype, nvl(d.cutlength,0) cutlength, nvl(d.stkqnty,0) stkqnty, d.qntyin, d.proguniqno, ";
-            sql += "nvl(o.prefno,r.docno) recdocno, r.docdt recdocdt, decode(nvl(f.mergepcs,0),0,1,f.mergepcs) mergepcs, ";
-            sql += "(select sizecdgrp from " + scm + ".v_msitem_sizegrp where itcd = d.itcd and sizecdgrp like '%^' || d.sizecd || '^%') sizecdgrp, ";
-            sql += "o.slcd||nvl(o.linecd,'') recslcd, p.slnm||decode(q.linenm,null,'',' ['||q.linenm||']') recslnm, ";
-            sql += "d.recautono, d.orgbatchautono, d.orgbatchslno, d.gauge, d.itremark, a.qnty, a.nos, ";
-            sql += "nvl(b.drnos,0) drnos, nvl(b.crnos,0) crnos,  nvl(b.drnos,0)-nvl(b.crnos,0) balnos, ";
-            sql += "nvl(b.drqnty,0) drqnty, nvl(b.crqnty,0) crqnty, nvl(c.short_qnty,0) short_qnty, nvl(c.short_allow,0) short_allow, ";
-            sql += "nvl(b.drqnty,0) - nvl(b.crqnty,0) - nvl(b.tshortqnty,0) - nvl(c.short_allow,0) balqnty from ";
+            sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm, f.uomcd, j.itnm fabitnm, ";
+            sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, d.linecd, l.print_seq, ";
+            sql += "a.balqnty, a.balnos from ";
 
-            sql += "(select a.autono, a.slno, a.qnty, a.nos, b.docno, b.docdt, b.doconlyno, b.doccd ";
-            sql += "from " + scm + ".t_progmast a, " + scm + ".t_cntrl_hdr b ";
-            sql += "where a.autono=b.autono and b.compcd='" + COM + "' and b.loccd='" + LOC + "' and ";
-            if (jobcd.retStr() != "") sql += "a.jobcd in (" + jobcd + ") and ";
-            if (progfromdt.retStr() != "") sql += "b.docdt >= to_date('" + progfromdt + "', 'dd/mm/yyyy') and ";
-            if (tdt != "") sql += "b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
-            sql += "nvl(b.cancel,'N')='N' ) a, ";
-
-            sql += "(select a.progautono, a.progslno, sum(nvl(c.shortqnty,0)) tshortqnty, ";
-            sql += "sum(decode(a.stkdrcr,'D',nvl(c.nos,a.nos),0)) drnos, sum(decode(a.stkdrcr,'C',nvl(c.nos,a.nos),0)) crnos, ";
-            sql += "sum(decode(a.stkdrcr,'D',nvl(c.qnty,a.qnty),0)) drqnty, sum(decode(a.stkdrcr,'C',nvl(c.qnty,a.qnty),0)) crqnty ";
-            sql += "from " + scm + ".t_progdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txndtl c ";
-            sql += "where a.autono=b.autono and a.autono=c.recprogautono(+) and a.slno=c.recprogslno(+) and ";
+            sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno, ";
+            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) balqnty, ";
+            sql += "sum(case a.stkdrcr when 'C' then a.nos when 'D' then a.nos*-1 end) balnos ";
+            sql += "from " + scm + ".t_progdtl a, " + scm + ".t_progmast b, " + scm + ".t_cntrl_hdr c ";
+            sql += "where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.autono=c.autono(+) and ";
+            sql += "c.docdt <= to_date('31/03/2021','dd/mm/yyyy') and ";
             if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
+            if (jobcd.retStr() != "") sql += "b.jobcd in (" + jobcd + ") and ";
             if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "', 'dd/mm/yyyy') and ";
-            sql += "nvl(b.cancel,'N')='N' ";
-            sql += "group by a.progautono, a.progslno) b, ";
+            sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' ";
+            sql += "group by a.progautono, a.progslno, a.progautono||a.progslno ) a, ";
 
-            sql += "( select a.progautono, a.progslno, ";
-            sql += "sum(a.short_qnty) short_qnty, sum(a.short_allow) short_allow ";
-            sql += "from " + scm + ".t_prog_close a, " + scm + ".t_cntrl_hdr b ";
-            sql += "where a.autono=b.autono and a.recautono is null and ";
-            if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
-            if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "', 'dd/mm/yyyy') and ";
-            sql += "nvl(b.cancel,'N')='N' ";
-            sql += "group by a.progautono, a.progslno ) c, ";
-
-            sql += "" + scm + ".t_progmast d, " + scmf + ".m_subleg e, " + scm + ".m_sitem f, " + scmf + ".m_uom g, ";
-            sql += "" + scm + ".m_parts h, " + scm + ".m_size i, " + scm + ".m_color j, " + scm + ".m_linemast k, " + scm + ".m_jobmst l, ";
-            sql += scm + ".m_group m, " + scm + ".m_brand n," + scm + ".t_txn o, " + scmf + ".m_subleg p, " + scm + ".m_linemast q, " + scm + ".t_cntrl_hdr r ";
-            sql += "where a.autono=b.progautono(+) and a.slno=b.progslno(+) and ";
-            sql += "a.autono=c.progautono(+) and a.slno=c.progslno(+) and d.recautono=o.autono(+) and o.slcd=p.slcd(+) and o.linecd=q.linecd(+) and d.recautono=r.autono(+) and ";
+            sql += scm + ".t_progmast d, " + scm + ".t_cntrl_hdr e, ";
+            sql += scm + ".m_sitem f, " + scm + ".m_group g, " + scm + ".m_color h, " + scmf + ".m_subleg i, " + scm + ".m_sitem j, " + scm + ".m_line k, " + scm + "m_size l ";
+            sql += "where a.progautono=d.autono(+) and a.progslno=d.slno(+) and a.progautono=e.autono(+) and ";
+            sql += "d.itcd=f.itcd(+) and f.itgrpcd=g.itgrpcd(+) and d.colrcd=h.colrcd(+) and d.slcd=i.slcd(+) and ";
+            if (progfromdt.retStr() != "") sql += "e.docdt >= to_date('" + progfromdt + "', 'dd/mm/yyyy') and ";
             if (slcd.retStr() != "") sql += "d.slcd in (" + slcd + ") and ";
             if (linecd.retStr() != "") sql += "d.linecd in (" + linecd + ") and ";
             if (itcd.retStr() != "") sql += "d.itcd in (" + itcd + ") and ";
-            if (itgrpcd.retStr() != "") sql += "f.itgrpcd in (" + itgrpcd + ") and ";
-            if (brandcd.retStr() != "") sql += "m.brandcd in (" + brandcd + ") and ";
-            if (stktype.retStr() != "") sql += "d.stktype in (" + stktype + ") and ";
-            if (recslcd.retStr() != "") sql += "o.slcd in (" + recslcd + ") and ";
-            sql += "a.autono=d.autono(+) and a.slno=d.slno(+) and d.slcd=e.slcd(+) and d.itcd=f.itcd(+) and  f.uomcd=g.uomcd(+) and ";
-            sql += "d.partcd=h.partcd(+) and d.sizecd=i.sizecd(+) and d.colrcd=j.colrcd(+) and d.linecd=k.linecd(+) and d.jobcd=l.jobcd(+) and ";
-            sql += "f.itgrpcd=m.itgrpcd(+) and m.brandcd=n.brandcd(+) and ";
-            sql += "nvl(b.drqnty,0) - nvl(b.crqnty,0) - nvl(b.tshortqnty,0) - nvl(c.short_qnty,0) - nvl(c.short_allow,0) > 0 ";
-            sql += "order by styleno, itnm, itcd, partnm, partcd, print_seq, sizenm ";
+            sql += "nvl(a.balnos,0) <> 0 ";
+            sql += "f.fabitcd=j.itcd(+) and d.linecd=k.linecd(+) and d.sizecd=l.sizecd(+) ";
+            sql += "order by styleno, itnm, itcd, partcd, print_seq, sizenm ";
             DataTable tbl = SQLquery(sql);
             return tbl;
         }
@@ -1301,7 +1210,7 @@ namespace Improvar
             return rtval;
         }
 
-        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false)
+        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string menupara="", string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false)
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1323,18 +1232,21 @@ namespace Improvar
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
             sql += "d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
-            sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos ";
+            sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm ";
             sql += "from ";
             sql += "( ";
-            //sql += "select distinct '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
-            //sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
-            //sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
-            //sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
-            //if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
-            //if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
-            //if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
-            //sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-            //sql += "union ";
+            if (menupara != "PB")
+            {
+                sql += "select distinct '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
+                sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
+                sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
+                sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
+                if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
+                if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
+                if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+                sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+                sql += "union ";
+            }
             sql += "select '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, '' partcd, a.colrcd, a.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
             sql += "from " + scm + ".m_sitem_barcode a, " + scm + ".m_sitem b, " + scm + ".m_cntrl_hdr c, " + scm + ".m_cntrl_loca d ";
             sql += "where a.itcd=b.itcd(+) and b.m_autono=c.m_autono(+) and b.m_autono=d.m_autono(+) and ";
@@ -1400,14 +1312,14 @@ namespace Improvar
 
             sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
-            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k ";
+            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k , " + scm + ".m_size l ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
             if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
-            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) ";
+            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+) ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
@@ -1442,7 +1354,7 @@ namespace Improvar
             return tbl;
         }
 
-        public DataTable getPendingPackslip(string docdt, string skipautono = "")
+        public DataTable getPendingPackslip(string docdt,string slcd, string skipautono = "")
         {
             DataTable tbl;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1450,13 +1362,14 @@ namespace Improvar
             string sql = "";
             sql = "";
             sql += "select a.autono, c.docno, c.docdt, c.slcd, g.slnm, nvl(g.slarea,g.district) district ";
-            sql += "from " + scm + ".t_txn a, " + scm + "t_cntrl_hdr c, ";
+            sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr c, ";
             sql += scm + ".m_doctype d, " + scm + ".t_txn_linkno e, " + scmf + ".m_subleg g ";
             sql += "where a.autono=c.autono(+) and c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.slcd=g.slcd(+) and ";
             sql += "a.autono=e.linkautono(+) and e.autono is null and ";
             if (skipautono.retStr() != "") sql += "e.autono not in (" + skipautono + ") and ";
             sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and ";
             sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
+            if (slcd.retStr() != "") sql += "and c.slcd = '"+ slcd + "' ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
