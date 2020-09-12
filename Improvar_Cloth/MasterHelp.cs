@@ -2198,25 +2198,7 @@ namespace Improvar
                 }
             }
         }
-        public string DOCNO_T_TXN_help(ImprovarDB DB, string doccd)
-        {
-            var query = (from c in DB.T_TXN
-                         orderby c.DOCNO, c.DOCDT
-                         where c.DOCCD == doccd
-                         select new
-                         {
-                             DOCNO = c.DOCNO,
-                             DOCDT = c.DOCDT
-                         }).ToList();
-            System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            for (int i = 0; i <= query.Count - 1; i++)
-            {
-                SB.Append("<tr><td>" + query[i].DOCDT + "</td><td>" + query[i].DOCNO + "</td></tr>");
-            }
-            var hdr = "Doc Date" + Cn.GCS() + "Doc No";
-            return Generate_help(hdr, SB.ToString());
-        }
-        public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
+        public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD="", string GOCD="", string PRCCD="", string MTRLJOBCD="")
         {
             DataTable tbl = new DataTable();
             if (menupara == "PB")
