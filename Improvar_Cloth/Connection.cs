@@ -19,6 +19,8 @@ using System.Net.Sockets;
 using Microsoft.VisualBasic;
 using BarcodeLib;
 using System.Drawing.Imaging;
+//using iTextSharp.text;
+//using iTextSharp.text.pdf;
 
 namespace Improvar
 {
@@ -3553,13 +3555,16 @@ namespace Improvar
         {// Rettype=string/image
             try
             {//
-                int Length = 600; int Height = 200; int FontSize = 40;
+                int width = 600;
+                if (Barcodestr.Length > 12) width = 700;
+                else if (Barcodestr.Length > 12) width = 800;
+                int Height = 150; int FontSize = 40;
                 using (Barcode barcode = new Barcode())
                 {
                     barcode.IncludeLabel = true;
                     barcode.Alignment = AlignmentPositions.CENTER;
                     barcode.LabelFont = new Font(FontFamily.GenericMonospace, FontSize, FontStyle.Regular);
-                    var barcodeImage = barcode.Encode(TYPE.CODE128, Barcodestr, Color.Black, Color.White, Length, Height);
+                    var barcodeImage = barcode.Encode(TYPE.CODE128, Barcodestr, Color.Black, Color.White, width, Height);
                     if (Rettype == "image")
                     {
                         using (MemoryStream ms = new MemoryStream())
@@ -3589,6 +3594,103 @@ namespace Improvar
             {
                 SaveException(ex, "");
                 return ex.Message;
+            }
+        }
+
+        public void barcodeTest()
+        {
+
+            var pgSize = new iTextSharp.text.Rectangle(300f, 400f);
+            var doc = new iTextSharp.text.Document(pgSize, 0.1f, 0.1f, 0.1f, 0.1f);
+            try
+            {
+                string pdfFilePath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments");
+                //MemoryStream PDFData = new MemoryStream();
+                //PdfWriter writer = PdfWriter.GetInstance(doc, PDFData);
+                //PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(pdfFilePath + "/Default.pdf", FileMode.Create));
+                //doc.Open();
+
+                //doc.NewPage();
+                //Paragraph paragraph = new Paragraph("Getting Started ITextSharp.");
+
+                //string imageURL = Server.MapPath(".") + "/image2.jpg";
+                //var rt = Cn.GenerateBarcode("2001PW00567011111", "image");
+                //iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(rt);
+                ////Resize image depend upon your need
+
+                //jpg.ScaleToFit(140f, 120f);
+                ////Give space before image
+
+                //jpg.SpacingBefore = 10f;
+                ////Give some space after the image
+
+                //jpg.SpacingAfter = 1f;
+                //jpg.Alignment = Element.ALIGN_LEFT;
+                //doc.Add(paragraph);
+
+                //doc.Add(jpg);
+                ////=================
+                //doc.NewPage();
+                //System.Drawing.Font font2 = new Font(Font.FontFamily.TIMES_ROMAN, 9f);
+
+
+                //PdfPTable table = new PdfPTable(3);
+
+                //float[] widths = new float[] { 1f, 1f, 1f };
+
+                //table.TotalWidth = 300f;
+                //table.LockedWidth = true;
+                //table.SetWidths(widths);
+
+                //PdfPCell cell = new PdfPCell(new Phrase("Header spanning 3 columns"));
+
+                //cell.Colspan = 3;
+
+                //cell.HorizontalAlignment = 0;
+
+                //table.AddCell(cell);
+
+                //table.AddCell("Col 1 Row 1");
+                //table.AddCell("Col 2 Row 1");
+
+                //table.AddCell("Col 3 Row 1");
+
+                //table.AddCell("Col 1 Row 2");
+
+                //table.AddCell("Col 2 Row 2");
+
+                //table.AddCell("Col 3 Row 2");
+                //doc.Add(table);
+
+
+                //doc.Add(new Paragraph("Hello World on a new page!"));
+                ////=================
+                //doc.NewPage();
+
+                //table = new PdfPTable(2);
+                //table.TotalWidth = 300f;
+                //table.LockedWidth = true;
+
+                //cell = new PdfPCell();
+                //cell.AddElement(jpg);
+                //cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                //cell.HorizontalAlignment = 0;
+                //table.AddCell(cell);
+
+                //cell = new PdfPCell();
+                //cell.AddElement(new Phrase("Color :Red ", font2));
+                //cell.AddElement(new Phrase("Size:Small", font2));
+                //cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                //table.AddCell(cell);
+
+                //doc.Add(table);
+
+            }
+            catch (Exception ex)
+            { }
+            finally
+            {
+                doc.Close();
             }
         }
     }
