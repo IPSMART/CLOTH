@@ -68,6 +68,8 @@ namespace Improvar.Controllers
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
                     VE.BARGEN_TYPE = masterHelp.BARGEN_TYPE();
+                    VE.INVTYPE_list = masterHelp.INVTYPE_list();
+                    VE.EXPCD_list = masterHelp.EXPCD_list(VE.MENU_PARA == "PB" ? "P" : "S");
                     VE.Database_Combo1 = (from n in DB.T_TXNOTH
                                           select new Database_Combo1() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
 

@@ -2321,5 +2321,37 @@ namespace Improvar
                 }
             }
         }
+        public List<INVTYPE_list> INVTYPE_list()
+        {
+            List<INVTYPE_list> INVTYPE_list = new List<INVTYPE_list> {
+                new INVTYPE_list { Value = "01", Text = "Regular" },
+                new INVTYPE_list { Value = "02", Text = "SEZ supplies with payment" },
+                new INVTYPE_list { Value = "03", Text = "SEZ supplies without payment" },
+                new INVTYPE_list { Value = "04", Text = "Deemed Exp" },
+            };
+            return (INVTYPE_list);
+        }
+        public List<EXPCD_list> EXPCD_list(string salpur = "S")
+        {
+            if (salpur == "P")
+            {
+                List<EXPCD_list> EXPCD_list = new List<EXPCD_list>
+                    {
+                        new EXPCD_list { Value = "11", Text = "IGWPAY" },
+                        new EXPCD_list { Value = "12", Text = "IGWOPAY"},
+                        new EXPCD_list { Value = "13", Text = "ISWPAY"},
+                    };
+                return (EXPCD_list);
+            }
+            else
+            {
+                List<EXPCD_list> EXPCD_list = new List<EXPCD_list>
+                    {
+                        new EXPCD_list { Value = "01", Text = "WPAY" },
+                        new EXPCD_list { Value = "02", Text = "WOPAY"},
+                    };
+                return (EXPCD_list);
+            }
+        }
     }
 }

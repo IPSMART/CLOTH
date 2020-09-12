@@ -1276,6 +1276,15 @@
                     <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="OpenAmount();" accesskey="F">Freight & Others(F)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
+                    <li id="OtherAddress_LI" class=""><a data-toggle="tab" href="#OtherAddress">Other Address</a></li>
+                    @*@if (Model.MENU_PARA == "SO")
+                    {
+                        <li id="StockTransfer_LI" class=""><a data-toggle="tab" href="#StockTransfer">Stock Out</a></li>
+                    }
+                    else if (Model.MENU_PARA == "SI")
+                    {*@
+                        <li id="StockTransfer_LI" class=""><a data-toggle="tab" href="#StockTransfer">Stock In</a></li>
+                    @*}*@
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
