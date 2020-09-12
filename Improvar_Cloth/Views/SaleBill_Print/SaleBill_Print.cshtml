@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.ReportViewinHtml
 @{
-    ViewBag.Title = "Bill_Print";
+    ViewBag.Title = "Sale Bill_Print";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
     var REP_PARA = Model.maxdate;
 }
@@ -15,7 +15,7 @@
 </script>
 
 @{
-    string PageControllerName = "T_BillPrint";
+    string PageControllerName = "SaleBill_Print";
 }
 @using (Html.BeginForm())
 {

@@ -254,6 +254,7 @@
     <Compile Include="Controllers\M_SubBrandController.cs" />
     <Compile Include="Controllers\M_SubLeg_SDdtlController.cs" />
     <Compile Include="Controllers\M_Sub_JobController.cs" />
+    <Compile Include="Controllers\M_SysCnfgController.cs" />
     <Compile Include="Controllers\M_Tax_RateController.cs" />
     <Compile Include="Controllers\M_Tax_Rate_CodeController.cs" />
     <Compile Include="Controllers\M_USR_ACS_DOCCDController.cs" />
@@ -265,7 +266,7 @@
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
-    <Compile Include="Controllers\T_BillPrintController.cs" />
+    <Compile Include="Controllers\SaleBill_PrintController.cs" />
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
@@ -440,6 +441,7 @@
     <Compile Include="Models\M_SUBLEG_LOCOTH.cs" />
     <Compile Include="Models\M_SUBLEG_SDDTL.cs" />
     <Compile Include="Models\M_SUBLEG_TAX.cs" />
+    <Compile Include="Models\M_SYSCNFG.cs" />
     <Compile Include="Models\M_TAXGRP.cs" />
     <Compile Include="Models\M_TDS_CNTRL.cs" />
     <Compile Include="Models\M_UOM.cs" />
@@ -573,6 +575,7 @@
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
+    <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
     <Compile Include="ViewModels\ColorEntry.cs" />
     <Compile Include="ViewModels\CommonReport.cs" />
@@ -1028,8 +1031,9 @@
     <Content Include="Views\T_Bilty_Khasra\T_Bilty_Khasra.cshtml" />
     <Content Include="Views\Shared\_T_Bilty_Khasra_Main.cshtml" />
     <Content Include="Views\Shared\_T_Bilty_Khasra_PopUp.cshtml" />
-    <Content Include="Views\T_BillPrint\T_BillPrint.cshtml" />
+    <Content Include="Views\SaleBill_Print\SaleBill_Print.cshtml" />
     <Content Include="Views\Rep_Doc_Print\Rep_Doc_Print.cshtml" />
+    <Content Include="Views\M_SysCnfg\M_SysCnfg.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
