@@ -62,7 +62,6 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.TPROGBOM[i].Checked, new { id = "Q_chkid_" + i, @TabIndex = -1 })
-                                            @*@Html.HiddenFor(model => model.TPROGBOM[i].BARNO, new { id = "BARNO_" + i })*@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].SLNO, new { id = "Q_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -79,22 +78,20 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "Q_RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "')" })
                                         </td>
-                                        @*<td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPNM, new { id = "Q_ITGRPNM_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPNM_" + i + "','" + "Q_ITGRPNM_" + i + "=itgrpnm=0/" + "Q_ITGRPCD_" + i + "=itgrpcd=1');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPNM_" + i + "','" + "Q_ITGRPNM_" + i + "=itgrpnm=0/" + "Q_ITGRPCD_" + i + "=itgrpcd=1');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS")','Group Details','Q_ITGRPNM_@i','Q_ITGRPNM_@i=itgrpnm=0/Q_ITGRPCD_@i=itgrpcd=1')" />
-                                            @Html.HiddenFor(model => model.TPROGBOM[i].ITGRPCD, new { id = "Q_ITGRPCD_" + i })
-                                        </td>*@
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPCD, new { id = "Q_ITGRPCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPCD_" + i + "','" + "Q_ITGRPCD_" + i + "=itgrpcd=1/" + "Q_ITGRPNM_" + i + "=itgrpnm=0');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPCD_" + i + "','" + "Q_ITGRPCD_" + i + "=itgrpcd=1/" + "Q_ITGRPNM_" + i + "=itgrpnm=0');", @placeholder = "ITGRPCD", @class = " atextBoxFor textbox_image" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BARNO, new { id = "Q_BARNO_" + i, maxlength = 20, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS") + "','Barno Details','" + "Q_BARNO_" + i + "','" + "Q_BARNO_" + i + "=BARNO=0/Q_ITCD_" + i + "=ITCD/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_UOM_" + i + "=UOMCD/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", @placeholder = "ITCD", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS")','Item Details','Q_ITCD_@i','Q_ITCD_@i=ITCD=2/Q_ITNM_@i=ITNM=1/Q_UOM_@i=UOMCD=3/Q_ITNM_@i=ITSTYLE/Q_ITGRPCD_@i=ITGRPCD=5/Q_ITGRPNM_@i=ITGRPNM=4','Q_ITGRPCD_@i')" />
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPCD, new { id = "Q_ITGRPCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPCD_" + i + "','" + "Q_ITGRPCD_" + i + "=itgrpcd=1/" + "Q_ITGRPNM_" + i + "=itgrpnm=0');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPCD_" + i + "','" + "Q_ITGRPCD_" + i + "=itgrpcd=1/" + "Q_ITGRPNM_" + i + "=itgrpnm=0');", @placeholder = "ITGRPCD", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS")','Group Details','Q_ITGRPCD_@i','Q_ITGRPCD_@i=itgrpcd=1/Q_ITGRPNM_@i=itgrpnm=0')" />
-
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPNM, new { id = "Q_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
 
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITCD, new { id = "Q_ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", @placeholder = "ITCD", @class = " atextBoxFor textbox_image" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITCD, new { id = "Q_ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", @placeholder = "ITCD", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "T_OUTISSPROCESS")','Item Details','Q_ITCD_@i','Q_ITCD_@i=ITCD=2/Q_ITNM_@i=ITNM=1/Q_UOM_@i=UOMCD=3/Q_ITNM_@i=ITSTYLE/Q_ITGRPCD_@i=ITGRPCD=5/Q_ITGRPNM_@i=ITGRPNM=4','Q_ITGRPCD_@i')" />
                                         </td>
                                         <td class="">
@@ -150,7 +147,8 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td> @Html.EditorFor(model => Model.T_QQNTY, new { htmlAttributes = new { id = "T_QQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })</td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*Q_BARNO_*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*itgrpcd*@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -176,12 +174,4 @@
             </div>
         }
     </div>
-    @*<div class="row">
-            <div class="col-md-1" style="width:auto;">
-                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="Fill_BarCodeData()" />
-            </div>
-            <div class="col-md-1" style="width:auto;">
-                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Fill Data Into Detail" title="Click to Fill Data in Details Tab" onclick="Fill_DetailData()" />
-            </div>
-        </div>*@
 </div>

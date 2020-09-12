@@ -800,7 +800,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = Master_Help.BARCODE_help(val);
+                var str = Master_Help.BARNO_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
