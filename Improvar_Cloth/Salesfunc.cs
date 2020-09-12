@@ -24,7 +24,7 @@ namespace Improvar
             sql += "select z.slcd, b.taxgrpcd, a.agslcd, a.areacd, a.prccd, a.discrtcd, a.crdays, a.crlimit, a.cod, a.gstno, a.docth, b.trslcd, b.courcd, nvl(c.agslcd,a.agslcd) agslcd, ";
             sql += "g.slnm, g.slarea, h.slnm agslnm, i.slnm trslnm, e.taxgrpnm, f.prcnm, ";
             //sql += "f.prcnm, "; // c.prcdesc, c.effdt, c.itmprccd, ";
-            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit ";
+            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd ";
             sql += "from ";
 
             sql += "(select a.slcd from " + scmf + ".m_subleg a where a.slcd='" + slcd + "' ) z, ";
