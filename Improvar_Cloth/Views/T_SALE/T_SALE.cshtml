@@ -1013,6 +1013,162 @@
     }
 </script>
 <script>
+    function ReverceCharges() {
+        var GridRowMain = $("#_T_PND_ITEM_GRID > tbody > tr").length;
+        var REVCHG = $("#REVCHG").val();
+        for (var i = 0; i <= GridRowMain - 1; i++) {
+
+            if (REVCHG == "N") {
+                $("#igstper_" + i).val(0);
+                $("#igstamt_" + i).val(parseFloat(0).toFixed(2));
+                $("#cgstper_" + i).val(0);
+                $("#cgstamt_" + i).val(parseFloat(0).toFixed(2));
+                $("#sgstper_" + i).val(0);
+                $("#sgstamt_" + i).val(parseFloat(0).toFixed(2));
+                $("#cessper_" + i).val(0);
+                $("#cessamt_" + i).val(parseFloat(0).toFixed(2));
+                $("#igstper_" + i).attr('readonly', 'readonly');
+                $("#igstamt_" + i).attr('readonly', 'readonly');
+                $("#cgstper_" + i).attr('readonly', 'readonly');
+                $("#cgstamt_" + i).attr('readonly', 'readonly');
+                $("#sgstper_" + i).attr('readonly', 'readonly');
+                $("#sgstamt_" + i).attr('readonly', 'readonly');
+                $("#cessper_" + i).attr('readonly', 'readonly');
+                $("#cessamt_" + i).attr('readonly', 'readonly');
+                var taxableamt = $("#TAXABLE_" + i).val();
+                var netamount = parseFloat(taxableamt).toFixed(2);
+                $("#NETAMOUNT_" + i).val(netamount);
+            }
+            else {
+                var taxableamt = $("#TAXABLE_" + i).val();
+                $("#igstper_" + i).removeAttr('readonly');
+                $("#igstamt_" + i).removeAttr('readonly');
+                $("#cgstper_" + i).removeAttr('readonly');
+                $("#cgstamt_" + i).removeAttr('readonly');
+                $("#sgstper_" + i).removeAttr('readonly');
+                $("#sgstamt_" + i).removeAttr('readonly');
+                $("#cessper_" + i).removeAttr('readonly');
+                $("#cessamt_" + i).removeAttr('readonly');
+                var igstp = $("#BackupIGSTPER").val();
+                $("#igstper_" + i).val(igstp);
+                var igstamount = parseFloat(taxableamt * igstp / 100).toFixed(2);
+                $("#igstamt_" + i).val(igstamount);
+
+                var cgstp = $("#BackupCGSTPER").val();
+                $("#cgstper_" + i).val(cgstp);
+                var cgstamount = parseFloat(taxableamt * cgstp / 100).toFixed(2);
+                $("#cgstamt_" + i).val(cgstamount);
+
+                var sgstp = $("#BackupSGSTPER").val();
+                $("#sgstper_" + i).val(sgstp);
+                var sgstamount = parseFloat(taxableamt * sgstp / 100).toFixed(2);
+                $("#sgstamt_" + i).val(sgstamount);
+
+                var cessper = $("#BackupCESSTPER").val();
+                $("#cessper_" + i).val(cessper);
+                var cessamount = parseFloat(taxableamt * cessper / 100).toFixed(2);
+                $("#cessamt_" + i).val(cessamount);
+                var netamount = parseFloat(taxableamt) + parseFloat(igstamount) + parseFloat(cgstamount) + parseFloat(sgstamount) + parseFloat(cessamount);
+                netamount = parseFloat(netamount).toFixed(2);
+                $("#NETAMOUNT_" + i).val(netamount);
+            }
+        }
+        BillAmountCalculate();
+        //DRCRBillAmount();
+        //SBILLBillAmount();
+    }
+    function BillAmountCalculate() {
+        debugger;
+        var R_TOTAL_BILL_AMOUNT = 0;
+        var TOTAL_ROUND = 0;
+        var netamt = 0;
+        var ROUND_TAG = document.getElementById("RoundOff").checked;
+
+        var D_TOTALNOS = $("#T_NOS").val();
+        if (D_TOTALNOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(D_TOTALNOS); } else { D_TOTALNOS = D_TOTALNOS + parseInt(0); }
+
+        var D_TOTALQNTY = $("#T_QNTY").val();
+        if (D_TOTALQNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(D_TOTALQNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseInt(0); }
+
+        var D_TOTALTAXVAL = $("#T_GROSS_AMT").val();
+        if (D_TOTALTAXVAL != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(D_TOTALTAXVAL); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseInt(0); }
+
+        var A_TOTALTAXVAL = $("#A_T_AMOUNT").val();
+        if (A_TOTALTAXVAL != "") { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(A_TOTALTAXVAL); } else { A_TOTALTAXVAL = A_TOTALTAXVAL + parseInt(0); }
+        //
+        var D_TOTALIGST = $("#T_IGST_AMT").val();
+        if (D_TOTALIGST != "") { D_TOTALIGST = D_TOTALIGST + parseFloat(D_TOTALIGST); } else { D_TOTALIGST = D_TOTALIGST + parseInt(0); }
+
+        var A_TOTALIGST = $("#A_T_IGST").val();
+        if (A_TOTALIGST != "") { A_TOTALIGST = A_TOTALIGST + parseFloat(A_TOTALIGST); } else { A_TOTALIGST = A_TOTALIGST + parseInt(0); }
+
+        var D_TOTALCGST = $("#T_CGST_AMT").val();
+        if (D_TOTALCGST != "") { D_TOTALCGST = D_TOTALCGST + parseFloat(D_TOTALCGST); } else { D_TOTALCGST = D_TOTALCGST + parseInt(0); }
+
+        var A_TOTALCGST = $("#A_T_CGST").val();
+        if (A_TOTALCGST != "") { A_TOTALCGST = A_TOTALCGST + parseFloat(A_TOTALCGST); } else { A_TOTALCGST = A_TOTALCGST + parseInt(0); }
+
+        var D_TOTALSGST = $("#T_SGST_AMT").val();
+        if (D_TOTALSGST != "") { D_TOTALSGST = D_TOTALSGST + parseFloat(D_TOTALSGST); } else { D_TOTALSGST = D_TOTALSGST + parseInt(0); }
+
+        var A_TOTALSGST = $("#A_T_SGST").val();
+        if (A_TOTALSGST != "") { A_TOTALSGST = A_TOTALSGST + parseFloat(A_TOTALSGST); } else { A_TOTALSGST = A_TOTALSGST + parseInt(0); }
+
+        var D_TOTALNETAMT = $("#T_NET_AMT").val();
+        if (D_TOTALNETAMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(D_TOTALNETAMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseInt(0); }
+
+        var A_TOTALNETAMT = $("#A_T_NET").val();
+        if (A_TOTALNETAMT != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_TOTALNETAMT); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseInt(0); }
+
+        var totaltaxval = 0;
+        totaltaxval = parseFloat(D_TOTALTAXVAL + A_TOTALTAXVAL).toFixed(2);
+
+        var totaltax = 0;
+        totaltax = parseFloat(D_TOTALIGST + A_TOTALIGST + D_TOTALCGST + A_TOTALCGST + D_TOTALSGST + A_TOTALSGST).toFixed(2);
+
+        var totalbillamt = 0;
+        totalbillamt = parseFloat(D_TOTALNETAMT + A_TOTALNETAMT).toFixed(2);
+
+        $("#TOTNOS").val(parseFloat(D_TOTALNOS).toFixed(2));
+        $("#TOTQNTY").val(parseFloat(D_TOTALQNTY).toFixed(2));
+        $("#TOTTAXVAL").val(parseFloat(totaltaxval).toFixed(2));
+        $("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
+
+      
+        var REVCHRG = $("#REVCHRG").val();
+        if (REVCHRG == "Y") {
+            totalbillamt = totalbillamt - totaltax;
+        }
+        if (ROUND_TAG == true) {
+            R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
+            TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
+            document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+            @*if ("@Model.MENU_PARA" == "PI") {
+                document.getElementById("BILL_AMTRecvd").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+                var ADVRECDAMT = document.getElementById("ADVRECDAMT").value;
+                if (ADVRECDAMT != "") {
+                    document.getElementById("NET_AMTRecvd").value = (parseFloat(R_TOTAL_BILL_AMOUNT) - parseFloat(ADVRECDAMT)).toFixed(2);
+                } else { document.getElementById("NET_AMTRecvd").value = ""; }
+
+            }*@
+        }
+        else {
+            //TOTAL_BILL_AMOUNT = parseFloat(PRODUCT_TOTAL_AMT) + parseFloat(AMOUNT_TOTAL_AMT);
+            TOTAL_ROUND = 0;
+            document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
+            @*if ("@Model.MENU_PARA" == "PI") {
+                document.getElementById("BILL_AMTRecvd").value = parseFloat(totalbillamt).toFixed(2);
+                var ADVRECDAMT = document.getElementById("ADVRECDAMT").value;
+                if (ADVRECDAMT != "") { document.getElementById("NET_AMTRecvd").value = (parseFloat(totalbillamt) - parseFloat(ADVRECDAMT)).toFixed(2); }
+                else { document.getElementById("NET_AMTRecvd").value = ""; }
+            }*@
+            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+        }
+
+    }
+</script>
+<script>
     function CalulateTareWt(GRWT, NTWT, TRWT) {
         var GROSS = document.getElementById(GRWT.id).value;
         if (GROSS == "") {
@@ -1276,6 +1432,15 @@
                     <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="OpenAmount();" accesskey="F">Freight & Others(F)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
+                    <li id="OtherAddress_LI" class=""><a data-toggle="tab" href="#OtherAddress">Other Address</a></li>
+                    @*@if (Model.MENU_PARA == "SO")
+                    {
+                        <li id="StockTransfer_LI" class=""><a data-toggle="tab" href="#StockTransfer">Stock Out</a></li>
+                    }
+                    else if (Model.MENU_PARA == "SI")
+                    {*@
+                        <li id="StockTransfer_LI" class=""><a data-toggle="tab" href="#StockTransfer">Stock In</a></li>
+                    @*}*@
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
@@ -1473,6 +1638,16 @@
                             <div class="col-md-2">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.TOTTAX, new { htmlAttributes = new { @class = "form-control", id = "TOTTAX", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Total Tax", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Reverse Charge")
+                                </div>
+                            </div>
+                            <div class="col-md-7" style="width:auto;">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text", Model.T_TXN.REVCHRG), "No", new { @class = "form-control", id = "REVCHRG", onchange = "ReverceCharges();" })
                                 </div>
                             </div>
                         </div>

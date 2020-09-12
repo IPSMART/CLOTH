@@ -2112,14 +2112,14 @@ namespace Improvar
         {
             string scm = CommVar.CurSchema(UNQSNO);
             string sql = "";
-            sql += "select STKTYPE,STKNAME from " + scm + ".M_stktype ORDER BY case when STKTYPE = 'F' then 1 else 2  end  ";
+            sql += "select STKTYPE,decode(STKTYPE,'F','',STKNAME)STKNAME from " + scm + ".M_stktype ORDER BY case when STKTYPE = 'F' then 1 else 2  end  ";
             DataTable dt = SQLquery(sql);
             List<DropDown_list_StkType> DropDown_list_StkType = new List<DropDown_list_StkType>();
             DropDown_list_StkType = (from DataRow dr in dt.Rows
                                      select new DropDown_list_StkType() { text = dr["STKNAME"].retStr(), value = dr["STKTYPE"].retStr() }).OrderBy(s => s.text).Distinct().ToList();
             return DropDown_list_StkType;
         }
-        public string BARCODE_help(string val)
+        public string BARNO_help(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
@@ -2138,9 +2138,9 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"] + " </td><td>" + tbl.Rows[i]["COLRNM"] + " </td><td>" + tbl.Rows[i]["SIZENM"] + " </td></tr>");
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No.";
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No." + Cn.GCS() + "Color Name." + Cn.GCS() + "Size Name.";
                 return Generate_help(hdr, SB.ToString());
             }
             else
@@ -2320,6 +2320,51 @@ namespace Improvar
                     }
                 }
             }
+        }
+        public List<INVTYPE_list> INVTYPE_list()
+        {
+            List<INVTYPE_list> INVTYPE_list = new List<INVTYPE_list> {
+                new INVTYPE_list { Value = "01", Text = "Regular" },
+                new INVTYPE_list { Value = "02", Text = "SEZ supplies with payment" },
+                new INVTYPE_list { Value = "03", Text = "SEZ supplies without payment" },
+                new INVTYPE_list { Value = "04", Text = "Deemed Exp" },
+            };
+            return (INVTYPE_list);
+        }
+        public List<EXPCD_list> EXPCD_list(string salpur = "S")
+        {
+            if (salpur == "P")
+            {
+                List<EXPCD_list> EXPCD_list = new List<EXPCD_list>
+                    {
+                        new EXPCD_list { Value = "11", Text = "IGWPAY" },
+                        new EXPCD_list { Value = "12", Text = "IGWOPAY"},
+                        new EXPCD_list { Value = "13", Text = "ISWPAY"},
+                    };
+                return (EXPCD_list);
+            }
+            else
+            {
+                List<EXPCD_list> EXPCD_list = new List<EXPCD_list>
+                    {
+                        new EXPCD_list { Value = "01", Text = "WPAY" },
+                        new EXPCD_list { Value = "02", Text = "WOPAY"},
+                    };
+                return (EXPCD_list);
+            }
+        }
+        public List<REV_CHRG> REV_CHRG()
+        {
+            List<REV_CHRG> Reverse = new List<REV_CHRG>();//add reverse charge option
+            REV_CHRG Reverse0 = new REV_CHRG();
+            Reverse0.Text = "No"; Reverse0.Value = "";
+            REV_CHRG Reverse1 = new REV_CHRG();
+            Reverse1.Text = "Yes"; Reverse1.Value = "Y";
+            REV_CHRG Reverse2 = new REV_CHRG();
+            Reverse2.Text = "Not Applicable"; Reverse2.Value = "N";
+            //Reverse.Add(Reverse0);
+            Reverse.Add(Reverse1); Reverse.Add(Reverse2);
+            return Reverse;
         }
     }
 }
