@@ -557,12 +557,13 @@
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Programme_LI4" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
-                    <li id="QtyRequird_LI4" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement(Q)</a></li>
+                    <li id="Programme_LI" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
+                    <li id="QtyRequird_LI" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement(Q)</a></li>
                     <li id="MtrlIssue_LI" class=""><a data-toggle="tab" href="#MtrlIssue" accesskey="M">Material Issue(M)</a></li>
-                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
-                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
-                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents"accesskey="U">Documents(U)</a></li>
+                    <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
+                    <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
+                    <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
+                    <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents"accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="Programme" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
@@ -571,6 +572,16 @@
                                 <div id="partialdivProgramme" style="margin-top:0px;">
                                     @Html.Partial("_T_OUTISSPROCESS_Programme")
                                 </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading ui-icon-note">Rules</div>
+                            <div class="panel-body">
+                                <p>
+                                    1.Press <b>F8</b> for repeat above Row
+                                    @*2.Press F8 for repeat above Row*@
+                                </p>
+                            
                             </div>
                         </div>
                     </div>
@@ -901,6 +912,142 @@
                             <div>
                                 <div id="partialdivDetail" style="margin-top:0px;">
                                     @Html.Partial("_T_OUTISSPROCESS_DETAIL")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Transport" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Transporter")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Courier")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.CRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CRSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd')" />
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.CRSLNM, new { htmlAttributes = new { @class = "form-control", id = "CRSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Courier Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Eway Bill Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.EWAYBILLNO, new { htmlAttributes = new { @class = "form-control", id = "EWAYBILLNO", maxlength = 20, @placeholder = "Eway Bill Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "LR Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LRNO, new { htmlAttributes = new { @class = "form-control", id = "LRNO", maxlength = 15, @placeholder = "LR Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "LR Date")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LRDT, new { htmlAttributes = new { @class = "form-control", id = "LRDT", maxlength = 10, onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Vechicle Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LORRYNO, new { htmlAttributes = new { @class = "form-control", id = "LORRYNO", maxlength = 16, @placeholder = "Vechicle Number" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Gross Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.GRWT, new { htmlAttributes = new { @class = "form-control", id = "GRWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Gross Weight" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Net Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.NTWT, new { htmlAttributes = new { @class = "form-control", id = "NTWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Net Weight" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Tare Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRWT, new { htmlAttributes = new { @class = "form-control", id = "TRWT", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Tare Weight", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Cases Nos.")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.CASENOS, new { htmlAttributes = new { @class = "form-control", id = "CASENOS", maxlength = 500, @placeholder = "Cases Nos" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "No of Cases")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "No of Cases" } })
                                 </div>
                             </div>
                         </div>
