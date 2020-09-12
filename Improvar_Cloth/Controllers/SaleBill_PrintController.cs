@@ -564,7 +564,7 @@ namespace Improvar.Controllers
 
                 while (i <= maxR)
                 {
-                    fssailicno = tbl.Rows[i]["fssailicno"].ToString();
+                    
                     //grpemailid = tbl.Rows[i]["grpemailid"].ToString();
                     gocd = tbl.Rows[i]["gocd"].ToString();
                     goadd = tbl.Rows[i]["goadd1"].ToString() + " " + tbl.Rows[i]["goadd2"].ToString() + " " + tbl.Rows[i]["goadd3"].ToString();
