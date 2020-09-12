@@ -352,6 +352,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("goadd1", typeof(string), "");
                 IR.Columns.Add("goadd2", typeof(string), "");
                 IR.Columns.Add("goadd3", typeof(string), "");
+                IR.Columns.Add("gophno", typeof(string), "");
+                IR.Columns.Add("goemail", typeof(string), "");
                 IR.Columns.Add("slcd", typeof(string), "");
                 IR.Columns.Add("partycd", typeof(string), "");
                 IR.Columns.Add("slnm", typeof(string), "");
