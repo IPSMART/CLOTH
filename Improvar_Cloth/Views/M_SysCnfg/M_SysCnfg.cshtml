@@ -1,0 +1,409 @@
+﻿@model Improvar.ViewModels.SysCnfgMasterEntry
+@{
+    ViewBag.Title = "Code & Terms Setup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string PageControllerName = "M_SysCnfg";
+}
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+
+            $("#ITGRPCD").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Group Name", "GRPNM")) { return false; }
+        if (!emptyFieldCheck("Enter Item Group Name", "ITGRPNM")) { return false; }
+        var grptyp = $("#grptype").val();
+        if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
+        if (!emptyFieldCheck("Enter Sales General Ledger Code", "SALDEBGLCD")) { return false; }
+        if (!emptyFieldCheck("Enter Purchase General Ledger Code", "PURDEBGLCD")) { return false; }
+
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_SYSCNFG != null)
+        {
+            mldauto = Model.M_SYSCNFG.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+<script>
+    function CheckGroupCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#urlname").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#msg_ok_info").focus();
+                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
+                            $("#ITGRPCD").val("");
+                            message_value = "ITGRPCD";
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
+<script>
+    function input(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectProductGrp(id, PRODGRPCD, PRODGRPNM) {
+        if (id == "") {
+            $("#PRODGRPNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlPRODGRP").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#PRODGRPCD").val("");
+                        $("#PRODGRPNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Product Group Code !! ");
+                        message_value = "PRODGRPCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        input(PRODGRPCD, PRODGRPNM);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function pageprinting() {
+        $("#btnprint").click();
+    }
+</script>
+<script></script>
+
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlname" value="@Url.Action("CheckGroupCode", PageControllerName)" />
+            <input type="hidden" id="urlPRODGRP" value="@Url.Action("ProductGrp", PageControllerName)" />
+            <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
+            <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.M_SYSCNFG.M_AUTONO)
+            @Html.HiddenFor(e => e.M_SYSCNFG.EMD_NO)
+            @Html.HiddenFor(e => e.M_SYSCNFG.COMPCD)
+            <input type="hidden" id="GLCDlinkcd" value="O" />
+            <input type="hidden" id="SLCDlinkcd" value="D" />
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                <li><a data-toggle="tab" href="#Documents">Documents</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Effective Date")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SYSCNFG.EFFDT, new { htmlAttributes = new { @class = "form-control", id = "EFFDT", maxlength = 10, @placeholder = "Code" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Debtors")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SYSCNFG.SALDEBGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SALDEBGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Debtors Details','SALDEBGLCD','SALDEBGLCD=GLCD=1/SALDEBGLNM=GLNM=0','GLCDlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Debtors Details','SALDEBGLCD','SALDEBGLCD=GLCD=1/SALDEBGLNM=GLNM=0','GLCDlinkcd');", @placeholder = "SALDEBGLCD", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','Debtors Details','SALDEBGLCD','SALDEBGLCD=GLCD=1/SALDEBGLNM=GLNM=0','GLCDlinkcd')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.SALDEBGLNM, new { htmlAttributes = new { @class = "form-control", id = "SALDEBGLNM", @placeholder = "Debtors Name", maxlength = 45, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Creditors")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+
+                                @Html.EditorFor(model => model.M_SYSCNFG.PURDEBGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURDEBGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Creditors Details','PURDEBGLCD','PURDEBGLCD=GLCD=1/PURDEBGLNM=GLNM=0','GLCDlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','Creditors Details','PURDEBGLCD','PURDEBGLCD=GLCD=1/PURDEBGLNM=GLNM=0','GLCDlinkcd');", @placeholder = "PURDEBGLCD", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','Creditors Details','PURDEBGLCD','PURDEBGLCD=GLCD=1/PURDEBGLNM=GLNM=0','GLCDlinkcd')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.PURDEBGLNM, new { htmlAttributes = new { @class = "form-control", id = "PURDEBGLNM", @placeholder = "Creditors Name", maxlength = 45, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div id="CLASS1" class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Class 1")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SYSCNFG.CLASS1CD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CLASS1CD", onkeydown = "GetHelpBlur('" + @Url.Action("GetClass1Details", PageControllerName) + "','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetClass1Details", PageControllerName) + "','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0');", @placeholder = "Class1 Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetClass1Details", PageControllerName)','Class 1 Details','CLASS1CD','CLASS1CD=CLASS1CD=1/CLASS1NM=CLASS1NM=0')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.CLASS1NM, new { htmlAttributes = new { @class = "form-control", id = "CLASS1NM", maxlength = 40, @title = "Only for View", @placeholder = "Class 1 Name", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Retail Debtor")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SYSCNFG.RETDEBSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RETDEBSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Retail Debtor Details','RETDEBSLCD','RETDEBSLCD=slcd=1/RETDEBSLNM=slnm=0','SLCDlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Retail Debtor Details','RETDEBSLCD','RETDEBSLCD=slcd=1/RETDEBSLNM=slnm=0','SLCDlinkcd');", @placeholder = "RETDEBSLCD", maxlength = 8 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Retail Debtor Details','RETDEBSLCD','RETDEBSLCD=slcd=1/RETDEBSLNM=slnm=0','SLCDlinkcd')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.RETDEBSLNM, new { htmlAttributes = new { @class = "form-control", id = "RETDEBSLNM", @placeholder = "Retail Debtor", maxlength = 45, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", " WP Price Gen")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.M_SYSCNFG.WPPRICEGEN, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control", id = "WPPRICEGEN" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", " RP Price Gen")
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.M_SYSCNFG.RPPRICEGEN, new SelectList(Model.DropDown_list2, "Value", "Text"), new { @class = "form-control", id = "RPPRICEGEN" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-md-7">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Deals in")
+
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SYSCNFG.DEALSIN, new { htmlAttributes = new { @class = "form-control", id = "DEALSIN", @placeholder = "Deals in", maxlength = 100} })
+                                </div>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Insurance Policy")
+
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                               @Html.EditorFor(model => model.M_SYSCNFG.INSPOLDESC, new { htmlAttributes = new { @class = "form-control", id = "INSPOLDESC", @placeholder = "Insurance Policy", maxlength = 100 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Bill Terms")
+
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SYSCNFG.BLTERMS, new { htmlAttributes = new { @class = "form-control", id = "BLTERMS", @placeholder = "Bill Terms", maxlength = 1000 } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Due Date Calc on")
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => Model.M_SYSCNFG.DUEDATECALCON, new SelectList(Model.DropDown_list3, "Value", "Text"), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Bank Serial No")
+
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SYSCNFG.BANLSLNO, new { htmlAttributes = new { @class = "form-control", id = "BANLSLNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Bank Serial No", maxlength = 2 } })
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "De - Activate")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.Checked)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                        <div id="partialdivDocument">
+                            @Html.Partial("_UPLOADDOCUMENTS")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}
