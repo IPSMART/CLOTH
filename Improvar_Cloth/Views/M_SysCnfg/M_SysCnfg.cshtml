@@ -15,7 +15,7 @@
         }
         else if ("@Model.DefaultAction" == "E") {
 
-            $("#ITGRPCD").attr("readonly", "readonly");
+            $("#EFFDT").attr("readonly", "readonly");
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -25,14 +25,15 @@
 </script>
 <script>
     function requiredFieldValidator() {
-        if (!emptyFieldCheck("Enter Group Name", "GRPNM")) { return false; }
-        if (!emptyFieldCheck("Enter Item Group Name", "ITGRPNM")) { return false; }
-        var grptyp = $("#grptype").val();
-        if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
-        if (!emptyFieldCheck("Enter Sales General Ledger Code", "SALDEBGLCD")) { return false; }
-        if (!emptyFieldCheck("Enter Purchase General Ledger Code", "PURDEBGLCD")) { return false; }
+        if (!emptyFieldCheck("Select Effective Date ", "EFFDT")) { return false; }
+        
 
         return true;
+    }
+</script>
+<script>
+    if ("@Model.DefaultAction" == "A") {
+        $(function () { $("#EFFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });
     }
 </script>
 <script>
@@ -50,80 +51,6 @@
     function ModifyLogDetails() {
         if ("@Model.DefaultAction" == "V") {
             ModifyLogDtl(@mldauto);
-        }
-    }
-</script>
-<script>
-    function CheckGroupCode(id) {
-        if ("@Model.DefaultAction" == "A") {
-            var valu = document.getElementById(id).value;
-            if (valu == "") {
-            }
-            else {
-                $.ajax({
-                    type: 'GET',
-                    url: $("#urlname").val(),
-                    data: {
-                        val: valu
-                    },
-                    success: function (result) {
-                        if (result == "1") {
-                            $("#Msgdiv1").show();
-                            $("#info").show();
-                            $("#msg_ok_info").focus();
-                            $("#msgbody_info").html("Code Already Exists : Please Enter a Valid Code !! ");
-                            $("#ITGRPCD").val("");
-                            message_value = "ITGRPCD";
-                        }
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        $("#WaitingMode").hide();
-                        msgError(XMLHttpRequest.responseText);
-                        $("body span h1").remove(); $("#msgbody_error style").remove();
-                    }
-                });
-            }
-        }
-    }
-</script>
-<script>
-    function input(id, id1) {
-        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-        $("#" + id.id).val(str[0]);
-        $("#" + id1.id).val(str[1].toString());
-    }
-    function SelectProductGrp(id, PRODGRPCD, PRODGRPNM) {
-        if (id == "") {
-            $("#PRODGRPNM").val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: $("#urlPRODGRP").val(),
-                data: {
-                    val: id
-                },
-                success: function (result) {
-                    if (result == "0") {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#PRODGRPCD").val("");
-                        $("#PRODGRPNM").val("");
-                        $("#btnok").focus();
-                        $("#msgbody_info").html("Invalid Product Group Code !! ");
-                        message_value = "PRODGRPCD";
-                    }
-                    else {
-                        $("#tempHDD").val(result);
-                        input(PRODGRPCD, PRODGRPNM);
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
         }
     }
 </script>
@@ -188,12 +115,12 @@
             @Html.HiddenFor(e => e.M_SYSCNFG.COMPCD)
             <input type="hidden" id="GLCDlinkcd" value="O" />
             <input type="hidden" id="SLCDlinkcd" value="D" />
-            <ul class="nav nav-tabs">
+            @*<ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
                 <li><a data-toggle="tab" href="#Documents">Documents</a></li>
-            </ul>
-            <div class="tab-content">
-                <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+            </ul>*@
+            @*<div class="tab-content">
+                <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">*@
 
                     <div class="row">
                         <div class="col-md-7">
@@ -206,6 +133,9 @@
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_SYSCNFG.EFFDT, new { htmlAttributes = new { @class = "form-control", id = "EFFDT", maxlength = 10, @placeholder = "Code" } })
                             </div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="button" class="btn btn-info" id="btnCopySize" value="Copy Data" style="padding: 1px 7px 1px 7px;height: 20px;font-size: 11px;font-weight: bold;margin-top: 1px;" onclick="CopyData();" />
                         </div>
                     </div>
                     <div class="row">
@@ -387,15 +317,15 @@
                         </div>
                     </div>
                 </div>
-                <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                @*<div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                     <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
                         <div id="partialdivDocument">
                             @Html.Partial("_UPLOADDOCUMENTS")
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                </div>*@
+            @*</div>
+        </div>*@
     }
     else
     {
