@@ -2112,7 +2112,7 @@ namespace Improvar
         {
             string scm = CommVar.CurSchema(UNQSNO);
             string sql = "";
-            sql += "select STKTYPE,STKNAME from " + scm + ".M_stktype ORDER BY case when STKTYPE = 'F' then 1 else 2  end  ";
+            sql += "select STKTYPE,decode(STKTYPE,'F','',STKNAME)STKNAME from " + scm + ".M_stktype ORDER BY case when STKTYPE = 'F' then 1 else 2  end  ";
             DataTable dt = SQLquery(sql);
             List<DropDown_list_StkType> DropDown_list_StkType = new List<DropDown_list_StkType>();
             DropDown_list_StkType = (from DataRow dr in dt.Rows
@@ -2352,6 +2352,19 @@ namespace Improvar
                     };
                 return (EXPCD_list);
             }
+        }
+        public List<REV_CHRG> REV_CHRG()
+        {
+            List<REV_CHRG> Reverse = new List<REV_CHRG>();//add reverse charge option
+            REV_CHRG Reverse0 = new REV_CHRG();
+            Reverse0.Text = "No"; Reverse0.Value = "";
+            REV_CHRG Reverse1 = new REV_CHRG();
+            Reverse1.Text = "Yes"; Reverse1.Value = "Y";
+            REV_CHRG Reverse2 = new REV_CHRG();
+            Reverse2.Text = "Not Applicable"; Reverse2.Value = "N";
+            //Reverse.Add(Reverse0);
+            Reverse.Add(Reverse1); Reverse.Add(Reverse2);
+            return Reverse;
         }
     }
 }
