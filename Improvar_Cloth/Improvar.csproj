@@ -265,7 +265,7 @@
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
-    <Compile Include="Controllers\T_BillPrintController.cs" />
+    <Compile Include="Controllers\SaleBill_PrintController.cs" />
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
@@ -1015,8 +1015,6 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_DETAIL.cshtml" />
     <Content Include="Views\Shared\_T_SALE_BARNODETAIL.cshtml" />
-    <Content Include="Views\Shared\_T_OUTISSPROCESS_MATTERIAL_autofill.cshtml" />
-    <Content Include="Views\Shared\_T_OUTISSPROCESS_MATTERIAL_ISSUE.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_PRODUCT.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_QtyRequirement.cshtml" />
     <Content Include="Views\T_BiltyG_Mutia\T_BiltyG_Mutia.cshtml" />
@@ -1030,7 +1028,7 @@
     <Content Include="Views\T_Bilty_Khasra\T_Bilty_Khasra.cshtml" />
     <Content Include="Views\Shared\_T_Bilty_Khasra_Main.cshtml" />
     <Content Include="Views\Shared\_T_Bilty_Khasra_PopUp.cshtml" />
-    <Content Include="Views\T_BillPrint\T_BillPrint.cshtml" />
+    <Content Include="Views\SaleBill_Print\SaleBill_Print.cshtml" />
     <Content Include="Views\Rep_Doc_Print\Rep_Doc_Print.cshtml" />
   </ItemGroup>
   <ItemGroup>
