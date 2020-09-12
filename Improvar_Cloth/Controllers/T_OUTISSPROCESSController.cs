@@ -185,8 +185,8 @@ namespace Improvar.Controllers
                                 {
                                     TPROGDTL PROGDTL = new TPROGDTL();
                                     PROGDTL.SLNO = Convert.ToByte(i + 1);
-                                    PROGDTL.MTRLJOBCD = TTXN.JOBCD;
-                                    PROGDTL.MTRLJOBNM = VE.JOBNM;
+                                    //PROGDTL.MTRLJOBCD = TTXN.JOBCD;
+                                    //PROGDTL.MTRLJOBNM = VE.JOBNM;
                                     TPROGDTL.Add(PROGDTL);
                                     VE.TPROGDTL = TPROGDTL;
                                 }
@@ -988,23 +988,50 @@ namespace Improvar.Controllers
         {
             try
             {
-                VE.TPROGBOM = (from x in VE.TPROGDTL
-                               group x by new
-                               {
-                                   x.SLNO,
-                                   x.ITCD,
-                                   x.ITNM,
-                                   x.UOM,
-                                   x.QNTY
-                               } into P
-                               select new TPROGBOM
-                               {
-                                   SLNO = P.Key.SLNO.retShort(),
-                                   QITNM = P.Key.ITNM,
-                                   QUOM = P.Key.UOM,
-                                   QQNTY = P.Key.QNTY,
-                                   //qnty = P.Sum(A => A.QNTY)
-                               }).ToList();
+                Cn.getQueryString(VE);
+                if (VE.MENU_PARA == "DY")
+                {
+                    VE.TPROGBOM = (from x in VE.TPROGDTL                                 
+                                   select new TPROGBOM
+                                   {
+                                       SLNO = x.SLNO.retShort(),
+                                       QITNM = x.ITNM,
+                                       QUOM = x.UOM,
+                                       QQNTY = x.QNTY,
+                                       ITGRPCD = x.ITGRPCD,
+                                       ITGRPNM = x.ITGRPNM,
+                                       ITCD = x.ITCD,
+                                       ITNM = x.ITNM,
+                                       SIZECD = x.SIZECD,
+                                       COLRCD = x.COLRCD,
+                                       COLRNM = x.COLRNM,
+                                       UOM = x.UOM,
+                                       MTRLJOBCD = x.MTRLJOBCD,
+                                       MTRLJOBNM = x.MTRLJOBNM,
+                                   }).ToList();
+                }
+                else
+                {
+                    VE.TPROGBOM = (from x in VE.TPROGDTL
+                                   group x by new
+                                   {
+                                       x.SLNO,
+                                       x.ITCD,
+                                       x.ITNM,
+                                       x.UOM,
+                                       x.QNTY
+                                   } into P
+                                   select new TPROGBOM
+                                   {
+                                       SLNO = P.Key.SLNO.retShort(),
+                                       QITNM = P.Key.ITNM,
+                                       QUOM = P.Key.UOM,
+                                       QQNTY = P.Key.QNTY,
+                                       //qnty = P.Sum(A => A.QNTY)
+                                   }).ToList();
+
+                }
+
                 for (int p = 0; p <= VE.TPROGBOM.Count - 1; p++)
                 {
                     VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);

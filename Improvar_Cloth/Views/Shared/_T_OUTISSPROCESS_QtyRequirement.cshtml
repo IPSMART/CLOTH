@@ -34,10 +34,11 @@
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="" style="width: 55px;text-align:center;">SL No.</th>
-                                <th class=""style="width:80px;">Item Name</th>
+                                <th class="" style="width:80px;">Item Name</th>
                                 <th class="" style="width:47px;">UOM</th>
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
                                 <th class="" style="width: 55px;text-align:center;">RSL No.</th>
+                                <th class="" style="width:80px;">Barno</th>
                                 <th class="" style="width:81px;">Group Code</th>
                                 <th class="" style="width:177px;">Group Name</th>
                                 <th class=""style="width:94px;">Item Code</th>
@@ -51,7 +52,7 @@
                                 <th class=""style="width:62px;">Size</th>
                                 <th class="" style="width:111px;text-align:right;">Bom Quantity</th>
                                 <th class="" style="width:111px;text-align:right;">Extra Quantity</th>
-                                <th class="" style="text-align:center;width: 27px;">Sample</th>
+                                <th class="" style="text-align:center;">Sample</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,8 +80,8 @@
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].RSLNO, new { id = "Q_RSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "')" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BARNO, new { id = "Q_BARNO_" + i, maxlength = 20, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS") + "','Barno Details','" + "Q_BARNO_" + i + "','" + "Q_BARNO_" + i + "=BARNO=0/Q_ITCD_" + i + "=ITCD/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_UOM_" + i + "=UOMCD/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", @placeholder = "ITCD", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS")','Item Details','Q_ITCD_@i','Q_ITCD_@i=ITCD=2/Q_ITNM_@i=ITNM=1/Q_UOM_@i=UOMCD=3/Q_ITNM_@i=ITSTYLE/Q_ITGRPCD_@i=ITGRPCD=5/Q_ITGRPNM_@i=ITGRPNM=4','Q_ITGRPCD_@i')" />
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].BARNO, new { id = "Q_BARNO_" + i, maxlength = 20, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS") + "','Barno Details','" + "Q_BARNO_" + i + "','" + "Q_BARNO_" + i + "=BARNO=0/Q_ITCD_" + i + "=ITCD/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_UOM_" + i + "=UOMCD/" + "Q_ITGRPCD_" + i + "=ITGRPCD/" + "Q_ITGRPNM_" + i + "=ITGRPNM/" + "Q_COLRCD_" + i + "=COLRCD/" + "Q_SIZECD_" + i + "=SIZECD/" + "Q_COLRNM_" + i + "=COLRNM');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS") + "','Barno Details','" + "Q_BARNO_" + i + "','" + "Q_BARNO_" + i + "=BARNO=0/Q_ITCD_" + i + "=ITCD/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_UOM_" + i + "=UOMCD/" + "Q_ITGRPCD_" + i + "=ITGRPCD/" + "Q_ITGRPNM_" + i + "=ITGRPNM/" + "Q_COLRCD_" + i + "=COLRCD/" + "Q_SIZECD_" + i + "=SIZECD/" + "Q_COLRNM_" + i + "=COLRNM');", @placeholder = "barno", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS")','Barno Details','Q_BARNO_@i','Q_BARNO_@i=BARNO=0/Q_ITCD_@i=ITCD/Q_ITNM_@i=ITSTYLE/Q_UOM_@i=UOMCD/Q_ITGRPCD_@i=ITGRPCD/Q_ITGRPNM_@i=ITGRPNM/Q_COLRCD_@i =COLRCD/Q_SIZECD_@i =SIZECD/Q_COLRNM_@i=COLRNM');" />
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGBOM[i].ITGRPCD, new { id = "Q_ITGRPCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPCD_" + i + "','" + "Q_ITGRPCD_" + i + "=itgrpcd=1/" + "Q_ITGRPNM_" + i + "=itgrpnm=0');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTISSPROCESS") + "','Group Details','" + "Q_ITGRPCD_" + i + "','" + "Q_ITGRPCD_" + i + "=itgrpcd=1/" + "Q_ITGRPNM_" + i + "=itgrpnm=0');", @placeholder = "ITGRPCD", @class = " atextBoxFor textbox_image" })
@@ -91,7 +92,7 @@
 
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITCD, new { id = "Q_ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", @placeholder = "ITCD", @class = " atextBoxFor textbox_image" })
+                                            @Html.TextBoxFor(model => Model.TPROGBOM[i].ITCD, new { id = "Q_ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + "');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_OUTISSPROCESS") + "','Item Details','" + "Q_ITCD_" + i + "','" + "Q_ITCD_" + i + "=ITCD=2/" + "Q_ITNM_" + i + "=ITNM=1/" + "Q_UOM_" + i + "=UOMCD=3/" + "Q_ITNM_" + i + "=ITSTYLE/" + "Q_ITGRPCD_" + i + "=ITGRPCD=5/" + "Q_ITGRPNM_" + i + "=ITGRPNM=4','Q_ITGRPCD_" + i + " ');", @placeholder = "ITCD", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", "T_OUTISSPROCESS")','Item Details','Q_ITCD_@i','Q_ITCD_@i=ITCD=2/Q_ITNM_@i=ITNM=1/Q_UOM_@i=UOMCD=3/Q_ITNM_@i=ITSTYLE/Q_ITGRPCD_@i=ITGRPCD=5/Q_ITGRPNM_@i=ITGRPNM=4','Q_ITGRPCD_@i')" />
                                         </td>
                                         <td class="">
