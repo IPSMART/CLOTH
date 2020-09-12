@@ -2216,12 +2216,6 @@ namespace Improvar
             var hdr = "Doc Date" + Cn.GCS() + "Doc No";
             return Generate_help(hdr, SB.ToString());
         }
-        public string retCompLogo()
-        {
-            string complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".png";
-            if (!System.IO.File.Exists(complogo)) complogo = "c:\\improvar\\" + CommVar.Compcd(UNQSNO) + ".jpg";
-            return complogo;
-        }
         public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
         {
             DataTable tbl = new DataTable();
@@ -2288,6 +2282,42 @@ namespace Improvar
                 else
                 {
                     return "Invalid Packing Slip No. ! Please Enter a Valid Packing Slip No. !!";
+                }
+            }
+        }
+        public string DOCNO_help(string val, string doccd = "")
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
+            {
+                var query = (from c in DB.T_CNTRL_HDR where c.DOCCD == doccd orderby c.DOCDT, c.DOCONLYNO select new { DOCONLYNO = c.DOCONLYNO, DOCDT = c.DOCDT }).ToList();
+
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= query.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + query[i].DOCONLYNO + "</td><td>" + query[i].DOCDT.ToString().Substring(0, 10) + "</td></tr>");
+                    }
+                    var hdr = "Document Number" + Cn.GCS() + "Document Date";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    query = query.Where(a => a.DOCONLYNO == val).ToList();
+                    if (query.Any())
+                    {
+                        string str = "";
+                        foreach (var i in query)
+                        {
+                            str = ToReturnFieldValues(query);
+                        }
+                        return str;
+                    }
+                    else
+                    {
+                        return "Invalid Document Number ! Please Select / Enter a Valid Document Number !!";
+                    }
                 }
             }
         }

@@ -260,6 +260,7 @@
     <Compile Include="Controllers\M_USR_ACS_GRPDTLController.cs" />
     <Compile Include="Controllers\Prepare_JSONController.cs" />
     <Compile Include="Controllers\PrintPageController.cs" />
+    <Compile Include="Controllers\Rep_Doc_PrintController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
@@ -515,6 +516,7 @@
     <Compile Include="Models\T_SORDDTL.cs" />
     <Compile Include="Models\T_SORD_CANC.cs" />
     <Compile Include="Models\T_SORD_SCHEME.cs" />
+    <Compile Include="Models\T_STKTRNF.cs" />
     <Compile Include="Models\T_TXN.cs" />
     <Compile Include="Models\T_TXNACK.cs" />
     <Compile Include="Models\T_TXNAMT.cs" />
@@ -839,6 +841,7 @@
     <None Include="Metadata\PublishProfiles\Improvar_ERP.pubxml" />
     <Content Include="Report\CORRES.rpt" />
     <None Include="Properties\PublishProfiles\IpSmart_Sales.pubxml" />
+    <Content Include="Report\JobIssue.rpt" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\capsLock.js" />
     <Content Include="Scripts\Custom.js" />
@@ -1028,6 +1031,7 @@
     <Content Include="Views\Shared\_T_Bilty_Khasra_Main.cshtml" />
     <Content Include="Views\Shared\_T_Bilty_Khasra_PopUp.cshtml" />
     <Content Include="Views\T_BillPrint\T_BillPrint.cshtml" />
+    <Content Include="Views\Rep_Doc_Print\Rep_Doc_Print.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
