@@ -3693,5 +3693,22 @@ namespace Improvar
                 doc.Close();
             }
         }
+        public string CopyImage(string copyFromPath, string copyToPath)
+        {
+            try
+            {               
+                if (System.IO.File.Exists(copyToPath))
+                {
+                        System.IO.File.Delete(copyToPath);
+                }
+                File.Copy(copyFromPath, copyToPath);
+                return copyToPath;
+            }
+            catch (Exception ex)
+            {
+                SaveException(ex, copyToPath);
+                return "";
+            }
+        }
     }
 }

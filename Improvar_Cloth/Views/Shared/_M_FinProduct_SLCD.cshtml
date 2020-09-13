@@ -7,9 +7,9 @@
         {
             @Html.ValidationSummary(true)
             <div class="grid_title">
-                <input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="Rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
-                <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddRowSIZE('AddRowsMain')" />
-                <img src="~/Image/Minus.png" class="Help_image_buttonAddRemove" id="btnDelete" title="Delete Row" onclick="DeleteRowSIZE()" />
+                <input type="text" id="AddRowsSLCD" name="AddRowsSLCD" placeholder="Rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
+                <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddRowSLCD('AddRowsSLCD')" />
+                <img src="~/Image/Minus.png" class="Help_image_buttonAddRemove" id="btnDelete" title="Delete Row" onclick="DeleteRowSLCD()" />
 
                 <div class="col-md-8">
                     <input type="text" id="search_size" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleItemSize');" />
