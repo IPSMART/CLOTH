@@ -454,7 +454,7 @@ namespace Improvar.Controllers
                         UploadDOC1.Add(UPL);
                         VE.UploadDOC = UploadDOC1;
                     }
-                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_BATCH_IMG_HDR WHERE barno in(" + getbarno(sl.ITCD) .retSqlformat()+ ")";
+                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_BATCH_IMG_HDR WHERE barno in(" + getbarno(sl.ITCD).retSqlformat() + ")";
                     dt = masterHelp.SQLquery(sql);
                     VE.UploadBarImages = (from DataRow dr in dt.Rows
                                           select new UploadDOC
@@ -1410,7 +1410,10 @@ namespace Improvar.Controllers
                     }
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, BarImage);
+            }
             var result = Tuple.Create(doc);
             return result;
         }
