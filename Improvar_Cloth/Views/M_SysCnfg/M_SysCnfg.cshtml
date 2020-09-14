@@ -95,8 +95,9 @@
         $("#btnprint").click();
     }
 </script>
-@section Scripts {
+
     <script>
+        debugger;
         function ReloadWithData() {
             var searchValue = $('#SEARCH_AUTONO').val();
             var url = window.location.href;
@@ -106,7 +107,7 @@
             window.location = url;
         }
     </script>
-}
+
 
 
 @using (Html.BeginForm())
@@ -144,7 +145,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_SYSCNFG.EFFDT, new { htmlAttributes = new { @class = "form-control", id = "EFFDT", maxlength = 10, @placeholder = "Code" } })
+                                @Html.EditorFor(model => model.M_SYSCNFG.EFFDT, new { htmlAttributes = new { @class = "form-control", id = "EFFDT", maxlength = 10, @placeholder = "dd/mm/yyyy" } })
                             </div>
                         </div>
                         @if (Model.DefaultAction == "A")

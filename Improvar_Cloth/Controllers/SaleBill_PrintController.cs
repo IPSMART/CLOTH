@@ -383,6 +383,9 @@ namespace Improvar.Controllers
                 IR.Columns.Add("csladd5", typeof(string), "");
                 IR.Columns.Add("csladd6", typeof(string), "");
                 IR.Columns.Add("csladd7", typeof(string), "");
+                IR.Columns.Add("csladd8", typeof(string), "");
+                IR.Columns.Add("csladd9", typeof(string), "");
+                IR.Columns.Add("csladd10", typeof(string), "");
                 IR.Columns.Add("porefno", typeof(string), "");
                 IR.Columns.Add("porefdt", typeof(string), "");
                 IR.Columns.Add("trslcd", typeof(string), "");
@@ -505,6 +508,42 @@ namespace Improvar.Controllers
                 IR.Columns.Add("curr_cd", typeof(string), "");
                 IR.Columns.Add("shipmarkno", typeof(string), "");
                 IR.Columns.Add("blitdesc", typeof(string), "");
+
+
+                IR.Columns.Add("agstdocno", typeof(string), "");
+                IR.Columns.Add("agstdocdt", typeof(string), "");
+                IR.Columns.Add("makenm", typeof(string), "");
+                IR.Columns.Add("areacd", typeof(string), "");
+                IR.Columns.Add("itmprccd", typeof(string), "");
+                IR.Columns.Add("itmprcdesc", typeof(string), "");
+                IR.Columns.Add("prceffdt", typeof(string), "");
+                IR.Columns.Add("weekno", typeof(double), "");
+                IR.Columns.Add("ordrefno", typeof(string), "");
+                IR.Columns.Add("ordrefdt", typeof(string), "");
+                IR.Columns.Add("packsize", typeof(double), "");
+                IR.Columns.Add("hsnsaccd", typeof(string), "");
+                IR.Columns.Add("prodcd", typeof(string), "");
+                IR.Columns.Add("basamt", typeof(double), "");
+                IR.Columns.Add("stddiscamt", typeof(double), "");
+                IR.Columns.Add("taxableval", typeof(string), "");
+                IR.Columns.Add("user_id", typeof(string), "");
+                IR.Columns.Add("bltophead", typeof(string), "");
+                IR.Columns.Add("nopkgs", typeof(string), "");
+                IR.Columns.Add("mrp", typeof(double), "");
+                IR.Columns.Add("poslno", typeof(string), "");
+                IR.Columns.Add("plsupply", typeof(string), "");
+                IR.Columns.Add("destn", typeof(string), "");
+                IR.Columns.Add("mtrlcd", typeof(string), "");
+                IR.Columns.Add("bas_rate", typeof(string), "");
+                IR.Columns.Add("pv_per", typeof(string), "");
+                IR.Columns.Add("insudesc", typeof(string), "");
+                IR.Columns.Add("pvtag", typeof(string), "");
+                IR.Columns.Add("precarr", typeof(string), "");
+                IR.Columns.Add("precarrrecpt", typeof(string), "");
+                IR.Columns.Add("portload", typeof(string), "");
+                IR.Columns.Add("portdesc", typeof(string), "");
+                IR.Columns.Add("finaldest", typeof(string), "");
+                IR.Columns.Add("bankinter", typeof(string), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -955,8 +994,8 @@ namespace Improvar.Controllers
                             //dr1["blamt"] = (tbl.Rows[i]["blamt"].retDbl() - tbl.Rows[i]["ADVRECDAMT"].retDbl()).ToINRFormat();
 
                             dr1["rupinword"] = rupinwords;
-                            //dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
-                            //dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
+                            dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
+                            dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
                             blrem = "";
                             //if (tbl.Rows[i]["sapopdno"].ToString() != "") blrem = blrem + "ODP No. " + tbl.Rows[i]["sapopdno"].ToString() + "  ";
                             //if (tbl.Rows[i]["sapblno"].ToString() != "") blrem = blrem + "SAP Bill # " + tbl.Rows[i]["sapblno"].ToString() + "  ";
@@ -1192,7 +1231,7 @@ namespace Improvar.Controllers
                                             dr1["qnty"] = dqnty;
                                             if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                             dr1["qdecimal"] = uommaxdecimal;
-                                            dr1["basamt"] = dbasamt;
+                                            dr1["amt"] = dbasamt;
                                             dr1["tddiscamt"] = ddisc1;
                                             dr1["discamt"] = ddisc2;
                                             dr1["txblval"] = dtxblval.ToINRFormat();
@@ -1228,7 +1267,7 @@ namespace Improvar.Controllers
                                         dr1["qnty"] = dqnty;
                                         if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                         dr1["qdecimal"] = uommaxdecimal;
-                                        dr1["basamt"] = dbasamt;
+                                        dr1["amt"] = dbasamt;
                                         dr1["tddiscamt"] = ddisc1;
                                         dr1["discamt"] = ddisc2;
                                         dr1["txblval"] = dtxblval.ToINRFormat();
@@ -1257,7 +1296,7 @@ namespace Improvar.Controllers
                                     dr1["qnty"] = dqnty;
                                     if (VE.DOCCD == "SOOS" && uommaxdecimal == 6) uommaxdecimal = 4;
                                     dr1["qdecimal"] = uommaxdecimal;
-                                    dr1["basamt"] = dbasamt;
+                                    dr1["amt"] = dbasamt;
                                     dr1["tddiscamt"] = ddisc1;
                                     dr1["discamt"] = ddisc2;
                                     dr1["txblval"] = dtxblval.ToINRFormat();
