@@ -622,7 +622,7 @@ namespace Improvar.Controllers
                         bool doctotprint = false; bool totalreadyprint = false; bool delvchrg = false;
 
                         string dtldsc = "", dtlamt = "";
-                        double tqnty = 0, tamt = 0, tgst = 0, blamt = 0, totalosamt = 0;
+                        double tqnty = 0,tnos=0, tamt = 0, tgst = 0, blamt = 0, totalosamt = 0;
                         string hsnqnty = "", hsntaxblval = "", hsngstper1 = "", hsngstper2 = "", hsngstper3 = "", hsngstamt1 = "", hsngstamt2 = "", hsngstamt3 = "", hsncode = "";
                         double gstper1 = 0, gstamt1 = 0, total_qnty = 0, total_taxval = 0, total_gstamt1 = 0, total_gstamt2 = 0, total_gstamt3 = 0;
                         bool flagi = false, flagc = false, flags = false;
@@ -653,7 +653,7 @@ namespace Improvar.Controllers
                                 if (rsTmp.Rows.Count > 0) totalosamt = totalosamt + Convert.ToDouble(rsTmp.Rows[0]["blamt"] == DBNull.Value ? 0 : rsTmp.Rows[0]["blamt"]);
                             }
 
-                            Type A_T = tbl.Rows[0]["amt"].GetType(); Type Q_T = tbl.Rows[0]["qnty"].GetType(); Type I_T = tbl.Rows[0]["igstamt"].GetType();
+                            Type A_T = tbl.Rows[0]["amt"].GetType(); Type Q_T = tbl.Rows[0]["qnty"].GetType(); Type N_S = tbl.Rows[0]["nos"].GetType(); Type I_T = tbl.Rows[0]["igstamt"].GetType();
                             Type C_T = tbl.Rows[0]["cgstamt"].GetType(); Type S_T = tbl.Rows[0]["sgstamt"].GetType();
 
                             var GST_DATA = (from DataRow DR in tbl.Rows
@@ -666,6 +666,7 @@ namespace Improvar.Controllers
                                                 SGSTPER = X.Key.SGST,
                                                 TAMT = A_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("amt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("amt"))),
                                                 TQNTY = Q_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("qnty")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("qnty"))),
+                                                TNOS= N_S.Name == "Double" ? X.Sum(Z => Z.Field<double>("nos")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("nos"))),
                                                 IGSTAMT = I_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("igstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("igstamt"))),
                                                 CGSTAMT = C_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("cgstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("cgstamt"))),
                                                 SGSTAMT = S_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("sgstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("sgstamt"))),
@@ -680,6 +681,7 @@ namespace Improvar.Controllers
                                     if (k.CGSTAMT != 0) { dtldsc += "(+) CGST @ " + Cn.Indian_Number_format(k.CGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.CGSTAMT).ToINRFormat() + "~"; }
                                     if (k.SGSTAMT != 0) { dtldsc += "(+) SGST @ " + Cn.Indian_Number_format(k.SGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.SGSTAMT).ToINRFormat() + "~"; }
                                     tqnty = tqnty + Convert.ToDouble(k.TQNTY);
+                                    tnos = tnos + Convert.ToDouble(k.TNOS);
                                     tamt = tamt + Convert.ToDouble(k.TAMT);
                                     tgst = tgst + Convert.ToDouble(k.IGSTAMT) + Convert.ToDouble(k.CGSTAMT) + Convert.ToDouble(k.SGSTAMT);
                                 }
@@ -704,7 +706,7 @@ namespace Improvar.Controllers
                                                 TCGSTAMT = x.Sum(s => s.CGSTAMT),
                                                 TSGSTAMT = x.Sum(s => s.SGSTAMT),
                                                 TAMT = x.Sum(s => s.AMT),
-                                                TQNTY = x.Sum(s => s.QNTY),
+                                                TQNTY = x.Sum(s => s.QNTY)                                                
                                                 //DECIMAL = (from z in DBF.M_UOM
                                                 //           where z.UOMCD == (from y in DBF.T_VCH_GST where y.AUTONO == auto1 select y.UOM).FirstOrDefault()
                                                 //           select z.DECIMALS).FirstOrDefault()
@@ -847,7 +849,7 @@ namespace Improvar.Controllers
                             //dr1["weekno"] = tbl.Rows[i]["weekno"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["weekno"]);
 
                             dr1["slcd"] = tbl.Rows[i]["slcd"].ToString();
-                            //if (tbl.Rows[i]["slcd"].ToString() != "") dr1["slcd"] = "SAP - " + tbl.Rows[i]["slcd"].ToString();
+                            //if (tbl.Rows[i]["partycd"].ToString() != "") dr1["partycd"] = "SAP - " + tbl.Rows[i]["partycd"].ToString();
                             dr1["slnm"] = tbl.Rows[i]["slnm"].ToString();
                             dr1["regemailid"] = tbl.Rows[i]["regemailid"].ToString();
                             string cfld = "", rfld = ""; int rf = 0;
@@ -954,22 +956,22 @@ namespace Improvar.Controllers
                                 rf = rf + 1;
                                 rfld = "csladd" + Convert.ToString(rf);
                                 dr1[rfld] = tbl.Rows[i]["cstate"].ToString() + " [ Code - " + tbl.Rows[i]["cstatecd"].ToString() + " ]";
-                                //if (tbl.Rows[i]["cgstno"].ToString() != "")
-                                //{
-                                //    rf = rf + 1;
-                                //    rfld = "csladd" + Convert.ToString(rf);
-                                //    dr1[rfld] = "GST # " + tbl.Rows[i]["cgstno"].ToString();
-                                //}
-                                //if (tbl.Rows[i]["cpanno"].ToString() != "")
-                                //{
-                                //    rf = rf + 1;
-                                //    rfld = "csladd" + Convert.ToString(rf);
-                                //    dr1[rfld] = "PAN # " + tbl.Rows[i]["cpanno"].ToString();
-                                //}
+                                if (tbl.Rows[i]["cgstno"].ToString() != "")
+                                {
+                                    rf = rf + 1;
+                                    rfld = "csladd" + Convert.ToString(rf);
+                                    dr1[rfld] = "GST # " + tbl.Rows[i]["cgstno"].ToString();
+                                }
+                                if (tbl.Rows[i]["cpanno"].ToString() != "")
+                                {
+                                    rf = rf + 1;
+                                    rfld = "csladd" + Convert.ToString(rf);
+                                    dr1[rfld] = "PAN # " + tbl.Rows[i]["cpanno"].ToString();
+                                }
                             }
 
-                            //dr1["porefno"] = tbl.Rows[i]["porefno"].ToString();
-                            //dr1["porefdt"] = tbl.Rows[i]["porefdt"] == DBNull.Value ? "" : tbl.Rows[i]["porefdt"].retDateStr();
+                            dr1["porefno"] = tbl.Rows[i]["porefno"].ToString();
+                            dr1["porefdt"] = tbl.Rows[i]["porefdt"] == DBNull.Value ? "" : tbl.Rows[i]["porefdt"].retDateStr();
                             dr1["trslcd"] = tbl.Rows[i]["trslcd"].ToString();
                             dr1["trslnm"] = tbl.Rows[i]["trslnm"].ToString();
                             dr1["trsladd1"] = tbl.Rows[i]["trsladd1"].ToString();
@@ -1091,12 +1093,12 @@ namespace Improvar.Controllers
                                 //if (tbl.Rows[i]["prodcd"].ToString() != "") itdsc = itdsc + "PCD: " + tbl.Rows[i]["prodcd"].ToString() + " ";
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") itdsc += "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
                                 if (tbl.Rows[i]["itcd"].ToString() != "") dr1["caltype"] = 1; else dr1["caltype"] = 0;
-                                //dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
-                                //dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
+                                dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
+                                dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
                                 dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
                                 //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
-                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
+                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() +" "+ tbl.Rows[i]["styleno"].ToString();
                                 //if (tbl.Rows[i]["damstock"].ToString() == "D")
                                 //{
                                 //    dr1["itnm"] = dr1["itnm"].ToString() + " [Damage]";
@@ -1106,6 +1108,7 @@ namespace Improvar.Controllers
                                 //dr1["makenm"] = tbl.Rows[i]["makenm"].ToString();
                                 //dr1["mrp"] = tbl.Rows[i]["mrp"];
                                 if (tbl.Rows[i]["batchdlprint"].ToString() == "Y" && tbl.Rows[i]["batchdtl"].ToString() != "") dr1["batchdtl"] = "Batch # " + tbl.Rows[i]["batchdtl"].ToString(); else dr1["batchdtl"] = "";
+                                dr1["nos"] = tbl.Rows[i]["nos"].ToString();
                                 dr1["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
                                 //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
@@ -1129,23 +1132,23 @@ namespace Improvar.Controllers
                                 //dr1["bas_rate"] = (tbl.Rows[i]["bas_rate"] == DBNull.Value ? 0 : tbl.Rows[i]["bas_rate"]).retDbl().ToString("0.00");
                                 //dr1["pv_per"] = tbl.Rows[i]["pv_per"].ToString() == "" ? "" : tbl.Rows[i]["pv_per"].ToString() + " %"; if (tbl.Rows[i]["rateqntybag"].ToString() == "B") dr1["rateuomnm"] = "Case"; else dr1["rateuomnm"] = dr1["uomnm"];
                                 string strdsc = "";
-                                //if (Convert.ToDouble(tbl.Rows[i]["tddiscamt"]) != 0)
-                                //{
-                                //    switch (tbl.Rows[i]["tddisctype"].ToString())
-                                //    {
-                                //        case "Q":
-                                           
-                                //            strdsc = ""; break;
-                                //        case "N":
-                                            
-                                //            strdsc = ""; break;
-                                //        case "F":
-                                //            strdsc = "F"; break;
-                                //        default:
-                                //            dr1["discper"] = (tbl.Rows[i]["tddiscrate"]).retDbl();
-                                //            strdsc = (tbl.Rows[i]["tddiscrate"]).retDbl().ToString("0.00") + "%"; break;
-                                //    }
-                                //}
+                                if (Convert.ToDouble(tbl.Rows[i]["tddiscamt"]) != 0)
+                                {
+                                    switch (tbl.Rows[i]["tddisctype"].ToString())
+                                    {
+                                        case "Q":
+
+                                            strdsc = ""; break;
+                                        case "N":
+
+                                            strdsc = ""; break;
+                                        case "F":
+                                            strdsc = "F"; break;
+                                        default:
+                                            dr1["discper"] = (tbl.Rows[i]["tddiscrate"]).retDbl();
+                                            strdsc = (tbl.Rows[i]["tddiscrate"]).retDbl().ToString("0.00") + "%"; break;
+                                    }
+                                }
                                 dr1["stddisc"] = strdsc;
                                 dr1["tddiscamt"] = (tbl.Rows[i]["tddiscamt"]).retDbl();
                                 if ((tbl.Rows[i]["discamt"]).retDbl() != 0)
