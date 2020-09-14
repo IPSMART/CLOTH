@@ -372,7 +372,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("othadd3", typeof(string), "");
                 IR.Columns.Add("othadd4", typeof(string), "");
                 IR.Columns.Add("disctype", typeof(string), "");
-                IR.Columns.Add("discrate", typeof(string), "");
+                IR.Columns.Add("discrate", typeof(double), "");
                 IR.Columns.Add("cslcd", typeof(string), "");
                 IR.Columns.Add("cpartycd", typeof(string), "");
                 IR.Columns.Add("cslnm", typeof(string), "");
@@ -408,12 +408,12 @@ namespace Improvar.Controllers
                 IR.Columns.Add("gstno", typeof(double), "");
                 IR.Columns.Add("hsncode", typeof(string), "");
                 IR.Columns.Add("nos", typeof(double), "");
-                IR.Columns.Add("casenos", typeof(string), "");
-                IR.Columns.Add("noofcases", typeof(string), "");
+                IR.Columns.Add("casenos", typeof(double), "");
+                IR.Columns.Add("noofcases", typeof(double), "");
                 IR.Columns.Add("qnty", typeof(double), "");
                 IR.Columns.Add("uomnm", typeof(string), "");
                 IR.Columns.Add("qdecimal", typeof(double), "");
-                IR.Columns.Add("rate", typeof(string), "");
+                IR.Columns.Add("rate", typeof(double), "");
                 IR.Columns.Add("rateuomnm", typeof(string), "");
                 IR.Columns.Add("amt", typeof(double), "");
                 IR.Columns.Add("stddisc", typeof(string), "");
