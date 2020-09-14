@@ -187,7 +187,10 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="B_ImageData_@i" onchange="fileCheck(this,@i);" />
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
+                                         <input type="text" id="ImageDesc@i" value="" class="form-control" placeholder="Description" />
+                                            <input type="file" class="atextBoxFor" id="B_ImageData_@i" accept="image/*" onchange="fileTypeCheck(this,@i);" />
+                                            <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
                                         </td>
                                         @if (Model.DefaultAction != "V")
                                         {

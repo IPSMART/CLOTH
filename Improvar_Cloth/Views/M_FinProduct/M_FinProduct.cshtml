@@ -842,6 +842,8 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            <input type="hidden" id="ImageName" value="" />
+            <input type="hidden" id="ImageStr" value="" />
             @if (Model.MENU_PARA == "F")
             {  <input type="hidden" id="fabitcdlinkcd" value="F" />}
             else { <input type="hidden" id="fabitcdlinkcd" value="C" />}

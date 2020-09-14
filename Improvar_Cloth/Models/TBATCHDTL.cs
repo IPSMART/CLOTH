@@ -157,5 +157,7 @@ namespace Improvar.Models
         public string BARGENTYPE { get; set; }
         [StringLength(4)]
         public string BALEYR { get; set; }
+        public string BarImages { get; set; }
+        
     }
 }

@@ -988,7 +988,7 @@ namespace Improvar.Controllers
 
                         }
                         VE.DefaultView = true;
-                        return PartialView("_T_SALE_BARNODETAIL", VE);
+                        return PartialView("_T_SALE_POPUP_BARNODETAIL", VE);
                     }
                     else//stock return one row then return as blur
                     {
@@ -1292,7 +1292,7 @@ namespace Improvar.Controllers
                 }
                 ModelState.Clear();
                 VE.DefaultView = true;
-                var BARNOGRID = RenderRazorViewToString(ControllerContext, "_T_SALE_PRODUCT", VE);
+                var BARNOGRID = RenderRazorViewToString(ControllerContext, "_T_SALE_BARNO", VE);
                 var DETAILGRID = RenderRazorViewToString(ControllerContext, "_T_SALE_DETAIL", VE);
                 return Content(BARNOGRID + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + DETAILGRID);
 
@@ -1315,31 +1315,6 @@ namespace Improvar.Controllers
                 return stringWriter.GetStringBuilder().ToString();
             }
         }
-        //public ActionResult GetAllGstper(string PRODGRPGSTPER, double RATE, string ITCD, string DOCDT, string TAXGRPCD, string GOCD, string PRCCD, string MTRLJOBCD)
-        //{
-        //    try
-        //    {
-        //        string gstper = "";
-        //        if (PRODGRPGSTPER.retStr() != "")
-        //        {
-        //            var tax_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr().retSqlformat(), ITCD.retStr().retSqlformat(), "", MTRLJOBCD.retStr().retSqlformat(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
-        //            if (tax_data != null && tax_data.Rows.Count > 0)
-        //            {
-        //                PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
-
-        //            }
-        //            gstper = salesfunc.retGstPer(PRODGRPGSTPER.retStr(), RATE.retDbl());
-        //        }
-
-        //        return Content(gstper);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
 
         private void FreightCharges(TransactionPackingSlipEntry VE, string AUTO_NO)
         {
@@ -1367,8 +1342,7 @@ namespace Improvar.Controllers
                 sql += "where b.m_autono=c.m_autono(+) and b.salpur='" + S_P + "'  and nvl(c.inactive_tag,'N') = 'N' ";
                 sql += "and b.amtcd not in (select amtcd from " + scm + ".t_txnamt where autono='" + AUTO_NO + "')";
                 var AMOUNT_DATA = masterHelp.SQLquery(sql);
-
-              
+                              
                     VE.TTXNAMT = (from DataRow dr in AMOUNT_DATA.Rows
                                   select new TTXNAMT()
                                   {
@@ -1450,7 +1424,7 @@ namespace Improvar.Controllers
                 VE.TBATCHDTL = TBATCHDTL;
                 ModelState.Clear();
                 VE.DefaultView = true;
-                return PartialView("_T_SALE_PRODUCT", VE);
+                return PartialView("_T_SALE_BARNO", VE);
             }
             catch (Exception ex)
             {

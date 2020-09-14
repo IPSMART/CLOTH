@@ -1011,12 +1011,12 @@
     <Content Include="Views\M_Stktype\M_Stktype.cshtml" />
     <Content Include="Views\M_Payment\M_Payment.cshtml" />
     <Content Include="Views\Shared\_T_SALE_AMOUNT.cshtml" />
-    <Content Include="Views\Shared\_T_SALE_PRODUCT.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_BARNO.cshtml" />
     <Content Include="Views\Shared\_T_SALE_DETAIL.cshtml" />
     <Content Include="Views\T_OUTISSPROCESS\T_OUTISSPROCESS.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_DETAIL.cshtml" />
-    <Content Include="Views\Shared\_T_SALE_BARNODETAIL.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_POPUP_BARNODETAIL.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_PRODUCT.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_QtyRequirement.cshtml" />
     <Content Include="Views\T_BiltyG_Mutia\T_BiltyG_Mutia.cshtml" />
