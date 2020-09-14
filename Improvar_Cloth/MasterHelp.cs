@@ -2366,5 +2366,49 @@ namespace Improvar
             Reverse.Add(Reverse1); Reverse.Add(Reverse2);
             return Reverse;
         }
+        public string Get_SysConfgDetails(string val)
+        {
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                string scm = CommVar.CurSchema(UNQSNO);
+                string scmf = CommVar.FinSchema(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
+                //var query = (from c in DB.M_CLASS1 select new { CLASS1CD = c.CLASS1CD, CLASS1NM = c.CLASS1NM }).ToList();
+                string sql = "";
+                sql += "select a.m_autono,a.compcd,a.effdt,b.glnm saldebglnm,c.glnm purdebglnm from " + scm + ".m_syscnfg a," + scmf + ".m_genleg b,  ";
+                sql += scmf + ".m_genleg c where a.saldebglcd=b.glcd(+) and a.purdebglcd=c.glcd(+) "; 
+                if (valsrch.retStr() != "") sql += " and upper(m_autono) = '" + valsrch + "' ";
+                DataTable tbl = SQLquery(sql);
+                if (val.retStr() == "" || tbl.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["m_autono"] + "</td><td>" + tbl.Rows[i]["compcd"] + "</td><td>" + tbl.Rows[i]["effdt"].retDateStr() + "</td><td>" + tbl.Rows[i]["saldebglnm"] + "</td><td>" + tbl.Rows[i]["purdebglnm"] + "</td></tr>");
+                    }
+                    var hdr = "Autono" + Cn.GCS() + "Company Code" + Cn.GCS() + "Effective Date" + Cn.GCS() + "Debtors" + Cn.GCS() + "Creditors";
+                    return Generate_help(hdr, SB.ToString(),"0");
+                }
+                else
+                {
+                    string str = "";
+                    if (tbl.Rows.Count > 0)
+                    {
+                        str = ToReturnFieldValues("", tbl);
+                    }
+                    else
+                    {
+                        str = "Invalid Autono ! Please Select / Enter a Valid Autono !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
+
+        }
     }
 }

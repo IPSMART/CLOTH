@@ -22,6 +22,7 @@ namespace Improvar.Models
         public string TTAG { get; set; }
 
         [Key]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime EFFDT { get; set; }
 
         [StringLength(8)]
@@ -61,7 +62,7 @@ namespace Improvar.Models
 
         public byte? BANLSLNO { get; set; }
 
-        public long? M_AUTONO { get; set; }
+        public long M_AUTONO { get; set; }
 
         public decimal? WPPER { get; set; }
 

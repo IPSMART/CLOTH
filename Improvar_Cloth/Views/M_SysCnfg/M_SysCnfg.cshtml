@@ -26,7 +26,8 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Select Effective Date ", "EFFDT")) { return false; }
-        
+        if (!emptyFieldCheck("Select Debtors ", "SALDEBGLCD")) { return false; }
+        if (!emptyFieldCheck("Select Creditors ", "PURDEBGLCD")) { return false; }
 
         return true;
     }
@@ -94,7 +95,19 @@
         $("#btnprint").click();
     }
 </script>
-<script></script>
+@section Scripts {
+    <script>
+        function ReloadWithData() {
+            var searchValue = $('#SEARCH_AUTONO').val();
+            var url = window.location.href;
+            var key1 = "searchValue";
+            url = updateQueryStringParameter(url, key1, searchValue);
+            url = updateQueryStringParameter(url, "loadItem", "Y");
+            window.location = url;
+        }
+    </script>
+}
+
 
 @using (Html.BeginForm())
 {
@@ -123,7 +136,7 @@
                 <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">*@
 
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Effective Date")
                                 <b style="color:Red;">*</b>
@@ -134,12 +147,28 @@
                                 @Html.EditorFor(model => model.M_SYSCNFG.EFFDT, new { htmlAttributes = new { @class = "form-control", id = "EFFDT", maxlength = 10, @placeholder = "Code" } })
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <input type="button" class="btn btn-info" id="btnCopySize" value="Copy Data" style="padding: 1px 7px 1px 7px;height: 20px;font-size: 11px;font-weight: bold;margin-top: 1px;" onclick="CopyData();" />
-                        </div>
+                        @if (Model.DefaultAction == "A")
+                        {
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Copy from another")
+                                </div>
+                            </div>
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.SEARCH_AUTONO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SEARCH_AUTONO", onkeydown = "GetHelpBlur('" + @Url.Action("GetSysConfgDetails", PageControllerName) + "','SysCongf Details','SEARCH_AUTONO','SEARCH_AUTONO=m_autono=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSysConfgDetails", PageControllerName) + "','SysCongf Details','SEARCH_AUTONO','SEARCH_AUTONO=m_autono=0');", @placeholder = "Code", maxlength = 13 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSysConfgDetails", PageControllerName)','SysCongf Details','SEARCH_AUTONO','SEARCH_AUTONO=m_autono=0',)" />
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        <input type="button" value="Copy from previous" class="btn-sm" onclick="ReloadWithData();">
+                                    </div>
+                                </div>
+                        }
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Debtors")
                                 <b style="color:Red;">*</b>
@@ -158,7 +187,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Creditors")
                                 <b style="color:Red;">*</b>
@@ -178,7 +207,7 @@
                         </div>
                     </div>
                     <div id="CLASS1" class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Class 1")
                             </div>
@@ -196,7 +225,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Retail Debtor")
                             </div>
@@ -214,10 +243,9 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", " WP Price Gen")
-                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-7">
@@ -227,7 +255,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", " RP Price Gen")
                             </div>
@@ -239,7 +267,7 @@
                         </div>
                     </div>
                     <div class="row">
-                            <div class="col-md-7">
+                            <div class="col-md-5">
                                 <div class="editor-field" style="margin-top: 4px;">
                                     @Html.Label("", "Deals in")
 
@@ -252,7 +280,7 @@
                             </div>
                         </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Insurance Policy")
 
@@ -265,7 +293,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Bill Terms")
 
@@ -278,7 +306,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Due Date Calc on")
 
@@ -291,7 +319,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-5">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Bank Serial No")
 
@@ -305,7 +333,7 @@
                     </div>
                    
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "De - Activate")
                             </div>

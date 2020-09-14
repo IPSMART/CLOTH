@@ -86,24 +86,26 @@ namespace Improvar.Controllers
                     //=================For Due Date Calc on ================//
                     List<DropDown_list3> list2 = new List<DropDown_list3>();
                     DropDown_list3 obj5 = new DropDown_list3();
-                    obj5.text = "";
+                    obj5.text = "Bill Date";
                     obj5.value = "";
                     list2.Add(obj5);
                     DropDown_list3 obj6 = new DropDown_list3();
                     obj6.text = "LR Date";
                     obj6.value = "R";
                     list2.Add(obj6);
-                    DropDown_list3 obj7 = new DropDown_list3();
-                    obj7.text = "Bill Date";
-                    obj7.value = "B";
-                    list2.Add(obj7);
+                    //DropDown_list3 obj7 = new DropDown_list3();
+                    //obj7.text = "Bill Date";
+                    //obj7.value = "B";
+                    //list2.Add(obj7);
                     VE.DropDown_list3 = list2;
                     //=================End  Due Date Calc on ================//
                     VE.DefaultAction = op;
                     string GCS = Cn.GCS();
                     if (op.Length != 0)
                     {
-                        VE.IndexKey = (from p in DB.M_SYSCNFG orderby p.COMPCD select new IndexKey() { Navikey = p.COMPCD + GCS + p.EFFDT }).ToList();
+                        VE.IndexKey = (from p in DB.M_SYSCNFG orderby p.M_AUTONO
+                                       select  new { M_AUTONO = p.M_AUTONO }).Select (a=> new                                       
+                                       IndexKey() { Navikey = a.M_AUTONO.ToString() }).ToList();
 
                         if (op == "E" || op == "D" || op == "V")
                         {
@@ -199,8 +201,9 @@ namespace Improvar.Controllers
                     {
                         aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                     }
-                    DateTime EDT = Convert.ToDateTime(aa[1]);
-                    sl = DB.M_SYSCNFG.Find(aa[0],EDT);
+                    //DateTime EDT = Convert.ToDateTime(aa[1]);
+                    int autono = aa[0].retInt();
+                    sl = DB.M_SYSCNFG.Where(m=>m.M_AUTONO== autono).First();
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                     string class1cd = sl.CLASS1CD.retStr();
                     string SALDEBGLCD = sl.SALDEBGLCD.retStr();
@@ -235,16 +238,7 @@ namespace Improvar.Controllers
                     {
                         VE.Checked = false;
                     }
-                    //VE.UploadDOC = Cn.GetUploadImage(CommVar.CurSchema(UNQSNO).ToString(), Convert.ToInt32(sl.M_AUTONO));
-
-                    //if (VE.UploadDOC.Count == 0)
-                    //{
-                    //    List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
-                    //    UploadDOC UPL = new UploadDOC();
-                    //    UPL.DocumentType = doctP;
-                    //    UploadDOC1.Add(UPL);
-                    //    VE.UploadDOC = UploadDOC1;
-                    //}
+                   
                 }
             }
             catch (Exception ex)
@@ -255,23 +249,20 @@ namespace Improvar.Controllers
         }
         public ActionResult SearchPannelData()
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            var MDT = (from j in DB.M_SYSCNFG
-                       join o in DB.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
-                       where (j.M_AUTONO == o.M_AUTONO)
-                       select new
-                       {
-                           COMPCD = j.COMPCD,
-                           EFFDT = j.EFFDT,
-                           M_AUTONO = o.M_AUTONO
-                       }).OrderBy(s => s.COMPCD).ToList();
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string scm = CommVar.CurSchema(UNQSNO);
+            string scmf = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+            sql += "select a.m_autono,a.compcd,a.effdt,b.glnm saldebglnm,c.glnm purdebglnm from " + scm + ".m_syscnfg a," + scmf + ".m_genleg b,  ";
+            sql += scmf + ".m_genleg c where a.saldebglcd=b.glcd(+) and a.purdebglcd=c.glcd(+) ";
+            DataTable tbl = Master_Help.SQLquery(sql);
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Group Code" + Cn.GCS() + "Group Name" + Cn.GCS() + "AUTO NO";
-            for (int j = 0; j <= MDT.Count - 1; j++)
-            {
-                SB.Append("<tr><td>" + MDT[j].COMPCD + "</td><td>" + MDT[j].EFFDT + "</td><td>" + MDT[j].M_AUTONO + "</td></tr>");
-            }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "2"));
+            var hdr = "Autono" + Cn.GCS() + "Company Code" + Cn.GCS() + "Effective Date" + Cn.GCS() + "Debtors" + Cn.GCS() + "Creditors";
+            for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["m_autono"] + "</td><td>" + tbl.Rows[i]["compcd"] + "</td><td>" + tbl.Rows[i]["effdt"].retDateStr() + "</td><td>" + tbl.Rows[i]["saldebglnm"] + "</td><td>" + tbl.Rows[i]["purdebglnm"] + "</td></tr>");
+                }
+                return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "0"));
         }
         public ActionResult GetSubLedgerDetails(string val, string Code)
         {
@@ -308,6 +299,18 @@ namespace Improvar.Controllers
         public ActionResult GetGenLedgerDetails(string val, string Code)
         {
             var str = Master_Help.GLCD_help(val, Code);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
+            }
+        }
+        public ActionResult GetSysConfgDetails(string val)
+        {
+            var str = Master_Help.Get_SysConfgDetails(val);
             if (str.IndexOf("='helpmnu'") >= 0)
             {
                 return PartialView("_Help2", str);
@@ -433,7 +436,7 @@ namespace Improvar.Controllers
                         MSYSCNFG.BLTERMS = VE.M_SYSCNFG.BLTERMS;
                         MSYSCNFG.DUEDATECALCON = VE.M_SYSCNFG.DUEDATECALCON;
                         MSYSCNFG.BANLSLNO = VE.M_SYSCNFG.BANLSLNO;
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO.retInt(), VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_SYSCNFG.Add(MSYSCNFG);
