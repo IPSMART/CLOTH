@@ -16,5 +16,7 @@ namespace Improvar.ViewModels
         public string RETDEBSLNM { get; set; }
         public string SALDEBGLNM { get; set; }
         public string PURDEBGLNM { get; set; }
+        public string SEARCH_AUTONO { get; set; }
+
     }
 }
