@@ -461,11 +461,15 @@ namespace Improvar.Controllers
                                           {
                                               docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
                                               DOC_DESC = dr["DOC_DESC"].retStr(),
-                                              DOC_FILE = dr["DOC_FLNAME"].retStr(),
-                                              DOC_FILE_NAME = "/UploadDocuments/" + dr["DOC_FLNAME"].retStr(),
+                                              DOC_FILE = "/UploadDocuments/" + dr["DOC_FLNAME"].retStr(),
+                                              DOC_FILE_NAME =  dr["DOC_FLNAME"].retStr(),
                                           }).ToList();
                     foreach (var v in VE.UploadBarImages)
                     {
+                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + v.DOC_FILE_NAME;
+                        FROMpath = Path.Combine(FROMpath, "");
+                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath(v.DOC_FILE);
+                        Cn.CopyImage(FROMpath, TOPATH);
                         VE.BarImages += Cn.GCS() + v.DOC_FILE_NAME + "~" + v.DOC_DESC;
                     }
 

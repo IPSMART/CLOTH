@@ -63,6 +63,36 @@
     });
 </script>
 <script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        if ("@Model.MENU_PARA" == "PB") {
+            if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:first-child").addClass('active');
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                return false;
+            }
+            if (!emptyFieldCheck("Please Enter Purchase bill date", "PREFDT")) {
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:first-child").addClass('active');
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+<script>
     @{
         string mldauto = "";
         if (@Model.T_CNTRL_HDR != null)
@@ -85,21 +115,6 @@
         if ("@Model.DefaultAction" == "V") {
             ModifyLogDtl('@mldauto');
         }
-    }
-</script>
-<script>
-    function requiredFieldValidator() {
-        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }
-        return true;
     }
 </script>
 <script>
@@ -937,35 +952,8 @@
         //BillAmountCalculate();
 
     }
-    function OpenAmount() {
-        var AUTO_NO = document.getElementById("AUTONO").value;
-        var A_T_NOS = document.getElementById("T_NOS").value;
-        var A_T_QNTY = document.getElementById("T_QNTY").value;
-        var A_T_CURR_AMT = 0;
-        //var A_T_CURR_AMT = document.getElementById("T_CURR_AMT").value;
-        var A_T_AMT = document.getElementById("T_AMT").value;
-        var A_T_TAXABLE = document.getElementById("T_GROSS_AMT").value;
-        var A_T_IGST_AMT = document.getElementById("T_IGST_AMT").value;
-        var A_T_CGST_AMT = document.getElementById("T_CGST_AMT").value;
-        var A_T_SGST_AMT = document.getElementById("T_SGST_AMT").value;
-        var A_T_CESS_AMT = document.getElementById("T_CESS_AMT").value;
-        var A_T_DUTY_AMT = 0;// document.getElementById("T_DUTY_AMT").value;
-        var A_T_NET_AMT = document.getElementById("T_NET_AMT").value;
-
-        if (A_T_NOS == "") { A_T_NOS = parseInt(0) } else { A_T_NOS = parseInt(A_T_NOS) }
-        if (A_T_QNTY == "") { A_T_QNTY = parseFloat(0) } else { A_T_QNTY = parseFloat(A_T_QNTY) }
-        //if (A_T_CURR_AMT == "") { A_T_CURR_AMT = parseFloat(0) } else { A_T_CURR_AMT = parseFloat(A_T_CURR_AMT) }
-        if (A_T_AMT == "") { A_T_AMT = parseFloat(0) } else { A_T_AMT = parseFloat(A_T_AMT) }
-        if (A_T_TAXABLE == "") { A_T_TAXABLE = parseFloat(0) } else { A_T_TAXABLE = parseFloat(A_T_TAXABLE) }
-        if (A_T_IGST_AMT == "") { A_T_IGST_AMT = parseFloat(0) } else { A_T_IGST_AMT = parseFloat(A_T_IGST_AMT) }
-        if (A_T_CGST_AMT == "") { A_T_CGST_AMT = parseFloat(0) } else { A_T_CGST_AMT = parseFloat(A_T_CGST_AMT) }
-        if (A_T_SGST_AMT == "") { A_T_SGST_AMT = parseFloat(0) } else { A_T_SGST_AMT = parseFloat(A_T_SGST_AMT) }
-        if (A_T_CESS_AMT == "") { A_T_CESS_AMT = parseFloat(0) } else { A_T_CESS_AMT = parseFloat(A_T_CESS_AMT) }
-        //if (A_T_DUTY_AMT == "") { A_T_DUTY_AMT = parseFloat(0) } else { A_T_DUTY_AMT = parseFloat(A_T_DUTY_AMT) }
-        if (A_T_NET_AMT == "") { A_T_NET_AMT = parseFloat(0) } else { A_T_NET_AMT = parseFloat(A_T_NET_AMT) }
-
+    function OpenAmount() {     
         var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0; var DUTY_PER = 0;
-
         var GridRowMain = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
         for (i = 0; i <= GridRowMain - 1; i++) {
             var IGST = parseFloat(document.getElementById("D_IGSTPER_" + i).value);
@@ -989,28 +977,14 @@
                 DUTY_PER = DUTY;
             }
         }
-
-        //AmountCalculateTotal();
-        @*if ("@Model.DefaultAction" == "E")
-        {
-            $("#AMOUNT_GRID").empty();
-        }*@
-
-        $.ajax({
-            type: 'post',
-            url: "@Url.Action("OPEN_AMOUNT", PageControllerName)",
-            data: $('form').serialize() + "&AUTO_NO=" + AUTO_NO + "&A_T_NOS=" + A_T_NOS + "&A_T_QNTY=" + A_T_QNTY + "&A_T_CURR_AMT=" + A_T_CURR_AMT + "&A_T_AMT=" + A_T_AMT + "&A_T_TAXABLE=" + A_T_TAXABLE
-                                        + "&A_T_IGST_AMT=" + A_T_IGST_AMT + "&A_T_CGST_AMT=" + A_T_CGST_AMT + "&A_T_SGST_AMT=" + A_T_SGST_AMT + "&A_T_CESS_AMT=" + A_T_CESS_AMT + "&A_T_DUTY_AMT=" + A_T_DUTY_AMT
-                                        + "&A_T_NET_AMT=" + A_T_NET_AMT + "&IGST_PER=" + IGST_PER + "&CGST_PER=" + CGST_PER + "&SGST_PER=" + SGST_PER + "&CESS_PER=" + CESS_PER + "&DUTY_PER=" + DUTY_PER,
-            success: function (result) {
-                $('#partialdivAmounts').html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
+        var GridRowMain = $("#AMOUNT_GRID > tbody > tr").length;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            document.getElementById("AIGSTPER_" + i).value = IGST_PER;
+            document.getElementById("ACGSTPER_" + i).value = CGST_PER;
+            document.getElementById("ASGSTPER_" + i).value = SGST_PER;
+            document.getElementById("ACESSPER_" + i).value = CESS_PER;
+            document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
+        }
     }
 </script>
 <script>
