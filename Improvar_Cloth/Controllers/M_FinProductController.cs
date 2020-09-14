@@ -315,30 +315,12 @@ namespace Improvar.Controllers
                     {
                         VE.Checked = false;
                     }
-                    //VE.MSITEMSLCD = (from i in DB.M_SITEM_SLCD
-                    //                     join j in DB.M_SUBLEG on i.SLCD equals (j.SLCD)
-                    //                 where (i.ITCD == sl.ITCD)
-                    //                 //orderby j.PRINT_SEQ
-                    //                 select new MSITEMSLCD()
-                    //                 {
-                    //                     CLCD = i.CLCD,
-                    //                     ITCD = i.ITCD,
-                    //                     SLCD=i.SLCD,
-                    //                     SLNM=j.SLNM,
-                    //                     JOBRT=i.JOBRT,
-                    //                     PDESIGN=i.PDESIGN
-                    //                     //SIZECD = i.SIZECD,
-                    //                     //SIZENM = j.SIZENM,
-                    //                     //BARCODE = j.SZBARCODE,
-                    //                     //IChecked = i.INACTIVE_TAG == "Y" ? true : false,
-                    //                 }).ToList();
+
                     string sql = "";
                     sql += "select i.SLCD,j.SLNM,i.JOBRT,i.PDESIGN from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_SLCD i,";
                     sql += CommVar.FinSchema(UNQSNO) + ".M_SUBLEG j where i.SLCD =j.SLCD and i.ITCD='" + sl.ITCD + "'";
-
-                    var MSITEMSLCD_DATA = Master_HelpFa.SQLquery(sql);
-
-                    VE.MSITEMSLCD = (from DataRow dr in MSITEMSLCD_DATA.Rows
+                    DataTable dt = Master_HelpFa.SQLquery(sql);
+                    VE.MSITEMSLCD = (from DataRow dr in dt.Rows
                                      select new MSITEMSLCD()
                                      {
                                          SLCD = dr["SLCD"].retStr(),
@@ -472,6 +454,21 @@ namespace Improvar.Controllers
                         UploadDOC1.Add(UPL);
                         VE.UploadDOC = UploadDOC1;
                     }
+                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_BATCH_IMG_HDR WHERE barno in(" + getbarno(sl.ITCD) .retSqlformat()+ ")";
+                    dt = masterHelp.SQLquery(sql);
+                    VE.UploadBarImages = (from DataRow dr in dt.Rows
+                                          select new UploadDOC
+                                          {
+                                              docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
+                                              DOC_DESC = dr["DOC_DESC"].retStr(),
+                                              DOC_FILE = dr["DOC_FLNAME"].retStr(),
+                                              DOC_FILE_NAME = "/UploadDocuments/" + dr["DOC_FLNAME"].retStr(),
+                                          }).ToList();
+                    foreach (var v in VE.UploadBarImages)
+                    {
+                        VE.BarImages += Cn.GCS() + v.DOC_FILE_NAME + "~" + v.DOC_DESC;
+                    }
+
                     if (VE.DefaultAction == "A")
                     {
                         VE.SEARCH_ITCD = sl.ITCD;
@@ -1131,7 +1128,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
         public ActionResult AddRowPARTS(ItemMasterEntry VE)
         {
             try
@@ -1199,7 +1195,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-         
         public ActionResult AddRowINVCD(ItemMasterEntry VE, int COUNT, string TAG)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -1372,6 +1367,68 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        private string getbarno(string ITCD)
+        {
+            var sql = "SELECT LISTAGG(barno,',') WITHIN GROUP (ORDER BY barno) AS barno FROM " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_BARCODE where itcd='" + ITCD + "'";
+            DataTable dt = masterHelp.SQLquery(sql);
+            if (dt.Rows.Count > 0)
+            {
+                return dt.Rows[0]["barno"].retStr();
+            }
+            else
+            {
+                return "";
+            }
+        }
+        public Tuple<List<M_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
+        {
+            List<M_BATCH_IMG_HDR> doc = new List<M_BATCH_IMG_HDR>();
+            int slno = 0;
+            try
+            {
+                var BarImages = BarImage.retStr().Trim(Convert.ToChar(Cn.GCS())).Split(Convert.ToChar(Cn.GCS()));
+                foreach (string image in BarImages)
+                {
+                    if (image != "")
+                    {
+                        var imagedes = image.Split('~');
+                        M_BATCH_IMG_HDR mdoc = new M_BATCH_IMG_HDR();
+                        mdoc.CLCD = CommVar.ClientCode(UNQSNO);
+                        mdoc.EMD_NO = EMD;
+                        mdoc.SLNO = Convert.ToByte(++slno);
+                        mdoc.DOC_CTG = "PRODUCT";
+                        var extension = Path.GetExtension(imagedes[0]);
+                        mdoc.DOC_FLNAME = BARNO + "_" + slno + extension;
+                        mdoc.DOC_DESC = imagedes[1];
+                        mdoc.BARNO = BARNO;
+                        mdoc.DOC_EXTN = extension;
+                        doc.Add(mdoc);
+                        string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
+                        topath = Path.Combine(topath, "");
+                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
+                        Cn.CopyImage(frompath, topath);
+                    }
+                }
+            }
+            catch (Exception ex) { }
+            var result = Tuple.Create(doc);
+            return result;
+        }
+        public ActionResult UploadImages(string ImageStr, string ImageName, string ImageDesc)
+        {
+            try
+            {
+                var extension = Path.GetExtension(ImageName);
+                string filename = "I".retRepname() + extension;
+                var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
+                return Content("/UploadDocuments/" + filename);
+            }
+            catch (Exception ex)
+            {
+                return Content("//.");
+            }
+
+        }
         public ActionResult SAVE(FormCollection FC, ItemMasterEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
@@ -1535,9 +1592,6 @@ namespace Improvar.Controllers
                             DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
                             DB.SaveChanges();
 
-                            DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)));
-                            DB.SaveChanges();
                             DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                             DB.SaveChanges();
@@ -1656,20 +1710,21 @@ namespace Improvar.Controllers
                             var img = Cn.SaveUploadImage("M_SITEM", VE.UploadDOC, MSITEM.M_AUTONO, MSITEM.EMD_NO.Value);
                             DB.M_CNTRL_HDR_DOC.AddRange(img.Item1);
                             DB.M_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
-
-                            var barimg = SaveBarImage(VE.UploadDOC, MSITEMBARCODE.BARNO, MSITEM.EMD_NO.retShort());
-                            DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
-                            DB.SaveChanges();
-                            DB.M_BATCH_IMG_HDR_DTL.AddRange(barimg.Item2);
-                            var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
-                            foreach (var imgbar in disntImgHdr)
+                            if (VE.BarImages.retStr() != "")
                             {
-                                M_BATCH_IMG_HDR_LINK m_batchImglink = new M_BATCH_IMG_HDR_LINK();
-                                m_batchImglink.CLCD = MSITEM.CLCD;
-                                m_batchImglink.EMD_NO = MSITEM.EMD_NO;
-                                m_batchImglink.BARNO = imgbar.BARNO;
-                                m_batchImglink.MAINBARNO = imgbar.BARNO;
-                                DB.M_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
+                                var barimg = SaveBarImage(VE.BarImages, MSITEMBARCODE.BARNO, MSITEM.EMD_NO.retShort());
+                                DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
+                                DB.SaveChanges();
+                                var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
+                                foreach (var imgbar in disntImgHdr)
+                                {
+                                    M_BATCH_IMG_HDR_LINK m_batchImglink = new M_BATCH_IMG_HDR_LINK();
+                                    m_batchImglink.CLCD = MSITEM.CLCD;
+                                    m_batchImglink.EMD_NO = MSITEM.EMD_NO;
+                                    m_batchImglink.BARNO = imgbar.BARNO;
+                                    m_batchImglink.MAINBARNO = imgbar.BARNO;
+                                    DB.M_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
+                                }
                             }
                         }
                         DB.SaveChanges();
@@ -1734,8 +1789,6 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
 
                         DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
-                        DB.SaveChanges();
-                        DB.M_BATCH_IMG_HDR_DTL.RemoveRange(DB.M_BATCH_IMG_HDR_DTL.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
 
                         var DOCFLNAMEs = DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).Select(e => new
@@ -1857,111 +1910,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
             return View();
-        }
-
-        private string getbarno(string ITCD)
-        {
-            var sql = "SELECT LISTAGG(barno,',') WITHIN GROUP (ORDER BY barno) AS barno FROM " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_BARCODE where itcd='" + ITCD + "'";
-            DataTable dt = masterHelp.SQLquery(sql);
-            if (dt.Rows.Count > 0)
-            {
-                return dt.Rows[0]["barno"].retStr();
-            }
-            else
-            {
-                return "";
-            }
-        }
-        public Tuple<List<M_BATCH_IMG_HDR>, List<M_BATCH_IMG_HDR_DTL>> SaveBarImage(List<UploadDOC> UploadDOC, string BARNO, short EMD)
-        {
-            List<M_BATCH_IMG_HDR> doc = new List<M_BATCH_IMG_HDR>();
-            List<M_BATCH_IMG_HDR_DTL> doc1 = new List<M_BATCH_IMG_HDR_DTL>();
-            int sl = 0;
-            try
-            {
-                foreach (var ss in UploadDOC)
-                {
-                    if (ss.DOC_FILE != null)
-                    {
-                        sl += 1;
-                        M_BATCH_IMG_HDR mdoc = new M_BATCH_IMG_HDR();
-                        mdoc.DOC_CTG = ss.docID;
-                        mdoc.DOC_DESC = ss.DOC_DESC;
-                        mdoc.BARNO = BARNO;
-                        mdoc.CLCD = CommVar.ClientCode(UNQSNO);
-                        mdoc.EMD_NO = EMD;
-                        //mdoc.M_TBLNM = table_name;
-                        mdoc.DOC_FLNAME = ss.DOC_FILE_NAME;
-                        mdoc.DOC_EXTN = "NA";
-
-                        mdoc.SLNO = Convert.ToByte(sl);
-                        doc.Add(mdoc);
-                        if (ss.DOC_FILE.Length <= 2000)
-                        {
-                            M_BATCH_IMG_HDR_DTL mdoct = new M_BATCH_IMG_HDR_DTL();
-                            mdoct.BARNO = BARNO;
-                            mdoct.CLCD = CommVar.ClientCode(UNQSNO);
-                            mdoct.EMD_NO = EMD;
-                            mdoct.SLNO = Convert.ToByte(sl);
-                            mdoct.RSLNO = 1;
-                            mdoct.DOC_STRING = ss.DOC_FILE;
-                            doc1.Add(mdoct);
-                        }
-                        else
-                        {
-                            long length = ss.DOC_FILE.Length;
-                            long count = length / 2000;
-                            int index = 0;
-                            for (int i = 0; i <= count - 1; i++)
-                            {
-                                M_BATCH_IMG_HDR_DTL mdoct = new M_BATCH_IMG_HDR_DTL();
-                                mdoct.BARNO = BARNO;
-                                mdoct.CLCD = CommVar.ClientCode(UNQSNO);
-                                mdoct.EMD_NO = EMD;
-                                mdoct.SLNO = Convert.ToInt16(sl);
-                                mdoct.DOC_STRING = ss.DOC_FILE.Substring(index, 2000);
-                                mdoct.RSLNO = Convert.ToInt16(i + 1);
-                                index += 2000;
-                                doc1.Add(mdoct);
-                            }
-                            if (index < ss.DOC_FILE.Length)
-                            {
-                                int rest = ss.DOC_FILE.Length - index;
-                                M_BATCH_IMG_HDR_DTL mdoct = new M_BATCH_IMG_HDR_DTL();
-                                mdoct.BARNO = BARNO;
-                                mdoct.CLCD = CommVar.ClientCode(UNQSNO);
-                                mdoct.EMD_NO = EMD;
-                                mdoct.SLNO = Convert.ToInt16(sl);
-                                mdoct.DOC_STRING = ss.DOC_FILE.Substring(index, rest);
-                                mdoct.RSLNO = Convert.ToInt16(count + 1);
-                                index += rest;
-                                doc1.Add(mdoct);
-                            }
-                        }
-                        var extension = Path.GetExtension(mdoc.DOC_FLNAME);
-                        string path = CommVar.SaveFolderPath() + "/ItemImages";
-                        if (!Directory.Exists(path))
-                        {
-                            Directory.CreateDirectory(path);
-                        }
-
-                        // Try to create the directory.
-                        Cn.SaveBase64toDrive(ss.DOC_FILE, path + "/" + BARNO + "" + extension);
-                    }
-                }
-            }
-            catch { }
-            var result = Tuple.Create(doc, doc1);
-            return result;
-        }
-        public ActionResult UploadImages(string ImageStr,string ImageName,string ImageDesc)
-        {
-            var extension = Path.GetExtension(ImageName);
-            string filename ="I".retRepname()+ extension;
-            var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
-            //var link = Cn.SaveImage(ImageStr, "c://ipsmart/" + filename);
-
-            return Content("/UploadDocuments/" + filename);
         }
     }
 }

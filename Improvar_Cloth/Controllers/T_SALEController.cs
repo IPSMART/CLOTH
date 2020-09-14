@@ -1622,9 +1622,9 @@ namespace Improvar.Controllers
                 }
                 ModelState.Clear();
                 VE.DefaultView = true;
-                var BARNOGRID = RenderRazorViewToString(ControllerContext, "_T_SALE_BARNODETAIL", VE);
+                var BARNOGRID = RenderRazorViewToString(ControllerContext, "_T_SALE_PRODUCT", VE);
                 var DETAILGRID = RenderRazorViewToString(ControllerContext, "_T_SALE_DETAIL", VE);
-                return PartialView(BARNOGRID + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + DETAILGRID);
+                return Content(BARNOGRID + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + DETAILGRID);
 
             }
             catch (Exception ex)

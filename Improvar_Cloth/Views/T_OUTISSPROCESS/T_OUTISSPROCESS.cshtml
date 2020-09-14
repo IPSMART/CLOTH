@@ -285,7 +285,7 @@
             if (NOS_ == "") { NOS_ = parseFloat(0) } else { NOS_ = parseFloat(NOS_) }
             var CUTLENGTH_ = document.getElementById('P_CUTLENGTH_' + i).value;
             if (CUTLENGTH_ == "") { CUTLENGTH_ = parseFloat(0) } else { CUTLENGTH_ = parseFloat(CUTLENGTH_) }
-            if (NOS_ > 0  && CUTLENGTH_ > 0 ) {
+            if (NOS_ > 0 && CUTLENGTH_ > 0) {
                 var qnty = (parseFloat(NOS_) * parseFloat(CUTLENGTH_));
                 document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
             }
@@ -362,16 +362,16 @@
             type: 'POST',
             url: "@Url.Action("DeleteRow", PageControllerName)",
             data: $('form').serialize(),
-        success: function (result) {
-            $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
-            $("#partialdivProgramme").html(result);
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $("#WaitingMode").hide();
-            msgError(XMLHttpRequest.responseText);
-            $("body span h1").remove(); $("#msgbody_error style").remove();
-        }
-    });
+            success: function (result) {
+                $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                $("#partialdivProgramme").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
     }
 </script>
 <script>
@@ -400,34 +400,8 @@
             type: 'POST',
             url: "@Url.Action("DeleteRowQTY", PageControllerName)",
             data: $('form').serialize(),
-        success: function (result) {
-            $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
-            $("#partialdivQtyRequirement").html(result);
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $("#WaitingMode").hide();
-            msgError(XMLHttpRequest.responseText);
-            $("body span h1").remove(); $("#msgbody_error style").remove();
-        }
-    });
-    }
-</script>
-<script>
-    function RepeatAboveRow_TPROGBOM(i) {
-        debugger;
-        i = parseInt(i);
-        if (event.key == "F8" && i > 0) {
-            //var itnm = $("#Q_RITNM1_" + (i - 1)).val();
-            //$("#Q_RITNM1_" + i).val(itnm);
-            //var TAG = ""; var COUNT = document.getElementById(i).value;
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("RepeatAboveRow", PageControllerName)",
-                beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&RowIndex=" + i,
             success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
                 $("#partialdivQtyRequirement").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -436,6 +410,43 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
+    }
+</script>
+<script>
+    function RepeatAboveRow_TPROGBOM(i) {
+        debugger;
+        i = parseInt(i);
+        if (event.key == "F7") {
+            var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
+            for (var J = 0; J <= GridRow - 1; J++) {
+                var slno = $("#P_SLNO_" + J).val();
+                if (parseInt(slno) == i) {
+                    $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
+                    $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
+                    $("#Q_ITCD_" + i).val($("#P_ITCD_" + J).val());
+                    $("#Q_ITNM_" + i).val($("#P_ITNM_" + J).val());
+                    $("#Q_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
+                    $("#Q_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
+                }
+            }
+        }
+        if (event.key == "F8" && i > 0) {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("RepeatAboveRow", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&RowIndex=" + i,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivQtyRequirement").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
 
         }
     }
@@ -477,11 +488,11 @@
                         <div class="editor-field">
                             @if (Model.DefaultAction == "A")
                             {
-                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                            @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
                             }
                             else
                             {
-                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                            @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
                             }
                         </div>
                     </div>
@@ -563,7 +574,7 @@
                     <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                     <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
-                    <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents"accesskey="U">Documents(U)</a></li>
+                    <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="Programme" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
@@ -574,16 +585,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading ui-icon-note">Rules</div>
-                            <div class="panel-body">
-                                <p>
-                                    1.Press <b>F8</b> for repeat above Row
-                                    @*2.Press F8 for repeat above Row*@
-                                </p>
-                            
-                            </div>
-                        </div>
+
                     </div>
                     <div id="QtyRequirement" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
@@ -591,6 +593,16 @@
                                 <div id="partialdivQtyRequirement" style="margin-top:0px;">
                                     @Html.Partial("_T_OUTISSPROCESS_QtyRequirement")
                                 </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading ui-icon-note">Rules</div>
+                            <div class="panel-body">
+                                <p>
+                                    1. Press <b>F7</b> for Same as program item [in the itcd/itgrpcd]<br />
+                                    2. Press <b>F8</b> for repeat above Row [in the itcd/itgrpcd]
+                                </p>
+
                             </div>
                         </div>
                     </div>
