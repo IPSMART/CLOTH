@@ -22,7 +22,7 @@ namespace Improvar.Controllers
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: M_SysCnfg
        
-        public ActionResult M_SysCnfg(FormCollection FC, string op = "", string key = "", int Nindex = 0, string searchValue = "")
+        public ActionResult M_SysCnfg(FormCollection FC, string op = "", string key = "", int Nindex = 0, string searchValue = "", string loadItem = "N")
         {
             //testing
             try
@@ -106,8 +106,9 @@ namespace Improvar.Controllers
                         VE.IndexKey = (from p in DB.M_SYSCNFG orderby p.M_AUTONO
                                        select  new { M_AUTONO = p.M_AUTONO }).Select (a=> new                                       
                                        IndexKey() { Navikey = a.M_AUTONO.ToString() }).ToList();
+                        if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
 
-                        if (op == "E" || op == "D" || op == "V")
+                        if (op == "E" || op == "D" || op == "V" || loadItem == "Y")
                         {
                             VE.Searchpannel_State = true;
                             if (searchValue.Length != 0)
@@ -151,7 +152,7 @@ namespace Improvar.Controllers
                             VE.M_SYSCNFG = sl;
                             VE.M_CNTRL_HDR = sll;
                         }
-                        if (op.ToString() == "A")
+                        if (op.ToString() == "A" && loadItem == "N")
                         {
                             //List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                             //UploadDOC UPL = new UploadDOC();
@@ -237,6 +238,10 @@ namespace Improvar.Controllers
                     else
                     {
                         VE.Checked = false;
+                    }
+                    if (VE.DefaultAction == "A")
+                    {
+                        sl.EFFDT =System.DateTime.Now.Date;
                     }
                    
                 }

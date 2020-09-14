@@ -2360,7 +2360,7 @@ namespace Improvar
                 string sql = "";
                 sql += "select a.m_autono,a.compcd,a.effdt,b.glnm saldebglnm,c.glnm purdebglnm from " + scm + ".m_syscnfg a," + scmf + ".m_genleg b,  ";
                 sql += scmf + ".m_genleg c where a.saldebglcd=b.glcd(+) and a.purdebglcd=c.glcd(+) "; 
-                if (valsrch.retStr() != "") sql += " and upper(m_autono) = '" + valsrch + "' ";
+                if (valsrch.retStr() != "") sql += " and a.m_autono = '" + valsrch + "' ";
                 DataTable tbl = SQLquery(sql);
                 if (val.retStr() == "" || tbl.Rows.Count > 1)
                 {
