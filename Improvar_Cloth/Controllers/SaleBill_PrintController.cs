@@ -837,6 +837,9 @@ namespace Improvar.Controllers
                             //dr1["itmprcdesc"] = tbl.Rows[i]["itmprcdesc"].ToString();
                             //dr1["prceffdt"] = tbl.Rows[i]["prceffdt"] == DBNull.Value ? "" : tbl.Rows[i]["prceffdt"].ToString().Substring(0, 10).ToString();
                             dr1["duedt"] = Convert.ToDateTime(tbl.Rows[i]["docdt"].ToString()).AddDays(duedays).ToString().retDateStr();
+                            dr1["packby"] = tbl.Rows[i]["packby"].retStr();
+                            dr1["selby"] = tbl.Rows[i]["selby"].retStr();
+                            dr1["dealby"] = tbl.Rows[i]["dealby"].retStr();
                             dr1["payterms"] = payterms;
                             //if (rsStkPrcDesc.Rows.Count > 0 && tbl.Rows[i]["itgrpcd"].ToString() == "G001" && doctotprint == false)
                             //{
@@ -1132,7 +1135,7 @@ namespace Improvar.Controllers
                                 //dr1["bas_rate"] = (tbl.Rows[i]["bas_rate"] == DBNull.Value ? 0 : tbl.Rows[i]["bas_rate"]).retDbl().ToString("0.00");
                                 //dr1["pv_per"] = tbl.Rows[i]["pv_per"].ToString() == "" ? "" : tbl.Rows[i]["pv_per"].ToString() + " %"; if (tbl.Rows[i]["rateqntybag"].ToString() == "B") dr1["rateuomnm"] = "Case"; else dr1["rateuomnm"] = dr1["uomnm"];
                                 string strdsc = "";
-                                if (Convert.ToDouble(tbl.Rows[i]["tddiscamt"]) != 0)
+                                if (tbl.Rows[i]["tddiscamt"].retDbl() != 0)
                                 {
                                     switch (tbl.Rows[i]["tddisctype"].ToString())
                                     {
