@@ -911,6 +911,7 @@
         AmountCalculateTotal();
     }
     function AmountCalculateTotal() {
+        debugger;
         var T_CURR_AMT = 0; var T_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_NET_AMT = 0;
         var GridRow = $("#AMOUNT_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
@@ -1075,40 +1076,40 @@
         var ROUND_TAG = document.getElementById("RoundOff").checked;
 
         var D_TOTALNOS = $("#T_NOS").val();
-        if (D_TOTALNOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(D_TOTALNOS); } else { D_TOTALNOS = D_TOTALNOS + parseInt(0); }
+        if (D_TOTALNOS != "") { D_TOTALNOS =  parseFloat(D_TOTALNOS); } else { D_TOTALNOS =  parseInt(0); }
 
         var D_TOTALQNTY = $("#T_QNTY").val();
-        if (D_TOTALQNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(D_TOTALQNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseInt(0); }
+        if (D_TOTALQNTY != "") { D_TOTALQNTY =  parseFloat(D_TOTALQNTY); } else { D_TOTALQNTY = parseInt(0); }
 
         var D_TOTALTAXVAL = $("#T_GROSS_AMT").val();
-        if (D_TOTALTAXVAL != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(D_TOTALTAXVAL); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseInt(0); }
+        if (D_TOTALTAXVAL != "") { D_TOTALTAXVAL =  parseFloat(D_TOTALTAXVAL); } else { D_TOTALTAXVAL = parseInt(0); }
 
         var A_TOTALTAXVAL = $("#A_T_AMOUNT").val();
-        if (A_TOTALTAXVAL != "") { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(A_TOTALTAXVAL); } else { A_TOTALTAXVAL = A_TOTALTAXVAL + parseInt(0); }
+        if (A_TOTALTAXVAL != "") { A_TOTALTAXVAL = parseFloat(A_TOTALTAXVAL); } else { A_TOTALTAXVAL =  parseInt(0); }
         //
         var D_TOTALIGST = $("#T_IGST_AMT").val();
-        if (D_TOTALIGST != "") { D_TOTALIGST = D_TOTALIGST + parseFloat(D_TOTALIGST); } else { D_TOTALIGST = D_TOTALIGST + parseInt(0); }
+        if (D_TOTALIGST != "") { D_TOTALIGST = parseFloat(D_TOTALIGST); } else { D_TOTALIGST = parseInt(0); }
 
         var A_TOTALIGST = $("#A_T_IGST").val();
-        if (A_TOTALIGST != "") { A_TOTALIGST = A_TOTALIGST + parseFloat(A_TOTALIGST); } else { A_TOTALIGST = A_TOTALIGST + parseInt(0); }
+        if (A_TOTALIGST != "") { A_TOTALIGST =  parseFloat(A_TOTALIGST); } else { A_TOTALIGST = parseInt(0); }
 
         var D_TOTALCGST = $("#T_CGST_AMT").val();
-        if (D_TOTALCGST != "") { D_TOTALCGST = D_TOTALCGST + parseFloat(D_TOTALCGST); } else { D_TOTALCGST = D_TOTALCGST + parseInt(0); }
+        if (D_TOTALCGST != "") { D_TOTALCGST = parseFloat(D_TOTALCGST); } else { D_TOTALCGST = parseInt(0); }
 
         var A_TOTALCGST = $("#A_T_CGST").val();
-        if (A_TOTALCGST != "") { A_TOTALCGST = A_TOTALCGST + parseFloat(A_TOTALCGST); } else { A_TOTALCGST = A_TOTALCGST + parseInt(0); }
+        if (A_TOTALCGST != "") { A_TOTALCGST = parseFloat(A_TOTALCGST); } else { A_TOTALCGST = parseInt(0); }
 
         var D_TOTALSGST = $("#T_SGST_AMT").val();
-        if (D_TOTALSGST != "") { D_TOTALSGST = D_TOTALSGST + parseFloat(D_TOTALSGST); } else { D_TOTALSGST = D_TOTALSGST + parseInt(0); }
+        if (D_TOTALSGST != "") { D_TOTALSGST = parseFloat(D_TOTALSGST); } else { D_TOTALSGST = parseInt(0); }
 
         var A_TOTALSGST = $("#A_T_SGST").val();
-        if (A_TOTALSGST != "") { A_TOTALSGST = A_TOTALSGST + parseFloat(A_TOTALSGST); } else { A_TOTALSGST = A_TOTALSGST + parseInt(0); }
+        if (A_TOTALSGST != "") { A_TOTALSGST = parseFloat(A_TOTALSGST); } else { A_TOTALSGST =  parseInt(0); }
 
         var D_TOTALNETAMT = $("#T_NET_AMT").val();
-        if (D_TOTALNETAMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(D_TOTALNETAMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseInt(0); }
+        if (D_TOTALNETAMT != "") { D_TOTALNETAMT = parseFloat(D_TOTALNETAMT); } else { D_TOTALNETAMT = parseInt(0); }
 
         var A_TOTALNETAMT = $("#A_T_NET").val();
-        if (A_TOTALNETAMT != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_TOTALNETAMT); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseInt(0); }
+        if (A_TOTALNETAMT != "") { A_TOTALNETAMT = parseFloat(A_TOTALNETAMT); } else { A_TOTALNETAMT = parseInt(0); }
 
         var totaltaxval = 0;
         totaltaxval = parseFloat(D_TOTALTAXVAL + A_TOTALTAXVAL).toFixed(2);
