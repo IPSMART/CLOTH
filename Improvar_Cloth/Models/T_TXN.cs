@@ -52,6 +52,7 @@ namespace Improvar.Models
 
          public double? BLAMT { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PREFDT { get; set; }
 
         [StringLength(16)]
