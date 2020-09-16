@@ -46,7 +46,8 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Finish Product/Design Master"; break;
                         case "C":
                             ViewBag.formname = "Fabric Item"; break;
-
+                        case "A":
+                            ViewBag.formname = "Accessories / Other Items"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     VE.Database_Combo1 = (from n in DB.M_SITEM
@@ -117,17 +118,28 @@ namespace Improvar.Controllers
                         {
                             itgrpcd = "F";
                         }
-                        else
+                        else if(VE.MENU_PARA == "C")
                         {
                             itgrpcd = "C";
                         }
-                        //sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) == "C" && r.ITCD == itcd).FirstOrDefault();
-                        VE.IndexKey = (from p in DB.M_SITEM
-                                       join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD)
-                                       where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE == itgrpcd)
-                                       select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
-                        if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
 
+                        //sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) == "C" && r.ITCD == itcd).FirstOrDefault();
+                        if (VE.MENU_PARA == "F" || VE.MENU_PARA == "C")
+                        {
+                            VE.IndexKey = (from p in DB.M_SITEM
+                                           join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD)
+                                           where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE == itgrpcd)
+                                           select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
+                        } 
+                       else
+                        {
+                            VE.IndexKey = (from p in DB.M_SITEM
+                                           join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD)
+                                           where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE !="C" && o.ITGRPTYPE != "F")
+                                           select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
+                        }
+
+                        if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
                         if (op == "E" || op == "D" || op == "V" || loadItem == "Y")
                         {
 
@@ -286,12 +298,13 @@ namespace Improvar.Controllers
                     var itcd = aa[0];
                     if (VE.MENU_PARA == "C")
                     {
-                        sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) == "C" && r.ITCD == itcd).FirstOrDefault();
+                        sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "F" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
                     }
-                    else
+                    else if (VE.MENU_PARA == "F")
                     {
-                        sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD == itcd).FirstOrDefault();
+                        sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "A" && r.ITCD == itcd).FirstOrDefault();
                     }
+                    else { sl = DB.M_SITEM.Where(r => r.ITCD.Remove(1) != "C" && r.ITCD.Remove(1) != "F" && r.ITCD == itcd).FirstOrDefault(); }
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                     slll = DB.M_GROUP.Find(sl.ITGRPCD);
                     slsb = DB.M_SUBBRAND.Find(sl.SBRANDCD);
@@ -1553,7 +1566,7 @@ namespace Improvar.Controllers
                         //MSITEM.PCSPERBOX = VE.M_SITEM.PCSPERBOX;
                         MSITEM.PCSPERSET = VE.M_SITEM.PCSPERSET;
                         MSITEM.COLRPERSET = VE.M_SITEM.COLRPERSET;
-                        if (VE.MENU_PARA == "C")
+                        if (VE.MENU_PARA == "C" || VE.MENU_PARA == "A")
                         {
                             MSITEM.FEATURE = VE.M_SITEM.FEATURE;
                             MSITEM.DMNSN = VE.M_SITEM.DMNSN;

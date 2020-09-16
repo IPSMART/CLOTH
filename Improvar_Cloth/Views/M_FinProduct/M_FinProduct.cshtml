@@ -10,6 +10,8 @@
             ViewBag.Title = "Finish Product/Design Master"; break;
         case "C":
             ViewBag.Title = "Fabric Item"; break;
+        case "A":
+            ViewBag.Title = "Accessories / Other Items"; break;
         default: ViewBag.Title = ""; break;
     }
 }
@@ -842,10 +844,16 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
+            <input type="hidden" id="ImageName" value="" />
+            <input type="hidden" id="ImageStr" value="" />
             @if (Model.MENU_PARA == "F")
             {  <input type="hidden" id="fabitcdlinkcd" value="F" />}
-            else { <input type="hidden" id="fabitcdlinkcd" value="C" />}
-            <input type="hidden" id="fabitGrpcd" value="C" />
+            else if (Model.MENU_PARA == "C")
+            { <input type="hidden" id="fabitcdlinkcd" value="C" />}
+            else { <input type="hidden" id="fabitcdlinkcd" value="" /> }
+            @if (Model.MENU_PARA == "F" || Model.MENU_PARA == "A")
+            {<input type="hidden" id="fabitGrpcd" value="C" /> }
+
 
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_SITEM.M_AUTONO)
@@ -938,7 +946,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if (Model.MENU_PARA == "F")
+                        @if (Model.MENU_PARA == "F" || Model.MENU_PARA == "A")
                         {
                         <div class="row">
                             <div class="col-md-6">
@@ -1075,7 +1083,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if (Model.MENU_PARA == "F")
+                        @if (Model.MENU_PARA == "F" || Model.MENU_PARA == "A")
                         {
                         <div class="row">
                             @*<div class="col-md-6">
@@ -1161,7 +1169,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if (Model.MENU_PARA == "C")
+                        @if (Model.MENU_PARA == "C"|| Model.MENU_PARA == "A")
                         {
                         <div class="row">
                             <div class="col-md-6">
