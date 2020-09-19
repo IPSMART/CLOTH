@@ -59,6 +59,11 @@
                 GetAllMtrljobcd();
             }
         }
+        if ("@Model.LINKDOCNO" != "") {
+            $('#_T_SALE_DETAIL_GRID input').attr('readonly', 'readonly');
+            $('#_T_SALE_BARNODETAIL_GRID input').attr('readonly', 'readonly');
+        }
+
         $("#WaitingMode").hide();
     });
 </script>
@@ -1173,27 +1178,6 @@
     }
 </script>
 <script>
-    function FillPackingSlip() {
-        if (!emptyFieldCheck("Please Select / Enter Packing Slip No. to get Packing Slip data", "LINKDOCNO")) { return false; }
-        var linkautono = $("#LINKAUTONO").val();
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("FillPacking_Slip", PageControllerName)",
-            data: $('form').serialize() + "&Autono=" + linkautono,
-            success: function (result) {
-                var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
-                $("#partialdivBarCodeTab").html(res[0]);
-                $("#partialdivDetail").html(res[1]);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
     function DeleteRow() {
         $.ajax({
             type: 'POST',
@@ -1266,7 +1250,27 @@
         });
     }
 </script>
-
+@section Scripts {
+    <script>
+        function ReloadWithData() {
+            var searchValue = $('#AUTONO').val();
+            var url = window.location.href;
+            var key1 = "searchValue";
+            url = updateQueryStringParameter(url, key1, searchValue);
+            url = updateQueryStringParameter(url, "loadOrder", "Y");
+            window.location = url;
+        }
+        function ReloadWithPSLIP() {
+            var searchValue = $('#LINKAUTONO').val();
+            var searchValue1 = $('#LINKDOCNO').val();
+            var url = window.location.href;
+            var key1 = "searchValue";
+            url = updateQueryStringParameter(url, key1, searchValue);
+            url = updateQueryStringParameter(url, "loadOrder", searchValue1);
+            window.location = url;
+        }
+    </script>
+}
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -1283,7 +1287,6 @@
         <input type="hidden" id="slcd_tag" value="Party" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
-        @Html.HiddenFor(a => a.T_TXN.DOCNO)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         <div class="form-horizontal">
@@ -1410,7 +1413,7 @@
                         @if (Model.DefaultAction == "A")
                         {
                             <div class="col-md-1" style="width:auto;">
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetPackingSlip" value="Get Packing Slip" title="Click to Get Packing Slip" onclick="FillPackingSlip()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetPackingSlip" value="Get Packing Slip" title="Click to Get Packing Slip" onclick="ReloadWithPSLIP()" />
                             </div>
                         }
                     </div>

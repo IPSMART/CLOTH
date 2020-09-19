@@ -2220,9 +2220,11 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
+                        + " </td><td>" + tbl.Rows[i]["irgrpnm"] + " </td><td>" + tbl.Rows[i]["uomcd"] + " </td><td>" + tbl.Rows[i]["colrnm"] + " </td><td>" + tbl.Rows[i]["sizecd"] + " </td></tr>");
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No.";
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "uom." + Cn.GCS() + "colornm." + Cn.GCS() + "sizecd.";
+
                 return Generate_help(hdr, SB.ToString());
             }
             else
