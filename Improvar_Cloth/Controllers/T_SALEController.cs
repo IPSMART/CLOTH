@@ -135,19 +135,19 @@ namespace Improvar.Controllers
                             {
                                 if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
                                 VE.Index = Nindex;
-                                VE = Navigation(VE, DB, 0, searchValue);
+                                VE = Navigation(VE, DB, 0, searchValue, loadOrder);
                             }
                             else
                             {
                                 if (key == "F")
                                 {
                                     VE.Index = 0;
-                                    VE = Navigation(VE, DB, 0, searchValue);
+                                    VE = Navigation(VE, DB, 0, searchValue, loadOrder);
                                 }
                                 else if (key == "" || key == "L")
                                 {
                                     VE.Index = VE.IndexKey.Count - 1;
-                                    VE = Navigation(VE, DB, VE.IndexKey.Count - 1, searchValue);
+                                    VE = Navigation(VE, DB, VE.IndexKey.Count - 1, searchValue, loadOrder);
                                 }
                                 else if (key == "P")
                                 {
@@ -157,7 +157,7 @@ namespace Improvar.Controllers
                                         Nindex = 0;
                                     }
                                     VE.Index = Nindex;
-                                    VE = Navigation(VE, DB, Nindex, searchValue);
+                                    VE = Navigation(VE, DB, Nindex, searchValue, loadOrder);
                                 }
                                 else if (key == "N")
                                 {
@@ -167,7 +167,7 @@ namespace Improvar.Controllers
                                         Nindex = VE.IndexKey.Count - 1;
                                     }
                                     VE.Index = Nindex;
-                                    VE = Navigation(VE, DB, Nindex, searchValue);
+                                    VE = Navigation(VE, DB, Nindex, searchValue, loadOrder);
                                 }
                             }
                             VE.T_TXN = TXN;
@@ -258,7 +258,7 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
-        public TransactionPackingSlipEntry Navigation(TransactionPackingSlipEntry VE, ImprovarDB DB, int index, string searchValue)
+        public TransactionPackingSlipEntry Navigation(TransactionPackingSlipEntry VE, ImprovarDB DB, int index, string searchValue, string loadOrder = "N")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
@@ -270,7 +270,7 @@ namespace Improvar.Controllers
 
             TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO();
 
-            if (VE.IndexKey.Count != 0)
+            if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
             {
                 string[] aa = null;
                 if (searchValue.Length == 0)
@@ -465,21 +465,25 @@ namespace Improvar.Controllers
                     v.GSTPER = VE.TTXNDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
                     {
-                        var tax_data = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and mtrljobcd = '" + v.MTRLJOBCD + "' and itgrpcd = '" + v.ITGRPCD + "'").CopyToDataTable();
-                        if (tax_data != null && tax_data.Rows.Count > 0)
+                        var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and mtrljobcd = '" + v.MTRLJOBCD + "' and itgrpcd = '" + v.ITGRPCD + "'");
+                        if (DATA.Count() > 0)
                         {
-                            PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
-                            if (PRODGRPGSTPER != "")
+                            DataTable tax_data = DATA.CopyToDataTable();
+                            if (tax_data != null && tax_data.Rows.Count > 0)
                             {
-                                ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl());
-                                if (ALL_GSTPER.retStr() != "")
+                                PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                                if (PRODGRPGSTPER != "")
                                 {
-                                    var gst = ALL_GSTPER.Split(',').ToList();
-                                    GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
+                                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, v.RATE.retDbl());
+                                    if (ALL_GSTPER.retStr() != "")
+                                    {
+                                        var gst = ALL_GSTPER.Split(',').ToList();
+                                        GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
+                                    }
+                                    v.PRODGRPGSTPER = PRODGRPGSTPER;
+                                    v.ALL_GSTPER = ALL_GSTPER;
+                                    v.GSTPER = GSTPER.retDbl();
                                 }
-                                v.PRODGRPGSTPER = PRODGRPGSTPER;
-                                v.ALL_GSTPER = ALL_GSTPER;
-                                v.GSTPER = GSTPER.retDbl();
                             }
                         }
                     }
@@ -619,10 +623,21 @@ namespace Improvar.Controllers
                 VE.TOTTAXVAL = VE.T_GROSS_AMT.retDbl() + VE.A_T_AMOUNT.retDbl();
                 VE.TOTTAX = VE.T_CGST_AMT.retDbl() + VE.A_T_CGST.retDbl() + VE.T_SGST_AMT.retDbl() + VE.A_T_SGST.retDbl() + VE.T_IGST_AMT.retDbl() + VE.A_T_IGST.retDbl();
 
-
+                if (loadOrder.retStr().Length > 1)
+                {
+                    TXN = new T_TXN();
+                    TXNTRN = new T_TXNTRANS();
+                    TXNOTH = new T_TXNOTH();
+                    TCH = new T_CNTRL_HDR();
+                    SLR = new T_CNTRL_HDR_REM();
+                    TTXNLINKNO = new T_TXN_LINKNO();
+                }
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
-            if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
+            if (loadOrder == "N")
+            {
+                if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
+            }
             return VE;
         }
         public ActionResult SearchPannelData(TransactionPackingSlipEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
