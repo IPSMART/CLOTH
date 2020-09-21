@@ -29,6 +29,7 @@ namespace Improvar.ViewModels
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
+        public List<Database_Combo3> Database_Combo3 { get; set; }
         public List<HSN_CODE> HSN_CODE { get; set; }
         public List<BL_TYPE> BL_TYPE { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }

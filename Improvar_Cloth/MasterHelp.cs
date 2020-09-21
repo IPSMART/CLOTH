@@ -163,16 +163,22 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string ITGRPCD_help(string ITGRPCD, string GRPTYPE)
+        public string ITGRPCD_help(string ITGRPCD, string GRPTYPE, string ITCD = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
+                DataTable dt1 = new DataTable();
                 string valsrch = ITGRPCD.ToUpper().Trim();
                 string sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_GROUP where 1=1";
                 if (GRPTYPE.retStr() != "") sql += " and ITGRPTYPE in (" + GRPTYPE.retSqlformat() + ") ";
                 if (valsrch.retStr() != "") sql += "and ( upper(ITGRPCD) like '%" + valsrch + "%' or upper(ITGRPNM) like '%" + valsrch + "%' ) ";
-
+                if (ITCD.retStr() != "")
+                {
+                    string sql2 = "select a.itgrpcd from " + CommVar.CurSchema(UNQSNO) + ".M_GROUP a," + CommVar.CurSchema(UNQSNO) + ".m_sitem b where a.ITGRPCD=b.ITGRPCD(+) and b.itcd = '" + ITCD.retStr() + "' ";
+                    if (valsrch.retStr() != "") sql2 += "and  upper(ITGRPCD) = '" + valsrch + "' ";
+                    dt1 = SQLquery(sql2);
+                }
                 DataTable dt = SQLquery(sql);
                 if (ITGRPCD.retStr() == "" || dt.Rows.Count > 1)
                 {
@@ -188,7 +194,12 @@ namespace Improvar
                 {
                     if (dt.Rows.Count > 0)
                     {
-                        return ToReturnFieldValues("", dt);
+                        string str = ToReturnFieldValues("", dt);
+                        if (ITCD.retStr() != "" && dt1 != null && dt1.Rows.Count > 0)
+                        {
+                            str += "^ITCD=^" + ITCD + Cn.GCS();
+                        }
+                        return str;
                     }
                     else
                     {
@@ -2199,7 +2210,7 @@ namespace Improvar
                 }
             }
         }
-        public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD="", string GOCD="", string PRCCD="", string MTRLJOBCD="")
+        public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "")
         {
             DataTable tbl = new DataTable();
             if (menupara == "PB")
@@ -2362,7 +2373,7 @@ namespace Improvar
                 //var query = (from c in DB.M_CLASS1 select new { CLASS1CD = c.CLASS1CD, CLASS1NM = c.CLASS1NM }).ToList();
                 string sql = "";
                 sql += "select a.m_autono,a.compcd,a.effdt,b.glnm saldebglnm,c.glnm purdebglnm from " + scm + ".m_syscnfg a," + scmf + ".m_genleg b,  ";
-                sql += scmf + ".m_genleg c where a.saldebglcd=b.glcd(+) and a.purdebglcd=c.glcd(+) "; 
+                sql += scmf + ".m_genleg c where a.saldebglcd=b.glcd(+) and a.purdebglcd=c.glcd(+) ";
                 if (valsrch.retStr() != "") sql += " and a.m_autono = '" + valsrch + "' ";
                 DataTable tbl = SQLquery(sql);
                 if (val.retStr() == "" || tbl.Rows.Count > 1)
@@ -2373,7 +2384,7 @@ namespace Improvar
                         SB.Append("<tr><td>" + tbl.Rows[i]["m_autono"] + "</td><td>" + tbl.Rows[i]["compcd"] + "</td><td>" + tbl.Rows[i]["effdt"].retDateStr() + "</td><td>" + tbl.Rows[i]["saldebglnm"] + "</td><td>" + tbl.Rows[i]["purdebglnm"] + "</td></tr>");
                     }
                     var hdr = "Autono" + Cn.GCS() + "Company Code" + Cn.GCS() + "Effective Date" + Cn.GCS() + "Debtors" + Cn.GCS() + "Creditors";
-                    return Generate_help(hdr, SB.ToString(),"0");
+                    return Generate_help(hdr, SB.ToString(), "0");
                 }
                 else
                 {

@@ -31,7 +31,7 @@
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="" style="width: 30px;text-align:center;">SL No.</th>
-                                <th class=""  style="width: 100px;text-align:center;">ItmGrp</th>
+                                <th class="" style="width: 100px;text-align:center;">ItmGrp</th>
                                 <th class="" style="width:45px;">Mtrl Type</th>
                                 <th class="" style="width:71px;">Item Code</th>
                                 <th class="" style="width:160px;">Item Design</th>
@@ -52,7 +52,7 @@
                                 <th class="" style="width:50px;">Disc-2</th>
                                 <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>
                                 <th class="" style="width:50px;text-align:right;">Disc2 Amt</th>
-                                <th class="" style="width:50px;text-align:right;">Taxable</th>
+                                <th class="" style="width:90px;text-align:right;">Taxable</th>
                                 <th class="" style="width:50px;text-align:right;">IGST %</th>
                                 <th class="" style="width:50px;text-align:right;">IGST Amt</th>
                                 <th class="" style="width:50px;text-align:right;">CGST %</th>
@@ -68,7 +68,7 @@
                                     <th class="" style="width:103px;">Bale No.</th>
                                 }
                                 <th class="" style="width:71px;">glcd</th>
-                                <th class="" >Image Upload</th>
+                                <th class="">Image Upload</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -119,7 +119,7 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].BLQNTY, new { htmlAttributes = new { id = "D_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#D_');"} })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#D_');" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].AMT, new { htmlattributes = new { id = "D_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
@@ -137,7 +137,7 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].TDDISCTYPE_DESC, new { id = "D_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCTYPE, new { id = "D_TDDISCTYPE_" + i })
-                                          </td>
+                                        </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "D_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
                                         </td>
@@ -147,7 +147,7 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].SCMDISCTYPE_DESC, new { id = "D_SCMDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].SCMDISCTYPE, new { id = "D_SCMDISCTYPE_" + i })
-                                         </td>
+                                        </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "D_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
                                         </td>
@@ -155,8 +155,8 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].SCMDISCAMT, new { htmlAttributes = new { id = "D_SCMDISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);" } })
                                         </td>
                                         <td class="">
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].TOTDISCAMT, new { id = "D_TOTDISCAMT_" + i })
                                             @Html.EditorFor(model => Model.TTXNDTL[i].TXBLVAL, new { htmlattributes = new { id = "D_TXBLVAL_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].TOTDISCAMT, new { id = "D_TOTDISCAMT_" + i })
                                         </td>
                                         <td class="">
                                             @Html.HiddenFor(model => model.TTXNDTL[i].PRODGRPGSTPER, new { id = "D_PRODGRPGSTPER_" + i })
