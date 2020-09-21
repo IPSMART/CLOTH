@@ -573,7 +573,7 @@ namespace Improvar.Controllers
             //partcode prtbarcode  1
             //color clrbarcode  4
             //size szbarcode   3
-            return itgrpcd.retStr().Substring(0,3) + itcd.retStr().Substring(0,7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
+            return itgrpcd.retStr().Substring(1,3) + itcd.retStr().Substring(1,7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
         }
         public ActionResult GetSubLedgerDetails(string val, string Code)
         {
