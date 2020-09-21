@@ -623,21 +623,10 @@ namespace Improvar.Controllers
                 VE.TOTTAXVAL = VE.T_GROSS_AMT.retDbl() + VE.A_T_AMOUNT.retDbl();
                 VE.TOTTAX = VE.T_CGST_AMT.retDbl() + VE.A_T_CGST.retDbl() + VE.T_SGST_AMT.retDbl() + VE.A_T_SGST.retDbl() + VE.T_IGST_AMT.retDbl() + VE.A_T_IGST.retDbl();
 
-                if (loadOrder.retStr().Length > 1)
-                {
-                    TXN = new T_TXN();
-                    TXNTRN = new T_TXNTRANS();
-                    TXNOTH = new T_TXNOTH();
-                    TCH = new T_CNTRL_HDR();
-                    SLR = new T_CNTRL_HDR_REM();
-                    TTXNLINKNO = new T_TXN_LINKNO();
-                }
+
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
-            if (loadOrder == "N")
-            {
-                if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
-            }
+            if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             return VE;
         }
         public ActionResult SearchPannelData(TransactionPackingSlipEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
