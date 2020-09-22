@@ -2406,5 +2406,56 @@ namespace Improvar
             }
 
         }
+        public string TDSCODE_help(string docdt, string val, string slcd, string Caption = "", string linktdscode = "")
+        {
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                string scmf = CommVar.FinSchema(UNQSNO);
+                string sql = "select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+                if (slcd.retStr() != "") sql += "(select CMPNONCMP from  " + scmf + ".m_subleg where slcd='" + slcd + "') as CMPNONCMP, "; else sql += "'' CMPNONCMP, ";
+                sql += " b.tdsnm, b.secno, b.glcd from ";
+                sql += "(select tdscode, edate, tdsper, tdspernoncmp from ";
+                sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+                sql += "row_number() over(partition by a.tdscode order by a.edate desc) as rn ";
+                sql += "from " + scmf + ".m_tds_cntrl_dtl a ";
+                sql += "where  edate <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
+                if (val.retStr() != "") sql += " and tdscode = '" + val + "' ";
+                if (linktdscode.retStr() != "") sql += " and tdscode in (" + linktdscode + ") ";
+                sql += ") where rn = 1 ) a, ";
+                sql += "" + scmf + ".m_tds_cntrl b ";
+                sql += "where a.tdscode = b.tdscode(+) ";
+
+                DataTable dt = SQLquery(sql);
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= dt.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr ><td>" + dt.Rows[i]["TDSNM"].retStr() + "</td><td>" + dt.Rows[i]["TDSCODE"].retStr() + " </td><td> " + dt.Rows[i]["TDSPER"].retStr() + "</td><td>" + dt.Rows[i]["TDSPERNONCMP"].retStr() + " </td><td> " + dt.Rows[i]["SECNO"].retStr() + "</td></tr>");
+                    }
+                    if (Caption.retStr() == "") Caption = "TDS";
+                    var hdr = Caption + " Name" + Cn.GCS() + Caption + " Code" + Cn.GCS() + Caption + " % Company" + Cn.GCS() + Caption + " % Non Company" + Cn.GCS() + "Sec No.";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    if (dt.Rows.Count != 0)
+                    {
+                        string str = "";
+                        str = ToReturnFieldValues("", dt);
+                        return str;
+                    }
+                }
+                return "Invalid TDS Code ! Please Enter a Valid Code ";
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return ex.Message + ex.InnerException;
+            }
+        }
+
     }
 }

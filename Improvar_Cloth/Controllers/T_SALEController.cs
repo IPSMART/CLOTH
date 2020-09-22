@@ -680,6 +680,48 @@ namespace Improvar.Controllers
             //size szbarcode   3
             return itgrpcd.retStr().Substring(1, 3) + itcd.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
         }
+
+        public ActionResult GetTDSDetails(string val, string TAG, string PARTY)
+        {
+            try
+            {
+                string linktdscode = "'Y','Z'", menu_para = "SB";
+                if (menu_para == "PB" || menu_para == "PR") linktdscode = "'X'";
+                if (TAG.retStr() == "") return Content("Enter Document Date");
+                if (val == null)
+                {
+                    return PartialView("_Help2", masterHelp.TDSCODE_help(TAG, val, PARTY, "TCS", linktdscode));
+                }
+                else
+                {
+                    return Content(masterHelp.TDSCODE_help(TAG, val, PARTY, "TCS", linktdscode));
+                }
+            }
+            catch (Exception Ex)
+            {
+                Cn.SaveException(Ex, "");
+                return Content(Ex.Message + Ex.InnerException);
+            }
+        }
+        public DataTable getTDS(string docdt, string slcd, string linktdscode = "")
+        {
+            string scmf = CommVar.FinSchema(UNQSNO);
+            string sql = "select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+            if (slcd.retStr() != "") sql += "(select CMPNONCMP from  " + scmf + ".m_subleg where slcd='" + slcd + "') as CMPNONCMP, "; else sql += "'' CMPNONCMP, ";
+            sql += " b.tdsnm, b.secno, b.glcd from ";
+            sql += "(select tdscode, edate, tdsper, tdspernoncmp from ";
+            sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+            sql += "row_number() over(partition by a.tdscode order by a.edate desc) as rn ";
+            sql += "from " + scmf + ".m_tds_cntrl_dtl a ";
+            sql += "where  edate <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
+            if (linktdscode.retStr() != "") sql += " and tdscode in (" + linktdscode + ") ";
+            sql += ") where rn = 1 ) a, ";
+            sql += "" + scmf + ".m_tds_cntrl b ";
+            sql += "where a.tdscode = b.tdscode(+) ";
+
+            DataTable dt = masterHelp.SQLquery(sql);
+            return dt;
+        }
         public ActionResult GetSubLedgerDetails(string val, string Code)
         {
             try

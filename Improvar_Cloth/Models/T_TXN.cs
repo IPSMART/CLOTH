@@ -107,5 +107,9 @@ namespace Improvar.Models
 
         [StringLength(50)]
         public string MENU_PARA { get; set; }
+        [StringLength(3)]
+        public string TDSCODE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? TCSON { get; set; }
     }
 }

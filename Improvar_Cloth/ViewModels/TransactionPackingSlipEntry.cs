@@ -171,7 +171,8 @@ namespace Improvar.ViewModels
         public string SLOCNM { get; set; }
         public string PORTNM { get; set; }
         public List<INVTYPE_list> INVTYPE_list { get; set; }
-        public List<EXPCD_list> EXPCD_list { get; set; }
+        public List<EXPCD_list> EXPCD_list { get; set; }        
         public List<REV_CHRG> Reverse_Charge { get; set; }
+        public string TDSNM { get; set; }
     }
 }
