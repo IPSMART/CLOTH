@@ -87,7 +87,7 @@ namespace Improvar.Controllers
                     {
                         if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR")
                         {
-                            if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == " PL" || v.MTRLJOBCD == "DY")
+                            if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == "PL" || v.MTRLJOBCD == "DY")
                             {
                                 v.Checked = true;
                             }
