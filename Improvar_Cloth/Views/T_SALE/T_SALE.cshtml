@@ -1770,7 +1770,7 @@
                                         @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO" } })
                                     </div>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Purchase bill dt")
                                         <b style="color:Red;">*</b>
@@ -1794,7 +1794,7 @@
                                     @Html.EditorFor(model => model.T_TXNOTH.POREFNO, new { htmlAttributes = new { @class = "form-control", id = "POREFNO", maxlength = 30, @placeholder = "POREFNO" } })
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <div class="editor-field" style="margin-top: 6px;">
                                     @Html.Label("", "Party Order dt")
                                 </div>
@@ -1806,7 +1806,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "TCS %")
                                 </div>
@@ -1836,7 +1836,7 @@
                                     @Html.Label("", "TCS Head")
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXN.TDSCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSCODE", onkeyup = "GetHelp_WithId('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TDSCODE',DOCDT.value)", onblur = "SelectTDSCode(this.value,TDSCODE,TDSNM,TCSPER);", @placeholder = "Code", maxlength = 3, onchange = "BillAmountCalculate();" } })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTDSDetails", PageControllerName)','TDSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TDSCODE',DOCDT.value)" />
