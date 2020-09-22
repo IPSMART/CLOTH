@@ -176,7 +176,7 @@ namespace Improvar
                 if (ITCD.retStr() != "")
                 {
                     string sql2 = "select a.itgrpcd from " + CommVar.CurSchema(UNQSNO) + ".M_GROUP a," + CommVar.CurSchema(UNQSNO) + ".m_sitem b where a.ITGRPCD=b.ITGRPCD(+) and b.itcd = '" + ITCD.retStr() + "' ";
-                    if (valsrch.retStr() != "") sql2 += "and  upper(ITGRPCD) = '" + valsrch + "' ";
+                    if (valsrch.retStr() != "") sql2 += "and  upper(a.ITGRPCD) = '" + valsrch + "' ";
                     dt1 = SQLquery(sql2);
                 }
                 DataTable dt = SQLquery(sql);
