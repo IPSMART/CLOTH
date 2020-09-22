@@ -50,7 +50,7 @@
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
                                 <th class="" style="width:50px;">UOM</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
-                                <th class="" style="width:50px;text-align:right;">Rate</th>
+                                <th class="" style="width:80px;text-align:right;">Rate</th>
                                 <th class="" style="width:50px;text-align:right;">GST Per</th>
                                 <th class="" style="width:50px;text-align:right;">Disc (%)</th>
                                 <th class="" style="width:50px;">Disc Type</th>
@@ -75,11 +75,13 @@
                                             @Html.CheckBoxFor(model => model.TBATCHDTL[i].Checked, new { id = "B_Checked_" + i, @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].OURDESIGN, new { id = "B_OURDESIGN_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].FLAGMTR, new { id = "B_FLAGMTR_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].HSNCODE, new { id = "B_HSNCODE_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].LOCABIN, new { id = "B_LOCABIN_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].GLCD, new { id = "B_GLCD_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:20px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -224,7 +226,9 @@
                                     @Html.EditorFor(model => Model.B_T_QNTY, new { htmlAttributes = new { id = "B_T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.B_T_NOS, new { htmlAttributes = new { id = "B_T_NOS", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

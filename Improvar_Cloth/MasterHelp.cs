@@ -2243,6 +2243,32 @@ namespace Improvar
                 if (tbl.Rows.Count > 0)
                 {
                     string str = ToReturnFieldValues("", tbl);
+                    string glcd = "";
+                    switch (menupara)
+                    {
+                        case "SBPCK"://Packing Slip
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SB"://Sales Bill (Agst Packing Slip)
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBDIR"://Sales Bill
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SR"://Sales Return (SRM)
+                            glcd = str.retCompValue("SALRETGLCD"); break;
+                        case "SBCM"://Cash Memo
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBCMR"://Cash Memo Return Note
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBEXP"://Sales Bill (Export)
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "PI"://Proforma Invoice
+                            glcd = ""; break;
+                        case "PB"://Purchase Bill
+                            glcd = str.retCompValue("PURGLCD"); break;
+                        case "PR"://Purchase Return (PRM)
+                            glcd = str.retCompValue("PURRETGLCD"); break;
+                        default: glcd = ""; break;
+                    }
+                    str += "^GLCD=^" + glcd + Cn.GCS();
                     return str;
                 }
                 else

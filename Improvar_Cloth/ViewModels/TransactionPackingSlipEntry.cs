@@ -174,5 +174,10 @@ namespace Improvar.ViewModels
         public List<EXPCD_list> EXPCD_list { get; set; }        
         public List<REV_CHRG> Reverse_Charge { get; set; }
         public string TDSNM { get; set; }
+        [StringLength(30)]
+        public string OURDESIGN { get; set; }
+        public double B_T_NOS { get; set; }
+        [StringLength(8)]
+        public string GLCD { get; set; }
     }
 }
