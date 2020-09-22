@@ -1240,6 +1240,56 @@
     }
 </script>
 <script>
+    function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
+        if (id == "") {
+            $("#" + TDSHD.id).val("");
+            $("#" + TDSNM.id).val("");
+            $("#" + TCSPER.id).val("");
+        }
+        else {
+            if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
+            if (!emptyFieldCheck("Enter Supplier Code", "SLCD")) { return false; }
+            var PARTY = document.getElementById("SLCD").value;
+            var DOCDT = document.getElementById("DOCDT").value;
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetTDSDetails", PageControllerName)",
+                data:
+                    {
+                        val: id,
+                        PARTY: PARTY,
+                        TAG: DOCDT
+                    },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        document.getElementById(TDSHD.id).value = returncolvalue(result, "TDSCODE");
+                        document.getElementById(TDSNM.id).value = returncolvalue(result, "TDSNM");
+                        var CMPNONCMP = returncolvalue(result, "CMPNONCMP");
+                        if (CMPNONCMP == "L") {
+                            document.getElementById(TCSPER.id).value = returncolvalue(result, "TDSPER");
+                        } else {
+                            document.getElementById(TCSPER.id).value = returncolvalue(result, "TDSPERNONCMP");
+                        }
+                    }
+                    else {
+                        $("#" + TDSHD.id).val("");
+                        $("#" + TDSNM.id).val("");
+                        $("#" + TCSPER.id).val("");
+                        msgInfo(result);
+                        message_value = TDSHD.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
     function pageprinting() {
         debugger;
         var ty = $("#DOCCD").val();
@@ -1259,6 +1309,7 @@
         });
     }
 </script>
+
 @section Scripts {
     <script>
         function ReloadWithData() {
@@ -1747,6 +1798,50 @@
                             <div class="col-md-3">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNOTH.POREFDT, new { htmlAttributes = new { @class = "form-control", id = "POREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "TCS %")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.TCSPER, "{0:0.000}", new { htmlAttributes = new { @class = "form-control", id = "TCSPER", maxlength = 5, @placeholder = "TCS %", onblur = "BillAmountCalculate();" } })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @TabIndex = -1, @placeholder = "TCS Amount", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "TCS ON")
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @TabIndex = -1, @placeholder = "TCS on", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "TCS Head")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXN.TDSCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSCODE", onkeyup = "GetHelp_WithId('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TDSCODE',DOCDT.value)", onblur = "SelectTDSCode(this.value,TDSCODE,TDSNM,TCSPER);", @placeholder = "Code", maxlength = 3, onchange = "BillAmountCalculate();" } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTDSDetails", PageControllerName)','TDSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TDSCODE',DOCDT.value)" />
+                                </div>
+                                <input id="TDSAMTCAL" type="hidden" />
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TDSNM, new { htmlAttributes = new { @class = "form-control", id = "TDSNM", @placeholder = "TDS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
                                 </div>
                             </div>
                         </div>
