@@ -66,6 +66,9 @@
         if ("@Model.LINKDOCNO" != "") {
             $('#_T_SALE_DETAIL_GRID input').attr('readonly', 'readonly');
             $('#_T_SALE_PRODUCT_GRID input').attr('readonly', 'readonly');
+            $('#_T_SALE_DETAIL_GRID input').removeAttr("onblur");
+            $('#_T_SALE_PRODUCT_GRID input').attr('TabIndex', '-1');
+            $('#_T_SALE_DETAIL_GRID input').attr('TabIndex', '-1');
         }
 
         $("#WaitingMode").hide();
