@@ -1444,7 +1444,7 @@
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
-        <input type="hidden" id="slcd_tag" value="Party" />  
+        <input type="hidden" id="slcd_tag" value="Party" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
@@ -2185,8 +2185,8 @@
 
 
                                 <div class="row">
-                                    @if (Model.MENU_PARA == "PB")
-                        {
+                                    @if (Model.MENU_PARA == "PB" || 1 == 1)
+                                    {
                                         <div class="col-md-8">
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
@@ -2249,35 +2249,35 @@
                                                                 }
 
                             <div class="row">
-                              
+
                                 <div class="col-md-3" style="width:auto;">
 
                                 </div>
                             </div>
-                                <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
-                                    <div id="partialdivBarCodeTab">
-                                        @Html.Partial("_T_SALE_PRODUCT")
+                            <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
+                                <div id="partialdivBarCodeTab">
+                                    @Html.Partial("_T_SALE_PRODUCT")
+                                </div>
+                                <div>
+                                    <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
                                     </div>
-                                    <div>
-                                        <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                                </div>
+                            </div>
+                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                    {
+                                <div>
+                                    <div class="row">
+                                        <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-1" style="width:auto;">
+                                            <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
                                         </div>
                                     </div>
                                 </div>
-                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
-                    {
-                                    <div>
-                                        <div class="row">
-                                            <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-1" style="width:auto;">
-                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
+                            }
 
-                            </div>
+                        </div>
                     </div>
                     <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
@@ -2698,10 +2698,9 @@
                             <div id="myCarousel" class="carousel slide" data-ride="carousel">
                                 <div class="carousel-inner" id="div_carousel_inner">
                                     <div class="item active">
-                                        <img src="la.jpg" alt="Los Angeles" style="width:100%;">
+                                        @*<img src="la.jpg" alt="Los Angelsssssssssssssssses" style="width:100%;">*@
                                     </div>
                                 </div>
-
                                 <!-- Left and right controls -->
                                 <a class="left carousel-control" href="#myCarousel" data-slide="prev">
                                     <span class="glyphicon glyphicon-chevron-left"></span>
@@ -2982,8 +2981,15 @@
     }
 
     function UploadBarnoImage(i) {
+        debugger;
         var ImageDesc = $('#ImageDesc').val();
         if (document.getElementById("ImageName").value == "") return;
+        var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
+        if (OpenImageModal == "") { OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").append(''); } else {
+            OpenImageModal = parseInt(OpenImageModal) + 1;
+            actt = "";
+        }
+        $('#OpenImageModal_' + i).html(OpenImageModal);
         $.ajax({
             type: 'POST',
             url: "@Url.Action("UploadImages", PageControllerName )",
@@ -2995,16 +3001,13 @@
                 var newid = $("#BarImages").val() + String.fromCharCode(181) + (result.split('/')[2] + '~' + ImageDesc);
                 $("#BarImages").val(newid);
                 var htm = '';
-                                        htm += '<div class="item active">';
-                                        htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
-                                        htm += '    <div class="carousel-caption">';
-                                        htm += '    <h3> ' + ImageDesc+' </h3>';
-                                        htm += '    </div>';
-                                        htm += '</div>';
-                                        $("#div_carousel_inner").append(htm);
-
-
-
+                htm += '<div class="item ' + actt + '">';
+                htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
+                htm += '    <div class="carousel-caption">';
+                htm += '    <h3> ' + ImageDesc + ' </h3>';
+                htm += '    </div>';
+                htm += '</div>';
+                $("#div_carousel_inner").append(htm);
 
                 //htm += '<div class="col-lg-4" id="' + id + '">';
                 //htm += '       <div class="thumbnail">';
