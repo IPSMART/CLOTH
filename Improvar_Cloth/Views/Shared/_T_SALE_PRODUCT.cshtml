@@ -194,7 +194,7 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            <span onclick="ModifyLogDetails()" data-toggle="modal" data-target="#ViewImageModal"></span>
+                                            <a onclick="" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i"></a>
                                         </td>
                                         <td class="">
                                             <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">                                        
@@ -245,7 +245,7 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> 
+                                @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@ 
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
                                     <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
