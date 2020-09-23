@@ -161,6 +161,7 @@ namespace Improvar.Models
         [StringLength(8)]
         public string GLCD { get; set; }
         public string BarImages { get; set; }
-        
+        public string ChildData { get; set; }
+
     }
 }

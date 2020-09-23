@@ -83,6 +83,7 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].LOCABIN, new { id = "B_LOCABIN_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].GLCD, new { id = "B_GLCD_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].ChildData, new { id = "B_ChildData_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:20px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })

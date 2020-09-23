@@ -56,6 +56,7 @@
             else {
                 GetAllMtrljobcd();
             }
+            Checked_Disable();
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -1282,6 +1283,16 @@
             }
             var TARE = GROSS - NET;
             document.getElementById(TRWT.id).value = TARE.toFixed(3);
+        }
+    }
+</script>
+<script>
+    function Checked_Disable() {
+        var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            if ($("#B_ChildData_" + i).val() == "Y") {
+                document.getElementById("B_Checked_" + i).disabled = true;
+            }
         }
     }
 </script>
