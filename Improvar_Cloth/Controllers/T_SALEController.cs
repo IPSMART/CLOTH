@@ -232,7 +232,7 @@ namespace Improvar.Controllers
                             }
                             VE = (TransactionPackingSlipEntry)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COM, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
-                        if (parkID == "")
+                        if (parkID == "" && loadOrder == "N")
                         {
                             FreightCharges(VE, VE.T_TXN.AUTONO);
                         }
@@ -2746,5 +2746,21 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult UploadImages(string ImageStr, string ImageName, string ImageDesc)
+        {
+            try
+            {
+                var extension = Path.GetExtension(ImageName);
+                string filename = "I".retRepname() + extension;
+                var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
+                return Content("/UploadDocuments/" + filename);
+            }
+            catch (Exception ex)
+            {
+                return Content("//.");
+            }
+
+        }
+
     }
 }

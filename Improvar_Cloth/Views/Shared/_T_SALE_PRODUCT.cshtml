@@ -58,6 +58,7 @@
                                 <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
                                 <th class="" style="width:50px;">Disc-2</th>
                                 <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>
+                                <th class="" style="width:50px;">Image Desc</th>
                                 <th class="">Image Upload</th>
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
@@ -188,12 +189,17 @@
                                                     }
                                                 </datalist>*@
                                         </td>
+
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="B_ImageData_@i" onchange="fileCheck(this,@i);" />
+                                            <span onclick="ModifyLogDetails()" data-toggle="modal" data-target="#ViewImageModal"></span>
                                         </td>
+                                        <td class="">
+                                            <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">                                        
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages)     
+                                         </td>
                                         @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                         {
                                             <td class="sticky-cell-opposite">
@@ -238,6 +244,8 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> 
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
                                     <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
