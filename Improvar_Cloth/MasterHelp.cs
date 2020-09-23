@@ -2281,6 +2281,22 @@ namespace Improvar
         {
 
             DataTable tbl = salesfunc.getPendingPackslip(docdt, slcd);
+            if (tbl != null && tbl.Rows.Count > 0)
+            {
+                string str1 = "";
+                if (autono.retStr() != "") str1 = "autono = '" + autono + "' ";
+                if (str1 != "" && val.retStr() != "") str1 += "and ";
+                if (val.retStr() != "") str1 += "docno = '" + val + "' ";
+                var data = tbl.Select(str1);
+                if (data.Count() > 0)
+                {
+                    tbl = data.CopyToDataTable();
+                }
+                else
+                {
+                    tbl = new DataTable();
+                }
+            }
             if (val.retStr() == "" || tbl.Rows.Count > 1)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -2293,9 +2309,6 @@ namespace Improvar
             }
             else
             {
-                string str1 = "";
-                if (autono.retStr() != "") str1 = "and autono = '" + autono + "' ";
-                tbl = tbl.Select("docno = '" + val + "'" + str1).CopyToDataTable();
                 if (tbl.Rows.Count > 0)
                 {
                     string str = ToReturnFieldValues("", tbl);
