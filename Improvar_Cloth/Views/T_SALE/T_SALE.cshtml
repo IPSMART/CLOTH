@@ -1719,7 +1719,7 @@
                                     @*@Html.EditorFor(model => model.T_TXNOTH.PACKBY, new { htmlAttributes = new { @class = "form-control", id = "PACKBY", maxlength = 50, @placeholder = "Packed By" } })*@
                                     @Html.EditorFor(model => model.T_TXNOTH.PACKBY, new { htmlAttributes = new { @class = "form-control", id = "PACKBY", @placeholder = "Packed By", maxlength = 50, @list = "PackedBy_List" } })
                                     <datalist id="PackedBy_List">
-                                        @foreach (var jg in Model.Database_Combo1)
+                                        @foreach (var jg in Model.Database_Combo3)
                                         {
                                             <option value="@jg.FIELD_VALUE" />
                                         }
