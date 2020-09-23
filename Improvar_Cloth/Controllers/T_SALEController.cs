@@ -2750,5 +2750,21 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult UploadImages(string ImageStr, string ImageName, string ImageDesc)
+        {
+            try
+            {
+                var extension = Path.GetExtension(ImageName);
+                string filename = "I".retRepname() + extension;
+                var link = Cn.SaveImage(ImageStr, "/UploadDocuments/" + filename);
+                return Content("/UploadDocuments/" + filename);
+            }
+            catch (Exception ex)
+            {
+                return Content("//.");
+            }
+
+        }
+
     }
 }

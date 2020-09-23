@@ -1444,7 +1444,7 @@
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
-        <input type="hidden" id="slcd_tag" value="Party" />
+        <input type="hidden" id="slcd_tag" value="Party" />  
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
@@ -2234,32 +2234,57 @@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="UpdateRow_Barcode" accesskey="W" value="Update Row(Alt+W)" title="Click to Update Data in Barcode Details" onclick="UpdateBarCodeRow()" />
                                         <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
                                     </div>
-                                </div>
-                                                                }
-                            <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
-                                <div id="partialdivBarCodeTab">
-                                    @Html.Partial("_T_SALE_PRODUCT")
-                                </div>
-                                <div>
-                                    <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                                    @*iamge*@
+                                    <div class="col-md-1">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Image Desc")
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
-                    {
-                                <div>
-                                    <div class="row">
-                                        <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
+                                    <div class="col-md-1">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />
+                                            <input type="hidden" id="ImageName" value="" />
+                                            <input type="hidden" id="ImageStr" value="" />
+                                        </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-1" style="width:auto;">
-                                            <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
+                                    <div class="col-md-6">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            <input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" />
                                         </div>
                                     </div>
                                 </div>
-                            }
+                                                                }
 
-                        </div>
+                            <div class="row">
+                              
+                                <div class="col-md-3" style="width:auto;">
+
+                                </div>
+                            </div>
+                                <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
+                                    <div id="partialdivBarCodeTab">
+                                        @Html.Partial("_T_SALE_PRODUCT")
+                                    </div>
+                                    <div>
+                                        <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                    {
+                                    <div>
+                                        <div class="row">
+                                            <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-1" style="width:auto;">
+                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
                     </div>
                     <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
@@ -2664,9 +2689,44 @@
 
                         </div>*@
                 </div>
-
             </div>
         </div>
+
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="ViewImageModal" role="dialog">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Image</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner" id="div_carousel_inner">
+                                    <div class="item active">
+                                        <img src="la.jpg" alt="Los Angeles" style="width:100%;">
+                                    </div>
+                                </div>
+
+                                <!-- Left and right controls -->
+                                <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
                                                                 }
                                                                 else
                                                                 {
@@ -2911,5 +2971,80 @@
         } else {
             $("#BARCODE").focus();
         }
+    }
+</script>
+<script>
+    function fileTypeCheck(id) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            document.getElementById("ImageName").value = fileToLoad.name;
+            var fileReader = new FileReader();
+            fileReader.onload = function (fileLoadedEvent) {
+                document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
+            };
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
+
+    function UploadBarnoImage(i) {
+        var ImageDesc = $('#ImageDesc').val();
+        if (document.getElementById("ImageName").value == "") return;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("UploadImages", PageControllerName )",
+            beforesend: $("#WaitingMode").show(),
+            data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                var id = (result.split('/')[2]).split('.')[0];
+                var newid = $("#BarImages").val() + String.fromCharCode(181) + (result.split('/')[2] + '~' + ImageDesc);
+                $("#BarImages").val(newid);
+                var htm = '';
+                                        htm += '<div class="item active">';
+                                        htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
+                                        htm += '    <div class="carousel-caption">';
+                                        htm += '    <h3> ' + ImageDesc+' </h3>';
+                                        htm += '    </div>';
+                                        htm += '</div>';
+                                        $("#div_carousel_inner").append(htm);
+
+
+
+
+                //htm += '<div class="col-lg-4" id="' + id + '">';
+                //htm += '       <div class="thumbnail">';
+                //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
+                //htm += '           <a href="' + result + '" target="_blank">';
+                //htm += '                <img src="' + result + '" alt="" style="width:100%">';
+                //htm += '                <div class="caption">';
+                //htm += '                   ' + ImageDesc;
+                //htm += '          </div>';
+                //htm += '      </a>';
+                //htm += '  </div>';
+                //htm += '</div>';
+                $("#divUploadImage").append(htm);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function deleteBarImages(id) {
+        debugger;
+        var arr = $("#BarImages").val().split(String.fromCharCode(181)); var deleteindex = 0;
+        $.each(arr, function (index, value) {
+            var divid = (value.split('~')[0]).split('.')[0];
+            if (id == divid) {
+                deleteindex = index;
+            }
+        });
+        arr.splice(deleteindex, 1);
+        $("#" + id).remove();
+        var newimg = arr.join(String.fromCharCode(181));
+        $("#BarImages").val(newimg);
     }
 </script>
