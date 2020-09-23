@@ -499,7 +499,7 @@ namespace Improvar.Controllers
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "";
                     var tax_data = (from a in VE.TBATCHDTL
-                                    where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE 
+                                    where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE
                                     && a.RATE == v.RATE && a.DISCTYPE == v.DISCTYPE && a.DISCRATE == v.DISCRATE && a.TDDISCTYPE == v.TDDISCTYPE
                                      && a.TDDISCRATE == v.TDDISCRATE && a.SCMDISCTYPE == v.SCMDISCTYPE && a.SCMDISCRATE == v.SCMDISCRATE
                                     select new { a.PRODGRPGSTPER, a.ALL_GSTPER }).FirstOrDefault();
@@ -962,8 +962,8 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-
-                    str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
+                    str = masterHelp.ToReturnFieldValues("", tax_data);
+                    //str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
                     str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
                     str += "^GSTPER=^" + GSTPER + Cn.GCS();
                     return Content(str);
