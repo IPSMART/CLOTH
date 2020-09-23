@@ -45,6 +45,10 @@
             modeView();
         }
         else if ("@Model.DefaultAction" == "E") {
+            var BARGENTYPE = $("#BARGENTYPE").val();
+            if (BARGENTYPE == "E") {
+                $("#BARGENTYPE").attr("style", "pointer-events:none");
+            }
             if ('@Model.MENU_PARA' == "SB") {
                 $('#PACKSLIP_HELP').hide("");
                 $("#LINKDOCNO").attr("readonly", "readonly");
