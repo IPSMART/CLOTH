@@ -232,7 +232,7 @@ namespace Improvar.Controllers
                             }
                             VE = (TransactionPackingSlipEntry)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COM, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
-                        if (parkID == "")
+                        if (parkID == "" && loadOrder == "N")
                         {
                             FreightCharges(VE, VE.T_TXN.AUTONO);
                         }
@@ -290,6 +290,7 @@ namespace Improvar.Controllers
                 if (VE.MENU_PARA == "SB")
                 {
                     TTXNLINKNO = (from a in DB.T_TXN_LINKNO where a.AUTONO == TXN.AUTONO select a).FirstOrDefault();
+                    VE.LINKDOCNO= (from a in DB.T_CNTRL_HDR where a.AUTONO == TTXNLINKNO.LINKAUTONO select a).FirstOrDefault().DOCNO;
                 }
                 if (TXN.SLCD.retStr() != "")
                 {
