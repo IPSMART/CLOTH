@@ -935,7 +935,7 @@ namespace Improvar.Controllers
                 {
                     return PartialView("_Help2", str);
                 }
-                else
+                else if (str.IndexOf(Convert.ToChar(Cn.GCS())) >= 0)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                     DataTable tax_data = new DataTable();
@@ -962,10 +962,13 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-                    str = masterHelp.ToReturnFieldValues("", tax_data);
-                    //str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
+                    str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
                     str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
                     str += "^GSTPER=^" + GSTPER + Cn.GCS();
+                    return Content(str);
+                }
+                else
+                {
                     return Content(str);
                 }
             }
