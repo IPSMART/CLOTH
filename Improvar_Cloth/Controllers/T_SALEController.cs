@@ -497,7 +497,7 @@ namespace Improvar.Controllers
                     }
 
                     //checking childdata exist against barno
-                    var chk_child = (from a in DB.T_BATCHDTL where a.BARNO == v.BARNO && a.AUTONO != v.AUTONO select a).ToList();
+                    var chk_child = (from a in DB.T_BATCHDTL where a.BARNO == v.BARNO && a.AUTONO != TXN.AUTONO select a).ToList();
                     if (chk_child.Count() > 0)
                     {
                         v.ChildData = "Y";
@@ -2143,31 +2143,6 @@ namespace Improvar.Controllers
                             {
                                 bool flagbatch = false;
                                 string barno = "";
-                                //string Action = "", SqlCondition = "";
-                                //if (VE.DefaultAction == "A")
-                                //{
-                                //    Action = VE.DefaultAction;
-                                //}
-                                //else
-                                //{
-                                //    sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where autono='" + TTXN.AUTONO + "' and slno = " + VE.TBATCHDTL[i].SLNO + " ";
-                                //    OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
-                                //    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
-
-                                //    if (recoexist == true)
-                                //    {
-                                //        Action = "E";
-                                //        SqlCondition = "autono = '" + TTXN.AUTONO + "' and slno = " + VE.TBATCHDTL[i].SLNO;
-                                //        flagbatch = true;
-                                //    }
-                                //    else
-                                //    {
-                                //        Action = "A";
-                                //    }
-
-                                //}
-                                //if (Action == "A")
-                                //{
                                 if (VE.MENU_PARA == "PB" && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
                                     //barno = TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (COUNTERBATCH + 1));
@@ -2183,7 +2158,33 @@ namespace Improvar.Controllers
 
                                     if (recoexist == false) flagbatch = true;
                                 }
-                                //}
+
+                                //checking barno exist or not
+                                string Action = "", SqlCondition = "";
+                                if (VE.DefaultAction == "A")
+                                {
+                                    Action = VE.DefaultAction;
+                                }
+                                else
+                                {
+                                    sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where autono='" + TTXN.AUTONO + "' and slno = " + VE.TBATCHDTL[i].SLNO + " and barno='" + barno + "' ";
+                                    OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                                    if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+
+                                    if (recoexist == true)
+                                    {
+                                        Action = "E";
+                                        SqlCondition = "autono = '" + TTXN.AUTONO + "' and slno = " + VE.TBATCHDTL[i].SLNO + " and barno='" + barno + "' ";
+                                        flagbatch = true;
+                                        barno = VE.TBATCHDTL[i].BARNO;
+                                    }
+                                    else
+                                    {
+                                        Action = "A";
+                                    }
+
+                                }
+
                                 if (flagbatch == true)
                                 {
                                     T_BATCHMST TBATCHMST = new T_BATCHMST();
@@ -2228,8 +2229,8 @@ namespace Improvar.Controllers
                                     TBATCHMST.MILLNM = VE.TBATCHDTL[i].MILLNM;
                                     TBATCHMST.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
                                     TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
-                                    //dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
-                                    dbsql = masterHelp.RetModeltoSql(TBATCHMST);
+                                    //dbsql = masterHelp.RetModeltoSql(TBATCHMST);
+                                    dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                                 COUNTER = COUNTER + 1;

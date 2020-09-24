@@ -1306,6 +1306,7 @@
                 success: function (result) {
                     $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
                     $("#partialdivBarCodeTab").html(result);
+                    Checked_Disable();
                     CalculateTotal_Barno();
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
