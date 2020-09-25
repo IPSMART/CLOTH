@@ -138,7 +138,7 @@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>
+                                        </td> 
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateTotal_Barno();", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
