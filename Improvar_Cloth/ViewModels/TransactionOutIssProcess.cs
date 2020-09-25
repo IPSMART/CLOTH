@@ -153,6 +153,26 @@ namespace Improvar.ViewModels
         public double T_EXTRAQNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
         public double T_QQNTY { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double B_T_QNTY { get; set; }
+        public double B_T_NOS { get; set; }
+        public short SLNO { get; set; }
+        public string MTBARCODE { get; set; }
+        public string ITSTYLE { get; set; }
+        public string PRTBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }
+        public string SZBARCODE { get; set; }
+        [StringLength(30)]
+        public string PDESIGN { get; set; }
+        public string ALL_GSTPER { get; set; }
+        public string PRODGRPGSTPER { get; set; }
+        [StringLength(30)]
+        public string OURDESIGN { get; set; }
+        public string ALLMTRLJOBCD { get; set; }
+        [StringLength(4)]
+        public string BALEYR { get; set; }
+        [StringLength(8)]
+        public string GLCD { get; set; }
 
     }
 }

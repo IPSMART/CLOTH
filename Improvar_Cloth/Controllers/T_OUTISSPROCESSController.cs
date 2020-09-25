@@ -615,17 +615,45 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetItemGroupDetails(string val)
+        public ActionResult GetItemGroupDetails(string val, string Code)
         {
             try
             {
-                string str = masterHelp.ITGRPCD_help(val, "");
+                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                Cn.getQueryString(VE);
+                string str = masterHelp.ITGRPCD_help(val, "", Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
                 }
                 else
                 {
+                    string glcd = "";
+                    switch (VE.MENU_PARA)
+                    {
+                        case "SBPCK"://Packing Slip
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SB"://Sales Bill (Agst Packing Slip)
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBDIR"://Sales Bill
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SR"://Sales Return (SRM)
+                            glcd = str.retCompValue("SALRETGLCD"); break;
+                        case "SBCM"://Cash Memo
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBCMR"://Cash Memo Return Note
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBEXP"://Sales Bill (Export)
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "PI"://Proforma Invoice
+                            glcd = ""; break;
+                        case "PB"://Purchase Bill
+                            glcd = str.retCompValue("PURGLCD"); break;
+                        case "PR"://Purchase Return (PRM)
+                            glcd = str.retCompValue("PURRETGLCD"); break;
+                        default: glcd = ""; break;
+                    }
+                    str += "^GLCD=^" + glcd + Cn.GCS();
                     return Content(str);
                 }
             }
@@ -656,6 +684,73 @@ namespace Improvar.Controllers
             }
         }
         public ActionResult GetItemDetails(string val, string Code)
+        {
+            try
+            {
+                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                Cn.getQueryString(VE);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string ITGRPCD = data[0].retStr() == "" ? "" : data[0].retStr().retSqlformat();
+                string DOCDT = data[1].retStr();
+                if (DOCDT == "")
+                {
+                    return Content("Please Select Document Date");
+                }
+                string TAXGRPCD = data[2].retStr();
+                string GOCD = data[3].retStr() == "" ? "" : data[3].retStr().retSqlformat();
+                string PRCCD = data[4].retStr();
+                string MTRLJOBCD = data[5].retStr() == "" ? "" : data[5].retStr().retSqlformat();
+                string BARNO = data[6].retStr() == "" ? "" : data[6].retStr().retSqlformat();
+                double RATE = data[7].retDbl();
+                var str = masterHelp.ITCD_help(val, "", data[0].retStr());
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else if (str.IndexOf(Convert.ToChar(Cn.GCS())) >= 0)
+                {
+                    string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
+                    DataTable tax_data = new DataTable();
+                    if (VE.MENU_PARA == "PB")
+                    {
+                        tax_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), val.retStr().retSqlformat(), MTRLJOBCD.retStr(), "", ITGRPCD, "", PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
+
+                    }
+                    else
+                    {
+                        tax_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), val.retStr().retSqlformat(), MTRLJOBCD.retStr(), "", ITGRPCD, "", PRCCD.retStr(), TAXGRPCD.retStr());
+
+                    }
+                    if (tax_data != null && tax_data.Rows.Count > 0)
+                    {
+                        PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                        if (PRODGRPGSTPER != "")
+                        {
+                            ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE);
+                            if (ALL_GSTPER.retStr() != "")
+                            {
+                                var gst = ALL_GSTPER.Split(',').ToList();
+                                GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
+                            }
+                        }
+                    }
+                    str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
+                    str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
+                    str += "^GSTPER=^" + GSTPER + Cn.GCS();
+                    return Content(str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetGridItemDetails(string val, string Code)
         {
             try
             {
@@ -800,17 +895,146 @@ namespace Improvar.Controllers
         {
             try
             {
-                string DOCDT = Code.retStr();
                 TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
                 Cn.getQueryString(VE);
-                var str = masterHelp.T_TXN_BARNO_help(val, VE.MENU_PARA, DOCDT);
-                if (str.IndexOf("='helpmnu'") >= 0)
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string DOCDT = data[0].retStr();
+                string TAXGRPCD = data[1].retStr();
+                string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
+                string PRCCD = data[3].retStr();
+                string MTRLJOBCD = data[4].retStr();
+                if (val.retStr() == "")
                 {
-                    return PartialView("_Help2", str);
+                    var str = masterHelp.T_TXN_BARNO_help(val, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
+                    if (str.IndexOf("='helpmnu'") >= 0)
+                    {
+                        return PartialView("_Help2", str);
+                    }
+                    else
+                    {
+                        return Content(str);
+                    }
                 }
                 else
                 {
-                    return Content(str);
+                    DataTable stock_data = new DataTable();
+                    if (VE.MENU_PARA == "PB")
+                    {
+                        stock_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+
+                    }
+                    else
+                    {
+                        stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+
+                    }
+                    if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
+                    {
+                        return Content("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
+                    }
+                    else if (stock_data != null && stock_data.Rows.Count > 1)//if stock return more then one row then open popup
+                    {
+                        VE.TSALEBARNOPOPUP = (from DataRow dr in stock_data.Rows
+                                              select new TSALEBARNOPOPUP
+                                              {
+                                                  //SLNO = dr["slno"].retShort(),
+                                                  BARNO = dr["BARNO"].retStr(),
+                                                  ITGRPCD = dr["ITGRPCD"].retStr(),
+                                                  ITGRPNM = dr["ITGRPNM"].retStr(),
+                                                  MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
+                                                  MTBARCODE = dr["MTBARCODE"].retStr(),
+                                                  MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
+                                                  ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
+                                                  ITCD = dr["ITCD"].retStr(),
+                                                  STYLENO = dr["STYLENO"].retStr(),
+                                                  PARTNM = dr["PARTNM"].retStr(),
+                                                  PRTBARCODE = dr["PRTBARCODE"].retStr(),
+                                                  PARTCD = dr["PARTCD"].retStr(),
+                                                  COLRCD = dr["COLRCD"].retStr(),
+                                                  COLRNM = dr["COLRNM"].retStr(),
+                                                  CLRBARCODE = dr["CLRBARCODE"].retStr(),
+                                                  SIZENM = dr["SIZENM"].retStr(),
+                                                  SZBARCODE = dr["SZBARCODE"].retStr(),
+                                                  SIZECD = dr["SIZECD"].retStr(),
+                                                  SLNM = dr["SLNM"].retStr(),
+                                                  SLCD = dr["SLCD"].retStr(),
+                                                  UOM = dr["uomcd"].retStr(),
+                                                  STKTYPE = dr["STKTYPE"].retStr(),
+                                                  DOCDT = dr["DOCDT"].retStr().Remove(10),
+                                                  BALQNTY = dr["BALQNTY"].retDbl(),
+                                                  BALNOS = dr["BALNOS"].retDbl(),
+                                                  PDESIGN = dr["PDESIGN"].retStr(),
+                                                  //OURDESIGN = dr["OURDESIGN"].retStr(),
+                                                  FLAGMTR = dr["FLAGMTR"].retDbl(),
+                                                  RATE = dr["RATE"].retDbl(),
+                                                  HSNCODE = dr["HSNCODE"].retStr(),
+                                                  PRODGRPGSTPER = dr["PRODGRPGSTPER"].retStr(),
+                                                  //ALL_GSTPER = dr["ALL_GSTPER"].retStr(),
+                                                  SHADE = dr["SHADE"].retStr(),
+                                                  LOCABIN = dr["LOCABIN"].retStr(),
+                                                  GLCD = VE.MENU_PARA == "SBPCK" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SB" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBDIR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SR" ? dr["SALRETGLCD"].retStr() : VE.MENU_PARA == "SBCM" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBCMR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBEXP" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "PI" ? "" : VE.MENU_PARA == "PB" ? dr["PURGLCD"].retStr() : VE.MENU_PARA == "PR" ? dr["PURRETGLCD"].retStr() : "",
+                                              }).ToList();
+                        for (int p = 0; p <= VE.TSALEBARNOPOPUP.Count - 1; p++)
+                        {
+                            VE.TSALEBARNOPOPUP[p].SLNO = Convert.ToInt16(p + 1);
+                            VE.TSALEBARNOPOPUP[p].ALL_GSTPER = salesfunc.retGstPer(VE.TSALEBARNOPOPUP[p].PRODGRPGSTPER, VE.TSALEBARNOPOPUP[p].RATE.retDbl());
+                            if (VE.TSALEBARNOPOPUP[p].ALL_GSTPER.retStr() != "")
+                            {
+                                var gst = VE.TSALEBARNOPOPUP[p].ALL_GSTPER.Split(',').ToList();
+                                VE.TSALEBARNOPOPUP[p].GSTPER = (from a in gst select a.retDbl()).Sum();
+                            }
+
+                        }
+                        VE.DefaultView = true;
+                        return PartialView("_T_SALE_BARNODETAIL", VE);
+                    }
+                    else//stock return one row then return as blur
+                    {
+                        var str = masterHelp.ToReturnFieldValues("", stock_data);
+                        string all_gstper = ""; double gst = 0;
+                        if (stock_data.Rows[0]["PRODGRPGSTPER"].retStr() != "")
+                        {
+                            all_gstper = salesfunc.retGstPer(stock_data.Rows[0]["PRODGRPGSTPER"].retStr(), stock_data.Rows[0]["RATE"].retDbl());
+                            if (all_gstper.retStr() != "")
+                            {
+                                var gst_data = all_gstper.Split(',').ToList();
+                                gst = (from a in gst_data select a.retDbl()).Sum();
+                            }
+                        }
+
+                        str += "^ALL_GSTPER=^" + all_gstper + Cn.GCS();
+                        str += "^GSTPER=^" + gst + Cn.GCS();
+
+                        string glcd = "";
+                        switch (VE.MENU_PARA)
+                        {
+                            case "SBPCK"://Packing Slip
+                                glcd = str.retCompValue("SALGLCD"); break;
+                            case "SB"://Sales Bill (Agst Packing Slip)
+                                glcd = str.retCompValue("SALGLCD"); break;
+                            case "SBDIR"://Sales Bill
+                                glcd = str.retCompValue("SALGLCD"); break;
+                            case "SR"://Sales Return (SRM)
+                                glcd = str.retCompValue("SALRETGLCD"); break;
+                            case "SBCM"://Cash Memo
+                                glcd = str.retCompValue("SALGLCD"); break;
+                            case "SBCMR"://Cash Memo Return Note
+                                glcd = str.retCompValue("SALGLCD"); break;
+                            case "SBEXP"://Sales Bill (Export)
+                                glcd = str.retCompValue("SALGLCD"); break;
+                            case "PI"://Proforma Invoice
+                                glcd = ""; break;
+                            case "PB"://Purchase Bill
+                                glcd = str.retCompValue("PURGLCD"); break;
+                            case "PR"://Purchase Return (PRM)
+                                glcd = str.retCompValue("PURRETGLCD"); break;
+                            default: glcd = ""; break;
+                        }
+                        str += "^GLCD=^" + glcd + Cn.GCS();
+                        return Content(str);
+                    }
+
+
                 }
             }
             catch (Exception ex)
