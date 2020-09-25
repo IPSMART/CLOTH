@@ -1009,7 +1009,6 @@
     <Content Include="Views\M_Line\M_Line.cshtml" />
     <Content Include="Views\M_JobMaster\M_JobMaster.cshtml" />
     <Content Include="Views\M_Stktype\M_Stktype.cshtml" />
-    <Content Include="Views\M_Payment\M_Payment.cshtml" />
     <Content Include="Views\Shared\_T_SALE_AMOUNT.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PRODUCT.cshtml" />
     <Content Include="Views\Shared\_T_SALE_DETAIL.cshtml" />
@@ -1033,6 +1032,7 @@
     <Content Include="Views\SaleBill_Print\SaleBill_Print.cshtml" />
     <Content Include="Views\Rep_Doc_Print\Rep_Doc_Print.cshtml" />
     <Content Include="Views\M_SysCnfg\M_SysCnfg.cshtml" />
+    <Content Include="Views\M_Payment\M_Payment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

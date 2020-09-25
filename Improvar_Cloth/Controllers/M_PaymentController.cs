@@ -15,7 +15,6 @@ namespace Improvar.Controllers
         string CS = null;
         M_PAYMENT sl;
         M_CNTRL_HDR sll;
-        M_GENLEG mgl;
         MasterHelp Master_Help = new MasterHelp();
         MasterHelpFa Master_HelpFa = new MasterHelpFa();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -86,7 +85,6 @@ namespace Improvar.Controllers
                                 }
                             }
                             VE.M_PAYMENT = sl;
-                            VE.M_GENLEG = mgl;
                             VE.M_CNTRL_HDR = sll;
                         }
                        
@@ -116,8 +114,8 @@ namespace Improvar.Controllers
             {
                 sl = new M_PAYMENT();
                 sll = new M_CNTRL_HDR();
-                mgl = new M_GENLEG();
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO).ToString());
                 if (VE.IndexKey.Count != 0)
                 {
                     string[] aa = null;
@@ -130,9 +128,8 @@ namespace Improvar.Controllers
                         aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                     }
                     sl = DB.M_PAYMENT.Find(aa[0]);
-                    mgl = DB.M_GENLEG.Find(sl.GLCD);
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
-
+                    VE.GLNM = sl.GLCD.retStr() == "" ? "" : DBF.M_GENLEG.Where(a => a.GLCD == sl.GLCD).Select(b => b.GLNM).FirstOrDefault();
                     if (sll.INACTIVE_TAG == "Y")
                     {
                         VE.Checked = true;
@@ -150,34 +147,24 @@ namespace Improvar.Controllers
             }
             return VE;
         }
+        
         public ActionResult SearchPannelData()
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            var MDT = (from j in DB.M_PAYMENT
-                       join o in DB.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
-                       join k in DB.M_GENLEG on j.GLCD equals(k.GLCD)
-                       where (j.M_AUTONO == o.M_AUTONO)
-                       select new
-                       {
-                           PYMTCD = j.PYMTCD,
-                           PYMTNM = j.PYMTNM,
-                           GLCD = j.GLCD,
-                           GLNM= k.GLNM,
-                           M_AUTONO = o.M_AUTONO
-                       }).OrderBy(s => s.PYMTCD).ToList();
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string scm = CommVar.CurSchema(UNQSNO); string scmf = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+            sql += "select a.M_AUTONO,a.PYMTCD,a.PYMTNM,a.GLCD,c.GLNM from " + scm + ".M_PAYMENT a," + scm + ".M_CNTRL_HDR b," + scmf + ".m_genleg c  ";
+            sql += " where a.M_AUTONO=b.M_AUTONO(+) and a.GLCD=c.GLCD(+) ";
+            DataTable tbl = Master_Help.SQLquery(sql);
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Payment Code" + Cn.GCS() + "Payment Name" + Cn.GCS() + "Ledger Name" + Cn.GCS() + "AUTO NO";
-            for (int j = 0; j <= MDT.Count - 1; j++)
+            var hdr = "Payment Code" + Cn.GCS() + "Payment Name" + Cn.GCS() + "Ledger Name" + Cn.GCS() + "Ledger Code" + Cn.GCS() + "AUTO NO";
+            for (int i = 0; i <= tbl.Rows.Count - 1; i++)
             {
-                SB.Append("<tr><td>" + MDT[j].PYMTCD + "</td><td>" + MDT[j].PYMTNM + "</td><td>"+ MDT[j].GLNM +"["+ MDT[j].GLCD +"]"+"</td><td>" + MDT[j].M_AUTONO + "</td></tr>");
+                SB.Append("<tr><td>" + tbl.Rows[i]["PYMTCD"] + "</td><td>" + tbl.Rows[i]["PYMTNM"] + "</td><td>" + tbl.Rows[i]["GLNM"] + "</td><td>" + tbl.Rows[i]["GLCD"] + "</td><td>" + tbl.Rows[i]["M_AUTONO"] + "</td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "3"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "4"));
         }
-        //public ActionResult GetGenLedger()
-        //{
-        //    ImprovarDB DBfin = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-        //    return PartialView("_Help2", Master_HelpFa.GLCD_help(DBfin));
-        //}
+
         public ActionResult GetGenLedgerDetails(string val)
         {
             var str = Master_Help.GLCD_help(val);
@@ -190,25 +177,7 @@ namespace Improvar.Controllers
                 return Content(str);
             }
         }
-        public ActionResult GenLedger(string val)
-        {
-            ImprovarDB DBfin = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            var query = (from c in DBfin.M_GENLEG where (c.GLCD == val) select c);
-            if (query.Any())
-            {
-                string str = "";
-                foreach (var i in query)
-                {
-                    str = i.GLCD + Cn.GCS() + i.GLNM;
-                }
-                return Content(str);
-            }
-            else
-            {
-                return Content("0");
-            }
-        }
-       
+      
         public ActionResult SAVE(FormCollection FC, PaymentReceivedEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
@@ -303,9 +272,10 @@ namespace Improvar.Controllers
             try
             {
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
+                string dbfname = CommVar.FinSchema(UNQSNO).ToString();
 
                 string query = "select a.PYMTCD, a.PYMTNM,GLCD,GLNM  ";
-                query = query + " from " + dbname + ".M_PAYMENT a, " + dbname + ".m_cntrl_hdr c ," + dbname + ".m_genleg d ";
+                query = query + " from " + dbname + ".M_PAYMENT a, " + dbname + ".m_cntrl_hdr c ," + dbfname + ".m_genleg d ";
                 query = query + "where  a.m_autono=c.m_autono(+) and a.GLCD=d.GLCD(+) and nvl(c.inactive_tag,'N') = 'N' ";
                 query = query + "order by PYMTCD, a.PYMTNM";
 
