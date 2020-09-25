@@ -63,11 +63,7 @@
                                 <th class="" style="width:50px;text-align:right;">CESS Amt</th>
                                 <th class="" style="width:50px;text-align:right;">Net Amount</th>
                                 <th class="" style="width:60px;">Hsn Code</th>
-                                @if (Model.MENU_PARA == "PB")
-                                {
-                                    <th class="" style="width:103px;">Bale No.</th>
-                                }
-                                <th class="" style="width:71px;">glcd</th>
+                                @*<th class="" style="width:71px;">glcd</th>*@
                                 <th class="">Image Upload</th>
                             </tr>
                         </thead>
@@ -164,41 +160,36 @@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].ALL_GSTPER, new { id = "D_ALL_GSTPER_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].IGSTAMT, new { htmlattributes = new { id = "D_IGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",AIGSTPER_" + i + ",ANETAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].IGSTAMT, new { htmlattributes = new { id = "D_IGSTAMT_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].CGSTPER, new { htmlattributes = new { id = "D_CGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].CGSTAMT, new { htmlattributes = new { id = "D_CGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].CGSTAMT, new { htmlattributes = new { id = "D_CGSTAMT_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].SGSTPER, new { htmlattributes = new { id = "D_SGSTPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].SGSTAMT, new { htmlattributes = new { id = "D_SGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ASGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].SGSTAMT, new { htmlattributes = new { id = "D_SGSTAMT_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].CESSPER, new { htmlattributes = new { id = "D_CESSPER_" + i, @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @onchange = "CalculateAmt_Details(" + i + ")" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].CESSAMT, new { htmlattributes = new { id = "D_CESSAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACESSPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].CESSAMT, new { htmlattributes = new { id = "D_CESSAMT_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].NETAMT, new { htmlattributes = new { id = "D_NETAMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.HiddenFor(model => model.TTXNDTL[i].GLCD, new { id = "D_GLCD_" + i })
                                         </td>
-                                        @if (Model.MENU_PARA == "PB")
-                                        {
-                                            <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 12, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
-                                            </td>
-                                        }
-                                        <td class="">
+                                        @*<td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].GLCD, new { htmlattributes = new { id = "D_GLCD_" + i, @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
-                                        </td>
+                                        </td>*@
                                         <td class="">
                                             <input type="file" class="atextBoxFor" name="ImageData_@i" id="D_ImageData_@i" onchange="fileCheck(this,@i);" />
                                         </td>
@@ -262,10 +253,6 @@
                                     @Html.EditorFor(model => Model.T_NET_AMT, new { htmlattributes = new { id = "T_NET_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @if (Model.MENU_PARA == "PB")
-                                {
-                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                             </tr>

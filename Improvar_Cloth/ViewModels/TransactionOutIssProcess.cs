@@ -129,7 +129,7 @@ namespace Improvar.ViewModels
         public string SCMDISCTYPE { get; set; }
         [StringLength(10)]
         public string LOCABIN { get; set; }
-        public long? T_NOS { get; set; }
+        public double T_NOS { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
         public double? T_QNTY { get; set; }
@@ -173,6 +173,10 @@ namespace Improvar.ViewModels
         public string BALEYR { get; set; }
         [StringLength(8)]
         public string GLCD { get; set; }
+        public List<TSALEBARNOPOPUP> TSALEBARNOPOPUP { get; set; }
+        public double? P_T_NOS { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
+        public double? P_T_QNTY { get; set; }
 
     }
 }
