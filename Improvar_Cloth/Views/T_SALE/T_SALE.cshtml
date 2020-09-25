@@ -1459,33 +1459,43 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Image</h4>
+                            <h4 class="modal-title">Image Preview</h4>
                         </div>
                         <div class="modal-body">
-                            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                            <div id="myCarousel" class="carousel" data-ride="carousel">
                                 <div class="carousel-inner" id="div_carousel_inner">
                                     <div class="item active">
-                                        @*<img src="la.jpg" alt="Los Angelsssssssssssssssses" style="width:100%;">*@
+                                        <img src="" alt="Los Angeles" style="width:100%;">
+                                    </div>
+                                    <div class="item">
+                                        <img src="" alt="Chicago" style="width:100%;">
                                     </div>
                                 </div>
                                 <!-- Left and right controls -->
-                                <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                <a class="left  carousel-control arrow-left" id="prev" ">
                                     <span class="glyphicon glyphicon-chevron-left"></span>
                                 </a>
-                                <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                <a class="right  carousel-control arrow-right" id="next" ">
                                     <span class="glyphicon glyphicon-chevron-right"></span>
                                 </a>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="pull-left">
+                                        <input type="hidden" id="ActiveBarRowIndex" />
+                                        <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-
+        
                                                                 }
                                                                 else
                                                                 {
@@ -1519,7 +1529,9 @@
         var ImageDesc = $('#ImageDesc').val();
         if (document.getElementById("ImageName").value == "") return;
         var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
-        if (OpenImageModal == "") { OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").append(''); } else {
+        if (OpenImageModal == "") {
+            OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
+        } else {
             OpenImageModal = parseInt(OpenImageModal) + 1;
             actt = "";
         }
@@ -1530,19 +1542,23 @@
             beforesend: $("#WaitingMode").show(),
             data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
             success: function (result) {
-                $("#WaitingMode").hide();
-                var id = (result.split('/')[2]).split('.')[0];
-                var newid = $("#BarImages").val() + String.fromCharCode(181) + (result.split('/')[2] + '~' + ImageDesc);
-                $("#BarImages").val(newid);
-                var htm = '';
-                htm += '<div class="item ' + actt + '">';
-                htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
-                htm += '    <div class="carousel-caption">';
-                htm += '    <h3> ' + ImageDesc + ' </h3>';
-                htm += '    </div>';
-                htm += '</div>';
-                $("#div_carousel_inner").append(htm);
+                $("#WaitingMode").hide(); var newid = '';
+                if ($("#B_BarImages_" + i).val() != ""){
+                    newid= $("#B_BarImages_" + i).val() + String.fromCharCode(181) +(result.split('/')[2] + '~' + ImageDesc);}
+                else{
+                    newid= (result.split('/')[2] + '~' + ImageDesc);
+                }
+                $("#B_BarImages_" + i).val(newid);
+                //var htm = '';
+                //htm += '<div class="item ' + actt + '">';
+                //htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
+                //htm += '    <span class="carousel-caption">';
+                //htm += '    <p> ' + ImageDesc + ' </p>';
+                //htm += '    </span>';
+                //htm += '</div>';
+                //$("#div_carousel_inner").append(htm);
 
+                //$('.carousel').carousel(); // $("#carousel").carousel();
                 //htm += '<div class="col-lg-4" id="' + id + '">';
                 //htm += '       <div class="thumbnail">';
                 //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
@@ -1554,7 +1570,7 @@
                 //htm += '      </a>';
                 //htm += '  </div>';
                 //htm += '</div>';
-                $("#divUploadImage").append(htm);
+                //$("#divUploadImage").append(htm);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -1563,9 +1579,28 @@
             }
         });
     }
-    function deleteBarImages(id) {
+    $(document).on('click', '.arrow-left, .arrow-right', function () {
+        var next;
+        var circler;
+        if ($(this).is('.arrow-left')) {
+            next = 'prev';
+            circler = ':last';
+        } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
+            next = 'next';
+            circler = ':first';
+        }
+        var nextTarget = $('#div_carousel_inner div.active')[next]('div');
+        if (nextTarget.length == 0) {
+            nextTarget = $('#div_carousel_inner div' + circler);
+        }
+        $('#div_carousel_inner div').removeClass('active');
+        nextTarget.addClass('active');
+    });
+    function deleteBarImages() {
         debugger;
-        var arr = $("#BarImages").val().split(String.fromCharCode(181)); var deleteindex = 0;
+        var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
+        var id = $("#div_carousel_inner div.active").attr('id')
+        var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(181)); var deleteindex = 0;
         $.each(arr, function (index, value) {
             var divid = (value.split('~')[0]).split('.')[0];
             if (id == divid) {
@@ -1575,6 +1610,29 @@
         arr.splice(deleteindex, 1);
         $("#" + id).remove();
         var newimg = arr.join(String.fromCharCode(181));
-        $("#BarImages").val(newimg);
+        $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
+        $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
+
+    }
+    function FillImageModal(index) {
+        debugger;
+        //var OpenImageModal =
+        $('#ActiveBarRowIndex').val(index);
+        var actt = ""; $("#div_carousel_inner").html('');
+        var arr = $("#B_BarImages_" + index).val();
+        arr = arr.split(String.fromCharCode(181));
+        $.each(arr, function (index, value) {
+            var imgname = (value.split('~')[0]);
+            var id = (imgname).split('.')[0];
+            var ImageDesc = (value.split('~')[1]);
+            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+            htm += '<div id="'+id+'" class="item ' + actt + '">';
+            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+            htm += '    <span class="carousel-caption">';
+            htm += '    <p> ' + ImageDesc + ' </p>';
+            htm += '    </span>';
+            htm += '</div>';
+            $("#div_carousel_inner").append(htm);
+        });
     }
 </script>

@@ -58,7 +58,7 @@
                                 <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
                                 <th class="" style="width:50px;">Disc-2</th>
                                 <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>
-                                <th class="" style="width:50px;">Image Desc</th>
+                                <th class="" style="width:50px; text-align:center">Img</th>
                                 <th class="">Image Upload</th>
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
@@ -195,12 +195,13 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            <a onclick="" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i"></a>
+                                            <span onclick="FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i"></span>
                                         </td>
                                         <td class="">
-                                            <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">                                        
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages)     
-                                         </td>
+                                            <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
+                                        </td>
+
                                         @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                         {
                                             <td class="sticky-cell-opposite">
