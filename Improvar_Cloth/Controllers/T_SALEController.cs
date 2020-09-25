@@ -464,9 +464,7 @@ namespace Improvar.Controllers
                 else
                 {
                     allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
-
                 }
-
                 foreach (var v in VE.TBATCHDTL)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
