@@ -43,7 +43,6 @@ namespace Improvar.Models
         [Required]
         [StringLength(1)]
         public string STKDRCR { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? QNTY { get; set; }
@@ -157,5 +156,12 @@ namespace Improvar.Models
         public string BARGENTYPE { get; set; }
         [StringLength(4)]
         public string BALEYR { get; set; }
+        [StringLength(30)]
+        public string OURDESIGN { get; set; }
+        [StringLength(8)]
+        public string GLCD { get; set; }
+        public string BarImages { get; set; }
+        public string ChildData { get; set; }
+
     }
 }

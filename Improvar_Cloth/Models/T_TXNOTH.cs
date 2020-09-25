@@ -101,7 +101,7 @@ namespace Improvar.Models
 
         [StringLength(30)]
         public string POREFNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? POREFDT { get; set; }
 
         [StringLength(50)]

@@ -29,6 +29,7 @@ namespace Improvar.ViewModels
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
         public List<Database_Combo2> Database_Combo2 { get; set; }
+        public List<Database_Combo3> Database_Combo3 { get; set; }
         public List<HSN_CODE> HSN_CODE { get; set; }
         public List<BL_TYPE> BL_TYPE { get; set; }
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
@@ -170,7 +171,13 @@ namespace Improvar.ViewModels
         public string SLOCNM { get; set; }
         public string PORTNM { get; set; }
         public List<INVTYPE_list> INVTYPE_list { get; set; }
-        public List<EXPCD_list> EXPCD_list { get; set; }
+        public List<EXPCD_list> EXPCD_list { get; set; }        
         public List<REV_CHRG> Reverse_Charge { get; set; }
+        public string TDSNM { get; set; }
+        [StringLength(30)]
+        public string OURDESIGN { get; set; }
+        public double B_T_NOS { get; set; }
+        [StringLength(8)]
+        public string GLCD { get; set; }
     }
 }

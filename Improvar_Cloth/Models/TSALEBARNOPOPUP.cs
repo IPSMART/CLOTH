@@ -85,6 +85,10 @@ namespace Improvar.Models
         public string PRTBARCODE { get; set; }
         public string CLRBARCODE { get; set; }
         public string SZBARCODE { get; set; }
+        [StringLength(30)]
+        public string OURDESIGN { get; set; }
+        [StringLength(8)]
+        public string GLCD { get; set; }
 
     }
 }

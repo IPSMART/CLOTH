@@ -28,6 +28,7 @@ namespace Improvar.Models
         [Required]
         [StringLength(5)]
         public string DOCCD { get; set; }
+
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DOCDT { get; set; }
 
@@ -48,10 +49,11 @@ namespace Improvar.Models
         [StringLength(3)]
         public string CURR_CD { get; set; }
 
-         public double? CURRRT { get; set; }
+        public double? CURRRT { get; set; }
 
-         public double? BLAMT { get; set; }
+        public double? BLAMT { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PREFDT { get; set; }
 
         [StringLength(16)]
@@ -60,7 +62,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string REVCHRG { get; set; }
 
-         public double? ROAMT { get; set; }
+        public double? ROAMT { get; set; }
 
         [StringLength(1)]
         public string ROYN { get; set; }
@@ -75,11 +77,11 @@ namespace Improvar.Models
         [StringLength(16)]
         public string MANSLIPNO { get; set; }
 
-        public byte? DUEDAYS { get; set; }
+        public int? DUEDAYS { get; set; }
 
-         public double? TCSPER { get; set; }
+        public double? TCSPER { get; set; }
 
-         public double? TCSAMT { get; set; }
+        public double? TCSAMT { get; set; }
 
         [StringLength(8)]
         public string PARGLCD { get; set; }
@@ -105,5 +107,9 @@ namespace Improvar.Models
 
         [StringLength(50)]
         public string MENU_PARA { get; set; }
+        [StringLength(3)]
+        public string TDSCODE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? TCSON { get; set; }
     }
 }

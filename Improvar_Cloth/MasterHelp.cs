@@ -31,7 +31,7 @@ namespace Improvar
                 {
                     if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
                 }
-                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrpnm, b.itgrptype,a.styleno, a.PCSPERSET,a.hsncode, a.fabitcd, c.itnm fabitnm, a.itnm||' '||a.styleno itstyle ";
+                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrpnm, b.itgrptype,a.styleno, a.PCSPERSET,nvl(a.hsncode,b.hsncode)hsncode, a.fabitcd, c.itnm fabitnm, a.itnm||' '||a.styleno itstyle ";
                 sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b, " + scm1 + ".m_sitem c ";
                 sql += "where a.itgrpcd=b.itgrpcd and a.fabitcd=c.itcd(+) ";
                 if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
@@ -42,7 +42,7 @@ namespace Improvar
                     sql += ") ";
                 }
                 if (ITGRPCD.retStr() != "") sql += "and a.ITGRPCD ='" + ITGRPCD + "' ";
-                if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";else sql += "and b.itgrptype not in ('F','C') ";
+                if (ITGTYPE.retStr() != "") sql += "and b.itgrptype in (" + ITGTYPE + ") ";//else sql += "and b.itgrptype not in ('F','C') ";
 
                 if (valsrch.retStr() != "") sql += "and ( upper(a.itcd) like '%" + valsrch + "%' or upper(a.itnm) like '%" + valsrch + "%' or upper(a.styleno) like '%" + valsrch + "%' or upper(a.uomcd) like '%" + valsrch + "%'  )  ";
 
@@ -163,16 +163,22 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
-        public string ITGRPCD_help(string ITGRPCD, string GRPTYPE)
+        public string ITGRPCD_help(string ITGRPCD, string GRPTYPE, string ITCD = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
             {
+                DataTable dt1 = new DataTable();
                 string valsrch = ITGRPCD.ToUpper().Trim();
                 string sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_GROUP where 1=1";
                 if (GRPTYPE.retStr() != "") sql += " and ITGRPTYPE in (" + GRPTYPE.retSqlformat() + ") ";
                 if (valsrch.retStr() != "") sql += "and ( upper(ITGRPCD) like '%" + valsrch + "%' or upper(ITGRPNM) like '%" + valsrch + "%' ) ";
-
+                if (ITCD.retStr() != "")
+                {
+                    string sql2 = "select a.itgrpcd from " + CommVar.CurSchema(UNQSNO) + ".M_GROUP a," + CommVar.CurSchema(UNQSNO) + ".m_sitem b where a.ITGRPCD=b.ITGRPCD(+) and b.itcd = '" + ITCD.retStr() + "' ";
+                    if (valsrch.retStr() != "") sql2 += "and  upper(a.ITGRPCD) = '" + valsrch + "' ";
+                    dt1 = SQLquery(sql2);
+                }
                 DataTable dt = SQLquery(sql);
                 if (ITGRPCD.retStr() == "" || dt.Rows.Count > 1)
                 {
@@ -188,7 +194,12 @@ namespace Improvar
                 {
                     if (dt.Rows.Count > 0)
                     {
-                        return ToReturnFieldValues("", dt);
+                        string str = ToReturnFieldValues("", dt);
+                        if (ITCD.retStr() != "" && dt1 != null && dt1.Rows.Count > 0)
+                        {
+                            str += "^ITCD=^" + ITCD + Cn.GCS();
+                        }
+                        return str;
                     }
                     else
                     {
@@ -2199,7 +2210,7 @@ namespace Improvar
                 }
             }
         }
-        public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD="", string GOCD="", string PRCCD="", string MTRLJOBCD="")
+        public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "")
         {
             DataTable tbl = new DataTable();
             if (menupara == "PB")
@@ -2220,9 +2231,11 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
+                        + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["uomcd"] + " </td><td>" + tbl.Rows[i]["colrnm"] + " </td><td>" + tbl.Rows[i]["sizecd"] + " </td></tr>");
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No.";
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "uom." + Cn.GCS() + "colornm." + Cn.GCS() + "sizecd.";
+
                 return Generate_help(hdr, SB.ToString());
             }
             else
@@ -2230,6 +2243,32 @@ namespace Improvar
                 if (tbl.Rows.Count > 0)
                 {
                     string str = ToReturnFieldValues("", tbl);
+                    string glcd = "";
+                    switch (menupara)
+                    {
+                        case "SBPCK"://Packing Slip
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SB"://Sales Bill (Agst Packing Slip)
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBDIR"://Sales Bill
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SR"://Sales Return (SRM)
+                            glcd = str.retCompValue("SALRETGLCD"); break;
+                        case "SBCM"://Cash Memo
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBCMR"://Cash Memo Return Note
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBEXP"://Sales Bill (Export)
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "PI"://Proforma Invoice
+                            glcd = ""; break;
+                        case "PB"://Purchase Bill
+                            glcd = str.retCompValue("PURGLCD"); break;
+                        case "PR"://Purchase Return (PRM)
+                            glcd = str.retCompValue("PURRETGLCD"); break;
+                        default: glcd = ""; break;
+                    }
+                    str += "^GLCD=^" + glcd + Cn.GCS();
                     return str;
                 }
                 else
@@ -2242,6 +2281,22 @@ namespace Improvar
         {
 
             DataTable tbl = salesfunc.getPendingPackslip(docdt, slcd);
+            if (tbl != null && tbl.Rows.Count > 0)
+            {
+                string str1 = "";
+                if (autono.retStr() != "") str1 = "autono = '" + autono + "' ";
+                if (str1 != "" && val.retStr() != "") str1 += "and ";
+                if (val.retStr() != "") str1 += "docno = '" + val + "' ";
+                var data = tbl.Select(str1);
+                if (data.Count() > 0)
+                {
+                    tbl = data.CopyToDataTable();
+                }
+                else
+                {
+                    tbl = new DataTable();
+                }
+            }
             if (val.retStr() == "" || tbl.Rows.Count > 1)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -2254,9 +2309,6 @@ namespace Improvar
             }
             else
             {
-                string str1 = "";
-                if (autono.retStr() != "") str1 = "and autono = '" + autono + "' ";
-                tbl = tbl.Select("docno = '" + val + "'" + str1).CopyToDataTable();
                 if (tbl.Rows.Count > 0)
                 {
                     string str = ToReturnFieldValues("", tbl);
@@ -2360,7 +2412,7 @@ namespace Improvar
                 //var query = (from c in DB.M_CLASS1 select new { CLASS1CD = c.CLASS1CD, CLASS1NM = c.CLASS1NM }).ToList();
                 string sql = "";
                 sql += "select a.m_autono,a.compcd,a.effdt,b.glnm saldebglnm,c.glnm purdebglnm from " + scm + ".m_syscnfg a," + scmf + ".m_genleg b,  ";
-                sql += scmf + ".m_genleg c where a.saldebglcd=b.glcd(+) and a.purdebglcd=c.glcd(+) "; 
+                sql += scmf + ".m_genleg c where a.saldebglcd=b.glcd(+) and a.purdebglcd=c.glcd(+) ";
                 if (valsrch.retStr() != "") sql += " and a.m_autono = '" + valsrch + "' ";
                 DataTable tbl = SQLquery(sql);
                 if (val.retStr() == "" || tbl.Rows.Count > 1)
@@ -2371,7 +2423,7 @@ namespace Improvar
                         SB.Append("<tr><td>" + tbl.Rows[i]["m_autono"] + "</td><td>" + tbl.Rows[i]["compcd"] + "</td><td>" + tbl.Rows[i]["effdt"].retDateStr() + "</td><td>" + tbl.Rows[i]["saldebglnm"] + "</td><td>" + tbl.Rows[i]["purdebglnm"] + "</td></tr>");
                     }
                     var hdr = "Autono" + Cn.GCS() + "Company Code" + Cn.GCS() + "Effective Date" + Cn.GCS() + "Debtors" + Cn.GCS() + "Creditors";
-                    return Generate_help(hdr, SB.ToString(),"0");
+                    return Generate_help(hdr, SB.ToString(), "0");
                 }
                 else
                 {
@@ -2393,5 +2445,56 @@ namespace Improvar
             }
 
         }
+        public string TDSCODE_help(string docdt, string val, string slcd, string Caption = "", string linktdscode = "")
+        {
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                string scmf = CommVar.FinSchema(UNQSNO);
+                string sql = "select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+                if (slcd.retStr() != "") sql += "(select CMPNONCMP from  " + scmf + ".m_subleg where slcd='" + slcd + "') as CMPNONCMP, "; else sql += "'' CMPNONCMP, ";
+                sql += " b.tdsnm, b.secno, b.glcd from ";
+                sql += "(select tdscode, edate, tdsper, tdspernoncmp from ";
+                sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+                sql += "row_number() over(partition by a.tdscode order by a.edate desc) as rn ";
+                sql += "from " + scmf + ".m_tds_cntrl_dtl a ";
+                sql += "where  edate <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
+                if (val.retStr() != "") sql += " and tdscode = '" + val + "' ";
+                if (linktdscode.retStr() != "") sql += " and tdscode in (" + linktdscode + ") ";
+                sql += ") where rn = 1 ) a, ";
+                sql += "" + scmf + ".m_tds_cntrl b ";
+                sql += "where a.tdscode = b.tdscode(+) ";
+
+                DataTable dt = SQLquery(sql);
+                if (val == null)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= dt.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr ><td>" + dt.Rows[i]["TDSNM"].retStr() + "</td><td>" + dt.Rows[i]["TDSCODE"].retStr() + " </td><td> " + dt.Rows[i]["TDSPER"].retStr() + "</td><td>" + dt.Rows[i]["TDSPERNONCMP"].retStr() + " </td><td> " + dt.Rows[i]["SECNO"].retStr() + "</td></tr>");
+                    }
+                    if (Caption.retStr() == "") Caption = "TDS";
+                    var hdr = Caption + " Name" + Cn.GCS() + Caption + " Code" + Cn.GCS() + Caption + " % Company" + Cn.GCS() + Caption + " % Non Company" + Cn.GCS() + "Sec No.";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    if (dt.Rows.Count != 0)
+                    {
+                        string str = "";
+                        str = ToReturnFieldValues("", dt);
+                        return str;
+                    }
+                }
+                return "Invalid TDS Code ! Please Enter a Valid Code ";
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return ex.Message + ex.InnerException;
+            }
+        }
+
     }
 }
