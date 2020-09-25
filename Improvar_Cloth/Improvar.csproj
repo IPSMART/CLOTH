@@ -1020,11 +1020,9 @@
     <Content Include="Views\Shared\_T_OUTISSPROCESS_PRODUCT.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_QtyRequirement.cshtml" />
     <Content Include="Views\T_BiltyG_Mutia\T_BiltyG_Mutia.cshtml" />
-    <Content Include="Views\T_BiltyG_Mutia\_T_BiltyG_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyG_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyG_Mutia_PopUp.cshtml" />
     <Content Include="Views\T_BiltyR_Mutia\T_BiltyR_Mutia.cshtml" />
-    <Content Include="Views\T_BiltyR_Mutia\_T_BiltyR_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyR_Mutia_Main.cshtml" />
     <Content Include="Views\Shared\_T_BiltyR_Mutia_PopUp.cshtml" />
     <Content Include="Views\T_Bilty_Khasra\T_Bilty_Khasra.cshtml" />

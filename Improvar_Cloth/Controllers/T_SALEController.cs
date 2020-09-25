@@ -1465,7 +1465,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
             }
         }
-        public ActionResult DeleteRow(TransactionPackingSlipEntry VE)
+        public ActionResult DeleteRowBarno(TransactionPackingSlipEntry VE)
         {
             try
             {
