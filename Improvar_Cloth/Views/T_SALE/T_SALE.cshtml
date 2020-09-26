@@ -36,9 +36,7 @@
         height: 190px;
     }
 </style>
-<script src="~/Scripts/Sale.js"></script>
-<script src="~/Scripts/jquery.min.js"></script>
-<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<script src="~/Scripts/Sale.js?Ver=@System.DateTime.Today"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
@@ -72,7 +70,6 @@
             $('#_T_SALE_PRODUCT_GRID input').attr('TabIndex', '-1');
             $('#_T_SALE_DETAIL_GRID input').attr('TabIndex', '-1');
         }
-
         $("#WaitingMode").hide();
     });
 </script>
@@ -1000,8 +997,8 @@
                                             @Html.Label("", "Image Desc")
                                         </div>
                                     </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-label" style="margin-top: 6px;">
+                                    <div class="col-md-2">
+                                        <div class="editor-label" style="margin-top: 4px;">
                                             <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />
                                             <input type="hidden" id="ImageName" value="" />
                                             <input type="hidden" id="ImageStr" value="" />

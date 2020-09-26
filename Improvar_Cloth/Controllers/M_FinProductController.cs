@@ -1416,7 +1416,7 @@ namespace Improvar.Controllers
                         mdoc.DOC_CTG = "PRODUCT";
                         var extension = Path.GetExtension(imagedes[0]);
                         mdoc.DOC_FLNAME = BARNO + "_" + slno + extension;
-                        mdoc.DOC_DESC = imagedes[1];
+                        mdoc.DOC_DESC = imagedes[1].retStr().Replace('~', ' ');
                         mdoc.BARNO = BARNO;
                         mdoc.DOC_EXTN = extension;
                         doc.Add(mdoc);

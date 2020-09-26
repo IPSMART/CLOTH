@@ -1075,7 +1075,8 @@ namespace Improvar
             sql += ") a where prccd='" + prccd + "') b, ";
 
             sql += "(select a.barno, ";
-            sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
+            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(181)) ";
+            //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";
             sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
             sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
@@ -1274,8 +1275,9 @@ namespace Improvar
             sql += ") a where prccd='" + prccd + "') b, ";
 
             sql += "(select a.barno, ";
-            sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
-            sql += "within group (order by a.barno) as barimage from ";
+            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(181)) ";
+            sql += "within group (order by a.barno) as barimage from ";       
+            //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
             sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
             sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
             sql += "from " + scm + ".m_batch_img_hdr a ";

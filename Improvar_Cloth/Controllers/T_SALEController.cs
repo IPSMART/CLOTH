@@ -454,7 +454,7 @@ namespace Improvar.Controllers
                 DataTable allprodgrpgstper_data = new DataTable();
                 string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
                 string ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
-                string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
+                //string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
                 if (VE.MENU_PARA == "PB")
                 {
@@ -489,6 +489,17 @@ namespace Improvar.Controllers
                                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                                     v.ALL_GSTPER = ALL_GSTPER;
                                     v.GSTPER = GSTPER.retDbl();
+                                }
+                                v.BarImages= tax_data.Rows[0]["barimage"].retStr();
+                                var brimgs = v.BarImages.retStr().Split(Convert.ToChar(Cn.GCS()));
+                                v.BarImagesCount = brimgs.Length==0?"": brimgs.Length.retStr();
+                               foreach(var barimg in brimgs)
+                                {
+                                    string barfilename = barimg.Split('~')[0];
+                                    string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                                    FROMpath = Path.Combine(FROMpath, "");
+                                    string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                    Cn.CopyImage(FROMpath, TOPATH);
                                 }
                             }
                         }
@@ -2216,6 +2227,22 @@ namespace Improvar.Controllers
                                         if (VE.MENU_PARA == "PB")
                                         {
                                             TBATCHMST.OURDESIGN = VE.TBATCHDTL[i].OURDESIGN;
+                                            if (VE.TBATCHDTL[i].BarImages.retStr() != "")
+                                            {
+                                                var barimg = SaveBarImage(VE.TBATCHDTL[i].BarImages, barno, TTXN.EMD_NO.retShort());
+                                                DB.T_BATCH_IMG_HDR.AddRange(barimg.Item1);
+                                                DB.SaveChanges();
+                                                var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
+                                                foreach (var imgbar in disntImgHdr)
+                                                {
+                                                    T_BATCH_IMG_HDR_LINK m_batchImglink = new T_BATCH_IMG_HDR_LINK();
+                                                    m_batchImglink.CLCD = TTXN.CLCD;
+                                                    m_batchImglink.EMD_NO = TTXN.EMD_NO;
+                                                    m_batchImglink.BARNO = imgbar.BARNO;
+                                                    m_batchImglink.MAINBARNO = imgbar.BARNO;
+                                                    DB.T_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
+                                                }
+                                            }
                                         }
                                     }
                                     //TBATCHMST.ORGBATCHAUTONO = VE.TBATCHDTL[i].ORGBATCHAUTONO;
@@ -2814,6 +2841,43 @@ namespace Improvar.Controllers
                 return Content("//.");
             }
 
+        }
+        public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
+        {
+            List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
+            int slno = 0;
+            try
+            {
+                var BarImages = BarImage.retStr().Trim(Convert.ToChar(Cn.GCS())).Split(Convert.ToChar(Cn.GCS()));
+                foreach (string image in BarImages)
+                {
+                    if (image != "")
+                    {
+                        var imagedes = image.Split('~');
+                        T_BATCH_IMG_HDR mdoc = new T_BATCH_IMG_HDR();
+                        mdoc.CLCD = CommVar.ClientCode(UNQSNO);
+                        mdoc.EMD_NO = EMD;
+                        mdoc.SLNO = Convert.ToByte(++slno);
+                        mdoc.DOC_CTG = "PRODUCT";
+                        var extension = Path.GetExtension(imagedes[0]);
+                        mdoc.DOC_FLNAME = BARNO + "_" + slno + extension;
+                        mdoc.DOC_DESC = imagedes[1].retStr().Replace('~',' ');
+                        mdoc.BARNO = BARNO;
+                        mdoc.DOC_EXTN = extension;
+                        doc.Add(mdoc);
+                        string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
+                        topath = Path.Combine(topath, "");
+                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
+                        Cn.CopyImage(frompath, topath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, BarImage);
+            }
+            var result = Tuple.Create(doc);
+            return result;
         }
 
     }
