@@ -1489,9 +1489,13 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + SCMDISCRATE + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + SCMDISCRATE + '">';
     tr += '    </td>';
-    tr += '    <td class="" >';
-    tr += '        <input type="file" class="atextBoxFor" name="ImageData_' + rowindex + '" id="B_ImageData_' + rowindex + '" onchange="fileCheck(this,0);">';
-    tr += '    </td>';
+    tr += '   <td class=""> ';
+    tr += '   <button type="button" onclick="FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px"></button> ';
+    tr += '   </td> ';
+    tr += '   <td class="">  ';
+    tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px" readonly="readonly" placeholder=""> ';
+    tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder=""> ';
+    tr += '   </td> ';
     tr += '        <td class="sticky-cell-opposite">';
     tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
     tr += '        </td>';

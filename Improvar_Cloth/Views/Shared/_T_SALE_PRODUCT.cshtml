@@ -198,13 +198,12 @@
                                             <button type="button" onclick="FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TBATCHDTL[i].BarImagesCount</button>
                                         </td>
                                         <td class="">
-                                            @if (Model.DefaultAction != "V" && Model.MENU_PARA == "PB" && Model.TBATCHDTL[i].BARGENTYPE=="E")
-                                            { 
+                                            @*@if (Model.DefaultAction != "V" && Model.MENU_PARA == "PB" && Model.TBATCHDTL[i].BARGENTYPE=="E")
+                                            {*@ 
                                                 <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">
-                                            }
+                                            @*}*@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
                                         </td>
-
                                         @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                         {
                                             <td class="sticky-cell-opposite">
