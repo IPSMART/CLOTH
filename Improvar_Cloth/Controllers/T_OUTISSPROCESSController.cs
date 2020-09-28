@@ -156,7 +156,7 @@ namespace Improvar.Controllers
                             }
                             VE.T_TXN = TXN;
                             //VE.T_TXNTRANS = TXNTRN;
-                            //VE.T_TXNOTH = TXNOTH;
+                            VE.T_TXNOTH = TXNOTH;
                             VE.T_CNTRL_HDR = TCH;
                             VE.T_CNTRL_HDR_REM = SLR;
                             if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
@@ -265,7 +265,7 @@ namespace Improvar.Controllers
                 //if (TXN.ROYN == "Y") VE.RoundOff = true;
                 //else VE.RoundOff = false;
                 //TXNTRN = DB.T_TXNTRANS.Find(TXN.AUTONO);
-                //TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
+                TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
                 if (TXN.SLCD.retStr() != "")
                 {
                     string slcd = TXN.SLCD;
@@ -275,11 +275,12 @@ namespace Improvar.Controllers
                     VE.GSTNO = subleg.GSTNO;
                 }
                 VE.JOBNM = TXN.JOBCD.retStr() == "" ? "" : DB.M_JOBMST.Where(a => a.JOBCD == TXN.JOBCD).Select(b => b.JOBNM).FirstOrDefault();
+                VE.GONM = TXN.GOCD.retStr() == "" ? "" : DB.M_GODOWN.Where(a => a.GOCD == TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
                 //VE.CONSLNM = TXN.CONSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXN.CONSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.AGSLNM = TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.SAGSLNM = TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
-                //VE.GONM = TXN.GOCD.retStr() == "" ? "" : DB.M_GODOWN.Where(a => a.GOCD == TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
-                //VE.PRCNM = TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
+
+                VE.PRCNM = TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
 
                 //VE.TRANSLNM = TXNTRN.TRANSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.TRANSLCD).Select(b => b.SLNM).FirstOrDefault();
                 //VE.CRSLNM = TXNTRN.CRSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.CRSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -288,7 +289,7 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0; double TOTAL_BOMQNTY = 0; double TOTAL_EXTRAQNTY = 0; double TOTAL_QQNTY = 0;
                 string str = "";
                 str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample, k.itnm||' '||k.styleno itstyle from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                str += "a.itremark,a.shade,a.cutlength,a.sample, k.itnm||' '||k.styleno itstyle,a.barno from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
                 str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
                 str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
@@ -303,11 +304,11 @@ namespace Improvar.Controllers
                                    SLNO = Convert.ToInt16(dr["slno"]),
                                    NOS = dr["nos"].retDbl(),
                                    QNTY = dr["qnty"].retDbl(),
-                                   ITGRPCD = dr["itgrpcd"].ToString(),
-                                   ITGRPNM = dr["itgrpnm"].ToString(),
-                                   ITCD = dr["itcd"].ToString(),
-                                   ITNM = dr["itstyle"].ToString(),
-                                   UOM = dr["uomcd"].ToString(),
+                                   ITGRPCD = dr["itgrpcd"].retStr(),
+                                   ITGRPNM = dr["itgrpnm"].retStr(),
+                                   ITCD = dr["itcd"].retStr(),
+                                   ITNM = dr["itstyle"].retStr(),
+                                   UOM = dr["uomcd"].retStr(),
                                    SIZECD = dr["sizecd"].retStr(),
                                    SIZENM = dr["sizenm"].retStr(),
                                    PARTCD = dr["partcd"].retStr(),
@@ -319,7 +320,9 @@ namespace Improvar.Controllers
                                    ITREMARK = dr["itremark"].retStr(),
                                    SHADE = dr["shade"].retStr(),
                                    CUTLENGTH = dr["cutlength"].retDbl(),
-                                   SAMPLE = dr["sample"].retStr()
+                                   SAMPLE = dr["sample"].retStr(),
+                                   BARNO = dr["barno"].retStr()
+
                                }).OrderBy(s => s.SLNO).ToList();
                 foreach (var q in VE.TPROGDTL)
                 {
@@ -332,13 +335,13 @@ namespace Improvar.Controllers
 
 
                 string str2 = "";
-                str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,n.itgrpnm, ";
+                str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k1.itgrpcd,n.itgrpnm, ";
                 str2 += " k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd,b.qnty qntyMst, ";
-                str2 += "a.sample,k.itnm||' '||k.styleno itstyle from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
-                str2 += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
+                str2 += "a.sample,k.itnm||' '||k.styleno itstyle,k1.itnm||' '||k1.styleno itstyle1,k1.uomcd Quomcd,b.barno from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
+                str2 += Scm + ".M_SITEM k, " + Scm + ".M_SITEM k1, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
-                str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+)  ";
-                str2 += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k1.ITCD(+) and b.ITCD = k.ITCD(+)  ";
+                str2 += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k1.ITGRPCD=n.ITGRPCD(+) and ";
                 str2 += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
                 str2 += "order by a.slno ";
 
@@ -350,10 +353,13 @@ namespace Improvar.Controllers
                                    RSLNO = Convert.ToInt16(dr["rslno"]),
                                    QQNTY = dr["qntyMst"].retDbl(),
                                    QNTY = dr["qnty"].retDbl(),
-                                   ITGRPCD = dr["itgrpcd"].ToString(),
-                                   ITGRPNM = dr["itgrpnm"].ToString(),
-                                   ITCD = dr["itcd"].ToString(),
-                                   ITNM = dr["itstyle"].ToString(),
+                                   QITNM = dr["itstyle1"].retStr(),
+                                   QUOM = dr["Quomcd"].retStr(),
+                                   BARNO = dr["barno"].retStr(),
+                                   ITGRPCD = dr["itgrpcd"].retStr(),
+                                   ITGRPNM = dr["itgrpnm"].retStr(),
+                                   ITCD = dr["itcd"].retStr(),
+                                   ITNM = dr["itstyle"].retStr(),
                                    SIZECD = dr["sizecd"].retStr(),
                                    SIZENM = dr["sizenm"].retStr(),
                                    PARTCD = dr["partcd"].retStr(),
@@ -1005,9 +1011,11 @@ namespace Improvar.Controllers
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string DOCDT = data[0].retStr();
                 string TAXGRPCD = data[1].retStr();
-                string GOCD = "";// data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
+                string GOCD = data[2].retStr();// data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
                 string PRCCD = data[3].retStr();
                 string MTRLJOBCD = data[4].retStr();
+                string ITCD = data[5].retStr();
+                string ITGRPCD = data[6].retStr();
                 if (val.retStr() == "")
                 {
                     var str = masterHelp.T_TXN_BARNO_help(val, "", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
@@ -1023,7 +1031,7 @@ namespace Improvar.Controllers
                 else
                 {
                     DataTable stock_data = new DataTable();
-                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), ITCD, MTRLJOBCD.retStr(), "", ITGRPCD, "", PRCCD.retStr(), TAXGRPCD.retStr());
 
                     if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
                     {
@@ -1365,6 +1373,7 @@ namespace Improvar.Controllers
                                        QITNM = x.ITNM,
                                        QUOM = x.UOM,
                                        QQNTY = x.QNTY,
+                                       BARNO=x.BARNO,
                                        ITGRPCD = x.ITGRPCD,
                                        ITGRPNM = x.ITGRPNM,
                                        ITCD = x.ITCD,
@@ -1898,8 +1907,9 @@ namespace Improvar.Controllers
                     //TTXN.REVCHRG = VE.T_TXN.REVCHRG;
                     //TTXN.ROAMT = VE.T_TXN.ROAMT;
                     //if (VE.RoundOff == true) { TTXN.ROYN = "Y"; } else { TTXN.ROYN = "N"; }
-                    TTXN.GOCD = "DH";
+                   
                     TTXN.JOBCD = VE.T_TXN.JOBCD;
+                    TTXN.GOCD = VE.T_TXN.GOCD;
                     //TTXN.MANSLIPNO = VE.T_TXN.MANSLIPNO;
                     //TTXN.DUEDAYS = VE.T_TXN.DUEDAYS;
                     //TTXN.PARGLCD = VE.T_TXN.PARGLCD;
@@ -2081,6 +2091,7 @@ namespace Improvar.Controllers
                             TPROGMAST.AUTONO = TTXN.AUTONO;
                             TPROGMAST.SLNO = VE.TPROGDTL[i].SLNO;
                             TPROGMAST.SLCD = TTXN.SLCD;
+                            TPROGMAST.BARNO = VE.TPROGDTL[i].BARNO;
                             TPROGMAST.MTRLJOBCD = VE.TPROGDTL[i].MTRLJOBCD;
                             TPROGMAST.STKTYPE = stktype;
                             TPROGMAST.ITCD = VE.TPROGDTL[i].ITCD;

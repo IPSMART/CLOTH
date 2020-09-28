@@ -52,8 +52,8 @@
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 <th class="" style="width:50px;text-align:right;">GST Per</th>
-                                <th class="" style="width:50px;text-align:right;">Disc (%)</th>
                                 <th class="" style="width:50px;">Disc Type</th>
+                                <th class="" style="width:50px;text-align:right;">Disc (%)</th>
                                 <th class="" style="width:50px;">Disc-1</th>
                                 <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
                                 <th class="" style="width:50px;">Disc-2</th>
@@ -151,12 +151,14 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ALL_GSTPER, new { id = "B_ALL_GSTPER_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].PRODGRPGSTPER, new { id = "B_PRODGRPGSTPER_" + i })
                                         </td>
-                                        <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
-                                        </td>
+                                      
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
+                                            </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
+                                        </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })

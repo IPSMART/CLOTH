@@ -1027,11 +1027,11 @@ namespace Improvar
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
             sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
             sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
-            if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
+            if (gocd.retStr() != "") sql += "a.gocd in ('" + gocd + "') and ";
             if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
-            if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
+            if (itcd.retStr() != "") sql += "b.itcd in ('" + itcd + "') and ";
             if (skipautono.retStr() != "") sql += "a.autono not in ('" + skipautono + ") and ";
-            if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+            if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in ('" + mtrljobcd + "') and ";
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
             sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             if (pendpslipconsider == true)
@@ -1044,11 +1044,11 @@ namespace Improvar
                 sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
                 sql += "c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.autono=e.linkautono(+) and e.autono is null and ";
                 sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
-                if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
+                if (gocd.retStr() != "") sql += "a.gocd in ('" + gocd + "') and ";
                 if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
-                if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
+                if (itcd.retStr() != "") sql += "b.itcd in ('" + itcd + "') and ";
                 if (skipautono.retStr() != "") sql += "a.autono not in ('" + skipautono + ") and ";
-                if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+                if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in ('" + mtrljobcd + "') and ";
                 sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
                 sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             }
@@ -1118,8 +1118,8 @@ namespace Improvar
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
             if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
-            if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
-            if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
+            if (itgrpcd.retStr() != "") sql += "d.itgrpcd in ('" + itgrpcd + "') and ";
+            if (brandcd.retStr() != "") sql += "d.brandcd in ('" + brandcd + "') and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+)and a.sizecd=l.sizecd(+) ";
             tbl = MasterHelpFa.SQLquery(sql);
@@ -1180,7 +1180,8 @@ namespace Improvar
             {
                 sql = "select  max(a.uniqno) uniqno ";
                 sql += "from " + scm + ".t_cntrl_hdr_uniqno a, " + scm + ".t_cntrl_hdr b ";
-                sql += "where a.autono = b.autono(+) and a.autono='" + autono + "' ";
+                sql += "where a.autono = b.autono(+) ";
+                sql +=" and a.autono='" + autono + "' ";
                 tbl = SQLquery(sql);
                 if (tbl.Rows.Count == 1) unqno = tbl.Rows[0]["uniqno"].retStr();
             }
@@ -1231,7 +1232,7 @@ namespace Improvar
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
-            sql += "d.itnm, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
+            sql += "d.itnm, d.styleno,d.itnm||' '||d.styleno itstyle, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
             sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm ";
             sql += "from ";
