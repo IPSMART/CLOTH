@@ -21,6 +21,8 @@ namespace Improvar.ViewModels
         public string PURGLNM { get; set; }
         public string SALRETGLNM { get; set; }
         public string PURRETGLNM { get; set; }
+        public bool NEGSTOCK { get; set; }
+        
 
     }
 }

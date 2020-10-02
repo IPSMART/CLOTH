@@ -47,5 +47,6 @@ namespace Improvar.Models
         [StringLength(3)]        
         public string SZBARCODE { get; set; }
         public string CLRBARCODE { get; set; }
+        public bool HASTRANSACTION { get; set; }
     }
 }

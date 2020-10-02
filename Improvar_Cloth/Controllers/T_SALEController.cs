@@ -957,7 +957,7 @@ namespace Improvar.Controllers
                 }
                 else if (str.IndexOf(Convert.ToChar(Cn.GCS())) >= 0)
                 {
-                    string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
+                    string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "", BARIMAGE = "";
                     DataTable tax_data = new DataTable();
                     if (VE.MENU_PARA == "PB")
                     {
@@ -972,6 +972,7 @@ namespace Improvar.Controllers
                     if (tax_data != null && tax_data.Rows.Count > 0)
                     {
                         PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                        BARIMAGE = tax_data.Rows[0]["BARIMAGE"].retStr();
                         if (PRODGRPGSTPER != "")
                         {
                             ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE);
@@ -983,6 +984,7 @@ namespace Improvar.Controllers
                         }
                     }
                     str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
+                    str += "^BARIMAGE=^" + BARIMAGE + Cn.GCS();
                     str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
                     str += "^GSTPER=^" + GSTPER + Cn.GCS();
                     return Content(str);

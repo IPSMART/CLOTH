@@ -840,11 +840,13 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
-                                                </div>
+                                                @if (Model.MENU_PARA == "PB")
+                                                {
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
+                                                    </div>
+                                                }                                           
                                             </div>
-
                                         </div>
                                         <div class="row">
                                             <div class="col-md-1">
@@ -881,12 +883,12 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc. Rate" } })
+                                                    @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc. Type" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc. Type" })
+                                                    @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc. Rate" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -900,8 +902,6 @@
                                                     @Html.EditorFor(model => model.GSTPER, new { htmlAttributes = new { @class = "form-control", id = "GSTPER", @onkeypress = "return numericOnly(this,2);", maxlength = 5, @placeholder = "GSTPER", @readonly = "readonly", @TabIndex = -1, @title = "GSTPER" } })
                                                     @Html.HiddenFor(model => model.ALL_GSTPER, new { id = "ALL_GSTPER" })
                                                     @Html.HiddenFor(model => model.PRODGRPGSTPER, new { id = "PRODGRPGSTPER" })
-
-
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -992,6 +992,8 @@
                                         <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
                                     </div>
                                     @*iamge*@
+                                    <input type="hidden" id="ImageName" value="" />
+                                    <input type="hidden" id="ImageStr" value="" />
                                     @if (Model.MENU_PARA == "PB"){
                                     <div class="col-md-1">
                                         <div class="editor-label" style="margin-top: 6px;">
@@ -1000,9 +1002,7 @@
                                     </div>
                                     <div class="col-md-2">
                                         <div class="editor-label" style="margin-top: 4px;">
-                                            <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />
-                                            <input type="hidden" id="ImageName" value="" />
-                                            <input type="hidden" id="ImageStr" value="" />
+                                            <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />                                          
                                         </div>
                                     </div>
                                     <div class="col-md-6">

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Web.Mvc;                                                   
+using System.Web.Mvc;
 using Improvar.Models;
 using Improvar.ViewModels;
 using System.Data;
@@ -26,7 +26,8 @@ namespace Improvar.Controllers
         public ActionResult M_GrpMast(FormCollection FC, string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
             //testing
-            try {//test
+            try
+            {//test
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -119,7 +120,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                if ( key == "F")
+                                if (key == "F")
                                 {
                                     VE.Index = 0;
                                     VE = Navigation(VE, DB, 0, searchValue);
@@ -185,7 +186,8 @@ namespace Improvar.Controllers
         }
         public GroupMasterEntry Navigation(GroupMasterEntry VE, ImprovarDB DB, int index, string searchValue)
         {
-            try {
+            try
+            {
                 sl = new M_GROUP();
                 sll = new M_CNTRL_HDR();
                 sBRND = new M_BRAND();
@@ -208,7 +210,7 @@ namespace Improvar.Controllers
                     sPROD = DB.M_PRODGRP.Find(sl.PRODGRPCD);
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                     string class1cd = sl.CLASS1CD.retStr();
-                    string salglcd= sl.SALGLCD.retStr();
+                    string salglcd = sl.SALGLCD.retStr();
                     string purglcd = sl.PURGLCD.retStr();
                     string salretglcd = sl.SALRETGLCD.retStr();
                     string purretglcd = sl.PURRETGLCD.retStr();
@@ -238,7 +240,6 @@ namespace Improvar.Controllers
                         var purretglnm = (from a in DBF.M_GENLEG where a.GLCD == purretglcd select new { a.GLNM }).FirstOrDefault();
                         VE.PURRETGLNM = purretglnm.GLNM;
                     }
-
                     if (sll.INACTIVE_TAG == "Y")
                     {
                         VE.Checked = true;
@@ -246,6 +247,15 @@ namespace Improvar.Controllers
                     else
                     {
                         VE.Checked = false;
+                    }
+
+                    if (sl.NEGSTOCK == "Y")
+                    {
+                        VE.NEGSTOCK = true;
+                    }
+                    else
+                    {
+                        VE.NEGSTOCK = false;
                     }
                     VE.UploadDOC = Cn.GetUploadImage(CommVar.CurSchema(UNQSNO).ToString(), Convert.ToInt32(sl.M_AUTONO));
 
@@ -271,7 +281,7 @@ namespace Improvar.Controllers
             var MDT = (from j in DB.M_GROUP
                        join o in DB.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
                        where (j.M_AUTONO == o.M_AUTONO)
-                       select new 
+                       select new
                        {
                            ITGRPCD = j.ITGRPCD,
                            ITGRPNM = j.ITGRPNM,
@@ -285,7 +295,7 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "2"));
         }
-     
+
         public ActionResult BrandMaster(string val)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
@@ -446,11 +456,11 @@ namespace Improvar.Controllers
                             MGROUP.EMD_NO = 0;
                             MGROUP.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
                             string txtst = VE.M_GROUP.ITGRPNM.Substring(0, 1).ToUpper();
-                            string sql = " select max(SUBSTR(ITGRPCD, 2)) ITGRPCD FROM " + CommVar.CurSchema(UNQSNO)+".M_GROUP";
+                            string sql = " select max(SUBSTR(ITGRPCD, 2)) ITGRPCD FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
                             var tbl = Master_Help.SQLquery(sql);
-                            if (tbl.Rows[0]["ITGRPCD"].ToString()!="")
+                            if (tbl.Rows[0]["ITGRPCD"].ToString() != "")
                             {
-                                MGROUP.ITGRPCD = txtst + ((tbl.Rows[0]["ITGRPCD"]).retInt()+1).ToString("D3");
+                                MGROUP.ITGRPCD = txtst + ((tbl.Rows[0]["ITGRPCD"]).retInt() + 1).ToString("D3");
                             }
                             else
                             {
@@ -492,6 +502,7 @@ namespace Improvar.Controllers
                         MGROUP.SALRETGLCD = VE.M_GROUP.SALRETGLCD;
                         MGROUP.PURRETGLCD = VE.M_GROUP.PURRETGLCD;
                         MGROUP.CLASS1CD = VE.M_GROUP.CLASS1CD;
+                        MGROUP.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "N";
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_GROUP", MGROUP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {

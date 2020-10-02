@@ -52,8 +52,8 @@
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 <th class="" style="width:50px;text-align:right;">GST Per</th>
-                                <th class="" style="width:50px;text-align:right;">Disc (%)</th>
                                 <th class="" style="width:50px;">Disc Type</th>
+                                <th class="" style="width:50px;text-align:right;">Disc Rate</th>
                                 <th class="" style="width:50px;">Disc-1</th>
                                 <th class="" style="width:50px;text-align:right;">Disc1 Rate</th>
                                 <th class="" style="width:50px;">Disc-2</th>
@@ -152,25 +152,15 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].PRODGRPGSTPER, new { id = "B_PRODGRPGSTPER_" + i })
                                         </td>
                                         <td class="">
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
+                                        </td>
+                                        <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
-                                        <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })
-
-
-
-
-                                            @*@Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_TDDISCTYPE", maxlength = 1, @list = "TDDISCTYPE_List1" } })
-                                                <datalist id="TDDISCTYPE_List1">
-                                                    @foreach (var jg in Model.TDDISC_TYPE)
-                                                    {
-                                                        <option value="@jg.FIELD_VALUE" />
-                                                    }
-                                                </datalist>*@
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
@@ -178,19 +168,7 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SCMDISCTYPE_DESC, new { id = "B_SCMDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].SCMDISCTYPE, new { id = "B_SCMDISCTYPE_" + i })
-
-
-
-
-                                            @*@Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCTYPE, new { htmlAttributes = new { @class = "atextBoxFor", id = "B_SCMDISCTYPE", maxlength = 1, @list = "SCMDISCTYPE_List1" } })
-                                                <datalist id="SCMDISCTYPE_List1">
-                                                    @foreach (var jg in Model.SCMDISC_TYPE)
-                                                    {
-                                                        <option value="@jg.FIELD_VALUE" />
-                                                    }
-                                                </datalist>*@
                                         </td>
-
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
@@ -198,10 +176,10 @@
                                             <button type="button" onclick="FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TBATCHDTL[i].BarImagesCount</button>
                                         </td>
                                         <td class="">
-                                            @*@if (Model.DefaultAction != "V" && Model.MENU_PARA == "PB" && Model.TBATCHDTL[i].BARGENTYPE=="E")
-                                            {*@ 
+                                            @if (Model.DefaultAction != "V" && Model.MENU_PARA == "PB" && Model.TBATCHDTL[i].BARGENTYPE=="E")
+                                            { 
                                                 <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">
-                                            @*}*@
+                                            }
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
                                         </td>
                                         @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
