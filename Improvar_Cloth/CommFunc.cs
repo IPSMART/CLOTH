@@ -67,7 +67,7 @@ namespace Improvar
         {
             string rtval = "";
             string[] cdval = codestr.retStr().Split(',');
-            if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.ToString().Trim() != "")
+            if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.retStr().Trim() != "")
             {
                 rtval = "'" + string.Join("','", cdval) + "'";
             }
