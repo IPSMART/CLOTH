@@ -36,7 +36,7 @@
         height: 190px;
     }
 </style>
-<script src="~/Scripts/Sale.js?Ver=@System.DateTime.Today"></script>
+<script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
@@ -808,7 +808,7 @@
                                                     @*@Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
                                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetStockDetails", PageControllerName)','Stock Details','STKTYPE','STKTYPE=STKTYPE =1/STKNAME =STKNAME =0')" />
                                                         @Html.HiddenFor(model => model.STKNAME, new { id = "STKNAME" })*@
-                                                    @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text"), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
+                                                    @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text", Model.STKTYPE), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -1542,7 +1542,8 @@
             success: function (result) {
                 $("#WaitingMode").hide(); var newid = '';
                 if ($("#B_BarImages_" + i).val() != ""){
-                    newid= $("#B_BarImages_" + i).val() + String.fromCharCode(181) +(result.split('/')[2] + '~' + ImageDesc);}
+                    newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
+                }
                 else{
                     newid= (result.split('/')[2] + '~' + ImageDesc);
                 }
@@ -1598,7 +1599,7 @@
         debugger;
         var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
         var id = $("#div_carousel_inner div.active").attr('id')
-        var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(181)); var deleteindex = 0;
+        var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
         $.each(arr, function (index, value) {
             var divid = (value.split('~')[0]).split('.')[0];
             if (id == divid) {
@@ -1607,7 +1608,7 @@
         });
         arr.splice(deleteindex, 1);
         $("#" + id).remove();
-        var newimg = arr.join(String.fromCharCode(181));
+        var newimg = arr.join(String.fromCharCode(179));
         $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
         $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
 
@@ -1618,7 +1619,7 @@
         $('#ActiveBarRowIndex').val(index);
         var actt = ""; $("#div_carousel_inner").html('');
         var arr = $("#B_BarImages_" + index).val();
-        arr = arr.split(String.fromCharCode(181));
+        arr = arr.split(String.fromCharCode(179));
         $.each(arr, function (index, value) {
             var imgname = (value.split('~')[0]);
             var id = (imgname).split('.')[0];

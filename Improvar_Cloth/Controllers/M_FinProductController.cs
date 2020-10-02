@@ -1581,7 +1581,7 @@ namespace Improvar.Controllers
                             MSITEM.DMNSN = VE.M_SITEM.DMNSN;
                         }
 
-                        MSITEM.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "N";
+                        MSITEM.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "";
                         //MSITEM.STD_RATE = VE.M_SITEM.STD_RATE;
                         //MSITEM.SAMPPC = VE.M_SITEM.SAMPPC;
                         //MSITEM.STDLOTQTY = VE.M_SITEM.SAMPPC;

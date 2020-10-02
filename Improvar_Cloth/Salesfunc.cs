@@ -1013,7 +1013,7 @@ namespace Improvar
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
-            sql += "d.itnm, d.styleno,d.itnm|| d.styleno itstyle, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
+            sql += "d.itnm, d.styleno, d.styleno||' '||d.itnm itstyle, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
             sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode ";
             sql += "from ";
@@ -1075,7 +1075,7 @@ namespace Improvar
             sql += ") a where prccd='" + prccd + "') b, ";
 
             sql += "(select a.barno, ";
-            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(181)) ";
+            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
             //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";
             sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
@@ -1275,7 +1275,7 @@ namespace Improvar
             sql += ") a where prccd='" + prccd + "') b, ";
 
             sql += "(select a.barno, ";
-            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(181)) ";
+            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";       
             //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
             sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
@@ -1387,7 +1387,7 @@ namespace Improvar
             sql += " select a.blautono, a.mutslcd, a.trem, j.slnm mutianm, j.regmobile, a.baleno, a.baleyr, e.lrno, e.lrdt,	 ";
             sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.slno blslno, g.nos, g.qnty,	";
             sql += " '' shade, g.pageno, g.pageslno, ";
-            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos,h.itnm||' '||h.styleno itstyle from ";
+            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos, h.styleno||' '||h.itnm  itstyle from ";
             sql += " (select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
             sql += "  from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
@@ -1425,7 +1425,7 @@ namespace Improvar
             string sql = "";
             sql = "";
             sql += " select a.autono, a.docno, a.docdt, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
-            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty,h.itnm||' '||h.styleno itstyle, ";
+            sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, ";
             sql += " '' shade, g.pageno, g.pageslno, ";
             sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos from ";
 

@@ -502,7 +502,7 @@ namespace Improvar.Controllers
                         MGROUP.SALRETGLCD = VE.M_GROUP.SALRETGLCD;
                         MGROUP.PURRETGLCD = VE.M_GROUP.PURRETGLCD;
                         MGROUP.CLASS1CD = VE.M_GROUP.CLASS1CD;
-                        MGROUP.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "N";
+                        MGROUP.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "";
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_GROUP", MGROUP.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {

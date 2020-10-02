@@ -491,7 +491,7 @@ namespace Improvar.Controllers
                                     v.GSTPER = GSTPER.retDbl();
                                 }
                                 v.BarImages= tax_data.Rows[0]["barimage"].retStr();
-                                var brimgs = v.BarImages.retStr().Split(Convert.ToChar(Cn.GCS()));
+                                var brimgs = v.BarImages.retStr().Split((char)179);
                                 v.BarImagesCount = brimgs.Length==0?"": brimgs.Length.retStr();
                                foreach(var barimg in brimgs)
                                 {
