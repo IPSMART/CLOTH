@@ -1,8 +1,118 @@
-﻿
+﻿@model Improvar.ViewModels.ImageLinkBarcode
 @{
-    ViewBag.Title = "Image_Link_Barcode";
+    ViewBag.Title = "Image Linkup with Barcode";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
 }
+@{
+    string PageControllerName = "Image_Link_Barcode";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
 
-<h2>Image_Link_Barcode</h2>
+    });
+</script>
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+    });
+</script>
+<script>
+    function fileTypeCheck(id) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            document.getElementById("ImageName").value = fileToLoad.name;
+            var fileReader = new FileReader();
+            fileReader.onload = function (fileLoadedEvent) {
+                document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
+            };
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
 
+    function UploadBarnoImage() {
+        var ImageDesc = $('#ImageDesc').val();
+        if (document.getElementById("ImageName").value == "") return;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("UploadImages", PageControllerName )",
+            beforesend: $("#WaitingMode").show(),
+            data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                var id = (result.split('/')[2]).split('.')[0];
+                var newid = $("#BarImages").val() + String.fromCharCode(181) + (result.split('/')[2] + '~' + ImageDesc);
+                $("#BarImages").val(newid);
+                var htm = '';
+                htm += '<div class="col-lg-4" id="' + id + '">';
+                htm += '       <div class="thumbnail">';
+                htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
+                htm += '           <a href="' + result + '" target="_blank">';
+                htm += '                <img src="' + result + '" alt="" style="width:100%;height:300px;">';
+                htm += '                <div class="caption">';
+                htm += '                   ' + ImageDesc;
+                htm += '          </div>';
+                htm += '      </a>';
+                htm += '  </div>';
+                htm += '</div>';
+                $("#divUploadImage").append(htm);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function deleteBarImages(id) {
+        debugger;
+        var arr = $("#BarImages").val().split(String.fromCharCode(181)); var deleteindex = 0;
+        $.each(arr, function (index, value) {
+            var divid = (value.split('~')[0]).split('.')[0];
+            if (id == divid) {
+                deleteindex = index;
+            }
+        });
+        arr.splice(deleteindex, 1);
+        $("#" + id).remove();
+        var newimg = arr.join(String.fromCharCode(181));
+        $("#BarImages").val(newimg);
+    }
+</script>
+
+@using (Html.BeginForm(Model.ActionName, PageControllerName, FormMethod.Post))
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+            <div class="col-md-1">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Bar Code")
+                    <b style="color:Red;">*</b>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
+                </div>
+            </div>
+            <div class="row">
+                @Html.HiddenFor(model => model.TEXTBOX2)
+                <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
+                <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
+                <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
+                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
+            </div>
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}

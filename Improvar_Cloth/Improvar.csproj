@@ -576,6 +576,7 @@
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
+    <Compile Include="ViewModels\ImageLinkBarcode.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
     <Compile Include="ViewModels\ColorEntry.cs" />
