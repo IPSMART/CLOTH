@@ -235,6 +235,7 @@
     <Compile Include="Controllers\ImageData.cs" />
     <Compile Include="Controllers\Image_Link_BarcodeController.cs" />
     <Compile Include="Controllers\M_AmttypeController.cs" />
+    <Compile Include="Controllers\M_BarcodePrintFormatController.cs" />
     <Compile Include="Controllers\M_BOMController.cs" />
     <Compile Include="Controllers\M_BrandController.cs" />
     <Compile Include="Controllers\M_CollectionController.cs" />
@@ -298,6 +299,7 @@
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\LocationMaster.cs" />
     <Compile Include="Models\Login.cs" />
+    <Compile Include="Models\MBARCODEPRINTFORMAT.cs" />
     <Compile Include="Models\MCNTRLHDRDOC.cs" />
     <Compile Include="Models\MDEPTHOD.cs" />
     <Compile Include="Models\MDISCRTDTL.cs" />
@@ -351,6 +353,7 @@
     <Compile Include="Models\MUSRACSGRPDTL.cs" />
     <Compile Include="Models\M_AMTTYPE.cs" />
     <Compile Include="Models\M_AREACD.cs" />
+    <Compile Include="Models\M_BARCODEPRINTFORMAT.cs" />
     <Compile Include="Models\M_BATCH_IMG_HDR.cs" />
     <Compile Include="Models\M_BATCH_IMG_HDR_LINK.cs" />
     <Compile Include="Models\M_BLTYPE.cs" />
@@ -574,9 +577,11 @@
     <Compile Include="SMS.cs" />
     <Compile Include="ViewModels\AmountTypeMasterEntry.cs" />
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
+    <Compile Include="ViewModels\BarcodePrintFormat.cs" />
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
+    <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
     <Compile Include="ViewModels\ColorEntry.cs" />
@@ -1038,6 +1043,8 @@
     <Content Include="Views\M_SysCnfg\M_SysCnfg.cshtml" />
     <Content Include="Views\Image_Link_Barcode\Image_Link_Barcode.cshtml" />
     <Content Include="Views\Rep_BarcodePrint\Rep_BarcodePrint.cshtml" />
+    <Content Include="Views\M_BarcodePrintFormat\M_BarcodePrintFormat.cshtml" />
+    <Content Include="Views\Shared\_M_BarcodePrintFormat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

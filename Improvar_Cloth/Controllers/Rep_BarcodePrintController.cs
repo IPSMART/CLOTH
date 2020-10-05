@@ -147,6 +147,13 @@ namespace Improvar.Controllers
                 doc.Close();
             }
         }
+        [HttpPost]
+        public ActionResult Rep_BarcodePrint(RepBarcodePrint VE)
+        {
+            barcodeTest();
 
+
+            return View();
+        }
     }
 }
