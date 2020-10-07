@@ -3555,15 +3555,13 @@ namespace Improvar
         {// Rettype=string/image
             try
             {//
-                int width = 600;
-                if (Barcodestr.Length > 12) width = 700;
-                else if (Barcodestr.Length > 12) width = 800;
-                int Height = 200; int FontSize = 40;
+                int width = 600;               
+                int Height = 200; int FontSize = 30;
                 using (Barcode barcode = new Barcode())
                 {
                     barcode.IncludeLabel = true;
                     barcode.Alignment = AlignmentPositions.LEFT;
-                    barcode.LabelFont = new Font(FontFamily.GenericSerif, FontSize, FontStyle.Regular);
+                    barcode.LabelFont = new Font(FontFamily.GenericSansSerif, FontSize, FontStyle.Regular);
                     var barcodeImage = barcode.Encode(TYPE.CODE128, Barcodestr, Color.Black, Color.White, width, Height);
                     if (Rettype == "byte")
                     {

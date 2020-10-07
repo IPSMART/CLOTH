@@ -325,9 +325,20 @@ namespace Improvar.Controllers
             DataTable IR = new DataTable("DataTable1");
             IR.Columns.Add("brcodeImage", typeof(byte[]));
             IR.Columns.Add("itnm", typeof(string));
-            var byteimg = Cn.GenerateBarcode("1234567890123456", "byte");
+            var byteimg = Cn.GenerateBarcode("1234515"+System.DateTime.Now.ToString("ddmmyyyyss"), "byte");
             byte[] imgb = (byte[])byteimg;
+
+            var byteimg1 = Cn.GenerateBarcode("123456789012", "byte");
+            byte[] imgb1 = (byte[])byteimg1;
+
             IR.Rows.Add(imgb, "hook");
+            byte[] imgb12 = Cn.GenerateBarcode("1235" + System.DateTime.Now.ToString("ddmmyyyyss"), "byte");
+
+            IR.Rows.Add(imgb12, "hook");
+            IR.Rows.Add(imgb1, "hook");
+
+            //var byteimg1 = Cn.GenerateBarcode("12345678901234P", "byte");
+           
             //ReportDocument crystalReport = new ReportDocument();
             //crystalReport.Load(Server.MapPath("~/EmployeesReport.rpt"));
             DSPrintBarcode dsEmployees=new DSPrintBarcode();
