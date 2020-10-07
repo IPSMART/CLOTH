@@ -144,6 +144,20 @@ namespace Improvar
             if (val.retStr() == "") return 0;
             else return Convert.ToInt32(val);
         }
+        public static float MMtoPointFloat(this object val)
+        {
+            if (val.retStr() == "") return 0;
+            else {
+                return float.Parse((val.retDbl() * 2.83465).ToString());
+            }
+        }
+        public static float PointtoMMFloat(this object val)
+        {
+            if (val.retStr() == "") return 0;
+            else {
+                return float.Parse((val.retDbl() * 2.83465).ToString());
+            }
+        }
         public static decimal retDcml(this object val)
         {
             decimal rtval = 0;

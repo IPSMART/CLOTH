@@ -3558,14 +3558,14 @@ namespace Improvar
                 int width = 600;
                 if (Barcodestr.Length > 12) width = 700;
                 else if (Barcodestr.Length > 12) width = 800;
-                int Height = 150; int FontSize = 40;
+                int Height = 200; int FontSize = 40;
                 using (Barcode barcode = new Barcode())
                 {
                     barcode.IncludeLabel = true;
-                    barcode.Alignment = AlignmentPositions.CENTER;
-                    barcode.LabelFont = new Font(FontFamily.GenericMonospace, FontSize, FontStyle.Regular);
+                    barcode.Alignment = AlignmentPositions.LEFT;
+                    barcode.LabelFont = new Font(FontFamily.GenericSerif, FontSize, FontStyle.Regular);
                     var barcodeImage = barcode.Encode(TYPE.CODE128, Barcodestr, Color.Black, Color.White, width, Height);
-                    if (Rettype == "image")
+                    if (Rettype == "byte")
                     {
                         using (MemoryStream ms = new MemoryStream())
                         {
