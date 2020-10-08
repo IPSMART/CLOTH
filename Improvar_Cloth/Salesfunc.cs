@@ -1027,11 +1027,11 @@ namespace Improvar
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
             sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
             sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
-            if (gocd.retStr() != "") sql += "a.gocd in ('" + gocd + "') and ";
+            if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
             if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
-            if (itcd.retStr() != "") sql += "b.itcd in ('" + itcd + "') and ";
+            if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
             if (skipautono.retStr() != "") sql += "a.autono not in ('" + skipautono + ") and ";
-            if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in ('" + mtrljobcd + "') and ";
+            if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
             sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             if (pendpslipconsider == true)
@@ -1044,11 +1044,11 @@ namespace Improvar
                 sql += "where a.barno=b.barno(+) and a.autono=c.autono(+) and ";
                 sql += "c.doccd=d.doccd(+) and d.doctype in ('SPSLP') and a.autono=e.linkautono(+) and e.autono is null and ";
                 sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
-                if (gocd.retStr() != "") sql += "a.gocd in ('" + gocd + "') and ";
+                if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
                 if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
-                if (itcd.retStr() != "") sql += "b.itcd in ('" + itcd + "') and ";
+                if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
                 if (skipautono.retStr() != "") sql += "a.autono not in ('" + skipautono + ") and ";
-                if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in ('" + mtrljobcd + "') and ";
+                if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
                 sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
                 sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             }
@@ -1075,8 +1075,7 @@ namespace Improvar
             sql += ") a where prccd='" + prccd + "') b, ";
 
             sql += "(select a.barno, ";
-            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(181)) ";
-            //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
+            sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";
             sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
             sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
@@ -1118,8 +1117,8 @@ namespace Improvar
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
             if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
-            if (itgrpcd.retStr() != "") sql += "d.itgrpcd in ('" + itgrpcd + "') and ";
-            if (brandcd.retStr() != "") sql += "d.brandcd in ('" + brandcd + "') and ";
+            if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
+            if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+)and a.sizecd=l.sizecd(+) ";
             tbl = MasterHelpFa.SQLquery(sql);

@@ -1007,15 +1007,16 @@ namespace Improvar.Controllers
             try
             {
                 TransactionOutIssProcess VE = new TransactionOutIssProcess();
-                Cn.getQueryString(VE);
+                Cn.getQueryString(VE); string MTRLJOBCD = "";
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string DOCDT = data[0].retStr();
                 string TAXGRPCD = data[1].retStr();
-                string GOCD = data[2].retStr();// data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
+                string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
                 string PRCCD = data[3].retStr();
-                string MTRLJOBCD = data[4].retStr();
+                if(data[7].retStr()!="Y")  MTRLJOBCD = data[4].retStr();
                 string ITCD = data[5].retStr();
                 string ITGRPCD = data[6].retStr();
+
                 if (val.retStr() == "")
                 {
                     var str = masterHelp.T_TXN_BARNO_help(val, "", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
@@ -1031,7 +1032,7 @@ namespace Improvar.Controllers
                 else
                 {
                     DataTable stock_data = new DataTable();
-                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), ITCD, MTRLJOBCD.retStr(), "", ITGRPCD, "", PRCCD.retStr(), TAXGRPCD.retStr());
+                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), ITCD.retStr(), MTRLJOBCD.retStr(), "", ITGRPCD.retStr(), "", PRCCD.retStr(), TAXGRPCD.retStr());
 
                     if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
                     {
@@ -1945,7 +1946,7 @@ namespace Improvar.Controllers
                         //dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E");
                         //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         dbsql = masterHelp.TblUpdt("t_txndtl", TTXN.AUTONO, "E");
-
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         #endregion
 
                         dbsql = masterHelp.TblUpdt("t_progbom", TTXN.AUTONO, "E");
@@ -1956,17 +1957,17 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
 
-                        //dbsql = MasterHelpFa.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
-                        //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        //dbsql = MasterHelpFa.TblUpdt("t_batchmst", TTXN.AUTONO, "E");
-                        //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        dbsql = masterHelp.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         //dbsql = MasterHelpFa.TblUpdt("t_txndtl", TTXN.AUTONO, "E");
                         //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         //dbsql = MasterHelpFa.TblUpdt("t_txn_linkno", TTXN.AUTONO, "E");
                         //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        //dbsql = MasterHelpFa.TblUpdt("t_txntrans", TTXN.AUTONO, "E");
+                        //dbsql = masterHelp.TblUpdt("t_txntrans", TTXN.AUTONO, "E");
                         //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        //dbsql = MasterHelpFa.TblUpdt("t_txnoth", TTXN.AUTONO, "E");
+                        //dbsql = masterHelp.TblUpdt("t_txnoth", TTXN.AUTONO, "E");
                         //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         //dbsql = MasterHelpFa.TblUpdt("t_vch_gst", TTXN.AUTONO, "E");
                         //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -2053,10 +2054,12 @@ namespace Improvar.Controllers
 
                     dbsql = masterHelp.RetModeltoSql(TTXN, VE.DefaultAction);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    dbsql = masterHelp.RetModeltoSql(TXNTRANS);
+                     dbsql = masterHelp.RetModeltoSql(TXNTRANS);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     dbsql = masterHelp.RetModeltoSql(TTXNOTH);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                   
+                   
                     //dbsql = MasterHelpFa.RetModeltoSql(TVCHGST,"A",CommVar.FinSchema(UNQSNO));
                     //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -2298,7 +2301,7 @@ namespace Improvar.Controllers
                             TTXNDTL.FREESTK = VE.TTXNDTL[i].FREESTK;
                             TTXNDTL.BATCHNO = VE.TTXNDTL[i].BATCHNO;
                             TTXNDTL.BALEYR = VE.BALEYR;// VE.TTXNDTL[i].BALEYR;
-                            TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
+                            //TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
                             TTXNDTL.GOCD = VE.T_TXN.GOCD;
                             TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
                             TTXNDTL.NOS = VE.TTXNDTL[i].NOS == null ? 0 : VE.TTXNDTL[i].NOS;
@@ -2306,7 +2309,7 @@ namespace Improvar.Controllers
                             TTXNDTL.BLQNTY = VE.TTXNDTL[i].BLQNTY;
                             TTXNDTL.RATE = VE.TTXNDTL[i].RATE;
                             TTXNDTL.AMT = VE.TTXNDTL[i].AMT;
-                            TTXNDTL.FLAGMTR = VE.TTXNDTL[i].FLAGMTR;
+                            //TTXNDTL.FLAGMTR = VE.TTXNDTL[i].FLAGMTR;
                             TTXNDTL.TOTDISCAMT = VE.TTXNDTL[i].TOTDISCAMT;
                             TTXNDTL.TXBLVAL = VE.TTXNDTL[i].TXBLVAL;
                             TTXNDTL.IGSTPER = VE.TTXNDTL[i].IGSTPER;
@@ -2415,7 +2418,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.QNTY = VE.TBATCHDTL[i].QNTY;
                                     TBATCHMST.RATE = VE.TBATCHDTL[i].RATE;
                                     //TBATCHMST.AMT = VE.TBATCHDTL[i].AMT;
-                                    TBATCHMST.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
+                                    //TBATCHMST.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
                                     //TBATCHMST.MTRL_COST = VE.TBATCHDTL[i].MTRL_COST;
                                     //TBATCHMST.OTH_COST = VE.TBATCHDTL[i].OTH_COST;
                                     TBATCHMST.ITREM = VE.TBATCHDTL[i].ITREM;
@@ -2455,7 +2458,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.NOS = VE.TBATCHDTL[i].NOS;
                                 TBATCHDTL.QNTY = VE.TBATCHDTL[i].QNTY;
                                 TBATCHDTL.BLQNTY = VE.TBATCHDTL[i].BLQNTY;
-                                TBATCHDTL.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
+                                //TBATCHDTL.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
                                 TBATCHDTL.ITREM = VE.TBATCHDTL[i].ITREM;
                                 TBATCHDTL.RATE = VE.TBATCHDTL[i].RATE;
                                 TBATCHDTL.DISCRATE = VE.TBATCHDTL[i].DISCRATE;
@@ -2473,7 +2476,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.MILLNM = VE.TBATCHDTL[i].MILLNM;
                                 TBATCHDTL.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
                                 TBATCHDTL.BALEYR = VE.BALEYR;// VE.TBATCHDTL[i].BALEYR;
-                                TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
+                                //TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                             }
@@ -2547,14 +2550,7 @@ namespace Improvar.Controllers
                 else if (VE.DefaultAction == "V")
                 {
                     #region batch and detail data
-                    dbsql = masterHelp.TblUpdt("t_cntrl_hdr_uniqno", VE.T_TXN.AUTONO, "D");
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    dbsql = masterHelp.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D");
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    dbsql = masterHelp.TblUpdt("t_txndtl", VE.T_TXN.AUTONO, "D");
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    
 
                     #endregion
                     //dbsql = MasterHelpFa.TblUpdt("t_cntrl_doc_pass", VE.T_TXN.AUTONO, "D");
@@ -2565,6 +2561,13 @@ namespace Improvar.Controllers
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_cntrl_hdr_rem", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("t_cntrl_hdr_uniqno", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("t_txndtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_progbom", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -2574,9 +2577,13 @@ namespace Improvar.Controllers
                     //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     //dbsql = MasterHelpFa.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
                     //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    //dbsql = MasterHelpFa.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D");
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    //dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D");
+                    //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_progmast", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("T_TXNOTH", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("T_TXNTRANS", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_txn", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }

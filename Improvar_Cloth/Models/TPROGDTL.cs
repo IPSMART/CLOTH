@@ -145,6 +145,9 @@ namespace Improvar.Models
         public string BOMQNTY { get; set; }
         public string EXTRAQNTY { get; set; }
         public string SAMPLE { get; set; }
+        public string tag1 { get; set; }
+        public string tag2 { get; set; }
+
 
     }
 }
