@@ -1075,6 +1075,7 @@
     <Content Include="Views\M_SysCnfg\M_SysCnfg.cshtml" />
     <Content Include="Views\Image_Link_Barcode\Image_Link_Barcode.cshtml" />
     <Content Include="Views\Rep_BarcodePrint\Rep_BarcodePrint.cshtml" />
+    <Content Include="Views\Shared\Rep_BarcodePrint_Main.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
