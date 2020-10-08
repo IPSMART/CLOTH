@@ -36,7 +36,7 @@
         height: 190px;
     }
 </style>
-<script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>
+<script src="~/Scripts/Sale.js?Ver=@System.DateTime.Today"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
@@ -808,7 +808,7 @@
                                                     @*@Html.EditorFor(model => model.STKTYPE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STKTYPE", onkeydown = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0')", onblur = "GetHelpBlur('" + @Url.Action("GetStockDetails", PageControllerName) + "','Stock Details','STKTYPE','STKTYPE=STKTYPE=1/STKNAME=STKNAME=0');", @placeholder = "Stock Type", maxlength = 1 } })
                                                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetStockDetails", PageControllerName)','Stock Details','STKTYPE','STKTYPE=STKTYPE =1/STKNAME =STKNAME =0')" />
                                                         @Html.HiddenFor(model => model.STKNAME, new { id = "STKNAME" })*@
-                                                    @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text", Model.STKTYPE), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
+                                                    @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text"), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -840,13 +840,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
-                                                @if (Model.MENU_PARA == "PB")
-                                                {
-                                                    <div class="editor-field">
-                                                        @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
-                                                    </div>
-                                                }                                           
+                                                <div class="editor-field">
+                                                    @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
+                                                </div>
                                             </div>
+
                                         </div>
                                         <div class="row">
                                             <div class="col-md-1">
@@ -883,12 +881,12 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc. Type" })
+                                                    @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc. Rate" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc. Rate" } })
+                                                    @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc. Type" })
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -902,6 +900,8 @@
                                                     @Html.EditorFor(model => model.GSTPER, new { htmlAttributes = new { @class = "form-control", id = "GSTPER", @onkeypress = "return numericOnly(this,2);", maxlength = 5, @placeholder = "GSTPER", @readonly = "readonly", @TabIndex = -1, @title = "GSTPER" } })
                                                     @Html.HiddenFor(model => model.ALL_GSTPER, new { id = "ALL_GSTPER" })
                                                     @Html.HiddenFor(model => model.PRODGRPGSTPER, new { id = "PRODGRPGSTPER" })
+
+
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -992,8 +992,6 @@
                                         <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
                                     </div>
                                     @*iamge*@
-                                    <input type="hidden" id="ImageName" value="" />
-                                    <input type="hidden" id="ImageStr" value="" />
                                     @if (Model.MENU_PARA == "PB"){
                                     <div class="col-md-1">
                                         <div class="editor-label" style="margin-top: 6px;">
@@ -1002,7 +1000,9 @@
                                     </div>
                                     <div class="col-md-2">
                                         <div class="editor-label" style="margin-top: 4px;">
-                                            <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />                                          
+                                            <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />
+                                            <input type="hidden" id="ImageName" value="" />
+                                            <input type="hidden" id="ImageStr" value="" />
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -1542,8 +1542,7 @@
             success: function (result) {
                 $("#WaitingMode").hide(); var newid = '';
                 if ($("#B_BarImages_" + i).val() != ""){
-                    newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
-                }
+                    newid= $("#B_BarImages_" + i).val() + String.fromCharCode(181) +(result.split('/')[2] + '~' + ImageDesc);}
                 else{
                     newid= (result.split('/')[2] + '~' + ImageDesc);
                 }
@@ -1599,7 +1598,7 @@
         debugger;
         var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
         var id = $("#div_carousel_inner div.active").attr('id')
-        var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
+        var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(181)); var deleteindex = 0;
         $.each(arr, function (index, value) {
             var divid = (value.split('~')[0]).split('.')[0];
             if (id == divid) {
@@ -1608,7 +1607,7 @@
         });
         arr.splice(deleteindex, 1);
         $("#" + id).remove();
-        var newimg = arr.join(String.fromCharCode(179));
+        var newimg = arr.join(String.fromCharCode(181));
         $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
         $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
 
@@ -1619,7 +1618,7 @@
         $('#ActiveBarRowIndex').val(index);
         var actt = ""; $("#div_carousel_inner").html('');
         var arr = $("#B_BarImages_" + index).val();
-        arr = arr.split(String.fromCharCode(179));
+        arr = arr.split(String.fromCharCode(181));
         $.each(arr, function (index, value) {
             var imgname = (value.split('~')[0]);
             var id = (imgname).split('.')[0];

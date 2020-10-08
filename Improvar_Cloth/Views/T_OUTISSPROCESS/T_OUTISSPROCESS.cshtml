@@ -517,25 +517,25 @@
                             @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Price List Name", @placeholder = "Price List Name", @readonly = "readonly" } })
                         </div>
                     </div>
-                        <div class="col-md-5">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Godown")
-                                <b style="color:Red;">*</b>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
-                                @*@Html.HiddenFor(model => model.GONM, new { id = "GONM" })*@
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
-                            </div>
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Godown")
+                            <b style="color:Red;">*</b>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
+                            @*@Html.HiddenFor(model => model.GONM, new { id = "GONM" })*@
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
@@ -591,8 +591,8 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/ITCD/ITGRPCD')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/ITCD/ITGRPCD')", @placeholder = "Bar Code", maxlength = 25 } })@*"GetBarnoDetails(this.value);"*@
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/ITCD/ITGRPCD')" />
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })@*"GetBarnoDetails(this.value);"*@
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
                                         </div>
                                     </div>
                                 }
@@ -735,11 +735,11 @@
                                                     @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos", @title = "Nos" } })
                                                 </div>
                                             </div>
-                                            <div class="col-md-1">
-                                                <div class="editor-field">
+                                            @*<div class="col-md-1">
+                                                <div class="editor-field">*@
                                                     @Html.HiddenFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR", @title = "FLAGMTR" } })
-                                                </div>
-                                            </div>
+                                                @*</div>
+                                            </div>*@
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Rate", @placeholder = "Rate", @onchange = "GetGstPer('','');" } })
@@ -817,12 +817,12 @@
                                 <div class="row">
                                     @if (Model.MENU_PARA == "PB" || 1 == 1)
                                     {
-                                        <div class="col-md-8">
-                                            <div class="editor-field">
+                                        @*<div class="col-md-8">
+                                            <div class="editor-field">*@
                                                 @Html.HiddenFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
                                                 @Html.HiddenFor(model => model.BALEYR, new { id = "BALEYR" })
-                                            </div>
-                                        </div>
+                                            @*</div>
+                                        </div>*@
                                     }
                                     <div class="col-md-1">
                                         <div class="editor-field">
@@ -846,11 +846,13 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10, @title = "Location Bin" } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetLocationBinDetails", PageControllerName)','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')" />
+                                            @*@Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10, @title = "Location Bin" } })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetLocationBinDetails", PageControllerName)','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')" />*@
+                                            @Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control", id = "LOCABIN", @placeholder = "Location Bin", maxlength = 10, @title = "Location Bin" } })
                                             @Html.HiddenFor(model => model.GLCD, new { id = "GLCD" })
                                         </div>
                                     </div>
+
                                     <div class="col-md-1" style="width:auto;">
                                         @*<input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />*@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(Alt+A)" title="Click to Fill Data in Barcode Details" onclick="AddBarCodeGrid()" />
@@ -859,22 +861,22 @@
                                     </div>
                                     @*iamge*@
                                     @*<div class="col-md-1">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Image Desc")
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                @Html.Label("", "Image Desc")
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />
-                                            <input type="hidden" id="ImageName" value="" />
-                                            <input type="hidden" id="ImageStr" value="" />
+                                        <div class="col-md-1">
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />
+                                                <input type="hidden" id="ImageName" value="" />
+                                                <input type="hidden" id="ImageStr" value="" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            <input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" />
-                                        </div>
-                                    </div>*@
+                                        <div class="col-md-6">
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                <input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" />
+                                            </div>
+                                        </div>*@
                                 </div>
                                                                 }
 
