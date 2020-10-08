@@ -65,7 +65,14 @@
                                     @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].SZBARCODE, new { id = "ISZBARCODE_" + i, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].BARNO, new { id = "IBARCODE_" + i, maxlength = 20, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                    @if (Model.MSITEMBARCODE[i].HASTRANSACTION != true)
+                                    {
+                                        @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].BARNO, new { id = "IBARCODE_" + i, maxlength = 20, @class = " atextBoxFor ", @TabIndex = -1 })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBoxFor(model => Model.MSITEMBARCODE[i].BARNO, new { id = "IBARCODE_" + i, maxlength = 20, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                    }
                                 </td>
                             </tr>
                         }

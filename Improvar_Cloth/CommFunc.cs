@@ -67,7 +67,7 @@ namespace Improvar
         {
             string rtval = "";
             string[] cdval = codestr.retStr().Split(',');
-            if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.ToString().Trim() != "")
+            if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.retStr().Trim() != "")
             {
                 rtval = "'" + string.Join("','", cdval) + "'";
             }
@@ -143,6 +143,20 @@ namespace Improvar
         {
             if (val.retStr() == "") return 0;
             else return Convert.ToInt32(val);
+        }
+        public static float MMtoPointFloat(this object val)
+        {
+            if (val.retStr() == "") return 0;
+            else {
+                return float.Parse((val.retDbl() * 2.83465).ToString());
+            }
+        }
+        public static float PointtoMMFloat(this object val)
+        {
+            if (val.retStr() == "") return 0;
+            else {
+                return float.Parse((val.retDbl() * 2.83465).ToString());
+            }
         }
         public static decimal retDcml(this object val)
         {

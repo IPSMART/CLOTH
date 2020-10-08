@@ -18,7 +18,7 @@
         }
     }
     $("#ALLMTRLJOBCD").val(allcode);
-    
+
 }
 function GetBarnoDetails(id) {
     var DefaultAction = $("#DefaultAction").val();
@@ -70,7 +70,7 @@ function GetBarnoDetails(id) {
             }
         });
     }
-   
+
 }
 function Add_BarCodeRow() {
     var DefaultAction = $("#DefaultAction").val();
@@ -99,7 +99,7 @@ function Add_BarCodeRow() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
-    
+
 }
 function FillBarcodeArea(str, Table, i) {
     var DefaultAction = $("#DefaultAction").val();
@@ -243,13 +243,13 @@ function FillBarcodeArea(str, Table, i) {
         $("#UpdateRow_Barcode").show();
 
     }
-   
+
 }
 function CloseBarnoPopup() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     $("#popup").html("");
-   
+
 }
 function UpdateBarCodeRow() {
     var DefaultAction = $("#DefaultAction").val();
@@ -385,7 +385,7 @@ function UpdateBarCodeRow() {
     } else {
         $("#BARCODE").focus();
     }
-   
+
 }
 
 function ClearBarcodeArea(TAG) {
@@ -409,7 +409,7 @@ function ClearBarcodeArea(TAG) {
             $("#BARCODE").focus();
         }
     }
-   
+
 }
 function Fill_DetailData() {
     var DefaultAction = $("#DefaultAction").val();
@@ -439,7 +439,7 @@ function Fill_DetailData() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
-   
+
 }
 function UpdateBarCodeRow_FrmDet(i) {
     var DefaultAction = $("#DefaultAction").val();
@@ -482,7 +482,7 @@ function UpdateBarCodeRow_FrmDet(i) {
             }
         }
     }
-    
+
 }
 
 function CalculateTotal_Barno() {
@@ -498,7 +498,7 @@ function CalculateTotal_Barno() {
     }
     $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
-   
+
 }
 function CalculateAmt_Details(i) {
     var DefaultAction = $("#DefaultAction").val();
@@ -645,7 +645,7 @@ function CalculateAmt_Details(i) {
     var netamt = parseFloat(parseFloat(taxbleamt) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
     $("#D_NETAMT_" + i).val(netamt);
     CalculateTotal_Details();
-   
+
 }
 function CalculateTotal_Details() {
     var DefaultAction = $("#DefaultAction").val();
@@ -698,7 +698,7 @@ function CalculateTotal_Details() {
     //$("#TOTTAXVAL").val(parseFloat(T_GROSS_AMT).toFixed(2));
     //$("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
     BillAmountCalculate();
-    
+
 }
 
 function GetGstPer(i, FieldidStarting) {
@@ -743,7 +743,7 @@ function GetGstPer(i, FieldidStarting) {
         UpdateBarCodeRow_FrmDet(i);
         CalculateAmt_Details(i);
     }
-    
+
 }
 function retGstPer(prodgrpgstper, rate) {
     var DefaultAction = $("#DefaultAction").val();
@@ -766,13 +766,13 @@ function retGstPer(prodgrpgstper, rate) {
     }
     if (selrow != -1) rtval = mgstrate[2] + "," + mgstrate[3] + "," + mgstrate[4];
     return rtval;
-   
+
 }
 function ItcdClr() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,HSNCODE");
-   
+
 }
 
 function AmountCalculation(i) {
@@ -856,7 +856,7 @@ function AmountCalculation(i) {
 
     //GRID TOTAL CALCULATION
     AmountCalculateTotal();
-    
+
 }
 function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
     var DefaultAction = $("#DefaultAction").val();
@@ -882,7 +882,7 @@ function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
     }
     //GRID TOTAL CALCULATION
     AmountCalculateTotal();
-    
+
 }
 function AmountCalculateTotal() {
     var DefaultAction = $("#DefaultAction").val();
@@ -926,7 +926,7 @@ function AmountCalculateTotal() {
 
     //BILL AMOUNT CALCULATION
     BillAmountCalculate();
-    
+
 }
 function OpenAmount() {
     var DefaultAction = $("#DefaultAction").val();
@@ -963,7 +963,7 @@ function OpenAmount() {
         document.getElementById("ACESSPER_" + i).value = CESS_PER;
         document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
     }
-   
+
 }
 
 function ReverceCharges() {
@@ -1046,7 +1046,7 @@ function ReverceCharges() {
     //BillAmountCalculate();
     //DRCRBillAmount();
     //SBILLBillAmount();
-   
+
 }
 function BillAmountCalculate() {
     var DefaultAction = $("#DefaultAction").val();
@@ -1138,7 +1138,7 @@ function BillAmountCalculate() {
         //}*@
         document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
     }
-    
+
 }
 
 function CalulateTareWt(GRWT, NTWT, TRWT) {
@@ -1154,7 +1154,7 @@ function CalulateTareWt(GRWT, NTWT, TRWT) {
     }
     var TARE = GROSS - NET;
     document.getElementById(TRWT.id).value = TARE.toFixed(3);
-   
+
 }
 
 function Checked_Disable() {
@@ -1185,7 +1185,7 @@ function DeleteBarnoRow() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
-   
+
 }
 
 function AddDOCrow() {
@@ -1205,7 +1205,7 @@ function AddDOCrow() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
-    
+
 }
 function DeleteDOCrow() {
     var DefaultAction = $("#DefaultAction").val();
@@ -1224,7 +1224,7 @@ function DeleteDOCrow() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
-    
+
 }
 
 function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
@@ -1276,7 +1276,7 @@ function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
             }
         });
     }
-   
+
 }
 function AddBarCodeGrid() {
     var DefaultAction = $("#DefaultAction").val();
@@ -1384,7 +1384,11 @@ function AddBarCodeGrid() {
     var SCMDISCRATE = $("#SCMDISCRATE").val();
     var LOCABIN = $("#LOCABIN").val();
     var GLCD = $("#GLCD").val();
-
+    var ITMBARGENTYPE = $("#BARGENTYPETEMP").val();
+    var ENTRYBARGENTYPE = $("#BARGENTYPE").val();
+    var BarImages = $("#BarImages").val();
+    var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
+    if (BarImages == '') { NoOfBarImages = ''; }
     var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     var SLNO = 1;
     if (parseInt(rowindex) != 0) {
@@ -1405,7 +1409,7 @@ function AddBarCodeGrid() {
     tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
     tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
     tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
-    tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + '' + '">';
+    tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
     tr += '    </td>';
     tr += '    <td class="sticky-cell" style="left:20px;" title="' + SLNO + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
@@ -1469,13 +1473,14 @@ function AddBarCodeGrid() {
     tr += '        <input id="B_ALL_GSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ALL_GSTPER" type="hidden" value="' + ALL_GSTPER + '">';
     tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
     tr += '    </td>';
-    tr += '    <td class="" title="' + DISCRATE + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + DISCRATE + '">';
-    tr += '    </td>';
     tr += '    <td class="" title="' + DISCTYPE_DESC + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="' + DISCTYPE_DESC + '">';
     tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
-    tr += '    </td><td class="" title="' + TDDISCTYPE_DESC + '">';
+    tr += '    </td>';
+    tr += '    <td class="" title="' + DISCRATE + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + DISCRATE + '">';
+    tr += '    </td>';
+    tr += '     <td class="" title="' + TDDISCTYPE_DESC + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="' + TDDISCTYPE_DESC + '">';
     tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
     tr += '                              </td>';
@@ -1490,11 +1495,13 @@ function AddBarCodeGrid() {
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + SCMDISCRATE + '">';
     tr += '    </td>';
     tr += '   <td class=""> ';
-    tr += '   <button type="button" onclick="FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px"></button> ';
+    tr += '   <button type="button" onclick="FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
     tr += '   </td> ';
     tr += '   <td class="">  ';
-    tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px" readonly="readonly" placeholder=""> ';
-    tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder=""> ';
+    if (MENU_PARA == "PB" && ENTRYBARGENTYPE == "E") {
+        tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px" readonly="readonly" placeholder=""> ';
+    }
+    tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder="" value=' + BarImages + '> ';
     tr += '   </td> ';
     tr += '        <td class="sticky-cell-opposite">';
     tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
@@ -1503,19 +1510,13 @@ function AddBarCodeGrid() {
 
     $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
     CalculateTotal_Barno();
-    ClearBarcodeArea();
-    //@*if (MENU_PARA == "PB") {
-    //    $("#BALENO").val("");
-    //}
-    //$("#DISCTYPE").val("P");
-    //$("#TDDISCTYPE").val("P");
-    //$("#SCMDISCTYPE").val("P");*@
 
+    ClearBarcodeArea();
     if (MENU_PARA == "PB") {
         $("#TXNSLNO").focus();
     } else {
         $("#BARCODE").focus();
-}
+    }
 }
 
 

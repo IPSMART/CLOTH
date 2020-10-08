@@ -19,7 +19,7 @@ namespace Improvar.Controllers
     {
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
-        MasterHelpFa Master_HelpFa = new MasterHelpFa();
+        MasterHelpFa Master_HelpFa = new MasterHelpFa(); Salesfunc salesfunc = new Salesfunc();
         M_SITEM sl; M_CNTRL_HDR sll; M_GROUP slll; M_SUBBRAND slsb; M_BRAND slb; M_COLLECTION slc; M_UOM sluom;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: M_FinProduct
@@ -118,7 +118,7 @@ namespace Improvar.Controllers
                         {
                             itgrpcd = "F";
                         }
-                        else if(VE.MENU_PARA == "C")
+                        else if (VE.MENU_PARA == "C")
                         {
                             itgrpcd = "C";
                         }
@@ -130,12 +130,12 @@ namespace Improvar.Controllers
                                            join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD)
                                            where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE == itgrpcd)
                                            select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
-                        } 
-                       else
+                        }
+                        else
                         {
                             VE.IndexKey = (from p in DB.M_SITEM
                                            join o in DB.M_GROUP on p.ITGRPCD equals (o.ITGRPCD)
-                                           where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE !="C" && o.ITGRPTYPE != "F")
+                                           where (p.ITGRPCD == o.ITGRPCD && o.ITGRPTYPE != "C" && o.ITGRPTYPE != "F")
                                            select new IndexKey() { Navikey = p.ITCD }).OrderBy(a => a.Navikey).ToList();
                         }
 
@@ -311,6 +311,7 @@ namespace Improvar.Controllers
                     slb = DB.M_BRAND.Find(sl.BRANDCD);
                     slc = DB.M_COLLECTION.Find(sl.COLLCD);
                     sluom = DBF.M_UOM.Find(sl.UOMCD);
+                    VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "") != "" ? true : false;
                     string fitcd = sl.FABITCD.retStr();
                     if (fitcd != "")
                     {
@@ -319,7 +320,14 @@ namespace Improvar.Controllers
                         VE.FABSTYLENO = fitem.STYLENO;
                         VE.FABUOMNM = fitem.UOMCD;
                     }
-
+                    if (sl.NEGSTOCK == "Y")
+                    {
+                        VE.NEGSTOCK = true;
+                    }
+                    else
+                    {
+                        VE.NEGSTOCK = false;
+                    }
                     if (sll.INACTIVE_TAG == "Y")
                     {
                         VE.Checked = true;
@@ -341,8 +349,6 @@ namespace Improvar.Controllers
                                          JOBRT = dr["JOBRT"].retDbl(),
                                          PDESIGN = dr["PDESIGN"].retStr()
                                      }).ToList();
-
-
                     if (VE.MSITEMSLCD.Count == 0)
                     {
                         List<MSITEMSLCD> ITEMSIZE = new List<MSITEMSLCD>();
@@ -383,23 +389,26 @@ namespace Improvar.Controllers
                             VE.MSITEMPARTS[i].SLNO = Convert.ToByte(i + 1);
                         }
                     }
-
                     VE.ITEM_BARCODE = DB.M_SITEM_BARCODE.Where(a => a.ITCD == sl.ITCD && a.COLRCD == null && a.SIZECD == null).Select(b => b.BARNO).FirstOrDefault();
-                    VE.MSITEMBARCODE = (from i in DB.M_SITEM_BARCODE
-                                        join j in DB.M_COLOR on i.COLRCD equals (j.COLRCD) into x
-                                        from j in x.DefaultIfEmpty()
-                                        join k in DB.M_SIZE on i.SIZECD equals (k.SIZECD) into y
-                                        from k in y.DefaultIfEmpty()
-                                        where (i.ITCD == sl.ITCD && i.COLRCD != null && i.BARNO != null)
+
+                    sql = "";
+                    sql += "SELECT i.SIZECD,  k.SIZENM,k.SZBARCODE,i.COLRCD,j.COLRNM, i.BARNO, j.CLRBARCODE, ";
+                    sql += "case when exists (select autono from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST a where a.BARNO = i.BARNO) then 'Y' else '' end as HASTRANSACTION ";
+                    sql += "FROM " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_BARCODE i, " + CommVar.CurSchema(UNQSNO) + ".M_COLOR j, " + CommVar.CurSchema(UNQSNO) + ".M_SIZE k ";
+                    sql += "where I.COLRCD = j.colrcd(+) and I.SIZECD = k.SIZECD(+) and i.itcd = '" + sl.ITCD + "' and ";
+                    sql += "nvl(i.sizecd, i.colrcd) is not null and i.BARNO is not null ";
+                    dt = masterHelp.SQLquery(sql);
+                    VE.MSITEMBARCODE = (from DataRow dr in dt.Rows
                                         select new MSITEMBARCODE()
                                         {
-                                            SIZECD = i.SIZECD,
-                                            SIZENM = k.SIZENM,
-                                            SZBARCODE = k.SZBARCODE,
-                                            COLRCD = i.COLRCD,
-                                            COLRNM = j.COLRNM,
-                                            BARNO = i.BARNO,
-                                            CLRBARCODE = j.CLRBARCODE
+                                            SIZECD = dr["SIZECD"].ToString(),
+                                            SIZENM = dr["SIZENM"].ToString(),
+                                            SZBARCODE = dr["SZBARCODE"].ToString(),
+                                            COLRCD = dr["COLRCD"].ToString(),
+                                            COLRNM = dr["COLRNM"].ToString(),
+                                            BARNO = dr["BARNO"].ToString(),
+                                            CLRBARCODE = dr["CLRBARCODE"].ToString(),
+                                            HASTRANSACTION = dr["HASTRANSACTION"].ToString() == "Y" ? true : false
                                         }).ToList();
 
                     if (VE.MSITEMBARCODE.Count == 0)
@@ -420,9 +429,7 @@ namespace Improvar.Controllers
                                 VE.MSITEMBARCODE[i].BARNO = null;
                             }
                         }
-
                     }
-
                     VE.MSITEMMEASURE = (from i in DB.M_SITEM_MEASURE
                                         where (i.ITCD == sl.ITCD)
                                         select new MSITEMMEASURE()
@@ -431,7 +438,6 @@ namespace Improvar.Controllers
                                             MVAL = i.MVAL,
                                             REM = i.REM,
                                         }).ToList();
-
                     if (VE.MSITEMMEASURE.Count == 0)
                     {
                         List<MSITEMMEASURE> ITEMMEASURE = new List<MSITEMMEASURE>();
@@ -446,11 +452,11 @@ namespace Improvar.Controllers
                         {
                             VE.MSITEMMEASURE[i].SLNO = Convert.ToByte((i + 1));
                         }
-
                     }
                     VE.M_SITEM = sl;
+                    string barnosql = getbarno(sl.ITCD).retSqlformat();
 
-                    VE.DropDown_list1 = Price_Effdt(VE, sl.ITCD);
+                    VE.DropDown_list1 = Price_Effdt(VE, barnosql);
                     if (VE.DropDown_list1.Count > 0)
                     {
                         VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
@@ -467,7 +473,7 @@ namespace Improvar.Controllers
                         UploadDOC1.Add(UPL);
                         VE.UploadDOC = UploadDOC1;
                     }
-                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_BATCH_IMG_HDR WHERE barno in(" + getbarno(sl.ITCD).retSqlformat() + ")";
+                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_BATCH_IMG_HDR WHERE barno in(" + barnosql + ")";
                     dt = masterHelp.SQLquery(sql);
                     VE.UploadBarImages = (from DataRow dr in dt.Rows
                                           select new UploadDOC
@@ -475,7 +481,7 @@ namespace Improvar.Controllers
                                               docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
                                               DOC_DESC = dr["DOC_DESC"].retStr(),
                                               DOC_FILE = "/UploadDocuments/" + dr["DOC_FLNAME"].retStr(),
-                                              DOC_FILE_NAME =  dr["DOC_FLNAME"].retStr(),
+                                              DOC_FILE_NAME = dr["DOC_FLNAME"].retStr(),
                                           }).ToList();
                     foreach (var v in VE.UploadBarImages)
                     {
@@ -564,7 +570,8 @@ namespace Improvar.Controllers
             {
                 VE.DTPRICES = GetPrices(VE);
                 TempData["DTPRICES"] = VE.DTPRICES;
-                VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
+                string barnosql = getbarno(VE.M_SITEM.ITCD).retSqlformat();
+                VE.DropDown_list1 = Price_Effdt(VE, barnosql);
 
                 ModelState.Clear();
                 VE.DefaultView = true;
@@ -604,10 +611,10 @@ namespace Improvar.Controllers
             }
 
         }
-        public List<DropDown_list1> Price_Effdt(ItemMasterEntry VE, string ITCD)
+        public List<DropDown_list1> Price_Effdt(ItemMasterEntry VE, string barno)
         {
-            //string sql = "select distinct EFFDT from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + ITCD + "' order by EFFDT desc";
-            string sql = "select distinct EFFDT from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL order by EFFDT desc";
+            string sql = "select distinct EFFDT from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where barno in (" + barno + ") order by EFFDT desc";
+            //string sql = "select distinct EFFDT from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL order by EFFDT desc";
             DataTable dt = masterHelp.SQLquery(sql);
             VE.DropDown_list1 = (from DataRow Dr in dt.Rows
                                  select new DropDown_list1() { value = Dr["EFFDT"].retDateStr(), text = Dr["EFFDT"].retDateStr() }).ToList();
@@ -1397,6 +1404,8 @@ namespace Improvar.Controllers
                 return "";
             }
         }
+
+
         public Tuple<List<M_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
         {
             List<M_BATCH_IMG_HDR> doc = new List<M_BATCH_IMG_HDR>();
@@ -1571,6 +1580,8 @@ namespace Improvar.Controllers
                             MSITEM.FEATURE = VE.M_SITEM.FEATURE;
                             MSITEM.DMNSN = VE.M_SITEM.DMNSN;
                         }
+
+                        MSITEM.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "";
                         //MSITEM.STD_RATE = VE.M_SITEM.STD_RATE;
                         //MSITEM.SAMPPC = VE.M_SITEM.SAMPPC;
                         //MSITEM.STDLOTQTY = VE.M_SITEM.SAMPPC;
@@ -1678,6 +1689,7 @@ namespace Improvar.Controllers
                         MSITEMBARCODE.ITCD = MSITEM.ITCD;
                         MSITEMBARCODE.BARNO = MSITEM.ITGRPCD.Substring(MSITEM.ITGRPCD.Length - 3).retStr() + MSITEM.ITCD.Substring(MSITEM.ITCD.Length - 7).retStr();
                         DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
+                        List<string> barnos = new List<string>();
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
                         {
                             if (VE.MSITEMBARCODE[i].SIZECD != null || VE.MSITEMBARCODE[i].COLRCD != null)
@@ -1690,6 +1702,7 @@ namespace Improvar.Controllers
                                 MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
                                 MSITEMBARCODE1.BARNO = MSITEMBARCODE.BARNO + VE.MSITEMBARCODE[i].CLRBARCODE.retStr() + VE.MSITEMBARCODE[i].SZBARCODE.retStr();
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
+                                barnos.Add(MSITEMBARCODE1.BARNO);
                             }
                         }
 
@@ -1735,14 +1748,14 @@ namespace Improvar.Controllers
                                 var barimg = SaveBarImage(VE.BarImages, MSITEMBARCODE.BARNO, MSITEM.EMD_NO.retShort());
                                 DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
                                 DB.SaveChanges();
-                                var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
-                                foreach (var imgbar in disntImgHdr)
+                                //var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
+                                foreach (var imgbar in barnos)
                                 {
                                     M_BATCH_IMG_HDR_LINK m_batchImglink = new M_BATCH_IMG_HDR_LINK();
                                     m_batchImglink.CLCD = MSITEM.CLCD;
                                     m_batchImglink.EMD_NO = MSITEM.EMD_NO;
-                                    m_batchImglink.BARNO = imgbar.BARNO;
-                                    m_batchImglink.MAINBARNO = imgbar.BARNO;
+                                    m_batchImglink.BARNO = imgbar;
+                                    m_batchImglink.MAINBARNO = MSITEMBARCODE.BARNO;
                                     DB.M_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
                                 }
                             }
@@ -1877,11 +1890,10 @@ namespace Improvar.Controllers
             {
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
 
-                string query = "SELECT A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE, ";
-                query = query + "LISTAGG(D.SIZENM,',') WITHIN GROUP (ORDER BY C.ITCD, D.PRINT_SEQ) sizes ";
-                query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B, " + dbname + ".M_SITEM_SLCD C, " + dbname + ".M_SIZE D, ";
+                string query = "SELECT A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
+                query = query + "FROM " + dbname + ".M_SITEM A, " + dbname + ".M_GROUP B,  " + dbname + ".M_SIZE D, ";
                 query = query + dbname + ".M_CNTRL_HDR E, " + dbname + ".M_BRAND F ";
-                query = query + "WHERE A.ITGRPCD = B.ITGRPCD(+) AND A.ITCD=C.ITCD(+) AND C.SIZECD=D.SIZECD(+) AND ";
+                query = query + "WHERE A.ITGRPCD = B.ITGRPCD(+)   AND ";
                 query = query + "A.M_AUTONO=E.M_AUTONO(+) AND NVL(E.INACTIVE_TAG,'N')='N' AND a.BRANDCD=F.BRANDCD(+) ";
                 query = query + "GROUP BY A.STYLENO, A.ITNM, A.ITCD, B.ITGRPNM, F.BRANDNM, A.HSNCODE ";
                 query = query + "ORDER BY B.ITGRPNM, A.STYLENO";
@@ -1898,7 +1910,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "itcd", "string", "c,10", "Item;Code");
                 HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item Name");
                 //HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "Pcs/;Box");
-                HC.GetPrintHeader(IR, "sizes", "string", "c,25", "Sizes");
+                //HC.GetPrintHeader(IR, "sizes", "string", "c,25", "Sizes");
                 HC.GetPrintHeader(IR, "brandnm", "string", "c,15", "Brand Name");
                 HC.GetPrintHeader(IR, "hsnsaccd", "string", "c,8", "HSN;Code");
                 string lastgrpnm = ""; string lastbrandnm = "";
@@ -1912,7 +1924,7 @@ namespace Improvar.Controllers
                     dr["itcd"] = tbl.Rows[i]["itcd"];
                     dr["itnm"] = tbl.Rows[i]["itnm"];
                     //dr["pcsperbox"] = Convert.ToDouble(tbl.Rows[i]["pcsperbox"] == DBNull.Value ? 0 : tbl.Rows[i]["pcsperbox"]);
-                    dr["sizes"] = (tbl.Rows[i]["sizes"]);
+                    //dr["sizes"] = (tbl.Rows[i]["sizes"]);
                     dr["hsnsaccd"] = (tbl.Rows[i]["HSNCODE"]);
                     dr["brandnm"] = tbl.Rows[i]["brandnm"];
                     dr["Flag"] = " class='grid_td'";

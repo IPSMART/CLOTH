@@ -2139,7 +2139,7 @@ namespace Improvar
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
-            sql += "select c.BARNO,a.ITGRPCD,d.ITGRPNM,a.ITCD,a.ITNM,a.STYLENO,c.COLRCD,e.COLRNM,e.CLRBARCODE,c.SIZECD,f.SIZENM,f.SZBARCODE,a.UOMCD,NVL(D.HSNCODE,a.HSNCODE) HSNCODE,a.itnm||' '||a.styleno itstyle ";
+            sql += "select c.BARNO,a.ITGRPCD,d.ITGRPNM,a.ITCD,a.ITNM,a.STYLENO,c.COLRCD,e.COLRNM,e.CLRBARCODE,c.SIZECD,f.SIZENM,f.SZBARCODE,a.UOMCD,NVL(D.HSNCODE,a.HSNCODE) HSNCODE,a.styleno||' '||a.itnm itstyle ";
             sql += "from " + scm + ".M_SITEM a, " + scm + ".M_CNTRL_HDR b, " + scm + ".M_SITEM_BARCODE c, " + scm + ".M_GROUP d, " + scm + ".M_COLOR e, " + scm + ".M_SIZE f ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N'and a.ITCD=c.ITCD(+) and a.ITGRPCD=d.ITGRPCD(+) and c.COLRCD=e.COLRCD(+) and c.SIZECD=f.SIZECD(+) ";
             if (valsrch.retStr() != "") sql += "and ( upper(c.BARNO) = '" + valsrch + "' ) ";

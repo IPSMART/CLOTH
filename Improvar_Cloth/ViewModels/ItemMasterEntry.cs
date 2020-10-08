@@ -38,5 +38,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public List<UploadDOC> UploadBarImages { get; set; }
         public string BarImages { get; set; }
+        public bool NEGSTOCK { get; set; }
+        public bool HASTRANSACTION { get; set; }
     }
 }

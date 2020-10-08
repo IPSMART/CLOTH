@@ -80,7 +80,7 @@
                                     }
                                     @for (int i = 7; i < Model.DTPRICES.Columns.Count; i++)
                                     {
-                                        <th class="grid_th">@Model.DTPRICES.Columns[i].Caption <a title="Add first Cell Rate to all Size" onclick="SameRatetoallSize('@i')" style="float:right;cursor:pointer">Same Rate</a></th>
+                                        <th class="grid_th">@Model.DTPRICES.Columns[i].Caption <a title="Add first Cell Rate to all Size" onclick="SameRatetoallSize('@i')" style="float:right;cursor:pointer">Same Rate(F8)</a></th>
                                     }
                                 </tr>
                             </thead>
@@ -99,7 +99,7 @@
                                             else
                                             {
                                                 <td>
-                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new {@id="rate_"+i+"_"+j, @class = "atextBoxFor text-right", @onkeypress = "return numericOnly(this,2);" })
+                                                    @Html.TextBoxFor(model => model.DTPRICES.Rows[i][j], new {@id="rate_"+i+"_"+j, @class = "atextBoxFor text-right", @onkeypress = "return numericOnly(this,2);", onkeydown= "SameRatetoallSize('" + j + "');" })
                                                 </td>
                                             }
                                         }
@@ -112,4 +112,7 @@
             </div>
         }
     </div>
+</div>
+<div class="row">
+    <p class="text-info">* Press <b>F8</b>  For Repeat Same Rate from first row </p>
 </div>

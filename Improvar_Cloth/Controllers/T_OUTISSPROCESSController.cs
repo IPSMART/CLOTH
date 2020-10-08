@@ -467,7 +467,7 @@ namespace Improvar.Controllers
                                   MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
                                   //MTBARCODE = dr["MTBARCODE"].retStr(),
                                   ITCD = dr["ITCD"].retStr(),
-                                  ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
+                                  ITSTYLE = dr["STYLENO"].retStr() + " " + dr["ITNM"].retStr(),
                                   UOM = dr["UOMCD"].retStr(),
                                   STKTYPE = dr["STKTYPE"].retStr(),
                                   STKNAME = dr["STKNAME"].retStr(),
