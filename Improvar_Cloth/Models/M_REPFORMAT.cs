@@ -10,8 +10,7 @@ namespace Improvar.Models
         [Column(Order = 0)]
         [StringLength(15)]
         public string REPTYPE { get; set; }
-
-        [Required]
+        
         [Key]
         [Column(Order = 2)]
         [StringLength(15)]

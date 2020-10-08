@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.RepBarcodePrint
 @{
-    ViewBag.Title = "Image Linkup with Barcode";
+    ViewBag.Title = "Barcode Printing";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
 }
 @{
@@ -42,6 +42,12 @@
                     </div>
                 </div>
             </div>
+            <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
+                 <div id="partialdivRemarks">
+                        @Html.Partial("_Rep_BarcodePrint_Main")
+                    </div>
+            </div>
+          
             <input type="submit" value="Download Barcode" name="downloadbar">
         </div>
     }
