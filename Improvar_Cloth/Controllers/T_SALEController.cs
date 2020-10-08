@@ -463,7 +463,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
+                    allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "",SLR.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
                 }
                 foreach (var v in VE.TBATCHDTL)
                 {
@@ -491,7 +491,7 @@ namespace Improvar.Controllers
                                     v.GSTPER = GSTPER.retDbl();
                                 }
                                 v.BarImages= tax_data.Rows[0]["barimage"].retStr();
-                                var brimgs = v.BarImages.retStr().Split(Convert.ToChar(Cn.GCS()));
+                                var brimgs = v.BarImages.retStr().Split((char)179);
                                 v.BarImagesCount = brimgs.Length==0?"": brimgs.Length.retStr();
                                foreach(var barimg in brimgs)
                                 {
@@ -957,7 +957,7 @@ namespace Improvar.Controllers
                 }
                 else if (str.IndexOf(Convert.ToChar(Cn.GCS())) >= 0)
                 {
-                    string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
+                    string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "", BARIMAGE = "";
                     DataTable tax_data = new DataTable();
                     if (VE.MENU_PARA == "PB")
                     {
@@ -972,6 +972,7 @@ namespace Improvar.Controllers
                     if (tax_data != null && tax_data.Rows.Count > 0)
                     {
                         PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
+                        BARIMAGE = tax_data.Rows[0]["BARIMAGE"].retStr();
                         if (PRODGRPGSTPER != "")
                         {
                             ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE);
@@ -983,6 +984,7 @@ namespace Improvar.Controllers
                         }
                     }
                     str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
+                    str += "^BARIMAGE=^" + BARIMAGE + Cn.GCS();
                     str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
                     str += "^GSTPER=^" + GSTPER + Cn.GCS();
                     return Content(str);

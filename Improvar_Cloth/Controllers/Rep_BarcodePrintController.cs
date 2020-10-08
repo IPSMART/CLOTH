@@ -6,6 +6,7 @@ using System;
 using CrystalDecisions.CrystalReports.Engine;
 using System.IO;
 using Improvar.DataSets;
+using System.Collections.Generic;
 
 namespace Improvar.Controllers
 {
@@ -22,7 +23,12 @@ namespace Improvar.Controllers
         {
             //GenerateBarcode();
             //barcodeTest();
-            ImageLinkBarcode VE = new ImageLinkBarcode();
+            RepBarcodePrint VE = new RepBarcodePrint();
+            Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            VE.DropDown_list1 = (from i in DB.M_REPFORMAT
+                                 select new DropDown_list1()
+                                 { value = i.CTGCD, text = i.CTGNM }).Distinct().OrderBy(s => s.text).ToList();
             VE.DefaultView = true;
             return View(VE);
         }
