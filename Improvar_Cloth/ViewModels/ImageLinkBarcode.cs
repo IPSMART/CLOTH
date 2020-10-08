@@ -32,5 +32,16 @@ namespace Improvar.ViewModels
         public string SLNM { get; set; }
         public string DOCNM { get; set; }
         public string TEXTBOX6 { get; set; }
+        public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
+        public string ALLMTRLJOBCD { get; set; }
+        public string ITGRPNM { get; set; }
+        public string STYLENO { get; set; }
+        public string FABITNM { get; set; }
+        public string PDESIGN { get; set; }
+        public string BLSLNO { get; set; }
+        public string AUTONO { get; set; }
+        
+
+
     }
 }

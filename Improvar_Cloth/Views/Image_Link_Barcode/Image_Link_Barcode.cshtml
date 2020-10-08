@@ -82,6 +82,83 @@
         $("#BarImages").val(newimg);
     }
 </script>
+<script>
+    function CompPermission() {
+        $.ajax({
+            type: 'post',
+            url: "@Url.Action("Save", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1") {
+                    msgSuccess1("Company Permission SuccessFully.");
+                    message_value = "btnCompPermission";
+                }
+                else {
+                    msgWarning(result);
+                    message_value = "btnCompPermission";
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function GetBarCode(id) {
+        debugger;
+          
+            if (id == "") {
+                //ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                ClearAllTextBoxes("BARCODE,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO");
+            }
+            else {
+                var FDT = $("#FDT").val();
+                $.ajax({
+                    type: 'POST',
+                    beforesend: $("#WaitingMode").show(),
+                    url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
+                    data: "&val=" + id + "&Code=" + FDT,
+                    success: function (result) {
+                        var MSG = result.indexOf('#helpDIV');
+                        if (MSG >= 0) {
+
+                            var MSG = result.indexOf(String.fromCharCode(181));
+                            if (result >= 0) {
+                                $("#BARCODE").val(returncolvalue(result, "barno"));
+                                $("#STYLENO").val(returncolvalue(result, "styleno"));
+                                //$("#FABSTYLENO").val(returncolvalue(result, "styleno"));
+                                $("#ITGRPNM").val(returncolvalue(result, "itgrpnm"));
+                                $("#FABITNM").val(returncolvalue(result, "itnm"));
+                                $("#PDESIGN").val(returncolvalue(result, "pdesign"));
+                                $("#BLSLNO").val(returncolvalue(result, "balnos"));
+
+                            }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            //ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
+                            ClearAllTextBoxes("BARCODE,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO");
+                            message_value = "BARCODE";
+                        }
+                        $("#WaitingMode").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+
+       
+    }
+</script>
 
 @using (Html.BeginForm(Model.ActionName, PageControllerName, FormMethod.Post))
 {
@@ -89,26 +166,83 @@
     {
         <div class="form-horizontal">
             @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(model => model.AUTONO, new { id = "AUTONO" })
+       
             <div class="col-md-1">
                 <div class="editor-label" style="margin-top: 6px;">
                     @Html.Label("", "Bar Code")
                     <b style="color:Red;">*</b>
                 </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <div class="editor-field">
-                    @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
+                    @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','FDT')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/STYLENO=styleno/ITGRPNM=itgrpnm/FABITNM=itnm/PDESIGN=pdesign/BLSLNO=balnos','FDT')", @placeholder = "Bar Code", maxlength = 25 } })
+                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','FDT')" />
                 </div>
             </div>
-            <div class="row">
-                @Html.HiddenFor(model => model.TEXTBOX2)
-                <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
-                <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
-                <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
-                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
+            <div class="col-lg-1">
+                <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
+                    <table id="exampleLT" border="1" style="width: auto;">
+                        @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
+                        {
+                            <tr>
+                                <td align="center">
+                                    @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcd();" })
+                                </td>
+                                <td align="center">
+                                    @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                    @Html.DisplayFor(model => STRC)
+                                    @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
+                                </td>
+                                <td align="center">
+                                    @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                    @Html.DisplayFor(model => STRC1)
+                                </td>
+                            </tr>
+                                        }
+                    </table>
+                </div>
+                @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
             </div>
-        </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control", id = "STYLENO", @title = "STYLENO", @placeholder = "STYLENO", @readonly = "readonly", @TabIndex = -1 } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "ITGRPNM", @placeholder = "ITGRPNM", @readonly = "readonly", @TabIndex = -1 } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @title = "FABITNM", @placeholder = "FABITNM", @readonly = "readonly", @TabIndex = -1 } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @title = "PDESIGN", @placeholder = "PDESIGN", @readonly = "readonly", @TabIndex = -1 } })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.BLSLNO, new { htmlAttributes = new { @class = "form-control", id = "BLSLNO", @title = "BLSLNO", @placeholder = "BLSLNO", @readonly = "readonly", @TabIndex = -1 } })
+                    </div>
+                </div>
+                </div>
+
+                <div class="row">
+                    @Html.HiddenFor(model => model.TEXTBOX2)
+                    <div class="col-md-5"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
+                    <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
+                    <div class="col-lg-2"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
+                    <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
+                </div>
+            <div class="row">
+                <input class="btn btn-primary" type="button" id="btnSave" value="Save" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="CompPermission();" />
+                </div>
+            </div>
     }
     <div class="container">
         <div id="helpDIV" style="z-index: 2;">

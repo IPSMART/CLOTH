@@ -2212,15 +2212,16 @@ namespace Improvar
         }
         public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "")
         {
-            DataTable tbl = new DataTable();
+            DataTable tbl = new DataTable(); val = val.retStr() == "" ? "" : val.retStr().retSqlformat();
             if (menupara == "PB")
             {
-                val = val.retStr() == "" ? "" : val.retStr().retSqlformat();
+               
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), val, "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
 
             }
             else
             {
+               
                 tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val, "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
 
             }

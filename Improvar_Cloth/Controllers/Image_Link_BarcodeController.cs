@@ -7,6 +7,7 @@ using CrystalDecisions.CrystalReports.Engine;
 using System.Data;
 using System.IO;
 using System.Collections.Generic;
+using Oracle.ManagedDataAccess.Client;
 
 namespace Improvar.Controllers
 {
@@ -32,7 +33,7 @@ namespace Improvar.Controllers
                     return RedirectToAction("Login", "Login");
                 }
                 else
-                {                   
+                {
                     ViewBag.formname = "Image Linkup with Barcode";
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     //ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
@@ -55,6 +56,15 @@ namespace Improvar.Controllers
                         }
 
                         VE.DOCNM = (from j in DB.M_DOCTYPE where j.DOCCD == VE.DOCCD select j.DOCNM).SingleOrDefault();
+                        VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                        foreach (var v in VE.DropDown_list_MTRLJOBCD)
+                        {
+                            if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == "PL")
+                            {
+                                v.Checked = true;
+                            }
+
+                        }
                         //VE = (Image_Link_Barcode)Cn.EntryCommonLoading(VE, VE.PermissionID);
                         VE.DefaultView = true;
                         VE.ExitMode = 1;
@@ -120,7 +130,34 @@ namespace Improvar.Controllers
                 return "";
             }
         }
-
+        public ActionResult GetBarCodeDetails(string val, string Code)
+        {
+            try
+            {
+                ImageLinkBarcode VE = new ImageLinkBarcode();
+                Cn.getQueryString(VE);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string DOCDT =System.DateTime.Now.ToShortDateString();
+                //string TAXGRPCD = data[1].retStr();
+                //string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
+                //string PRCCD = data[3].retStr();
+                //string MTRLJOBCD = data[4].retStr();
+                var str = masterHelp.T_TXN_BARNO_help(val, VE.MENU_PARA, DOCDT);
+                    if (str.IndexOf("='helpmnu'") >= 0)
+                    {
+                        return PartialView("_Help2", str);
+                    }
+                    else
+                    {
+                        return Content(str);
+                    }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
 
         public Tuple<List<M_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
         {
@@ -173,6 +210,46 @@ namespace Improvar.Controllers
                 return Content("//.");
             }
 
+        }
+        public ActionResult Save(FormCollection FC, ImageLinkBarcode VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            //Oracle Queries
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            OracleTransaction OraTrans;
+            string dbsql = "", sql = "", query = "";
+            OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
+            OraCmd.Transaction = OraTrans;
+            DB.Configuration.ValidateOnSaveEnabled = false;
+
+            try
+            {
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                string ContentFlg = "";
+                var schnm = CommVar.CurSchema(UNQSNO); var comp_ModuleCode = "";
+                var CLCD = CommVar.ClientCode(UNQSNO);
+                sql = "update " + schnm + ". T_BATCH_IMG_HDR set  BARNO= '" + VE.TEXTBOX1 + "', CLCD='" + CLCD + "',DOC_DESC='F' ";
+                sql += " where BARNO='" + VE.TEXTBOX1 + "' ";
+                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+
+                ContentFlg = "1";
+                OraTrans.Commit();
+                OraCon.Dispose();
+                return Content(ContentFlg);
+
+
+            }
+            catch (Exception ex)
+            {
+                OraTrans.Rollback();
+                OraCon.Dispose();
+                return Content(ex.Message + ex.InnerException);
+            }
         }
     }
 }
