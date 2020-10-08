@@ -8,5 +8,7 @@ namespace Improvar.ViewModels
     {
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public string Reptype { get; set; }
+
+
     }
 }
