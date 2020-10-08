@@ -604,7 +604,6 @@
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
-    <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
     <Compile Include="ViewModels\ColorEntry.cs" />
@@ -1078,7 +1077,6 @@
     <Content Include="Views\Image_Link_Barcode\Image_Link_Barcode.cshtml" />
     <Content Include="Views\Rep_BarcodePrint\Rep_BarcodePrint.cshtml" />
     <Content Include="Views\M_BarcodePrintFormat\M_BarcodePrintFormat.cshtml" />
-    <Content Include="Views\Shared\_M_BarcodePrintFormat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
