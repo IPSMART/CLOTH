@@ -1,23 +1,34 @@
 ﻿@model Improvar.ViewModels.ImageLinkBarcode
 @{
     ViewBag.Title = "Image Linkup with Barcode";
-    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
     string PageControllerName = "Image_Link_Barcode";
 }
-<script src="~/Scripts/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
     });
 </script>
 <script>
-    $(function () {
-        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
-        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
-    });
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Design", "BARNO")) {
+            return false;
+        }
+        return true;
+    }
 </script>
+
 <script>
     function fileTypeCheck(id) {
         var fileUpload = $(id).get(0);
@@ -32,7 +43,6 @@
             fileReader.readAsDataURL(fileToLoad);
         }
     }
-
     function UploadBarnoImage() {
         var ImageDesc = $('#ImageDesc').val();
         if (document.getElementById("ImageName").value == "") return;
@@ -44,7 +54,7 @@
             success: function (result) {
                 $("#WaitingMode").hide();
                 var id = (result.split('/')[2]).split('.')[0];
-                var newid = $("#BarImages").val() + String.fromCharCode(181) + (result.split('/')[2] + '~' + ImageDesc);
+                var newid = $("#BarImages").val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
                 $("#BarImages").val(newid);
                 var htm = '';
                 htm += '<div class="col-lg-4" id="' + id + '">';
@@ -69,7 +79,7 @@
     }
     function deleteBarImages(id) {
         debugger;
-        var arr = $("#BarImages").val().split(String.fromCharCode(181)); var deleteindex = 0;
+        var arr = $("#BarImages").val().split(String.fromCharCode(179)); var deleteindex = 0;
         $.each(arr, function (index, value) {
             var divid = (value.split('~')[0]).split('.')[0];
             if (id == divid) {
@@ -78,7 +88,7 @@
         });
         arr.splice(deleteindex, 1);
         $("#" + id).remove();
-        var newimg = arr.join(String.fromCharCode(181));
+        var newimg = arr.join(String.fromCharCode(179));
         $("#BarImages").val(newimg);
     }
 </script>
@@ -111,52 +121,67 @@
 <script>
     function GetBarCode(id) {
         debugger;
-          
-            if (id == "") {
-                //ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
-                ClearAllTextBoxes("BARCODE,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO");
-            }
-            else {
-                var FDT = $("#FDT").val();
-                $.ajax({
-                    type: 'POST',
-                    beforesend: $("#WaitingMode").show(),
-                    url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
-                    data: "&val=" + id + "&Code=" + FDT,
-                    success: function (result) {
-                        var MSG = result.indexOf('#helpDIV');
+        if (id == "") {
+            ClearAllTextBoxes("BARNO,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO");
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
+                data: "&val=" + id,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
+                    if (MSG <= 0) {
+                        var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
-
-                            var MSG = result.indexOf(String.fromCharCode(181));
-                            if (result >= 0) {
-                                $("#BARCODE").val(returncolvalue(result, "barno"));
-                                $("#STYLENO").val(returncolvalue(result, "styleno"));
-                                //$("#FABSTYLENO").val(returncolvalue(result, "styleno"));
-                                $("#ITGRPNM").val(returncolvalue(result, "itgrpnm"));
-                                $("#FABITNM").val(returncolvalue(result, "itnm"));
-                                $("#PDESIGN").val(returncolvalue(result, "pdesign"));
-                                $("#BLSLNO").val(returncolvalue(result, "balnos"));
-
-                            }
+                            $("#BARNO").val(returncolvalue(result, "barno"));
+                            $("#BarImages").val(returncolvalue(result, "BARIMAGE")); ShowBarImage();
+                            $("#STYLENO").val(returncolvalue(result, "styleno"));
+                            //$("#FABSTYLENO").val(returncolvalue(result, "styleno"));
+                            $("#ITGRPNM").val(returncolvalue(result, "itgrpnm"));
+                            $("#FABITNM").val(returncolvalue(result, "itnm"));
+                            $("#PDESIGN").val(returncolvalue(result, "pdesign"));
+                            $("#BLSLNO").val(returncolvalue(result, "balnos"));
                         }
-                        else {
-                            $('#helpDIV').html("");
-                            msgInfo("" + result + " !");
-                            //ClearAllTextBoxes("FABITCD,FABITNM,FABSTYLENO,FABUOMNM");
-                            ClearAllTextBoxes("BARCODE,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO");
-                            message_value = "BARCODE";
-                        }
-                        $("#WaitingMode").hide();
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        $("#WaitingMode").hide();
-                        msgError(XMLHttpRequest.responseText);
-                        $("body span h1").remove(); $("#msgbody_error style").remove();
                     }
-                });
-            }
-
-       
+                    else {
+                        $('#helpDIV').html("");
+                        msgInfo("" + result + " !");
+                        ClearAllTextBoxes("BARNO,STYLENO,ITGRPNM,FABITNM,PDESIGN,BLSLNO");
+                        message_value = "BARNO";
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    function ShowBarImage() {
+        var arr = $("#BarImages").val().split(String.fromCharCode(179));
+        $.each(arr, function (index, value) {
+            var imgname = (value.split('~')[0]);
+            var id = (imgname).split('.')[0];
+            var ImageDesc = (value.split('~')[1]);
+            var htm = "";
+            htm += '<div class="col-lg-4" id="' + id + '">';
+            htm += '       <div class="thumbnail">';
+            htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
+            htm += '           <a href="/UploadDocuments/' + imgname + '"  target="_blank">';
+            htm += '                <img src="/UploadDocuments/' + imgname + '"  alt="" style="width:100%;height:300px;">';
+            htm += '                <div class="caption">';
+            htm += '                   ' + ImageDesc;
+            htm += '          </div>';
+            htm += '      </a>';
+            htm += '  </div>';
+            htm += '</div>';
+            $("#divUploadImage").append(htm);
+        });
+     
     }
 </script>
 
@@ -166,8 +191,10 @@
     {
         <div class="form-horizontal">
             @Html.HiddenFor(s => s.DefaultAction)
-            @Html.HiddenFor(model => model.AUTONO, new { id = "AUTONO" })
-       
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="ImageName" value="" />
+            <input type="hidden" id="ImageStr" value="" />
+
             <div class="col-md-1">
                 <div class="editor-label" style="margin-top: 6px;">
                     @Html.Label("", "Bar Code")
@@ -176,8 +203,9 @@
             </div>
             <div class="col-md-6">
                 <div class="editor-field">
-                    @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','FDT')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/STYLENO=styleno/ITGRPNM=itgrpnm/FABITNM=itnm/PDESIGN=pdesign/BLSLNO=balnos','FDT')", @placeholder = "Bar Code", maxlength = 25 } })
-                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','FDT')" />
+                    @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARNO", onkeydown = "GetBarCode('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARNO','BARNO=BARNO=0','FDT')", onblur = "GetBarCode(this.value)", @placeholder = "Bar Code", maxlength = 25 } })
+                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARNO','BARNO=BARNO=0','FDT')" />
+                    <input type="hidden" id="FDT" />
                 </div>
             </div>
             <div class="col-lg-1">
@@ -230,23 +258,34 @@
                         @Html.EditorFor(model => model.BLSLNO, new { htmlAttributes = new { @class = "form-control", id = "BLSLNO", @title = "BLSLNO", @placeholder = "BLSLNO", @readonly = "readonly", @TabIndex = -1 } })
                     </div>
                 </div>
-                </div>
-
-                <div class="row">
-                    @Html.HiddenFor(model => model.TEXTBOX2)
-                    <div class="col-md-5"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
-                    <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
-                    <div class="col-lg-2"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
-                    <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
-                </div>
-            <div class="row">
-                <input class="btn btn-primary" type="button" id="btnSave" value="Save" style="margin-top: 4px;padding: 2px 7px 2px 5px;" onclick="CompPermission();" />
-                </div>
             </div>
-    }
-    <div class="container">
-        <div id="helpDIV" style="z-index: 2;">
+            <div class="row">
+                @Html.HiddenFor(model => model.BarImages)
+                <div class="col-md-5"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
+                <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
+                <div class="col-lg-2"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
+                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
+            </div>
+
+            <div class="row" id="divUploadImage">
+                @*<div class="col-lg-4" id="@v.docID">
+                        <div class="thumbnail">
+                            <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick="deleteBarImages('@v.docID')">X</button>
+                            <a href="@v.DOC_FILE" target="_blank">
+                                <img src="@v.DOC_FILE" alt="" style="width:100%;height:300px;">
+                                <div class="caption">
+                                    @v.DOC_DESC
+                                </div>
+                            </a>
+                        </div>
+                    </div>*@
+            </div>
 
         </div>
-    </div>
-}
+                                        }
+                                        <div class="container">
+                                            <div id="helpDIV" style="z-index: 2;">
+
+                                            </div>
+                                        </div>
+                                        }

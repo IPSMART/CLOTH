@@ -136,21 +136,31 @@ namespace Improvar.Controllers
             {
                 ImageLinkBarcode VE = new ImageLinkBarcode();
                 Cn.getQueryString(VE);
-                var data = Code.Split(Convert.ToChar(Cn.GCS()));
-                string DOCDT =System.DateTime.Now.ToShortDateString();
+                //var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string DOCDT = System.DateTime.Now.ToShortDateString();
                 //string TAXGRPCD = data[1].retStr();
                 //string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
                 //string PRCCD = data[3].retStr();
                 //string MTRLJOBCD = data[4].retStr();
                 var str = masterHelp.T_TXN_BARNO_help(val, VE.MENU_PARA, DOCDT);
-                    if (str.IndexOf("='helpmnu'") >= 0)
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    string BARIMAGE = str.retCompValue("BARIMAGE");
+                    var brimgs = BARIMAGE.retStr().Split((char)179);
+                    foreach (var barimg in brimgs)
                     {
-                        return PartialView("_Help2", str);
+                        string barfilename = barimg.Split('~')[0];
+                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                        FROMpath = Path.Combine(FROMpath, "");
+                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                        Cn.CopyImage(FROMpath, TOPATH);
                     }
-                    else
-                    {
-                        return Content(str);
-                    }
+                    return Content(str);
+                }
             }
             catch (Exception ex)
             {
@@ -158,20 +168,36 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
-        public Tuple<List<M_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
+        private string barImagesCard(string id, string result,string ImageDesc)
         {
-            List<M_BATCH_IMG_HDR> doc = new List<M_BATCH_IMG_HDR>();
+            var htm = "";
+            htm += "<div class='col-lg-4' id='" + id + "'>";
+            htm += "       <div class='thumbnail'>";
+            htm += "           <button type='button' style='position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;' class='btn-danger' onclick= deleteBarImages('" + id + "')>X</button>";
+            htm += "           <a href='" + result + "' target='_blank'>";
+            htm += "                <img src='" + result + "' alt='' style='width:100%;height:300px;'>";
+            htm += "                <div class='caption'>";
+            htm += "                   " + ImageDesc;
+            htm += "          </div>";
+            htm += "      </a>";
+            htm += "  </div>";
+            htm += "</div>";
+            return htm;
+        }
+
+        public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
+        {
+            List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
             int slno = 0;
             try
             {
-                var BarImages = BarImage.retStr().Trim(Convert.ToChar(Cn.GCS())).Split(Convert.ToChar(Cn.GCS()));
+                var BarImages = BarImage.retStr().Trim(Convert.ToChar(179)).Split(Convert.ToChar(179));
                 foreach (string image in BarImages)
                 {
                     if (image != "")
                     {
                         var imagedes = image.Split('~');
-                        M_BATCH_IMG_HDR mdoc = new M_BATCH_IMG_HDR();
+                        T_BATCH_IMG_HDR mdoc = new T_BATCH_IMG_HDR();
                         mdoc.CLCD = CommVar.ClientCode(UNQSNO);
                         mdoc.EMD_NO = EMD;
                         mdoc.SLNO = Convert.ToByte(++slno);
@@ -196,6 +222,7 @@ namespace Improvar.Controllers
             var result = Tuple.Create(doc);
             return result;
         }
+
         public ActionResult UploadImages(string ImageStr, string ImageName, string ImageDesc)
         {
             try
@@ -215,40 +242,51 @@ namespace Improvar.Controllers
         {
             Cn.getQueryString(VE);
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            //Oracle Queries
-            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
-            OraCon.Open();
-            OracleCommand OraCmd = OraCon.CreateCommand();
-            OracleTransaction OraTrans;
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));          
             string dbsql = "", sql = "", query = "";
-            OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
-            OraCmd.Transaction = OraTrans;
-            DB.Configuration.ValidateOnSaveEnabled = false;
-
-            try
+            Int16 emdno = 1;
+            using (var transaction = DB.Database.BeginTransaction())
             {
-                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string ContentFlg = "";
-                var schnm = CommVar.CurSchema(UNQSNO); var comp_ModuleCode = "";
-                var CLCD = CommVar.ClientCode(UNQSNO);
-                sql = "update " + schnm + ". T_BATCH_IMG_HDR set  BARNO= '" + VE.TEXTBOX1 + "', CLCD='" + CLCD + "',DOC_DESC='F' ";
-                sql += " where BARNO='" + VE.TEXTBOX1 + "' ";
-                OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+                    var CLCD = CommVar.ClientCode(UNQSNO);
+                    //sql = "update " + schnm + ". T_BATCH_IMG_HDR set  BARNO= '" + VE.BARNO + "', CLCD='" + CLCD + "',DOC_DESC='F' ";
+                    //sql += " where BARNO='" + VE.BARNO + "' ";
 
-
-                ContentFlg = "1";
-                OraTrans.Commit();
-                OraCon.Dispose();
-                return Content(ContentFlg);
-
-
-            }
-            catch (Exception ex)
-            {
-                OraTrans.Rollback();
-                OraCon.Dispose();
-                return Content(ex.Message + ex.InnerException);
+                    DB.T_BATCH_IMG_HDR.Where(x => x.BARNO == VE.BARNO).ToList().ForEach(x => { x.DTAG = "E"; });
+                    DB.T_BATCH_IMG_HDR.RemoveRange(DB.T_BATCH_IMG_HDR.Where(x => x.BARNO == VE.BARNO));
+                    DB.SaveChanges();
+                    if (VE.BarImages.retStr() != "")
+                    {
+                        var barimg = SaveBarImage(VE.BarImages, VE.BARNO, emdno);
+                        DB.T_BATCH_IMG_HDR.AddRange(barimg.Item1);
+                        DB.SaveChanges();
+                        var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
+                        foreach (var imgbar in disntImgHdr)
+                        {
+                            T_BATCH_IMG_HDR_LINK m_batchImglink = new T_BATCH_IMG_HDR_LINK();
+                            m_batchImglink.CLCD = CommVar.ClientCode(UNQSNO);
+                            m_batchImglink.EMD_NO = emdno;
+                            m_batchImglink.BARNO = imgbar.BARNO;
+                            m_batchImglink.MAINBARNO = imgbar.BARNO;
+                            DB.T_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
+                        }
+                    }
+                    ContentFlg = "1";
+                    DB.SaveChanges();
+                    transaction.Commit();
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    DB.SaveChanges();
+                    transaction.Rollback();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
             }
         }
     }
