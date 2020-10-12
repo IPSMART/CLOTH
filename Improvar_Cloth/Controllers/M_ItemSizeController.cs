@@ -179,15 +179,16 @@ namespace Improvar.Controllers
                         {
                             MSIZE.EMD_NO = 0;
                             MSIZE.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
-                            var MAXSZBARCODE = (from p in DB.M_SIZE select p.SZBARCODE).Max();
-                            if (MAXSZBARCODE == null)
-                            {
-                                MSIZE.SZBARCODE = "901";
-                            }
-                            else
-                            {
-                                MSIZE.SZBARCODE = (Convert.ToInt16(MAXSZBARCODE)+1).retStr();
-                            }
+                            MSIZE.SZBARCODE = Cn.GenMasterCode("M_SIZE", "SZBARCODE", "", 2);
+                            //var MAXSZBARCODE = (from p in DB.M_SIZE select p.SZBARCODE).Max();
+                            //if (MAXSZBARCODE == null)
+                            //{
+                            //    MSIZE.SZBARCODE = "901";
+                            //}
+                            //else
+                            //{
+                            //    MSIZE.SZBARCODE = (Convert.ToInt16(MAXSZBARCODE)+1).retStr();
+                            //}
                         }
                         if (VE.DefaultAction == "E")
                         {

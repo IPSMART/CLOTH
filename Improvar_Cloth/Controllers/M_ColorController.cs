@@ -263,7 +263,17 @@ namespace Improvar.Controllers
                         {
                             MCOLOR.EMD_NO = 0;
                             MCOLOR.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
-                            MCOLOR.CLRBARCODE = Cn.GenMasterCode("M_COLOR", "CLRBARCODE", "8", 4);
+                            //MCOLOR.CLRBARCODE = Cn.GenMasterCode("M_COLOR", "CLRBARCODE", "800", 4);
+                            string sql1 = " select max(CLRBARCODE) CLRBARCODE FROM " + CommVar.CurSchema(UNQSNO) + ".M_COLOR";
+                            var tbl = Master_Help.SQLquery(sql1);
+                            if (tbl.Rows[0]["CLRBARCODE"].ToString() != "")
+                            {
+                                MCOLOR.CLRBARCODE = ((tbl.Rows[0]["CLRBARCODE"]).retInt() + 1).ToString("D3");
+                            }
+                            else
+                            {
+                                MCOLOR.CLRBARCODE = (100).ToString("D3");
+                            }
                         }
                         if (VE.DefaultAction == "E")
                         {
