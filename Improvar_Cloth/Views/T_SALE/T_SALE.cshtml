@@ -139,6 +139,26 @@
     });
 </script>
 
+
+
+
+<script>
+    function 
+        private static int RoundValueToNearst100(double value)
+    {
+        int result =(int) Math.Round(value / 100);
+        if (value > 0 && result == 0) {
+            result = 1;
+        }
+        return (int) result * 100;
+    }
+
+
+</script>
+
+
+
+
 <script>
     function pageprinting() {
         debugger;
@@ -511,9 +531,20 @@
                             </div>
                             @if (Model.MENU_PARA == "PB")
                     {
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Wholesale %")
+                                    </div>
+                                </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.T_TXN.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", @title = "WPPER" } })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Retail %")
                                     </div>
                                 </div>
                                 <div class="col-md-1">
