@@ -65,5 +65,15 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string NEGSTOCK { get; set; }
+
+        [StringLength(5)]
+        public string WPPRICEGEN { get; set; }
+
+        [StringLength(5)]
+        public string RPPRICEGEN { get; set; }
+
+        [StringLength(2)]
+        public string GRPBARCODE { get; set; }
+
     }
 }

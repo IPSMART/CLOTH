@@ -216,6 +216,16 @@
                                 }
                             </div>
                         </div>
+                        <div class="col-md-7" style="width: auto;">
+                            <div class="editor-label" style="margin-top:6px;">
+                                @Html.Label("", "Group Barcode")
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.EditorFor(model => model.M_GROUP.GRPBARCODE, new { htmlAttributes = new { @class = "form-control", id = "GRPBARCODE", @placeholder = "GRPBARCODE", @onkeyup = "toUpper(this);", maxlength = 4, @readonly = "readonly" } })
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-7">
@@ -455,7 +465,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Allow Negetive Stock")
                             </div>
@@ -465,7 +475,21 @@
                                 @Html.CheckBoxFor(model => model.NEGSTOCK)
                             </div>
                         </div>
+                        
                     </div>
+                    @*<div class="row">
+                        <div class="col-md-7">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Group Barcode")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.EditorFor(model => model.M_GROUP.GRPBARCODE, new { htmlAttributes = new { @class = "form-control", id = "GRPBARCODE", @placeholder = "GRPBARCODE", @onkeyup = "toUpper(this);", maxlength = 4, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>*@
+                  
                     <div class="row">
                         <div class="col-md-3">
                             <div class="editor-label" style="margin-top: 6px;">

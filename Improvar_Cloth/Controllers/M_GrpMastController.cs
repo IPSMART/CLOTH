@@ -455,8 +455,9 @@ namespace Improvar.Controllers
                         {
                             MGROUP.EMD_NO = 0;
                             MGROUP.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
-                            string txtst = VE.M_GROUP.ITGRPNM.Substring(0, 1).ToUpper();
+                            string txtst = VE.M_GROUP.ITGRPNM.Substring(0, 1).Trim().ToUpper();
                             string sql = " select max(SUBSTR(ITGRPCD, 2)) ITGRPCD FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
+                            string sql1 = " select max(GRPBARCODE) GRPBARCODE FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
                             var tbl = Master_Help.SQLquery(sql);
                             if (tbl.Rows[0]["ITGRPCD"].ToString() != "")
                             {
@@ -466,11 +467,22 @@ namespace Improvar.Controllers
                             {
                                 MGROUP.ITGRPCD = txtst + (1).ToString("D3");
                             }
+                            var tb1l = Master_Help.SQLquery(sql1);
+                            if (tb1l.Rows[0]["GRPBARCODE"].ToString() != "")
+                            {
+                                MGROUP.GRPBARCODE = ((tb1l.Rows[0]["GRPBARCODE"]).retInt() + 1).ToString("D2");
+                            }
+                            else
+                            {
+                                MGROUP.GRPBARCODE = (10).ToString("D2");
+                            }
+                            //MGROUP.GRPBARCODE = Cn.GenMasterCode("M_GROUP", "GRPBARCODE", "", 2);
                         }
                         if (VE.DefaultAction == "E")
                         {
 
                             MGROUP.ITGRPCD = VE.M_GROUP.ITGRPCD;
+                            MGROUP.GRPBARCODE = VE.M_GROUP.GRPBARCODE;
                             MGROUP.DTAG = "E";
                             MGROUP.M_AUTONO = VE.M_GROUP.M_AUTONO;
                             var MAXEMDNO = (from p in DB.M_GROUP where p.M_AUTONO == VE.M_GROUP.M_AUTONO select p.EMD_NO).Max();

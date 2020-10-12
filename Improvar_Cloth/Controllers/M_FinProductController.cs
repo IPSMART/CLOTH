@@ -1513,22 +1513,36 @@ namespace Improvar.Controllers
                             var grptype = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select new { ITGRPTYPE = p.ITGRPTYPE }).ToList();
                             string h = grptype[0].ITGRPTYPE;
                             string txtst = h.Substring(0, 1);
+                            var grpbarcd = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select new { GRPBARCODE = p.GRPBARCODE }).ToList();
+                            string h3 = grpbarcd[0].GRPBARCODE;
+                            string txtst3 = h3;
 
-                            var MAXJOBCD = DB.M_SITEM.Where(a => a.ITCD.Substring(0, 1) == txtst).Max(a => a.ITCD);
-
-                            if (MAXJOBCD == null)
+                            //var MAXJOBCD = DB.M_SITEM.Where(a => a.ITCD.Substring(0, 1) == txtst).Max(a => a.ITCD);
+                           
+                            string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO)+".m_sitem where itcd like('"+ h + txtst3 + "%') ";
+                            var tbl = masterHelp.SQLquery(sql);
+                            if (tbl.Rows[0]["itcd"].ToString() == "")
                             {
                                 string txt = txtst;
-                                string stxt = txt.Substring(0, 1);
-                                string R = stxt + "0000001";
+                                string stxt = txt;
+                                string R = stxt+ txtst3 + "00001";
                                 MSITEM.ITCD = R.ToString();
                             }
+
+                            //    if (MAXJOBCD == null)
+                            //{
+                            //    string txt = txtst;
+                            //    string stxt = txt.Substring(0, 1);
+                            //    string R = stxt + "0000001";
+                            //    MSITEM.ITCD = R.ToString();
+                            //}
                             else
                             {
-                                string maxSLst = MAXJOBCD.Substring(0, 1);
+                                //string maxSLst = MAXJOBCD.Substring(0, 1);
+                                string maxSLst = tbl.Rows[0]["itcd"].ToString().Substring(0,1);
                                 if (maxSLst == txtst)
                                 {
-                                    string s = MAXJOBCD;
+                                    string s = tbl.Rows[0]["itcd"].ToString();
                                     string digits = new string(s.Where(char.IsDigit).ToArray());
                                     string letters = new string(s.Where(char.IsLetter).ToArray());
                                     int number;
@@ -1543,11 +1557,12 @@ namespace Improvar.Controllers
                                 {
                                     string txt = txtst;
                                     string stxt = txt.Substring(0, 1);
-                                    string R = stxt + "000001";
+                                    string R = stxt + txtst3 + "00001";
                                     MSITEM.ITCD = R.ToString();
                                 }
                             }
                         }
+                        
                         MSITEM.ITGRPCD = VE.M_SITEM.ITGRPCD;
                         MSITEM.ITNM = VE.M_SITEM.ITNM;
                         MSITEM.BRANDCD = VE.M_SITEM.BRANDCD;
@@ -1687,7 +1702,9 @@ namespace Improvar.Controllers
                         MSITEMBARCODE.CLCD = MSITEM.CLCD;
                         MSITEMBARCODE.EMD_NO = MSITEM.EMD_NO;
                         MSITEMBARCODE.ITCD = MSITEM.ITCD;
-                        MSITEMBARCODE.BARNO = MSITEM.ITGRPCD.Substring(MSITEM.ITGRPCD.Length - 3).retStr() + MSITEM.ITCD.Substring(MSITEM.ITCD.Length - 7).retStr();
+                        //MSITEMBARCODE.BARNO = MSITEM.ITGRPCD.Substring(MSITEM.ITGRPCD.Length - 3).retStr() + MSITEM.ITCD.Substring(MSITEM.ITCD.Length - 7).retStr();
+                        string txtitgrpcd = VE.M_SITEM.ITGRPCD;
+                        MSITEMBARCODE.BARNO = MSITEM.ITCD.Substring(1, 2).retStr()+ MSITEM.ITCD.Substring(MSITEM.ITCD.Length - 5).retStr();
                         DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
                         List<string> barnos = new List<string>();
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
