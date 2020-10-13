@@ -179,5 +179,11 @@ namespace Improvar.ViewModels
         public double B_T_NOS { get; set; }
         [StringLength(8)]
         public string GLCD { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? WPRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? RPRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? MRPRATE { get; set; }
     }
 }
