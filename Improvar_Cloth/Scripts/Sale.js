@@ -123,7 +123,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#ITCD").val(returncolvalue(str, "ITCD"));
         $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
         $("#STYLENO").val(returncolvalue(str, "STYLENO"));
-        $("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
+        //$("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
         $("#PARTCD").val(returncolvalue(str, "PARTCD"));
         $("#PARTNM").val(returncolvalue(str, "PARTNM"));
         $("#PRTBARCODE").val(returncolvalue(str, "PRTBARCODE"));
@@ -141,7 +141,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
         $("#RATE").val(returncolvalue(str, "RATE"));
         $("#DISCRATE").val(returncolvalue(str, "DISCRATE"));
-        $("#DISCTYPE").val(returncolvalue(str, "DISCTYPE"));
+        //$("#DISCTYPE").val(returncolvalue(str, "DISCTYPE"));
         $("#HSNCODE").val(returncolvalue(str, "HSNCODE"));
         $("#GSTPER").val(returncolvalue(str, "GSTPER"));
         $("#ALL_GSTPER").val(returncolvalue(str, "ALL_GSTPER"));
@@ -151,9 +151,9 @@ function FillBarcodeArea(str, Table, i) {
             $("#BALENO").val(returncolvalue(str, "BALENO"));
             $("#OURDESIGN").val(returncolvalue(str, "OURDESIGN"));
         }
-        $("#TDDISCTYPE").val(returncolvalue(str, "TDDISCTYPE"));
+        //$("#TDDISCTYPE").val(returncolvalue(str, "TDDISCTYPE"));
         $("#TDDISCRATE").val(returncolvalue(str, "TDDISCRATE"));
-        $("#SCMDISCTYPE").val(returncolvalue(str, "SCMDISCTYPE"));
+        //$("#SCMDISCTYPE").val(returncolvalue(str, "SCMDISCTYPE"));
         $("#SCMDISCRATE").val(returncolvalue(str, "SCMDISCRATE"));
         $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
         $("#GLCD").val(returncolvalue(str, "GLCD"));
@@ -277,7 +277,7 @@ function UpdateBarCodeRow() {
         return false;
     }
     var TXNSLNO = "";
-    if ($("#TXNSLNO").val() == "") {
+    if ($("#TXNSLNO").val() == "" || $("#TXNSLNO").val() == "0") {
         var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         if (GridRowMain == 0) {
             TXNSLNO = 1;
@@ -367,7 +367,10 @@ function UpdateBarCodeRow() {
             $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
             $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
             $("#B_GLCD_" + j).val($("#GLCD").val());
+            if (MENU_PARA == "PB") {
+                RateUpdate(j);
 
+            }
         }
     }
     CalculateTotal_Barno();
@@ -397,6 +400,7 @@ function ClearBarcodeArea(TAG) {
         $("#BALENO").val("");
         $("#OURDESIGN").val("");
     }
+    $("#STKTYPE").val("F");
     $("#DISCTYPE").val("P");
     $("#TDDISCTYPE").val("P");
     $("#SCMDISCTYPE").val("P");
@@ -1322,7 +1326,7 @@ function AddBarCodeGrid() {
         return false;
     }
     var TXNSLNO = "";
-    if ($("#TXNSLNO").val() == "") {
+    if ($("#TXNSLNO").val() == "" || $("#TXNSLNO").val() == "0") {
         var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         if (GridRowMain == 0) {
             TXNSLNO = 1;
@@ -1364,6 +1368,7 @@ function AddBarCodeGrid() {
     var UOM = $("#UOM").val();
     var NOS = $("#NOS").val();
     var RATE = $("#RATE").val();
+
     var DISCRATE = $("#DISCRATE").val();
     var DISCTYPE = $("#DISCTYPE").val();
     var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" : "Fixed";
@@ -1466,8 +1471,18 @@ function AddBarCodeGrid() {
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateTotal_Barno();" value="' + NOS + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + RATE + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="GetGstPer(' + rowindex + ',\'#B_\');" value="' + RATE + '" >';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ');" value="' + RATE + '" >';
     tr += '    </td>';
+    if (MENU_PARA == "PB") {
+        tr += '    <td class="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field WPRATE must be a number." id="B_WPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].WPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly"  >';
+        tr += '    </td>';
+
+        tr += '    <td class="">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RPRATE must be a number." id="B_RPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly" >';
+        tr += '    </td>';
+    }
+
     tr += '    <td class="" title="' + GSTPER + '">';
     tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
     tr += '        <input id="B_ALL_GSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ALL_GSTPER" type="hidden" value="' + ALL_GSTPER + '">';
@@ -1510,6 +1525,10 @@ function AddBarCodeGrid() {
 
     $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
     CalculateTotal_Barno();
+    if (MENU_PARA == "PB") {
+        RateUpdate(rowindex);
+
+    }
 
     ClearBarcodeArea();
     if (MENU_PARA == "PB") {
@@ -1517,6 +1536,159 @@ function AddBarCodeGrid() {
     } else {
         $("#BARCODE").focus();
     }
+}
+function RateUpdate(index) {
+    var MENU_PARA = $("#MENU_PARA").val();
+    if ((MENU_PARA == "PB") && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#B_BARGENTYPE_" + index).val() == "E"))) {
+        var WPRATE = $("#WPRATE").val();
+        if (WPRATE != "") { WPRATE = parseFloat(WPRATE); } else { WPRATE = parseFloat(0); }
+
+        var RPRATE = $("#RPRATE").val();
+        if (RPRATE != "") { RPRATE = parseFloat(RPRATE); } else { RPRATE = parseFloat(0); }
+
+        var RATE = $("#B_RATE_" + index).val();
+        if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
+
+        var B_WPRATE = parseFloat(WPRATE) * parseFloat(RATE);
+        $("#B_WPRATE_" + index).val(parseFloat(B_WPRATE).toFixed(2))
+        $("#B_WPRATE_" + index).attr('title', parseFloat(B_WPRATE).toFixed(2));
+
+        var B_RPRATE = parseFloat(RPRATE) * parseFloat(RATE);
+        $("#B_RPRATE_" + index).val(parseFloat(B_RPRATE).toFixed(2))
+        $("#B_RPRATE_" + index).attr('title', parseFloat(B_RPRATE).toFixed(2))
+    }
+}
+function BarGridRateUpdate() {
+    var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+    for (j = 0; j <= GridRowMain - 1; j++) {
+        RateUpdate(j);
+    }
+}
+function fileTypeCheck(id) {
+    var fileUpload = $(id).get(0);
+    var filesSelected = fileUpload.files;
+    if (filesSelected.length > 0) {
+        var fileToLoad = filesSelected[0];
+        document.getElementById("ImageName").value = fileToLoad.name;
+        var fileReader = new FileReader();
+        fileReader.onload = function (fileLoadedEvent) {
+            document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
+        };
+        fileReader.readAsDataURL(fileToLoad);
+    }
+}
+
+function UploadBarnoImage(i) {
+    debugger;
+    var ImageDesc = $('#ImageDesc').val();
+    if (document.getElementById("ImageName").value == "") return;
+    var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
+    if (OpenImageModal == "") {
+        OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
+    } else {
+        OpenImageModal = parseInt(OpenImageModal) + 1;
+        actt = "";
+    }
+    $('#OpenImageModal_' + i).html(OpenImageModal);
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlUploadImages").val(),// "@Url.Action("UploadImages", PageControllerName )",
+        beforesend: $("#WaitingMode").show(),
+        data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
+        success: function (result) {
+            $("#WaitingMode").hide(); var newid = '';
+            if ($("#B_BarImages_" + i).val() != "") {
+                newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
+            }
+            else {
+                newid = (result.split('/')[2] + '~' + ImageDesc);
+            }
+            $("#B_BarImages_" + i).val(newid);
+            //var htm = '';
+            //htm += '<div class="item ' + actt + '">';
+            //htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
+            //htm += '    <span class="carousel-caption">';
+            //htm += '    <p> ' + ImageDesc + ' </p>';
+            //htm += '    </span>';
+            //htm += '</div>';
+            //$("#div_carousel_inner").append(htm);
+
+            //$('.carousel').carousel(); // $("#carousel").carousel();
+            //htm += '<div class="col-lg-4" id="' + id + '">';
+            //htm += '       <div class="thumbnail">';
+            //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
+            //htm += '           <a href="' + result + '" target="_blank">';
+            //htm += '                <img src="' + result + '" alt="" style="width:100%">';
+            //htm += '                <div class="caption">';
+            //htm += '                   ' + ImageDesc;
+            //htm += '          </div>';
+            //htm += '      </a>';
+            //htm += '  </div>';
+            //htm += '</div>';
+            //$("#divUploadImage").append(htm);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+$(document).on('click', '.arrow-left, .arrow-right', function () {
+    var next;
+    var circler;
+    if ($(this).is('.arrow-left')) {
+        next = 'prev';
+        circler = ':last';
+    } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
+        next = 'next';
+        circler = ':first';
+    }
+    var nextTarget = $('#div_carousel_inner div.active')[next]('div');
+    if (nextTarget.length == 0) {
+        nextTarget = $('#div_carousel_inner div' + circler);
+    }
+    $('#div_carousel_inner div').removeClass('active');
+    nextTarget.addClass('active');
+});
+function deleteBarImages() {
+    debugger;
+    var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
+    var id = $("#div_carousel_inner div.active").attr('id')
+    var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
+    $.each(arr, function (index, value) {
+        var divid = (value.split('~')[0]).split('.')[0];
+        if (id == divid) {
+            deleteindex = index;
+        }
+    });
+    arr.splice(deleteindex, 1);
+    $("#" + id).remove();
+    var newimg = arr.join(String.fromCharCode(179));
+    $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
+    $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
+
+}
+function FillImageModal(index) {
+    debugger;
+    //var OpenImageModal =
+    $('#ActiveBarRowIndex').val(index);
+    var actt = ""; $("#div_carousel_inner").html('');
+    var arr = $("#B_BarImages_" + index).val();
+    arr = arr.split(String.fromCharCode(179));
+    $.each(arr, function (index, value) {
+        var imgname = (value.split('~')[0]);
+        var id = (imgname).split('.')[0];
+        var ImageDesc = (value.split('~')[1]);
+        var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+        htm += '<div id="' + id + '" class="item ' + actt + '">';
+        htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+        htm += '    <span class="carousel-caption">';
+        htm += '    <p> ' + ImageDesc + ' </p>';
+        htm += '    </span>';
+        htm += '</div>';
+        $("#div_carousel_inner").append(htm);
+    });
 }
 
 
