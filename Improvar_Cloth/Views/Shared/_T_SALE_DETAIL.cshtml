@@ -35,6 +35,7 @@
                                 <th class="" style="width:45px;">Mtrl Type</th>
                                 <th class="" style="width:71px;">Item Code</th>
                                 <th class="" style="width:160px;">Item Design</th>
+                               
                                 <th class="" style="width: 34px;">Stock Type</th>
                                 <th class="" style="width:50px;">UOM</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
@@ -68,6 +69,7 @@
                                     <th class="" style="width:103px;">Bale No.</th>
                                 }
                                 <th class="" style="width:71px;">glcd</th>
+                                <th class="" style="width:160px;">Item Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -98,6 +100,7 @@
                                             @*@Html.HiddenFor(model => model.TTXNDTL[i].ITCD, new { id = "D_ITCD_" + i })*@
                                             @Html.HiddenFor(model => model.TTXNDTL[i].STYLENO, new { id = "D_STYLENO_" + i })
                                         </td>
+                                     
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].STKTYPE, new { id = "D_STKTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @*@Html.HiddenFor(model => model.TTXNDTL[i].STKTYPE, new { id = "D_STKTYPE_" + i })*@
@@ -198,6 +201,9 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].GLCD, new { htmlattributes = new { id = "D_GLCD_" + i, @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].ITREM, new { id = "D_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
+                                        </td>
                                     </tr>
                                 }
                             }
@@ -262,6 +268,7 @@
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                             </tr>

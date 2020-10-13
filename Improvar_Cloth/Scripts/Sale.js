@@ -157,6 +157,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#SCMDISCRATE").val(returncolvalue(str, "SCMDISCRATE"));
         $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
         $("#GLCD").val(returncolvalue(str, "GLCD"));
+        $("#BARGENTYPETEMP").val(returncolvalue(str, "BARGENTYPE"));
     }
     else {
         var FieldidStarting = "";
@@ -223,6 +224,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#ALL_GSTPER").val($(FieldidStarting + "ALL_GSTPER_" + i).val());
         $("#PRODGRPGSTPER").val($(FieldidStarting + "PRODGRPGSTPER_" + i).val());
         $("#SHADE").val($(FieldidStarting + "SHADE_" + i).val());
+        $("#BARGENTYPETEMP").val($(FieldidStarting + "BARGENTYPE_" + i).val());
         if (MENU_PARA == "PB") {
             $("#BALENO").val($(FieldidStarting + "BALENO_" + i).val());
             $("#OURDESIGN").val($(FieldidStarting + "OURDESIGN_" + i).val());
@@ -395,7 +397,7 @@ function ClearBarcodeArea(TAG) {
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP");
     if (MENU_PARA == "PB") {
         $("#BALENO").val("");
         $("#OURDESIGN").val("");
@@ -468,6 +470,7 @@ function UpdateBarCodeRow_FrmDet(i) {
     for (j = 0; j <= GridRowMain - 1; j++) {
         if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD && $("#B_MTRLJOBCD_" + j).val() == MTRLJOBCD && $("#B_ITCD_" + j).val() == ITCD && $("#B_STKTYPE_" + j).val() == STKTYPE) {
             $("#B_RATE_" + j).val(RATE);
+            RateUpdate(j);
             $("#B_DISCTYPE_" + j).val(DISCTYPE);
             $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE_DESC);
             $("#B_DISCRATE_" + j).val(DISCRATE);
