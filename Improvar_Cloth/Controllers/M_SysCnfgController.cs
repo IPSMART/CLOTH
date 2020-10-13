@@ -441,6 +441,10 @@ namespace Improvar.Controllers
                         MSYSCNFG.BLTERMS = VE.M_SYSCNFG.BLTERMS;
                         MSYSCNFG.DUEDATECALCON = VE.M_SYSCNFG.DUEDATECALCON;
                         MSYSCNFG.BANLSLNO = VE.M_SYSCNFG.BANLSLNO;
+                        MSYSCNFG.WPPER = VE.M_SYSCNFG.WPPER;
+                        MSYSCNFG.RPPER = VE.M_SYSCNFG.RPPER;
+                        MSYSCNFG.PRICEINCODE = VE.M_SYSCNFG.PRICEINCODE;
+                        
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {
