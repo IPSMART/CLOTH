@@ -1867,8 +1867,8 @@ namespace Improvar.Controllers
                     TTXN.CLASS2CD = VE.T_TXN.CLASS2CD;
                     TTXN.LINECD = VE.T_TXN.LINECD;
                     TTXN.BARGENTYPE = VE.T_TXN.BARGENTYPE;
-                    TTXN.WPPER = VE.T_TXN.WPPER;
-                    TTXN.RPPER = VE.T_TXN.RPPER;
+                    //TTXN.WPPER = VE.T_TXN.WPPER;
+                    //TTXN.RPPER = VE.T_TXN.RPPER;
                     TTXN.MENU_PARA = VE.T_TXN.MENU_PARA;
                     TTXN.TCSPER = VE.T_TXN.TCSPER;
                     TTXN.TCSAMT = VE.T_TXN.TCSAMT;
