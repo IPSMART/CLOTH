@@ -257,7 +257,7 @@ namespace Improvar.Controllers
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
                         M_COLOR MCOLOR = new M_COLOR();
-                        MCOLOR.COLRCD = VE.M_COLOR.COLRCD;
+                        MCOLOR.COLRCD = VE.M_COLOR.COLRCD.ToUpper().Trim(' ');
                         MCOLOR.CLCD = CommVar.ClientCode(UNQSNO);
                         if (VE.DefaultAction == "A")
                         {
@@ -272,7 +272,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MCOLOR.CLRBARCODE = (100).ToString("D3");
+                                MCOLOR.CLRBARCODE = (101).ToString("D3");
                             }
                         }
                         if (VE.DefaultAction == "E")

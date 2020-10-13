@@ -1702,9 +1702,15 @@ namespace Improvar.Controllers
                         MSITEMBARCODE.CLCD = MSITEM.CLCD;
                         MSITEMBARCODE.EMD_NO = MSITEM.EMD_NO;
                         MSITEMBARCODE.ITCD = MSITEM.ITCD;
-                        //MSITEMBARCODE.BARNO = MSITEM.ITGRPCD.Substring(MSITEM.ITGRPCD.Length - 3).retStr() + MSITEM.ITCD.Substring(MSITEM.ITCD.Length - 7).retStr();
                         string txtitgrpcd = VE.M_SITEM.ITGRPCD;
-                        MSITEMBARCODE.BARNO = MSITEM.ITCD.Substring(1, 2).retStr()+ MSITEM.ITCD.Substring(MSITEM.ITCD.Length - 5).retStr();
+                        if (VE.ITEM_BARCODE.retStr() != "")
+                        {
+                            MSITEMBARCODE.BARNO = VE.ITEM_BARCODE;
+                        }
+                        else
+                        {
+                            MSITEMBARCODE.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD);
+                        }
                         DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
                         List<string> barnos = new List<string>();
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
@@ -1717,13 +1723,18 @@ namespace Improvar.Controllers
                                 MSITEMBARCODE1.ITCD = MSITEM.ITCD;
                                 MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                 MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
-                                MSITEMBARCODE1.BARNO = MSITEMBARCODE.BARNO + VE.MSITEMBARCODE[i].CLRBARCODE.retStr() + VE.MSITEMBARCODE[i].SZBARCODE.retStr();
+                                if(VE.MSITEMBARCODE[i].BARNO.retStr() != "")
+                                {
+                                    MSITEMBARCODE1.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
+                                }
+                                else
+                                {
+                                    MSITEMBARCODE1.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, "", "", VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
+                                }
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                                 barnos.Add(MSITEMBARCODE1.BARNO);
                             }
                         }
-
-
                         for (int i = 0; i <= VE.MSITEMMEASURE.Count - 1; i++)
                         {
                             if (VE.MSITEMMEASURE[i].SLNO != 0 && VE.MSITEMMEASURE[i].MDESC != null)
@@ -1958,7 +1969,6 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message);
             }
-            return View();
         }
     }
 }

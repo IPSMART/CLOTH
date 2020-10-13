@@ -697,17 +697,7 @@ namespace Improvar.Controllers
         {//YRCODE	2,lbatchini	2,TXN UNIQ NO	7,SLNO	4
             var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2);
             return yrcd + lbatchini + UNIQNO + slno.ToString().PadLeft(4, '0');
-        }
-        private string CommonBarcodeGenerate(string itgrpcd, string itcd, string MTBARCODE, string PRTBARCODE, string CLRBARCODE, string SZBARCODE)
-        {
-            //itgrpcd last 3  3
-            //itcd last 7  7
-            //mtrljobcd mtrlbarcode 1
-            //partcode prtbarcode  1
-            //color clrbarcode  4
-            //size szbarcode   3
-            return itgrpcd.retStr().Substring(1, 3) + itcd.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
-        }
+        } 
         public ActionResult GetTDSDetails(string val, string TAG, string PARTY)
         {
             try
@@ -2162,7 +2152,7 @@ namespace Improvar.Controllers
                                 }
                                 else
                                 {
-                                    barno = CommonBarcodeGenerate(VE.TBATCHDTL[i].ITGRPCD, VE.TBATCHDTL[i].ITCD, VE.TBATCHDTL[i].MTBARCODE, VE.TBATCHDTL[i].PRTBARCODE, VE.TBATCHDTL[i].CLRBARCODE, VE.TBATCHDTL[i].SZBARCODE);
+                                    barno =salesfunc.GenerateBARNO(VE.TBATCHDTL[i].ITCD, VE.TBATCHDTL[i].MTBARCODE, VE.TBATCHDTL[i].PRTBARCODE, VE.TBATCHDTL[i].CLRBARCODE, VE.TBATCHDTL[i].SZBARCODE);
                                     sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                     OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
                                     if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();

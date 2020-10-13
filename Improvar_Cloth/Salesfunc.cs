@@ -1554,5 +1554,14 @@ namespace Improvar
             return tbl;
         }
 
+        public string GenerateBARNO(string ITCD, string MTBARCODE="", string PRTBARCODE="", string CLRBARCODE="", string SZBARCODE="")
+        {
+            //itcd last 7  7
+            //mtrljobcd mtrlbarcode 1
+            //partcode prtbarcode  1
+            //color clrbarcode  3
+            //size szbarcode   2
+            return ITCD.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
+        }
     }
 }

@@ -465,7 +465,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MGROUP.ITGRPCD = txtst + (1).ToString("D3");
+                                MGROUP.ITGRPCD = txtst + (10).ToString("D3");
                             }
                             var tb1l = Master_Help.SQLquery(sql1);
                             if (tb1l.Rows[0]["GRPBARCODE"].ToString() != "")
