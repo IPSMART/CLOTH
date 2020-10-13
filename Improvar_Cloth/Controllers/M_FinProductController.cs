@@ -1801,7 +1801,8 @@ namespace Improvar.Controllers
                                 string sizebarno = prcCols[5];
                                 string colorcd = prcCols[0];
                                 string sizecd = prcCols[3];
-                                var varcode = VE.MSITEMBARCODE.Where(d => d.COLRCD == colorcd && d.SIZECD == sizecd).FirstOrDefault();
+                                string barno = prcCols[6];
+                               var varcode = VE.MSITEMBARCODE.Where(d => d.BARNO == barno).FirstOrDefault();
                                 if (varcode == null && colorcd != "" && sizecd != "")
                                 {
                                     transaction.Rollback();
@@ -1813,7 +1814,7 @@ namespace Improvar.Controllers
                                 MIP.CLCD = MSITEM.CLCD;
                                 MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
                                 MIP.PRCCD = PRCCD;
-                                MIP.BARNO = MSITEMBARCODE.BARNO + colorbarno + sizebarno;
+                                MIP.BARNO = barno;
                                 MIP.RATE = prcCols[j].retDbl();
                                 DB.M_ITEMPLISTDTL.Add(MIP);
                             }

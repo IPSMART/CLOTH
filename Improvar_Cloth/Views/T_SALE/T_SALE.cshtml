@@ -56,6 +56,7 @@
                 GetAllMtrljobcd();
             }
             Checked_Disable();
+            changeBARGENTYPE();
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -138,27 +139,6 @@
         }
     });
 </script>
-
-
-
-
-<script>
-    function 
-        private static int RoundValueToNearst100(double value)
-    {
-        int result =(int) Math.Round(value / 100);
-        if (value > 0 && result == 0) {
-            result = 1;
-        }
-        return (int) result * 100;
-    }
-
-
-</script>
-
-
-
-
 <script>
     function pageprinting() {
         debugger;
@@ -686,14 +666,28 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE" })
+                                    @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE", onchange = "changeBARGENTYPE()" })
                                 </div>
                             </div>
 
                         </div>
+
+                        <script>
+                            function changeBARGENTYPE() {
+                                var BARGENTYPE = $("#BARGENTYPE").val();
+                                if (BARGENTYPE == "C") {
+                                    $("#divImageUpload").hide();
+                                }
+                                else if (BARGENTYPE == "E") {
+                                    $("#divImageUpload").show();
+                                }
+                                return 0;
+                            }
+                        </script>
+
                         <div class="row">
                             @if (Model.MENU_PARA == "PB")
-                    {
+                               {
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Purchase bill no")
@@ -876,7 +870,7 @@
                                                     <div class="editor-field">
                                                         @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
                                                     </div>
-                                                }                                           
+                                                }
                                             </div>
                                         </div>
                                         <div class="row">
@@ -1025,26 +1019,28 @@
                                     @*iamge*@
                                     <input type="hidden" id="ImageName" value="" />
                                     <input type="hidden" id="ImageStr" value="" />
-                                    @if (Model.MENU_PARA == "PB"){
-                                    <div class="col-md-1">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Image Desc")
+                                    @if (Model.MENU_PARA == "PB")
+                                    {
+                                        <div id="divImageUpload" style="display:none;">
+                                            <div class="col-md-1">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    @Html.Label("", "Image Desc")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="editor-label" style="margin-top: 4px;">
+                                                    <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="editor-label" style="margin-top: 6px;">
+                                                    <input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" />
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="editor-label" style="margin-top: 4px;">
-                                            <input type="text" id="ImageDesc" value="" class="atextBoxFor" placeholder="Description" />                                          
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            <input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" />
-                                        </div>
-                                    </div>
                                     }
                                 </div>
-                                                              }
-
+                                                                }
                             <div class="row">
                                 <div class="col-md-3" style="width:auto;">
                                 </div>
@@ -1524,7 +1520,7 @@
                 </div>
             </div>
         </div>
-        
+
                                                                 }
                                                                 else
                                                                 {
@@ -1572,11 +1568,11 @@
             data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
             success: function (result) {
                 $("#WaitingMode").hide(); var newid = '';
-                if ($("#B_BarImages_" + i).val() != ""){
+                if ($("#B_BarImages_" + i).val() != "") {
                     newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
                 }
-                else{
-                    newid= (result.split('/')[2] + '~' + ImageDesc);
+                else {
+                    newid = (result.split('/')[2] + '~' + ImageDesc);
                 }
                 $("#B_BarImages_" + i).val(newid);
                 //var htm = '';
@@ -1656,7 +1652,7 @@
             var id = (imgname).split('.')[0];
             var ImageDesc = (value.split('~')[1]);
             var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
-            htm += '<div id="'+id+'" class="item ' + actt + '">';
+            htm += '<div id="' + id + '" class="item ' + actt + '">';
             htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
             htm += '    <span class="carousel-caption">';
             htm += '    <p> ' + ImageDesc + ' </p>';
