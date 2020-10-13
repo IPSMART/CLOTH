@@ -1444,6 +1444,8 @@ $(document).ready(function () {
 function OpenZoomTextBoxModal(id) {
     ZoomTextBoxModalId = id;
     var tye = $("#" + id).val();
+    var maxLength = document.getElementById(id).maxLength;
+    $("#txtZoomTextBoxModal").prop('maxLength', maxLength);
     $("#txtZoomTextBoxModal").val(tye);
     return;
 }
