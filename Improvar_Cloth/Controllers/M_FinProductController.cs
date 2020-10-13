@@ -570,8 +570,15 @@ namespace Improvar.Controllers
             {
                 VE.DTPRICES = GetPrices(VE);
                 TempData["DTPRICES"] = VE.DTPRICES;
-                string barnosql = getbarno(VE.M_SITEM.ITCD).retSqlformat();
-                VE.DropDown_list1 = Price_Effdt(VE, barnosql);
+                string barnosql = getbarno(VE.M_SITEM.ITCD.retStr()).retSqlformat();
+                if (barnosql != "")
+                {
+                    VE.DropDown_list1 = Price_Effdt(VE, barnosql);
+                }
+                else
+                {
+                    VE.DropDown_list1 = new List<DropDown_list1>();
+                }
 
                 ModelState.Clear();
                 VE.DefaultView = true;
@@ -1814,7 +1821,22 @@ namespace Improvar.Controllers
                                 MIP.CLCD = MSITEM.CLCD;
                                 MIP.EFFDT = VE.PRICES_EFFDT != null ? Convert.ToDateTime(VE.PRICES_EFFDT) : System.DateTime.Now.Date;
                                 MIP.PRCCD = PRCCD;
-                                MIP.BARNO = barno;
+                                if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
+                                {
+                                    MIP.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
+                                }
+                                else
+                                {
+                                    MIP.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, "", "", VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
+                                }
+                                //if (i == 0)
+                                //{
+                                //    MIP.BARNO = MSITEMBARCODE.BARNO;
+                                //}
+                                //else
+                                //{
+                                //    MIP.BARNO = barno;
+                                //}
                                 MIP.RATE = prcCols[j].retDbl();
                                 DB.M_ITEMPLISTDTL.Add(MIP);
                             }

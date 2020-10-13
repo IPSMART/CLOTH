@@ -163,6 +163,12 @@ namespace Improvar.Models
         public string BarImages { get; set; }
         public string BarImagesCount { get; set; }
         public string ChildData { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? WPRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? RPRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? MRPRATE { get; set; }
 
     }
 }

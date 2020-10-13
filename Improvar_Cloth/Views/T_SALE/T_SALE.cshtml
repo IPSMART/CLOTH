@@ -196,6 +196,7 @@
         <input type="hidden" id="UrlAddDOCRow" value="@Url.Action("AddDOCRow", PageControllerName)" />
         <input type="hidden" id="UrlDeleteDOCRow" value="@Url.Action("DeleteDOCRow", PageControllerName)" />
         <input type="hidden" id="UrlSelectTDSCode" value="@Url.Action("GetTDSDetails", PageControllerName)" />
+        <input type="hidden" id="UrlUploadImages" value="@Url.Action("UploadImages", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -511,25 +512,25 @@
                             </div>
                             @if (Model.MENU_PARA == "PB")
                     {
-                                <div class="col-md-5">
+                                <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Wholesale %")
                                     </div>
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_TXN.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", @title = "WPPER" } })
+                                        @Html.EditorFor(model => model.WPRATE, new { htmlAttributes = new { @class = "form-control", id = "WPRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPRATE", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
 
-                                <div class="col-md-5">
+                                <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Retail %")
                                     </div>
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_TXN.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", @title = "RPPER" } })
+                                        @Html.EditorFor(model => model.RPRATE, new { htmlAttributes = new { @class = "form-control", id = "RPRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPRATE", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
                             }
@@ -556,7 +557,7 @@
                                     @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Taxable Value")
                                 </div>
@@ -1014,7 +1015,7 @@
                                         @*<input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />*@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(Alt+A)" title="Click to Fill Data in Barcode Details" onclick="AddBarCodeGrid()" />
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="UpdateRow_Barcode" accesskey="W" value="Update Row(Alt+W)" title="Click to Update Data in Barcode Details" onclick="UpdateBarCodeRow()" />
-                                        <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
+                                        <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Alt+Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
                                     </div>
                                     @*iamge*@
                                     <input type="hidden" id="ImageName" value="" />
@@ -1534,131 +1535,3 @@
                                                                 </div>
                                                                 }
 
-<script>
-    function fileTypeCheck(id) {
-        var fileUpload = $(id).get(0);
-        var filesSelected = fileUpload.files;
-        if (filesSelected.length > 0) {
-            var fileToLoad = filesSelected[0];
-            document.getElementById("ImageName").value = fileToLoad.name;
-            var fileReader = new FileReader();
-            fileReader.onload = function (fileLoadedEvent) {
-                document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
-            };
-            fileReader.readAsDataURL(fileToLoad);
-        }
-    }
-
-    function UploadBarnoImage(i) {
-        debugger;
-        var ImageDesc = $('#ImageDesc').val();
-        if (document.getElementById("ImageName").value == "") return;
-        var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
-        if (OpenImageModal == "") {
-            OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
-        } else {
-            OpenImageModal = parseInt(OpenImageModal) + 1;
-            actt = "";
-        }
-        $('#OpenImageModal_' + i).html(OpenImageModal);
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("UploadImages", PageControllerName )",
-            beforesend: $("#WaitingMode").show(),
-            data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
-            success: function (result) {
-                $("#WaitingMode").hide(); var newid = '';
-                if ($("#B_BarImages_" + i).val() != "") {
-                    newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
-                }
-                else {
-                    newid = (result.split('/')[2] + '~' + ImageDesc);
-                }
-                $("#B_BarImages_" + i).val(newid);
-                //var htm = '';
-                //htm += '<div class="item ' + actt + '">';
-                //htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
-                //htm += '    <span class="carousel-caption">';
-                //htm += '    <p> ' + ImageDesc + ' </p>';
-                //htm += '    </span>';
-                //htm += '</div>';
-                //$("#div_carousel_inner").append(htm);
-
-                //$('.carousel').carousel(); // $("#carousel").carousel();
-                //htm += '<div class="col-lg-4" id="' + id + '">';
-                //htm += '       <div class="thumbnail">';
-                //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
-                //htm += '           <a href="' + result + '" target="_blank">';
-                //htm += '                <img src="' + result + '" alt="" style="width:100%">';
-                //htm += '                <div class="caption">';
-                //htm += '                   ' + ImageDesc;
-                //htm += '          </div>';
-                //htm += '      </a>';
-                //htm += '  </div>';
-                //htm += '</div>';
-                //$("#divUploadImage").append(htm);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    $(document).on('click', '.arrow-left, .arrow-right', function () {
-        var next;
-        var circler;
-        if ($(this).is('.arrow-left')) {
-            next = 'prev';
-            circler = ':last';
-        } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
-            next = 'next';
-            circler = ':first';
-        }
-        var nextTarget = $('#div_carousel_inner div.active')[next]('div');
-        if (nextTarget.length == 0) {
-            nextTarget = $('#div_carousel_inner div' + circler);
-        }
-        $('#div_carousel_inner div').removeClass('active');
-        nextTarget.addClass('active');
-    });
-    function deleteBarImages() {
-        debugger;
-        var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
-        var id = $("#div_carousel_inner div.active").attr('id')
-        var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
-        $.each(arr, function (index, value) {
-            var divid = (value.split('~')[0]).split('.')[0];
-            if (id == divid) {
-                deleteindex = index;
-            }
-        });
-        arr.splice(deleteindex, 1);
-        $("#" + id).remove();
-        var newimg = arr.join(String.fromCharCode(179));
-        $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
-        $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
-
-    }
-    function FillImageModal(index) {
-        debugger;
-        //var OpenImageModal =
-        $('#ActiveBarRowIndex').val(index);
-        var actt = ""; $("#div_carousel_inner").html('');
-        var arr = $("#B_BarImages_" + index).val();
-        arr = arr.split(String.fromCharCode(179));
-        $.each(arr, function (index, value) {
-            var imgname = (value.split('~')[0]);
-            var id = (imgname).split('.')[0];
-            var ImageDesc = (value.split('~')[1]);
-            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
-            htm += '<div id="' + id + '" class="item ' + actt + '">';
-            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
-            htm += '    <span class="carousel-caption">';
-            htm += '    <p> ' + ImageDesc + ' </p>';
-            htm += '    </span>';
-            htm += '</div>';
-            $("#div_carousel_inner").append(htm);
-        });
-    }
-</script>
