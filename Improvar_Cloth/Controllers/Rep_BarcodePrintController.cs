@@ -67,6 +67,7 @@ namespace Improvar.Controllers
                                            PDESIGN = dr["pdesign"].retStr(),
                                            COLRNM = dr["colrnm"].retStr(),
                                            SIZENM = dr["sizenm"].retStr(),
+                                           ITGRPSHORTNM= dr["shortnm"].retStr(),
                                            //WPPRICE = dr["wpprice"].retStr(),
                                            //WPPRICECODE = dr["wppricecode"].retStr(),
                                            //RPPRICE = dr["rpprice"].retStr(),
@@ -183,13 +184,13 @@ namespace Improvar.Controllers
 
             IR.Columns.Add("txslno", typeof(string));
 
-            IR.Columns.Add("wpprice", typeof(string));
+            IR.Columns.Add("wprate_paisa", typeof(string));
 
-            IR.Columns.Add("wppricecode", typeof(string));
+            IR.Columns.Add("wprate_code", typeof(string));
 
-            IR.Columns.Add("rpprice", typeof(string));
+            IR.Columns.Add("cprate_paisa", typeof(string));
 
-            IR.Columns.Add("rppricecode", typeof(string));
+            IR.Columns.Add("cprate_code", typeof(string));
 
             IR.Columns.Add("cost", typeof(string));
 
@@ -217,7 +218,8 @@ namespace Improvar.Controllers
                         dr["brcodeImage"] = brcodeImage;
                         dr["barno"] = barno;
                         dr["compinit"] = "";
-                        dr["itgrpnm"] = VE.BarcodePrint[i].ITGRPNM.retStr(); 
+                        dr["itgrpnm"] = VE.BarcodePrint[i].ITGRPNM.retStr();
+                        dr["itgrpshortnm"] = VE.BarcodePrint[i].ITGRPSHORTNM.retStr();
                         dr["itnm"] = VE.BarcodePrint[i].STYLENO.retStr();
                         dr["design"] = VE.BarcodePrint[i].DESIGN.retStr();
                         dr["pdesign"] = VE.BarcodePrint[i].PDESIGN.retStr();
@@ -225,9 +227,9 @@ namespace Improvar.Controllers
                         dr["colrnm"] = VE.BarcodePrint[i].COLRNM.retStr();
                         dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
                         dr["txslno"] = VE.BarcodePrint[i].TAXSLNO.retStr();
-                        dr["wpprice"] = VE.BarcodePrint[i].WPRATE.retStr().Replace(".","");
-                        dr["rpprice"] = "";
-                        dr["rppricecode"] = "";
+                        dr["wprate_paisa"] = VE.BarcodePrint[i].WPRATE.retStr().Replace(".","");
+                        dr["cprate_paisa"] = VE.BarcodePrint[i].CPRATE.retStr().Replace(".", "");
+                        dr["wprate_code"] = "";
                         dr["cost"] = "";
                         dr["costcode"] = "";
                         dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();

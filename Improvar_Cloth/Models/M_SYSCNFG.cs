@@ -69,5 +69,9 @@ namespace Improvar.Models
         public decimal? RPPER { get; set; }
         [StringLength(11)]
         public string PRICEINCODE { get; set; }
+        [StringLength(8)]
+        public string RTDEBCD { get; set; }
+        [StringLength(1)]
+        public string INC_RATE { get; set; }
     }
 }

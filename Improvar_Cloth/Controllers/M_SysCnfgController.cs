@@ -230,7 +230,17 @@ namespace Improvar.Controllers
                         var salretglnm = (from a in DBF.M_SUBLEG where a.SLCD == RETDEBSLCD select new { a.SLNM }).FirstOrDefault();
                         VE.RETDEBSLNM = salretglnm.SLNM;
                     }
-                  
+                    if (sl.RTDEBCD != null)
+                    { var Party = DBF.M_RETDEB.Find(sl.RTDEBCD); if (Party != null) { VE.RTDBNM = Party.RTDEBNM; } }
+                    if (sl.INC_RATE == "Y")
+                    {
+                        VE.INC_RATE = true;
+                    }
+                    else
+                    {
+                        VE.INC_RATE = false;
+                    }
+
                     if (sll.INACTIVE_TAG == "Y")
                     {
                         VE.Checked = true;
@@ -323,6 +333,27 @@ namespace Improvar.Controllers
             else
             {
                 return Content(str);
+            }
+        }
+        public ActionResult GetRefRetailDetails(string val)
+        {
+            try
+            {
+                if (val == null)
+                {
+                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                    return PartialView("_Help2", Master_Help.RTDEBCD_help(val));
+                }
+                else
+                {
+                    string str = Master_Help.RTDEBCD_help(val);
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult AddDOCRow(SysCnfgMasterEntry VE)
@@ -444,7 +475,8 @@ namespace Improvar.Controllers
                         MSYSCNFG.WPPER = VE.M_SYSCNFG.WPPER;
                         MSYSCNFG.RPPER = VE.M_SYSCNFG.RPPER;
                         MSYSCNFG.PRICEINCODE = VE.M_SYSCNFG.PRICEINCODE;
-                        
+                        MSYSCNFG.RTDEBCD = VE.M_SYSCNFG.RTDEBCD;
+                        if (VE.INC_RATE == true) { MSYSCNFG.INC_RATE = "Y"; } else { MSYSCNFG.INC_RATE = "N"; }
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {
