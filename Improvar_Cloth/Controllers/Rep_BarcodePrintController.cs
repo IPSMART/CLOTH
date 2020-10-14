@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Improvar.Controllers
-{
+{//
     public class Rep_BarcodePrintController : Controller
     {
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();

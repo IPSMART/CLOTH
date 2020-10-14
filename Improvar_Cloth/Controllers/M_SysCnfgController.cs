@@ -339,14 +339,13 @@ namespace Improvar.Controllers
         {
             try
             {
-                if (val == null)
+                var str = Master_Help.RTDEBCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                    return PartialView("_Help2", Master_Help.RTDEBCD_help(val));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.RTDEBCD_help(val);
                     return Content(str);
                 }
             }

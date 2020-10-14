@@ -1611,38 +1611,75 @@ namespace Improvar
                 return Generate_help(hdr, SB.ToString());
             }
         }
+        //public string RTDEBCD_help(string val)
+        //{
+        //    var UNQSNO = Cn.getQueryStringUNQSNO();
+        //    using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+        //    {
+        //        var query = (from c in DB.M_RETDEB join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { RTDEBCD = c.RTDEBCD, RTDEBNM = c.RTDEBNM }).ToList();
+        //        if (val == null)
+        //        {
+        //            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+        //            for (int i = 0; i <= query.Count - 1; i++)
+        //            {
+        //                SB.Append("<tr><td>" + query[i].RTDEBNM + "</td><td>" + query[i].RTDEBCD + "</td></tr>");
+        //            }
+        //            var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
+        //            return Generate_help(hdr, SB.ToString());
+        //        }
+        //        else
+        //        {
+        //            query = query.Where(a => a.RTDEBCD == val).ToList();
+        //            if (query.Any())
+        //            {
+        //                string str = "";
+        //                foreach (var i in query)
+        //                {
+        //                    str = i.RTDEBCD + Cn.GCS() + i.RTDEBNM;
+        //                }
+        //                return str;
+        //            }
+        //            else
+        //            {
+        //                return "Invalid Ref Retail Code ! Please Select / Enter a Valid Ref Retail Code !!";
+        //            }
+        //        }
+        //    }
+        //}
         public string RTDEBCD_help(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.FinSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR ";
+            sql += "from " + scm + ".M_RETDEB a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.RTDEBCD) = '" + valsrch + "' ) ";
+            sql += "order by a.RTDEBCD,a.RTDEBNM";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
             {
-                var query = (from c in DB.M_RETDEB join i in DB.M_CNTRL_HDR on c.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new { RTDEBCD = c.RTDEBCD, RTDEBNM = c.RTDEBNM }).ToList();
-                if (val == null)
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= query.Count - 1; i++)
-                    {
-                        SB.Append("<tr><td>" + query[i].RTDEBNM + "</td><td>" + query[i].RTDEBCD + "</td></tr>");
-                    }
-                    var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
-                    return Generate_help(hdr, SB.ToString());
+                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td></tr>");
+                }
+                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
                 }
                 else
                 {
-                    query = query.Where(a => a.RTDEBCD == val).ToList();
-                    if (query.Any())
-                    {
-                        string str = "";
-                        foreach (var i in query)
-                        {
-                            str = i.RTDEBCD + Cn.GCS() + i.RTDEBNM;
-                        }
-                        return str;
-                    }
-                    else
-                    {
-                        return "Invalid Ref Retail Code ! Please Select / Enter a Valid Ref Retail Code !!";
-                    }
+                    return "Invalid Ref Retail Code ! Please Select / Enter a Valid Ref Retail Code !!";
                 }
             }
         }
