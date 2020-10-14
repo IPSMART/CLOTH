@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Improvar.Models
 {
@@ -18,9 +15,28 @@ namespace Improvar.Models
         public string FABITNM { get; set; }
         public string STYLENO { get; set; }
         public string NOS { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public string WPRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public string CPRATE { get; set; }
         public string MTR { get; set; }
+        public string ITGRPSHORTNM { get; set; }
+        public string DESIGN { get; set; }
+        public string PDESIGN { get; set; }
+        public string COLRNM { get; set; }
+        public string SIZENM { get; set; }
+        public string WPPRICE { get; set; }
+        public string WPPRICECODE { get; set; }
+        public string RPPRICE { get; set; }
+        public string RPPRICECODE { get; set; }
+        public string COST { get; set; }
+        public string COSTCODE { get; set; }
+        public string DOCNO { get; set; }
+        public string DOCDT { get; set; }
+        public string PREFNO { get; set; }
+        public string PREFDT { get; set; }
+        public string DOCDTCODE { get; set; }
+        public string COMPINIT { get; set; }
         public bool Checked { get; set; }
     }
 }

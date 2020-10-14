@@ -20,10 +20,10 @@ namespace Improvar.Controllers
         SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: Rep_BarcodePrint
-        public ActionResult Rep_BarcodePrint()
+        public ActionResult Rep_BarcodePrint(string autono,string docdt, string barno)
         {
             try
-            {
+            {if (docdt.retDateStr() == "") docdt = System.DateTime.Now.retDateStr();
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -51,7 +51,7 @@ namespace Improvar.Controllers
                     //var sql = "select distinct '123456789' BARNO,a.SLNO,b.itnm FABITNM ,b.STYLENO,c.ITGRPNM  from " + Schnm + ".t_txndtl a," + Schnm + ".M_SITEM b," + Schnm + ".M_GROUP c where a.itcd=b.itcd(+) and b.itgrpcd=c.itgrpcd(+)";
 
                     //DataTable ttxndtl = masterHelp.SQLquery(sql);
-                    DataTable ttxndtl = retBarPrn("13/10/2020", "", "");
+                    DataTable ttxndtl = retBarPrn(docdt, autono, barno);
                     VE.BarcodePrint = (from DataRow dr in ttxndtl.Rows
                                        select new BarcodePrint()
                                        {
@@ -59,10 +59,25 @@ namespace Improvar.Controllers
                                            BARNO = dr["BARNO"].retStr(),
                                            ITGRPNM = dr["ITGRPNM"].retStr(),
                                            FABITNM = dr["FABITNM"].retStr(),
-                                           //STYLENO = dr["STYLENO"].retStr(),
-                                           NOS= dr["barnos"].retStr(),
+                                           STYLENO = dr["itnm"].retStr(),
+                                           NOS = dr["barnos"].retStr(),
                                            WPRATE= dr["wprate"].retStr(),
                                            CPRATE = dr["cprate"].retStr(),
+                                           DESIGN = dr["design"].retStr(),
+                                           PDESIGN = dr["pdesign"].retStr(),
+                                           COLRNM = dr["colrnm"].retStr(),
+                                           SIZENM = dr["sizenm"].retStr(),
+                                           //WPPRICE = dr["wpprice"].retStr(),
+                                           //WPPRICECODE = dr["wppricecode"].retStr(),
+                                           //RPPRICE = dr["rpprice"].retStr(),
+                                           //RPPRICECODE = dr["rppricecode"].retStr(),
+                                           //COST = dr["cost"].retStr(),
+                                           //COSTCODE = dr["costcode"].retStr(),
+                                           DOCNO = dr["docno"].retStr(),
+                                           DOCDT = dr["docdt"].retStr(),
+                                           //PREFNO = dr["prefno"].retStr(),
+                                           //PREFDT = dr["prefdt"].retStr(),
+                                           //DOCDTCODE = dr["docdtcode"].retStr()
 
                                        }).Distinct().OrderBy(s => s.TAXSLNO).ToList();
                     VE.DefaultView = true;
@@ -87,7 +102,7 @@ namespace Improvar.Controllers
             if (barno != "") tblmst = true;
             sql = "";
 
-            sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm, ";
+            sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm ";
             sql += "a.pdesign, nvl(a.ourdesign,b.styleno) design, ";
             sql += "nvl(m.rate,x.rate) cprate, nvl(n.rate,0) wprate, nvl(o.rate,0) rprate, ";
             sql += "a.itrem, a.partcd, h.partnm, a.sizecd, a.colrcd, nvl(a.shade,g.colrnm) colrnm, ";
@@ -134,11 +149,11 @@ namespace Improvar.Controllers
 
             sql += "" + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, ";
             sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, ";
-            sql += "" + scmf + ".m_subleg i ";
+            sql += "" + scmf + ".m_subleg i " + scmf + ".m_size j ";
             sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and ";
             sql += "a.itcd=b.itcd(+) and a.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and ";
             sql += "x.barno=m.barno(+) and x.barno=n.barno(+) and x.barno=o.barno(+) and ";
-            sql += "a.colrcd=g.colrcd(+) and a.partcd=h.partcd(+) and c.slcd=i.slcd(+) ";
+            sql += "a.colrcd=g.colrcd(+) and a.partcd=h.partcd(+) and c.slcd=i.slcd(+) and a.sizecd=j.sizecd(+) ";
             DataTable tbl = masterHelp.SQLquery(sql);
 
             return tbl;
@@ -154,6 +169,7 @@ namespace Improvar.Controllers
             IR.Columns.Add("barno", typeof(string));
             IR.Columns.Add("compinit", typeof(string));
             IR.Columns.Add("itgrpnm", typeof(string));
+            IR.Columns.Add("itgrpshortnm", typeof(string));
             IR.Columns.Add("itnm", typeof(string));
             IR.Columns.Add("design", typeof(string));
 
@@ -201,21 +217,21 @@ namespace Improvar.Controllers
                         dr["brcodeImage"] = brcodeImage;
                         dr["barno"] = barno;
                         dr["compinit"] = "";
-                        dr["itgrpnm"] = "";
-                        dr["itnm"] = "";
-                        dr["design"] = "";
-                        dr["pdesign"] = "";
-                        dr["mtr"] = "";
-                        dr["colrnm"] = "";
-                        dr["sizenm"] = "";
-                        dr["txslno"] = "";
-                        dr["wpprice"] = "";
+                        dr["itgrpnm"] = VE.BarcodePrint[i].ITGRPNM.retStr(); 
+                        dr["itnm"] = VE.BarcodePrint[i].STYLENO.retStr();
+                        dr["design"] = VE.BarcodePrint[i].DESIGN.retStr();
+                        dr["pdesign"] = VE.BarcodePrint[i].PDESIGN.retStr();
+                        dr["mtr"] = VE.BarcodePrint[i].MTR.retStr();
+                        dr["colrnm"] = VE.BarcodePrint[i].COLRNM.retStr();
+                        dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
+                        dr["txslno"] = VE.BarcodePrint[i].TAXSLNO.retStr();
+                        dr["wpprice"] = VE.BarcodePrint[i].WPRATE.retStr().Split('.');
                         dr["rpprice"] = "";
                         dr["rppricecode"] = "";
                         dr["cost"] = "";
                         dr["costcode"] = "";
-                        dr["docno"] = "";
-                        dr["docdt"] = "";
+                        dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
+                        dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Split('/');
                         dr["prefno"] = "";
                         dr["prefdt"] = "";
                         dr["docdtcode"] = "";
