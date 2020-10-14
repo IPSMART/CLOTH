@@ -1303,6 +1303,7 @@ namespace Improvar.Controllers
                                   x.PRODGRPGSTPER,
                                   x.BALENO,
                                   x.GLCD,
+                                  x.ITREM,
                               } into P
                               select new TTXNDTL
                               {
@@ -1338,6 +1339,7 @@ namespace Improvar.Controllers
                                   PRODGRPGSTPER = P.Key.PRODGRPGSTPER,
                                   BALENO = P.Key.BALENO,
                                   GLCD = P.Key.GLCD,
+                                  ITREM = P.Key.ITREM,
                               }).ToList();
 
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)

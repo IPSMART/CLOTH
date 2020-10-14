@@ -28,7 +28,7 @@ namespace Improvar.Models
         [StringLength(8)]
         public string RTDEBCD { get; set; }
 
-        [StringLength(50)]
+        [StringLength(60)]
         public string NM { get; set; }
 
         [StringLength(12)]

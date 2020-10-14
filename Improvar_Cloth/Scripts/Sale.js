@@ -465,6 +465,7 @@ function UpdateBarCodeRow_FrmDet(i) {
     var SCMDISCRATE = $("#D_SCMDISCRATE_" + i).val();
     var SCMDISCTYPE = $("#D_SCMDISCTYPE_" + i).val();
     var BALENO = $("#D_BALENO_" + i).val();
+    var ITREM = $("#D_ITREM_" + i).val();
     var ALLGSTPER = $("#D_ALL_GSTPER_" + i).val();
     var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     for (j = 0; j <= GridRowMain - 1; j++) {
@@ -479,6 +480,7 @@ function UpdateBarCodeRow_FrmDet(i) {
             $("#B_SCMDISCRATE_" + j).val(SCMDISCRATE);
             $("#B_SCMDISCTYPE_" + j).val(SCMDISCTYPE);
             $("#B_BALENO_" + j).val(BALENO);
+            $("#B_ITREM_" + j).val(ITREM);
             $("#B_ALL_GSTPER_" + j).val(ALLGSTPER);
             if (ALLGSTPER != "") {
                 var str = ALLGSTPER.split(',');
