@@ -185,5 +185,11 @@ namespace Improvar.ViewModels
         public double? RPRATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? MRPRATE { get; set; }
+        public string TCSAPPL { get; set; }
+        public double TDSLIMIT { get; set; }
+        [StringLength(1)]
+        public string TDSCALCON { get; set; }
+        public double AMT { get; set; }
+        public string TDSROUNDCAL { get; set; }
     }
 }

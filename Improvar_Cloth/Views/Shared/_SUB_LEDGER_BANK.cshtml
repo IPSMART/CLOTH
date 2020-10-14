@@ -37,7 +37,7 @@
                                 @Html.CheckBoxFor(model => model.MSUBLEGIFSC[i].Checked, new { htmlAttributes = new { id = "chkid" } })
                             </td>
                             <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].SLNO, new { id = "SLNO_" + i, maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].SLNO, new { id = "SLNO_" + i, maxlength = 2, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                             </td>
                             <td class="grid_td">
                                 @Html.TextBoxFor(model => Model.MSUBLEGIFSC[i].IFSCCODE, new { id = "IFSCCODE_" + i, maxlength = 15, @class = " atextBoxFor textbox_image" })

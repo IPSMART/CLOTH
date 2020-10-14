@@ -117,6 +117,7 @@ namespace Improvar.Models
         public string RECPROGLOTNO { get; set; }
 
         public short? RECPROGSLNO { get; set; }
-        
+        public double? INCRATE { get; set; }
+
     }
 }

@@ -31,7 +31,7 @@
         var FLOORNO = $("#FLOORNO").val().length;
         var sum = parseInt(BLDGNO) + parseInt(PREMISES) + parseInt(FLOORNO);
         if (sum > 60) {
-            msgInfo("BLDGNO+FLOORNO+ PREMISES must be less than 60 charecters !");
+            msgInfo("Address must be less than 60 charecters !");
             message_value = "BLDGNO";
             return false;
         }
@@ -44,6 +44,7 @@
 
             return false;
         }
+        debugger;
         var str = ($("#SLNM").val().trim()).substr(0, 1);
 
         if (/^[a-zA-Z0-9- ]*$/.test(str) == false) {
@@ -56,6 +57,33 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
+        //if (str.trim()!= str)
+        //{
+        //    msgInfo("Subledger could not contain space at starting of name !");
+        //    message_value = "SLNM";
+        //    $("li").removeClass("active").addClass("");
+        //    $(".nav-tabs li:first-child").addClass('active');
+        //    //below set the  child sequence
+        //    $(".tab-content div").removeClass("active");
+        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //    return false;
+        //}
+
+        //var format = /^[ !#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]$/;
+
+        //if (!format.test(str)) {
+        //    debugger
+        //    if (str.include("$", 0)) {
+        //        msgInfo("Subledger could not contain any special cherecter at starting of name !");
+        //        message_value = "SLNM";
+        //        $("li").removeClass("active").addClass("");
+        //        $(".nav-tabs li:first-child").addClass('active');
+        //        //below set the  child sequence
+        //        $(".tab-content div").removeClass("active");
+        //        $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //        return false;
+        //    }
+        //}
         if (!emptyFieldCheck("Select District", "DISTRICT")) {
             message_value = "DISTRICT";
             $("li").removeClass("active").addClass("");
@@ -362,6 +390,20 @@
                         $("#msgbody_info").html(result);
                         message_value = COMPCD_.id;
                     }
+                    //if (result == "0") {
+                    //    $("#Msgdiv1").show();
+                    //    $("#info").show();
+                    //    $("#msg_ok_info").focus();
+                    //    $("#" + id1).val("");
+                    //    $("#" + id2).val("");
+                    //    $("#msgbody_info").html("Invalid Code !! ");
+                    //    message_value = "COMPCD_";
+                    //}
+                    //else {
+                    //    $("#tempHDD").val(result);
+                    //    input6(COMPCD_, COMPNM_);
+                    //}
+
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -394,7 +436,7 @@
                         msgInfo("Invalid District Code !");
                         $("#DISTRICT").val("");
                         $("#DISTNM").val("");
-
+                       
                         message_value = "DISTRICT";
                     }
                     else {
@@ -661,7 +703,7 @@
             success: function (result) {
                 $("#WaitingMode").hide();
                 if (result == "1") {
-                    msgSuccess1("Previous year data save sucessfully");
+                   msgSuccess1("Previous year data save sucessfully");
                     message_value = "btnPrvyr";
                 }
                 else {
@@ -704,14 +746,11 @@
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
             <input type="hidden" id="ModifyLogSchma" value="FIN" />
+
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(e => e.M_SUBLEG.EMD_NO)
             @Html.HiddenFor(a => a.M_SUBLEG.M_AUTONO)
             @Html.HiddenFor(a => a.maxdate)
-            @if (Model.DefaultAction == "V")
-            {
-                @Html.Partial("_FilteredSearch")
-            }
             <ul class="nav nav-tabs">
                 <li class="active">
                     <a data-toggle="tab" href="#Standard">Standard</a>
@@ -784,9 +823,9 @@
                                 }
                                 if (Model.isPresentinLastYrSchema == "EDIT")
                                 {<button type="button" id="btnPrvyr" style="padding-left:1px;padding-right:1px" value="PRVSCHM" name="button" class="btn btn-info btn-sm" onclick="AddToPrivious();">Modify to last year schema</button>
-                                }
+                                 } 
                             }
-
+                            
                         </div>
                     </div>
                     <div class="row ">
@@ -811,6 +850,25 @@
                                 @Html.EditorFor(model => model.M_SUBLEG.SHORTNM, new { htmlAttributes = new { @class = "form-control", ID = "SHORTNM", @placeholder = "Short Name", maxlength = 15 } })
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Party Group Code")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_SUBLEG.PARTYCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTYCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartyGroupDetails", PageControllerName) + "','Party Group Details','PARTYCD','PARTYCD=PARTYCD=1/PARTYNM=PARTYNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPartyGroupDetails", PageControllerName) + "','Party Group Details','PARTYCD','PARTYCD=PARTYCD=1/PARTYNM=PARTYNM=0');", @placeholder = "Code", maxlength = 4 } })
+                                    <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartyGroupDetails", PageControllerName)','Party Group Details','PARTYCD','PARTYCD=PARTYCD=1/PARTYNM=PARTYNM=0')" />
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.PARTYNM, new { htmlAttributes = new { @class = "form-control", id = "PARTYNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Group Name", @readonly = "readonly", tabindex = "-1" } })
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -1075,7 +1133,7 @@
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.M_SUBLEG.ACTNAMEOF, new { htmlAttributes = new { @class = "form-control", @placeholder = "Account Name Of/Party Bill Remarks", Id = "ACTNAMEOF", maxlength = 100 } })
                             </div>
-                        </div>
+                        </div>              
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -1459,6 +1517,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", " TCS Applicable")
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.CheckBoxFor(model => model.TCSAPPL)
+                        </div>
+                    </div>
+
                 </div>
                 <div id="Communication" class="tab-pane fade" style="margin-top: 10px;">
                     <div class="row">

@@ -108,5 +108,6 @@ namespace Improvar.Models
         public string TDSCODE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? TCSON { get; set; }
+        public double? INC_RATE { get; set; }
     }
 }

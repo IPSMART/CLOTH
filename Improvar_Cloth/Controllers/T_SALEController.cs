@@ -304,14 +304,18 @@ namespace Improvar.Controllers
                     TTXNLINKNO = (from a in DB.T_TXN_LINKNO where a.AUTONO == TXN.AUTONO select a).FirstOrDefault();
                     VE.LINKDOCNO = (from a in DB.T_CNTRL_HDR where a.AUTONO == TTXNLINKNO.LINKAUTONO select a).FirstOrDefault().DOCNO;
                 }
+                string panno = "";
                 if (TXN.SLCD.retStr() != "")
                 {
                     string slcd = TXN.SLCD;
-                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD }).FirstOrDefault();
+                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL,a.PANNO }).FirstOrDefault();
                     VE.SLNM = subleg.SLNM;
                     VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                     VE.GSTNO = subleg.GSTNO;
                     VE.PSLCD = subleg.PSLCD;
+                    VE.TCSAPPL = subleg.TCSAPPL;
+                    if(VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
+                    panno = subleg.PANNO;
                 }
 
                 VE.CONSLNM = TXN.CONSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXN.CONSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -324,6 +328,18 @@ namespace Improvar.Controllers
                 VE.CRSLNM = TXNTRN.CRSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.CRSLCD).Select(b => b.SLNM).FirstOrDefault();
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
+
+                //tcsdata
+                var tdsdt = getTDS(TXN.DOCDT.retStr().Remove(10), TXN.SLCD, TXN.TDSCODE);
+                if (tdsdt != null && tdsdt.Rows.Count > 0)
+                {
+                    VE.TDSLIMIT = tdsdt.Rows[0]["TDSLIMIT"].retDbl();
+                    VE.TDSCALCON = tdsdt.Rows[0]["TDSCALCON"].retStr();
+                    VE.TDSROUNDCAL = tdsdt.Rows[0]["TDSROUNDCAL"].retStr();
+                }
+                VE.AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), TXN.DOCDT.retStr().Remove(10), VE.MENU_PARA, TXN.AUTONO).retDbl();
+                VE.AMT = VE.AMT.retDbl() > VE.TDSLIMIT.retDbl() ? VE.TDSLIMIT.retDbl() : VE.AMT.retDbl();
+                //
 
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
@@ -464,7 +480,7 @@ namespace Improvar.Controllers
                 VE.T_NET_AMT = VE.TTXNDTL.Sum(a => a.NETAMT).retDbl();
                 if (VE.MENU_PARA == "PB" && VE.TBATCHDTL.Count() > 0)
                 {
-                    VE.WPRATE = VE.TBATCHDTL.Where(a=>a.WPRATE.retDbl() != 0).Select(b=>b.WPRATE).FirstOrDefault();
+                    VE.WPRATE = VE.TBATCHDTL.Where(a => a.WPRATE.retDbl() != 0).Select(b => b.WPRATE).FirstOrDefault();
                     VE.RPRATE = VE.TBATCHDTL.Where(a => a.RPRATE.retDbl() != 0).Select(b => b.RPRATE).FirstOrDefault();
                 }
 
@@ -750,9 +766,9 @@ namespace Improvar.Controllers
             string scmf = CommVar.FinSchema(UNQSNO);
             string sql = "select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
             if (slcd.retStr() != "") sql += "(select CMPNONCMP from  " + scmf + ".m_subleg where slcd='" + slcd + "') as CMPNONCMP, "; else sql += "'' CMPNONCMP, ";
-            sql += " b.tdsnm, b.secno, b.glcd from ";
-            sql += "(select tdscode, edate, tdsper, tdspernoncmp from ";
-            sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+            sql += " b.tdsnm, b.secno, b.glcd,a.tdslimit,a.tdscalcon,a.tdsroundcal from ";
+            sql += "(select tdscode, edate, tdsper, tdspernoncmp,tdslimit,tdscalcon,tdsroundcal from ";
+            sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp,a.tdslimit,a.tdscalcon,a.tdsroundcal, ";
             sql += "row_number() over(partition by a.tdscode order by a.edate desc) as rn ";
             sql += "from " + scmf + ".m_tds_cntrl_dtl a ";
             sql += "where  edate <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
@@ -768,7 +784,8 @@ namespace Improvar.Controllers
         {
             try
             {
-
+                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                Cn.getQueryString(VE);
                 var code_data = Code.Split(Convert.ToChar(Cn.GCS()));
                 if (code_data.Count() > 1)
                 {
@@ -807,12 +824,36 @@ namespace Improvar.Controllers
                 {
                     if (code_data[0].retStr() == "Party")
                     {
+                        string TCSPER = "", TCSCODE = "", TCSNM = "", TDSLIMIT = "", TDSCALCON = "", AMT = "", TDSROUNDCAL = "";
                         if (str.IndexOf(Cn.GCS()) > 0)
                         {
                             var party_data = salesfunc.GetSlcdDetails(val, code_data[1]);
                             if (party_data != null && party_data.Rows.Count > 0)
                             {
+                                if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") party_data.Rows[0]["TCSAPPL"] = "N";
+                                if (party_data.Rows[0]["TCSAPPL"].retStr() == "Y")
+                                {
+                                    string linktdscode = "'Y'";
+                                    if (VE.MENU_PARA == "PB") linktdscode = "'X'";
+                                    var tdsdt = getTDS(code_data[1], val, linktdscode);
+                                    if (tdsdt != null && tdsdt.Rows.Count > 0)
+                                    {
+                                        TCSPER = tdsdt.Rows[0]["TDSPER"].retStr();
+                                        TCSCODE = tdsdt.Rows[0]["TDSCODE"].retStr();
+                                        TCSNM = tdsdt.Rows[0]["TDSNM"].retStr();
+                                        TDSLIMIT = tdsdt.Rows[0]["TDSLIMIT"].retStr();
+                                        TDSCALCON = tdsdt.Rows[0]["TDSCALCON"].retStr();
+                                        TDSROUNDCAL = tdsdt.Rows[0]["TDSROUNDCAL"].retStr();
+                                    }
+                                    AMT = salesfunc.getSlcdTCSonCalc(party_data.Rows[0]["PANNO"].retStr(), code_data[1], VE.MENU_PARA).ToString();
+                                    AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
+                                }
                                 str = masterHelp.ToReturnFieldValues("", party_data);
+                                str += "^" + "TCSPER" + "=^" + TCSPER + Cn.GCS();
+                                str += "^" + "TDSLIMIT" + "=^" + TDSLIMIT + Cn.GCS();
+                                str += "^" + "TDSCALCON" + "=^" + TDSCALCON + Cn.GCS();
+                                str += "^" + "AMT" + "=^" + AMT + Cn.GCS();
+                                str += "^" + "TDSROUNDCAL" + "=^" + TDSROUNDCAL + Cn.GCS();
                                 return Content(str);
                             }
                             else
@@ -1303,6 +1344,7 @@ namespace Improvar.Controllers
                                   x.PRODGRPGSTPER,
                                   x.BALENO,
                                   x.GLCD,
+                                  x.ITREM,
                               } into P
                               select new TTXNDTL
                               {
@@ -1338,6 +1380,7 @@ namespace Improvar.Controllers
                                   PRODGRPGSTPER = P.Key.PRODGRPGSTPER,
                                   BALENO = P.Key.BALENO,
                                   GLCD = P.Key.GLCD,
+                                  ITREM = P.Key.ITREM,
                               }).ToList();
 
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)

@@ -59,19 +59,19 @@
                                 @Html.CheckBoxFor(model => model.MSUBLEGLOCOTH[i].Checked)
                             </td>
                             <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].SLNO, new { id = "SLNO_" + i, maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].SLNO, new { id = "SLNO_" + i, maxlength = 2, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                             </td>
                             <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].COMPCD, new {  maxlength = 4, @class = " atextBoxFor ", @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].COMPCD, new {  maxlength = 4, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                             </td>
                             <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].COMPNM, new { maxlength = 35, @class = " atextBoxFor ", @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].COMPNM, new { maxlength = 35, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                             </td>
                             <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].LOCCD, new { id = "LOCCD_" + i, maxlength = 4, @class = " atextBoxFor ", @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].LOCCD, new { id = "LOCCD_" + i, maxlength = 4, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                             </td>
                             <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].LOCNM, new { id = "LOCNM_" + i, maxlength = 35, @class = " atextBoxFor ", @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].LOCNM, new { id = "LOCNM_" + i, maxlength = 35, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                             </td>
                             <td class="grid_td">
                                 @Html.TextBoxFor(model => Model.MSUBLEGLOCOTH[i].DISTANCE, new { id = "DISTANCE_" + i, maxlength = 7, @class = "km atextBoxFor text-right " })

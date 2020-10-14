@@ -32,7 +32,7 @@ namespace Improvar.Controllers
                     else if (MODULE == "INV") { ViewBag.formname = "Vendor Master"; }
                     else if (MODULE.Remove(4) == "SALE") { ViewBag.formname = "Customer Master"; }
                     SubLedgerEntry VE = new SubLedgerEntry();
-                    Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE); VE.SrcFlagCaption = "District/Area/Gst";
+                    Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(VE.UNQSNO));
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
@@ -221,6 +221,7 @@ namespace Improvar.Controllers
                             UPL.DocumentType = doctP;
                             UploadDOC1.Add(UPL);
                             VE.UploadDOC = UploadDOC1;
+                            VE.TCSAPPL = true;
                         }
                         return View(VE);
                     }
@@ -273,6 +274,20 @@ namespace Improvar.Controllers
                 else
                 {
                     VE.Checked = false;
+                }
+                if (sl.TCSAPPL == "Y")
+                {
+                    VE.TCSAPPL = true;
+                }
+                else
+                {
+                    VE.TCSAPPL = false;
+                }
+                if (sl.PARTYCD.retStr() != "")
+                {
+                    string PARTYCD = sl.PARTYCD;
+                    var partynm = (from a in DB.M_PARTYGRP where a.PARTYCD == PARTYCD select new { a.PARTYNM }).FirstOrDefault();
+                    VE.PARTYNM = partynm.PARTYNM;
                 }
                 var ss = (from p in DB.M_SUBLEG_BUSNAT where (p.SLCD == sl.SLCD) select new BusinessActivity() { NATBUSCD = p.NATBUSCD, Checked = true }).ToList();
                 if (ss != null)
@@ -465,23 +480,23 @@ namespace Improvar.Controllers
                 //}
                 string sql = "", scmf = CommVar.FinSchema(UNQSNO);
                 sql = " select ROW_NUMBER() OVER(ORDER BY compcd) AS slno, compcd, compnm, loccd, locnm, distance from( ";
-                sql += "  select a.compcd, a.loccd, b.compnm, c.locnm, a.distance from " + scmf + ".M_SUBLEG_LOCOTH A, " + scmf + ".M_comp b, " + scmf + ".M_loca c ";
-                sql += "  where a.compcd = b.compcd and a.loccd = c.loccd and a.compcd = c.compcd  and  slcd = '" + sl.SLCD + "' ";
+                sql += "  select a.compcd, a.loccd, b.compnm, c.locnm, a.distance from "+ scmf + ".M_SUBLEG_LOCOTH A, " + scmf + ".M_comp b, " + scmf + ".M_loca c ";
+                sql += "  where a.compcd = b.compcd and a.loccd = c.loccd and a.compcd = c.compcd  and  slcd = '"+ sl.SLCD +"' ";
                 sql += "  union all ";
                 sql += "  select distinct b.compcd, c.loccd, b.compnm, c.locnm, 0 distance from " + scmf + ".M_comp b, " + scmf + ".M_loca c ";
                 sql += "   where b.compcd = c.compcd  and c.compcd || c.loccd not in (select a.compcd || a.loccd from " + scmf + ".M_SUBLEG_LOCOTH A where slcd = '" + sl.SLCD + "') ";
                 sql += "  ) a ";
                 var FILTER_DATA = masterHelp.SQLquery(sql);
                 VE.MSUBLEGLOCOTH = (from DataRow dr in FILTER_DATA.Rows
-                                    select new MSUBLEGLOCOTH()
-                                    {
-                                        SLNO = Convert.ToSByte(dr["slno"]),
-                                        COMPCD = dr["compcd"].retStr(),
-                                        COMPNM = dr["compnm"].retStr(),
-                                        LOCCD = dr["loccd"].retStr(),
-                                        LOCNM = dr["locnm"].retStr(),
-                                        DISTANCE = dr["distance"].retInt()
-                                    }).ToList();
+                               select new MSUBLEGLOCOTH()
+                               {
+                                   SLNO = Convert.ToSByte(dr["slno"]),
+                                   COMPCD = dr["compcd"].retStr(),
+                                   COMPNM = dr["compnm"].retStr(),
+                                   LOCCD = dr["loccd"].retStr(),
+                                   LOCNM = dr["locnm"].retStr(),
+                                   DISTANCE = dr["distance"].retInt()
+                               }).ToList();
 
                 for (int q = 0; q <= VE.MSUBLEGLOCOTH.Count - 1; q++)
                 {
@@ -554,23 +569,31 @@ namespace Improvar.Controllers
             }
             return VE;
         }
-        public ActionResult SearchPannelData(SubLedgerEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT, string SRC_FLAG)
+        public ActionResult SearchPannelData()
         {
             try
             {
                 var UNQSNO = Cn.getQueryStringUNQSNO();
-                //ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string sql = "select SLCD,SLNM,GSTNO,SLAREA,DISTRICT,PIN from " + CommVar.FinSchema(UNQSNO) + ".M_SUBLEG a where  ";
-                if (SRC_SLCD.retStr() != "") sql += "  (SLCD like '%" + SRC_SLCD.retStr() + "%' or upper(SLnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%' ) and";
-                if (SRC_FLAG.retStr() != "") sql += "(a.GSTNO like '%" + SRC_FLAG.retStr() + "%' or upper(DISTRICT) like '%" + SRC_FLAG.retStr().ToUpper() + "%' or upper(SLAREA) like '%" + SRC_FLAG.retStr().ToUpper() + "%') and ";
-                sql += " rownum<50000";
-                var dt = masterHelp.SQLquery(sql);
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                var MDT = (from j in DBF.M_SUBLEG
+                           join o in DBF.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
+                           where (o.M_AUTONO == j.M_AUTONO)
+                           select new
+                           {
+                               SLCD = j.SLCD,
+                               SLNM = j.SLNM,
+                               GSTNO = j.GSTNO,
+                               SLAREA = j.SLAREA,
+                               DISTRICT = j.DISTRICT,
+                               PIN = j.PIN
+                           }).OrderBy(s => s.SLCD).ToList();
+
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 var hdr = "Sub Ledger Code" + Cn.GCS() + "Sub Ledger Name" + Cn.GCS() + "GST" + Cn.GCS() + "District" + Cn.GCS() + "Area" + Cn.GCS() + "PIN";
-                foreach (DataRow dr in dt.Rows)
+                for (int j = 0; j <= MDT.Count - 1; j++)
                 {
-                    SB.Append("<tr><td>" + dr["SLCD"] + "</td><td>" + dr["SLNM"] + " </td><td> " + dr["GSTNO"] + "</td><td>" + dr["DISTRICT"] + " </td><td> " + dr["SLAREA"] + " </td><td>" + dr["PIN"] + " </td></tr>");
-                }       
+                    SB.Append("<tr><td>" + MDT[j].SLCD + "</td><td>" + MDT[j].SLNM + "</td><td>" + MDT[j].GSTNO + "</td><td>" + MDT[j].DISTRICT + "</td><td>" + MDT[j].SLAREA + "</td><td>" + MDT[j].PIN + "</td></tr>");
+                }
                 return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "0"));
             }
             catch (Exception ex)
@@ -1442,6 +1465,7 @@ namespace Improvar.Controllers
                             MSUBLEG.SLNM = VE.M_SUBLEG.SLNM.TrimStart(' ');
                             MSUBLEG.PSLCD = VE.M_SUBLEG.PSLCD;
                             MSUBLEG.SHORTNM = VE.M_SUBLEG.SHORTNM;
+                            MSUBLEG.PARTYCD = VE.M_SUBLEG.PARTYCD;
                             MSUBLEG.FULLNAME = VE.M_SUBLEG.FULLNAME;
                             MSUBLEG.BLDGNO = VE.M_SUBLEG.BLDGNO;
                             MSUBLEG.PREMISES = VE.M_SUBLEG.PREMISES;
@@ -1467,6 +1491,14 @@ namespace Improvar.Controllers
                             MSUBLEG.STATDT_1 = VE.M_SUBLEG.STATDT_1;
                             MSUBLEG.SLCOMPTYPE = FC["comtype"].ToString();
                             MSUBLEG.CMPNONCMP = DB1.MS_COMPTYPE.Where(s => s.COMPTYCD == MSUBLEG.SLCOMPTYPE).Select(s => s.LTDIND).FirstOrDefault();
+                            if (VE.TCSAPPL == true)
+                            {
+                                MSUBLEG.TCSAPPL = "Y";
+                            }
+                            else
+                            {
+                                MSUBLEG.TCSAPPL = "N";
+                            }
                             MSUBLEG.PROPNAME = VE.M_SUBLEG.PROPNAME;
                             MSUBLEG.ADHAARNO = VE.M_SUBLEG.ADHAARNO;
                             MSUBLEG.GPSLAT = VE.M_SUBLEG.GPSLAT;
@@ -1746,7 +1778,7 @@ namespace Improvar.Controllers
                             string ContentFlg = "";
                             if (VE.DefaultAction == "A")
                             {
-                                ContentFlg = "1" + "<br/><br/>Code:  " + MSUBLEG.SLCD + "    " + "  Name:  " + MSUBLEG.SLNM + "    " + "  District:  " + MSUBLEG.DISTRICT + "    " + "  Area:  " + MSUBLEG.SLAREA;
+                                ContentFlg = "1" + "<br/><br/>Code:  " + MSUBLEG.SLCD + "    " +"  Name:  "+ MSUBLEG.SLNM + "    " +"  District:  " + MSUBLEG.DISTRICT + "    " + "  Area:  " + MSUBLEG.SLAREA ;
                             }
                             else if (VE.DefaultAction == "E")
                             {
@@ -1867,6 +1899,26 @@ namespace Improvar.Controllers
             }
             TempData["printparameter"] = rvh;
             return Content("");
+        }
+        public ActionResult GetPartyGroupDetails(string val)
+        {
+            try
+            {
+                var str = MasterHelpFa.PARTYCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
     }
 }
