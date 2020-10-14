@@ -339,6 +339,10 @@ namespace Improvar.Controllers
                 }
                 VE.AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), TXN.DOCDT.retStr().Remove(10), VE.MENU_PARA, TXN.AUTONO).retDbl();
                 VE.AMT = VE.AMT.retDbl() > VE.TDSLIMIT.retDbl() ? VE.TDSLIMIT.retDbl() : VE.AMT.retDbl();
+                if (TXN.TDSCODE.retStr() != "")
+                {
+                    VE.TDSNM = DBF.M_TDS_CNTRL.Where(e => e.TDSCODE == TXN.TDSCODE).FirstOrDefault()?.TDSNM;
+                }
                 //
 
                 string Scm = CommVar.CurSchema(UNQSNO);
@@ -743,8 +747,10 @@ namespace Improvar.Controllers
         {
             try
             {
-                string linktdscode = "'Y','Z'", menu_para = "SB";
-                if (menu_para == "PB" || menu_para == "PR") linktdscode = "'X'";
+                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                Cn.getQueryString(VE);
+                string linktdscode = "'Y','Z'";
+                if (VE.MENU_PARA == "PB") linktdscode = "'X'";
                 if (TAG.retStr() == "") return Content("Enter Document Date");
                 if (val == null)
                 {
@@ -854,6 +860,8 @@ namespace Improvar.Controllers
                                 str += "^" + "TDSCALCON" + "=^" + TDSCALCON + Cn.GCS();
                                 str += "^" + "AMT" + "=^" + AMT + Cn.GCS();
                                 str += "^" + "TDSROUNDCAL" + "=^" + TDSROUNDCAL + Cn.GCS();
+                                str += "^" + "TCSCODE" + "=^" + TCSCODE + Cn.GCS();
+                                str += "^" + "TCSNM" + "=^" + TCSNM + Cn.GCS();
                                 return Content(str);
                             }
                             else
@@ -1940,6 +1948,8 @@ namespace Improvar.Controllers
                     TTXN.MENU_PARA = VE.T_TXN.MENU_PARA;
                     TTXN.TCSPER = VE.T_TXN.TCSPER;
                     TTXN.TCSAMT = VE.T_TXN.TCSAMT;
+                    TTXN.TCSON = VE.T_TXN.TCSON;
+                    TTXN.TDSCODE = VE.T_TXN.TDSCODE;
                     if (VE.DefaultAction == "E")
                     {
                         dbsql = masterHelp.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
