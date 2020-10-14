@@ -2455,9 +2455,9 @@ namespace Improvar
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string sql = "select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
                 if (slcd.retStr() != "") sql += "(select CMPNONCMP from  " + scmf + ".m_subleg where slcd='" + slcd + "') as CMPNONCMP, "; else sql += "'' CMPNONCMP, ";
-                sql += " b.tdsnm, b.secno, b.glcd from ";
-                sql += "(select tdscode, edate, tdsper, tdspernoncmp from ";
-                sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+                sql += " b.tdsnm, b.secno, b.glcd,a.tdslimit,a.tdscalcon,a.tdsroundcal from ";
+                sql += "(select tdscode, edate, tdsper, tdspernoncmp,tdslimit,tdscalcon,tdsroundcal from ";
+                sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp,a.tdslimit,a.tdscalcon,a.tdsroundcal, ";
                 sql += "row_number() over(partition by a.tdscode order by a.edate desc) as rn ";
                 sql += "from " + scmf + ".m_tds_cntrl_dtl a ";
                 sql += "where  edate <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";

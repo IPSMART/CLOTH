@@ -390,7 +390,7 @@ function UpdateBarCodeRow() {
     } else {
         $("#BARCODE").focus();
     }
-
+    $("#bardatachng").val("Y");
 }
 
 function ClearBarcodeArea(TAG) {
@@ -1161,35 +1161,20 @@ function BillAmountCalculate() {
         }
     }
     //
-    totalbillamt = totalbillamt + TCSAMT;
+    totalbillamt = parseFloat(totalbillamt) + parseFloat(TCSAMT);
     var REVCHRG = $("#REVCHRG").val();
     if (REVCHRG == "Y") {
-        totalbillamt = totalbillamt - totaltax;
+        totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
     }
     if (ROUND_TAG == true) {
         R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
         TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
         document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
         document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
-        //@*if (MENU_PARA == "PI") {
-        //    document.getElementById("BILL_AMTRecvd").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
-        //    var ADVRECDAMT = document.getElementById("ADVRECDAMT").value;
-        //    if (ADVRECDAMT != "") {
-        //        document.getElementById("NET_AMTRecvd").value = (parseFloat(R_TOTAL_BILL_AMOUNT) - parseFloat(ADVRECDAMT)).toFixed(2);
-        //    } else { document.getElementById("NET_AMTRecvd").value = ""; }
-
-        //}*@
     }
     else {
-        //TOTAL_BILL_AMOUNT = parseFloat(PRODUCT_TOTAL_AMT) + parseFloat(AMOUNT_TOTAL_AMT);
         TOTAL_ROUND = 0;
         document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
-        //@*if (MENU_PARA == "PI") {
-        //    document.getElementById("BILL_AMTRecvd").value = parseFloat(totalbillamt).toFixed(2);
-        //    var ADVRECDAMT = document.getElementById("ADVRECDAMT").value;
-        //    if (ADVRECDAMT != "") { document.getElementById("NET_AMTRecvd").value = (parseFloat(totalbillamt) - parseFloat(ADVRECDAMT)).toFixed(2); }
-        //    else { document.getElementById("NET_AMTRecvd").value = ""; }
-        //}*@
         document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
     }
 
@@ -1297,7 +1282,7 @@ function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
         var DOCDT = document.getElementById("DOCDT").value;
         $.ajax({
             type: 'GET',
-            url: $("#GetTDSDetails").val(),//"@Url.Action("GetTDSDetails", PageControllerName)",
+            url: $("#UrlSelectTDSCode").val(),//"@Url.Action("GetTDSDetails", PageControllerName)",
             data:
         {
             val: id,
@@ -1566,6 +1551,9 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + SCMDISCRATE + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + SCMDISCRATE + '">';
     tr += '    </td>';
+    tr += '    <td class="">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text" >';
+    tr += '    </td>';
     tr += '   <td class=""> ';
     tr += '   <button type="button" onclick="FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
     tr += '   </td> ';
@@ -1575,9 +1563,11 @@ function AddBarCodeGrid() {
     }
     tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder="" value=' + BarImages + '> ';
     tr += '   </td> ';
-    tr += '        <td class="sticky-cell-opposite">';
-    tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
-    tr += '        </td>';
+    if (MENU_PARA != "SB") {
+        tr += '        <td class="sticky-cell-opposite">';
+        tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
+        tr += '        </td>';
+    }
     tr += ' </tr>';
 
     $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
@@ -1593,6 +1583,7 @@ function AddBarCodeGrid() {
     } else {
         $("#BARCODE").focus();
     }
+    $("#bardatachng").val("Y");
 }
 function RateUpdate(index) {
     var MENU_PARA = $("#MENU_PARA").val();
@@ -1752,7 +1743,7 @@ function GetPartyDetails(id) {
     if (DefaultAction == "V") return true;
     debugger;
     if (id == "") {
-        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL");
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
     }
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
@@ -1764,7 +1755,7 @@ function GetPartyDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL");
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
                     $('#SearchFldValue').val("SLCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
@@ -1787,6 +1778,8 @@ function GetPartyDetails(id) {
                         $("#PSLCD").val(returncolvalue(result, "PSLCD"));
 
                         //tcs
+                        $("#TDSCODE").val(returncolvalue(result, "TCSCODE"));
+                        $("#TDSNM").val(returncolvalue(result, "TCSNM"));
                         $("#TCSPER").val(returncolvalue(result, "TCSPER"));
                         $("#TDSLIMIT").val(returncolvalue(result, "TDSLIMIT"));
                         $("#TDSCALCON").val(returncolvalue(result, "TDSCALCON"));
@@ -1799,7 +1792,7 @@ function GetPartyDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
                         message_value = "SLCD";
                     }
                 }

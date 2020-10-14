@@ -1892,54 +1892,54 @@ namespace Improvar
                 return sql;
             }
         }
-        public string TDSCODE_help(string docdt, string val, string slcd)
-        {
-            try
-            {
-                var UNQSNO = Cn.getQueryStringUNQSNO();
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string scmf = CommVar.FinSchema(UNQSNO);
-                string sql = "select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
-                if (slcd.retStr() != "") sql += "(select CMPNONCMP from  " + scmf + ".m_subleg where slcd='" + slcd + "') as CMPNONCMP, "; else sql += "'' CMPNONCMP, ";
-                sql += " b.tdsnm, b.secno, b.glcd from ";
-                sql += "(select tdscode, edate, tdsper, tdspernoncmp from ";
-                sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
-                sql += "row_number() over(partition by a.tdscode order by a.edate desc) as rn ";
-                sql += "from " + scmf + ".m_tds_cntrl_dtl a ";
-                sql += "where  edate <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
-                if (val.retStr() != "") sql += " and tdscode = '" + val + "' ";
-                sql += ")where rn = 1 ) a, ";
-                sql += "" + scmf + ".m_tds_cntrl b ";
-                sql += "where a.tdscode = b.tdscode(+) ";
+        //public string TDSCODE_help(string docdt, string val, string slcd)
+        //{
+        //    try
+        //    {
+        //        var UNQSNO = Cn.getQueryStringUNQSNO();
+        //        ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+        //        string scmf = CommVar.FinSchema(UNQSNO);
+        //        string sql = "select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+        //        if (slcd.retStr() != "") sql += "(select CMPNONCMP from  " + scmf + ".m_subleg where slcd='" + slcd + "') as CMPNONCMP, "; else sql += "'' CMPNONCMP, ";
+        //        sql += " b.tdsnm, b.secno, b.glcd from ";
+        //        sql += "(select tdscode, edate, tdsper, tdspernoncmp from ";
+        //        sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+        //        sql += "row_number() over(partition by a.tdscode order by a.edate desc) as rn ";
+        //        sql += "from " + scmf + ".m_tds_cntrl_dtl a ";
+        //        sql += "where  edate <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
+        //        if (val.retStr() != "") sql += " and tdscode = '" + val + "' ";
+        //        sql += ")where rn = 1 ) a, ";
+        //        sql += "" + scmf + ".m_tds_cntrl b ";
+        //        sql += "where a.tdscode = b.tdscode(+) ";
 
-                DataTable dt = SQLquery(sql);
-                if (val == null)
-                {
-                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= dt.Rows.Count - 1; i++)
-                    {
-                        SB.Append("<tr ><td>" + dt.Rows[i]["TDSNM"].retStr() + "</td><td>" + dt.Rows[i]["TDSCODE"].retStr() + " </td><td> " + dt.Rows[i]["TDSPER"].retStr() + "</td><td>" + dt.Rows[i]["TDSPERNONCMP"].retStr() + " </td><td> " + dt.Rows[i]["SECNO"].retStr() + "</td></tr>");
-                    }
-                    var hdr = "TDS Name" + Cn.GCS() + "TDS Code" + Cn.GCS() + "TDS % Company" + Cn.GCS() + "TDS % Non Company" + Cn.GCS() + "Sec No.";
-                    return Generate_help(hdr, SB.ToString());
-                }
-                else
-                {
-                    if (dt.Rows.Count != 0)
-                    {
-                        string str = "";
-                        str = ToReturnFieldValues("", dt);
-                        return str;
-                    }
-                }
-                return "Invalid TDS Code ! Please Enter a Valid Code ";
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return ex.Message + ex.InnerException;
-            }
-        }
+        //        DataTable dt = SQLquery(sql);
+        //        if (val == null)
+        //        {
+        //            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+        //            for (int i = 0; i <= dt.Rows.Count - 1; i++)
+        //            {
+        //                SB.Append("<tr ><td>" + dt.Rows[i]["TDSNM"].retStr() + "</td><td>" + dt.Rows[i]["TDSCODE"].retStr() + " </td><td> " + dt.Rows[i]["TDSPER"].retStr() + "</td><td>" + dt.Rows[i]["TDSPERNONCMP"].retStr() + " </td><td> " + dt.Rows[i]["SECNO"].retStr() + "</td></tr>");
+        //            }
+        //            var hdr = "TDS Name" + Cn.GCS() + "TDS Code" + Cn.GCS() + "TDS % Company" + Cn.GCS() + "TDS % Non Company" + Cn.GCS() + "Sec No.";
+        //            return Generate_help(hdr, SB.ToString());
+        //        }
+        //        else
+        //        {
+        //            if (dt.Rows.Count != 0)
+        //            {
+        //                string str = "";
+        //                str = ToReturnFieldValues("", dt);
+        //                return str;
+        //            }
+        //        }
+        //        return "Invalid TDS Code ! Please Enter a Valid Code ";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return ex.Message + ex.InnerException;
+        //    }
+        //}
         public string SLCD_help(string val, string LINK_CD = "", string CAPTION = "", string GLCD = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
