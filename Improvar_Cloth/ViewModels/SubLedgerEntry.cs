@@ -33,5 +33,9 @@ namespace Improvar.ViewModels
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public List<DropDown_list> DropDown_list { get; set; }
         public string isPresentinLastYrSchema { get; set; }
+        public bool TCSAPPL { get; set; }
+        public string PARTYNM { get; set; }
+        
+
     }
 }

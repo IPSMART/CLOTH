@@ -39,7 +39,7 @@
                                 @Html.CheckBoxFor(model => model.MSUBLEGCONT[i].Checked)
                             </td>
                             <td class="grid_td">
-                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
+                                @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                             </td>
                             <td class="grid_td">
                                 @Html.TextBoxFor(model => Model.MSUBLEGCONT[i].CPERSON, new { id = "CPN_" + i, @class = " atextBoxFor ", maxlength = 60 })

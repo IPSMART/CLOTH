@@ -2276,5 +2276,39 @@ namespace Improvar
             if (!System.IO.File.Exists(complogo)) complogo = "";
             return complogo;
         }
+        public string PARTYCD_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string scmf = CommVar.FinSchema(UNQSNO);
+            string valsrch = val.ToUpper().Trim();
+            string sql = "";
+            sql += "select c.PARTYCD,c.PARTYNM from " + scmf + ".M_PARTYGRP c," + scmf + ".M_CNTRL_HDR i where c.M_AUTONO= i.M_AUTONO(+) ";
+            sql += "and i.INACTIVE_TAG ='N' ";
+            if (valsrch.retStr() != "") sql += "and upper(c.PARTYCD) = '" + valsrch + "'  ";
+            sql += "order by  c.PARTYCD,c.PARTYNM ";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["PARTYNM"] + "</td><td>" + tbl.Rows[i]["PARTYCD"] + " </td></tr>");
+                }
+                var hdr = "Party Group Name" + Cn.GCS() + "Party Group Code";
+                return (Generate_help(hdr, SB.ToString()));
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Party Group Code ! Please Enter a Valid Party Group Code !!";
+                }
+            }
+        }
     }
 }

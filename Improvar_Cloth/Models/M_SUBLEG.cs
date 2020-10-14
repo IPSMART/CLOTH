@@ -235,6 +235,10 @@ namespace Improvar.Models
         public string SLPHNO { get; set; }
         [StringLength(100)]
         public string ACTNAMEOF { get; set; }
-        
+        [StringLength(1)]
+        public string TCSAPPL { get; set; }
+        [StringLength(4)]
+        public string PARTYCD { get; set; }
+
     }
 }

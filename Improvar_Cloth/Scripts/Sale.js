@@ -1116,7 +1116,52 @@ function BillAmountCalculate() {
     $("#TOTTAXVAL").val(parseFloat(totaltaxval).toFixed(2));
     $("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
 
+    //tcs
+    var TCSPER = 0; TCSAMT = 0; TCSON = 0;
+    var MENU_PARA = $("#MENU_PARA").val();
+    if (MENU_PARA != "SR" || MENU_PARA != "PR" ) {
+        TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
+        if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
+        document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
+        if (MENU_PARA == "PB") {
+            TCSON = $("#TCSON").val();
+            if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
+        }
+        else {
+            GetTCSON(totalbillamt);
+            TCSON = $("#TCSON").val();
+            if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+        }
+        TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100);
+        TCSAMT = CalculateTcsAmt(TCSAMT);
+        if (MENU_PARA == "PB") {
+            var NEW_TCSAMT = $("#TCSAMT").val();
+            if (NEW_TCSAMT == "") { NEW_TCSAMT = parseFloat(0); } else { NEW_TCSAMT = parseFloat(NEW_TCSAMT) }
 
+            var TCSON = $("#TCSON").val();
+            if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+
+            var TCSPER = $("#TCSPER").val();
+            if (TCSPER == "") { TCSPER = parseFloat(0); } else { TCSPER = parseFloat(TCSPER) }
+
+            var CAL_TCSAMT = TCSAMT;
+            var BAL_AMT = Math.abs(parseFloat(NEW_TCSAMT) - parseFloat(CAL_TCSAMT));
+            if (BAL_AMT <= 1 && NEW_TCSAMT > 0) {
+                $("#TCSAMT").val(parseFloat(NEW_TCSAMT).toFixed(2));
+                TCSAMT = NEW_TCSAMT;
+            }
+            else {
+                $("#TCSAMT").val(parseFloat(CAL_TCSAMT).toFixed(2));
+                TCSAMT = CAL_TCSAMT;
+            }
+        }
+        else {
+            document.getElementById("TCSAMT").value = parseFloat(TCSAMT).toFixed(2);
+
+        }
+    }
+    //
+    totalbillamt = totalbillamt + TCSAMT;
     var REVCHRG = $("#REVCHRG").val();
     if (REVCHRG == "Y") {
         totalbillamt = totalbillamt - totaltax;
@@ -1237,12 +1282,13 @@ function DeleteDOCrow() {
 }
 
 function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
-    var DefaultAction = $("#DefaultAction").val();
-    if (DefaultAction == "V") return true;
     if (id == "") {
         $("#" + TDSHD.id).val("");
         $("#" + TDSNM.id).val("");
         $("#" + TCSPER.id).val("");
+        $("#TDSLIMIT").val("");
+        $("#TDSCALCON").val("");
+        $("#TDSROUNDCAL").val("");
     }
     else {
         if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
@@ -1251,7 +1297,7 @@ function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
         var DOCDT = document.getElementById("DOCDT").value;
         $.ajax({
             type: 'GET',
-            url: $("#UrlSelectTDSCode").val(),//"@Url.Action("GetTDSDetails", PageControllerName)",
+            url: $("#GetTDSDetails").val(),//"@Url.Action("GetTDSDetails", PageControllerName)",
             data:
         {
             val: id,
@@ -1269,11 +1315,18 @@ function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
                     } else {
                         document.getElementById(TCSPER.id).value = returncolvalue(result, "TDSPERNONCMP");
                     }
+                    document.getElementById("TDSLIMIT").value = returncolvalue(result, "TDSLIMIT");
+                    document.getElementById("TDSCALCON").value = returncolvalue(result, "TDSCALCON");
+                    document.getElementById("TDSROUNDCAL").value = returncolvalue(result, "TDSROUNDCAL");
+                    BillAmountCalculate('');//fill value of tcson
                 }
                 else {
                     $("#" + TDSHD.id).val("");
                     $("#" + TDSNM.id).val("");
                     $("#" + TCSPER.id).val("");
+                    $("#TDSLIMIT").val("");
+                    $("#TDSCALCON").val("");
+                    $("#TDSROUNDCAL").val("");
                     msgInfo(result);
                     message_value = TDSHD.id;
                 }
@@ -1285,7 +1338,6 @@ function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
             }
         });
     }
-
 }
 function AddBarCodeGrid() {
     var DefaultAction = $("#DefaultAction").val();
@@ -1694,6 +1746,138 @@ function FillImageModal(index) {
         htm += '</div>';
         $("#div_carousel_inner").append(htm);
     });
+}
+function GetPartyDetails(id) {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    debugger;
+    if (id == "") {
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL");
+    }
+    else {
+        var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: $("#UrlSubLedgerDetails").val(),//"@Url.Action("GetBarCodeDetails", PageControllerName)",
+            data: "&val=" + id + "&Code=" + code,
+            success: function (result) {
+                var MSG = result.indexOf('#helpDIV');
+                if (MSG >= 0) {
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL");
+                    $('#SearchFldValue').val("SLCD");
+                    $('#helpDIV').html(result);
+                    $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
+                    $('#ReferanceColumn').val("1/0/3/2");
+                    $('#helpDIV_Header').html("Party Details");
+                }
+                else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#SLCD").val(returncolvalue(result, "slcd"));
+                        $("#SLNM").val(returncolvalue(result, "slnm"));
+                        $("#SLAREA").val(returncolvalue(result, "slarea"));
+                        $("#GSTNO").val(returncolvalue(result, "gstno"));
+                        $("#TAXGRPCD").val(returncolvalue(result, "TAXGRPCD"));
+                        $("#PRCCD").val(returncolvalue(result, "PRCCD"));
+                        $("#PRCNM").val(returncolvalue(result, "PRCNM"));
+                        $("#AGSLCD").val(returncolvalue(result, "AGSLCD"));
+                        $("#AGSLNM").val(returncolvalue(result, "AGSLNM"));
+                        $("#DUEDAYS").val(returncolvalue(result, "crdays"));
+                        $("#PSLCD").val(returncolvalue(result, "PSLCD"));
+
+                        //tcs
+                        $("#TCSPER").val(returncolvalue(result, "TCSPER"));
+                        $("#TDSLIMIT").val(returncolvalue(result, "TDSLIMIT"));
+                        $("#TDSCALCON").val(returncolvalue(result, "TDSCALCON"));
+                        $("#AMT").val(returncolvalue(result, "AMT"));
+                        $("#TCSAPPL").val(returncolvalue(result, "TCSAPPL"));
+                        $("#TDSROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
+                        BillAmountCalculate();//fill value of tcson
+                        //
+                    }
+                    else {
+                        $('#helpDIV').html("");
+                        msgInfo("" + result + " !");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL");
+                        message_value = "SLCD";
+                    }
+                }
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+}
+function GetTCSON(billamount) {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
+    var TCSON = 0;
+    if ($("#TCSAPPL").val() != "Y") {
+        TCSON = parseFloat(0);
+    }
+    else {
+        var tdslimit = $("#TDSLIMIT").val();
+        if (tdslimit == "") { tdslimit = parseFloat(0); } else { tdslimit = parseFloat(tdslimit) }
+
+        var amt = $("#AMT").val();
+        if (amt == "") { amt = parseFloat(0); } else { amt = parseFloat(amt) }
+
+        var blamt = billamount;//$("#BILL_AMT").val();
+        if (blamt == "") { blamt = parseFloat(0); } else { blamt = parseFloat(blamt) }
+
+        var tcsamt = $("#TCSAMT").val();
+        if (tcsamt == "") { tcsamt = parseFloat(0); } else { tcsamt = parseFloat(tcsamt) }
+
+        var totaltaxableamt = $("#TOTTAXVAL").val();
+        if (totaltaxableamt == "") { totaltaxableamt = parseFloat(0); } else { totaltaxableamt = parseFloat(totaltaxableamt) }
+
+        var tdscalcon = $("#TDSCALCON").val();
+
+        var TL = tdslimit;	//tdslimit from m_tds_cntrl_dtl
+        var O = amt;	//amt from slcdtcscalcon func
+        var B = blamt;//parseFloat(blamt - tcsamt);//	blamt - tcsamt
+        var T = totaltaxableamt;//	total taxable amt
+
+
+        if (tdscalcon == "B") {
+            TCSON = parseFloat(parseFloat(O) + parseFloat(B) - parseFloat(TL));
+        }
+        else {// tdscalcon = "T"
+            TCSON = parseFloat(parseFloat(O) + parseFloat(T) - parseFloat(TL));
+        }
+
+        if (TCSON < 0) TCSON = parseFloat(0);
+    }
+    $("#TCSON").val(parseFloat(TCSON).toFixed(2));
+}
+function CalculateTcsAmt(TCSAMT) {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var TDSROUNDCAL = $("#TDSROUNDCAL").val();
+    if (TDSROUNDCAL == "Y" || TDSROUNDCAL == "") {
+        TCSAMT = Math.round(TCSAMT); //==yes or null or blank
+    }
+    else
+        if (TDSROUNDCAL == "N") {
+            TCSAMT = Math.ceil(TCSAMT); //==nxt
+        }
+        else
+            if (TDSROUNDCAL == "L") {
+                TCSAMT = Math.floor(TCSAMT); //==least
+            }
+            else {
+                TCSAMT = TCSAMT; //==2
+            }
+    return TCSAMT;
 }
 
 

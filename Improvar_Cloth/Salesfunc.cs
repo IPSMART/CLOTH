@@ -24,7 +24,7 @@ namespace Improvar
             sql += "select z.slcd, b.taxgrpcd, a.agslcd, a.areacd, a.prccd, a.discrtcd, a.crdays, a.crlimit, a.cod, a.gstno, a.docth, b.trslcd, b.courcd, nvl(c.agslcd,a.agslcd) agslcd, ";
             sql += "g.slnm, g.slarea, h.slnm agslnm, i.slnm trslnm, e.taxgrpnm, f.prcnm, ";
             //sql += "f.prcnm, "; // c.prcdesc, c.effdt, c.itmprccd, ";
-            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd ";
+            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno ";
             sql += "from ";
 
             sql += "(select a.slcd from " + scmf + ".m_subleg a where a.slcd='" + slcd + "' ) z, ";
@@ -1645,6 +1645,39 @@ namespace Improvar
 
             return tbl;
 
+        }
+        public double getSlcdTCSonCalc(string slcdpanno, string docdt, string menupara = "SB", string autono = "")
+        {
+            double rtval = 0;
+            string sql = "", COM = CommVar.Compcd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+            string trcd = "'SB','SD'";
+            string salpur = "S";
+            if (menupara == "PB" || menupara == "PD") { trcd = "'PB','PD'"; salpur = "P"; }
+
+            sql = "select sum(nvl(amt,0)) amt from (";
+
+            sql += "select sum(a.amt) amt ";
+            sql += "from " + scmf + ".t_vch_det a, " + scmf + ".t_vch_hdr b, " + scmf + ".t_cntrl_hdr c, " + scmf + ".m_subleg d, " + scmf + ".m_genleg e ";
+            sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and a.slcd = d.slcd(+) and d.panno = '" + slcdpanno + "' and ";
+            sql += "c.compcd = '" + COM + "' and b.trcd in (" + trcd + ") and nvl(c.cancel, 'N')= 'N' and ";
+            if (autono.retStr() != "") sql += "a.autono not in ('" + autono + "') and ";
+            sql += "a.glcd=e.glcd(+) and e.linkcd in (" + (salpur == "P" ? "'C'" : "'D'") + ") and ";
+            sql += "c.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ";
+
+            sql += "union all ";
+
+            sql += "select sum(case a.drcr when e.linkcd then a.amt else a.amt*-1 end) amt ";
+            sql += "from " + scmf + ".t_vch_det a, " + scmf + ".t_vch_hdr b, " + scmf + ".t_cntrl_hdr c, " + scmf + ".m_doctype d, ";
+            sql += scmf + ".m_genleg e, " + scmf + ".m_subleg f ";
+            sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.doccd=d.doccd(+) and ";
+            sql += "c.compcd='" + COM + "' and nvl(c.cancel,'N')='N' and d.doctype in ('AOPEN') and a.drcr in ('D','C') and ";
+            sql += "a.glcd=e.glcd(+) and a.slcd=f.slcd(+) and e.linkcd in (" + (salpur == "P" ? "'C'" : "'D'") + ") and f.panno='" + slcdpanno + "' ";
+
+            sql += ") ";
+
+            DataTable tbl = SQLquery(sql);
+            if (tbl.Rows.Count == 1) rtval = tbl.Rows[0]["amt"].retDbl();
+            return rtval;
         }
 
     }
