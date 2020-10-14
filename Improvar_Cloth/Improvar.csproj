@@ -286,6 +286,7 @@
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_SALEController.cs" />
+    <Compile Include="Controllers\T_SALE_POSController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
     <Compile Include="Controllers\User_GuideController.cs" />
     <Compile Include="DataSets\DSPrintBarcode.Designer.cs">
@@ -645,6 +646,7 @@
     <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
     <Compile Include="ViewModels\TransactionPackingSlipEntry.cs" />
+    <Compile Include="ViewModels\TransactionSalePosEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
     <Compile Include="ViewModels\UserGroupLinkDetails.cs" />
     <Compile Include="ViewModels\UserGuideImprovar.cs" />
@@ -1074,6 +1076,7 @@
     <Content Include="Views\Image_Link_Barcode\Image_Link_Barcode.cshtml" />
     <Content Include="Views\Rep_BarcodePrint\Rep_BarcodePrint.cshtml" />
     <Content Include="Views\Shared\_Rep_BarcodePrint_Main.cshtml" />
+    <Content Include="Views\T_SALE_POS\T_SALE_POS.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
