@@ -102,16 +102,16 @@ namespace Improvar.Controllers
             if (barno != "") tblmst = true;
             sql = "";
 
-            sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm ";
+            sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , ";
             sql += "a.pdesign, nvl(a.ourdesign,b.styleno) design, ";
             sql += "nvl(m.rate,x.rate) cprate, nvl(n.rate,0) wprate, nvl(o.rate,0) rprate, ";
             sql += "a.itrem, a.partcd, h.partnm, a.sizecd, a.colrcd, nvl(a.shade,g.colrnm) colrnm, ";
-            sql += "nvl(c.prefno,d.docno) blno, d.docdt, c.slcd, nvl(i.shortnm,i.slnm) slnm, ";
+            sql += "nvl(c.prefno,d.docno) blno, d.docdt,d.docno, c.slcd, nvl(i.shortnm,i.slnm) slnm, ";
             sql += "a.fabitcd, e.itnm fabitnm from ";
 
             sql += "( select a.autono, to_number(" + (tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, ";
             sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
-            sql += "from " + scm + (tblmst == false ? ".t_batchdtl" : "t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d ";
+            sql += "from " + scm + (tblmst == false ? ".t_batchdtl" : ".t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d ";
             sql += "where a.autono=d.autono(+) and a.barno=b.barno(+) and b.itcd=c.itcd(+) and ";
             if (autono.retStr() != "") sql += "a.autono in (" + autono + ") and ";
             if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
@@ -149,7 +149,7 @@ namespace Improvar.Controllers
 
             sql += "" + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, ";
             sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, ";
-            sql += "" + scmf + ".m_subleg i " + scmf + ".m_size j ";
+            sql += "" + scmf + ".m_subleg i ," + scm + ".m_size j ";
             sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and ";
             sql += "a.itcd=b.itcd(+) and a.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and ";
             sql += "x.barno=m.barno(+) and x.barno=n.barno(+) and x.barno=o.barno(+) and ";
@@ -225,13 +225,13 @@ namespace Improvar.Controllers
                         dr["colrnm"] = VE.BarcodePrint[i].COLRNM.retStr();
                         dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
                         dr["txslno"] = VE.BarcodePrint[i].TAXSLNO.retStr();
-                        dr["wpprice"] = VE.BarcodePrint[i].WPRATE.retStr().Split('.');
+                        dr["wpprice"] = VE.BarcodePrint[i].WPRATE.retStr().Replace(".","");
                         dr["rpprice"] = "";
                         dr["rppricecode"] = "";
                         dr["cost"] = "";
                         dr["costcode"] = "";
                         dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
-                        dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Split('/');
+                        dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/","");
                         dr["prefno"] = "";
                         dr["prefdt"] = "";
                         dr["docdtcode"] = "";
