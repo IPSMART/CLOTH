@@ -47,6 +47,7 @@
               <xs:element name="colrnm" msprop:Generator_ColumnVarNameInTable="columncolrnm" msprop:Generator_ColumnPropNameInRow="colrnm" msprop:Generator_ColumnPropNameInTable="colrnmColumn" msprop:Generator_UserColumnName="colrnm" type="xs:string" minOccurs="0" />
               <xs:element name="sizecd" msprop:Generator_ColumnVarNameInTable="columnsizecd" msprop:Generator_ColumnPropNameInRow="sizecd" msprop:Generator_ColumnPropNameInTable="sizecdColumn" msprop:Generator_UserColumnName="sizecd" type="xs:string" minOccurs="0" />
               <xs:element name="partnm" msprop:Generator_ColumnVarNameInTable="columnpartnm" msprop:Generator_ColumnPropNameInRow="partnm" msprop:Generator_ColumnPropNameInTable="partnmColumn" msprop:Generator_UserColumnName="partnm" type="xs:string" minOccurs="0" />
+              <xs:element name="itgrpshortnm" msprop:Generator_ColumnVarNameInTable="columnitgrpshortnm" msprop:Generator_ColumnPropNameInRow="itgrpshortnm" msprop:Generator_ColumnPropNameInTable="itgrpshortnmColumn" msprop:Generator_UserColumnName="itgrpshortnm" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
