@@ -33,7 +33,7 @@ namespace Improvar.ViewModels
         public DataTable DTPRICES { get; set; }
         public string STRPRICES { get; set; }
         public string SEARCH_ITCD { get; set; }
-        public string ITEM_BARCODE { get; set; }
+        //public string ITEM_BARCODE { get; set; }
         public string PRICES_EFFDTDROP { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public List<UploadDOC> UploadBarImages { get; set; }
