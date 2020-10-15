@@ -257,8 +257,8 @@ namespace Improvar.Controllers
                         var rpp = VE.BarcodePrint[i].RPRATE.retDbl() * 100;
                         dr["rprate_paisa"] = rpp;
                         dr["rprate_code"] = Decode(VE.BarcodePrint[i].RPRATE.retStr());
-                        dr["cost"] = "";
-                        dr["costcode"] = "";
+                        dr["cost"] = VE.BarcodePrint[i].CPRATE.retStr();
+                        dr["costcode"] = Decode(VE.BarcodePrint[i].CPRATE.retStr());
                         dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
                         dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/","");
                         dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
