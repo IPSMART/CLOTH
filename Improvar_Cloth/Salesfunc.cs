@@ -1580,72 +1580,72 @@ namespace Improvar
             return dt;
 
         }
-        public DataTable retBarPrn(string docdt, string autono = "", string barno = "", string wppricecd = "WP", string rppricecd = "RP")
-        {
-            string UNQSNO = CommVar.getQueryStringUNQSNO();
-            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
-            string sql = "";
-            bool tblmst = false;
-            if (barno != "") tblmst = true;
-            sql = "";
+        //public DataTable retBarPrn(string docdt, string autono = "", string barno = "", string wppricecd = "WP", string rppricecd = "RP")
+        //{
+        //    string UNQSNO = CommVar.getQueryStringUNQSNO();
+        //    string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+        //    string sql = "";
+        //    bool tblmst = false;
+        //    if (barno != "") tblmst = true;
+        //    sql = "";
 
-            sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm, ";
-            sql += "a.pdesign, nvl(a.ourdesign,b.styleno) design, ";
-            sql += "nvl(m.rate,x.rate) cprate, nvl(n.rate,0) wprate, nvl(o.rate,0) rprate, ";
-            sql += "a.itrem, a.partcd, h.partnm, a.sizecd, a.colrcd, nvl(a.shade,g.colrnm) colrnm, ";
-            sql += "nvl(c.prefno,d.docno) blno, d.docdt, c.slcd, nvl(i.shortnm,i.slnm) slnm, ";
-            sql += "a.fabitcd, e.itnm fabitnm from ";
+        //    sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm, ";
+        //    sql += "a.pdesign, nvl(a.ourdesign,b.styleno) design, ";
+        //    sql += "nvl(m.rate,x.rate) cprate, nvl(n.rate,0) wprate, nvl(o.rate,0) rprate, ";
+        //    sql += "a.itrem, a.partcd, h.partnm, a.sizecd, a.colrcd, nvl(a.shade,g.colrnm) colrnm, ";
+        //    sql += "nvl(c.prefno,d.docno) blno, d.docdt, c.slcd, nvl(i.shortnm,i.slnm) slnm, ";
+        //    sql += "a.fabitcd, e.itnm fabitnm from ";
 
-            sql += "( select a.autono, to_number(" + (tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, ";
-            sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
-            sql += "from " + scm + (tblmst == false ? ".t_batchdtl" : "t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d ";
-            sql += "where a.autono=d.autono(+) and a.barno=b.barno(+) and b.itcd=c.itcd(+) and ";
-            if (autono.retStr() != "") sql += "a.autono in (" + autono + ") and ";
-            if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
-            sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ) x, ";
+        //    sql += "( select a.autono, to_number(" + (tblmst == true ? "0" : "a.txnslno") + ") txnslno, nvl(b.fabitcd,c.fabitcd) fabitcd, a.barno, ";
+        //    sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
+        //    sql += "from " + scm + (tblmst == false ? ".t_batchdtl" : "t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d ";
+        //    sql += "where a.autono=d.autono(+) and a.barno=b.barno(+) and b.itcd=c.itcd(+) and ";
+        //    if (autono.retStr() != "") sql += "a.autono in (" + autono + ") and ";
+        //    if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
+        //    sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ) x, ";
 
-            for (int x = 0; x <= 2; x++)
-            {
-                string prccd = "", sqlals = "";
-                switch (x)
-                {
-                    case 0:
-                        prccd = "CP"; sqlals = "m"; break;
-                    case 1:
-                        prccd = wppricecd; sqlals = "n"; break;
-                    case 2:
-                        prccd = rppricecd; sqlals = "o"; break;
-                }
-                sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
-                sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
-                sql += "(select a.barno, a.prccd, a.effdt, ";
-                sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                sql += "from " + scm + ".m_itemplistdtl a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
-                sql += ") a, " + scm + ".m_itemplistdtl b, " + scm + ".m_sitem_barcode c ";
-                sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 and a.prccd='" + prccd + "' ";
-                sql += "union ";
-                sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
-                sql += "(select a.barno, a.prccd, a.effdt, ";
-                sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-                sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ) ";
-                sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".m_sitem_barcode d ";
-                sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.prccd='" + prccd + "' and ";
-                sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
-                sql += ") a where prccd='" + prccd + "') " + sqlals + ", ";
-            }
+        //    for (int x = 0; x <= 2; x++)
+        //    {
+        //        string prccd = "", sqlals = "";
+        //        switch (x)
+        //        {
+        //            case 0:
+        //                prccd = "CP"; sqlals = "m"; break;
+        //            case 1:
+        //                prccd = wppricecd; sqlals = "n"; break;
+        //            case 2:
+        //                prccd = rppricecd; sqlals = "o"; break;
+        //        }
+        //        sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
+        //        sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+        //        sql += "(select a.barno, a.prccd, a.effdt, ";
+        //        sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+        //        sql += "from " + scm + ".m_itemplistdtl a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
+        //        sql += ") a, " + scm + ".m_itemplistdtl b, " + scm + ".m_sitem_barcode c ";
+        //        sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 and a.prccd='" + prccd + "' ";
+        //        sql += "union ";
+        //        sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
+        //        sql += "(select a.barno, a.prccd, a.effdt, ";
+        //        sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
+        //        sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ) ";
+        //        sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".m_sitem_barcode d ";
+        //        sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.prccd='" + prccd + "' and ";
+        //        sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
+        //        sql += ") a where prccd='" + prccd + "') " + sqlals + ", ";
+        //    }
 
-            sql += "" + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, ";
-            sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, ";
-            sql += "" + scmf + ".m_subleg i ";
-            sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and ";
-            sql += "a.itcd=b.itcd(+) and a.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and ";
-            sql += "x.barno=m.barno(+) and x.barno=n.barno(+) and x.barno=o.barno(+) and ";
-            sql += "a.colrcd=g.colrcd(+) and a.partcd=h.partcd(+) and c.slcd=i.slcd(+) ";
-            DataTable tbl = SQLquery(sql);
+        //    sql += "" + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, ";
+        //    sql += "" + scm + ".m_sitem e, " + scm + ".m_group f, " + scm + ".m_color g, " + scm + ".m_parts h, ";
+        //    sql += "" + scmf + ".m_subleg i ";
+        //    sql += "where x.autono=c.autono(+) and x.autono=d.autono(+) and x.barno=a.barno(+) and ";
+        //    sql += "a.itcd=b.itcd(+) and a.fabitcd=e.itcd(+) and b.itgrpcd=f.itgrpcd(+) and ";
+        //    sql += "x.barno=m.barno(+) and x.barno=n.barno(+) and x.barno=o.barno(+) and ";
+        //    sql += "a.colrcd=g.colrcd(+) and a.partcd=h.partcd(+) and c.slcd=i.slcd(+) ";
+        //    DataTable tbl = SQLquery(sql);
 
-            return tbl;
+        //    return tbl;
 
-        }
+        //}
         public double getSlcdTCSonCalc(string slcdpanno, string docdt, string menupara = "SB", string autono = "")
         {
             double rtval = 0;
