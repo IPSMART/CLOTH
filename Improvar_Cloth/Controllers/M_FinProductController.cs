@@ -389,14 +389,14 @@ namespace Improvar.Controllers
                             VE.MSITEMPARTS[i].SLNO = Convert.ToByte(i + 1);
                         }
                     }
-                    VE.ITEM_BARCODE = DB.M_SITEM_BARCODE.Where(a => a.ITCD == sl.ITCD && a.COLRCD == null && a.SIZECD == null).Select(b => b.BARNO).FirstOrDefault();
+                    //VE.ITEM_BARCODE = DB.M_SITEM_BARCODE.Where(a => a.ITCD == sl.ITCD && a.COLRCD == null && a.SIZECD == null).Select(b => b.BARNO).FirstOrDefault();
 
                     sql = "";
                     sql += "SELECT i.SIZECD,  k.SIZENM,k.SZBARCODE,i.COLRCD,j.COLRNM, i.BARNO, j.CLRBARCODE, ";
                     sql += "case when exists (select autono from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST a where a.BARNO = i.BARNO) then 'Y' else '' end as HASTRANSACTION ";
                     sql += "FROM " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_BARCODE i, " + CommVar.CurSchema(UNQSNO) + ".M_COLOR j, " + CommVar.CurSchema(UNQSNO) + ".M_SIZE k ";
-                    sql += "where I.COLRCD = j.colrcd(+) and I.SIZECD = k.SIZECD(+) and i.itcd = '" + sl.ITCD + "' and ";
-                    sql += "nvl(i.sizecd, i.colrcd) is not null and i.BARNO is not null ";
+                    sql += "where I.COLRCD = j.colrcd(+) and I.SIZECD = k.SIZECD(+) and i.itcd = '" + sl.ITCD + "' ";
+                    sql += " order by COLRCD NULLS first,sizecd NULLS first,K.PRINT_SEQ asc ";
                     dt = masterHelp.SQLquery(sql);
                     VE.MSITEMBARCODE = (from DataRow dr in dt.Rows
                                         select new MSITEMBARCODE()
@@ -496,7 +496,7 @@ namespace Improvar.Controllers
                     {
                         VE.SEARCH_ITCD = sl.ITCD;
                         sl.ITCD = null;
-                        VE.ITEM_BARCODE = null;
+                        //VE.ITEM_BARCODE = null;
                         sl.STYLENO = null;
 
                     }
@@ -660,29 +660,14 @@ namespace Improvar.Controllers
                 {
                     column = dt.Columns.Add(plist.PRCCD, typeof(string)); column.Caption = plist.PRCNM;
                 }
-                dt.Rows.Add("");
-                foreach (var plist in M_PRCLST)
-                {//add same item price
-                    DataRow drRATE = dt_prcrt.Select("SIZECD is null AND  COLRCD is null AND PRCCD='" + plist.PRCCD + "'").FirstOrDefault();
-                    if (drRATE != null)
-                    {
-                        dt.Rows[0][plist.PRCCD] = drRATE["rate"].ToString();
-                    }
-                }
-                dt.Rows[0]["SIZECD"] = "";//Add blank row
-                dt.Rows[0]["COLRCD"] = "";
-                dt.Rows[0]["SZBARCODE"] = "";
-                dt.Rows[0]["CLRBARCODE"] = "";
-
-                var MSITEMBARCODE = VE.MSITEMBARCODE.Where(r => r.COLRCD != null || r.SIZECD != null).ToList();
-                foreach (MSITEMBARCODE bar in MSITEMBARCODE)
+                foreach (MSITEMBARCODE bar in VE.MSITEMBARCODE)
                 {
                     dt.Rows.Add("");
                     int rNo = dt.Rows.Count - 1;
-                    dt.Rows[rNo]["SIZECD"] = bar.SIZECD;
+                    dt.Rows[rNo]["SIZECD"] = bar.SIZECD.retStr();
                     dt.Rows[rNo]["SIZENM"] = bar.SIZENM;
                     dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
-                    dt.Rows[rNo]["COLRCD"] = bar.COLRCD;
+                    dt.Rows[rNo]["COLRCD"] = bar.COLRCD.retStr();
                     dt.Rows[rNo]["COLRNM"] = bar.COLRNM;
                     dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
                     dt.Rows[rNo]["BARNO"] = bar.BARNO;
@@ -691,7 +676,7 @@ namespace Improvar.Controllers
                         foreach (var plist in M_PRCLST)
                         {
                             string rate = (from DataRow dr in dt_prcrt.Rows
-                                           where dr["sizecd"].retStr() == bar.SIZECD && dr["colrcd"].retStr() == bar.COLRCD && dr["prccd"].retStr() == plist.PRCCD
+                                           where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr()
                                            select dr["rate"].retStr()).FirstOrDefault();
                             dt.Rows[rNo][plist.PRCCD] = rate;
                         }
@@ -1411,8 +1396,6 @@ namespace Improvar.Controllers
                 return "";
             }
         }
-
-
         public Tuple<List<M_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
         {
             List<M_BATCH_IMG_HDR> doc = new List<M_BATCH_IMG_HDR>();
@@ -1525,14 +1508,14 @@ namespace Improvar.Controllers
                             string txtst3 = h3;
 
                             //var MAXJOBCD = DB.M_SITEM.Where(a => a.ITCD.Substring(0, 1) == txtst).Max(a => a.ITCD);
-                           
-                            string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO)+".m_sitem where itcd like('"+ h + txtst3 + "%') ";
+
+                            string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + h + txtst3 + "%') ";
                             var tbl = masterHelp.SQLquery(sql);
                             if (tbl.Rows[0]["itcd"].ToString() == "")
                             {
                                 string txt = txtst;
                                 string stxt = txt;
-                                string R = stxt+ txtst3 + "00001";
+                                string R = stxt + txtst3 + "00001";
                                 MSITEM.ITCD = R.ToString();
                             }
 
@@ -1546,7 +1529,7 @@ namespace Improvar.Controllers
                             else
                             {
                                 //string maxSLst = MAXJOBCD.Substring(0, 1);
-                                string maxSLst = tbl.Rows[0]["itcd"].ToString().Substring(0,1);
+                                string maxSLst = tbl.Rows[0]["itcd"].ToString().Substring(0, 1);
                                 if (maxSLst == txtst)
                                 {
                                     string s = tbl.Rows[0]["itcd"].ToString();
@@ -1569,7 +1552,7 @@ namespace Improvar.Controllers
                                 }
                             }
                         }
-                        
+
                         MSITEM.ITGRPCD = VE.M_SITEM.ITGRPCD;
                         MSITEM.ITNM = VE.M_SITEM.ITNM;
                         MSITEM.BRANDCD = VE.M_SITEM.BRANDCD;
@@ -1705,24 +1688,24 @@ namespace Improvar.Controllers
                                 DB.M_SITEM_PARTS.Add(MIP);
                             }
                         }
-                        M_SITEM_BARCODE MSITEMBARCODE = new M_SITEM_BARCODE();
-                        MSITEMBARCODE.CLCD = MSITEM.CLCD;
-                        MSITEMBARCODE.EMD_NO = MSITEM.EMD_NO;
-                        MSITEMBARCODE.ITCD = MSITEM.ITCD;
-                        string txtitgrpcd = VE.M_SITEM.ITGRPCD;
-                        if (VE.ITEM_BARCODE.retStr() != "")
-                        {
-                            MSITEMBARCODE.BARNO = VE.ITEM_BARCODE;
-                        }
-                        else
-                        {
-                            MSITEMBARCODE.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD);
-                        }
-                        DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
-                        List<string> barnos = new List<string>();
+                        //M_SITEM_BARCODE MSITEMBARCODE = new M_SITEM_BARCODE();
+                        //MSITEMBARCODE.CLCD = MSITEM.CLCD;
+                        //MSITEMBARCODE.EMD_NO = MSITEM.EMD_NO;
+                        //MSITEMBARCODE.ITCD = MSITEM.ITCD;
+                        //string txtitgrpcd = VE.M_SITEM.ITGRPCD;
+                        //if (VE.ITEM_BARCODE.retStr() != "")
+                        //{
+                        //    MSITEMBARCODE.BARNO = VE.ITEM_BARCODE;
+                        //}
+                        //else
+                        //{
+                        //    MSITEMBARCODE.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD);
+                        //}
+                        //DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
+                        List<string> barnos = new List<string>(); string BARNO = "";
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
                         {
-                            if (VE.MSITEMBARCODE[i].SIZECD != null || VE.MSITEMBARCODE[i].COLRCD != null)
+                            if (VE.MSITEMBARCODE[i].SIZECD != null || VE.MSITEMBARCODE[i].COLRCD != null || i == 0)
                             {
                                 M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
                                 MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
@@ -1730,7 +1713,7 @@ namespace Improvar.Controllers
                                 MSITEMBARCODE1.ITCD = MSITEM.ITCD;
                                 MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                 MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
-                                if(VE.MSITEMBARCODE[i].BARNO.retStr() != "")
+                                if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
                                 {
                                     MSITEMBARCODE1.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
                                 }
@@ -1740,6 +1723,7 @@ namespace Improvar.Controllers
                                 }
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                                 barnos.Add(MSITEMBARCODE1.BARNO);
+                                if (i == 0) BARNO = MSITEMBARCODE1.BARNO;
                             }
                         }
                         for (int i = 0; i <= VE.MSITEMMEASURE.Count - 1; i++)
@@ -1780,7 +1764,7 @@ namespace Improvar.Controllers
                             DB.M_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
                             if (VE.BarImages.retStr() != "")
                             {
-                                var barimg = SaveBarImage(VE.BarImages, MSITEMBARCODE.BARNO, MSITEM.EMD_NO.retShort());
+                                var barimg = SaveBarImage(VE.BarImages, BARNO, MSITEM.EMD_NO.retShort());
                                 DB.M_BATCH_IMG_HDR.AddRange(barimg.Item1);
                                 DB.SaveChanges();
                                 //var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
@@ -1790,7 +1774,7 @@ namespace Improvar.Controllers
                                     m_batchImglink.CLCD = MSITEM.CLCD;
                                     m_batchImglink.EMD_NO = MSITEM.EMD_NO;
                                     m_batchImglink.BARNO = imgbar;
-                                    m_batchImglink.MAINBARNO = MSITEMBARCODE.BARNO;
+                                    m_batchImglink.MAINBARNO = BARNO;
                                     DB.M_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
                                 }
                             }
@@ -1809,8 +1793,8 @@ namespace Improvar.Controllers
                                 string colorcd = prcCols[0];
                                 string sizecd = prcCols[3];
                                 string barno = prcCols[6];
-                               var varcode = VE.MSITEMBARCODE.Where(d => d.BARNO == barno).FirstOrDefault();
-                                if (varcode == null && colorcd != "" && sizecd != "")
+                                var varcode = VE.MSITEMBARCODE.Where(d => d.SIZECD.retStr() == sizecd && d.COLRCD.retStr() == colorcd).FirstOrDefault();
+                                if (varcode == null)
                                 {
                                     transaction.Rollback();
                                     return Content("Color:" + colorcd + " Sizecd:" + sizecd + " not in barcode Tab. Please refresh pricelist. ");

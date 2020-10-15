@@ -41,6 +41,9 @@ namespace Improvar.Models
         public string COMPINIT { get; set; }
         public string GRPNM { get; set; }
         public string ITREM { get; set; }
+        public string PARTNM { get; set; }
+        public string SIZECD { get; set; }
+        
         public bool Checked { get; set; }
     }
 }
