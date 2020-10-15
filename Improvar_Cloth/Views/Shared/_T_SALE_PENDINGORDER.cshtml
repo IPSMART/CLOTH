@@ -1,0 +1,135 @@
+﻿@model Improvar.ViewModels.TransactionPackingSlipEntry
+<script>
+    $("#popupIndent").ready(function () { $("#dragclass").draggable({ cursor: "move" }); });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") { modeView(); }
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_BARNODETAIL_GRID'));
+        FooterFilter('_T_SALE_BARNODETAIL_GRID');
+    });
+</script>
+<div id="dragclass" style="overflow-y:auto;max-height:500px;height:auto;overflow-x:hidden;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="PO_P_IN_FS" name="PO_P_IN_FS" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_BARNODETAIL_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Stock Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:381px;">
+                    <table id="_T_SALE_BARNODETAIL_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" width="100%">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width:27px;">SL No.</th>
+                                <th class="" style="width:228px;">Barcode</th>
+                                <th class="">Group</th>
+                                <th class="" style="width:72px;">Mtrl Status</th>
+                                <th class="" style="width:118px;">Item</th>
+                                <th class="" style="width:118px;">Design</th>
+                                <th class="" style="width:111px;">Part</th>
+                                <th class="" style="width:137px;">Color</th>
+                                <th class="" style="width:74px;">Size</th>
+                                <th class="" style="width:137px;">Party</th>
+                                <th class="" style="width:73px;">Uom</th>
+                                <th class="" style="width:58px;">Stk.Type</th>
+                                <th class="" style="width:135px;">Date</th>
+                                <th class="" style="width:137px;text-align:right;">Bal.Qnty</th>
+                                <th class="" style="width:137px;text-align:right;">Bal.Nos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i <= Model.TSALEBARNOPOPUP.Count - 1; i++)
+                            {
+                                <tr style="font-size:12px; font-weight:bold;">
+                                    <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                        @Html.CheckBoxFor(model => model.TSALEBARNOPOPUP[i].Checked, new { id = "STOCK_Checked_" + i })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].SLNO, new { id = "STOCK_SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].BARNO, new { id = "STOCK_BARNO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].ITGRPCD, new { id = "STOCK_ITGRPCD_" + i })
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].ITGRPNM, new { id = "STOCK_ITGRPNM_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].MTRLJOBNM, new { id = "STOCK_MTRLJOBNM_" + i })
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].MTRLJOBCD, new { id = "STOCK_MTRLJOBCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].MTBARCODE, new { id = "STOCK_MTBARCODE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].ITSTYLE, new { id = "STOCK_ITSTYLE_" + i })
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].ITCD, new { id = "STOCK_ITCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].STYLENO, new { id = "STOCK_STYLENO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].PARTNM, new { id = "STOCK_PARTNM_" + i })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].PRTBARCODE, new { id = "STOCK_PRTBARCODE_" + i })
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].PARTCD, new { id = "STOCK_PARTCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].COLRCD, new { id = "STOCK_COLRCD_" + i })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].CLRBARCODE, new { id = "STOCK_CLRBARCODE_" + i })
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].COLRNM, new { id = "STOCK_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].SIZENM, new { id = "STOCK_SIZENM_" + i })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].SZBARCODE, new { id = "STOCK_SZBARCODE_" + i })
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].SIZECD, new { id = "STOCK_SIZECD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].SLNM, new { id = "STOCK_SLNM_" + i })
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].SLCD, new { id = "STOCK_SLCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].UOM, new { id = "STOCK_UOM_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].STKTYPE, new { id = "STOCK_STKTYPE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSALEBARNOPOPUP[i].DOCDT, new { id = "STOCK_DOCDT_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.EditorFor(model => Model.TSALEBARNOPOPUP[i].BALQNTY, new { htmlattributes = new { id = "STOCK_BALQNTY_" + i, @class = " atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                    </td>
+                                    <td class="">
+                                        @Html.EditorFor(model => Model.TSALEBARNOPOPUP[i].BALNOS, new { htmlattributes = new { id = "STOCK_BALNOS_" + i, @class = " atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].PDESIGN, new { id = "STOCK_PDESIGN_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].OURDESIGN, new { id = "STOCK_OURDESIGN_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].FLAGMTR, new { id = "STOCK_FLAGMTR_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].RATE, new { id = "STOCK_RATE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].HSNCODE, new { id = "STOCK_HSNCODE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].GSTPER, new { id = "STOCK_GSTPER_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].ALL_GSTPER, new { id = "STOCK_ALL_GSTPER_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].PRODGRPGSTPER, new { id = "STOCK_PRODGRPGSTPER_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].SHADE, new { id = "STOCK_SHADE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].LOCABIN, new { id = "STOCK_LOCABIN_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TSALEBARNOPOPUP[i].GLCD, new { id = "STOCK_GLCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+    </div>
+    <div class="row" style="padding:5px;text-align:center;">
+        <input type="button" class="btn btn-success" id="btnCancel" value="Select" style="padding: 2px 5px 2px 5px;" onclick="FillBarcodeArea('', '_T_SALE_BARNODETAIL_GRID');" />
+        <input type="button" class="btn btn-danger" id="btnCancel" value="Close" style="padding: 2px 5px 2px 5px;" onclick="CloseBarnoPopup();" />
+    </div>
+</div>

@@ -35,6 +35,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
         public List<BARGEN_TYPE> BARGEN_TYPE { get; set; }
         public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
+        public List<PENDINGORDER> PENDINGORDER { get; set; }
         public List<DISC_TYPE> DISC_TYPE { get; set; }
         public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
         public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
