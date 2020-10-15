@@ -1547,7 +1547,6 @@ namespace Improvar.Controllers
             TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
             Cn.getQueryString(VE);
             DataTable dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", VE.MENU_PARA);
-            TempData["PENDORDER"] = dt;
             VE.PENDINGORDER = (from DataRow dr in dt.Rows
                                select new PENDINGORDER
                                {
@@ -1556,7 +1555,7 @@ namespace Improvar.Controllers
                                    ORDSLNO = dr["ORDSLNO"].retStr(),
                                    ORDDT = dr["ORDDT"].retStr().Remove(10),
                                    ITGRPNM = dr["ITGRPNM"].retStr(),
-                                   ITSTYLE = dr["styleno"].retStr()+" "+ dr["ITNM"].retStr(),
+                                   ITSTYLE = dr["styleno"].retStr() + " " + dr["ITNM"].retStr(),
                                    COLRNM = dr["COLRNM"].retStr(),
                                    SIZECD = dr["SIZECD"].retStr(),
                                    ORDQTY = dr["ORDQTY"].retDbl(),
@@ -1567,6 +1566,28 @@ namespace Improvar.Controllers
 
             VE.DefaultView = true;
             return PartialView("_T_SALE_PENDINGORDER", VE);
+        }
+        public JsonResult SelectPendOrder(TransactionPackingSlipEntry VE)
+        {
+            Cn.getQueryString(VE);
+
+            var dt = (from a in VE.PENDINGORDER
+                      where a.Ord_Checked == true
+                      select new PENDINGORDER
+                      {
+                          ORDNO = a.ORDNO.retStr(),
+                          ORDAUTONO = a.ORDAUTONO.retStr(),
+                          ORDSLNO = a.ORDSLNO.retStr(),
+                          ORDDT = a.ORDDT.retStr().Remove(10),
+                          ITCD = a.ITCD.retStr(),
+                          COLRCD = a.COLRCD.retStr(),
+                          SIZECD =a.SIZECD.retStr(),
+                          ORDQTY = a.ORDQTY.retDbl(),
+                      }).ToList();
+            TempData["PENDORDER"] = dt;
+
+            VE.DefaultView = true;
+            return Json(new { dt }, JsonRequestBehavior.AllowGet);
         }
         public ActionResult DeleteRowBarno(TransactionPackingSlipEntry VE)
         {

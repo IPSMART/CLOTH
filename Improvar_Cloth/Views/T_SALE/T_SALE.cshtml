@@ -213,12 +213,15 @@
         <input type="hidden" id="UrlUploadImages" value="@Url.Action("UploadImages", PageControllerName )" />
         <input type="hidden" id="UrlSubLedgerDetails" value="@Url.Action("GetSubLedgerDetails", PageControllerName )" />
         <input type="hidden" id="UrlPendOrder" value="@Url.Action("GetPendOrder", PageControllerName )" />
+        <input type="hidden" id="UrlSelectPendOrder" value="@Url.Action("SelectPendOrder", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
         <input type="hidden" id="slcd_tag" value="Party" />
         <input type="hidden" id="bardatachng" value="N" />
+        <input type="hidden" id="haspendorddata" value="N" />
+        <input type="hidden" id="selectpendord"/>
         @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
         @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
@@ -373,6 +376,12 @@
                         }
                     </div>
                 }
+            </div>
+            <div class="row">
+                <div>
+                    <div id="popup" class="row" style="margin-top: 11px;top:15%;left:13%;right:2%;position:absolute;width:fit-content;">
+                    </div>
+                </div>
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
@@ -1099,10 +1108,6 @@
                             <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
                                 <div id="partialdivBarCodeTab">
                                     @Html.Partial("_T_SALE_PRODUCT")
-                                </div>
-                                <div>
-                                    <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
-                                    </div>
                                 </div>
                             </div>
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
