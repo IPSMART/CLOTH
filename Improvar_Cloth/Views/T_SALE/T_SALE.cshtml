@@ -157,7 +157,6 @@
             url: "@Url.Action("Print", PageControllerName)",
             data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
             success: function (result) {
-                @*window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")*@
                 window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -166,6 +165,12 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
+    }
+    function Barcodeprinting() {
+        debugger;
+        var AUTONO = $("#AUTONO").val();
+        var DOCDT = $("#DOCDT").val();
+        window.open("@Url.Action("Rep_BarcodePrint", "Rep_BarcodePrint")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT, "_blank")
     }
 </script>
 @section Scripts {
@@ -275,7 +280,12 @@
                         </div>
 
                     </div>
-
+                    @if (Model.MENU_PARA == "PB" && Model.DefaultAction == "V")
+                    {
+                        <div class="col-md-1">
+                                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
+                        </div>
+                    }
                 </div>
                 <div class="row">
                     <div class="col-md-5">
