@@ -52,6 +52,7 @@ namespace Improvar.Controllers
 
                     //DataTable ttxndtl = masterHelp.SQLquery(sql);
                     DataTable ttxndtl = retBarPrn(docdt, autono, barno);
+                    if (ttxndtl.Rows.Count == 0) return Content("No Records..");
                     VE.BarcodePrint = (from DataRow dr in ttxndtl.Rows
                                        select new BarcodePrint()
                                        {
@@ -71,7 +72,9 @@ namespace Improvar.Controllers
                                            ITGRPSHORTNM= dr["shortnm"].retStr(),
                                            GRPNM = dr["grpnm"].retStr(),
                                            ITREM = dr["itrem"].retStr(),
-                                           
+                                           PARTNM = dr["partnm"].retStr(),
+                                           SIZECD = dr["sizecd"].retStr(),
+
                                            //WPPRICE = dr["wpprice"].retStr(),
                                            //WPPRICECODE = dr["wppricecode"].retStr(),
                                            //RPPRICE = dr["rpprice"].retStr(),
@@ -217,12 +220,14 @@ namespace Improvar.Controllers
             IR.Columns.Add("docdtcode", typeof(string));
             IR.Columns.Add("grpnm", typeof(string));
             IR.Columns.Add("itrem", typeof(string));
+            IR.Columns.Add("partnm", typeof(string));
+            IR.Columns.Add("sizecd", typeof(string));
 
             for (int i = 0; i < VE.BarcodePrint.Count; i++)
             {
                 if (VE.BarcodePrint[i].Checked == true)
                 {
-                    for (int j = 0; j < VE.BarcodePrint[i].NOS.retInt(); j++)
+                    for (int j = 0; j < VE.BarcodePrint[i].NOS.retDbl(); j++)
                     {
                         DataRow dr = IR.NewRow();
                         string barno = VE.BarcodePrint[i].BARNO.retStr();
@@ -241,21 +246,28 @@ namespace Improvar.Controllers
                         dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
                         dr["txslno"] = VE.BarcodePrint[i].TAXSLNO.retStr();
                         dr["wprate"] = VE.BarcodePrint[i].WPRATE.retStr();
-                        dr["wprate_paisa"] = VE.BarcodePrint[i].WPRATE.retStr().Replace(".","");
+                        var wpp= VE.BarcodePrint[i].WPRATE.retDbl()*100;
+                        dr["wprate_paisa"] = wpp;
                         dr["cprate"] = VE.BarcodePrint[i].CPRATE.retStr();
-                        dr["cprate_paisa"] = VE.BarcodePrint[i].CPRATE.retStr().Replace(".", "");
-                        dr["wprate_code"] = "";
+                        var cpp = VE.BarcodePrint[i].CPRATE.retDbl() * 100;
+                        dr["cprate_paisa"] = cpp;
+                        dr["cprate_code"] = Decode(VE.BarcodePrint[i].CPRATE.retStr());
+                        dr["wprate_code"] = Decode(VE.BarcodePrint[i].WPRATE.retStr());
                         dr["rprate"] = VE.BarcodePrint[i].RPRATE.retStr();
-                        dr["rprate_paisa"] = VE.BarcodePrint[i].RPRATE.retStr().Replace(".", "");
-                        dr["rprate_code"] = "";
+                        var rpp = VE.BarcodePrint[i].RPRATE.retDbl() * 100;
+                        dr["rprate_paisa"] = rpp;
+                        dr["rprate_code"] = Decode(VE.BarcodePrint[i].RPRATE.retStr());
                         dr["cost"] = "";
                         dr["costcode"] = "";
                         dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
                         dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/","");
                         dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
                         dr["prefdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
-                        dr["docdtcode"] = "";
+                        dr["docdtcode"] = Decode(VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", ""));
                         dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
+                        dr["itrem"] = VE.BarcodePrint[i].ITREM.retStr();
+                        dr["partnm"] = VE.BarcodePrint[i].PARTNM.retStr();
+                        dr["sizecd"] = VE.BarcodePrint[i].SIZECD.retStr();
                         IR.Rows.Add(dr);
                     }
                 }
@@ -276,5 +288,11 @@ namespace Improvar.Controllers
             reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
             return new FileStreamResult(stream, "application/pdf");
         }
+        public string Decode(string rates)
+        {
+            string str = "abcd";
+            return str;
+        }
+
     }
 }
