@@ -1,18 +1,8 @@
 ﻿@model Improvar.ViewModels.RepBarcodePrint
+
 <script type="text/javascript">
-    $(document).ready(function ()
-    {
-        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_Rep_BarcodePrint_Main'));
-    });
-</script>
-<script type="text/javascript">
-    $(document).ready(function ()
-    {
-        $("td").on("mouseover", function (e)
-        {
-            var titlee = $(this).find("input").val();
-            $(this).attr('title', titlee);
-        });
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
     });
 </script>
 <div style="width: 1200px;" overflow-y:auto;">
@@ -49,7 +39,7 @@
                                 <th class="grid_th" style="width:111px;text-align:right;">Wprate</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Cprate</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Mtr</th>
-                              
+
                             </tr>
                         </thead>
                         <tbody>
@@ -59,8 +49,8 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.BarcodePrint[i].Checked, new  { id = "BChecked_" + i, @style = "text-align:center;" })
-                                            @Html.HiddenFor(model => Model.BarcodePrint[i].COMPINIT, new { id = "COMPINIT_" + i})
+                                            @Html.CheckBoxFor(model => model.BarcodePrint[i].Checked, new { id = "BChecked_" + i, @style = "text-align:center;" })
+                                            @Html.HiddenFor(model => Model.BarcodePrint[i].COMPINIT, new { id = "COMPINIT_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].ITGRPSHORTNM, new { id = "ITGRPSHORTNM_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].DESIGN, new { id = "DESIGN_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].PDESIGN, new { id = "PDESIGN_" + i })
@@ -102,7 +92,7 @@
                                             @Html.TextBoxFor(model => Model.BarcodePrint[i].TAXSLNO, new { id = "TAXSLNO_" + i, maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         </td>
                                         <td class="grid_td">
-                                            @Html.EditorFor(model => Model.BarcodePrint[i].NOS, new { htmlAttributes = new { id = "NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);",@class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.BarcodePrint[i].NOS, new { htmlAttributes = new { id = "NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
 
                                         </td>
                                         <td class="grid_td">
@@ -117,7 +107,7 @@
                                             @Html.EditorFor(model => Model.BarcodePrint[i].MTR, new { htmlAttributes = new { id = "MTR_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
 
                                         </td>
-                                       
+
                                     </tr>
                                 }
                             }

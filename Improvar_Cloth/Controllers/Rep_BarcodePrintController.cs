@@ -20,10 +20,11 @@ namespace Improvar.Controllers
         SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: Rep_BarcodePrint
-        public ActionResult Rep_BarcodePrint(string autono,string docdt, string barno)
+        public ActionResult Rep_BarcodePrint(string autono, string docdt, string barno)
         {
             try
-            {if (docdt.retDateStr() == "") docdt = System.DateTime.Now.retDateStr();
+            {
+                if (docdt.retDateStr() == "") docdt = System.DateTime.Now.retDateStr();
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -62,14 +63,14 @@ namespace Improvar.Controllers
                                            FABITNM = dr["FABITNM"].retStr(),
                                            STYLENO = dr["itnm"].retStr(),
                                            NOS = dr["barnos"].retStr(),
-                                           WPRATE= dr["wprate"].retStr(),
+                                           WPRATE = dr["wprate"].retStr(),
                                            CPRATE = dr["cprate"].retStr(),
                                            RPRATE = dr["rprate"].retStr(),
                                            DESIGN = dr["design"].retStr(),
                                            PDESIGN = dr["pdesign"].retStr(),
                                            COLRNM = dr["colrnm"].retStr(),
                                            SIZENM = dr["sizenm"].retStr(),
-                                           ITGRPSHORTNM= dr["shortnm"].retStr(),
+                                           ITGRPSHORTNM = dr["shortnm"].retStr(),
                                            GRPNM = dr["grpnm"].retStr(),
                                            ITREM = dr["itrem"].retStr(),
                                            PARTNM = dr["partnm"].retStr(),
@@ -172,6 +173,13 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult Rep_BarcodePrint(RepBarcodePrint VE)
         {
+            string sql = "select * from  " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg where rownum=1 order by effdt desc";
+            var dtsyscnfg = masterHelp.SQLquery(sql); string PRICEINCODE = "";
+            if (dtsyscnfg.Rows.Count > 0)
+            {
+                PRICEINCODE = dtsyscnfg.Rows[0]["PRICEINCODE"].retStr();
+            }
+
             DataTable IR = new DataTable("DataTable1");
             IR.Columns.Add("brcodeImage", typeof(byte[]));
             IR.Columns.Add("barno", typeof(string));
@@ -246,24 +254,24 @@ namespace Improvar.Controllers
                         dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
                         dr["txslno"] = VE.BarcodePrint[i].TAXSLNO.retStr();
                         dr["wprate"] = VE.BarcodePrint[i].WPRATE.retStr();
-                        var wpp= VE.BarcodePrint[i].WPRATE.retDbl()*100;
+                        var wpp = VE.BarcodePrint[i].WPRATE.retDbl() * 100;
                         dr["wprate_paisa"] = wpp;
                         dr["cprate"] = VE.BarcodePrint[i].CPRATE.retStr();
                         var cpp = VE.BarcodePrint[i].CPRATE.retDbl() * 100;
                         dr["cprate_paisa"] = cpp;
-                        dr["cprate_code"] = Decode(VE.BarcodePrint[i].CPRATE.retStr());
-                        dr["wprate_code"] = Decode(VE.BarcodePrint[i].WPRATE.retStr());
+                        dr["cprate_code"] = RateDecode(VE.BarcodePrint[i].CPRATE.retInt(), PRICEINCODE);
+                        dr["wprate_code"] = RateDecode(VE.BarcodePrint[i].WPRATE.retInt(), PRICEINCODE);
                         dr["rprate"] = VE.BarcodePrint[i].RPRATE.retStr();
                         var rpp = VE.BarcodePrint[i].RPRATE.retDbl() * 100;
                         dr["rprate_paisa"] = rpp;
-                        dr["rprate_code"] = Decode(VE.BarcodePrint[i].RPRATE.retStr());
+                        dr["rprate_code"] = RateDecode(VE.BarcodePrint[i].RPRATE.retInt(), PRICEINCODE);
                         dr["cost"] = VE.BarcodePrint[i].CPRATE.retStr();
-                        dr["costcode"] = Decode(VE.BarcodePrint[i].CPRATE.retStr());
+                        dr["costcode"] = RateDecode(VE.BarcodePrint[i].CPRATE.retInt(), PRICEINCODE);
                         dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
-                        dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/","");
+                        dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
                         dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
                         dr["prefdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
-                        dr["docdtcode"] = Decode(VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", ""));
+                        dr["docdtcode"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
                         dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
                         dr["itrem"] = VE.BarcodePrint[i].ITREM.retStr();
                         dr["partnm"] = VE.BarcodePrint[i].PARTNM.retStr();
@@ -288,11 +296,37 @@ namespace Improvar.Controllers
             reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
             return new FileStreamResult(stream, "application/pdf");
         }
-        public string Decode(string rates)
+        public string RateDecode(int rate, string PRICEINCODE)
         {
-            string str = "abcd";
-            return str;
+            PRICEINCODE = PRICEINCODE.ToUpper();
+            string str = "";
+            string[,] arr = new string[11, 2];
+            //G A N A S H 
+            //0 1 2 3 4 5
+            if (PRICEINCODE != "")
+            {
+                int i = 0;
+                foreach (char c in PRICEINCODE)
+                {
+                    arr[i, 0] = c.ToString();
+                    arr[i, 1] = i.ToString();i++;
+                }
+                var strate = rate.ToString();
+                foreach (char c in strate)
+                {
+                    var ty = c.ToString();
+                    for (int k = 0; k < arr.GetLength(0); k++)
+                    {
+                        if (c.ToString() == arr[k, 1])
+                            str += arr[k, 0];
+                    }
+                }
+                return str;
+            }
+            else
+            {
+                return rate.ToString();
+            }
         }
-
     }
 }
