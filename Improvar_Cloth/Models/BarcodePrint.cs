@@ -19,6 +19,8 @@ namespace Improvar.Models
         public string WPRATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public string CPRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public string RPRATE { get; set; }
         public string MTR { get; set; }
         public string ITGRPSHORTNM { get; set; }
         public string DESIGN { get; set; }
@@ -37,6 +39,8 @@ namespace Improvar.Models
         public string PREFDT { get; set; }
         public string DOCDTCODE { get; set; }
         public string COMPINIT { get; set; }
+        public string GRPNM { get; set; }
+        public string ITREM { get; set; }
         public bool Checked { get; set; }
     }
 }

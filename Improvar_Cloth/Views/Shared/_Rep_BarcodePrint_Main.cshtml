@@ -77,6 +77,8 @@
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].PREFNO, new { id = "PREFNO_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].PREFDT, new { id = "PREFDT_" + i })
                                             @Html.HiddenFor(model => Model.BarcodePrint[i].DOCDTCODE, new { id = "DOCDTCODE_" + i })
+                                            @Html.HiddenFor(model => Model.BarcodePrint[i].RPRATE, new { id = "RPRATE_" + i })
+                                            @Html.HiddenFor(model => Model.BarcodePrint[i].GRPNM, new { id = "GRPNM_" + i })
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.BarcodePrint[i].BARNO, new { id = "BARNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
