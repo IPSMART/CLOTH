@@ -544,7 +544,7 @@ namespace Improvar.Controllers
                     sql += scm1 + ".m_size d, " + scm1 + ".m_color e ";
                     sql += "where a.itcd = '" + ITEM + "' and a.itcd = b.itcd(+) and a.itcd = c.itcd(+) and b.sizecd = d.sizecd(+) and c.colrcd = e.colrcd(+) and ";
                     sql += "nvl(b.inactive_tag, 'N')= 'N' and nvl(c.inactive_tag, 'N')= 'N' ) a, ";
-                    sql += "( select a.itcd, a.sizecd, a.rate,a.colrcd ";
+                    sql += "( select a.itcd, a.sizecd, a.rate,'' colrcd ";
                     sql += "from " + scm1 + ".m_itemplistdtl a ";
                     //sql += "where a.prccd='" + prccd + "' and a.effdt=to_date('" + prceffdt + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
                     sql += "where a.effdt=to_date('" + VE.T_SORD.DOCDT.retStr().Remove(10) + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
@@ -1899,7 +1899,7 @@ namespace Improvar.Controllers
             try
             {
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
-                var str = Master_Help.ITCD_help(val, "", data[0].retSqlformat(), data[1].retSqlformat());
+                var str = Master_Help.ITCD_help(val, "", data[0].retStr(), data[1].retSqlformat());
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

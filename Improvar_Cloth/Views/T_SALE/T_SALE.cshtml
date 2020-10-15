@@ -212,6 +212,7 @@
         <input type="hidden" id="UrlSelectTDSCode" value="@Url.Action("GetTDSDetails", PageControllerName)" />
         <input type="hidden" id="UrlUploadImages" value="@Url.Action("UploadImages", PageControllerName )" />
         <input type="hidden" id="UrlSubLedgerDetails" value="@Url.Action("GetSubLedgerDetails", PageControllerName )" />
+        <input type="hidden" id="UrlPendOrder" value="@Url.Action("GetPendOrder", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -283,7 +284,7 @@
                     @if (Model.MENU_PARA == "PB" && Model.DefaultAction == "V")
                     {
                         <div class="col-md-1">
-                                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
+                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
                         </div>
                     }
                 </div>
@@ -297,11 +298,11 @@
                     <div class="col-md-3">
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')" />*@
+                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')" />*@
                             @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')", onblur = "GetPartyDetails(this.value);", @placeholder = "Code", maxlength = 8 } })
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')" />
 
-                             @Html.HiddenFor(model => Model.PSLCD, new { htmlAttributes = new { @class = "form-control", id = "PSLCD" } })
+                            @Html.HiddenFor(model => Model.PSLCD, new { htmlAttributes = new { @class = "form-control", id = "PSLCD" } })
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -309,12 +310,12 @@
                             @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Party Name", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.SLAREA, new { htmlAttributes = new { @class = "form-control", id = "SLAREA", @title = "Area", @placeholder = "Area", @readonly = "readonly", tabindex = "-1" } })
                         </div>
                     </div>
-                    <div class="col-md-7">
+                    <div class="col-md-6">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "GST No", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
                         </div>
@@ -335,7 +336,12 @@
                             @Html.EditorFor(model => model.T_TXN.DUEDAYS, new { htmlAttributes = new { @class = "form-control", id = "DUEDAYS", maxlength = 3, @placeholder = "Due Days" } })
                         </div>
                     </div>
-
+                    @if (Model.MENU_PARA == "SBPCK" && (Model.DefaultAction == "A" || Model.DefaultAction == "E"))
+                    {
+                        <div class="col-md-1">
+                            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Pending_Order" value="Get Pending Order" title="Click to Get Pending Order" onclick="GetPendOrder()" />
+                        </div>
+                    }
                 </div>
                 @if (Model.MENU_PARA == "SB")
                 {
@@ -732,7 +738,7 @@
 
                         <div class="row">
                             @if (Model.MENU_PARA == "PB")
-                               {
+                            {
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Purchase bill no")
