@@ -118,8 +118,8 @@ namespace Improvar.Controllers
             sql += "a.qnty, a.rate, decode(nvl(a.nos,0),0,a.qnty,a.nos) barnos ";
             sql += "from " + scm + (tblmst == false ? ".t_batchdtl" : ".t_batchmst") + " a, " + scm + ".t_batchmst b, " + scm + ".m_sitem c, " + scm + ".t_cntrl_hdr d ";
             sql += "where a.autono=d.autono(+) and a.barno=b.barno(+) and b.itcd=c.itcd(+) and ";
-            if (autono.retStr() != "") sql += "a.autono in (" + autono + ") and ";
-            if (barno.retStr() != "") sql += "a.barno in (" + barno + ") and ";
+            if (autono.retStr() != "") sql += "a.autono in ('" + autono + "') and ";
+            if (barno.retStr() != "") sql += "a.barno in ('" + barno + "') and ";
             sql += "d.compcd='" + COM + "' and d.loccd='" + LOC + "' and nvl(d.cancel,'N')='N' ) x, ";
 
             for (int x = 0; x <= 2; x++)
