@@ -308,13 +308,13 @@ namespace Improvar.Controllers
                 if (TXN.SLCD.retStr() != "")
                 {
                     string slcd = TXN.SLCD;
-                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL,a.PANNO }).FirstOrDefault();
+                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO }).FirstOrDefault();
                     VE.SLNM = subleg.SLNM;
                     VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                     VE.GSTNO = subleg.GSTNO;
                     VE.PSLCD = subleg.PSLCD;
                     VE.TCSAPPL = subleg.TCSAPPL;
-                    if(VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
+                    if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
                     panno = subleg.PANNO;
                 }
 
@@ -1541,6 +1541,53 @@ namespace Improvar.Controllers
             {
                 Cn.SaveException(ex, "");
             }
+        }
+        public ActionResult GetPendOrder(string SLCD)
+        {
+            TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+            Cn.getQueryString(VE);
+            DataTable dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", VE.MENU_PARA);
+            VE.PENDINGORDER = (from DataRow dr in dt.Rows
+                               select new PENDINGORDER
+                               {
+                                   ORDNO = dr["ORDNO"].retStr(),
+                                   ORDAUTONO = dr["ORDAUTONO"].retStr(),
+                                   ORDSLNO = dr["ORDSLNO"].retStr(),
+                                   ORDDT = dr["ORDDT"].retStr().Remove(10),
+                                   ITGRPNM = dr["ITGRPNM"].retStr(),
+                                   ITSTYLE = dr["styleno"].retStr() + " " + dr["ITNM"].retStr(),
+                                   COLRNM = dr["COLRNM"].retStr(),
+                                   SIZECD = dr["SIZECD"].retStr(),
+                                   ORDQTY = dr["ORDQTY"].retDbl(),
+                                   BALQTY = dr["BALQTY"].retDbl(),
+                                   ITCD = dr["ITCD"].retStr(),
+                                   COLRCD = dr["COLRCD"].retStr(),
+                               }).ToList();
+
+            VE.DefaultView = true;
+            return PartialView("_T_SALE_PENDINGORDER", VE);
+        }
+        public JsonResult SelectPendOrder(TransactionPackingSlipEntry VE)
+        {
+            Cn.getQueryString(VE);
+
+            var dt = (from a in VE.PENDINGORDER
+                      where a.Ord_Checked == true
+                      select new PENDINGORDER
+                      {
+                          ORDNO = a.ORDNO.retStr(),
+                          ORDAUTONO = a.ORDAUTONO.retStr(),
+                          ORDSLNO = a.ORDSLNO.retStr(),
+                          ORDDT = a.ORDDT.retStr().Remove(10),
+                          ITCD = a.ITCD.retStr(),
+                          COLRCD = a.COLRCD.retStr(),
+                          SIZECD =a.SIZECD.retStr(),
+                          ORDQTY = a.ORDQTY.retDbl(),
+                      }).ToList();
+            TempData["PENDORDER"] = dt;
+
+            VE.DefaultView = true;
+            return Json(new { dt }, JsonRequestBehavior.AllowGet);
         }
         public ActionResult DeleteRowBarno(TransactionPackingSlipEntry VE)
         {

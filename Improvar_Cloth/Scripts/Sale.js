@@ -1120,7 +1120,7 @@ function BillAmountCalculate() {
     //tcs
     var TCSPER = 0; TCSAMT = 0; TCSON = 0;
     var MENU_PARA = $("#MENU_PARA").val();
-    if (MENU_PARA != "SR" || MENU_PARA != "PR" ) {
+    if (MENU_PARA != "SR" || MENU_PARA != "PR") {
         TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
         if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
         document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
@@ -1878,6 +1878,47 @@ function HasChangeBarSale() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     $("#bardatachng").val("Y");
+}
+function GetPendOrder() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var slcd = $("#SLCD").val();
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlPendOrder").val(),// "@Url.Action("GetPendOrder", PageControllerName )",
+        beforesend: $("#WaitingMode").show(),
+        data: { SLCD: slcd },
+        success: function (result) {
+            $("#popup").animate({ marginTop: '-10px' }, 50);
+            $("#popup").html(result);
+            $("#WaitingMode").hide();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+function SelectPendOrder() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+
+    $.ajax({
+        type: 'post',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlSelectPendOrder").val(),//"@Url.Action("SelectPendOrder", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            $("#selectpendord").val(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
 }
 
 

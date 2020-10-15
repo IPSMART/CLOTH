@@ -58,107 +58,6 @@ namespace Improvar
 
             return tbl;
         }
-
-
-        public string GetPendOrderSql(string slcd = "", string ordupto = "", string ordautono = "", string txnupto = "", string skipautono = "", string menupara = "SB", string brandcd = "", bool OnlyBal = true, string ordfromdt = "", string itcd = "", string agslcd = "", string slmslcd = "", bool Showasperpslip = false, string itgrpcd = "", string curschema = "", string finschema = "")
-        {
-            string UNQSNO = CommVar.getQueryStringUNQSNO();
-            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
-            if (curschema != "") scm = curschema;
-            if (finschema != "") scmf = finschema;
-
-            string doctype = "SORD";
-            if (menupara == "SB") doctype = "SORD"; else doctype = "PORD";
-
-            if (ordupto == "") ordupto = txnupto;
-            if (ordupto != "") ordupto = ordupto.retDateStr();
-            if (skipautono == null) skipautono = "";
-            if (slcd == null) slcd = "";
-            if (slcd != "") { if (slcd.IndexOf("'") < 0) slcd = "'" + slcd + "'"; }
-
-            string sqlc = "";
-            sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and ";
-            if (slcd != "") sqlc += "c.slcd in (" + slcd + ") and ";
-            if (skipautono != "") sqlc += "a.autono <> '" + skipautono + "' and ";
-            sqlc += "nvl(b.cancel,'N')='N' ";
-
-            string sql = "";
-
-            sql += "select a.autono, a.slcd, j.slnm, j.district, j.slarea, a.doccd, a.docno, a.docdt, nvl(a.stktype,'') stktype, nvl(a.freestk,'') freestk, nvl(a.rate,0) rate, ";
-            sql += "a.agslcd, a.slmslcd, k.slnm agslnm, l.slnm slmslnm, ";
-            sql += "d.styleno, d.mixsize, a.itcd, a.sizecd, a.colrcd, d.itnm, nvl(d.pcsperbox,0) pcsperbox, nvl(d.pcsperset,0) pcsperset, nvl(d.colrperset,0) colrperset, ";
-            sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm, h.brandcd, i.brandnm, ";
-            sql += "(select sizecdgrp from " + scm + ".v_msitem_sizegrp where itcd = a.itcd and sizecdgrp like '%^' || a.sizecd || '^%') sizecdgrp, ";
-            sql += "e.sizenm, e.print_seq, f.colrnm, nvl(a.ordqnty,0) ordqnty, ";
-            sql += "nvl(a.ordqnty, 0) - nvl(b.qnty, 0) - nvl(z.qnty,0) balaspslip, ";
-            sql += "nvl(a.ordqnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty from ";
-
-            sql += "( select a.autono, c.agslcd, c.slmslcd, c.slcd, b.doccd, b.docno, b.docdt, a.stktype, a.freestk, a.rate, ";
-            sql += "nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, ";
-            sql += "a.itcd, a.sizecd, a.colrcd, sum(a.qnty) ordqnty ";
-            sql += "from " + scm + ".t_sorddtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_sord c, " + scm + ".m_doctype d ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and b.doccd=d.doccd and d.doctype = '" + doctype + "' and ";
-            if (ordautono != "") sql += "a.autono in (" + ordautono + ") and ";
-            if (ordfromdt.retStr() != "") sql += "b.docdt >= to_date('" + ordfromdt + "','dd/mm/yyyy') and ";
-            if (ordupto != "") sql += "b.docdt <= to_date('" + ordupto + "','dd/mm/yyyy') and ";
-            if (agslcd != "") sql += "c.agslcd in (" + agslcd + ") and ";
-            if (slmslcd != "") sql += "c.slmslcd in (" + slmslcd + ") and ";
-            if (itcd != "") sql += "a.itcd in (" + itcd + ") and ";
-            sql += sqlc;
-            sql += "group by a.autono, c.agslcd, c.slmslcd, c.slcd, b.doccd, b.docno, b.docdt, a.stktype, a.freestk, a.rate, ";
-            sql += "nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,''), ";
-            sql += "a.itcd, a.sizecd, a.colrcd ) a, ";
-
-            //Ord Canc
-            sql += "( select a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, ";
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
-            sql += "from " + scm + ".t_sorddtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_sord_canc c, " + scm + ".m_doctype d ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and b.doccd=d.doccd and d.doctype <> '" + doctype + "' and ";
-            if (OnlyBal == false) sql += "a.autono='xx' and ";
-            if (txnupto != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
-            sql += sqlc;
-            sql += "group by a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') ) b, ";
-
-            //DO
-            sql += "( select a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, ";
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
-            sql += "from " + scm + ".t_dodtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_do c ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and ";
-            if (OnlyBal == false) sql += "a.autono='xx' and ";
-            if (txnupto != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
-            sql += sqlc;
-            sql += "group by a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') ) c, ";
-
-            //Pslip
-            sql += "( select a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, ";
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
-            sql += "from " + scm + ".t_pslipdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_pslip c ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and ";
-            if (OnlyBal == false) sql += "a.autono='xx' and ";
-            if (txnupto != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
-            sql += sqlc;
-            sql += "group by a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') ) z, ";
-
-            sql += scm + ".m_sitem d, " + scm + ".m_size e, " + scm + ".m_color f, " + scmf + ".m_uom g, " + scm + ".m_group h, " + scm + ".m_brand i, " + scmf + ".m_subleg j, ";
-            sql += scmf + ".m_subleg k, " + scmf + ".m_subleg l ";
-            sql += "where a.autono=b.ordautono(+) and a.autono=c.ordautono(+) and a.autono=z.ordautono(+) and ";
-            sql += "a.itcolsize=b.itcolsize(+) and a.itcolsize=c.itcolsize(+) and a.itcolsize=z.itcolsize(+) and ";
-            sql += "a.itcd=d.itcd(+) and a.sizecd=e.sizecd(+) and a.colrcd=f.colrcd(+) and d.uomcd=g.uomcd(+) and d.itgrpcd=h.itgrpcd(+) and h.brandcd=i.brandcd(+) and a.slcd=j.slcd(+) and ";
-            sql += "a.agslcd=k.slcd(+) and a.slmslcd=l.slcd(+) and ";
-            if (brandcd != "") sql += "h.brandcd in (" + brandcd + ") and ";
-            if (itgrpcd != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
-            if (Showasperpslip == true) sql += "nvl(a.ordqnty,0) - nvl(b.qnty,0) - nvl(z.qnty,0) <> 0 ";
-            else sql += "nvl(a.ordqnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) <> 0 ";
-            sql += "order by styleno, print_seq, sizenm";
-            return sql;
-        }
-        public DataTable GetPendOrder(string slcd = "", string ordupto = "", string ordautono = "", string txnupto = "", string skipautono = "", string menupara = "SB", string brandcd = "", bool OnlyBal = true, string ordfromdt = "", string itcd = "", string agslcd = "", string slmslcd = "", bool Showasperpslip = false, string itgrpcd = "", string curschema = "", string finschema = "")
-        {
-            string sql = GetPendOrderSql(slcd, ordupto, ordautono, txnupto, skipautono, menupara, brandcd, OnlyBal, ordfromdt, itcd, agslcd, slmslcd, Showasperpslip, itgrpcd, curschema, finschema);
-            DataTable tbl = new DataTable();
-            tbl = SQLquery(sql);
-            return tbl;
-        }
         public DataTable GetPendDO(string slcd = "", string doupto = "", string doautono = "", string ordautono = "", string txnupto = "", string skipautono = "", string brandcd = "", bool OnlyBal = true)
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1495,10 +1394,10 @@ namespace Improvar
 
             sql += "select a.autono, n.slcd, j.slnm, j.district, j.slarea, o.doccd, o.docno, o.docdt, nvl(m.stktype,'') stktype, nvl(m.freestk,'') freestk, nvl(m.rate,0) rate, ";
             sql += "n.agslcd, n.slmslcd, k.slnm agslnm, l.slnm slmslnm, ";
-            sql += "d.styleno, d.mixsize, m.itcd, m.sizecd, m.colrcd, d.itnm, m.delvdt, m.itrem, ";
-            sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm, h.brandcd, i.brandnm, ";
-            sql += "e.sizenm, e.print_seq, f.colrnm, nvl(a.ordqnty,0) ordqnty, ";
-            sql += "nvl(a.ordqnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty from ";
+            sql += "d.styleno, m.itcd, m.sizecd, m.colrcd, d.itnm, m.delvdt, m.itrem, ";
+            sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm, d.brandcd, i.brandnm, ";
+            sql += "e.sizenm, e.print_seq, f.colrnm, nvl(a.qnty,0) ordqnty, ";
+            sql += "nvl(a.qnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty from ";
 
             sql += "( select a.autono, a.slno, a.qnty ";
             sql += "from " + scm + ".t_sorddtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_sord c, " + scm + ".m_doctype d ";
@@ -1525,7 +1424,7 @@ namespace Improvar
             //Pslip or Bill
             sql += "( select a.ordautono, a.ordslno, ";
             sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
-            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + "m_doctype d ";
+            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txn c, " + scm + ".m_doctype d ";
             sql += "where a.autono=b.autono and a.autono=c.autono and b.doccd=d.doccd(+) and ";
             if (OnlyBal == false) sql += "a.autono='xx' and ";
             if (txnupto != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
@@ -1538,11 +1437,11 @@ namespace Improvar
             sql += "where a.autono=b.ordautono(+) and a.autono=c.ordautono(+) and ";
             sql += "a.slno=b.ordslno(+) and a.slno=c.ordslno(+) and ";
             sql += "a.autono=m.autono(+) and a.slno=m.slno(+) and a.autono=n.autono(+) and a.autono=o.autono(+) and ";
-            sql += "m.itcd=d.itcd(+) and m.sizecd=e.sizecd(+) and m.colrcd=f.colrcd(+) and d.uomcd=g.uomcd(+) and d.itgrpcd=h.itgrpcd(+) and h.brandcd=i.brandcd(+) and n.slcd=j.slcd(+) and ";
+            sql += "m.itcd=d.itcd(+) and m.sizecd=e.sizecd(+) and m.colrcd=f.colrcd(+) and d.uomcd=g.uomcd(+) and d.itgrpcd=h.itgrpcd(+) and d.brandcd=i.brandcd(+) and n.slcd=j.slcd(+) and ";
             sql += "n.agslcd=k.slcd(+) and n.slmslcd=l.slcd(+) and ";
             if (brandcd != "") sql += "h.brandcd in (" + brandcd + ") and ";
             if (itgrpcd != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
-            sql += "nvl(a.ordqnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) <> 0 ";
+            sql += "nvl(a.qnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) <> 0 ";
             sql += "order by styleno, print_seq, sizenm";
             return sql;
         }
