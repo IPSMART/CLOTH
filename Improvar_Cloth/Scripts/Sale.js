@@ -196,6 +196,12 @@ function FillBarcodeArea(str, Table, i) {
             $("#TDDISCRATE").val($(FieldidStarting + "TDDISCRATE_" + i).val());
             $("#SCMDISCTYPE").val($(FieldidStarting + "SCMDISCTYPE_" + i).val());
             $("#SCMDISCRATE").val($(FieldidStarting + "SCMDISCRATE_" + i).val());
+            if (MENU_PARA == "SBPCK") {
+                $("#ORDNO").val($(FieldidStarting + "ORDNO_" + i).val());
+                $("#ORDDT").val($(FieldidStarting + "ORDDT_" + i).val());
+                $("#ORDAUTONO").val($(FieldidStarting + "ORDAUTONO_" + i).val());
+                $("#ORDSLNO").val($(FieldidStarting + "ORDSLNO_" + i).val());
+            }
 
         }
         $("#BARCODE").val($(FieldidStarting + "BARNO_" + i).val());
@@ -369,6 +375,12 @@ function UpdateBarCodeRow() {
             $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
             $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
             $("#B_GLCD_" + j).val($("#GLCD").val());
+            if (MENU_PARA == "SBPCK") {
+                $("#B_ORDNO_" + j).val($("#ORDNO").val());
+                $("#B_ORDAUTONO_" + j).val($("#ORDAUTONO").val());
+                $("#B_ORDSLNO_" + j).val($("#ORDSLNO").val());
+                $("#B_ORDDT_" + j).val($("#ORDDT").val());
+            }
             if (MENU_PARA == "PB") {
                 RateUpdate(j);
 
@@ -1435,6 +1447,12 @@ function AddBarCodeGrid() {
     var GLCD = $("#GLCD").val();
     var ITMBARGENTYPE = $("#BARGENTYPETEMP").val();
     var ENTRYBARGENTYPE = $("#BARGENTYPE").val();
+    if (MENU_PARA == "SBPCK") {
+        var ORDNO = $("#ORDNO").val();
+        var ORDDT = $("#ORDDT").val();
+        var ORDAUTONO = $("#ORDAUTONO").val();
+        var ORDSLNO = $("#ORDSLNO").val();
+    }
     var BarImages = $("#BarImages").val();
     var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
     if (BarImages == '') { NoOfBarImages = ''; }
@@ -1553,6 +1571,17 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + SCMDISCRATE + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + SCMDISCRATE + '">';
     tr += '    </td>';
+    if (MENU_PARA == "SBPCK") {
+        tr += '    <td class="" title="' + ORDNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDNO" readonly="readonly" type="text" value="' + ORDNO + '">';
+        tr += '        <input id="B_ORDAUTONO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="' + ORDAUTONO + '">';
+        tr += '        <input id="B_ORDSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDSLNO" type="hidden" value="' + ORDSLNO + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + ORDDT + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDT" readonly="readonly" type="text" value="' + ORDDT + '">';
+        tr += '    </td>';
+    }
+
     tr += '    <td class="">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
@@ -1903,7 +1932,22 @@ function GetPendOrder() {
 function SelectPendOrder() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-
+    var Count = 0;
+    var GridRow = $("#_T_SALE_PENDINGORDER_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        var Check = document.getElementById("Ord_Checked_" + i).checked;
+        if (Check == true) {
+            Count = Count + 1;
+        }
+    }
+    if (Count > 0) {
+        $("#haspendorddata").val("Y");
+        //$("#show_order").show();
+    }
+    else {
+        msgInfo("Please select Order !");
+        return false;
+    }
     $.ajax({
         type: 'post',
         beforesend: $("#WaitingMode").show(),
@@ -1911,7 +1955,8 @@ function SelectPendOrder() {
         data: $('form').serialize(),
         success: function (result) {
             $("#WaitingMode").hide();
-            $("#selectpendord").val(result);
+            $("#hiddenpendord").val(result);
+            $("#popup").html("");
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -1919,6 +1964,101 @@ function SelectPendOrder() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
+}
+function ShowPendOrder() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    if ($("#haspendorddata").val() != "Y") {
+        msgInfo("Please select Order !");
+        return false;
+    }
+    var orddata = $("#hiddenpendord").val();
+    $.each(orddata, function (i, item) {
+        for (let i = 0; i < item.length; i++) {
+            var tr = "";
+            tr += ' <tr style="font-size:12px; font-weight:bold;">';
+            tr += '    <td class="sticky-cell">';
+            tr += '        <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="B_Checked_' + rowindex + '" name="PENDINGORDER[' + i + '].Checked" type="checkbox" value="true"><input name="PENDINGORDER[' + rowindex + '].Checked" type="hidden" value="false">';
+            tr += '    </td>';
+            tr += '    <td class="sticky-cell"  title="' + item[i].SLNO + '">';
+            tr += '        <input tabindex="-1" class=" atextBoxFor "  id="Ord_SLNO_' + i + '" maxlength="2" name="PENDINGORDER[' + i + '].SLNO" readonly="readonly"  type="text" value="' + item[i].SLNO + '">';
+            tr += '    </td>';
+            tr += '    <td title="' + item[i].ORDNO + '">';
+            tr += '        <input tabindex="-1" class=" atextBoxFor "  id="Ord_ORDNO_' + i + '" maxlength="2" name="PENDINGORDER[' + i + '].ORDNO" readonly="readonly"  type="text" value="' + item[i].ORDNO + '">';
+            tr += '        <input id="Ord_ORDAUTONO_' + i + '" name="PENDINGORDER[' + i + '].ORDAUTONO" type="hidden" value="' + item[i].ORDAUTONO + '">';
+            tr += '        <input id="Ord_ORDSLNO_' + i + '" name="PENDINGORDER[' + i + '].ORDSLNO" type="hidden" value="' + item[i].ORDSLNO + '">';
+            tr += '    </td>';
+            tr += ' </tr>';
+
+            //console.log(item[i]);
+            poslno = item[i].PO_SRLNO - 1;
+            taxfields += "<input id='Main_TAX_SRLNO_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+                + "].TPORDTAXDTL[" + i + "].SRLNO' type='hidden' value='" + item[i].SRLNO + "'>";
+
+            taxfields += "<input id='Main_TAX_PO_SRLNO_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+                + "].TPORDTAXDTL[" + i + "].PO_SRLNO' type='hidden' value='" + item[i].PO_SRLNO + "'>";
+
+            var TaxNature = ""; if (item[i].TaxNature == null) { TaxNature = ""; } else { TaxNature = item[i].TaxNature; }
+            taxfields += "<input id='Main_TAX_TaxNature_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+               + "].TPORDTAXDTL[" + i + "].TaxNature' type='hidden' value='" + TaxNature + "'>";
+
+            var MDVT_TYP = ""; if (item[i].MDVT_TYP == null) { MDVT_TYP = ""; } else { MDVT_TYP = item[i].MDVT_TYP; }
+            taxfields += "<input id='Main_TAX_MDVT_TYP_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+                + "].TPORDTAXDTL[" + i + "].MDVT_TYP' type='hidden' value='" + MDVT_TYP + "'>";
+
+            var TAX_TYP = ""; if (item[i].TAX_TYP == null) { TAX_TYP = ""; } else { TAX_TYP = item[i].TAX_TYP; }
+            taxfields += "<input id='Main_TAX_TAX_TYP_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+                + "].TPORDTAXDTL[" + i + "].TAX_TYP' type='hidden' value='" + TAX_TYP + "'>";
+
+
+            taxfields += "<input id='Main_TAX_TAXCD_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+              + "].TPORDTAXDTL[" + i + "].TAXCD' type='hidden' value='" + item[i].TAXCD + "'>";
+
+            taxfields += "<input id='Main_TAX_TAXNM_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+             + "].TPORDTAXDTL[" + i + "].TAXNM' type='hidden' value='" + item[i].TAXNM + "'>";
+
+            taxfields += "<input id='Main_TAX_VARCD_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+               + "].TPORDTAXDTL[" + i + "].VARCD' type='hidden' value='" + item[i].VARCD + "'>";
+
+            var CALC_TYPE = ""; if (item[i].CALC_TYPE == null) { CALC_TYPE = ""; } else { CALC_TYPE = item[i].CALC_TYPE; }
+            taxfields += "<input id='Main_TAX_CALC_TYPE_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+             + "].TPORDTAXDTL[" + i + "].CALC_TYPE' type='hidden' value='" + CALC_TYPE + "'>";
+
+            var TAXNAT = ""; if (item[i].TAXNAT == null) { TAXNAT = ""; } else { TAXNAT = item[i].TAXNAT; }
+            taxfields += "<input id='Main_TAX_TAXNAT_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+             + "].TPORDTAXDTL[" + i + "].TAXNAT' type='hidden' value='" + TAXNAT + "'>";
+
+            var CALC_FORMULA = ""; if (item[i].CALC_FORMULA == null) { CALC_FORMULA = ""; } else { CALC_FORMULA = item[i].CALC_FORMULA; }
+            taxfields += "<input id='Main_TAX_CALC_FORMULA_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+             + "].TPORDTAXDTL[" + i + "].CALC_FORMULA' type='hidden' value='" + CALC_FORMULA + "'>";
+
+
+            var TAX_VALUE = ""; if (item[i].TAX_VALUE == null) { TAX_VALUE = "0"; } else { TAX_VALUE = item[i].TAX_VALUE; }
+            taxfields += "<input id='Main_TAX_TAX_VALUE_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+               + "].TPORDTAXDTL[" + i + "].TAX_VALUE' type='hidden' value='" + TAX_VALUE + "'>";
+
+            var TAX_AMT = ""; if (item[i].TAX_AMT == null) { TAX_AMT = "0"; } else { TAX_AMT = item[i].TAX_AMT; }
+            taxfields += "<input id='Main_TAX_TAX_AMT_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+               + "].TPORDTAXDTL[" + i + "].TAX_AMT' type='hidden' value='" + TAX_AMT + "'>";
+
+            var TAX_REMARK = ""; if (item[i].TAX_REMARK == null) { TAX_REMARK = ""; } else { TAX_REMARK = item[i].TAX_REMARK; }
+            taxfields += "<input id='Main_TAX_TAX_REMARK_" + poslno + "_" + i + "' name='TPORDDTL[" + poslno
+             + "].TPORDTAXDTL[" + i + "].TAX_REMARK' type='hidden' value='" + TAX_REMARK + "'>";
+        }
+        //console.log(taxfields);
+        $("#Main_TAX_" + poslno).html(taxfields);
+        if (TAG == "UpdateHsn") {
+            CalculateMainGridTax(poslno, "HSN");
+        }
+        //CalculateTotal();
+        if (TAG == "") {
+            $("#popupTax").html("");
+            $('.PopUp_Backround').fadeOut();
+            CalculateTotal();
+        }
+
+    });
+
 }
 
 

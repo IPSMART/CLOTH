@@ -169,6 +169,8 @@ namespace Improvar.Models
         public double? RPRATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? MRPRATE { get; set; }
+        public string ORDNO { get; set; }
+        public string ORDDT { get; set; }
 
     }
 }

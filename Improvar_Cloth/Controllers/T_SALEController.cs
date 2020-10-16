@@ -1581,13 +1581,65 @@ namespace Improvar.Controllers
                           ORDDT = a.ORDDT.retStr().Remove(10),
                           ITCD = a.ITCD.retStr(),
                           COLRCD = a.COLRCD.retStr(),
-                          SIZECD =a.SIZECD.retStr(),
+                          SIZECD = a.SIZECD.retStr(),
                           ORDQTY = a.ORDQTY.retDbl(),
                       }).ToList();
             TempData["PENDORDER"] = dt;
 
             VE.DefaultView = true;
             return Json(new { dt }, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetOrderDetails(string val, string Code)
+        {
+            try
+            {
+                DataTable tbl = (DataTable)TempData["PENDORDER"]; TempData.Keep();
+                if (tbl == null || tbl.Rows.Count == 0)
+                {
+                    return Content("Please Select Order!");
+                }
+
+                string sel1 = "";
+                if (Code.retStr() != "")
+                {
+                    sel1 = "itcd = '" + Code + "' ";
+                }
+                if (val.retStr() != "")
+                {
+                    sel1 += "and ordno = '" + val + "' ";
+                }
+                if (sel1 != "")
+                {
+                    tbl = tbl.Select(sel1).CopyToDataTable();
+                }
+                if (val.retStr() == "" || tbl.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["ORDNO"] + "</td><td>" + tbl.Rows[i]["ORDDT"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["ORDQTY"] + " </td></tr>");
+                    }
+                    var hdr = "Order No." + Cn.GCS() + "Order Date" + Cn.GCS() + "Item Code" + Cn.GCS() + "Order Qnty";
+                    return PartialView("_Help2", masterHelp.Generate_help(hdr, SB.ToString()));
+                }
+                else
+                {
+                    if (tbl.Rows.Count > 0)
+                    {
+                        string str = masterHelp.ToReturnFieldValues("", tbl);
+                        return Content(str);
+                    }
+                    else
+                    {
+                        return Content("Invalid Order No ! Please Enter a Valid Order No !!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
         public ActionResult DeleteRowBarno(TransactionPackingSlipEntry VE)
         {
