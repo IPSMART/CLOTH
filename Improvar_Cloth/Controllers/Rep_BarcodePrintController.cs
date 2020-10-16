@@ -8,6 +8,7 @@ using System.IO;
 using Improvar.DataSets;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Improvar.Controllers
 {//
@@ -171,154 +172,173 @@ namespace Improvar.Controllers
 
 
         [HttpPost]
-        public ActionResult Rep_BarcodePrint(RepBarcodePrint VE)
+        public ActionResult Rep_BarcodePrint(RepBarcodePrint VE, string btnSubmit)
         {
-            string sql = "select * from  " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg where rownum=1 order by effdt desc";
-            var dtsyscnfg = masterHelp.SQLquery(sql); string PRICEINCODE = "";
-            if (dtsyscnfg.Rows.Count > 0)
+            if (btnSubmit == "Print from text")
             {
-                PRICEINCODE = dtsyscnfg.Rows[0]["PRICEINCODE"].retStr();
+                return RedirectToAction("PreviewBarcodeTxtFmt");
             }
-
-            DataTable IR = new DataTable("DataTable1");
-            IR.Columns.Add("brcodeImage", typeof(byte[]));
-            IR.Columns.Add("barno", typeof(string));
-            IR.Columns.Add("compinit", typeof(string));
-            IR.Columns.Add("itgrpnm", typeof(string));
-            IR.Columns.Add("itgrpshortnm", typeof(string));
-            IR.Columns.Add("itnm", typeof(string));
-            IR.Columns.Add("design", typeof(string));
-
-            IR.Columns.Add("pdesign", typeof(string));
-
-            IR.Columns.Add("mtr", typeof(string));
-
-            IR.Columns.Add("colrnm", typeof(string));
-
-            IR.Columns.Add("sizenm", typeof(string));
-
-            IR.Columns.Add("txslno", typeof(string));
-            IR.Columns.Add("wprate", typeof(string));
-            IR.Columns.Add("wprate_paisa", typeof(string));
-
-            IR.Columns.Add("wprate_code", typeof(string));
-            IR.Columns.Add("cprate", typeof(string));
-
-            IR.Columns.Add("cprate_paisa", typeof(string));
-
-            IR.Columns.Add("cprate_code", typeof(string));
-            IR.Columns.Add("rprate", typeof(string));
-
-            IR.Columns.Add("rprate_paisa", typeof(string));
-
-            IR.Columns.Add("rprate_code", typeof(string));
-
-            IR.Columns.Add("cost", typeof(string));
-
-            IR.Columns.Add("costcode", typeof(string));
-
-            IR.Columns.Add("docno", typeof(string));
-
-            IR.Columns.Add("docdt", typeof(string));
-
-            IR.Columns.Add("blno", typeof(string));
-
-            IR.Columns.Add("prefdt", typeof(string));
-
-            IR.Columns.Add("docdtcode", typeof(string));
-            IR.Columns.Add("grpnm", typeof(string));
-            IR.Columns.Add("itrem", typeof(string));
-            IR.Columns.Add("partnm", typeof(string));
-            IR.Columns.Add("sizecd", typeof(string));
-
-            for (int i = 0; i < VE.BarcodePrint.Count; i++)
+            else
             {
-                if (VE.BarcodePrint[i].Checked == true)
+                string sql = "select * from  " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg where rownum=1 order by effdt desc";
+                var dtsyscnfg = masterHelp.SQLquery(sql); string PRICEINCODE = "";
+                if (dtsyscnfg.Rows.Count > 0)
                 {
-                    for (int j = 0; j < VE.BarcodePrint[i].NOS.retDbl(); j++)
+                    PRICEINCODE = dtsyscnfg.Rows[0]["PRICEINCODE"].retStr();
+                }
+                DataTable IR = new DataTable("DataTable1");
+                IR.Columns.Add("brcodeImage", typeof(byte[]));
+                IR.Columns.Add("barno", typeof(string));
+                IR.Columns.Add("compinit", typeof(string));
+                IR.Columns.Add("itgrpnm", typeof(string));
+                IR.Columns.Add("itgrpshortnm", typeof(string));
+                IR.Columns.Add("itnm", typeof(string));
+                IR.Columns.Add("design", typeof(string));
+
+                IR.Columns.Add("pdesign", typeof(string));
+
+                IR.Columns.Add("mtr", typeof(string));
+
+                IR.Columns.Add("colrnm", typeof(string));
+
+                IR.Columns.Add("sizenm", typeof(string));
+
+                IR.Columns.Add("txslno", typeof(string));
+                IR.Columns.Add("wprate", typeof(string));
+                IR.Columns.Add("wprate_paisa", typeof(string));
+
+                IR.Columns.Add("wprate_code", typeof(string));
+                IR.Columns.Add("cprate", typeof(string));
+
+                IR.Columns.Add("cprate_paisa", typeof(string));
+
+                IR.Columns.Add("cprate_code", typeof(string));
+                IR.Columns.Add("rprate", typeof(string));
+
+                IR.Columns.Add("rprate_paisa", typeof(string));
+
+                IR.Columns.Add("rprate_code", typeof(string));
+
+                IR.Columns.Add("cost", typeof(string));
+
+                IR.Columns.Add("costcode", typeof(string));
+
+                IR.Columns.Add("docno", typeof(string));
+
+                IR.Columns.Add("docdt", typeof(string));
+
+                IR.Columns.Add("blno", typeof(string));
+
+                IR.Columns.Add("prefdt", typeof(string));
+
+                IR.Columns.Add("docdtcode", typeof(string));
+                IR.Columns.Add("grpnm", typeof(string));
+                IR.Columns.Add("itrem", typeof(string));
+                IR.Columns.Add("partnm", typeof(string));
+                IR.Columns.Add("sizecd", typeof(string));
+
+                var ischecked = VE.BarcodePrint.Where(c => c.Checked == true).ToList();
+                if (ischecked.Count == 0) return Content("<h1>Please select/checked a row in the grid. <h1>");
+                for (int i = 0; i < VE.BarcodePrint.Count; i++)
+                {
+                    if (VE.BarcodePrint[i].Checked == true)
                     {
-                        DataRow dr = IR.NewRow();
-                        string barno = VE.BarcodePrint[i].BARNO.retStr();
-                        byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte");
-                        dr["brcodeImage"] = brcodeImage;
-                        dr["barno"] = barno;
-                        dr["compinit"] = "";
-                        dr["grpnm"] = VE.BarcodePrint[i].GRPNM.retStr();
-                        dr["itgrpnm"] = VE.BarcodePrint[i].ITGRPNM.retStr();
-                        dr["itgrpshortnm"] = VE.BarcodePrint[i].ITGRPSHORTNM.retStr();
-                        dr["itnm"] = VE.BarcodePrint[i].STYLENO.retStr();
-                        dr["design"] = VE.BarcodePrint[i].DESIGN.retStr();
-                        dr["pdesign"] = VE.BarcodePrint[i].PDESIGN.retStr();
-                        dr["mtr"] = VE.BarcodePrint[i].MTR.retStr();
-                        dr["colrnm"] = VE.BarcodePrint[i].COLRNM.retStr();
-                        dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
-                        dr["txslno"] = VE.BarcodePrint[i].TAXSLNO.retStr();
-                        dr["wprate"] = VE.BarcodePrint[i].WPRATE.retStr();
-                        var wpp = VE.BarcodePrint[i].WPRATE.retDbl() * 100;
-                        dr["wprate_paisa"] = wpp;
-                        dr["cprate"] = VE.BarcodePrint[i].CPRATE.retStr();
-                        var cpp = VE.BarcodePrint[i].CPRATE.retDbl() * 100;
-                        dr["cprate_paisa"] = cpp;
-                        dr["cprate_code"] = RateDecode(VE.BarcodePrint[i].CPRATE.retInt(), PRICEINCODE);
-                        dr["wprate_code"] = RateDecode(VE.BarcodePrint[i].WPRATE.retInt(), PRICEINCODE);
-                        dr["rprate"] = VE.BarcodePrint[i].RPRATE.retStr();
-                        var rpp = VE.BarcodePrint[i].RPRATE.retDbl() * 100;
-                        dr["rprate_paisa"] = rpp;
-                        dr["rprate_code"] = RateDecode(VE.BarcodePrint[i].RPRATE.retInt(), PRICEINCODE);
-                        dr["cost"] = VE.BarcodePrint[i].CPRATE.retStr();
-                        dr["costcode"] = RateDecode(VE.BarcodePrint[i].CPRATE.retInt(), PRICEINCODE);
-                        dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
-                        dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
-                        dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
-                        dr["prefdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
-                        dr["docdtcode"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
-                        dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
-                        dr["itrem"] = VE.BarcodePrint[i].ITREM.retStr();
-                        dr["partnm"] = VE.BarcodePrint[i].PARTNM.retStr();
-                        dr["sizecd"] = VE.BarcodePrint[i].SIZECD.retStr();
-                        IR.Rows.Add(dr);
+                        for (int j = 0; j < VE.BarcodePrint[i].NOS.retDbl(); j++)
+                        {
+                            DataRow dr = IR.NewRow();
+                            string barno = VE.BarcodePrint[i].BARNO.retStr();
+                            byte[] brcodeImage = (byte[])Cn.GenerateBarcode(barno, "byte");
+                            dr["brcodeImage"] = brcodeImage;
+                            dr["barno"] = barno;
+                            dr["compinit"] = "";
+                            dr["grpnm"] = VE.BarcodePrint[i].GRPNM.retStr();
+                            dr["itgrpnm"] = VE.BarcodePrint[i].ITGRPNM.retStr();
+                            dr["itgrpshortnm"] = VE.BarcodePrint[i].ITGRPSHORTNM.retStr();
+                            dr["itnm"] = VE.BarcodePrint[i].STYLENO.retStr();
+                            dr["design"] = VE.BarcodePrint[i].DESIGN.retStr();
+                            dr["pdesign"] = VE.BarcodePrint[i].PDESIGN.retStr();
+                            dr["mtr"] = VE.BarcodePrint[i].MTR.retStr();
+                            dr["colrnm"] = VE.BarcodePrint[i].COLRNM.retStr();
+                            dr["sizenm"] = VE.BarcodePrint[i].SIZENM.retStr();
+                            dr["txslno"] = VE.BarcodePrint[i].TAXSLNO.retStr();
+                            dr["wprate"] = VE.BarcodePrint[i].WPRATE.retStr();
+                            var wpp = VE.BarcodePrint[i].WPRATE.retDbl() * 100;
+                            dr["wprate_paisa"] = wpp;
+                            dr["cprate"] = VE.BarcodePrint[i].CPRATE.retStr();
+                            var cpp = VE.BarcodePrint[i].CPRATE.retDbl() * 100;
+                            dr["cprate_paisa"] = cpp;
+                            dr["cprate_code"] = RateEncode(VE.BarcodePrint[i].CPRATE.retInt(), PRICEINCODE);
+                            dr["wprate_code"] = RateEncode(VE.BarcodePrint[i].WPRATE.retInt(), PRICEINCODE);
+                            dr["rprate"] = VE.BarcodePrint[i].RPRATE.retStr();
+                            var rpp = VE.BarcodePrint[i].RPRATE.retDbl() * 100;
+                            dr["rprate_paisa"] = rpp;
+                            dr["rprate_code"] = RateEncode(VE.BarcodePrint[i].RPRATE.retInt(), PRICEINCODE);
+                            dr["cost"] = VE.BarcodePrint[i].CPRATE.retStr();
+                            dr["costcode"] = RateEncode(VE.BarcodePrint[i].CPRATE.retInt(), PRICEINCODE);
+                            dr["docno"] = VE.BarcodePrint[i].DOCNO.retStr();
+                            dr["docdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
+                            dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
+                            dr["prefdt"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
+                            dr["docdtcode"] = VE.BarcodePrint[i].DOCDT.retDateStr().Replace("/", "");
+                            dr["blno"] = VE.BarcodePrint[i].PREFNO.retStr();
+                            dr["itrem"] = VE.BarcodePrint[i].ITREM.retStr();
+                            dr["partnm"] = VE.BarcodePrint[i].PARTNM.retStr();
+                            dr["sizecd"] = VE.BarcodePrint[i].SIZECD.retStr();
+                            IR.Rows.Add(dr);
+                        }
                     }
                 }
-            }
-            string rptfile = "PrintBarcode";
-            string rptname = "~/Report/" + rptfile + ".rpt";
+                string rptfile = "PrintBarcode";
+                string rptname = "~/Report/" + rptfile + ".rpt";
 
-            ReportDocument reportdocument = new ReportDocument();
-            reportdocument.Load(Server.MapPath(rptname));
-            DSPrintBarcode DSP = new DSPrintBarcode();
-            DSP.Merge(IR);
-            reportdocument.SetDataSource(DSP);
-            Response.Buffer = false;
-            Response.ClearContent();
-            Response.ClearHeaders();
-            Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-            stream.Seek(0, SeekOrigin.Begin);
-            reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
-            return new FileStreamResult(stream, "application/pdf");
+                ReportDocument reportdocument = new ReportDocument();
+                reportdocument.Load(Server.MapPath(rptname));
+                DSPrintBarcode DSP = new DSPrintBarcode();
+                DSP.Merge(IR);
+                reportdocument.SetDataSource(DSP);
+                Response.Buffer = false;
+                Response.ClearContent();
+                Response.ClearHeaders();
+                Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
+                stream.Seek(0, SeekOrigin.Begin);
+                reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
+                return new FileStreamResult(stream, "application/pdf");
+            }
         }
-        public string RateDecode(int rate, string PRICEINCODE)
+        public string RateEncode(int rate, string PRICEINCODE)
         {
             PRICEINCODE = PRICEINCODE.ToUpper();
-            string str = "";
+            string str = ""; string rptchar = "";
             string[,] arr = new string[11, 2];
-            //G A N A S H 
-            //0 1 2 3 4 5
+            //G A N A S H R //11th charecter can repeat eg 1122=ARNR
+            //0 1 2 3 4 5 H
             if (PRICEINCODE != "")
             {
                 int i = 0;
                 foreach (char c in PRICEINCODE)
                 {
                     arr[i, 0] = c.ToString();
-                    arr[i, 1] = i.ToString();i++;
+                    arr[i, 1] = i.ToString(); i++;
                 }
-                var strate = rate.ToString();
+                var strate = rate.ToString(); string lastchar = "";
+                if (PRICEINCODE.Length == 11) rptchar = arr[10, 0];
                 foreach (char c in strate)
                 {
-                    var ty = c.ToString();
-                    for (int k = 0; k < arr.GetLength(0); k++)
+                    for (int k = 0; k < arr.GetLength(0) - rptchar.Length; k++)
                     {
                         if (c.ToString() == arr[k, 1])
-                            str += arr[k, 0];
+                        {
+                            if (lastchar == arr[k, 0] && rptchar != "")
+                            {
+                                str += rptchar;
+                                lastchar = "";
+                            }
+                            else
+                            {
+                                str += arr[k, 0];
+                                lastchar = arr[k, 0];
+                            }
+                        }
                     }
                 }
                 return str;
@@ -328,5 +348,14 @@ namespace Improvar.Controllers
                 return rate.ToString();
             }
         }
+
+        public ActionResult PreviewBarcodeTxtFmt(string text)
+        {
+            ViewBag.BarText = "hook\nhook\nhook\nhook\nhook\nhook\nhook\n jkkkjhh<br> mithun";
+            //return View();
+            return Content("Hook\n mithun", "text/plain", Encoding.UTF8);
+        }
+
+
     }
 }

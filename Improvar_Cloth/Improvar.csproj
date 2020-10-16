@@ -1079,6 +1079,7 @@
     <Content Include="Views\Shared\_Rep_BarcodePrint_Main.cshtml" />
     <Content Include="Views\T_SALE_POS\T_SALE_POS.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PENDINGORDER.cshtml" />
+    <Content Include="Views\Rep_BarcodePrint\PreviewBarcodeTxtFmt.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
