@@ -51,8 +51,8 @@
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="" style="width:27px;text-align:center;">SL. No.</th>
-                                <th class="" style="width:180px;">SIZE NAME</th>
                                 <th class="" style="width:180px;">COLOR NAME</th>
+                                <th class="" style="width:180px;">SIZE NAME</th>
                                 <th class="" style="width:120px">Rate</th>
                                 <th class="" style="width:120px">Quantity</th>
                             </tr>
@@ -78,20 +78,21 @@
                                         @Html.HiddenFor(model => model.TSORDDTL_SIZE[i].TOTAL_BOX, new { id = "TOTAL_BOX_" + i })
                                         @Html.HiddenFor(model => model.TSORDDTL_SIZE[i].MIXSIZE, new { id = "SIZE_MIXSIZE_" + i })
                                     </td>
-                                    @if (SIZE_COUNT > 0)
-                                    {
-                                        <td class="">
-                                            @Html.HiddenFor(model => model.TSORDDTL_SIZE[i].SIZECD, new { id = "SIZECD_" + i })
-                                            @Html.TextBoxFor(model => Model.TSORDDTL_SIZE[i].SIZENM, new { id = "SIZENM_" + i, maxlength = 10, @title = "Only For Display", @placeholder = "Size Name", @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
-                                        </td>
-                                    }
-                                    @if (COLOR_COUNT > 0)
-                                    {
+                                    @*@if (COLOR_COUNT > 0)
+                                    {*@
                                         <td class="">
                                             @Html.HiddenFor(model => model.TSORDDTL_SIZE[i].COLRCD, new { id = "COLRCD_" + i })
                                             @Html.TextBoxFor(model => Model.TSORDDTL_SIZE[i].COLRNM, new { id = "COLRNM_" + i, maxlength = 10, @title = "Only For Display", @placeholder = "Color Name", @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         </td>
-                                    }
+                                    @*}
+                                    @if (SIZE_COUNT > 0)
+                                    {*@
+                                        <td class="">
+                                            @Html.HiddenFor(model => model.TSORDDTL_SIZE[i].SIZECD, new { id = "SIZECD_" + i })
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_SIZE[i].SIZENM, new { id = "SIZENM_" + i, maxlength = 10, @title = "Only For Display", @placeholder = "Size Name", @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
+                                        </td>
+                                        @*}*@
+
                                     <td class="">
                                         @Html.EditorFor(model => Model.TSORDDTL_SIZE[i].RATE, new { htmlAttributes = new { id = "SIZE_RATE_" + i, maxlength = 10, @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor ", @style = "text-align: right;" } })
                                     </td>

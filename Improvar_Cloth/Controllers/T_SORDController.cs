@@ -537,19 +537,28 @@ namespace Improvar.Controllers
 
                 if (query != null)
                 {
-                    string sql = "";
-                    sql += "select a.itcd, a.styleno, nvl(a.pcsperset,0) pcsperset, a.sizecd, a.sizenm, a.print_seq, a.colrcd, a.colrnm, a.slno, nvl(b.rate,0) rate from ";
-                    sql += "( select a.itcd, a.styleno,  a.pcsperset, b.sizecd, d.sizenm, d.print_seq, c.colrcd, c.slno, e.colrnm ";
-                    sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_sitem_size b, " + scm1 + ".m_sitem_color c, ";
-                    sql += scm1 + ".m_size d, " + scm1 + ".m_color e ";
-                    sql += "where a.itcd = '" + ITEM + "' and a.itcd = b.itcd(+) and a.itcd = c.itcd(+) and b.sizecd = d.sizecd(+) and c.colrcd = e.colrcd(+) and ";
-                    sql += "nvl(b.inactive_tag, 'N')= 'N' and nvl(c.inactive_tag, 'N')= 'N' ) a, ";
-                    sql += "( select a.itcd, a.sizecd, a.rate,'' colrcd ";
-                    sql += "from " + scm1 + ".m_itemplistdtl a ";
-                    //sql += "where a.prccd='" + prccd + "' and a.effdt=to_date('" + prceffdt + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
-                    sql += "where a.effdt=to_date('" + VE.T_SORD.DOCDT.retStr().Remove(10) + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
-                    sql += "where a.itcd=b.itcd(+) and a.sizecd=b.sizecd(+) and a.colrcd=b.colrcd(+) ";
-                    sql += "order by print_seq, slno ";
+                  string sql = "";
+                 sql += "select row_number() over(partition by a.itcd order by a.itcd) slno,a.itcd, a.styleno, nvl(a.pcsperset,0) pcsperset,a.COLRCD, a.colrnm, a.sizecd, a.sizenm, a.print_seq, nvl(b.rate,0) rate "; 
+                 sql += " from ( select a.itcd, a.styleno,  a.pcsperset, d.sizenm,B.COLRCD, d.print_seq,b.sizecd , e.colrnm from SD_DH2020.m_sitem a,SD_DH2020.m_sitem_barcode B, ";
+                 sql += " SD_DH2020.m_cntrl_hdr c,   SD_DH2020.m_size d, SD_DH2020.m_color e  ";
+                 sql += " where A.M_AUTONO=c.m_autono and a.itcd=b.itcd and b.colrcd=E.COLRCD(+) and b.sizecd=d.sizecd(+) and a.itcd = 'F1200002' and nvl(c.inactive_tag, 'N')= 'N' ";
+                 sql += "  ) a, ";
+                 sql += "  ( select a.itcd, a.rate,'' colrcd from SD_DH2020.m_itemplistdtl a where a.effdt=to_date('16/10/2020','dd/mm/yyyy')  ";
+                 sql += " and a.itcd='F1200002' ) b  ";
+                 sql += " where a.itcd=b.itcd(+)  ";
+                 sql += " order by slno ";
+                    //sql += "select a.itcd, a.styleno, nvl(a.pcsperset,0) pcsperset, a.sizecd, a.sizenm, a.print_seq, a.colrcd, a.colrnm, a.slno, nvl(b.rate,0) rate from ";
+                    //sql += "( select a.itcd, a.styleno,  a.pcsperset, b.sizecd, d.sizenm, d.print_seq, c.colrcd, c.slno, e.colrnm ";
+                    //sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_sitem_size b, " + scm1 + ".m_sitem_color c, ";
+                    //sql += scm1 + ".m_size d, " + scm1 + ".m_color e ";
+                    //sql += "where a.itcd = '" + ITEM + "' and a.itcd = b.itcd(+) and a.itcd = c.itcd(+) and b.sizecd = d.sizecd(+) and c.colrcd = e.colrcd(+) and ";
+                    //sql += "nvl(b.inactive_tag, 'N')= 'N' and nvl(c.inactive_tag, 'N')= 'N' ) a, ";
+                    //sql += "( select a.itcd, a.sizecd, a.rate,'' colrcd ";
+                    //sql += "from " + scm1 + ".m_itemplistdtl a ";
+                    ////sql += "where a.prccd='" + prccd + "' and a.effdt=to_date('" + prceffdt + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
+                    //sql += "where a.effdt=to_date('" + VE.T_SORD.DOCDT.retStr().Remove(10) + "','dd/mm/yyyy') and a.itcd='" + ITEM + "' ) b ";
+                    //sql += "where a.itcd=b.itcd(+) and a.sizecd=b.sizecd(+) and a.colrcd=b.colrcd(+) ";
+                    //sql += "order by print_seq, slno ";
 
                     var SIZE_DATA = Master_Help.SQLquery(sql); int SL_NO = 0;
                     var SIZE_COUNT = SIZE_DATA.Rows.Count;
@@ -564,11 +573,13 @@ namespace Improvar.Controllers
                                             SIZENM = dr["sizenm"].ToString(),
                                             COLRCD = dr["colrcd"].ToString(),
                                             COLRNM = dr["colrnm"].ToString(),
+                                            QNTY = QNTY,
                                             ParentSerialNo = SerialNo,
                                             ITCD_HIDDEN = ITEM,
                                             ITNM_HIDDEN = ITEM_NM,
                                             ARTNO_HIDDEN = ART_NO,
                                             UOM_HIDDEN = UOM,
+                                         
                                             //  PCS_HIDDEN = PCS.Value,
                                             // PCSPERSET_HIDDEN = PCS_PERSET,
                                             // FREESTK_HIDDEN = FREE_STK,
