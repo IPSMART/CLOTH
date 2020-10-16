@@ -743,7 +743,7 @@ namespace Improvar.Controllers
             var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2);
             return yrcd + lbatchini + UNIQNO + slno.ToString().PadLeft(4, '0');
         }
-        public ActionResult GetTDSDetails(string val, string TAG, string PARTY)
+        public ActionResult GetTDSDetails(string val, string TAG, string PARTY, string AUTONO)
         {
             try
             {
@@ -758,7 +758,15 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    return Content(masterHelp.TDSCODE_help(TAG, val, PARTY, "TCS", linktdscode));
+                    string str = masterHelp.TDSCODE_help(TAG, val, PARTY, "TCS", linktdscode);
+                    double TDSLIMIT = str.retCompValue("TDSLIMIT").retDbl();
+
+                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO).ToString());
+                    string panno = DBF.M_SUBLEG.Where(a => a.SLCD == PARTY).Select(b => b.PANNO).FirstOrDefault();
+                    string AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), TAG, VE.MENU_PARA, AUTONO.retStr()).ToString();
+                    AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
+                    str += "^AMT=^" + AMT + Cn.GCS();
+                    return Content(str);
                 }
             }
             catch (Exception Ex)
@@ -786,7 +794,7 @@ namespace Improvar.Controllers
             DataTable dt = masterHelp.SQLquery(sql);
             return dt;
         }
-        public ActionResult GetSubLedgerDetails(string val, string Code)
+        public ActionResult GetSubLedgerDetails(string val, string Code, string Autono, string linktdscode)
         {
             try
             {
@@ -839,7 +847,8 @@ namespace Improvar.Controllers
                                 if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") party_data.Rows[0]["TCSAPPL"] = "N";
                                 if (party_data.Rows[0]["TCSAPPL"].retStr() == "Y")
                                 {
-                                    string linktdscode = "'Y'";
+                                    linktdscode = linktdscode.retStr() == "" ? "'Y'" : linktdscode.retStr().retSqlformat();
+
                                     if (VE.MENU_PARA == "PB") linktdscode = "'X'";
                                     var tdsdt = getTDS(code_data[1], val, linktdscode);
                                     if (tdsdt != null && tdsdt.Rows.Count > 0)
@@ -851,7 +860,7 @@ namespace Improvar.Controllers
                                         TDSCALCON = tdsdt.Rows[0]["TDSCALCON"].retStr();
                                         TDSROUNDCAL = tdsdt.Rows[0]["TDSROUNDCAL"].retStr();
                                     }
-                                    AMT = salesfunc.getSlcdTCSonCalc(party_data.Rows[0]["PANNO"].retStr(), code_data[1], VE.MENU_PARA).ToString();
+                                    AMT = salesfunc.getSlcdTCSonCalc(party_data.Rows[0]["PANNO"].retStr(), code_data[1], VE.MENU_PARA, Autono.retStr()).ToString();
                                     AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
                                 }
                                 str = masterHelp.ToReturnFieldValues("", party_data);
@@ -1542,28 +1551,44 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
             }
         }
-        public ActionResult GetPendOrder(string SLCD)
+        public ActionResult GetPendOrder(string SLCD, string SUBMITBTN)
         {
             TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
             Cn.getQueryString(VE);
-            DataTable dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", VE.MENU_PARA);
-            VE.PENDINGORDER = (from DataRow dr in dt.Rows
-                               select new PENDINGORDER
-                               {
-                                   ORDNO = dr["ORDNO"].retStr(),
-                                   ORDAUTONO = dr["ORDAUTONO"].retStr(),
-                                   ORDSLNO = dr["ORDSLNO"].retStr(),
-                                   ORDDT = dr["ORDDT"].retStr().Remove(10),
-                                   ITGRPNM = dr["ITGRPNM"].retStr(),
-                                   ITSTYLE = dr["styleno"].retStr() + " " + dr["ITNM"].retStr(),
-                                   COLRNM = dr["COLRNM"].retStr(),
-                                   SIZECD = dr["SIZECD"].retStr(),
-                                   ORDQTY = dr["ORDQTY"].retDbl(),
-                                   BALQTY = dr["BALQTY"].retDbl(),
-                                   ITCD = dr["ITCD"].retStr(),
-                                   COLRCD = dr["COLRCD"].retStr(),
-                               }).ToList();
-
+            DataTable dt = new DataTable();
+            if (SUBMITBTN == "SHOWBTN")
+            {
+                dt = (DataTable)TempData["PENDORDER"]; TempData.Keep();
+            }
+            else
+            {
+                dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", VE.MENU_PARA);
+            }
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                VE.PENDINGORDER = (from DataRow dr in dt.Rows
+                                   select new PENDINGORDER
+                                   {
+                                       ORDDOCNO = SUBMITBTN == "SHOWBTN" ? dr["ORDDOCNO"].retStr() : dr["DOCNO"].retStr(),
+                                       ORDAUTONO = SUBMITBTN == "SHOWBTN" ? dr["ORDAUTONO"].retStr() : dr["AUTONO"].retStr(),
+                                       ORDSLNO = SUBMITBTN == "SHOWBTN" ? dr["ORDSLNO"].retStr() : dr["SLNO"].retStr(),
+                                       ORDDOCDT = SUBMITBTN == "SHOWBTN" ? dr["ORDDOCDT"].retStr().Remove(10) : dr["DOCDT"].retStr().Remove(10),
+                                       ITGRPNM = dr["ITGRPNM"].retStr(),
+                                       ITSTYLE = dr["styleno"].retStr() + " " + dr["ITNM"].retStr(),
+                                       COLRNM = dr["COLRNM"].retStr(),
+                                       SIZECD = dr["SIZECD"].retStr(),
+                                       ORDQTY = SUBMITBTN == "SHOWBTN" ? dr["ORDQTY"].retDbl() : dr["ORDQNTY"].retDbl(),
+                                       BALQTY = dr["BALQNTY"].retDbl(),
+                                       ITCD = dr["ITCD"].retStr(),
+                                       COLRCD = dr["COLRCD"].retStr(),
+                                   }).ToList();
+            }
+            int slno = 1;
+            for (int p = 0; p <= VE.PENDINGORDER.Count - 1; p++)
+            {
+                VE.PENDINGORDER[p].SLNO = slno.retShort();
+                slno++;
+            }
             VE.DefaultView = true;
             return PartialView("_T_SALE_PENDINGORDER", VE);
         }
@@ -1575,10 +1600,10 @@ namespace Improvar.Controllers
                       where a.Ord_Checked == true
                       select new PENDINGORDER
                       {
-                          ORDNO = a.ORDNO.retStr(),
+                          ORDDOCNO = a.ORDDOCNO.retStr(),
                           ORDAUTONO = a.ORDAUTONO.retStr(),
                           ORDSLNO = a.ORDSLNO.retStr(),
-                          ORDDT = a.ORDDT.retStr().Remove(10),
+                          ORDDOCDT = a.ORDDOCDT.retStr(),
                           ITCD = a.ITCD.retStr(),
                           COLRCD = a.COLRCD.retStr(),
                           SIZECD = a.SIZECD.retStr(),
@@ -1593,8 +1618,8 @@ namespace Improvar.Controllers
         {
             try
             {
-                DataTable tbl = (DataTable)TempData["PENDORDER"]; TempData.Keep();
-                if (tbl == null || tbl.Rows.Count == 0)
+                var tbl = (List<PENDINGORDER>)TempData["PENDORDER"]; TempData.Keep();
+                if (tbl == null || tbl.Count == 0)
                 {
                     return Content("Please Select Order!");
                 }
@@ -1602,31 +1627,28 @@ namespace Improvar.Controllers
                 string sel1 = "";
                 if (Code.retStr() != "")
                 {
-                    sel1 = "itcd = '" + Code + "' ";
+                    tbl = tbl.Where(a => a.ITCD == Code).ToList();
                 }
                 if (val.retStr() != "")
                 {
-                    sel1 += "and ordno = '" + val + "' ";
+                    tbl = tbl.Where(a => a.ORDDOCNO == val).ToList();
                 }
-                if (sel1 != "")
-                {
-                    tbl = tbl.Select(sel1).CopyToDataTable();
-                }
-                if (val.retStr() == "" || tbl.Rows.Count > 1)
+               
+                if (val.retStr() == "" || tbl.Count > 1)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    for (int i = 0; i <= tbl.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + tbl.Rows[i]["ORDNO"] + "</td><td>" + tbl.Rows[i]["ORDDT"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["ORDQTY"] + " </td></tr>");
+                        SB.Append("<tr><td>" + tbl[i].ORDDOCNO+ "</td><td>" + tbl[i].ORDDOCDT + " </td><td>" + tbl[i].ITCD + " </td><td>" + tbl[i].ORDQTY + " </td></tr>");
                     }
                     var hdr = "Order No." + Cn.GCS() + "Order Date" + Cn.GCS() + "Item Code" + Cn.GCS() + "Order Qnty";
                     return PartialView("_Help2", masterHelp.Generate_help(hdr, SB.ToString()));
                 }
                 else
                 {
-                    if (tbl.Rows.Count > 0)
+                    if (tbl.Count > 0)
                     {
-                        string str = masterHelp.ToReturnFieldValues("", tbl);
+                        string str = masterHelp.ToReturnFieldValues(tbl);
                         return Content(str);
                     }
                     else
