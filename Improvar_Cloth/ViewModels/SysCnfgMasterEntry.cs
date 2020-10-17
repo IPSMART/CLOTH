@@ -19,7 +19,9 @@ namespace Improvar.ViewModels
         public string SEARCH_AUTONO { get; set; }
         public bool INC_RATE { get; set; }
         public string RTDBNM { get; set; }
-
-
+        public string WPPRICEGENCD { get; set; }
+        public string WPPRICEGENAMT { get; set; }
+        public string RPPRICEGENCD { get; set; }
+        public string RPPRICEGENAMT { get; set; }
     }
 }

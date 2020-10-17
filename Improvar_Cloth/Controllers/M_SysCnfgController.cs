@@ -21,7 +21,7 @@ namespace Improvar.Controllers
         MasterHelp Master_Help = new MasterHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: M_SysCnfg
-       
+
         public ActionResult M_SysCnfg(FormCollection FC, string op = "", string key = "", int Nindex = 0, string searchValue = "", string loadItem = "N")
         {
             //testing
@@ -42,7 +42,7 @@ namespace Improvar.Controllers
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     var doctP = (from i in DB1.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
 
-                    //=================For WP Price Gen================//
+                    //=================For WP/rp Price Gen================//
                     List<DropDown_list1> GT = new List<DropDown_list1>();
                     DropDown_list1 GT1 = new DropDown_list1();
                     GT1.text = "ROUND";
@@ -61,28 +61,8 @@ namespace Improvar.Controllers
                     GT4.value = "NT";
                     GT.Add(GT4);
                     VE.DropDown_list1 = GT;
-                    //=================End WP Price Gen ================//
+                    //=================End WP/rp Price Gen ================//
 
-                    //=================For RP Price Gen ================//
-                    List<DropDown_list2> list1 = new List<DropDown_list2>();
-                    DropDown_list2 obj1 = new DropDown_list2();
-                    obj1.text = "";
-                    obj1.value = "";
-                    list1.Add(obj1);
-                    DropDown_list2 obj2 = new DropDown_list2();
-                    obj2.text = "NR95";
-                    obj2.value = "NR95";
-                    list1.Add(obj2);
-                    DropDown_list2 obj3 = new DropDown_list2();
-                    obj3.text = "NR85";
-                    obj3.value = "NR85";
-                    list1.Add(obj3);
-                    DropDown_list2 obj4 = new DropDown_list2();
-                    obj4.text = "NR85";
-                    obj4.value = "NR85";
-                    list1.Add(obj4);
-                    VE.DropDown_list2 = list1;
-                    //=================End  RP Price Gen ================//
                     //=================For Due Date Calc on ================//
                     List<DropDown_list3> list2 = new List<DropDown_list3>();
                     DropDown_list3 obj5 = new DropDown_list3();
@@ -93,19 +73,17 @@ namespace Improvar.Controllers
                     obj6.text = "LR Date";
                     obj6.value = "R";
                     list2.Add(obj6);
-                    //DropDown_list3 obj7 = new DropDown_list3();
-                    //obj7.text = "Bill Date";
-                    //obj7.value = "B";
-                    //list2.Add(obj7);
                     VE.DropDown_list3 = list2;
                     //=================End  Due Date Calc on ================//
                     VE.DefaultAction = op;
                     string GCS = Cn.GCS();
                     if (op.Length != 0)
                     {
-                        VE.IndexKey = (from p in DB.M_SYSCNFG orderby p.M_AUTONO
-                                       select  new { M_AUTONO = p.M_AUTONO }).Select (a=> new                                       
-                                       IndexKey() { Navikey = a.M_AUTONO.ToString() }).ToList();
+                        VE.IndexKey = (from p in DB.M_SYSCNFG
+                                       orderby p.M_AUTONO
+                                       select new { M_AUTONO = p.M_AUTONO }).Select(a => new
+                                     IndexKey()
+                                       { Navikey = a.M_AUTONO.ToString() }).ToList();
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
 
                         if (op == "E" || op == "D" || op == "V" || loadItem == "Y")
@@ -204,7 +182,7 @@ namespace Improvar.Controllers
                     }
                     //DateTime EDT = Convert.ToDateTime(aa[1]);
                     int autono = aa[0].retInt();
-                    sl = DB.M_SYSCNFG.Where(m=>m.M_AUTONO== autono).First();
+                    sl = DB.M_SYSCNFG.Where(m => m.M_AUTONO == autono).First();
                     sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                     string class1cd = sl.CLASS1CD.retStr();
                     string SALDEBGLCD = sl.SALDEBGLCD.retStr();
@@ -240,7 +218,16 @@ namespace Improvar.Controllers
                     {
                         VE.INC_RATE = false;
                     }
-
+                    if (sl.WPPRICEGEN.retStr() != "")
+                    {
+                        VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
+                        VE.WPPRICEGENAMT = sl.WPPRICEGEN.Substring(2, 2);
+                    }
+                    if (sl.RPPRICEGEN.retStr() != "")
+                    {
+                        VE.RPPRICEGENCD = sl.RPPRICEGEN.Substring(0, 2);
+                        VE.RPPRICEGENAMT = sl.RPPRICEGEN.Substring(2, 2);
+                    }
                     if (sll.INACTIVE_TAG == "Y")
                     {
                         VE.Checked = true;
@@ -251,9 +238,9 @@ namespace Improvar.Controllers
                     }
                     if (VE.DefaultAction == "A")
                     {
-                        sl.EFFDT =System.DateTime.Now.Date;
+                        sl.EFFDT = System.DateTime.Now.Date;
                     }
-                   
+
                 }
             }
             catch (Exception ex)
@@ -274,10 +261,10 @@ namespace Improvar.Controllers
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
             var hdr = "Autono" + Cn.GCS() + "Company Code" + Cn.GCS() + "Effective Date" + Cn.GCS() + "Debtors" + Cn.GCS() + "Creditors";
             for (int i = 0; i <= tbl.Rows.Count - 1; i++)
-                {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["m_autono"] + "</td><td>" + tbl.Rows[i]["compcd"] + "</td><td>" + tbl.Rows[i]["effdt"].retDateStr() + "</td><td>" + tbl.Rows[i]["saldebglnm"] + "</td><td>" + tbl.Rows[i]["purdebglnm"] + "</td></tr>");
-                }
-                return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "0"));
+            {
+                SB.Append("<tr><td>" + tbl.Rows[i]["m_autono"] + "</td><td>" + tbl.Rows[i]["compcd"] + "</td><td>" + tbl.Rows[i]["effdt"].retDateStr() + "</td><td>" + tbl.Rows[i]["saldebglnm"] + "</td><td>" + tbl.Rows[i]["purdebglnm"] + "</td></tr>");
+            }
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0", "0"));
         }
         public ActionResult GetSubLedgerDetails(string val, string Code)
         {
@@ -355,70 +342,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult AddDOCRow(SysCnfgMasterEntry VE)
-        {
-            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), "IMPROVAR");
-            var doctP = (from i in DB1.MS_DOCCTG
-                         select new DocumentType()
-                         {
-                             value = i.DOC_CTG,
-                             text = i.DOC_CTG
-                         }).OrderBy(s => s.text).ToList();
-            if (VE.UploadDOC == null)
-            {
-                List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
-                UploadDOC MLI = new UploadDOC();
-                MLI.DocumentType = doctP;
-                MLocIFSC1.Add(MLI);
-                VE.UploadDOC = MLocIFSC1;
-            }
-            else
-            {
-                List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
-                for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
-                {
-                    UploadDOC MLI = new UploadDOC();
-                    MLI = VE.UploadDOC[i];
-                    MLI.DocumentType = doctP;
-                    MLocIFSC1.Add(MLI);
-                }
-                UploadDOC MLI1 = new UploadDOC();
-                MLI1.DocumentType = doctP;
-                MLocIFSC1.Add(MLI1);
-                VE.UploadDOC = MLocIFSC1;
-            }
-            VE.DefaultView = true;
-            return PartialView("_UPLOADDOCUMENTS", VE);
-
-        }
-        public ActionResult DeleteDOCRow(SysCnfgMasterEntry VE)
-        {
-            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), "IMPROVAR");
-            var doctP = (from i in DB1.MS_DOCCTG
-                         select new DocumentType()
-                         {
-                             value = i.DOC_CTG,
-                             text = i.DOC_CTG
-                         }).OrderBy(s => s.text).ToList();
-            List<UploadDOC> LOCAIFSC = new List<UploadDOC>();
-            int count = 0;
-            for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
-            {
-                if (VE.UploadDOC[i].chk == false)
-                {
-                    count += 1;
-                    UploadDOC IFSC = new UploadDOC();
-                    IFSC = VE.UploadDOC[i];
-                    IFSC.DocumentType = doctP;
-                    LOCAIFSC.Add(IFSC);
-                }
-            }
-            VE.UploadDOC = LOCAIFSC;
-            ModelState.Clear();
-            VE.DefaultView = true;
-            return PartialView("_UPLOADDOCUMENTS", VE);
-
-        }
         public ActionResult SAVE(FormCollection FC, SysCnfgMasterEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
@@ -437,7 +360,7 @@ namespace Improvar.Controllers
                         {
                             MSYSCNFG.EMD_NO = 0;
                             MSYSCNFG.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
-                           
+
                         }
                         if (VE.DefaultAction == "E")
                         {
@@ -452,20 +375,19 @@ namespace Improvar.Controllers
                             {
                                 MSYSCNFG.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
-
-                            //DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
-                            //DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO));
-
-                            //DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
-                            //DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO));
-
                         }
                         MSYSCNFG.SALDEBGLCD = VE.M_SYSCNFG.SALDEBGLCD;
                         MSYSCNFG.PURDEBGLCD = VE.M_SYSCNFG.PURDEBGLCD;
                         MSYSCNFG.CLASS1CD = VE.M_SYSCNFG.CLASS1CD;
                         MSYSCNFG.RETDEBSLCD = VE.M_SYSCNFG.RETDEBSLCD;
-                        MSYSCNFG.WPPRICEGEN = VE.M_SYSCNFG.WPPRICEGEN;
-                        MSYSCNFG.RPPRICEGEN = VE.M_SYSCNFG.RPPRICEGEN;
+                        if (VE.WPPRICEGENCD.retStr() != "")
+                        {
+                            MSYSCNFG.WPPRICEGEN = VE.WPPRICEGENCD.retStr() + VE.WPPRICEGENAMT.retStr().PadLeft(2, '0');//NR99
+                        }
+                        if (VE.RPPRICEGENCD.retStr() != "")
+                        {
+                            MSYSCNFG.RPPRICEGEN = VE.RPPRICEGENCD.retStr() + VE.RPPRICEGENAMT.retStr().PadLeft(2, '0');//NT99
+                        }
                         MSYSCNFG.DEALSIN = VE.M_SYSCNFG.DEALSIN;
                         MSYSCNFG.INSPOLDESC = VE.M_SYSCNFG.INSPOLDESC;
                         MSYSCNFG.BLTERMS = VE.M_SYSCNFG.BLTERMS;
@@ -487,12 +409,6 @@ namespace Improvar.Controllers
                             DB.Entry(MSYSCNFG).State = System.Data.Entity.EntityState.Modified;
                             DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         }
-                        //if (VE.UploadDOC != null)
-                        //{
-                        //    var img = Cn.SaveUploadImage("M_SYSCNFG", VE.UploadDOC, MSYSCNFG.M_AUTONO.retInt(), MSYSCNFG.EMD_NO.Value);
-                        //    DB.M_CNTRL_HDR_DOC.AddRange(img.Item1);
-                        //    DB.M_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
-                        //}
                         DB.SaveChanges();
                         transaction.Commit();
                         string ContentFlg = "";
@@ -516,14 +432,6 @@ namespace Improvar.Controllers
                         DB.M_SYSCNFG.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.SaveChanges();
-                        //DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
-                        //DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
-
-                        //DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO));
-                        //DB.SaveChanges();
-                        //DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO));
-                        //DB.SaveChanges();
-
                         DB.M_SYSCNFG.RemoveRange(DB.M_SYSCNFG.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR.RemoveRange(DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SYSCNFG.M_AUTONO));
@@ -626,15 +534,5 @@ namespace Improvar.Controllers
             }
             return View();
         }
-
-        private ActionResult ResponsivePrintReport()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ActionResult PrintReport()
-        {
-            return RedirectToAction("PrintViewer", "RPTViewer");
-        }
-    }
+            }
 }
