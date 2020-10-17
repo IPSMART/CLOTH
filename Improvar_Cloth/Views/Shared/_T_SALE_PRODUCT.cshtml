@@ -196,12 +196,12 @@
                                         @if (Model.MENU_PARA == "SBPCK")
                                         {
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].ORDNO, new { htmlAttributes = new { id = "B_ORDNO_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { id = "B_ORDDOCNO_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].ORDAUTONO, new { id = "B_ORDAUTONO_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].ORDSLNO, new { id = "B_ORDSLNO_" + i })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].ORDDT, new { htmlAttributes = new { id = "B_ORDDT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].ORDDOCDT, new { htmlAttributes = new { id = "B_ORDDOCDT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                             </td>
                                         }
                                         <td class="">

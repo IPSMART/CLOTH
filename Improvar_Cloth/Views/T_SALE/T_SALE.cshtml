@@ -221,7 +221,7 @@
         <input type="hidden" id="slcd_tag" value="Party" />
         <input type="hidden" id="bardatachng" value="N" />
         <input type="hidden" id="haspendorddata" value="N" />
-        <input type="hidden" id="hiddenpendord" />
+        <input type="hidden" id="hiddenpendordJSON" />
         @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
         @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
@@ -1006,13 +1006,13 @@
                                             {
                                                 <div class="col-md-7">
                                                     <div class="editor-field">
-                                                        @Html.EditorFor(model => model.ORDNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ORDNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDNO','ORDNO=ORDNO=1/ORDDT=ORDDT=0/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY','ITCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDNO','ORDNO=ORDNO=1/ORDDT=ORDDT=0/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY','ITCD');", @placeholder = "Order No.", maxlength = 4, @title = "Order No." } })
-                                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", PageControllerName)','Order Details','ORDNO','ORDNO=ORDNO=1/ORDDT=ORDDT=0/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY','ITCD')" />
+                                                        @Html.EditorFor(model => model.ORDDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ORDDOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY=3','ITCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY=3','ITCD');", @placeholder = "Order No.", maxlength = 4, @title = "Order No." } })
+                                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", PageControllerName)','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY=3','ITCD')" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="editor-field">
-                                                        @Html.EditorFor(model => model.ORDDT, new { htmlAttributes = new { @class = "form-control", id = "ORDDT", @title = "Order Date", @placeholder = "Order Date", @readonly = "readonly", @TabIndex = -1 } })
+                                                        @Html.EditorFor(model => model.ORDDOCDT, new { htmlAttributes = new { @class = "form-control", id = "ORDDOCDT", @title = "Order Date", @placeholder = "Order Date", @readonly = "readonly", @TabIndex = -1 } })
                                                         @Html.HiddenFor(model => model.ORDAUTONO, new { id = "ORDAUTONO" })
                                                         @Html.HiddenFor(model => model.ORDSLNO, new { id = "ORDSLNO" })
                                                      </div>
@@ -1093,7 +1093,7 @@
                                         <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Alt+Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
                                        @if (Model.MENU_PARA == "SBPCK")
                                        {
-                                         <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="ShowOder()" />
+                                         <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
                                        }
                                      </div>
                                     @*iamge*@

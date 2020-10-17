@@ -192,8 +192,8 @@ namespace Improvar.ViewModels
         public string TDSCALCON { get; set; }
         public double AMT { get; set; }
         public string TDSROUNDCAL { get; set; }
-        public string ORDNO { get; set; }
-        public string ORDDT { get; set; }
+        public string ORDDOCNO { get; set; }
+        public string ORDDOCDT { get; set; }
         public string ORDAUTONO { get; set; }
         public string ORDSLNO { get; set; }
     }

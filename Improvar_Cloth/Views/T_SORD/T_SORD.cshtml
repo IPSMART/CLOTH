@@ -313,6 +313,7 @@
     }
 
     function CalculateSizeQnty(QNTY) {
+        debugger;
         var CHECK_TAG = document.getElementById("SAME_QTY").checked;
         if (CHECK_TAG == true) {
             var GridRow = $("#_T_SORD_SIZE_GRID > tbody > tr").length;
@@ -359,14 +360,15 @@
 </script>
 <script>
     function CalculateSizeTotal() {
+        debugger;
         var TOTAL_SIZE_QNTY = 0;
         var GridRow = $("#_T_SORD_SIZE_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
             var SIZE = document.getElementById("SIZECD_" + i).value;
-            if (SIZE != "") {
+            //if (SIZE != "") {
                 var QUANTITY = document.getElementById("SIZE_QNTY_" + i).value; if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
                 TOTAL_SIZE_QNTY = parseFloat(TOTAL_SIZE_QNTY) + parseFloat(QUANTITY);
-            }
+            //}
         }
         document.getElementById("TOTAL_SIZE_QNTY").value = parseFloat(TOTAL_SIZE_QNTY).toFixed(2);
     }
