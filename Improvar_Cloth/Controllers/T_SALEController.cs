@@ -1568,27 +1568,29 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
             }
         }
-        public ActionResult GetPendOrder(TransactionPackingSlipEntry VE,string SLCD, string SUBMITBTN, string ITCD)
+        public ActionResult GetPendOrder(TransactionPackingSlipEntry VE, string SLCD, string SUBMITBTN, string ITCD)
         {
             Cn.getQueryString(VE);
             DataTable dt = new DataTable();
             if (SUBMITBTN == "SHOWBTN")
             {
-                VE.PENDINGORDER = (List<PENDINGORDER>)TempData["PENDORDER"]; TempData.Keep();
+                VE.PENDINGORDER = (List<PENDINGORDER>)TempData["PENDORDER" + VE.MENU_PARA]; TempData.Keep();
                 if (ITCD.retStr() != "")
                 {
                     VE.PENDINGORDER = VE.PENDINGORDER.Where(a => a.ITCD == ITCD).ToList();
                 }
-                if (VE.TBATCHDTL != null)
-                {
-                    foreach (var v in VE.PENDINGORDER)
-                    {
 
-                        var currentadjqnty = VE.TBATCHDTL.Where(a => a.ORDAUTONO == v.ORDAUTONO && a.ORDSLNO.retStr() == v.ORDSLNO).Sum(b => b.QNTY);
-                        v.CURRENTADJQTY = currentadjqnty.retDbl();
+                foreach (var v in VE.PENDINGORDER)
+                {
+                    double currentadjqnty = 0;
+                    if (VE.TBATCHDTL != null)
+                    {
+                        currentadjqnty = VE.TBATCHDTL.Where(a => a.ORDAUTONO == v.ORDAUTONO && a.ORDSLNO.retStr() == v.ORDSLNO).Sum(b => b.QNTY).retDbl();
                     }
-                    VE.PENDINGORDER = VE.PENDINGORDER.Where(a => a.BALQTY - a.CURRENTADJQTY > 0).ToList();
+                    v.CURRENTADJQTY = currentadjqnty.retDbl();
                 }
+                VE.PENDINGORDER = VE.PENDINGORDER.Where(a => a.BALQTY - a.CURRENTADJQTY > 0).ToList();
+
             }
             else
             {
@@ -1644,7 +1646,7 @@ namespace Improvar.Controllers
                           ITCD = a.ITCD.retStr(),
                           COLRCD = a.COLRCD.retStr(),
                       }).ToList();
-            TempData["PENDORDER"] = dt;
+            TempData["PENDORDER" + VE.MENU_PARA] = dt;
 
             VE.DefaultView = true;
             return Json(new { dt }, JsonRequestBehavior.AllowGet);
@@ -1653,22 +1655,26 @@ namespace Improvar.Controllers
         {
             try
             {
-                var tbl = (List<PENDINGORDER>)TempData["PENDORDER"]; TempData.Keep();
+                Cn.getQueryString(VE);
+                var tbl = (List<PENDINGORDER>)TempData["PENDORDER" + VE.MENU_PARA]; TempData.Keep();
                 if (tbl == null || tbl.Count == 0)
                 {
                     return Content("Please Select Order!");
                 }
                 else
                 {
-                    if (VE.TBATCHDTL != null)
+
+                    foreach (var v in tbl)
                     {
-                        foreach (var v in tbl)
+                        double currentadjqnty = 0;
+                        if (VE.TBATCHDTL != null)
                         {
-                            var currentadjqnty = VE.TBATCHDTL.Where(a => a.ORDAUTONO == v.ORDAUTONO && a.ORDSLNO.retStr() == v.ORDSLNO).Sum(b => b.QNTY);
-                            v.CURRENTADJQTY = currentadjqnty.retDbl();
+                            currentadjqnty = VE.TBATCHDTL.Where(a => a.ORDAUTONO == v.ORDAUTONO && a.ORDSLNO.retStr() == v.ORDSLNO).Sum(b => b.QNTY).retDbl();
                         }
-                        tbl = tbl.Where(a => a.BALQTY - a.CURRENTADJQTY > 0).ToList();
+                        v.CURRENTADJQTY = currentadjqnty.retDbl();
                     }
+                    tbl = tbl.Where(a => a.BALQTY - a.CURRENTADJQTY > 0).ToList();
+
                 }
                 if (Code.retStr() != "")
                 {
@@ -1693,7 +1699,6 @@ namespace Improvar.Controllers
                 {
                     if (tbl.Count > 0)
                     {
-                        TempData["PENDORDER"] = tbl;
                         string str = masterHelp.ToReturnFieldValues(tbl);
                         return Content(str);
                     }

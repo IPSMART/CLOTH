@@ -196,5 +196,6 @@ namespace Improvar.ViewModels
         public string ORDDOCDT { get; set; }
         public string ORDAUTONO { get; set; }
         public string ORDSLNO { get; set; }
+        public string NEGSTOCK { get; set; }
     }
 }
