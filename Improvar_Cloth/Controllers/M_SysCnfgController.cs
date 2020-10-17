@@ -45,20 +45,20 @@ namespace Improvar.Controllers
                     //=================For WP Price Gen================//
                     List<DropDown_list1> GT = new List<DropDown_list1>();
                     DropDown_list1 GT1 = new DropDown_list1();
-                    GT1.text = "";
-                    GT1.value = "";
+                    GT1.text = "ROUND";
+                    GT1.value = "RD";
                     GT.Add(GT1);
                     DropDown_list1 GT2 = new DropDown_list1();
-                    GT2.text = "NR95";
-                    GT2.value = "NR95";
+                    GT2.text = "ROUNDNEXT";
+                    GT2.value = "RN";
                     GT.Add(GT2);
                     DropDown_list1 GT3 = new DropDown_list1();
-                    GT3.text = "NR85";
-                    GT3.value = "NR85";
+                    GT3.text = "NEAR";
+                    GT3.value = "NR";
                     GT.Add(GT3);
                     DropDown_list1 GT4 = new DropDown_list1();
-                    GT4.text = "NR05";
-                    GT4.value = "NR05";
+                    GT4.text = "NEXT";
+                    GT4.value = "NT";
                     GT.Add(GT4);
                     VE.DropDown_list1 = GT;
                     //=================End WP Price Gen ================//

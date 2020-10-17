@@ -199,20 +199,20 @@ namespace Improvar
             // TODO: Null-check arguments
             return from item in source.GroupBy(predicate) select item.First();
         }
-        public static int CharmPrice(string NrNx, int RoundAmt, double Rate)
+        public static int CharmPrice(string NrNt, int RoundAmt, int Rate)
         {
-            int small = (((int)Rate / RoundAmt) * RoundAmt);
+            int small = ((Rate / RoundAmt) * RoundAmt);
             int big = small + RoundAmt;
             int roundVal = (Rate - small >= big - Rate) ? big : small;
-            if (NrNx == "ROUND")
+            if (NrNt == "RD")//ROUND
             {
                 return roundVal;
             }
-            else if (NrNx == "ROUNDNEXT")
+            else if (NrNt == "RN")//ROUNDNEXT
             {
                 return big;
             }
-            else if (NrNx == "NEXT")
+            else if (NrNt == "NT")//NEXT
             {
                 if (RoundAmt < 6) Rate = big;
                 int RoundLen = RoundAmt.ToString().Length;
@@ -220,7 +220,7 @@ namespace Improvar
                 var NEXT = Rate.ToString().Substring(0, RateLen - RoundLen) + RoundAmt;
                 return NEXT.retInt();
             }
-            else if (NrNx == "NEAR")
+            else if (NrNt == "NR")//NEAR
             {
                 if (RoundAmt == 5 && Rate < roundVal) Rate = small;
                 else if (RoundAmt < 6) Rate = roundVal;
