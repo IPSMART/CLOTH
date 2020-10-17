@@ -199,36 +199,50 @@ namespace Improvar
             // TODO: Null-check arguments
             return from item in source.GroupBy(predicate) select item.First();
         }
-        public static int CharmPrice(string NrNx, int RoundAmt, double Rate)
+        public static int CharmPrice(string ChrmType, int Rate, string RoundVal)
         {
-            int small = (((int)Rate / RoundAmt) * RoundAmt);
+            RoundVal = RoundVal.PadLeft(2, '0');
+            if (Rate < 10) Rate = 10 + Rate;
+            int RoundAmt = RoundVal.retInt();
+            if (RoundAmt == 0) RoundAmt = 100;
+            int small = ((Rate / RoundAmt) * RoundAmt);
             int big = small + RoundAmt;
-            int roundVal = (Rate - small >= big - Rate) ? big : small;
-            if (NrNx == "ROUND")
+            if (ChrmType == "RD")//ROUND
             {
-                return roundVal;
+                int roundValu = (Rate - small >= big - Rate) ? big : small;
+                return roundValu;
             }
-            else if (NrNx == "ROUNDNEXT")
+            else if (ChrmType == "RN")//ROUNDNEXT
             {
                 return big;
             }
-            else if (NrNx == "NEXT")
+            else if (ChrmType == "NT")//NEXT
             {
-                if (RoundAmt < 6) Rate = big;
-                int RoundLen = RoundAmt.ToString().Length;
-                int RateLen = Rate.ToString().Length;
-                var NEXT = Rate.ToString().Substring(0, RateLen - RoundLen) + RoundAmt;
-                return NEXT.retInt();
+                int last2rate = (Rate % 100);
+                if (last2rate <= RoundVal.retInt())
+                {
+                    big = (Rate.ToString().Substring(0, Rate.ToString().Length - 2) + RoundVal).retInt();
+                }
+                else
+                {
+                    big = ((Rate + 100).ToString().Substring(0, (Rate + 100).ToString().Length - 2) + RoundVal).retInt();
+                }
+                return big.retInt();
             }
-            else if (NrNx == "NEAR")
+            else if (ChrmType == "NR")//NEAR
             {
-                if (RoundAmt == 5 && Rate < roundVal) Rate = small;
-                else if (RoundAmt < 6) Rate = roundVal;
-                int RoundLen = RoundAmt.ToString().Length;
-                int RateLen = Rate.ToString().Length;
-                var NEXT = Rate.ToString().Substring(0, RateLen - RoundLen) + RoundAmt;
-                var LEAST = small.ToString().Substring(0, small.ToString().Length - RoundLen) + RoundAmt;
-                string NEAR = ((Rate - LEAST.retInt() >= NEXT.retInt() - Rate) ? NEXT : LEAST);
+                int last2rate = (Rate % 100);
+                if (last2rate <= RoundVal.retInt())
+                {
+                    big = (Rate.ToString().Substring(0, Rate.ToString().Length - 2) + RoundVal).retInt();
+                    small = ((Rate - 100).ToString().Substring(0, (Rate - 100).ToString().Length - 2) + RoundVal).retInt();
+                }
+                else
+                {
+                    big = ((Rate + 100).ToString().Substring(0, (Rate + 100).ToString().Length - 2) + RoundVal).retInt();
+                    small = ((Rate).ToString().Substring(0, Rate.ToString().Length - 2) + RoundVal).retInt();
+                }
+                int NEAR = (Rate - small >= big - Rate) ? big : small;
                 return NEAR.retInt();
             }
             else
@@ -236,8 +250,5 @@ namespace Improvar
                 return 0;
             }
         }
-
-
-
     }
 }
