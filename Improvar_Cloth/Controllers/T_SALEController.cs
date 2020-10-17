@@ -128,6 +128,16 @@ namespace Improvar.Controllers
                                        orderby p.DOCDT, p.DOCNO
                                        where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
                                        select new IndexKey() { Navikey = p.AUTONO }).ToList();
+                        if (VE.MENU_PARA == "SB" && op == "V" && searchValue != "")
+                        {
+                            var chk_autono = VE.IndexKey.Where(a => a.Navikey == searchValue).ToList();
+                            if (chk_autono.Count == 0)
+                            {
+                                searchValue = "";
+                            }
+                        }
+
+
                         if (searchValue != "") { Nindex = VE.IndexKey.FindIndex(r => r.Navikey.Equals(searchValue)); }
                         if (op == "E" || op == "D" || op == "V" || loadOrder.retStr().Length > 1)
                         {
@@ -302,7 +312,10 @@ namespace Improvar.Controllers
                 if (VE.MENU_PARA == "SB" && loadOrder == "N")
                 {
                     TTXNLINKNO = (from a in DB.T_TXN_LINKNO where a.AUTONO == TXN.AUTONO select a).FirstOrDefault();
-                    VE.LINKDOCNO = (from a in DB.T_CNTRL_HDR where a.AUTONO == TTXNLINKNO.LINKAUTONO select a).FirstOrDefault().DOCNO;
+                    if (TTXNLINKNO != null)
+                    {
+                        VE.LINKDOCNO = (from a in DB.T_CNTRL_HDR where a.AUTONO == TTXNLINKNO.LINKAUTONO select a).FirstOrDefault().DOCNO;
+                    }
                 }
                 string panno = "";
                 if (TXN.SLCD.retStr() != "")
@@ -349,11 +362,11 @@ namespace Improvar.Controllers
                 string str1 = "";
                 str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO, ";
                 str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
-                str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM ";
+                str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
-                str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q ";
+                str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
-                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+) ";
+                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
                 str1 += "order by i.SLNO ";
                 DataTable tbl = masterHelp.SQLquery(str1);
@@ -409,6 +422,10 @@ namespace Improvar.Controllers
                                     WPRATE = VE.MENU_PARA == "PB" ? dr["WPRATE"].retDbl() : (double?)null,
                                     RPRATE = VE.MENU_PARA == "PB" ? dr["RPRATE"].retDbl() : (double?)null,
                                     ITREM = dr["ITREM"].retStr(),
+                                    ORDAUTONO = dr["ORDAUTONO"].retStr(),
+                                    ORDSLNO = dr["ORDSLNO"].retShort(),
+                                    ORDDOCNO = dr["ORDDOCNO"].retStr(),
+                                    ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
@@ -1551,37 +1568,50 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
             }
         }
-        public ActionResult GetPendOrder(string SLCD, string SUBMITBTN)
+        public ActionResult GetPendOrder(TransactionPackingSlipEntry VE,string SLCD, string SUBMITBTN, string ITCD)
         {
-            TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
             Cn.getQueryString(VE);
             DataTable dt = new DataTable();
             if (SUBMITBTN == "SHOWBTN")
             {
-                dt = (DataTable)TempData["PENDORDER"]; TempData.Keep();
+                VE.PENDINGORDER = (List<PENDINGORDER>)TempData["PENDORDER"]; TempData.Keep();
+                if (ITCD.retStr() != "")
+                {
+                    VE.PENDINGORDER = VE.PENDINGORDER.Where(a => a.ITCD == ITCD).ToList();
+                }
+                if (VE.TBATCHDTL != null)
+                {
+                    foreach (var v in VE.PENDINGORDER)
+                    {
+
+                        var currentadjqnty = VE.TBATCHDTL.Where(a => a.ORDAUTONO == v.ORDAUTONO && a.ORDSLNO.retStr() == v.ORDSLNO).Sum(b => b.QNTY);
+                        v.CURRENTADJQTY = currentadjqnty.retDbl();
+                    }
+                    VE.PENDINGORDER = VE.PENDINGORDER.Where(a => a.BALQTY - a.CURRENTADJQTY > 0).ToList();
+                }
             }
             else
             {
                 dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", VE.MENU_PARA);
-            }
-            if (dt != null && dt.Rows.Count > 0)
-            {
-                VE.PENDINGORDER = (from DataRow dr in dt.Rows
-                                   select new PENDINGORDER
-                                   {
-                                       ORDDOCNO = SUBMITBTN == "SHOWBTN" ? dr["ORDDOCNO"].retStr() : dr["DOCNO"].retStr(),
-                                       ORDAUTONO = SUBMITBTN == "SHOWBTN" ? dr["ORDAUTONO"].retStr() : dr["AUTONO"].retStr(),
-                                       ORDSLNO = SUBMITBTN == "SHOWBTN" ? dr["ORDSLNO"].retStr() : dr["SLNO"].retStr(),
-                                       ORDDOCDT = SUBMITBTN == "SHOWBTN" ? dr["ORDDOCDT"].retStr().Remove(10) : dr["DOCDT"].retStr().Remove(10),
-                                       ITGRPNM = dr["ITGRPNM"].retStr(),
-                                       ITSTYLE = dr["styleno"].retStr() + " " + dr["ITNM"].retStr(),
-                                       COLRNM = dr["COLRNM"].retStr(),
-                                       SIZECD = dr["SIZECD"].retStr(),
-                                       ORDQTY = SUBMITBTN == "SHOWBTN" ? dr["ORDQTY"].retDbl() : dr["ORDQNTY"].retDbl(),
-                                       BALQTY = dr["BALQNTY"].retDbl(),
-                                       ITCD = dr["ITCD"].retStr(),
-                                       COLRCD = dr["COLRCD"].retStr(),
-                                   }).ToList();
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    VE.PENDINGORDER = (from DataRow dr in dt.Rows
+                                       select new PENDINGORDER
+                                       {
+                                           ORDDOCNO = dr["DOCNO"].retStr(),
+                                           ORDAUTONO = dr["AUTONO"].retStr(),
+                                           ORDSLNO = dr["SLNO"].retStr(),
+                                           ORDDOCDT = dr["DOCDT"].retStr().Remove(10),
+                                           ITGRPNM = dr["ITGRPNM"].retStr(),
+                                           ITSTYLE = dr["styleno"].retStr() + " " + dr["ITNM"].retStr(),
+                                           COLRNM = dr["COLRNM"].retStr(),
+                                           SIZECD = dr["SIZECD"].retStr(),
+                                           ORDQTY = dr["ORDQNTY"].retDbl(),
+                                           BALQTY = dr["BALQNTY"].retDbl(),
+                                           ITCD = dr["ITCD"].retStr(),
+                                           COLRCD = dr["COLRCD"].retStr(),
+                                       }).ToList();
+                }
             }
             int slno = 1;
             for (int p = 0; p <= VE.PENDINGORDER.Count - 1; p++)
@@ -1589,6 +1619,7 @@ namespace Improvar.Controllers
                 VE.PENDINGORDER[p].SLNO = slno.retShort();
                 slno++;
             }
+
             VE.DefaultView = true;
             return PartialView("_T_SALE_PENDINGORDER", VE);
         }
@@ -1604,17 +1635,21 @@ namespace Improvar.Controllers
                           ORDAUTONO = a.ORDAUTONO.retStr(),
                           ORDSLNO = a.ORDSLNO.retStr(),
                           ORDDOCDT = a.ORDDOCDT.retStr(),
-                          ITCD = a.ITCD.retStr(),
-                          COLRCD = a.COLRCD.retStr(),
+                          ITGRPNM = a.ITGRPNM.retStr(),
+                          ITSTYLE = a.ITSTYLE.retStr(),
+                          COLRNM = a.COLRNM.retStr(),
                           SIZECD = a.SIZECD.retStr(),
                           ORDQTY = a.ORDQTY.retDbl(),
+                          BALQTY = a.BALQTY.retDbl(),
+                          ITCD = a.ITCD.retStr(),
+                          COLRCD = a.COLRCD.retStr(),
                       }).ToList();
             TempData["PENDORDER"] = dt;
 
             VE.DefaultView = true;
             return Json(new { dt }, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult GetOrderDetails(string val, string Code)
+        public ActionResult GetOrderDetails(TransactionPackingSlipEntry VE, string val, string Code)
         {
             try
             {
@@ -1623,8 +1658,18 @@ namespace Improvar.Controllers
                 {
                     return Content("Please Select Order!");
                 }
-
-                string sel1 = "";
+                else
+                {
+                    if (VE.TBATCHDTL != null)
+                    {
+                        foreach (var v in tbl)
+                        {
+                            var currentadjqnty = VE.TBATCHDTL.Where(a => a.ORDAUTONO == v.ORDAUTONO && a.ORDSLNO.retStr() == v.ORDSLNO).Sum(b => b.QNTY);
+                            v.CURRENTADJQTY = currentadjqnty.retDbl();
+                        }
+                        tbl = tbl.Where(a => a.BALQTY - a.CURRENTADJQTY > 0).ToList();
+                    }
+                }
                 if (Code.retStr() != "")
                 {
                     tbl = tbl.Where(a => a.ITCD == Code).ToList();
@@ -1633,21 +1678,22 @@ namespace Improvar.Controllers
                 {
                     tbl = tbl.Where(a => a.ORDDOCNO == val).ToList();
                 }
-               
+
                 if (val.retStr() == "" || tbl.Count > 1)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= tbl.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + tbl[i].ORDDOCNO+ "</td><td>" + tbl[i].ORDDOCDT + " </td><td>" + tbl[i].ITCD + " </td><td>" + tbl[i].ORDQTY + " </td></tr>");
+                        SB.Append("<tr><td>" + tbl[i].ORDDOCNO + "</td><td>" + tbl[i].ORDDOCDT + " </td></tr>");
                     }
-                    var hdr = "Order No." + Cn.GCS() + "Order Date" + Cn.GCS() + "Item Code" + Cn.GCS() + "Order Qnty";
+                    var hdr = "Order No." + Cn.GCS() + "Order Date";
                     return PartialView("_Help2", masterHelp.Generate_help(hdr, SB.ToString()));
                 }
                 else
                 {
                     if (tbl.Count > 0)
                     {
+                        TempData["PENDORDER"] = tbl;
                         string str = masterHelp.ToReturnFieldValues(tbl);
                         return Content(str);
                     }
@@ -2417,6 +2463,11 @@ namespace Improvar.Controllers
                                     //TBATCHMST.OTH_COST = VE.TBATCHDTL[i].OTH_COST;
                                     TBATCHMST.ITREM = VE.TBATCHDTL[i].ITREM;
                                     TBATCHMST.PDESIGN = VE.TBATCHDTL[i].PDESIGN;
+                                    if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "PB")
+                                    {
+                                        TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
+                                        TBATCHMST.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
+                                    }
                                     if (VE.T_TXN.BARGENTYPE == "E")
                                     {
                                         TBATCHMST.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
@@ -2496,6 +2547,11 @@ namespace Improvar.Controllers
                                 TBATCHDTL.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
                                 TBATCHDTL.BALEYR = VE.BALEYR;// VE.TBATCHDTL[i].BALEYR;
                                 TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
+                                if (VE.MENU_PARA == "SBPCK")
+                                {
+                                    TBATCHDTL.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
+                                    TBATCHDTL.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
+                                }
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

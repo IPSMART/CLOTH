@@ -1,6 +1,12 @@
 ﻿@model Improvar.ViewModels.TransactionPackingSlipEntry
+@{
+    var haspendorddata = "";
+}
 <script>
-    $("#popupIndent").ready(function () { $("#dragclass").draggable({ cursor: "move" }); });
+    $("#popup").ready(function () {
+        $("#dragclass").draggable({ cursor: "move" });
+    });
+
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -27,7 +33,9 @@
                     <table id="_T_SALE_PENDINGORDER_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 947px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="sticky-cell" style="width: 27px;padding-left:7px;padding-right:7px;">
+                                    <input type="checkbox" name="Test" id="allchkord" onclick="SetAllCheckBoxesFilter(this, '_T_SALE_PENDINGORDER_GRID', 'Ord_Checked_')" />
+                                </th>
                                 <th class="sticky-cell" style="width:27px;">SL No.</th>
                                 <th class="" style="width:129px;">Order No.</th>
                                 <th class="" style="width:88px;">Order Date</th>
@@ -37,6 +45,7 @@
                                 <th class="" style="width: 50px;">Size</th>
                                 <th class="" style="width:50px;text-align:right;">Order Qnty</th>
                                 <th class="" style="width:50px;text-align:right;">Bal. Qnty</th>
+                                <th class="" style="width:50px;text-align:right;">Current Adj. Qnty</th>
                                 <th class="" style="width:71px;">Item Code</th>
                                 <th class="" style="width: 50px;">Color Code</th>
                             </tr>
@@ -80,6 +89,9 @@
                                             @Html.EditorFor(model => Model.PENDINGORDER[i].BALQTY, new { htmlattributes = new { id = "Ord_BALQTY_" + i, @class = " atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
+                                            @Html.EditorFor(model => Model.PENDINGORDER[i].CURRENTADJQTY, new { htmlattributes = new { id = "Ord_CURRENTADJQTY_" + i, @class = " atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].ITCD, new { id = "Ord_ITCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
 
@@ -102,6 +114,7 @@
                                 <th title="Size"></th>
                                 <th title="Order Qnty"></th>
                                 <th title="Bal. Qnty"></th>
+                                <th title="Current Adj. Qnty"></th>
                                 <th title="Item Code"></th>
                                 <th title="Color Code"></th>
                             </tr>

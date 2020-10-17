@@ -133,7 +133,6 @@ function FillBarcodeArea(str, Table, i) {
         $("#SIZECD").val(returncolvalue(str, "SIZECD"));
         $("#SIZENM").val(returncolvalue(str, "SIZENM"));
         $("#SZBARCODE").val(returncolvalue(str, "SZBARCODE"));
-        $("#PDESIGN").val(returncolvalue(str, "PDESIGN"));
         $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
         $("#QNTY").val(returncolvalue(str, "QNTY"));
         $("#UOM").val(returncolvalue(str, "uomcd"));
@@ -150,6 +149,7 @@ function FillBarcodeArea(str, Table, i) {
         if (MENU_PARA == "PB") {
             $("#BALENO").val(returncolvalue(str, "BALENO"));
             $("#OURDESIGN").val(returncolvalue(str, "OURDESIGN"));
+            $("#PDESIGN").val(returncolvalue(str, "PDESIGN"));
         }
         //$("#TDDISCTYPE").val(returncolvalue(str, "TDDISCTYPE"));
         $("#TDDISCRATE").val(returncolvalue(str, "TDDISCRATE"));
@@ -196,12 +196,12 @@ function FillBarcodeArea(str, Table, i) {
             $("#TDDISCRATE").val($(FieldidStarting + "TDDISCRATE_" + i).val());
             $("#SCMDISCTYPE").val($(FieldidStarting + "SCMDISCTYPE_" + i).val());
             $("#SCMDISCRATE").val($(FieldidStarting + "SCMDISCRATE_" + i).val());
-            if (MENU_PARA == "SBPCK") {
-                $("#ORDDOCNO").val($(FieldidStarting + "ORDDOCNO_" + i).val());
-                $("#ORDDOCDT").val($(FieldidStarting + "ORDDOCDT_" + i).val());
-                $("#ORDAUTONO").val($(FieldidStarting + "ORDAUTONO_" + i).val());
-                $("#ORDSLNO").val($(FieldidStarting + "ORDSLNO_" + i).val());
-            }
+            //if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
+            //    $("#ORDDOCNO").val($(FieldidStarting + "ORDDOCNO_" + i).val());
+            //    $("#ORDDOCDT").val($(FieldidStarting + "ORDDOCDT_" + i).val());
+            //    $("#ORDAUTONO").val($(FieldidStarting + "ORDAUTONO_" + i).val());
+            //    $("#ORDSLNO").val($(FieldidStarting + "ORDSLNO_" + i).val());
+            //}
 
         }
         $("#BARCODE").val($(FieldidStarting + "BARNO_" + i).val());
@@ -222,7 +222,6 @@ function FillBarcodeArea(str, Table, i) {
         $("#SIZECD").val($(FieldidStarting + "SIZECD_" + i).val());
         $("#SIZENM").val($(FieldidStarting + "SIZENM_" + i).val());
         $("#SZBARCODE").val($(FieldidStarting + "SZBARCODE_" + i).val());
-        $("#PDESIGN").val($(FieldidStarting + "PDESIGN_" + i).val());
         $("#FLAGMTR").val($(FieldidStarting + "FLAGMTR_" + i).val());
         $("#RATE").val($(FieldidStarting + "RATE_" + i).val());
         $("#HSNCODE").val($(FieldidStarting + "HSNCODE_" + i).val());
@@ -234,6 +233,7 @@ function FillBarcodeArea(str, Table, i) {
         if (MENU_PARA == "PB") {
             $("#BALENO").val($(FieldidStarting + "BALENO_" + i).val());
             $("#OURDESIGN").val($(FieldidStarting + "OURDESIGN_" + i).val());
+            $("#PDESIGN").val($(FieldidStarting + "PDESIGN_" + i).val());
         }
         $("#LOCABIN").val($(FieldidStarting + "LOCABIN_" + i).val());
         if (Table == "_T_SALE_BARNODETAIL_GRID") {
@@ -345,7 +345,6 @@ function UpdateBarCodeRow() {
             $("#B_SIZECD_" + j).val($("#SIZECD").val());
             $("#B_SIZENM_" + j).val($("#SIZENM").val());
             $("#B_SZBARCODE_" + j).val($("#SZBARCODE").val());
-            $("#B_PDESIGN_" + j).val($("#PDESIGN").val());
             $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
             $("#B_QNTY_" + j).val($("#QNTY").val());
             $("#B_UOM_" + j).val($("#UOM").val());
@@ -362,6 +361,7 @@ function UpdateBarCodeRow() {
             if (MENU_PARA == "PB") {
                 $("#B_BALENO_" + j).val($("#BALENO").val());
                 $("#B_OURDESIGN_" + j).val($("#OURDESIGN").val());
+                $("#B_PDESIGN_" + j).val($("#PDESIGN").val());
             }
             $("#B_TDDISCTYPE_" + j).val($("#TDDISCTYPE").val());
             $("#B_TDDISCRATE_" + j).val($("#TDDISCRATE").val());
@@ -375,7 +375,7 @@ function UpdateBarCodeRow() {
             $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
             $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
             $("#B_GLCD_" + j).val($("#GLCD").val());
-            if (MENU_PARA == "SBPCK") {
+            if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
                 $("#B_ORDDOCNO_" + j).val($("#ORDDOCNO").val());
                 $("#B_ORDAUTONO_" + j).val($("#ORDAUTONO").val());
                 $("#B_ORDSLNO_" + j).val($("#ORDSLNO").val());
@@ -409,12 +409,14 @@ function ClearBarcodeArea(TAG) {
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,PDESIGN,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP");
     if (MENU_PARA == "PB") {
         $("#BALENO").val("");
         $("#OURDESIGN").val("");
+        $("#PDESIGN").val("");
+
     }
-    if (MENU_PARA == "SBPCK") {
+    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
         $("#ORDDOCNO").val("");
         $("#ORDDOCDT").val("");
         $("#ORDAUTONO").val("");
@@ -483,7 +485,9 @@ function UpdateBarCodeRow_FrmDet(i) {
     var TDDISCTYPE = $("#D_TDDISCTYPE_" + i).val();
     var SCMDISCRATE = $("#D_SCMDISCRATE_" + i).val();
     var SCMDISCTYPE = $("#D_SCMDISCTYPE_" + i).val();
-    var BALENO = $("#D_BALENO_" + i).val();
+    if (MENU_PARA == "PB") {
+        var BALENO = $("#D_BALENO_" + i).val();
+    }
     var ITREM = $("#D_ITREM_" + i).val();
     var ALLGSTPER = $("#D_ALL_GSTPER_" + i).val();
     var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
@@ -498,7 +502,9 @@ function UpdateBarCodeRow_FrmDet(i) {
             $("#B_TDDISCTYPE_" + j).val(TDDISCTYPE);
             $("#B_SCMDISCRATE_" + j).val(SCMDISCRATE);
             $("#B_SCMDISCTYPE_" + j).val(SCMDISCTYPE);
-            $("#B_BALENO_" + j).val(BALENO);
+            if (MENU_PARA == "PB") {
+                $("#B_BALENO_" + j).val(BALENO);
+            }
             $("#B_ITREM_" + j).val(ITREM);
             $("#B_ALL_GSTPER_" + j).val(ALLGSTPER);
             if (ALLGSTPER != "") {
@@ -1432,7 +1438,7 @@ function AddBarCodeGrid() {
     var SIZECD = $("#SIZECD").val();
     var SIZENM = $("#SIZENM").val();
     var SZBARCODE = $("#SZBARCODE").val();
-    var PDESIGN = $("#PDESIGN").val();
+
     var BALSTOCK = $("#BALSTOCK").val();
     var UOM = $("#UOM").val();
     var NOS = $("#NOS").val();
@@ -1446,9 +1452,13 @@ function AddBarCodeGrid() {
     var ALL_GSTPER = $("#ALL_GSTPER").val();
     var PRODGRPGSTPER = $("#PRODGRPGSTPER").val();
     var SHADE = $("#SHADE").val();
+    var BALENO = "";
+    var OURDESIGN = "";
+    var PDESIGN = "";
     if (MENU_PARA == "PB") {
-        var BALENO = $("#BALENO").val();
-        var OURDESIGN = $("#OURDESIGN").val();
+        BALENO = $("#BALENO").val();
+        OURDESIGN = $("#OURDESIGN").val();
+        PDESIGN = $("#PDESIGN").val();
     }
     var TDDISCTYPE = $("#TDDISCTYPE").val();
     var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : "Fixed";
@@ -1460,7 +1470,7 @@ function AddBarCodeGrid() {
     var GLCD = $("#GLCD").val();
     var ITMBARGENTYPE = $("#BARGENTYPETEMP").val();
     var ENTRYBARGENTYPE = $("#BARGENTYPE").val();
-    if (MENU_PARA == "SBPCK") {
+    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
         var ORDDOCNO = $("#ORDDOCNO").val();
         var ORDDOCDT = $("#ORDDOCDT").val();
         var ORDAUTONO = $("#ORDAUTONO").val();
@@ -1482,11 +1492,13 @@ function AddBarCodeGrid() {
     tr += '    <td class="sticky-cell">';
     tr += '        <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="B_Checked_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].Checked" type="checkbox" value="true"><input name="TBATCHDTL[' + rowindex + '].Checked" type="hidden" value="false">';
     tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="' + BARCODE + '">';
-    tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
-    tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
     tr += '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="' + FLAGMTR + '">';
     tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
-    tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
+    if (MENU_PARA == "PB") {
+        tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
+        tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
+        tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
+    }
     tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
     tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
@@ -1584,7 +1596,7 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + SCMDISCRATE + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + SCMDISCRATE + '">';
     tr += '    </td>';
-    if (MENU_PARA == "SBPCK") {
+    if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
         tr += '    <td class="" title="' + ORDDOCNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCNO" readonly="readonly" type="text" value="' + ORDDOCNO + '">';
         tr += '        <input id="B_ORDAUTONO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="' + ORDAUTONO + '">';
@@ -1927,14 +1939,23 @@ function GetPendOrder(BtnId) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var slcd = $("#SLCD").val();
+    var itcd = $("#ITCD").val();
     $.ajax({
         type: 'POST',
         url: $("#UrlPendOrder").val(),// "@Url.Action("GetPendOrder", PageControllerName )",
         beforesend: $("#WaitingMode").show(),
-        data: { SLCD: slcd, SUBMITBTN: BtnId },
+        data: $('form').serialize() + "&SLCD=" + slcd + "&SUBMITBTN=" + BtnId + "&ITCD=" + itcd,
         success: function (result) {
             $("#popup").animate({ marginTop: '-10px' }, 50);
             $("#popup").html(result);
+            if (BtnId == "SHOWBTN") {
+                $("#btnSelectPendOrder").hide();
+                $("#allchkord").attr('disabled', true);
+                var GridRow = $("#_T_SALE_PENDINGORDER_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    $("#Ord_Checked_"+i).attr('disabled', true);
+                }
+            }
             $("#WaitingMode").hide();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1971,6 +1992,7 @@ function SelectPendOrder() {
         success: function (result) {
             $("#WaitingMode").hide();
             $("#hiddenpendordJSON").val(result);
+            $("#Pending_Order").hide();
             $("#popup").html("");
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1979,6 +2001,56 @@ function SelectPendOrder() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
+}
+function GetOrder(id) {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    debugger;
+    if (id == "") {
+        ClearAllTextBoxes("ORDDOCNO,ORDDOCDT,ORDAUTONO,ORDSLNO");
+    }
+    else {
+        var itcd = $("#ITCD").val();
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: $("#UrlOrderDetails").val(), //"@Url.Action("GetOrderDetails", PageControllerName)",
+            data: $('form').serialize() + "&Code=" + itcd + "&val=" + id,
+            success: function (result) {
+                var MSG = result.indexOf('#helpDIV');
+                if (MSG >= 0) {
+                    ClearAllTextBoxes("ORDDOCNO,ORDDOCDT,ORDAUTONO,ORDSLNO");
+                    $('#SearchFldValue').val("ORDDOCNO");
+                    $('#helpDIV').html(result);
+                    $('#ReferanceFieldID').val("ORDDOCNO/ORDDOCDT");
+                    $('#ReferanceColumn').val("0/1");
+                    $('#helpDIV_Header').html("Order Details");
+                }
+                else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#ORDDOCNO").val(returncolvalue(result, "ORDDOCNO"));
+                        $("#ORDDOCDT").val(returncolvalue(result, "ORDDOCDT"));
+                        $("#ORDAUTONO").val(returncolvalue(result, "ORDAUTONO"));
+                        $("#ORDSLNO").val(returncolvalue(result, "ORDSLNO"));
+                    }
+                    else {
+                        $('#helpDIV').html("");
+                        msgInfo("" + result + " !");
+                        ClearAllTextBoxes("ORDDOCNO,ORDDOCDT,ORDAUTONO,ORDSLNO");
+                        message_value = "ORDDOCNO";
+                    }
+                }
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+
+    }
 }
 
 

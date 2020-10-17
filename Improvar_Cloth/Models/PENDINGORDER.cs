@@ -24,5 +24,7 @@ namespace Improvar.Models
         public string ITSTYLE { get; set; }
         public bool Ord_Checked { get; set; }
         public short SLNO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double CURRENTADJQTY { get; set; }
     }
 }
