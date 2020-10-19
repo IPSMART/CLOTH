@@ -57,7 +57,7 @@
             }
             Checked_Disable();
             changeBARGENTYPE();
-             if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB") {
+            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB") {
                 $('#barfirstrow input').attr('readonly', 'readonly');
                 $('#barfirstrow input').removeAttr("onblur");
                 $('#barfirstrow').find(".Help_image_button").hide();
@@ -569,7 +569,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.WPRATE, new { htmlAttributes = new { @class = "form-control", id = "WPRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPRATE", onchange = "BarGridRateUpdate();" } })
+                                        @Html.EditorFor(model => model.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
 
@@ -580,7 +580,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.RPRATE, new { htmlAttributes = new { @class = "form-control", id = "RPRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPRATE", onchange = "BarGridRateUpdate();" } })
+                                        @Html.EditorFor(model => model.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
                             }
@@ -853,8 +853,8 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD'),FillBarcodeArea('', 'COPYLROW')", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD');", @onchange = "ItcdClr();", @placeholder = "Item Group Code", @title = "Item Group Code" })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD')" />
+                                                    @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD/WPPRICEGEN=WPPRICEGEN/RPPRICEGEN=RPPRICEGEN','ITCD/DOCDT'),FillBarcodeArea('', 'COPYLROW')", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD/WPPRICEGEN=WPPRICEGEN/RPPRICEGEN=RPPRICEGEN','ITCD/DOCDT');", @onchange = "ItcdClr();", @placeholder = "Item Group Code", @title = "Item Group Code" })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD/WPPRICEGEN=WPPRICEGEN/RPPRICEGEN=RPPRICEGEN','ITCD/DOCDT')" />
                                                     <input type="hidden" id="BARGENTYPETEMP" value="" />
                                                     @*@Html.HiddenFor(model => model.ITGRPNM, new { id = "ITGRPNM" })*@
                                                 </div>
@@ -862,6 +862,9 @@
                                             <div class="col-md-4">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Item Group Name", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                                                    @Html.HiddenFor(model => model.WPPRICEGEN, new { id = "WPPRICEGEN" })
+                                                    @Html.HiddenFor(model => model.RPPRICEGEN, new { id = "RPPRICEGEN" })
+
                                                 </div>
                                             </div>
                                             <div class="col-md-1">

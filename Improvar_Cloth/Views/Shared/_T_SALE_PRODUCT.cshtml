@@ -55,8 +55,8 @@
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 @if (Model.MENU_PARA == "PB")
                                 {
-                                    <th class="" style="width:80px;text-align:right;">Wholesale %</th>
-                                    <th class="" style="width:80px;text-align:right;">Retail %</th>
+                                    <th class="" style="width:80px;text-align:right;">Wholesale Rate</th>
+                                    <th class="" style="width:80px;text-align:right;">Retail Rate</th>
                                 }
                                 <th class="" style="width:50px;text-align:right;">GST Per</th>
                                 <th class="" style="width:50px;">Disc Type</th>
@@ -170,6 +170,8 @@
                                         {
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].WPRATE, new { htmlAttributes = new { id = "B_WPRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].WPPRICEGEN, new { id = "B_WPPRICEGEN_" + i })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].RPPRICEGEN, new { id = "B_RPPRICEGEN_" + i })
                                             </td>
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].RPRATE, new { htmlAttributes = new { id = "B_RPRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })

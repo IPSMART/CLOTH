@@ -114,6 +114,7 @@ function FillBarcodeArea(str, Table, i) {
         }
     }
     if (str != "") {
+        $("#BARCODE").val(returncolvalue(str, "BARNO"));
         $("#TXNSLNO").val(returncolvalue(str, "TXNSLNO"));
         $("#ITGRPCD").val(returncolvalue(str, "ITGRPCD"));
         $("#ITGRPNM").val(returncolvalue(str, "ITGRPNM"));
@@ -150,6 +151,8 @@ function FillBarcodeArea(str, Table, i) {
             $("#BALENO").val(returncolvalue(str, "BALENO"));
             $("#OURDESIGN").val(returncolvalue(str, "OURDESIGN"));
             $("#PDESIGN").val(returncolvalue(str, "PDESIGN"));
+            $("#WPPRICEGEN").val(returncolvalue(str, "WPPRICEGEN"));
+            $("#RPPRICEGEN").val(returncolvalue(str, "RPPRICEGEN"));
         }
         //$("#TDDISCTYPE").val(returncolvalue(str, "TDDISCTYPE"));
         $("#TDDISCRATE").val(returncolvalue(str, "TDDISCRATE"));
@@ -236,6 +239,8 @@ function FillBarcodeArea(str, Table, i) {
             $("#BALENO").val($(FieldidStarting + "BALENO_" + i).val());
             $("#OURDESIGN").val($(FieldidStarting + "OURDESIGN_" + i).val());
             $("#PDESIGN").val($(FieldidStarting + "PDESIGN_" + i).val());
+            $("#WPPRICEGEN").val($(FieldidStarting + "WPPRICEGEN_" + i).val());
+            $("#RPPRICEGEN").val($(FieldidStarting + "RPPRICEGEN_" + i).val());
         }
         $("#LOCABIN").val($(FieldidStarting + "LOCABIN_" + i).val());
         if (Table == "_T_SALE_BARNODETAIL_GRID") {
@@ -382,6 +387,8 @@ function UpdateBarCodeRow() {
                 $("#B_BALENO_" + j).val($("#BALENO").val());
                 $("#B_OURDESIGN_" + j).val($("#OURDESIGN").val());
                 $("#B_PDESIGN_" + j).val($("#PDESIGN").val());
+                $("#B_WPPRICEGEN_" + j).val($("#WPPRICEGEN").val());
+                $("#B_RPPRICEGEN_" + j).val($("#RPPRICEGEN").val());
             }
             $("#B_TDDISCTYPE_" + j).val($("#TDDISCTYPE").val());
             $("#B_TDDISCRATE_" + j).val($("#TDDISCRATE").val());
@@ -431,16 +438,10 @@ function ClearBarcodeArea(TAG) {
     if (DefaultAction == "V") return true;
     ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,ALL_GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
     if (MENU_PARA == "PB") {
-        $("#BALENO").val("");
-        $("#OURDESIGN").val("");
-        $("#PDESIGN").val("");
-
+        ClearAllTextBoxes("BALENO,OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
     }
     if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
-        $("#ORDDOCNO").val("");
-        $("#ORDDOCDT").val("");
-        $("#ORDAUTONO").val("");
-        $("#ORDSLNO").val("");
+        ClearAllTextBoxes("ORDDOCNO,ORDDOCDT,ORDAUTONO,ORDSLNO");
     }
     $("#STKTYPE").val("F");
     $("#DISCTYPE").val("P");
@@ -542,6 +543,7 @@ function UpdateBarCodeRow_FrmDet(i) {
 function CalculateTotal_Barno() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
     var T_QNTY = 0, T_NOS = 0;
     var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
@@ -1508,10 +1510,15 @@ function AddBarCodeGrid() {
     var BALENO = "";
     var OURDESIGN = "";
     var PDESIGN = "";
+
+    var WPPRICEGEN = "";
+    var RPPRICEGEN = "";
     if (MENU_PARA == "PB") {
         BALENO = $("#BALENO").val();
         OURDESIGN = $("#OURDESIGN").val();
         PDESIGN = $("#PDESIGN").val();
+        WPPRICEGEN = $("#WPPRICEGEN").val();
+        RPPRICEGEN = $("#RPPRICEGEN").val();
     }
     var TDDISCTYPE = $("#TDDISCTYPE").val();
     var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : "Fixed";
@@ -1622,6 +1629,8 @@ function AddBarCodeGrid() {
     if (MENU_PARA == "PB") {
         tr += '    <td class="">';
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field WPRATE must be a number." id="B_WPRATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].WPRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text"  readonly="readonly"  >';
+        tr += '        <input data-val="true" data-val-length="The field WPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_WPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].WPPRICEGEN" type="hidden" value="' + WPPRICEGEN + '">';
+        tr += '        <input data-val="true" data-val-length="The field RPPRICEGEN must be a string with a maximum length of 30." data-val-length-max="30" id="B_RPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPRICEGEN" type="hidden" value="' + RPPRICEGEN + '">';
         tr += '    </td>';
 
         tr += '    <td class="">';
@@ -1703,22 +1712,23 @@ function AddBarCodeGrid() {
 function RateUpdate(index) {
     var MENU_PARA = $("#MENU_PARA").val();
     if ((MENU_PARA == "PB") && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#B_BARGENTYPE_" + index).val() == "E"))) {
-        var WPRATE = $("#WPRATE").val();
-        if (WPRATE != "") { WPRATE = parseFloat(WPRATE); } else { WPRATE = parseFloat(0); }
-
-        var RPRATE = $("#RPRATE").val();
-        if (RPRATE != "") { RPRATE = parseFloat(RPRATE); } else { RPRATE = parseFloat(0); }
-
-        var RATE = $("#B_RATE_" + index).val();
-        if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
-
-        var B_WPRATE = parseFloat(WPRATE) * parseFloat(RATE);
-        $("#B_WPRATE_" + index).val(parseFloat(B_WPRATE).toFixed(2))
-        $("#B_WPRATE_" + index).attr('title', parseFloat(B_WPRATE).toFixed(2));
-
-        var B_RPRATE = parseFloat(RPRATE) * parseFloat(RATE);
-        $("#B_RPRATE_" + index).val(parseFloat(B_RPRATE).toFixed(2))
-        $("#B_RPRATE_" + index).attr('title', parseFloat(B_RPRATE).toFixed(2))
+        var WPPER = retFloat($("#WPPER").val());
+        var RPPER = retFloat($("#RPPER").val());
+        var RATE = retFloat($("#B_RATE_" + index).val());
+        var WPPRICEGEN = $("#B_WPPRICEGEN_" + index).val();
+        var RPPRICEGEN = $("#B_RPPRICEGEN_" + index).val();
+        if (WPPER != 0) {
+            var wprt = retFloat(((retFloat(RATE) * retFloat(WPPER)) / 100) + retFloat(RATE));
+            var B_WPRATE = CharmPrice(retStr(WPPRICEGEN).substring(0, 2), wprt, retStr(WPPRICEGEN).substring(2, retStr(WPPRICEGEN).length));
+            $("#B_WPRATE_" + index).val(parseFloat(B_WPRATE).toFixed(2))
+            $("#B_WPRATE_" + index).attr('title', parseFloat(B_WPRATE).toFixed(2));
+        }
+        if (RPPER != 0) {
+            var rprt = retFloat(((retFloat(RATE) * retFloat(RPPER)) / 100) + retFloat(RATE));
+            var B_RPRATE = CharmPrice(retStr(RPPRICEGEN).substring(0, 2), rprt, retStr(RPPRICEGEN).substring(2, retStr(RPPRICEGEN).length));
+            $("#B_RPRATE_" + index).val(parseFloat(B_RPRATE).toFixed(2))
+            $("#B_RPRATE_" + index).attr('title', parseFloat(B_RPRATE).toFixed(2))
+        }
     }
 }
 function BarGridRateUpdate() {
@@ -2063,6 +2073,67 @@ function SelectPendOrder() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
+}
+function retStr(val) {
+    var rtval = "";
+    if (val == null) rtval = "";
+    else if (String(val) == "") rtval = "";
+    else rtval = String(val);
+    return rtval;
+}
+function retInt(val) {
+    if (val == null || retStr(val) == "") return 0;
+    else return parseInt(val);
+}
+function retFloat(val) {
+    if (val == null || retStr(val) == "") return 0;
+    else return parseFloat(val);
+}
+function CharmPrice(ChrmType, Rate, RoundVal) {
+    debugger;
+    RoundVal = RoundVal.padStart(2, '0');
+    if (Rate < 10) Rate = 10 + Rate;
+    var RoundAmt = retInt(RoundVal);
+    if (RoundAmt == 0) RoundAmt = 100;
+    var small = ((Rate / RoundAmt) * RoundAmt);
+    var big = small + RoundAmt;
+    if (ChrmType == "RD")//ROUND
+    {
+        var roundValu = (Rate - small >= big - Rate) ? big : small;
+        return roundValu;
+    }
+    else if (ChrmType == "RN")//ROUNDNEXT
+    {
+        return big;
+    }
+    else if (ChrmType == "NT")//NEXT
+    {
+        var last2rate = (Rate % 100);
+        if (last2rate <= retInt(RoundVal)) {
+            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
+        }
+        else {
+            big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
+        }
+        return retInt(big);
+    }
+    else if (ChrmType == "NR")//NEAR
+    {
+        var last2rate = (Rate % 100);
+        if (last2rate <= retInt(RoundVal)) {
+            big = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
+            small = retInt(retStr(Rate - 100).substring(0, retStr(Rate - 100).length - 2) + RoundVal);
+        }
+        else {
+            big = retInt(retStr(Rate + 100).substring(0, retStr(Rate + 100).length - 2) + RoundVal);
+            small = retInt(retStr(Rate).substring(0, retStr(Rate).length - 2) + RoundVal);
+        }
+        var NEAR = (Rate - small >= big - Rate) ? big : small;
+        return retInt(NEAR);
+    }
+    else {
+        return 0;
+    }
 }
 
 

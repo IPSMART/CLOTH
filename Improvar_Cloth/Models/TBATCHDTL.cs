@@ -173,6 +173,8 @@ namespace Improvar.Models
         public string ORDDOCDT { get; set; }
         public string NEGSTOCK { get; set; }
         public double? BALSTOCK { get; set; }
+        public string WPPRICEGEN { get; set; }
+        public string RPPRICEGEN { get; set; }
 
     }
 }

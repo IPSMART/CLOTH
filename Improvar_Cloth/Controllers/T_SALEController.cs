@@ -227,8 +227,8 @@ namespace Improvar.Controllers
                                     DataTable data = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
                                     if (data != null && data.Rows.Count > 0)
                                     {
-                                        VE.WPRATE = data.Rows[0]["WPPER"].retDbl();
-                                        VE.RPRATE = data.Rows[0]["RPPER"].retDbl();
+                                        VE.WPPER = data.Rows[0]["WPPER"].retDbl();
+                                        VE.RPPER = data.Rows[0]["RPPER"].retDbl();
                                     }
 
                                 }
@@ -360,9 +360,11 @@ namespace Improvar.Controllers
 
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
-                str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO, ";
-                str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
-                str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT ";
+                str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM, ";
+                str1 += "p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
+                str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
+                str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
+                str1 += "n.WPPRICEGEN ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
@@ -426,6 +428,8 @@ namespace Improvar.Controllers
                                     ORDSLNO = dr["ORDSLNO"].retShort(),
                                     ORDDOCNO = dr["ORDDOCNO"].retStr(),
                                     ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
+                                    WPPRICEGEN = VE.MENU_PARA == "PB" ? dr["WPPRICEGEN"].retStr() : "",
+                                    RPPRICEGEN = VE.MENU_PARA == "PB" ? dr["RPPRICEGEN"].retStr() : "",
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
@@ -499,11 +503,7 @@ namespace Improvar.Controllers
                 VE.T_SGST_AMT = VE.TTXNDTL.Sum(a => a.SGSTAMT).retDbl();
                 VE.T_CESS_AMT = VE.TTXNDTL.Sum(a => a.CESSAMT).retDbl();
                 VE.T_NET_AMT = VE.TTXNDTL.Sum(a => a.NETAMT).retDbl();
-                if (VE.MENU_PARA == "PB" && VE.TBATCHDTL.Count() > 0)
-                {
-                    VE.WPRATE = VE.TBATCHDTL.Where(a => a.WPRATE.retDbl() != 0).Select(b => b.WPRATE).FirstOrDefault();
-                    VE.RPRATE = VE.TBATCHDTL.Where(a => a.RPRATE.retDbl() != 0).Select(b => b.RPRATE).FirstOrDefault();
-                }
+
 
                 //fill prodgrpgstper in t_batchdtl
                 DataTable allprodgrpgstper_data = new DataTable();
@@ -569,10 +569,35 @@ namespace Improvar.Controllers
                     {
                         v.ChildData = "Y";
                     }
-                    if ((VE.MENU_PARA == "PB") && ((TXN.BARGENTYPE == "E") || (TXN.BARGENTYPE == "C" && v.BARGENTYPE == "E")))
+                    //if ((VE.MENU_PARA == "PB") && ((TXN.BARGENTYPE == "E") || (TXN.BARGENTYPE == "C" && v.BARGENTYPE == "E")))
+                    //{
+                    //    v.WPRATE = v.RATE * VE.WPPER;
+                    //    v.RPRATE = v.RATE * VE.WPPER;
+                    //}
+
+                    if (VE.MENU_PARA == "PB")
                     {
-                        v.WPRATE = v.RATE * VE.WPRATE;
-                        v.RPRATE = v.RATE * VE.RPRATE;
+
+                        if (v.WPPRICEGEN.retStr() == "" || v.RPPRICEGEN.retStr() == "")
+                        {
+                            DataTable syscnfgdata = salesfunc.GetSyscnfgData(TXN.DOCDT.retDateStr());
+
+                            if (v.WPPRICEGEN.retStr() == "")
+                            {
+                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                {
+                                    v.WPPRICEGEN = syscnfgdata.Rows[0]["wppricegen"].retStr();
+                                }
+
+                            }
+                            if (v.RPPRICEGEN.retStr() == "")
+                            {
+                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                {
+                                    v.RPPRICEGEN = syscnfgdata.Rows[0]["rppricegen"].retStr();
+                                }
+                            }
+                        }
                     }
                 }
                 //fill prodgrpgstper in t_txndtl
@@ -959,7 +984,8 @@ namespace Improvar.Controllers
             {
                 TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
                 Cn.getQueryString(VE);
-                string str = masterHelp.ITGRPCD_help(val, "", Code);
+                string[] data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string str = masterHelp.ITGRPCD_help(val, "", data[0]);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -992,6 +1018,41 @@ namespace Improvar.Controllers
                         default: glcd = ""; break;
                     }
                     str += "^GLCD=^" + glcd + Cn.GCS();
+                    //pricegen
+                    if (VE.MENU_PARA == "PB")
+                    {
+                        string WPPRICEGEN = str.retCompValue("WPPRICEGEN");
+                        string RPPRICEGEN = str.retCompValue("RPPRICEGEN");
+
+                        if (WPPRICEGEN.retStr() == "" || RPPRICEGEN.retStr() == "")
+                        {
+                            DataTable syscnfgdata = salesfunc.GetSyscnfgData(data[1].retStr());
+
+                            if (WPPRICEGEN.retStr() == "")
+                            {
+                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                {
+                                    string grppricegenstr = "^WPPRICEGEN=^" + WPPRICEGEN + Cn.GCS();
+                                    string syspricegenstr = "^WPPRICEGEN=^" + syscnfgdata.Rows[0]["wppricegen"].retStr() + Cn.GCS();
+                                    str = str.Replace(grppricegenstr.retStr(), syspricegenstr.retStr());
+                                }
+
+                            }
+                            if (RPPRICEGEN.retStr() == "")
+                            {
+                                if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                {
+
+                                    string grppricegenstr = "^RPPRICEGEN=^" + WPPRICEGEN + Cn.GCS();
+                                    string syspricegenstr = "^RPPRICEGEN=^" + syscnfgdata.Rows[0]["rppricegen"].retStr() + Cn.GCS();
+                                    str = str.Replace(grppricegenstr.retStr(), syspricegenstr.retStr());
+                                }
+
+                            }
+                        }
+                    }
+
+                    //
                     return Content(str);
                 }
             }
@@ -1204,7 +1265,7 @@ namespace Improvar.Controllers
                 string MTRLJOBCD = data[4].retStr();
                 if (val.retStr() == "")
                 {
-                    var str = masterHelp.T_TXN_BARNO_help(val, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
+                    var str = masterHelp.T_TXN_BARNO_help(val.ToUpper().Trim(), VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
                     if (str.IndexOf("='helpmnu'") >= 0)
                     {
                         return PartialView("_Help2", str);
@@ -1219,12 +1280,12 @@ namespace Improvar.Controllers
                     DataTable stock_data = new DataTable();
                     if (VE.MENU_PARA == "PB")
                     {
-                        stock_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+                        stock_data = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), val.retStr().ToUpper().Trim().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
 
                     }
                     else
                     {
-                        stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
+                        stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().ToUpper().Trim().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
 
                     }
                     if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
@@ -1330,6 +1391,41 @@ namespace Improvar.Controllers
                             default: glcd = ""; break;
                         }
                         str += "^GLCD=^" + glcd + Cn.GCS();
+                        //pricegen
+                        if (VE.MENU_PARA == "PB")
+                        {
+                            string WPPRICEGEN = str.retCompValue("WPPRICEGEN");
+                            string RPPRICEGEN = str.retCompValue("RPPRICEGEN");
+
+                            if (WPPRICEGEN.retStr() == "" || RPPRICEGEN.retStr() == "")
+                            {
+                                DataTable syscnfgdata = salesfunc.GetSyscnfgData(DOCDT.retStr());
+
+                                if (WPPRICEGEN.retStr() == "")
+                                {
+                                    if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                    {
+                                        string grppricegenstr = "^WPPRICEGEN=^" + WPPRICEGEN + Cn.GCS();
+                                        string syspricegenstr = "^WPPRICEGEN=^" + syscnfgdata.Rows[0]["wppricegen"].retStr() + Cn.GCS();
+                                        str = str.Replace(grppricegenstr.retStr(), syspricegenstr.retStr());
+                                    }
+
+                                }
+                                if (RPPRICEGEN.retStr() == "")
+                                {
+                                    if (syscnfgdata != null && syscnfgdata.Rows.Count > 0)
+                                    {
+
+                                        string grppricegenstr = "^RPPRICEGEN=^" + WPPRICEGEN + Cn.GCS();
+                                        string syspricegenstr = "^RPPRICEGEN=^" + syscnfgdata.Rows[0]["rppricegen"].retStr() + Cn.GCS();
+                                        str = str.Replace(grppricegenstr.retStr(), syspricegenstr.retStr());
+                                    }
+
+                                }
+                            }
+                        }
+
+                        //
                         return Content(str);
                     }
 
@@ -2508,8 +2604,8 @@ namespace Improvar.Controllers
                                     TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
                                     if ((VE.MENU_PARA == "PB") && ((VE.T_TXN.BARGENTYPE == "E") || (VE.T_TXN.BARGENTYPE == "C" && VE.TBATCHDTL[i].BARGENTYPE == "E")))
                                     {
-                                        TBATCHMST.WPRATE = VE.WPRATE;
-                                        TBATCHMST.RPRATE = VE.RPRATE;
+                                        TBATCHMST.WPRATE = VE.TBATCHDTL[i].WPRATE;
+                                        TBATCHMST.RPRATE = VE.TBATCHDTL[i].RPRATE;
                                     }
                                     //dbsql = masterHelp.RetModeltoSql(TBATCHMST);
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
@@ -2564,7 +2660,7 @@ namespace Improvar.Controllers
                                 {
                                     if ((VE.MENU_PARA == "PB") && ((VE.T_TXN.BARGENTYPE == "E") || (VE.T_TXN.BARGENTYPE == "C" && VE.TBATCHDTL[i].BARGENTYPE == "E")))
                                     {
-                                        if (VE.WPRATE.retDbl() != 0 || VE.RPRATE.retDbl() != 0)
+                                        if (VE.WPPER.retDbl() != 0 || VE.RPPER.retDbl() != 0)
                                         {
                                             //RATE
                                             T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
@@ -2581,7 +2677,7 @@ namespace Improvar.Controllers
                                             dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                                            if (VE.WPRATE.retDbl() != 0)
+                                            if (VE.WPPER.retDbl() != 0)
                                             {
                                                 //WPRATE
                                                 T_BATCHMST_PRICE TBATCHMSTPRICE1 = new T_BATCHMST_PRICE();
@@ -2599,7 +2695,7 @@ namespace Improvar.Controllers
                                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                             }
 
-                                            if (VE.RPRATE.retDbl() != 0)
+                                            if (VE.RPPER.retDbl() != 0)
                                             {
                                                 //RPRATE
                                                 T_BATCHMST_PRICE TBATCHMSTPRICE2 = new T_BATCHMST_PRICE();
