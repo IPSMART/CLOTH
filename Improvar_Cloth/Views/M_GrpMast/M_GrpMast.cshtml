@@ -19,10 +19,6 @@
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
-            $('form :input:enabled:visible:not([readonly]):first').focus();
-            $('form :input:enabled:visible:not([readonly]):first').focus();
-            $('form :input:enabled:visible:not([readonly]):first').focus();
-            $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         $("#WaitingMode").hide();
     });
@@ -35,6 +31,7 @@
         if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
         if (!emptyFieldCheck("Enter Sales General Ledger Code", "SALGLCD")) { return false; }
         if (!emptyFieldCheck("Enter Purchase General Ledger Code", "PURGLCD")) { return false; }
+        if (!emptyFieldCheck("Enter Product group", "PRODGRPCD")) { return false; }
         
         return true;
     }
@@ -324,7 +321,8 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Product Group")
+                                                                @Html.Label("", "Product Group")
+                                                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-5">
