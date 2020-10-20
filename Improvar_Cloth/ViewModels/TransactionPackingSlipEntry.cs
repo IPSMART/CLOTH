@@ -181,9 +181,9 @@ namespace Improvar.ViewModels
         [StringLength(8)]
         public string GLCD { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public double? WPRATE { get; set; }
+        public double? WPPER { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public double? RPRATE { get; set; }
+        public double? RPPER { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? MRPRATE { get; set; }
         public string TCSAPPL { get; set; }
@@ -196,5 +196,8 @@ namespace Improvar.ViewModels
         public string ORDDOCDT { get; set; }
         public string ORDAUTONO { get; set; }
         public string ORDSLNO { get; set; }
+        public string NEGSTOCK { get; set; }
+        public string WPPRICEGEN { get; set; }
+        public string RPPRICEGEN { get; set; }
     }
 }

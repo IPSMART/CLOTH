@@ -57,11 +57,21 @@
             }
             Checked_Disable();
             changeBARGENTYPE();
+            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB") {
+                $('#barfirstrow input').attr('readonly', 'readonly');
+                $('#barfirstrow input').removeAttr("onblur");
+                $('#barfirstrow').find(".Help_image_button").hide();
+            }
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
             if ('@Model.MENU_PARA' != "SB") {
                 GetAllMtrljobcd();
+            }
+            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB") {
+                $('#barfirstrow input').attr('readonly', 'readonly');
+                $('#barfirstrow input').removeAttr("onblur");
+                $('#barfirstrow').find(".Help_image_button").hide();
             }
         }
         if ("@Model.LINKDOCNO" != "") {
@@ -214,6 +224,7 @@
         <input type="hidden" id="UrlSubLedgerDetails" value="@Url.Action("GetSubLedgerDetails", PageControllerName )" />
         <input type="hidden" id="UrlPendOrder" value="@Url.Action("GetPendOrder", PageControllerName )" />
         <input type="hidden" id="UrlSelectPendOrder" value="@Url.Action("SelectPendOrder", PageControllerName )" />
+        <input type="hidden" id="UrlOrderDetails" value="@Url.Action("GetOrderDetails", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -339,7 +350,7 @@
                             @Html.EditorFor(model => model.T_TXN.DUEDAYS, new { htmlAttributes = new { @class = "form-control", id = "DUEDAYS", maxlength = 3, @placeholder = "Due Days" } })
                         </div>
                     </div>
-                    @if (Model.MENU_PARA == "SBPCK" && (Model.DefaultAction == "A" || Model.DefaultAction == "E"))
+                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB") && (Model.DefaultAction == "A" || Model.DefaultAction == "E"))
                     {
                         <div class="col-md-1">
                             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Pending_Order" value="Get Pending Order" title="Click to Get Pending Order" onclick="GetPendOrder()" />
@@ -558,7 +569,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.WPRATE, new { htmlAttributes = new { @class = "form-control", id = "WPRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPRATE", onchange = "BarGridRateUpdate();" } })
+                                        @Html.EditorFor(model => model.WPPER, new { htmlAttributes = new { @class = "form-control", id = "WPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "WPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
 
@@ -569,7 +580,7 @@
                                 </div>
                                 <div class="col-md-1">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.RPRATE, new { htmlAttributes = new { @class = "form-control", id = "RPRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPRATE", onchange = "BarGridRateUpdate();" } })
+                                        @Html.EditorFor(model => model.RPPER, new { htmlAttributes = new { @class = "form-control", id = "RPPER", @onkeypress = "return numericOnly(this,2);", maxlength = 6, @placeholder = "RPPER", onchange = "BarGridRateUpdate();" } })
                                     </div>
                                 </div>
                             }
@@ -833,7 +844,7 @@
                     {
                                 <div class="row">
                                     <div class="col-lg-11">
-                                        <div class="row">
+                                        <div class="row" id="barfirstrow">
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
@@ -842,8 +853,8 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD'),FillBarcodeArea('', 'COPYLROW')", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD');", @onchange = "ItcdClr();", @placeholder = "Item Group Code", @title = "Item Group Code" })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD')" />
+                                                    @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD/WPPRICEGEN=WPPRICEGEN/RPPRICEGEN=RPPRICEGEN','ITCD/DOCDT'),FillBarcodeArea('', 'COPYLROW')", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD/WPPRICEGEN=WPPRICEGEN/RPPRICEGEN=RPPRICEGEN','ITCD/DOCDT');", @onchange = "ItcdClr();", @placeholder = "Item Group Code", @title = "Item Group Code" })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD/WPPRICEGEN=WPPRICEGEN/RPPRICEGEN=RPPRICEGEN','ITCD/DOCDT')" />
                                                     <input type="hidden" id="BARGENTYPETEMP" value="" />
                                                     @*@Html.HiddenFor(model => model.ITGRPNM, new { id = "ITGRPNM" })*@
                                                 </div>
@@ -851,6 +862,9 @@
                                             <div class="col-md-4">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Item Group Name", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                                                    @Html.HiddenFor(model => model.WPPRICEGEN, new { id = "WPPRICEGEN" })
+                                                    @Html.HiddenFor(model => model.RPPRICEGEN, new { id = "RPPRICEGEN" })
+
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -937,6 +951,7 @@
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.BALSTOCK, new { htmlAttributes = new { @class = "form-control", id = "BALSTOCK", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Stock", @readonly = "readonly", @TabIndex = -1, @title = "Stock" } })
+                                                    @Html.HiddenFor(model => model.NEGSTOCK, new { id = "NEGSTOCK" })
                                                 </div>
                                             </div>
 
@@ -1002,12 +1017,12 @@
                                                     </div>
                                                 </div>
                                             }
-                                            @if (Model.MENU_PARA == "SBPCK")
+                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
                                             {
                                                 <div class="col-md-7">
                                                     <div class="editor-field">
-                                                        @Html.EditorFor(model => model.ORDDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ORDDOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY=3','ITCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY=3','ITCD');", @placeholder = "Order No.", maxlength = 4, @title = "Order No." } })
-                                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", PageControllerName)','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO/QNTY=ORDQTY=3','ITCD')" />
+                                                        @Html.EditorFor(model => model.ORDDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ORDDOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO','ITCD','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO','ITCD','Y');", @placeholder = "Order No.", maxlength = 30, @title = "Order No." } })
+                                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", PageControllerName)','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO','ITCD','Y')" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
@@ -1015,7 +1030,7 @@
                                                         @Html.EditorFor(model => model.ORDDOCDT, new { htmlAttributes = new { @class = "form-control", id = "ORDDOCDT", @title = "Order Date", @placeholder = "Order Date", @readonly = "readonly", @TabIndex = -1 } })
                                                         @Html.HiddenFor(model => model.ORDAUTONO, new { id = "ORDAUTONO" })
                                                         @Html.HiddenFor(model => model.ORDSLNO, new { id = "ORDSLNO" })
-                                                     </div>
+                                                    </div>
                                                 </div>
                                             }
                                         </div>
@@ -1091,11 +1106,11 @@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(Alt+A)" title="Click to Fill Data in Barcode Details" onclick="AddBarCodeGrid()" />
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="UpdateRow_Barcode" accesskey="W" value="Update Row(Alt+W)" title="Click to Update Data in Barcode Details" onclick="UpdateBarCodeRow()" />
                                         <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Alt+Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
-                                       @if (Model.MENU_PARA == "SBPCK")
-                                       {
-                                         <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
-                                       }
-                                     </div>
+                                        @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
+                                        {
+                                            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
+                                        }
+                                    </div>
                                     @*iamge*@
                                     <input type="hidden" id="ImageName" value="" />
                                     <input type="hidden" id="ImageStr" value="" />

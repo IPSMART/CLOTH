@@ -1454,7 +1454,7 @@ function CloseZoomTextBoxModal() {
     $("#" + ZoomTextBoxModalId).focus();
 }
 var hlpblurval = "";
-function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds) {
+function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds,formdata) {
     debugger;
     const keyName = event.key;
     const keyType = event.type;
@@ -1507,10 +1507,18 @@ function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds) {
         ClearAllTextBoxes(fldid.join());
     }
     else {
+        var Data = "";
+        if (formdata == "Y") {
+            Data = $('form').serialize() + "&val=" + value + "&Code=" + dependfldIds;
+        }
+        else {
+            Data = "&val=" + value + "&Code=" + dependfldIds;
+        }
         $.ajax({
             type: 'POST',
             url: urlstring,
-            data: "&val=" + value + "&Code=" + dependfldIds,
+            //data: "&val=" + value + "&Code=" + dependfldIds,
+            data: Data,
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {

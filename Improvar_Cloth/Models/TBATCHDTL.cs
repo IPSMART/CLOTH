@@ -171,6 +171,10 @@ namespace Improvar.Models
         public double? MRPRATE { get; set; }
         public string ORDDOCNO { get; set; }
         public string ORDDOCDT { get; set; }
+        public string NEGSTOCK { get; set; }
+        public double? BALSTOCK { get; set; }
+        public string WPPRICEGEN { get; set; }
+        public string RPPRICEGEN { get; set; }
 
     }
 }
