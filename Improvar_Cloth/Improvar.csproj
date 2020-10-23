@@ -494,6 +494,7 @@
     <Compile Include="Models\TPROGBOM.cs" />
     <Compile Include="Models\TPROGDTL.cs" />
     <Compile Include="Models\TSALEBARNOPOPUP.cs" />
+    <Compile Include="Models\TsalePos_TBATCHDTL.cs" />
     <Compile Include="Models\TSORDDTL.cs" />
     <Compile Include="Models\TSORDDTL_CANC.cs" />
     <Compile Include="Models\TSORDDTL_CANC_SIZE.cs" />
@@ -1080,6 +1081,7 @@
     <Content Include="Views\T_SALE_POS\T_SALE_POS.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PENDINGORDER.cshtml" />
     <Content Include="Views\Rep_BarcodePrint\PreviewBarcodeTxtFmt.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_POS_PRODUCT.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

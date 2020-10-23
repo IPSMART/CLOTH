@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Improvar.ViewModels
 {
-    public class TransactionSalePosEntry
+    public class TransactionSalePosEntry :Permission
     {
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_TXN T_TXN { get; set; }
@@ -24,7 +24,7 @@ namespace Improvar.ViewModels
         public T_STKTRNF T_STKTRNF { get; set; }
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
-        public List<TBATCHDTL> TBATCHDTL { get; set; }
+        public List<TsalePos_TBATCHDTL> TsalePos_TBATCHDTL { get; set; }
         public List<TSALEBARNOPOPUP> TSALEBARNOPOPUP { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
@@ -41,8 +41,20 @@ namespace Improvar.ViewModels
         public string RTDEBCD { get; set; }
         public string RTDEBNM { get; set; }
         public string MOBILE { get; set; }
+        public string NM { get; set; }
+        public string MOBNO { get; set; }
+        public bool INC_RATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? NETDUE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? MEMOAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? RETAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? PAYABLE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? PAYAMT { get; set; }
         public string ADDR { get; set; }
-
         public string PSLCD { get; set; }
         public string SLNM { get; set; }
         public string SLAREA { get; set; }
