@@ -1107,6 +1107,7 @@ namespace Improvar.Controllers
                 else if (str.IndexOf(Convert.ToChar(Cn.GCS())) >= 0)
                 {
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "", BARIMAGE = "";
+                    string glcd = "";
                     DataTable tax_data = new DataTable();
                     if (VE.MENU_PARA == "PB")
                     {
@@ -1131,11 +1132,38 @@ namespace Improvar.Controllers
                                 GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
                             }
                         }
+                        switch (VE.MENU_PARA)
+                        {
+                            case "SBPCK"://Packing Slip
+                                glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
+                            case "SB"://Sales Bill (Agst Packing Slip)
+                                glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
+                            case "SBDIR"://Sales Bill
+                                glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
+                            case "SR"://Sales Return (SRM)
+                                glcd = tax_data.Rows[0]["SALRETGLCD"].retStr(); break;
+                            case "SBCM"://Cash Memo
+                                glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
+                            case "SBCMR"://Cash Memo Return Note
+                                glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
+                            case "SBEXP"://Sales Bill (Export)
+                                glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
+                            case "PI"://Proforma Invoice
+                                glcd = ""; break;
+                            case "PB"://Purchase Bill
+                                glcd = tax_data.Rows[0]["PURGLCD"].retStr(); break;
+                            case "PR"://Purchase Return (PRM)
+                                glcd = tax_data.Rows[0]["PURRETGLCD"].retStr();  break;
+                            default: glcd = ""; break;
+                        }
+
                     }
                     str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
                     str += "^BARIMAGE=^" + BARIMAGE + Cn.GCS();
                     str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
-                    str += "^GSTPER=^" + GSTPER + Cn.GCS();
+                    str += "^GSTPER=^" + GSTPER + Cn.GCS();                   
+                    str += "^GLCD=^" + glcd + Cn.GCS();
+
                     return Content(str);
                 }
                 else

@@ -25,7 +25,7 @@ function GetBarnoDetails(id) {
     if (DefaultAction == "V") return true;
     debugger;
     if (id == "") {
-       // ClearBarcodeArea();
+        // ClearBarcodeArea();
     }
     else {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -57,7 +57,7 @@ function GetBarnoDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                       // ClearBarcodeArea();
+                        // ClearBarcodeArea();
                         message_value = "BARCODE";
                     }
                 }
@@ -188,7 +188,9 @@ function FillBarcodeArea(str, Table, i) {
         }
         if (Table != "_T_SALE_BARNODETAIL_GRID") {
             $("#SLNO").val($(FieldidStarting + "SLNO_" + i).val());
-            $("#TXNSLNO").val($(FieldidStarting + "TXNSLNO_" + i).val());
+            if (Table != "COPYLROW") {
+                $("#TXNSLNO").val($(FieldidStarting + "TXNSLNO_" + i).val());
+            }
             $("#STKNAME").val($(FieldidStarting + "STKNAME_" + i).val());
             if (Table != "COPYLROW") {
                 $("#QNTY").val($(FieldidStarting + "QNTY_" + i).val());
@@ -490,6 +492,7 @@ function Fill_DetailData() {
 
 }
 function UpdateBarCodeRow_FrmDet(i) {
+    var MENU_PARA = $("#MENU_PARA").val();
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var TXNSLNO = $("#D_SLNO_" + i).val();
@@ -1689,7 +1692,7 @@ function AddBarCodeGrid() {
     tr += '   </td> ';
     if (MENU_PARA != "SB") {
         tr += '        <td class="sticky-cell-opposite">';
-        tr += '            <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
+        tr += '            <button type="button" class="btn btn-primary" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
         tr += '        </td>';
     }
     tr += ' </tr>';
