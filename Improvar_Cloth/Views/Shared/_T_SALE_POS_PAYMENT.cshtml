@@ -1,0 +1,124 @@
+﻿@model Improvar.ViewModels.TransactionSalePosEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_POS_PAYMENT'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+
+    });
+
+</script>
+
+@*<div style="transform: translate(0%, 0%);z-index: 1100;background-color:#c4b9b9;border:5px groove;width: 1200px;">*@
+<div style="width: 1200px;" overflow-y:auto;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
+                {
+                    <input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
+                    <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="Addrow('AddRowsMain')" />
+                    <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
+                }
+                <div class="col-md-8">
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_POS_PAYMENT');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
+                    <b> Entry Sauda Details</b>
+                </center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;max-height:291px;">
+                    <table id="_T_SALE_POS_PAYMENT" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width: 27px;text-align:center;">SL No.</th>
+                                <th class="" style="width:90px;">Pymt Code</th>
+                                <th class="" style="width:428px;">Pymt Desc</th>
+                                <th class="" style="width:177px;text-align:right;">Amount</th>
+                                <th class="" style="width:177px;">Card No</th>
+                                <th class="" style="width:177px;">Ins No</th>
+                                <th class="" style="width:177px;">Inst Date</th>
+                                <th class="" style="width:177px;">Payment Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.TTXNPYMT != null)
+                            {
+                                for (int i = 0; i <= Model.TTXNPYMT.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.TTXNPYMT[i].Checked, new { id = "chkid_" + i, @TabIndex = -1 })
+                                            @Html.HiddenFor(model => model.TTXNPYMT[i].GLCD, new { id = "GLCD_" + i, @TabIndex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => model.TTXNPYMT[i].PYMTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PYMTCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=SHRCD=1/" + "PYMTNM_" + i + "=SHRNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=SHRCD=1/" + "PYMTNM_" + i + "=SHRNM=0');", @placeholder = "Code", maxlength = 6 } })
+                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPaymentDetails", "T_SALE_POS")','Payment Details','PYMTCD_@i','PYMTCD_@i=SHRCD=1/PYMTNM_@i=SHRNM=0')" />
+
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].PYMTNM, new { id = "PYMTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                       
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].AMT, "{0:0.00}", new { id = "AMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @onchange = "CalculateAmt_Details(DRCR_" + i + ",'" + "QNTY_" + i + "','" + "AMT_" + i + "','" + "BROKAMT_" + i + "','DET','" + i + "');", maxlength = 15 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].CARDNO,new { id = "CARDNO_" + i, @class = " atextBoxFor ", maxlength = 12 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].INSNO, new { id = "INSNO_" + i, @class = " atextBoxFor ",maxlength = 15 })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TTXNPYMT[i].INSDT, new { htmlAttributes = new { id = "INSDT_" + i, @class = "atextBoxFor", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                                            <script>
+                                                    if("@Model.DefaultAction"=="A" || "@Model.DefaultAction"=="E")
+                                                    {
+                                                        $(function () { $("#" + "INSDT_" + @i).datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });
+                                                    }
+                                            </script>
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].PYMTREM, new { id = "PYMTREM_" + i, @class = " atextBoxFor ", maxlength = 15 })
+                                        </td>
+                                       
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="sticky-footer">
+                                <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.T_QNTY, "{0:0.0000}", new { htmlAttributes = new { id = "T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.T_AMT, "{0:0.00}", new { htmlAttributes = new { id = "T_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.T_BROKAMT, "{0:0.00}", new { htmlAttributes = new { id = "T_BROKAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.T_NETAMT, "{0:0.00}", new { htmlAttributes = new { id = "T_NETAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

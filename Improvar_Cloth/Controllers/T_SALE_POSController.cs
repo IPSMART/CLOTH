@@ -189,17 +189,36 @@ namespace Improvar.Controllers
                                     VE.MOBILE = syscnfg.Rows[0]["MOBILE"].retStr();
                                     VE.INC_RATE = syscnfg.Rows[0]["INC_RATE"].retStr()=="Y"? true:false;
                                 }
-                               
-                                if (VE.MENU_PARA == "PB")
-                                {
-                                    DataTable data = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
-                                    if (data != null && data.Rows.Count > 0)
-                                    {
-                                        VE.WPRATE = data.Rows[0]["WPPER"].retDbl();
-                                        VE.RPRATE = data.Rows[0]["RPPER"].retDbl();
-                                    }
 
+                                //if (VE.MENU_PARA == "PB")
+                                //{
+                                //    DataTable data = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
+                                //    if (data != null && data.Rows.Count > 0)
+                                //    {
+                                //        VE.WPRATE = data.Rows[0]["WPPER"].retDbl();
+                                //        VE.RPRATE = data.Rows[0]["RPPER"].retDbl();
+                                //    }
+
+                                //}
+                                List<TsalePos_TBATCHDTL> TSHRTXNDTL = new List<TsalePos_TBATCHDTL>();
+                                for (int i = 0; i <= 9; i++)
+                                {
+                                    TsalePos_TBATCHDTL PROGDTL = new TsalePos_TBATCHDTL();
+                                    PROGDTL.SLNO = Convert.ToByte(i + 1);
+                                    PROGDTL.DropDown_list1 = DropDown_list1();
+                                    TSHRTXNDTL.Add(PROGDTL);
+                                    VE.TsalePos_TBATCHDTL = TSHRTXNDTL;
                                 }
+                                VE.TsalePos_TBATCHDTL = TSHRTXNDTL;
+                                List<TTXNSLSMN> TTXNSLSMN = new List<TTXNSLSMN>();
+                                for (int i = 0; i <= 3; i++)
+                                {
+                                    TTXNSLSMN TTXNSLM = new TTXNSLSMN();
+                                    TTXNSLM.SLNO = Convert.ToByte(i + 1);
+                                    TTXNSLSMN.Add(TTXNSLM);
+                                    VE.TTXNSLSMN = TTXNSLSMN;
+                                }
+                                VE.TTXNSLSMN = TTXNSLSMN;
                                 List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                                 UploadDOC UPL = new UploadDOC();
                                 UPL.DocumentType = Cn.DOC_TYPE();
@@ -696,6 +715,19 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public List<DropDown_list1> DropDown_list1()
+        {
+            List<DropDown_list1> DropDown_list1 = new List<DropDown_list1> {
+                new DropDown_list1 { value = "", text = ""},
+                new DropDown_list1 { value = "DL", text = "Delivered"},
+                 new DropDown_list1 { value = "FP", text = "Fall"},
+                  new DropDown_list1 { value = "PO", text = "Polish"},
+                   new DropDown_list1 { value = "PP", text = "Polish/Fall"},
+                    new DropDown_list1 { value = "AL", text = "Alteration"},
+
+            };
+            return (DropDown_list1);
+        }
         private string TranBarcodeGenerate(string doccd, string lbatchini, string docbarcode, string UNIQNO, int slno)
         {//YRCODE	2,lbatchini	2,TXN UNIQ NO	7,SLNO	4
             var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2);
@@ -746,37 +778,6 @@ namespace Improvar.Controllers
         {
             try
             {
-                TransactionSalePosEntry VE = new TransactionSalePosEntry();
-                Cn.getQueryString(VE);
-                var code_data = Code.Split(Convert.ToChar(Cn.GCS()));
-                if (code_data.Count() > 1)
-                {
-                    if (code_data[0].retStr() == "Party")
-                    {
-                        if (code_data[1] == "")
-                        {
-                            return Content("Please Select Document Date !!");
-                        }
-                        else
-                        {
-                            Code = "";
-                        }
-                    }
-                    else
-                    {
-                        if (code_data[1] == "")
-                        {
-                            return Content("Please Select Agent !!");
-                        }
-                        else
-                        {
-                            Code = code_data[0];
-                        }
-                    }
-
-
-                }
-
                 var str = masterHelp.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -784,55 +785,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    if (code_data[0].retStr() == "Party")
-                    {
-                        string TCSPER = "", TCSCODE = "", TCSNM = "", TDSLIMIT = "", TDSCALCON = "", AMT = "", TDSROUNDCAL = "";
-                        if (str.IndexOf(Cn.GCS()) > 0)
-                        {
-                            var party_data = salesfunc.GetSlcdDetails(val, code_data[1]);
-                            if (party_data != null && party_data.Rows.Count > 0)
-                            {
-                                if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") party_data.Rows[0]["TCSAPPL"] = "N";
-                                if (party_data.Rows[0]["TCSAPPL"].retStr() == "Y")
-                                {
-                                    string linktdscode = "'Y'";
-                                    if (VE.MENU_PARA == "PB") linktdscode = "'X'";
-                                    var tdsdt = getTDS(code_data[1], val, linktdscode);
-                                    if (tdsdt != null && tdsdt.Rows.Count > 0)
-                                    {
-                                        TCSPER = tdsdt.Rows[0]["TDSPER"].retStr();
-                                        TCSCODE = tdsdt.Rows[0]["TDSCODE"].retStr();
-                                        TCSNM = tdsdt.Rows[0]["TDSNM"].retStr();
-                                        TDSLIMIT = tdsdt.Rows[0]["TDSLIMIT"].retStr();
-                                        TDSCALCON = tdsdt.Rows[0]["TDSCALCON"].retStr();
-                                        TDSROUNDCAL = tdsdt.Rows[0]["TDSROUNDCAL"].retStr();
-                                    }
-                                    AMT = salesfunc.getSlcdTCSonCalc(party_data.Rows[0]["PANNO"].retStr(), code_data[1], VE.MENU_PARA).ToString();
-                                    AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
-                                }
-                                str = masterHelp.ToReturnFieldValues("", party_data);
-                                str += "^" + "TCSPER" + "=^" + TCSPER + Cn.GCS();
-                                str += "^" + "TDSLIMIT" + "=^" + TDSLIMIT + Cn.GCS();
-                                str += "^" + "TDSCALCON" + "=^" + TDSCALCON + Cn.GCS();
-                                str += "^" + "AMT" + "=^" + AMT + Cn.GCS();
-                                str += "^" + "TDSROUNDCAL" + "=^" + TDSROUNDCAL + Cn.GCS();
-                                return Content(str);
-                            }
-                            else
-                            {
-                                return Content("Invalid Ledger Code ! Please Enter a Valid Ledger Code !!");
-                            }
-                        }
-                        else
-                        {
-                            return Content(str);
-                        }
-                    }
-                    else
-                    {
-                        return Content(str);
-                    }
-
+                    return Content(str);
                 }
             }
             catch (Exception ex)

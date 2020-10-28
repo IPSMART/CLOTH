@@ -502,6 +502,8 @@
     <Compile Include="Models\TTXNAMT.cs" />
     <Compile Include="Models\TTXNDTL.cs" />
     <Compile Include="Models\TTXNDTL_SEARCHPANEL.cs" />
+    <Compile Include="Models\TTXNPYMT.cs" />
+    <Compile Include="Models\TTXNSLSMN.cs" />
     <Compile Include="Models\T_BALE.cs" />
     <Compile Include="Models\T_BALE_HDR.cs" />
     <Compile Include="Models\T_BATCHDTL.cs" />
@@ -1082,6 +1084,8 @@
     <Content Include="Views\Shared\_T_SALE_PENDINGORDER.cshtml" />
     <Content Include="Views\Rep_BarcodePrint\PreviewBarcodeTxtFmt.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_PRODUCT.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_POS_SALESMAN.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_POS_PAYMENT.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
