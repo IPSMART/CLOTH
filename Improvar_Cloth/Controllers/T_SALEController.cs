@@ -1091,16 +1091,14 @@ namespace Improvar.Controllers
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string ITGRPCD = data[0].retStr() == "" ? "" : data[0].retStr().retSqlformat();
                 string DOCDT = data[1].retStr();
-                if (DOCDT == "")
-                {
-                    return Content("Please Select Document Date");
-                }
+                if (DOCDT == "") { return Content("Please Select Document Date"); }
                 string TAXGRPCD = data[2].retStr();
                 string GOCD = data[3].retStr() == "" ? "" : data[3].retStr().retSqlformat();
                 string PRCCD = data[4].retStr();
                 string MTRLJOBCD = data[5].retStr() == "" ? "" : data[5].retStr().retSqlformat();
                 string BARNO = data[6].retStr() == "" ? "" : data[6].retStr().retSqlformat();
                 double RATE = data[7].retDbl();
+                if (TAXGRPCD.retStr() == "") return Content("Please select Party !");
                 var str = masterHelp.ITCD_help(val, "", data[0].retStr());
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -3213,10 +3211,10 @@ namespace Improvar.Controllers
                     return Content("");
                 }
                 goto dbok;
-            dbnotsave:;
+                dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
-            dbok:;
+                dbok:;
             }
             catch (Exception ex)
             {
