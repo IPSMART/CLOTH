@@ -31,7 +31,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    TransactionPackingSlipEntry VE = (parkID == "") ? new TransactionPackingSlipEntry() : (Improvar.ViewModels.TransactionPackingSlipEntry)Session[parkID];
+                    TransactionSaleEntry VE = (parkID == "") ? new TransactionSaleEntry() : (Improvar.ViewModels.TransactionSaleEntry)Session[parkID];
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     switch (VE.MENU_PARA)
                     {
@@ -67,6 +67,7 @@ namespace Improvar.Controllers
                     VE.BL_TYPE = masterHelp.BL_TYPE();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
+                    VE.DISC_TYPE1 = masterHelp.DISC_TYPE1();
                     VE.BARGEN_TYPE = masterHelp.BARGEN_TYPE();
                     VE.INVTYPE_list = masterHelp.INVTYPE_list();
                     VE.EXPCD_list = masterHelp.EXPCD_list(VE.MENU_PARA == "PB" ? "P" : "S");
@@ -252,7 +253,7 @@ namespace Improvar.Controllers
                                 INI INIF = new INI();
                                 INIF.DeleteKey(Session["UR_ID"].ToString(), parkID, Server.MapPath("~/Park.ini"));
                             }
-                            VE = (TransactionPackingSlipEntry)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COM, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+                            VE = (TransactionSaleEntry)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COM, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
                         if (parkID == "" && loadOrder == "N")
                         {
@@ -272,7 +273,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.SaveException(ex, "");
                 VE.DefaultView = false;
                 VE.DefaultDay = 0;
@@ -280,7 +281,7 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
-        public TransactionPackingSlipEntry Navigation(TransactionPackingSlipEntry VE, ImprovarDB DB, int index, string searchValue, string loadOrder = "N")
+        public TransactionSaleEntry Navigation(TransactionSaleEntry VE, ImprovarDB DB, int index, string searchValue, string loadOrder = "N")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
@@ -744,7 +745,7 @@ namespace Improvar.Controllers
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             return VE;
         }
-        public ActionResult SearchPannelData(TransactionPackingSlipEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
+        public ActionResult SearchPannelData(TransactionSaleEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
         {
             try
             {
@@ -789,7 +790,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 string linktdscode = "'Y','Z'";
                 if (VE.MENU_PARA == "PB") linktdscode = "'X'";
@@ -840,7 +841,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 var code_data = Code.Split(Convert.ToChar(Cn.GCS()));
                 if (code_data.Count() > 1)
@@ -982,7 +983,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 string[] data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string str = masterHelp.ITGRPCD_help(val, "", data[0]);
@@ -1086,7 +1087,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string ITGRPCD = data[0].retStr() == "" ? "" : data[0].retStr().retSqlformat();
@@ -1281,7 +1282,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string DOCDT = data[0].retStr();
@@ -1464,7 +1465,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult FillDetailData(TransactionPackingSlipEntry VE)
+        public ActionResult FillDetailData(TransactionSaleEntry VE)
         {
             try
             {
@@ -1602,7 +1603,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        private void FreightCharges(TransactionPackingSlipEntry VE, string AUTO_NO)
+        private void FreightCharges(TransactionSaleEntry VE, string AUTO_NO)
         {
             try
             {
@@ -1690,7 +1691,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
             }
         }
-        public ActionResult GetPendOrder(TransactionPackingSlipEntry VE, string SLCD, string SUBMITBTN, string ITCD)
+        public ActionResult GetPendOrder(TransactionSaleEntry VE, string SLCD, string SUBMITBTN, string ITCD)
         {
             Cn.getQueryString(VE);
             DataTable dt = new DataTable();
@@ -1747,7 +1748,7 @@ namespace Improvar.Controllers
             VE.DefaultView = true;
             return PartialView("_T_SALE_PENDINGORDER", VE);
         }
-        public JsonResult SelectPendOrder(TransactionPackingSlipEntry VE)
+        public JsonResult SelectPendOrder(TransactionSaleEntry VE)
         {
             Cn.getQueryString(VE);
 
@@ -1773,7 +1774,7 @@ namespace Improvar.Controllers
             VE.DefaultView = true;
             return Json(new { dt }, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult GetOrderDetails(TransactionPackingSlipEntry VE, string val, string Code)
+        public ActionResult GetOrderDetails(TransactionSaleEntry VE, string val, string Code)
         {
             try
             {
@@ -1836,7 +1837,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult DeleteRowBarno(TransactionPackingSlipEntry VE)
+        public ActionResult DeleteRowBarno(TransactionSaleEntry VE)
         {
             try
             {
@@ -1861,7 +1862,7 @@ namespace Improvar.Controllers
                 VE.TBATCHDTL = TBATCHDTL;
                 ModelState.Clear();
                 VE.DefaultView = true;
-                return PartialView("_T_SALE_PRODUCT", VE);
+                return PartialView("_T_SALE_BarTab", VE);
             }
             catch (Exception ex)
             {
@@ -1869,7 +1870,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult AddDOCRow(TransactionPackingSlipEntry VE)
+        public ActionResult AddDOCRow(TransactionSaleEntry VE)
         {
             try
             {
@@ -1912,7 +1913,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult DeleteDOCRow(TransactionPackingSlipEntry VE)
+        public ActionResult DeleteDOCRow(TransactionSaleEntry VE)
         {
             try
             {
@@ -1947,7 +1948,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult cancelRecords(TransactionPackingSlipEntry VE, string par1)
+        public ActionResult cancelRecords(TransactionSaleEntry VE, string par1)
         {
             try
             {
@@ -1994,7 +1995,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ParkRecord(FormCollection FC, TransactionPackingSlipEntry stream, string MNUDET, string UNQSNO)
+        public ActionResult ParkRecord(FormCollection FC, TransactionSaleEntry stream, string MNUDET, string UNQSNO)
         {
             try
             {
@@ -2037,7 +2038,7 @@ namespace Improvar.Controllers
             try
             {
                 RateHistory RH = new RateHistory();
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 var DTRateHistory = salesfunc.GetRateHistory(VE.DOC_CODE, ITCD);
                 var doctP = (from DataRow dr in DTRateHistory.Rows
@@ -2063,7 +2064,7 @@ namespace Improvar.Controllers
             }
         }
         
-        public ActionResult SAVE(FormCollection FC, TransactionPackingSlipEntry VE)
+        public ActionResult SAVE(FormCollection FC, TransactionSaleEntry VE)
         {
             Cn.getQueryString(VE);
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
@@ -3283,7 +3284,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult Print(TransactionPackingSlipEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
+        public ActionResult Print(TransactionSaleEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
         {
             try
             {
