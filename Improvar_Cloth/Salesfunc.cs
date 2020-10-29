@@ -1376,7 +1376,7 @@ namespace Improvar
             if (finschema != "") scmf = finschema;
 
             string doctype = "SORD";
-            if (menupara.Substring(0,2) == "SB") doctype = "SORD"; else doctype = "PORD";
+            if (menupara.Substring(0, 2) == "SB") doctype = "SORD"; else doctype = "PORD";
 
             if (ordupto == "") ordupto = txnupto;
             if (ordupto != "") ordupto = ordupto.retDateStr();
@@ -1470,7 +1470,7 @@ namespace Improvar
             str += "select a.effdt, b.wppricegen, b.rppricegen, b.wpper, b.rpper, b.priceincode from ";
             str += "(select a.m_autono, a.effdt, row_number() over(order by a.effdt desc) as rn ";
             str += "from " + Scm + ".m_syscnfg a ";
-            str += "where (a.compcd = '"+ compcd + "' or a.compcd is null) and ";
+            str += "where (a.compcd = '" + compcd + "' or a.compcd is null) and ";
             str += "a.effdt <= to_date('" + EFFDT + "', 'dd/mm/yyyy') ) a, ";
             str += Scm + ".m_syscnfg b ";
             str += "where a.m_autono = b.m_autono(+) and a.rn = 1 ";
@@ -1578,6 +1578,16 @@ namespace Improvar
             if (tbl.Rows.Count == 1) rtval = tbl.Rows[0]["amt"].retDbl();
             return rtval;
         }
-
+        public DataTable GetRateHistory(string doctype, string itcd)
+        {
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string sql = "";
+            sql += " select distinct a.SLCD,a.autono,d.docno,d.docdt,b.qnty,b.rate,e.SLNM,e.district city ";
+            sql += " from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
+            sql += " where a.autono=b.autono and a.autono=d.autono and a.doccd=c.DOCCD and a.slcd=e.slcd  and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and itcd='" + itcd + "' and c.doctype='" + doctype + "' ";
+            sql += " order by d.docdt,d.docno desc ";
+            var dt = MasterHelpFa.SQLquery(sql);
+            return dt;
+        }
     }
 }

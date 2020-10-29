@@ -608,6 +608,7 @@
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
+    <Compile Include="ViewModels\RateHistory.cs" />
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />

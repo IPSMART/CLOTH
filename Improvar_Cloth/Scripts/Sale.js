@@ -2141,6 +2141,22 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
 }
 
-
+function RateHistoryDetails(i) {
+    $.ajax({
+        type: 'get',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlRateHistory").val(),
+        data: "ITCD=" + $('#B_ITCD_'+i).val() ,
+        success: function (result) {
+            $("#WaitingMode").hide();
+            $("#RateHistoryModal").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
 
 

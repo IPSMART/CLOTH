@@ -165,7 +165,7 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
-                                            <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"@i title="Rate History">Rate Hist</button>
+                                            <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"@i title="Rate History" onclick="RateHistoryDetails('@i')" data-toggle="modal" data-target="#RateHistoryModal" >Rate Hist</button>
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })
