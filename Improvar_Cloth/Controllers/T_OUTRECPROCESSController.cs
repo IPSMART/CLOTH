@@ -46,6 +46,16 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Receive for Embroidery"; break;
                         case "JW":
                             ViewBag.formname = "Receive for Other Jobs"; break;
+                        case "DYU":
+                            ViewBag.formname = "Return from Dyer w/o Job"; break;
+                        case "PRU":
+                            ViewBag.formname = "Return from Printer w/o Job"; break;
+                        case "STU":
+                            ViewBag.formname = "Return from Sticher w/o Job"; break;
+                        case "EMU":
+                            ViewBag.formname = "Return from Embroider w/o Job"; break;
+                        case "JWU":
+                            ViewBag.formname = "Return from Other w/o Job"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     string LOC = CommVar.Loccd(UNQSNO);
@@ -54,16 +64,8 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
-                    //return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
-                    VE.Database_Combo1 = (from n in DB.T_TXNOTH
-                                          select new Database_Combo1() { FIELD_VALUE = n.SELBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-
-                    VE.Database_Combo2 = (from n in DB.T_TXNOTH
-                                          select new Database_Combo2() { FIELD_VALUE = n.DEALBY }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-                    VE.HSN_CODE = (from n in DBF.M_HSNCODE
-                                   select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
                     VE.BARGEN_TYPE = masterHelp.BARGEN_TYPE();
-
+                    VE.Reverse_Charge = masterHelp.REV_CHRG();
                     VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
@@ -76,13 +78,6 @@ namespace Improvar.Controllers
                         }
 
                     }
-                    //VE.DropDown_list_StkType = (from n in DB.M_STKTYPE
-                    //                            select new DropDown_list_StkType() { value = n.STKTYPE, text = n.STKNAME }).OrderBy(s => s.value).Distinct().ToList();
-                    VE.DISC_TYPE = masterHelp.DISC_TYPE();
-                    VE.TDDISC_TYPE = (from n in DB.T_BATCHDTL
-                                      select new TDDISC_TYPE() { FIELD_VALUE = n.TDDISCTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
-                    VE.SCMDISC_TYPE = (from n in DB.T_BATCHDTL
-                                       select new SCMDISC_TYPE() { FIELD_VALUE = n.SCMDISCTYPE }).OrderBy(s => s.FIELD_VALUE).Distinct().ToList();
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -167,8 +162,29 @@ namespace Improvar.Controllers
                             {
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
-                                var jobcd = (from i in DB.M_JOBMST where i.JOBCD == VE.MENU_PARA select new { JOBCD = i.JOBCD, JOBNM = i.JOBNM }).OrderBy(s => s.JOBNM).FirstOrDefault();
-                                if (jobcd != null) { TTXN.JOBCD = jobcd.JOBCD; VE.JOBNM = jobcd.JOBNM; }
+                                string jobcd = "";
+                                if (VE.MENU_PARA == "DY" || VE.MENU_PARA == "DYU")
+                                {
+                                    jobcd = "DY";
+                                }
+                                else if (VE.MENU_PARA == "PR" || VE.MENU_PARA == "PRU")
+                                {
+                                    jobcd = "PR";
+                                }
+                                else if (VE.MENU_PARA == "ST" || VE.MENU_PARA == "STU")
+                                {
+                                    jobcd = "ST";
+                                }
+                                else if (VE.MENU_PARA == "EM" || VE.MENU_PARA == "EMU")
+                                {
+                                    jobcd = "EM";
+                                }
+
+                                var job = (from i in DB.M_JOBMST where i.JOBCD == jobcd select new { JOBCD = i.JOBCD, JOBNM = i.JOBNM }).OrderBy(s => s.JOBNM).FirstOrDefault();
+                                if (job != null) { TTXN.JOBCD = job.JOBCD; VE.JOBNM = job.JOBNM; }
+
+                                var mtrljob = (from i in DB.M_MTRLJOBMST where i.MTRLJOBCD == jobcd select new { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).FirstOrDefault();
+                                if (mtrljob != null) { VE.MTRLJOBCD = mtrljob.MTRLJOBCD; VE.MTRLJOBNM = mtrljob.MTRLJOBNM; }
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
@@ -652,11 +668,15 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetSubLedgerDetails(string val, string Code)
+        public ActionResult GetPartyDetails(string val, string Code, string Autono, string linktdscode)
         {
             try
             {
-                if (Code.retStr() == "")
+                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                Cn.getQueryString(VE);
+
+
+                if (Code == "")
                 {
                     return Content("Please Select Document Date !!");
                 }
@@ -667,12 +687,39 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    string TCSPER = "", TCSCODE = "", TCSNM = "", TDSLIMIT = "", TDSCALCON = "", AMT = "", TDSROUNDCAL = "";
                     if (str.IndexOf(Cn.GCS()) > 0)
                     {
-                        var party_data = salesfunc.GetSlcdDetails(val, Code.retStr());
+                        var party_data = salesfunc.GetSlcdDetails(val, Code);
                         if (party_data != null && party_data.Rows.Count > 0)
                         {
+                            if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") party_data.Rows[0]["TCSAPPL"] = "N";
+                            if (party_data.Rows[0]["TCSAPPL"].retStr() == "Y")
+                            {
+                                linktdscode = linktdscode.retStr() == "" ? "'Y'" : linktdscode.retStr().retSqlformat();
+
+                                if (VE.MENU_PARA == "PB") linktdscode = "'X'";
+                                var tdsdt = getTDS(Code, val, linktdscode);
+                                if (tdsdt != null && tdsdt.Rows.Count > 0)
+                                {
+                                    TCSPER = tdsdt.Rows[0]["TDSPER"].retStr();
+                                    TCSCODE = tdsdt.Rows[0]["TDSCODE"].retStr();
+                                    TCSNM = tdsdt.Rows[0]["TDSNM"].retStr();
+                                    TDSLIMIT = tdsdt.Rows[0]["TDSLIMIT"].retStr();
+                                    TDSCALCON = tdsdt.Rows[0]["TDSCALCON"].retStr();
+                                    TDSROUNDCAL = tdsdt.Rows[0]["TDSROUNDCAL"].retStr();
+                                }
+                                AMT = salesfunc.getSlcdTCSonCalc(party_data.Rows[0]["PANNO"].retStr(), Code, VE.MENU_PARA, Autono.retStr()).ToString();
+                                AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
+                            }
                             str = masterHelp.ToReturnFieldValues("", party_data);
+                            str += "^" + "TCSPER" + "=^" + TCSPER + Cn.GCS();
+                            str += "^" + "TDSLIMIT" + "=^" + TDSLIMIT + Cn.GCS();
+                            str += "^" + "TDSCALCON" + "=^" + TDSCALCON + Cn.GCS();
+                            str += "^" + "AMT" + "=^" + AMT + Cn.GCS();
+                            str += "^" + "TDSROUNDCAL" + "=^" + TDSROUNDCAL + Cn.GCS();
+                            str += "^" + "TCSCODE" + "=^" + TCSCODE + Cn.GCS();
+                            str += "^" + "TCSNM" + "=^" + TCSNM + Cn.GCS();
                             return Content(str);
                         }
                         else
@@ -684,6 +731,8 @@ namespace Improvar.Controllers
                     {
                         return Content(str);
                     }
+
+
                 }
             }
             catch (Exception ex)
@@ -692,12 +741,103 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public DataTable getTDS(string docdt, string slcd, string linktdscode = "")
+        {
+            string scmf = CommVar.FinSchema(UNQSNO);
+            string sql = "select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp, ";
+            if (slcd.retStr() != "") sql += "(select CMPNONCMP from  " + scmf + ".m_subleg where slcd='" + slcd + "') as CMPNONCMP, "; else sql += "'' CMPNONCMP, ";
+            sql += " b.tdsnm, b.secno, b.glcd,a.tdslimit,a.tdscalcon,a.tdsroundcal from ";
+            sql += "(select tdscode, edate, tdsper, tdspernoncmp,tdslimit,tdscalcon,tdsroundcal from ";
+            sql += "(select a.tdscode, a.edate, a.tdsper, a.tdspernoncmp,a.tdslimit,a.tdscalcon,a.tdsroundcal, ";
+            sql += "row_number() over(partition by a.tdscode order by a.edate desc) as rn ";
+            sql += "from " + scmf + ".m_tds_cntrl_dtl a ";
+            sql += "where  edate <= to_date('" + docdt + "', 'dd/mm/yyyy')  ";
+            if (linktdscode.retStr() != "") sql += " and tdscode in (" + linktdscode + ") ";
+            sql += ") where rn = 1 ) a, ";
+            sql += "" + scmf + ".m_tds_cntrl b ";
+            sql += "where a.tdscode = b.tdscode(+) ";
 
+            DataTable dt = masterHelp.SQLquery(sql);
+            return dt;
+        }
         public ActionResult GetGodownDetails(string val)
         {
             try
             {
                 var str = masterHelp.GOCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetMaterialJobDetails(string val)
+        {
+            try
+            {
+                string str = masterHelp.MTRLJOBCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetTDSDetails(string val, string TAG, string PARTY, string AUTONO)
+        {
+            try
+            {
+                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                Cn.getQueryString(VE);
+                string linktdscode = "'Y','Z'";
+                if (VE.MENU_PARA == "PB") linktdscode = "'X'";
+                if (TAG.retStr() == "") return Content("Enter Document Date");
+                if (val == null)
+                {
+                    return PartialView("_Help2", masterHelp.TDSCODE_help(TAG, val, PARTY, "TCS", linktdscode));
+                }
+                else
+                {
+                    string str = masterHelp.TDSCODE_help(TAG, val, PARTY, "TCS", linktdscode);
+                    double TDSLIMIT = str.retCompValue("TDSLIMIT").retDbl();
+
+                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO).ToString());
+                    string panno = DBF.M_SUBLEG.Where(a => a.SLCD == PARTY).Select(b => b.PANNO).FirstOrDefault();
+                    string AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), TAG, VE.MENU_PARA, AUTONO.retStr()).ToString();
+                    AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
+                    str += "^AMT=^" + AMT + Cn.GCS();
+                    return Content(str);
+                }
+            }
+            catch (Exception Ex)
+            {
+                Cn.SaveException(Ex, "");
+                return Content(Ex.Message + Ex.InnerException);
+            }
+        }
+        public ActionResult GetSubLedgerDetails(string val, string Code)
+        {
+            try
+            {
+
+                var str = masterHelp.SLCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -781,26 +921,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetMaterialJobDetails(string val)
-        {
-            try
-            {
-                string str = masterHelp.MTRLJOBCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
+       
         public ActionResult GetItemDetails(string val, string Code)
         {
             try
@@ -2602,7 +2723,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);

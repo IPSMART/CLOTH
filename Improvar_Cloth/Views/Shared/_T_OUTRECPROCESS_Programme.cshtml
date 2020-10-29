@@ -35,26 +35,27 @@
                     <table id="_T_OUTRECPROCESS_Programme_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1487px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 27px;"></th>
-                                <th class="" style="width: 55px;text-align:center;">SL No.</th>
-                                <th class="" style="width:81px;">Barno</th>
-                                <th class="" style="width:81px;">Group Code</th>
-                                <th class="" style="width:177px;">Group Name</th>
-                                <th class="" style="width:110px;">Item Code <b style="color:Red;">*</b></th>
-                                <th class="" style="width:180px;">Item Name</th>
+                                <th class="sticky-cell" style="width: 20px;"></th>
+                                <th class="sticky-cell" style="width: 20px;text-align:center;left:27px">SL No</th>
+                                <th class="" style="width:177px;">Item Group</th>
+                                <th class="" style="width:180px;">Item</th>
+                                <th class="" style="width:180px;">Style No</th>
                                 <th class="" style="width:47px;">UOM</th>
-                                <th class="" style="width: 81px;">Material Job Code <b style="color:Red;">*</b></th>
-                                <th class="" style="width:100px;">Material Job Name</th>
-                                <th class="" style="width:100px;">Part</th>
-                                <th class="" style="width: 81px;">Color Code</th>
-                                <th class="" style="width:100px;">Color Name</th>
+                                <th class="" style="width:100px;">Color</th>
                                 <th class="" style="width:107px;">Size</th>
-                                <th class="" style="width:111px;text-align:right;">Nos</th>
-                                <th class="" style="width:60px;text-align:right;">Cut Length</th>
-                                <th class="" style="width:111px;text-align:right;">Quantity</th>
                                 <th class="" style="width: 177px;">Shade</th>
-                                <th class="" style="width:177px;">Remarks</th>
-                                <th class="" style="text-align:center;">Sample</th>
+                                <th class="" style="width:111px;text-align:right;">Nos</th>
+                                <th class="" style="width:111px;text-align:right;">Quantity</th>
+                                <th class="" >Remarks</th>
+                                <th class="sticky-cell-opposite" style="text-align:center;">Sample</th>
+                                @*<th class="" style="width: 81px;">Material Job Code <b style="color:Red;">*</b></th>
+                                    <th class="" style="width:100px;">Material Job Name</th>
+                                    <th class="" style="width:100px;">Part</th>
+                                    <th class="" style="width: 81px;">Color Code</th>*@
+                                @*<th class="" style="width:60px;text-align:right;">Cut Length</th>*@
+                                @*<th class="" style="width:81px;">Barno</th>
+                                    <th class="" style="width:81px;">Group Code</th>*@
+                                @*<th class="" style="width:110px;">Item Code <b style="color:Red;">*</b></th>*@
                             </tr>
                         </thead>
                         <tbody>
@@ -67,32 +68,37 @@
                                             @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
                                             @*@Html.HiddenFor(model => model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i })*@
                                         </td>
-                                        <td class="">
+                                        <td class="sticky-cell" style="left:27px;">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i, maxlength = 20, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTRECPROCESS") + "','Barno Details','" + "P_BARNO_" + i + "','" + "P_BARNO_" + i + "=BARNO=0/P_ITCD_" + i + "=ITCD/" + "P_ITNM_" + i + "=ITSTYLE/" + "P_UOM_" + i + "=UOMCD/" + "P_ITGRPCD_" + i + "=ITGRPCD/" + "P_ITGRPNM_" + i + "=ITGRPNM/" + "P_COLRCD_" + i + "=COLRCD/" + "P_SIZECD_" + i + "=SIZECD/" + "P_COLRNM_" + i + "=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i+ "/P_ITCD_"+i+ "/P_ITGRPCD_" + i + "');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTRECPROCESS") + "','Barno Details','" + "P_BARNO_" + i + "','" + "P_BARNO_" + i + "=BARNO=0/P_ITCD_" + i + "=ITCD/" + "P_ITNM_" + i + "=ITSTYLE/" + "P_UOM_" + i + "=UOMCD/" + "P_ITGRPCD_" + i + "=ITGRPCD/" + "P_ITGRPNM_" + i + "=ITGRPNM/" + "P_COLRCD_" + i + "=COLRCD/" + "P_SIZECD_" + i + "=SIZECD/" + "P_COLRNM_" + i + "=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i+ "/P_ITCD_" + i + "/P_ITGRPCD_" + i + "');", @placeholder = "barno", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "T_OUTRECPROCESS")','Barno Details','P_BARNO_@i','P_BARNO_@i=BARNO=0/P_ITCD_@i=ITCD/P_ITNM_@i=ITSTYLE/P_UOM_@i=UOMCD/P_ITGRPCD_@i=ITGRPCD/P_ITGRPNM_@i=ITGRPNM/P_COLRCD_@i =COLRCD/P_SIZECD_@i =SIZECD/P_COLRNM_@i=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_@i/P_ITCD_@i/P_ITGRPCD_@i');" />
-                                        </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].ITGRPCD, new { id = "P_ITGRPCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTRECPROCESS") + "','Group Details','" + "P_ITGRPCD_" + i + "','" + "P_ITGRPCD_" + i + "=itgrpcd=1/" + "P_ITGRPNM_" + i + "=itgrpnm=0');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTRECPROCESS") + "','Group Details','" + "P_ITGRPCD_" + i + "','" + "P_ITGRPCD_" + i + "=itgrpcd=1/" + "P_ITGRPNM_" + i + "=itgrpnm=0');", @placeholder = "ITGRPCD", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTRECPROCESS")','Group Details','P_ITGRPCD_@i','P_ITGRPCD_@i=itgrpcd=1/P_ITGRPNM_@i=itgrpnm=0')" />
-                                        </td>
+                                        @*<td class="">
+                                                @Html.TextBoxFor(model => Model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i, maxlength = 20, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTRECPROCESS") + "','Barno Details','" + "P_BARNO_" + i + "','" + "P_BARNO_" + i + "=BARNO=0/P_ITCD_" + i + "=ITCD/" + "P_ITNM_" + i + "=ITSTYLE/" + "P_UOM_" + i + "=UOMCD/" + "P_ITGRPCD_" + i + "=ITGRPCD/" + "P_ITGRPNM_" + i + "=ITGRPNM/" + "P_COLRCD_" + i + "=COLRCD/" + "P_SIZECD_" + i + "=SIZECD/" + "P_COLRNM_" + i + "=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i + "/P_ITCD_" + i + "/P_ITGRPCD_" + i + "');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTRECPROCESS") + "','Barno Details','" + "P_BARNO_" + i + "','" + "P_BARNO_" + i + "=BARNO=0/P_ITCD_" + i + "=ITCD/" + "P_ITNM_" + i + "=ITSTYLE/" + "P_UOM_" + i + "=UOMCD/" + "P_ITGRPCD_" + i + "=ITGRPCD/" + "P_ITGRPNM_" + i + "=ITGRPNM/" + "P_COLRCD_" + i + "=COLRCD/" + "P_SIZECD_" + i + "=SIZECD/" + "P_COLRNM_" + i + "=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i + "/P_ITCD_" + i + "/P_ITGRPCD_" + i + "');", @placeholder = "barno", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "T_OUTRECPROCESS")','Barno Details','P_BARNO_@i','P_BARNO_@i=BARNO=0/P_ITCD_@i=ITCD/P_ITNM_@i=ITSTYLE/P_UOM_@i=UOMCD/P_ITGRPCD_@i=ITGRPCD/P_ITGRPNM_@i=ITGRPNM/P_COLRCD_@i =COLRCD/P_SIZECD_@i =SIZECD/P_COLRNM_@i=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_@i/P_ITCD_@i/P_ITGRPCD_@i');" />
+                                            </td>*@
+                                        @*<td class="">
+                                                @Html.TextBoxFor(model => Model.TPROGDTL[i].ITGRPCD, new { id = "P_ITGRPCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTRECPROCESS") + "','Group Details','" + "P_ITGRPCD_" + i + "','" + "P_ITGRPCD_" + i + "=itgrpcd=1/" + "P_ITGRPNM_" + i + "=itgrpnm=0');", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", "T_OUTRECPROCESS") + "','Group Details','" + "P_ITGRPCD_" + i + "','" + "P_ITGRPCD_" + i + "=itgrpcd=1/" + "P_ITGRPNM_" + i + "=itgrpnm=0');", @placeholder = "ITGRPCD", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_OUTRECPROCESS")','Group Details','P_ITGRPCD_@i','P_ITGRPCD_@i=itgrpcd=1/P_ITGRPNM_@i=itgrpnm=0')" />
+                                            </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITGRPNM, new { id = "P_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].ITGRPCD, new { id = "P_ITGRPCD_" + i })
                                         </td>
-                                        <td class="">
+                                        @*<td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITCD, new { id = "P_ITCD_" + i, maxlength = 8, onkeydown = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTRECPROCESS") + "','Item Details','" + "P_ITCD_" + i + "','" + "P_ITCD_" + i + "=ITCD=2/" + "P_ITNM_" + i + "=ITNM=1/" + "P_UOM_" + i + "=UOMCD=3/" + "P_ITNM_" + i + "=ITSTYLE/" + "P_ITGRPCD_" + i + "=ITGRPCD=5/" + "P_ITGRPNM_" + i + "=ITGRPNM=4','P_ITGRPCD_" + i + " ');", onblur = "GetHelpBlur('" + @Url.Action("GetGridItemDetails", "T_OUTRECPROCESS") + "','Item Details','" + "P_ITCD_" + i + "','" + "P_ITCD_" + i + "=ITCD=2/" + "P_ITNM_" + i + "=ITNM=1/" + "P_UOM_" + i + "=UOMCD=3/" + "P_ITNM_" + i + "=ITSTYLE','P_ITGRPCD_" + i + " ');", @placeholder = "ITCD", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGridItemDetails", "T_OUTRECPROCESS")','Item Details','P_ITCD_@i','P_ITCD_@i=ITCD=2/P_ITNM_@i=ITNM=1/P_UOM_@i=UOMCD=3/P_ITNM_@i=ITSTYLE/P_ITGRPCD_@i=ITGRPCD=5/P_ITGRPNM_@i=ITGRPNM=4','P_ITGRPCD_@i')" />
-                                        </td>
+                                        </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITNM, new { id = "P_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].ITCD, new { id = "P_ITCD_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].FABITCD, new { id = "P_FABITCD_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].STYLENO, new { id = "P_STYLENO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].UOM, new { id = "P_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
-                                        <td class="">
+                                        @*<td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].MTRLJOBCD, new { id = "P_MTRLJOBCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTRECPROCESS") + "','Material Job Details','" + "P_MTRLJOBCD_" + i + "','" + "P_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "P_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTRECPROCESS") + "','Material Job Details','" + "P_MTRLJOBCD_" + i + "','" + "P_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "P_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", @placeholder = "MTRLJOBCD", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", "T_OUTRECPROCESS")','Material Job Details','P_MTRLJOBCD_@i','P_MTRLJOBCD_@i=MTRLJOBCD=1/P_MTRLJOBNM_@i=MTRLJOBNM=0')" />
                                         </td>
@@ -110,30 +116,35 @@
 
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].COLRCD, new { id = "P_COLRCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_OUTRECPROCESS") + "','Color Details','" + "P_COLRCD_" + i + "','" + "P_COLRCD_" + i + "=COLRCD=1/" + "P_COLRNM_" + i + "=COLRNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_OUTRECPROCESS") + "','Color Details','" + "P_COLRCD_" + i + "','" + "P_COLRCD_" + i + "=COLRCD=1/" + "P_COLRNM_" + i + "=COLRNM=0');", @placeholder = "COLRCD", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "T_OUTRECPROCESS")','Color Details','P_COLRCD_@i','P_COLRCD_@i=COLRCD=1/P_COLRNM_@i=COLRNM=0')" />
-                                        </td>
+                                        </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].COLRNM, new { id = "P_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>
-                                        <td class="">
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].COLRCD, new { id = "P_COLRCD_" + i })
+                                         </td>
+                                        @*<td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].SIZECD, new { id = "P_SIZECD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_OUTRECPROCESS") + "','Size Details','" + "P_SIZECD_" + i + "','" + "P_SIZECD_" + i + "=SIZECD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_OUTRECPROCESS") + "','Size Details','" + "P_SIZECD_" + i + "','" + "P_SIZECD_" + i + "=SIZECD=1');", @placeholder = "SIZECD", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_OUTRECPROCESS")','Size Details','P_SIZECD_@i','P_SIZECD_@i=SIZECD=1')" />
+                                        </td>*@
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].SIZECD, new { id = "P_SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].SHADE, new { id = "P_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPROGDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateQNTY('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
-                                        <td class="">
+                                        @*<td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnly(this,4);", onblur = "CalculateQNTY('" + i + "');", @style = "text-align:right;" })
-                                        </td>
+                                        </td>*@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPROGDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
+                                       
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].SHADE, new { id = "P_SHADE_" + i, @class = " atextBoxFor " })
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].ITREMARK, new { id = "P_ITREMARK_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].ITREMARK, new { id = "P_ITREMARK_" + i, @class = " atextBoxFor " })
-                                        </td>
-                                        <td class=""style="padding-left:14px;">
+                                        <td class="sticky-cell-opposite" style="padding-left:14px;">
                                             @Html.CheckBoxFor(model => model.TPROGDTL[i].CheckedSample, new { id = "P_CheckedSample_" + i })
                                         </td>
 
@@ -144,13 +155,8 @@
                         <tfoot>
                             <tr class="sticky-footer">
                                 <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td class="sticky-cell" style="left:27px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> @*itgrp*@
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -160,15 +166,11 @@
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.P_T_NOS, new { htmlAttributes = new { id = "P_T_NOS", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
-                                @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@ @*RATE*@
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.P_T_QNTY, new { htmlAttributes = new { id = "P_T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -185,4 +187,3 @@
             </div>
         </div>*@
 </div>
-

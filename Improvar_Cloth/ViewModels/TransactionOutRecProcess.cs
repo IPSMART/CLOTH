@@ -177,6 +177,16 @@ namespace Improvar.ViewModels
         public double? P_T_NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
         public double? P_T_QNTY { get; set; }
+        public List<REV_CHRG> Reverse_Charge { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? NETAMT { get; set; }
+        public string TDSNM { get; set; }
+        public string TCSAPPL { get; set; }
+        public double TDSLIMIT { get; set; }
+        [StringLength(1)]
+        public string TDSCALCON { get; set; }
+        public double AMT { get; set; }
+        public string TDSROUNDCAL { get; set; }
 
     }
 }
