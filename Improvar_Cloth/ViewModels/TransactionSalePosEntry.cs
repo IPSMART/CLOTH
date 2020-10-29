@@ -208,5 +208,14 @@ namespace Improvar.ViewModels
         public string TDSCALCON { get; set; }
         public double AMT { get; set; }
         public string TDSROUNDCAL { get; set; }
+        public string INCLRATEASK { get; set; }
+        public List<TTXNSLSMN> TTXNSLSMN { get; set; }
+        public List<TTXNPYMT> TTXNPYMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_PER { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_ITAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_BLAMT { get; set; }
     }
 }
