@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Improvar.ViewModels
 {
-    public class TransactionPackingSlipEntry : Permission
+    public class TransactionSaleEntry : Permission
     {
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_TXN T_TXN { get; set; }
@@ -37,8 +37,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
         public List<PENDINGORDER> PENDINGORDER { get; set; }
         public List<DISC_TYPE> DISC_TYPE { get; set; }
-        public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
-        public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
+        public List<DISC_TYPE> DISC_TYPE1 { get; set; }
         public string PSLCD { get; set; }
         public string SLNM { get; set; }
         public string SLAREA { get; set; }

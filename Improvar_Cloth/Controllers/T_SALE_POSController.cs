@@ -1269,7 +1269,7 @@ namespace Improvar.Controllers
             DTYP.Add(DTYP4);
             return DTYP;
         }
-        public ActionResult GetOrderDetails(TransactionPackingSlipEntry VE, string val, string Code)
+        public ActionResult GetOrderDetails(TransactionSaleEntry VE, string val, string Code)
         {
             try
             {

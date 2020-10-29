@@ -1,11 +1,10 @@
-﻿@model Improvar.ViewModels.TransactionPackingSlipEntry
+﻿@model Improvar.ViewModels.TransactionSaleEntry
 <script type="text/javascript">
     $(document).ready(function () {
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_PRODUCT_GRID'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
 
     });
-
 </script>
 <div style="transform: translate(0%, 0%);z-index: 1100;">
     <div class="table-responsive">
