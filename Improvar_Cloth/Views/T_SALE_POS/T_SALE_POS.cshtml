@@ -430,7 +430,7 @@
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivReturn" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_POS_DETAIL")
+                                    @*@Html.Partial("_T_SALE_POS_DETAIL")*@
                                 </div>
                             </div>
                         </div>
@@ -439,23 +439,23 @@
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivAmounts" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_POS_AMOUNT")
+                                    @*@Html.Partial("_T_SALE_POS_AMOUNT")*@
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivPayment" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_POS_PAYMENT")
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div>
                                 <div id="partialdivPayment" style="margin-top:0px;">
                                     @Html.Partial("_T_SALE_POS_SALESMAN")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                            <div>
+                                <div id="partialdivPayment" style="margin-top:0px;">
+                                    @Html.Partial("_T_SALE_POS_PAYMENT")
                                 </div>
                             </div>
                         </div>

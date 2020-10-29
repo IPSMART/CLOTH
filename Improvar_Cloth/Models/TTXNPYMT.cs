@@ -15,8 +15,8 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? AMT { get; set; }
         public string CARDNO { get; set; }
-        public string INSNO { get; set; }
-        public string INSDT { get; set; }
+        public string INSTNO { get; set; }
+        public string INSTDT { get; set; }
         public string PYMTREM { get; set; }
         public string GLCD { get; set; }
     }
