@@ -1013,7 +1013,7 @@ namespace Improvar.Controllers
                 string TAXGRPCD = data[1].retStr();
                 string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
                 string PRCCD = data[3].retStr();
-                if(data[7].retStr()!="Y")  MTRLJOBCD = data[4].retStr();
+                //if(data[7].retStr()!="Y")  MTRLJOBCD = data[4].retStr();
                 string ITCD = data[5].retStr();
                 string ITGRPCD = data[6].retStr();
 
@@ -1032,7 +1032,7 @@ namespace Improvar.Controllers
                 else
                 {
                     DataTable stock_data = new DataTable();
-                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), ITCD.retStr(), MTRLJOBCD.retStr(), "", ITGRPCD.retStr(), "", PRCCD.retStr(), TAXGRPCD.retStr());
+                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), ITCD.retSqlformat(), MTRLJOBCD.retStr(), "", ITGRPCD.retStr(), "", PRCCD.retStr(), TAXGRPCD.retStr());
 
                     if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
                     {
