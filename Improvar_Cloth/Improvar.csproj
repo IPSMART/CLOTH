@@ -1089,6 +1089,8 @@
     <Content Include="Views\Shared\_T_SALE_POS_SALESMAN.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_PAYMENT.cshtml" />
     <Content Include="Views\T_OUTRECPROCESS\T_OUTRECPROCESS.cshtml" />
+    <Content Include="Views\Shared\_T_OUTRECPROCESS_Programme.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_RateHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

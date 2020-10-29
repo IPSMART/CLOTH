@@ -37,15 +37,15 @@ namespace Improvar.Controllers
                     switch (VE.MENU_PARA)
                     {
                         case "DY":
-                            ViewBag.formname = "Issue for Dyer"; break;
+                            ViewBag.formname = "Receive for Dyer"; break;
                         case "PR":
-                            ViewBag.formname = "Issue for Printing"; break;
+                            ViewBag.formname = "Receive for Printing"; break;
                         case "ST":
-                            ViewBag.formname = "Issue for Stiching"; break;
+                            ViewBag.formname = "Receive for Stiching"; break;
                         case "EM":
-                            ViewBag.formname = "Issue for Embroidery"; break;
+                            ViewBag.formname = "Receive for Embroidery"; break;
                         case "JW":
-                            ViewBag.formname = "Issue for Other Jobs"; break;
+                            ViewBag.formname = "Receive for Other Jobs"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     string LOC = CommVar.Loccd(UNQSNO);
@@ -2537,7 +2537,7 @@ namespace Improvar.Controllers
 
                     if (VE.DefaultAction == "A")
                     {
-                        ContentFlg = "1" + " (Issue No. " + TTXN.DOCNO + ")~" + TTXN.AUTONO;
+                        ContentFlg = "1" + " (Receive No. " + TTXN.DOCNO + ")~" + TTXN.AUTONO;
                     }
                     else if (VE.DefaultAction == "E")
                     {
