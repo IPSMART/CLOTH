@@ -2533,6 +2533,43 @@ namespace Improvar
                 return ex.Message + ex.InnerException;
             }
         }
+        public string PAYMTCD_help(string val)
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            string valsrch = val.ToUpper().Trim();
+
+            sql = "";
+            sql += "select a.PYMTCD,a.PYMTNM ";
+            sql += "from " + scm + ".M_PAYMENT a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            if (valsrch.retStr() != "") sql += "and ( upper(a.PYMTCD) = '" + valsrch + "' ) ";
+            sql += "order by a.PYMTCD,a.PYMTNM";
+            DataTable tbl = SQLquery(sql);
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + tbl.Rows[i]["PYMTNM"] + "</td><td>" + tbl.Rows[i]["PYMTCD"] + " </td></tr>");
+                }
+                var hdr = "Payment Desc" + Cn.GCS() + "Payment Code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                if (tbl.Rows.Count > 0)
+                {
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
+                }
+                else
+                {
+                    return "Invalid Payment Code ! Please Select / Enter a Valid Payment Code !!";
+                }
+            }
+        }
 
     }
 }
