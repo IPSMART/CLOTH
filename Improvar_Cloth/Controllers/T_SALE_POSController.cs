@@ -1145,7 +1145,7 @@ namespace Improvar.Controllers
                     var str = "";
                     DataTable stock_data = new DataTable();
 
-                    stock_data = salesfunc.GetBarHelp(DOCDT.retStr(), "", val.retStr().retSqlformat(), "", "", "", "", "", "", "");
+                    stock_data = salesfunc.GetStock(DOCDT.retStr(), "", val.retStr().retSqlformat(), "", "", "", "", "", "", "");
 
 
                     if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
@@ -1190,13 +1190,6 @@ namespace Improvar.Controllers
                                                      SIZECD = dr["SIZECD"].retStr(),
                                                      UOM = dr["uomcd"].retStr(),
                                                      STKTYPE = dr["STKTYPE"].retStr(),
-
-                                                     //DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
-                                                     //TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
-                                                     //TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
-                                                     //SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
-                                                     //SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
-
                                                      FLAGMTR = dr["FLAGMTR"].retDbl(),
                                                      RATE = dr["RATE"].retDbl(),
                                                      HSNCODE = dr["HSNCODE"].retStr(),
@@ -1205,7 +1198,11 @@ namespace Improvar.Controllers
                                                      GSTPER = gst,
                                                      SHADE = dr["SHADE"].retStr(),
                                                      LOCABIN = dr["LOCABIN"].retStr(),
+                                                     NEGSTOCK = dr["NEGSTOCK"].retStr(),
                                                      GLCD = VE.MENU_PARA == "SBCM" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBCMR" ? dr["SALGLCD"].retStr() : "",
+                                                     BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                                                     BarImages = dr["BARIMAGE"].retStr(),
+
                                                  }).ToList();
                         int slno = 0, txnslno = 0;
                         for (int p = 0; p <= VE.TsalePos_TBATCHDTL.Count - 1; p++)

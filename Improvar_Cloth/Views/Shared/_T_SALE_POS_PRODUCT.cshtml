@@ -151,7 +151,7 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
-                                        @if (Model.INCLRATEASK == "Y")
+                                        @if (Model.INC_RATE == true)
                                         {
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].INCLRATE, "{0:0.00}", new { id = "INCLRATE_" + i, onblur = "CalculateRATE('" + i + "');", @onkeypress = "return numericOnly(this,4);", maxlength = 12, style = "font-weight:bold;background-color: bisque;", @class = "atextBoxFor text-right" })
