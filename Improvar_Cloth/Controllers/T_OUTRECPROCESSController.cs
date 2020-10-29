@@ -1561,7 +1561,7 @@ namespace Improvar.Controllers
             //size szbarcode   3
             return itgrpcd.retStr().Substring(1, 3) + itcd.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
         }
-        public ActionResult DeleteRowBarno(TransactionPackingSlipEntry VE)
+        public ActionResult DeleteRowBarno(TransactionSaleEntry VE)
         {
             try
             {

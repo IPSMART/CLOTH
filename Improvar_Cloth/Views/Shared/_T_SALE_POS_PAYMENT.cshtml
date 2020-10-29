@@ -26,7 +26,7 @@
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
-                    <b> Entry Sauda Details</b>
+                    <b> Entry Payment Details</b>
                 </center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
@@ -59,8 +59,8 @@
                                             @Html.TextBoxFor(model => Model.TTXNPYMT[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => model.TTXNPYMT[i].PYMTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PYMTCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=SHRCD=1/" + "PYMTNM_" + i + "=SHRNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=SHRCD=1/" + "PYMTNM_" + i + "=SHRNM=0');", @placeholder = "Code", maxlength = 6 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPaymentDetails", "T_SALE_POS")','Payment Details','PYMTCD_@i','PYMTCD_@i=SHRCD=1/PYMTNM_@i=SHRNM=0')" />
+                                            @Html.EditorFor(model => model.TTXNPYMT[i].PYMTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PYMTCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "PYMTNM_" + i + "=PYMTNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "PYMTNM_" + i + "=PYMTNM=0');", @placeholder = "Code", maxlength = 6 } })
+                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPaymentDetails", "T_SALE_POS")','Payment Details','PYMTCD_@i','PYMTCD_@i=PYMTCD=1/PYMTNM_@i=PYMTNM=0')" />
 
                                         </td>
                                         <td class="">
@@ -74,10 +74,10 @@
                                             @Html.TextBoxFor(model => Model.TTXNPYMT[i].CARDNO,new { id = "CARDNO_" + i, @class = " atextBoxFor ", maxlength = 12 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].INSNO, new { id = "INSNO_" + i, @class = " atextBoxFor ",maxlength = 15 })
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].INSTNO, new { id = "INSTNO_" + i, @class = " atextBoxFor ",maxlength = 15 })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNPYMT[i].INSDT, new { htmlAttributes = new { id = "INSDT_" + i, @class = "atextBoxFor", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                                            @Html.EditorFor(model => Model.TTXNPYMT[i].INSTDT, new { htmlAttributes = new { id = "INSTDT_" + i, @class = "atextBoxFor", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
                                             <script>
                                                     if("@Model.DefaultAction"=="A" || "@Model.DefaultAction"=="E")
                                                     {

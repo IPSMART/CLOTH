@@ -608,6 +608,7 @@
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
+    <Compile Include="ViewModels\RateHistory.cs" />
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
@@ -1059,7 +1060,7 @@
     <Content Include="Views\M_JobMaster\M_JobMaster.cshtml" />
     <Content Include="Views\M_Stktype\M_Stktype.cshtml" />
     <Content Include="Views\Shared\_T_SALE_AMOUNT.cshtml" />
-    <Content Include="Views\Shared\_T_SALE_PRODUCT.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_BarTab.cshtml" />
     <Content Include="Views\Shared\_T_SALE_DETAIL.cshtml" />
     <Content Include="Views\T_OUTISSPROCESS\T_OUTISSPROCESS.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />

@@ -124,6 +124,43 @@
     });
 </script>
 <script>
+    function SelectBARCODEDetail(id,BARNO, DOCDT) {
+        debugger;
+        var docdt=document.getElementById(DOCDT.id).value;
+        if (id == "") {
+            $("#" + BARNO.id).val("");
+            //$("#" + CLASS1NM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
+                data: $('form').serialize() + "&val=" + id + "&Code=" + docdt,
+             success: function (result) {
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (result != 0) {
+                    $("#WaitingMode").hide();
+                    $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivBarCodeTab").html(result);
+                }
+                else {
+                   
+                    msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
+                    message_value = BARNO.id;
+
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    }
+</script>
+<script>
     function pageprinting() {
         debugger;
         var ty = $("#DOCCD").val();
@@ -389,7 +426,7 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", @placeholder = "Bar Code", maxlength = 25 } })
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />
                                         </div>
                                     </div>
@@ -405,10 +442,10 @@
                                 <div id="partialdivBarCodeTab">
                                     @Html.Partial("_T_SALE_POS_PRODUCT")
                                 </div>
-                                <div>
+                                @*<div>
                                     <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
                                     </div>
-                                </div>
+                                </div>*@
                             </div>
                             @*@if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {

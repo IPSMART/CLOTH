@@ -1,4 +1,4 @@
-﻿@model Improvar.ViewModels.TransactionPackingSlipEntry
+﻿@model Improvar.ViewModels.TransactionSaleEntry
 @{
     string PageControllerName = "T_SALE";
     ViewBag.Title = "Packing Slip Entry";
@@ -36,7 +36,6 @@
         height: 190px;
     }
 </style>
-
 <script src="~/Scripts/jquery.min.js"></script>
 <script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>
 <script type="text/javascript">
@@ -227,6 +226,7 @@
         <input type="hidden" id="UrlPendOrder" value="@Url.Action("GetPendOrder", PageControllerName )" />
         <input type="hidden" id="UrlSelectPendOrder" value="@Url.Action("SelectPendOrder", PageControllerName )" />
         <input type="hidden" id="UrlOrderDetails" value="@Url.Action("GetOrderDetails", PageControllerName )" />
+        <input type="hidden" id="UrlRateHistory" value="@Url.Action("GetRateHistoryDetails", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -1077,7 +1077,7 @@
                                     }
                                     <div class="col-md-1">
                                         <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.TDDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "TDDISCTYPE", @title = "Disc-1" })
+                                            @Html.DropDownListFor(model => model.TDDISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "TDDISCTYPE", @title = "Disc-1" })
                                         </div>
                                     </div>
                                     <div class="col-md-1">
@@ -1087,7 +1087,7 @@
                                     </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc2" })
+                                            @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc-2" })
                                         </div>
                                     </div>
                                     <div class="col-md-1">
@@ -1611,7 +1611,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="modal fade" id="RateHistoryModal" role="dialog">
+                     
+            </div>
+            </div>
 
                                                                 }
                                                                 else
