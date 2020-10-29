@@ -1626,6 +1626,9 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + NOS + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateTotal_Barno();HasChangeBarSale();" value="' + NOS + '">';
     tr += '    </td>';
+    tr += '    <td class="">';
+    tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History">Rate Hist</button>';
+    tr += '    </td>';
     tr += '    <td class="" title="' + RATE + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ');HasChangeBarSale();" value="' + RATE + '" >';
     tr += '    </td>';
@@ -1677,7 +1680,6 @@ function AddBarCodeGrid() {
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCDT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCDT" readonly="readonly" type="text" value="' + ORDDOCDT + '">';
         tr += '    </td>';
     }
-
     tr += '    <td class="">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
@@ -1692,7 +1694,7 @@ function AddBarCodeGrid() {
     tr += '   </td> ';
     if (MENU_PARA != "SB") {
         tr += '        <td class="sticky-cell-opposite">';
-        tr += '            <button type="button" class="btn btn-primary" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
+        tr += '            <button type="button" class="btn btn-info" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
         tr += '        </td>';
     }
     tr += ' </tr>';
@@ -2139,6 +2141,22 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
 }
 
-
+function RateHistoryDetails(i) {
+    $.ajax({
+        type: 'get',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlRateHistory").val(),
+        data: "ITCD=" + $('#B_ITCD_'+i).val() ,
+        success: function (result) {
+            $("#WaitingMode").hide();
+            $("#RateHistoryModal").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
 
 

@@ -1,7 +1,7 @@
 ﻿@model Improvar.ViewModels.TransactionOutRecProcess
 @{
     string PageControllerName = "T_OUTRECPROCESS";
-    ViewBag.Title = "Issue for Processing";
+    ViewBag.Title = "Receive for Processing";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
@@ -9,15 +9,15 @@
     switch (Model.MENU_PARA)
     {
         case "DY":
-            ViewBag.Title = "Issue for Dyer"; break;
+            ViewBag.Title = "Receive for Dyer"; break;
         case "PR":
-            ViewBag.Title = "Issue for Printing"; break;
+            ViewBag.Title = "Receive for Printing"; break;
         case "ST":
-            ViewBag.Title = "Issue for Stiching"; break;
+            ViewBag.Title = "Receive for Stiching"; break;
         case "EM":
-            ViewBag.Title = "Issue for Embroidery"; break;
+            ViewBag.Title = "Receive for Embroidery"; break;
         case "JW":
-            ViewBag.Title = "Issue for Other Jobs"; break;
+            ViewBag.Title = "Receive for Other Jobs"; break;
         default: ViewBag.Title = ""; break;
     }
 }
@@ -540,7 +540,7 @@
                 <ul class="nav nav-tabs">
                     <li id="Programme_LI" class="active"><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
                     <li id="QtyRequird_LI" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement(Q)</a></li>
-                    <li id="MtrlIssue_LI" class=""><a data-toggle="tab" href="#MtrlIssue" accesskey="M">Material Issue(M)</a></li>
+                    <li id="MtrlReceive_LI" class=""><a data-toggle="tab" href="#MtrlReceive" accesskey="M">Material Receive(M)</a></li>
                     <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                     <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
@@ -551,7 +551,7 @@
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivProgramme" style="margin-top:0px;">
-                                    @*@Html.Partial("_T_OUTRECPROCESS_Programme")*@
+                                    @Html.Partial("_T_OUTRECPROCESS_Programme")
                                 </div>
                             </div>
                         </div>
@@ -576,7 +576,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="MtrlIssue" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div id="MtrlReceive" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row">
 
                             <div class="row">

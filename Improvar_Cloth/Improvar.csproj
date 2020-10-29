@@ -608,6 +608,7 @@
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
+    <Compile Include="ViewModels\RateHistory.cs" />
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
@@ -1089,6 +1090,8 @@
     <Content Include="Views\Shared\_T_SALE_POS_SALESMAN.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_PAYMENT.cshtml" />
     <Content Include="Views\T_OUTRECPROCESS\T_OUTRECPROCESS.cshtml" />
+    <Content Include="Views\Shared\_T_OUTRECPROCESS_Programme.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_RateHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
