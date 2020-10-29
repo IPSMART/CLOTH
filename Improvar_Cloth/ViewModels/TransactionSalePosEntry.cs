@@ -35,9 +35,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
         public List<BARGEN_TYPE> BARGEN_TYPE { get; set; }
         public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
-        public List<DISC_TYPE> DISC_TYPE { get; set; }
-        public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
-        public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
+       
         public string RTDEBCD { get; set; }
         public string RTDEBNM { get; set; }
         public string MOBILE { get; set; }
@@ -217,5 +215,6 @@ namespace Improvar.ViewModels
         public double? T_ITAMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_BLAMT { get; set; }
+
     }
 }

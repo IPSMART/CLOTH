@@ -135,9 +135,6 @@ namespace Improvar.Models
         public List<DropDown_list1> DropDown_list1 { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GSTPER { get; set; }
-    
-        public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
-        public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
         [StringLength(15)]
         public string STKNAME { get; set; }
         [StringLength(30)]
@@ -177,5 +174,8 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? INCLRATE { get; set; }
         public string PCSACTION { get; set; }
+      public List<DISC_TYPE> DISC_TYPE { get; set; }
+        public List<DropDown_list2> TDDISC_TYPE { get; set; }
+        public List<DropDown_list3> SCMDISC_TYPE { get; set; }
     }
 }
