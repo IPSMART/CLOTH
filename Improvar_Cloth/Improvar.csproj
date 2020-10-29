@@ -285,6 +285,7 @@
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
+    <Compile Include="Controllers\T_OUTRECPROCESSController.cs" />
     <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SALE_POSController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
@@ -648,6 +649,7 @@
     <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionBiltyRMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
+    <Compile Include="ViewModels\TransactionOutRecProcess.cs" />
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
     <Compile Include="ViewModels\TransactionPackingSlipEntry.cs" />
     <Compile Include="ViewModels\TransactionSalePosEntry.cs" />
@@ -1086,6 +1088,7 @@
     <Content Include="Views\Shared\_T_SALE_POS_PRODUCT.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_SALESMAN.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_PAYMENT.cshtml" />
+    <Content Include="Views\T_OUTRECPROCESS\T_OUTRECPROCESS.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
