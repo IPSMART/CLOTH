@@ -188,7 +188,9 @@ namespace Improvar.Controllers
                                     VE.RTDEBNM = syscnfg.Rows[0]["RTDEBNM"].retStr();
                                     VE.MOBILE = syscnfg.Rows[0]["MOBILE"].retStr();
                                     VE.INC_RATE = syscnfg.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
+                                    VE.INCLRATEASK = syscnfg.Rows[0]["INC_RATE"].retStr();
                                 }
+                               
 
                                 //List<TsalePos_TBATCHDTL> TSHRTXNDTL = new List<TsalePos_TBATCHDTL>();
                                 //for (int i = 0; i <= 9; i++)
