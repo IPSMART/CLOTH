@@ -1,0 +1,191 @@
+﻿@model Improvar.ViewModels.TransactionSaleEntry
+<div style="width: auto;" overflow-y:auto;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'AMOUNT_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Amount Details</b></center>
+                <center style="font-size: 11px;color: maroon; border: 1px inset;">
+                    @* <b>*@
+                    <b><span style="font-variant:petite-caps;color: red;">Total :- </span></b>
+                    <span>
+                        NOS : @ViewBag.NOS ,
+                        Quantity : @ViewBag.QNTY ,
+                        Taxable Amount : @ViewBag.TAXABLEAMT ,
+                        Net Amount : @ViewBag.NETAMT ,
+                        Currency Amount : @ViewBag.CURRAMT,
+                        IGST Amount : @ViewBag.IGSTAMT ,
+                        CGST Amount : @ViewBag.CGSTAMT,
+                        SGST Amount : @ViewBag.SGSTAMT ,
+                        CESS Amount : @ViewBag.CESSAMT,
+                        DUTY Amount : @ViewBag.DUTYAMT
+                    </span>
+                    @*</b>*@
+                </center>
+            </div>
+            <table id="AMOUNT_GRID" class="resizable grid_table" cellpadding="0px" cellspacing="0px">
+                <thead>
+                    <tr style="height:30px;">
+                        <th class="grid_th" style="width: 27px;">SL No.</th>
+                        <th class="grid_th" style="width:75px;">Amount Code</th>
+                        <th class="grid_th" style="width:70px;">Add / Less</th>
+                        <th class="grid_th" style="width:165px;">Amount Name</th>
+                        <th class="grid_th" style="width:50px;">Calc. Code</th>
+                        <th class="grid_th" style="width:165px;">Description</th>
+                        <th class="grid_th" style="width:165px;">HSN Code</th>
+                        <th class="grid_th" style="width:165px;">Rate</th>
+                        <th class="grid_th" style="width:165px;">Currency Amount</th>
+                        <th class="grid_th" style="width:165px;">Amount</th>
+                        <th class="grid_th" style="width:75px;">IGST %</th>
+                        <th class="grid_th" style="width:75px;">IGST Amt</th>
+                        <th class="grid_th" style="width:75px;">CGST %</th>
+                        <th class="grid_th" style="width:75px;">CGST Amt</th>
+                        <th class="grid_th" style="width:75px;">SGST %</th>
+                        <th class="grid_th" style="width:75px;">SGST Amt</th>
+                        <th class="grid_th" style="width:75px;">CESS %</th>
+                        <th class="grid_th" style="width:75px;">CESS Amt</th>
+                        <th class="grid_th" style="width:75px;">DUTY %</th>
+                        <th class="grid_th" style="width:75px;">DUTY Amt</th>
+                        <th class="grid_th" style="width:75px;">Net Amt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.TTXNAMT != null)
+                    {
+                        for (int i = 0; i <= Model.TTXNAMT.Count - 1; i++)
+                        {
+                            <tr style="font-size:12px; font-weight:bold;">
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].SLNO, new { id = "ASLNO_" + i, @class = " atextBoxFor ", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTCD, new { id = "AMTCD_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].GLCD, new { id = "GLCD_" + i })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].TAXCODE, new { id = "TAXCODE_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].ADDLESS, new { id = "ADDLESS_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTNM, new { id = "AMTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].CALCCODE, new { id = "CALCCODE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].CALCTYPE, new { id = "CALCTYPE_" + i })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].CALCFORMULA, new { id = "CALCFORMULA_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTDESC, new { id = "AMTDESC_" + i, @class = " atextBoxFor ", maxlength = 300, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].HSNCODE, new { id = "HSNCODE_" + i, @class = " atextBoxFor ", maxlength = 8 })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].AMTRATE, new { htmlattributes = new { id = "AMTRATE_" + i, onblur = "AmountCalculation('" + i + "');", @class = " atextBoxFor text-right", maxlength = 12 } })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].CURR_AMT, new { htmlattributes = new { id = "ACURR_AMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].AMT, new { htmlattributes = new { id = "A_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].IGSTPER, new { htmlattributes = new { id = "AIGSTPER_" + i, onblur = "AmountCalculation('" + i + "');", @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right" } })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].IGSTPER_DESP, new { id = "AIGSTPER_DESP_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].IGSTAMT, new { htmlattributes = new { id = "AIGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",AIGSTPER_" + i + ",ANETAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].IGSTAMT_DESP, new { id = "AIGSTAMT_DESP_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].CGSTPER, new { htmlattributes = new { id = "ACGSTPER_" + i, onblur = "AmountCalculation('" + i + "');", @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor", @style = "text-align: right;" } })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].CGSTPER_DESP, new { id = "ACGSTPER_DESP_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].CGSTAMT, new { htmlattributes = new { id = "ACGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].CGSTAMT_DESP, new { id = "ACGSTAMT_DESP_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].SGSTPER, new { htmlattributes = new { id = "ASGSTPER_" + i, onblur = "AmountCalculation('" + i + "');", @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right" } })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].SGSTPER_DESP, new { id = "ASGSTPER_DESP_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].SGSTAMT, new { htmlattributes = new { id = "ASGSTAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ASGSTPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ACESSAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].SGSTAMT_DESP, new { id = "ASGSTAMT_DESP_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].CESSPER, new { htmlattributes = new { id = "ACESSPER_" + i, onblur = "AmountCalculation('" + i + "');", @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right" } })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].CESSPER_DESP, new { id = "ACESSPER_DESP_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].CESSAMT, new { htmlattributes = new { id = "ACESSAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ACESSPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ADUTYAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                    @Html.HiddenFor(model => Model.TTXNAMT[i].CESSAMT_DESP, new { id = "ACESSAMT_DESP_" + i })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].DUTYPER, new { htmlattributes = new { id = "ADUTYPER_" + i, onblur = "AmountCalculation('" + i + "');", @onkeypress = "return numericOnly(this,3);", maxlength = 7, @class = "atextBoxFor text-right" } })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].DUTYAMT, new { htmlattributes = new { id = "ADUTYAMT_" + i, onblur = "AmountChange(this,A_AMT_" + i + ",ADUTYPER_" + i + ",ANETAMT_" + i + ",AIGSTAMT_" + i + ",ACGSTAMT_" + i + ",ASGSTAMT_" + i + ",ACESSAMT_" + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @class = "atextBoxFor text-right" } })
+                                </td>
+                                <td class="grid_td">
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].NETAMT, new { htmlattributes = new { id = "ANETAMT_" + i, maxlength = 12, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+
+                <tfoot>
+                    <tr style="border:groove;background-color:thistle;">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:right;border:groove;padding-right: 10px;color: red;font-variant:petite-caps;"><b>Total : </b></td>
+                        <td style="text-align:right;border:groove;">
+                            @Html.EditorFor(model => Model.A_T_CURR, new { htmlattributes = new { id = "A_T_CURR", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        </td>
+                        <td style="text-align:right;border:groove;">
+                            @Html.EditorFor(model => Model.A_T_AMOUNT, new { htmlattributes = new { id = "A_T_AMOUNT", @class = "atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        </td>
+                        <td></td>
+                        <td style="text-align:right;border:groove;">
+                            @Html.EditorFor(model => Model.A_T_IGST, new { htmlattributes = new { id = "A_T_IGST", @class = "atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        </td>
+                        <td></td>
+                        <td style="text-align:right;border:groove;">
+                            @Html.EditorFor(model => Model.A_T_CGST, new { htmlattributes = new { id = "A_T_CGST", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        </td>
+                        <td></td>
+                        <td style="text-align:right;border:groove;">
+                            @Html.EditorFor(model => Model.A_T_SGST, new { htmlattributes = new { id = "A_T_SGST", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        </td>
+                        <td></td>
+                        <td style="text-align:right;border:groove;">
+                            @Html.EditorFor(model => Model.A_T_CESS, new { htmlattributes = new { id = "A_T_CESS", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        </td>
+                        <td></td>
+                        <td style="text-align:right;border:groove;">
+                            @Html.EditorFor(model => Model.A_T_DUTY, new { htmlattributes = new { id = "A_T_DUTY", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        </td>
+                        <td style="text-align:right;border:groove;">
+                            @Html.EditorFor(model => Model.A_T_NET, new { htmlattributes = new { id = "A_T_NET", @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
+                        </td>
+                    </tr>
+                </tfoot>
+
+
+            </table>
+
+        }
+
+    </div>
+</div>

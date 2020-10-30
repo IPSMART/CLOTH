@@ -1095,6 +1095,7 @@
     <Content Include="Views\Shared\_T_OUTRECPROCESS_Receive.cshtml" />
     <Content Include="Views\Shared\_T_OUTRECPROCESS_Detail.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_AMOUNT.cshtml" />
+    <Content Include="Views\Shared\_T_OUTRECPROCESS_Amount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
