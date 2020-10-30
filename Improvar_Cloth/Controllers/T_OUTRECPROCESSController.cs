@@ -672,7 +672,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionOutRecProcess VE = new TransactionOutRecProcess();
                 Cn.getQueryString(VE);
 
 
@@ -804,7 +804,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                TransactionPackingSlipEntry VE = new TransactionPackingSlipEntry();
+                TransactionOutRecProcess VE = new TransactionOutRecProcess();
                 Cn.getQueryString(VE);
                 string linktdscode = "'Y','Z'";
                 if (VE.MENU_PARA == "PB") linktdscode = "'X'";
