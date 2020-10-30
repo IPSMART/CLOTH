@@ -231,6 +231,13 @@
                     $("#SLCD").attr('readonly', 'readonly');
                     $('#PARTY_HELP').hide("");
                     $("#SLCD").removeAttr("onblur");
+
+                    $("li").removeClass("active").addClass("");
+                    $(".nav-tabs li:nth-child(2)").addClass('active');
+                    //below set the  child sequence
+                    $(".tab-content div").removeClass("active");
+                    $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                    $("#BARCODE").focus();
                 }
                 else {
                     msgInfo(result);
@@ -248,24 +255,39 @@
     function GetBarnoDetails(id) {
         debugger;
         if (id == "") {
-            // ClearBarcodeArea();
+            ClearAllTextBoxes("PROGAUTOSLNO,BARCODE");
         }
         else {
+            var progautoslno = $("#PROGAUTOSLNO").val();
             $.ajax({
                 type: 'POST',
                 beforesend: $("#WaitingMode").show(),
                 url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
-                data: "&val=" + id,
+                data: $('form').serialize() + "&val=" + id + "&Code=" + progautoslno,
                 success: function (result) {
                     var MSG = result.indexOf('id="_T_OUTRECPROCESS_Programme_GRID"');
                     if (MSG >= 0) {
+                        ClearAllTextBoxes("PROGAUTOSLNO,BARCODE");
                         $("#partialdivProgramme").html(result);
                     }
                     else {
-                        $('#helpDIV').html("");
-                        msgInfo("" + result + " !");
-                        $("#BARCODE").val("");
-                        message_value = "BARCODE";
+                        var MSG = result.indexOf('#helpDIV');
+                        if (MSG >= 0) {
+                            if (keyType != "mousedown") {
+                                ClearAllTextBoxes("PROGAUTOSLNO,BARCODE");
+                            }
+                            $('#SearchFldValue').val(hlpfield);
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val(fldIdseq);
+                            $('#ReferanceColumn').val(hpnlIndexseq);
+                            $('#helpDIV_Header').html(caption);
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearAllTextBoxes("PROGAUTOSLNO,BARCODE");
+                            message_value = "BARCODE";
+                        }
                     }
                     $("#WaitingMode").hide();
                 },
@@ -729,7 +751,7 @@
                     @if (Model.DefaultAction != "V")
                     {
                         <div class="col-md-8">
-                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;"  id="PendProgramme" value="Get Pending Programme" title="Click to Get Pending Programme" onclick="PendingProgramme()" />
+                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="PendProgramme" value="Get Pending Programme" title="Click to Get Pending Programme" onclick="PendingProgramme()" />
                         </div>
                     }
 
@@ -938,8 +960,9 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
+                                    @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO')" />
+                                    @Html.HiddenFor(model => model.PROGAUTOSLNO, new { id = "PROGAUTOSLNO" })
                                 </div>
                             </div>
                         </div>

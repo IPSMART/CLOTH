@@ -190,17 +190,17 @@ namespace Improvar.Controllers
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
 
                                 VE.RoundOff = true;
-                                List<TPROGDTL> TPROGDTL = new List<TPROGDTL>();
-                                for (int i = 0; i <= 9; i++)
-                                {
-                                    TPROGDTL PROGDTL = new TPROGDTL();
-                                    PROGDTL.SLNO = Convert.ToByte(i + 1);
-                                    //PROGDTL.MTRLJOBCD = TTXN.JOBCD;
-                                    //PROGDTL.MTRLJOBNM = VE.JOBNM;
-                                    TPROGDTL.Add(PROGDTL);
-                                    VE.TPROGDTL = TPROGDTL;
-                                }
-                                VE.TPROGDTL = TPROGDTL;
+                                //List<TPROGDTL> TPROGDTL = new List<TPROGDTL>();
+                                //for (int i = 0; i <= 9; i++)
+                                //{
+                                //    TPROGDTL PROGDTL = new TPROGDTL();
+                                //    PROGDTL.SLNO = Convert.ToByte(i + 1);
+                                //    //PROGDTL.MTRLJOBCD = TTXN.JOBCD;
+                                //    //PROGDTL.MTRLJOBNM = VE.JOBNM;
+                                //    TPROGDTL.Add(PROGDTL);
+                                //    VE.TPROGDTL = TPROGDTL;
+                                //}
+                                //VE.TPROGDTL = TPROGDTL;
                                 List<TPROGBOM> TPROGBOM = new List<TPROGBOM>();
                                 for (int i = 0; i <= 9; i++)
                                 {
@@ -1310,17 +1310,24 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetBarCodeDetails(string val, string Code)
+        public ActionResult GetBarCodeDetails(TransactionOutRecProcess VE, string val, string Code)
         {
             try
             {
-                TransactionOutRecProcess VE = new TransactionOutRecProcess();
                 Cn.getQueryString(VE);
                 var tbl = (DataTable)TempData["PENDPROGRAMME" + VE.MENU_PARA]; TempData.Keep();
+                if (VE.TPROGDTL != null)
+                {
+                    string[] data = VE.TPROGDTL.Select(x => x.PROGAUTOSLNO).ToArray();
+
+                    var table = tbl.AsEnumerable().Where(r => !data.Any(b => r.Field<string>("PROGAUTOSLNO") == b)).CopyToDataTable();
+                }
                 if (val.retStr() != "")
                 {
                     string valsrch = val.ToUpper().Trim();
-                    var filterdata = tbl.Select("barno = '" + valsrch + "' or styleno like('%" + valsrch + "%') ");
+                    string str = "(barno = '" + valsrch + "' or styleno like('%" + valsrch + "%')) ";
+                    if (Code.retStr() != "") { str += "and progautoslno = '" + Code + "'"; }
+                    var filterdata = tbl.Select(str);
                     if (filterdata != null && filterdata.Count() > 0)
                     {
                         tbl = filterdata.CopyToDataTable();
@@ -1332,13 +1339,15 @@ namespace Improvar.Controllers
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"] + " </td><td>" + tbl.Rows[i]["proguniqno"] + " </td><td>" 
-                            + tbl.Rows[i]["barno"] + " </td><td>" + tbl.Rows[i]["itgrpnm"]  + " </td><td>" + tbl.Rows[i]["itcd"] + " </td></tr>");
+                        SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"].retStr().Remove(10) + " </td><td>" + tbl.Rows[i]["proguniqno"] + " </td><td>"
+                            + tbl.Rows[i]["barno"] + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " [" + tbl.Rows[i]["itgrpcd"] + "]" + " </td><td>" + tbl.Rows[i]["itnm"] + " [" + tbl.Rows[i]["itcd"] + "]" + " </td><td>"
+                            + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["balnos"] + " </td><td>" + tbl.Rows[i]["balqnty"] + " </td><td>"
+                            + tbl.Rows[i]["progautoslno"] + " </td></tr>");
                     }
-                    var hdr = "Doc No." + Cn.GCS() + "Doc Dt." + Cn.GCS() + "Uniq. No." + Cn.GCS() + "Bar Code No" + Cn.GCS() 
-                        + "Item Group" + Cn.GCS() +  "Item" + Cn.GCS() + "Style No" + Cn.GCS() + "bal. Nos." + Cn.GCS() + "bal. Qnty."
-                        + Cn.GCS() + "progautono" + Cn.GCS() + "progslno";
-                    string str = masterHelp.Generate_help(hdr, SB.ToString());
+                    var hdr = "Doc No." + Cn.GCS() + "Doc Dt." + Cn.GCS() + "Uniq. No." + Cn.GCS() + "Bar Code No" + Cn.GCS()
+                        + "Item Group" + Cn.GCS() + "Item" + Cn.GCS() + "Style No" + Cn.GCS() + "bal. Nos." + Cn.GCS() + "bal. Qnty."
+                        + Cn.GCS() + "progautoslno";
+                    string str = masterHelp.Generate_help(hdr, SB.ToString(), "9");
                     return PartialView("_Help2", str);
                 }
                 else
@@ -1346,34 +1355,49 @@ namespace Improvar.Controllers
                     if (tbl != null && tbl.Rows.Count > 0)
                     {
 
-                        VE.TPROGDTL = (from DataRow dr in tbl.Rows
-                                       select new TPROGDTL
-                                       {
-                                           PROGAUTONO = dr["PROGAUTONO"].retStr(),
-                                           PROGSLNO = dr["PROGSLNO"].retShort(),
-                                           PROGUNIQNO = dr["PROGUNIQNO"].retStr(),
-                                           BARNO = dr["BARNO"].retStr(),
-                                           DOCNO = dr["DOCNO"].retStr(),
-                                           DOCDT = Convert.ToDateTime(dr["DOCDT"].retStr()),
-                                           ITGRPNM = dr["ITGRPNM"].retStr(),
-                                           ITGRPCD = dr["ITGRPCD"].retStr(),
-                                           ITNM = dr["FABITNM"].retStr() + " " + dr["ITNM"].retStr(),
-                                           ITCD = dr["ITCD"].retStr(),
-                                           //FABITCD = dr["FABITCD"].retStr(),
-                                           STYLENO = dr["STYLENO"].retStr(),
-                                           UOM = dr["UOMCD"].retStr(),
-                                           COLRNM = dr["COLRNM"].retStr(),
-                                           COLRCD = dr["COLRCD"].retStr(),
-                                           SIZECD = dr["SIZECD"].retStr(),
-                                           SHADE = dr["SHADE"].retStr(),
-                                           NOS = dr["BALNOS"].retDbl(),
-                                           QNTY = dr["BALQNTY"].retDbl(),
-                                           BALNOS = dr["BALNOS"].retDbl(),
-                                           BALQNTY = dr["BALQNTY"].retDbl(),
-                                           ITREMARK = dr["ITREMARK"].retStr(),
-                                           CheckedSample = dr["sample"].retStr() == "Y" ? true : false,
-                                       }).ToList();
-
+                        var data = (from DataRow dr in tbl.Rows
+                                    select new TPROGDTL
+                                    {
+                                        PROGAUTONO = dr["PROGAUTONO"].retStr(),
+                                        PROGSLNO = dr["PROGSLNO"].retShort(),
+                                        PROGAUTOSLNO = dr["PROGAUTOSLNO"].retStr(),
+                                        PROGUNIQNO = dr["PROGUNIQNO"].retStr(),
+                                        BARNO = dr["BARNO"].retStr(),
+                                        DOCNO = dr["DOCNO"].retStr(),
+                                        DOCDT = Convert.ToDateTime(dr["DOCDT"].retStr()),
+                                        ITGRPNM = dr["ITGRPNM"].retStr(),
+                                        ITGRPCD = dr["ITGRPCD"].retStr(),
+                                        ITNM = dr["FABITNM"].retStr() + " " + dr["ITNM"].retStr(),
+                                        ITCD = dr["ITCD"].retStr(),
+                                        //FABITCD = dr["FABITCD"].retStr(),
+                                        STYLENO = dr["STYLENO"].retStr(),
+                                        UOM = dr["UOMCD"].retStr(),
+                                        COLRNM = dr["COLRNM"].retStr(),
+                                        COLRCD = dr["COLRCD"].retStr(),
+                                        SIZECD = dr["SIZECD"].retStr(),
+                                        SHADE = dr["SHADE"].retStr(),
+                                        NOS = dr["BALNOS"].retDbl(),
+                                        QNTY = dr["BALQNTY"].retDbl(),
+                                        BALNOS = dr["BALNOS"].retDbl(),
+                                        BALQNTY = dr["BALQNTY"].retDbl(),
+                                        ITREMARK = dr["ITREMARK"].retStr(),
+                                        CheckedSample = dr["sample"].retStr() == "Y" ? true : false,
+                                    }).ToList();
+                        if (VE.TPROGDTL != null)
+                        {
+                            VE.TPROGDTL.AddRange(data);
+                        }
+                        else
+                        {
+                            VE.TPROGDTL = data;
+                        }
+                        int slno = 1;
+                        for (int p = 0; p <= VE.TPROGDTL.Count - 1; p++)
+                        {
+                            VE.TPROGDTL[p].SLNO = slno.retShort();
+                            slno++;
+                        }
+                        ModelState.Clear();
                         VE.DefaultView = true;
                         return PartialView("_T_OUTRECPROCESS_Programme", VE);
                     }
