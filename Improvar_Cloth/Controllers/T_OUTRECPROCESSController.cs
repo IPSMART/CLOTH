@@ -233,6 +233,10 @@ namespace Improvar.Controllers
                             }
                             VE = (TransactionOutRecProcess)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
+                        if (parkID == "")
+                        {
+                            FreightCharges(VE, VE.T_TXN.AUTONO);
+                        }
                     }
                     else
                     {
@@ -1561,7 +1565,95 @@ namespace Improvar.Controllers
             //size szbarcode   3
             return itgrpcd.retStr().Substring(1, 3) + itcd.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
         }
-        public ActionResult DeleteRowBarno(TransactionSaleEntry VE)
+        private void FreightCharges(TransactionOutRecProcess VE, string AUTO_NO)
+        {
+            try
+            {
+                double A_T_CURR_AMT = 0; double A_T_AMT = 0; double A_T_TAXABLE = 0; double A_T_IGST_AMT = 0; double A_T_CGST_AMT = 0;
+                double A_T_SGST_AMT = 0; double A_T_CESS_AMT = 0; double A_T_DUTY_AMT = 0; double A_T_NET_AMT = 0; double IGST_PER = 0; double CGST_PER = 0; double SGST_PER = 0;
+                double CESS_PER = 0; double DUTY_PER = 0;
+                string sql = "", scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+                Cn.getQueryString(VE);
+                string S_P = "";
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") { S_P = "P"; } else { S_P = "S"; }
+
+                sql = "";
+                sql += "select a.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, ";
+                sql += "a.amtdesc, b.glcd, b.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, ";
+                sql += "a.sgstper, a.sgstamt, a.cgstper, a.cgstamt,a.cessper, a.cessamt, a.dutyper, a.dutyamt ";
+                sql += "from " + scm + ".t_txnamt a, " + scm + ".m_amttype b ";
+                sql += "where a.amtcd=b.amtcd(+) and b.salpur='" + S_P + "' and a.autono='" + AUTO_NO + "' ";
+                sql += "union ";
+                sql += "select b.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, ";
+                sql += "'' amtdesc, b.glcd, b.hsncode, 0 amtrate, 0 curr_amt, 0 amt,0 igstper, 0 igstamt, ";
+                sql += "0 sgstper, 0 sgstamt, 0 cgstper, 0 cgstamt, 0 cessper, 0 cessamt, 0 dutyper, 0 dutyamt ";
+                sql += "from " + scm + ".m_amttype b, " + scm + ".m_cntrl_hdr c ";
+                sql += "where b.m_autono=c.m_autono(+) and b.salpur='" + S_P + "'  and nvl(c.inactive_tag,'N') = 'N' ";
+                sql += "and b.amtcd not in (select amtcd from " + scm + ".t_txnamt where autono='" + AUTO_NO + "')";
+                var AMOUNT_DATA = masterHelp.SQLquery(sql);
+
+
+                VE.TTXNAMT = (from DataRow dr in AMOUNT_DATA.Rows
+                              select new TTXNAMT()
+                              {
+                                  AMTCD = dr["amtcd"].ToString(),
+                                  ADDLESS = dr["addless"].ToString(),
+                                  TAXCODE = dr["taxcode"].ToString(),
+                                  GLCD = dr["GLCD"].ToString(),
+                                  AMTNM = dr["amtnm"].ToString(),
+                                  CALCCODE = dr["calccode"].ToString(),
+                                  CALCTYPE = dr["CALCTYPE"].ToString(),
+                                  CALCFORMULA = dr["calcformula"].ToString(),
+                                  AMTDESC = dr["amtdesc"].ToString(),
+                                  HSNCODE = dr["hsncode"].ToString(),
+                                  AMTRATE = dr["amtrate"].retDbl(),
+                                  CURR_AMT = dr["curr_amt"].retDbl(),
+                                  AMT = dr["amt"].retDbl(),
+                                  IGSTPER = dr["igstper"].retDbl(),
+                                  CGSTPER = dr["cgstper"].retDbl(),
+                                  SGSTPER = dr["sgstper"].retDbl(),
+                                  CESSPER = dr["cessper"].retDbl(),
+                                  DUTYPER = dr["dutyper"].retDbl(),
+                                  IGSTAMT = dr["igstamt"].retDbl(),
+                                  CGSTAMT = dr["cgstamt"].retDbl(),
+                                  SGSTAMT = dr["sgstamt"].retDbl(),
+                                  CESSAMT = dr["cessamt"].retDbl(),
+                                  DUTYAMT = dr["dutyamt"].retDbl(),
+                              }).ToList();
+
+                for (int p = 0; p <= VE.TTXNAMT.Count - 1; p++)
+                {
+                    VE.TTXNAMT[p].SLNO = Convert.ToInt16(p + 1);
+
+                    VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.Value + VE.TTXNAMT[p].IGSTAMT.Value + VE.TTXNAMT[p].CGSTAMT.Value + VE.TTXNAMT[p].SGSTAMT.Value + VE.TTXNAMT[p].CESSAMT.Value + VE.TTXNAMT[p].DUTYAMT.Value;
+                    VE.TTXNAMT[p].IGSTPER = IGST_PER;
+                    VE.TTXNAMT[p].CGSTPER = CGST_PER;
+                    VE.TTXNAMT[p].SGSTPER = SGST_PER;
+                    VE.TTXNAMT[p].CESSPER = CESS_PER;
+                    A_T_CURR_AMT = A_T_CURR_AMT + VE.TTXNAMT[p].CURR_AMT.Value;
+                    A_T_AMT = A_T_AMT + VE.TTXNAMT[p].AMT.Value;
+                    A_T_IGST_AMT = A_T_IGST_AMT + VE.TTXNAMT[p].IGSTAMT.Value;
+                    A_T_CGST_AMT = A_T_CGST_AMT + VE.TTXNAMT[p].CGSTAMT.Value;
+                    A_T_SGST_AMT = A_T_SGST_AMT + VE.TTXNAMT[p].SGSTAMT.Value;
+                    A_T_CESS_AMT = A_T_CESS_AMT + VE.TTXNAMT[p].CESSAMT.Value;
+                    A_T_DUTY_AMT = A_T_DUTY_AMT + VE.TTXNAMT[p].DUTYAMT.Value;
+                    A_T_NET_AMT = A_T_NET_AMT + A_T_AMT + A_T_IGST_AMT + A_T_CGST_AMT + A_T_SGST_AMT + A_T_CESS_AMT + A_T_DUTY_AMT;
+                }
+                VE.A_T_CURR = A_T_CURR_AMT;
+                VE.A_T_AMOUNT = A_T_AMT;
+                VE.A_T_IGST = A_T_IGST_AMT;
+                VE.A_T_CGST = A_T_CGST_AMT;
+                VE.A_T_SGST = A_T_SGST_AMT;
+                VE.A_T_CESS = A_T_CESS_AMT;
+                VE.A_T_DUTY = A_T_DUTY_AMT;
+                VE.A_T_NET = A_T_NET_AMT;
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+            }
+        }
+        public ActionResult DeleteRowBarno(TransactionOutRecProcess VE)
         {
             try
             {

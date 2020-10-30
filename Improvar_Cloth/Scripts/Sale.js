@@ -258,11 +258,11 @@ function FillBarcodeArea(str, Table, i) {
         $("#AddRow_Barcode").hide();
         $("#UpdateRow_Barcode").prop("value", "Update Row [" + $(FieldidStarting + "SLNO_" + i).val() + "] (Alt+W)");
         $("#UpdateRow_Barcode").show();
-
     }
     changeBARGENTYPE();
 }
 function changeBARGENTYPE() {
+    debugger;
     var BARGENTYPE = $("#BARGENTYPE").val();
     if (BARGENTYPE == "C") {
         $("#divImageUpload").hide();

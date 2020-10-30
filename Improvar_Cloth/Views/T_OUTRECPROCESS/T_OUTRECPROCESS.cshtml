@@ -232,7 +232,7 @@
 </script>
 
 <script>
-    function Fill_BarCodeData() {
+    @*function Fill_BarCodeData() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillBarCodeData", PageControllerName)",
@@ -268,7 +268,7 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
-    }
+    }*@
 
     @*function Fill_QtyRequirementData() {
         $.ajax({
@@ -292,59 +292,8 @@
         });
     }*@
 </script>
-<script>
-    function AddDOCrow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddDOCRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivDocument").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    function DeleteDOCrow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
-                $("#partialdivDocument").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
-    function pageprinting() {
-        var ty = $("#DOCCD").val();
-        $.ajax({
-            type: 'get',
-            url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
-            success: function (result) {
-                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
+
+@*<script>
     function CalculateQNTY(i) {
         if ("@Model.DefaultAction" != "V") {
             var NOS_ = document.getElementById('P_NOS_' + i).value;
@@ -401,7 +350,85 @@
     //}
 
 
-</script>
+</script>*@
+
+@*<script>
+        function AddrowQTY(ID) {
+            var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("AddRowQTY", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivQtyRequirement").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+
+        function DeleteRowQTY() {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("DeleteRowQTY", PageControllerName)",
+                data: $('form').serialize(),
+                success: function (result) {
+                    $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivQtyRequirement").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    </script>*@
+@*<script>
+        function RepeatAboveRow_TPROGBOM(i) {
+            debugger;
+            i = parseInt(i);
+            if (event.key == "F7") {
+                var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
+                for (var J = 0; J <= GridRow - 1; J++) {
+                    var slno = $("#P_SLNO_" + J).val();
+                    if (parseInt(slno) == i) {
+                        $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
+                        $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
+                        $("#Q_ITCD_" + i).val($("#P_ITCD_" + J).val());
+                        $("#Q_ITNM_" + i).val($("#P_ITNM_" + J).val());
+                        $("#Q_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
+                        $("#Q_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
+                    }
+                }
+            }
+            if (event.key == "F8" && i > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("RepeatAboveRow", PageControllerName)",
+                    beforesend: $("#WaitingMode").show(),
+                    data: $('form').serialize() + "&RowIndex=" + i,
+                    success: function (result) {
+                        $("#WaitingMode").hide();
+                        $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                        $("#partialdivQtyRequirement").html(result);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+
+            }
+        }
+    </script>*@
 <script>
     function Addrow(ID) {
         var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
@@ -440,35 +467,15 @@
         });
     }
 </script>
-@*<script>
-    function AddrowQTY(ID) {
-        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+<script>
+    function AddDOCrow() {
         $.ajax({
             type: 'POST',
-            url: "@Url.Action("AddRowQTY", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivQtyRequirement").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-
-    function DeleteRowQTY() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteRowQTY", PageControllerName)",
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
-                $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
-                $("#partialdivQtyRequirement").html(result);
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -477,47 +484,41 @@
             }
         });
     }
-</script>*@
-@*<script>
-    function RepeatAboveRow_TPROGBOM(i) {
-        debugger;
-        i = parseInt(i);
-        if (event.key == "F7") {
-            var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
-            for (var J = 0; J <= GridRow - 1; J++) {
-                var slno = $("#P_SLNO_" + J).val();
-                if (parseInt(slno) == i) {
-                    $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
-                    $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
-                    $("#Q_ITCD_" + i).val($("#P_ITCD_" + J).val());
-                    $("#Q_ITNM_" + i).val($("#P_ITNM_" + J).val());
-                    $("#Q_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
-                    $("#Q_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
-                }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
             }
-        }
-        if (event.key == "F8" && i > 0) {
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("RepeatAboveRow", PageControllerName)",
-                beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&RowIndex=" + i,
-                success: function (result) {
-                    $("#WaitingMode").hide();
-                    $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
-                    $("#partialdivQtyRequirement").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-
-        }
+        });
     }
-</script>*@
-<script></script>
+</script>
+<script>
+    function pageprinting() {
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 
 @using (Html.BeginForm())
 {
@@ -677,9 +678,13 @@
                             @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                         </div>
                     </div>
-                    <div class="col-md-8">
-                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetPendingProgramme" value="Get Pending Programme" title="Click to Get Pending Programme" />
-                    </div>
+                    @if (Model.DefaultAction != "V")
+                    {
+                        <div class="col-md-8">
+                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetPendingProgramme" value="Get Pending Programme" title="Click to Get Pending Programme" />
+                        </div>
+                    }
+
                 </div>
             </div>
             <div class="row" style="margin-top:5px;">
@@ -688,6 +693,7 @@
                     <li id="Programme_LI" class=""><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
                     <li id="Receive_LI" class=""><a data-toggle="tab" href="#Receive" accesskey="V">Receive(V)</a></li>
                     <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
+                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="OpenAmount();" accesskey="F">Freight & Others(F)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                     <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
@@ -866,11 +872,11 @@
                                     @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
                                     @if (Model.MENU_PARA == "PB")
                                     {
-                                    @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
+                                        @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                     }
                                     else
                                     {
-                                    @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @TabIndex = -1, @placeholder = "TCS on", @readonly = "readonly" } })
+                                        @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @TabIndex = -1, @placeholder = "TCS on", @readonly = "readonly" } })
                                     }
                                 </div>
                             </div>
@@ -878,11 +884,11 @@
                                 <div class="editor-field">
                                     @if (Model.MENU_PARA == "PB")
                                     {
-                                    @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @placeholder = "TCS Amount", onchange = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
+                                        @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @placeholder = "TCS Amount", onchange = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                     }
                                     else
                                     {
-                                    @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @TabIndex = -1, @placeholder = "TCS Amount", @readonly = "readonly" } })
+                                        @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @TabIndex = -1, @placeholder = "TCS Amount", @readonly = "readonly" } })
 
                                     }
                                 </div>
@@ -917,11 +923,16 @@
 
                     </div>
                     <div id="Receive" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content">
                             <div>
                                 <div id="partialdivDetail" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_DETAIL")
+                                    @Html.Partial("_T_OUTRECPROCESS_Receive")
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1" style="width:auto;">
+                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Finalise Data in Details Tab" onclick="Fill_DetailData()" />
                             </div>
                         </div>
                     </div>
@@ -930,7 +941,16 @@
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivDetail" style="margin-top:0px;">
-                                    @*@Html.Partial("_T_SALE_DETAIL")*@
+                                    @Html.Partial("_T_OUTRECPROCESS_Detail")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="FreightOthers" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivAmounts" style="margin-top:0px;">
+                                    @Html.Partial("_T_OUTRECPROCESS_Amount")
                                 </div>
                             </div>
                         </div>
@@ -1106,15 +1126,15 @@
 
             </div>
         </div>
-                                                                }
-                                                                else
-                                                                {
-                                                                    @ViewBag.ErrorMessage
-                                                                }
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
 
-                                                                <div class="container">
-                                                                    <div id="helpDIV">
+    <div class="container">
+        <div id="helpDIV">
 
-                                                                    </div>
-                                                                </div>
-                                                                }
+        </div>
+    </div>
+}

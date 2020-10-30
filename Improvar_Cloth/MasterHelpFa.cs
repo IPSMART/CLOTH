@@ -1698,13 +1698,13 @@ namespace Improvar
                 return bl;
             }
         }
-        public string TblUpdt(string tblname, string autono, string dtag, string modcd = "")
+        public string TblUpdt(string tblname, string autono, string dtag, string modcd = "", string whereClause = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             if (autono.IndexOf("'") < 0) autono = "'" + autono + "'";
 
             string scmf = "";
-            if (modcd == "") modcd = "S";
+            if (modcd == "") modcd = Module.MODCD;
             switch (modcd)
             {
                 case "F":
@@ -1717,8 +1717,9 @@ namespace Improvar
                     scmf = CommVar.PaySchema(UNQSNO); break;
             }
             string sql = "";
-            if (dtag == "D") sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where autono in (" + autono + ") " + "~";
-            sql += "delete from " + scmf + "." + tblname + " where autono in (" + autono + ") ";
+            if (whereClause.ToString() == "") whereClause = "autono in (" + autono + ")";
+            if (dtag == "D") sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where " + whereClause + "~";
+            sql += "delete from " + scmf + "." + tblname + " where  " + whereClause;
 
             return sql;
         }
