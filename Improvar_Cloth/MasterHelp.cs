@@ -2253,13 +2253,13 @@ namespace Improvar
             DataTable tbl = new DataTable(); val = val.retStr() == "" ? "" : val.retStr().retSqlformat();
             if (menupara == "PB")
             {
-               
+
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), val, "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
 
             }
             else
             {
-               
+
                 tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val, "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
 
             }
@@ -2270,11 +2270,10 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " </td><td>" + tbl.Rows[i]["ITCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
-                        + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["uomcd"] + " </td><td>" + tbl.Rows[i]["colrnm"] + " </td><td>" + tbl.Rows[i]["sizecd"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["ITCD"] + "]" + " </td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
+                        + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["uomcd"] + " </td><td>" + tbl.Rows[i]["colrnm"] + " </td><td>" + tbl.Rows[i]["sizecd"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td></tr>");
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "Item code" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "uom." + Cn.GCS() + "colornm." + Cn.GCS() + "sizecd.";
-
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "uom." + Cn.GCS() + "colornm." + Cn.GCS() + "sizecd." + Cn.GCS() + "PARTCD";
                 return Generate_help(hdr, SB.ToString());
             }
             else
@@ -2571,6 +2570,5 @@ namespace Improvar
                 }
             }
         }
-
     }
 }
