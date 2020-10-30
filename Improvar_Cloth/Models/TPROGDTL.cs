@@ -100,6 +100,8 @@ namespace Improvar.Models
         public double? BALQNTY { get; set; }
         [StringLength(15)]
         public string PROGUNIQNO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? BALNOS { get; set; }
 
     }
 }

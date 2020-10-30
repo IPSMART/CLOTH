@@ -97,7 +97,7 @@
     });
 </script>
 <script>
-    function GetPartyDetails(id) {
+    @*function GetPartyDetails(id) {
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
         debugger;
@@ -163,60 +163,43 @@
             });
         }
 
-    }
-    function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
+    }*@
+    function SelectTDSCode(id, TDSHD, TDSNM, TDSPER) {
         if (id == "") {
             $("#" + TDSHD.id).val("");
             $("#" + TDSNM.id).val("");
-            $("#" + TCSPER.id).val("");
-            $("#TDSLIMIT").val("");
-            $("#TDSCALCON").val("");
-            $("#TDSROUNDCAL").val("");
-            $("#AMT").val("");
-            //BillAmountCalculate();//fill value of tcson
+            $("#" + TDSPER.id).val("");
         }
         else {
             if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
             if (!emptyFieldCheck("Enter Supplier Code", "SLCD")) { return false; }
             var PARTY = document.getElementById("SLCD").value;
             var DOCDT = document.getElementById("DOCDT").value;
-            var autono = document.getElementById("AUTONO").value;
             $.ajax({
                 type: 'GET',
                 url: "@Url.Action("GetTDSDetails", PageControllerName)",
                 data:
-            {
-                val: id,
-                PARTY: PARTY,
-                TAG: DOCDT,
-                AUTONO: autono
-            },
+                    {
+                        val: id,
+                        PARTY: PARTY,
+                        TAG: DOCDT
+                    },
                 success: function (result) {
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
                         document.getElementById(TDSHD.id).value = returncolvalue(result, "TDSCODE");
                         document.getElementById(TDSNM.id).value = returncolvalue(result, "TDSNM");
                         var CMPNONCMP = returncolvalue(result, "CMPNONCMP");
-                        if (CMPNONCMP == "L") {
-                            document.getElementById(TCSPER.id).value = returncolvalue(result, "TDSPER");
+                        if (CMPNONCMP == "C") {
+                            document.getElementById(TDSPER.id).value = returncolvalue(result, "TDSPER");
                         } else {
-                            document.getElementById(TCSPER.id).value = returncolvalue(result, "TDSPERNONCMP");
+                            document.getElementById(TDSPER.id).value = returncolvalue(result, "TDSPERNONCMP");
                         }
-                        document.getElementById("TDSLIMIT").value = returncolvalue(result, "TDSLIMIT");
-                        document.getElementById("TDSCALCON").value = returncolvalue(result, "TDSCALCON");
-                        document.getElementById("TDSROUNDCAL").value = returncolvalue(result, "TDSROUNDCAL");
-                        document.getElementById("AMT").value = returncolvalue(result, "AMT");
-                        //BillAmountCalculate();//fill value of tcson
                     }
                     else {
                         $("#" + TDSHD.id).val("");
                         $("#" + TDSNM.id).val("");
-                        $("#" + TCSPER.id).val("");
-                        $("#TDSLIMIT").val("");
-                        $("#TDSCALCON").val("");
-                        $("#TDSROUNDCAL").val("");
-                        $("#AMT").val("");
-                        //BillAmountCalculate();//fill value of tcson
+                        $("#" + TDSPER.id).val("");
                         msgInfo(result);
                         message_value = TDSHD.id;
                     }
@@ -230,7 +213,72 @@
         }
     }
 </script>
+<script>
+    function PendingProgramme() {
+        if (!emptyFieldCheck("Please Select / Enter Party", "DOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
+        var DOCDT = $("#DOCDT").val();
+        var SLCD = $("#SLCD").val();
+        var JOBCD = $("#JOBCD").val();
+        var AUTONO = $("#AUTONO").val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("GetPendingProgramme", PageControllerName)",
+            data: { docdt: DOCDT, jobcd: JOBCD, slcd: SLCD, autono: AUTONO },
+            success: function (result) {
+                if (result == "1") {
+                    document.getElementById("PendProgramme").disabled = true;
+                    $("#SLCD").attr('readonly', 'readonly');
+                    $('#PARTY_HELP').hide("");
+                    $("#SLCD").removeAttr("onblur");
+                }
+                else {
+                    msgInfo(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function GetBarnoDetails(id) {
+        debugger;
+        if (id == "") {
+            // ClearBarcodeArea();
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
+                data: "&val=" + id,
+                success: function (result) {
+                    var MSG = result.indexOf('id="_T_OUTRECPROCESS_Programme_GRID"');
+                    if (MSG >= 0) {
+                        $("#partialdivProgramme").html(result);
+                    }
+                    else {
+                        $('#helpDIV').html("");
+                        msgInfo("" + result + " !");
+                        $("#BARCODE").val("");
+                        message_value = "BARCODE";
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
 
+    }
+</script>
 <script>
     @*function Fill_BarCodeData() {
         $.ajax({
@@ -294,63 +342,63 @@
 </script>
 
 @*<script>
-    function CalculateQNTY(i) {
-        if ("@Model.DefaultAction" != "V") {
-            var NOS_ = document.getElementById('P_NOS_' + i).value;
-            if (NOS_ == "") { NOS_ = parseFloat(0) } else { NOS_ = parseFloat(NOS_) }
-            var CUTLENGTH_ = document.getElementById('P_CUTLENGTH_' + i).value;
-            if (CUTLENGTH_ == "") { CUTLENGTH_ = parseFloat(0) } else { CUTLENGTH_ = parseFloat(CUTLENGTH_) }
-            if (NOS_ > 0 && CUTLENGTH_ > 0) {
-                var qnty = (parseFloat(NOS_) * parseFloat(CUTLENGTH_));
-                document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
+        function CalculateQNTY(i) {
+            if ("@Model.DefaultAction" != "V") {
+                var NOS_ = document.getElementById('P_NOS_' + i).value;
+                if (NOS_ == "") { NOS_ = parseFloat(0) } else { NOS_ = parseFloat(NOS_) }
+                var CUTLENGTH_ = document.getElementById('P_CUTLENGTH_' + i).value;
+                if (CUTLENGTH_ == "") { CUTLENGTH_ = parseFloat(0) } else { CUTLENGTH_ = parseFloat(CUTLENGTH_) }
+                if (NOS_ > 0 && CUTLENGTH_ > 0) {
+                    var qnty = (parseFloat(NOS_) * parseFloat(CUTLENGTH_));
+                    document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
+                }
+
+            } CalculateTotal();
+        }
+
+        function CalculateTotal() {
+            debugger;
+            var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
+            var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
+            var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                var NOS = document.getElementById("P_NOS_" + i).value;
+                if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+
+                var QNTY = document.getElementById("P_QNTY_" + i).value;
+                if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
+                else { T_QNTY = T_QNTY + parseFloat(0); }
+
+
             }
-
-        } CalculateTotal();
-    }
-
-    function CalculateTotal() {
-        debugger;
-        var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
-        var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
-        var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
-        for (var i = 0; i <= GridRow - 1; i++) {
-            var NOS = document.getElementById("P_NOS_" + i).value;
-            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
-
-            var QNTY = document.getElementById("P_QNTY_" + i).value;
-            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
-            else { T_QNTY = T_QNTY + parseFloat(0); }
+            document.getElementById("P_T_NOS").value = parseFloat(T_NOS).toFixed(0);
+            document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
 
 
         }
-        document.getElementById("P_T_NOS").value = parseFloat(T_NOS).toFixed(0);
-        document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
+
+        //function CalculateTotalProgBomQnty() {
+        //    var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
+        //    var GridRow = $("#__T_OUTRECPROCESS_QtyRequirement_GRID > tbody > tr").length;
+        //    for (var i = 0; i <= GridRow - 1; i++) {
+
+        //        var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
+        //        if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
+        //        if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
+        //        else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
+
+        //        var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
+        //        if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
+        //        if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
+        //        else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
 
 
-    }
-
-    //function CalculateTotalProgBomQnty() {
-    //    var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
-    //    var GridRow = $("#__T_OUTRECPROCESS_QtyRequirement_GRID > tbody > tr").length;
-    //    for (var i = 0; i <= GridRow - 1; i++) {
-
-    //        var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
-    //        if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
-    //        if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
-    //        else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
-
-    //        var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
-    //        if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
-    //        if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
-    //        else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
+        //    } document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(6);
+        //    document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(6);
+        //}
 
 
-    //    } document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(6);
-    //    document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(6);
-    //}
-
-
-</script>*@
+    </script>*@
 
 @*<script>
         function AddrowQTY(ID) {
@@ -430,7 +478,7 @@
         }
     </script>*@
 <script>
-    function Addrow(ID) {
+    @*function Addrow(ID) {
         var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
         $.ajax({
             type: 'POST',
@@ -448,7 +496,7 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
-    }
+    }*@
 
     function DeleteRow() {
         $.ajax({
@@ -599,7 +647,7 @@
                     <div class="col-md-3">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -617,8 +665,8 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','slcd_tag/DOCDT')", onblur = "GetPartyDetails(this.value);", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartyDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','slcd_tag/DOCDT')" />
+                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT');", @placeholder = "Code", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartyDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT')" />
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -681,7 +729,7 @@
                     @if (Model.DefaultAction != "V")
                     {
                         <div class="col-md-8">
-                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="GetPendingProgramme" value="Get Pending Programme" title="Click to Get Pending Programme" />
+                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;"  id="PendProgramme" value="Get Pending Programme" title="Click to Get Pending Programme" onclick="PendingProgramme()" />
                         </div>
                     }
 
@@ -833,75 +881,58 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "TCS Head")
+                                    @Html.Label("", "TDS Head")
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXN.TDSCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSCODE", onkeyup = "GetHelp('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TDSCODE',DOCDT.value)", onblur = "SelectTDSCode(this.value,TDSCODE,TDSNM,TCSPER);", @placeholder = "Code", maxlength = 3, onchange = "BillAmountCalculate();" } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTDSDetails", PageControllerName)','TDSCODE/TDSNM/TCSPER','1/0/2','TCS Details','TDSCODE',DOCDT.value)" />
+                                    @Html.EditorFor(model => model.T_TXNOTH.TDSHD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSHD", onkeyup = "GetHelp('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD',DOCDT.value)", onblur = "SelectTDSCode(this.value,TDSHD,TDSNM,TDSPER);", @placeholder = "Code", maxlength = 3 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTDSDetails", PageControllerName)','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD',DOCDT.value)" />
                                 </div>
-                                <input id="TDSAMTCAL" type="hidden" />
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.TDSNM, new { htmlAttributes = new { @class = "form-control", id = "TDSNM", @placeholder = "TDS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-2">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "TCS %")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXN.TCSPER, "{0:0.000}", new { htmlAttributes = new { @class = "form-control", id = "TCSPER", maxlength = 5, @placeholder = "TCS %", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,3);" } })
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "TCS ON")
+                                    @Html.Label("", "TDS On")
                                 </div>
                             </div>
                             <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.HiddenFor(model => model.TCSAPPL, new { id = "TCSAPPL" })
-                                    @Html.HiddenFor(model => model.TDSLIMIT, new { id = "TDSLIMIT" })
-                                    @Html.HiddenFor(model => model.TDSCALCON, new { id = "TDSCALCON" })
-                                    @Html.HiddenFor(model => model.AMT, new { id = "AMT" })
-                                    @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
-                                    @if (Model.MENU_PARA == "PB")
-                                    {
-                                        @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
-                                    }
-                                    else
-                                    {
-                                        @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @TabIndex = -1, @placeholder = "TCS on", @readonly = "readonly" } })
-                                    }
+                                <div class="editor-field" style="margin-top:6px;">
+                                    @Html.EditorFor(model => model.T_TXNOTH.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "TDSAMTCAL();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="editor-field">
-                                    @if (Model.MENU_PARA == "PB")
-                                    {
-                                        @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @placeholder = "TCS Amount", onchange = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
-                                    }
-                                    else
-                                    {
-                                        @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @TabIndex = -1, @placeholder = "TCS Amount", @readonly = "readonly" } })
-
-                                    }
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "TDS %")
                                 </div>
                             </div>
-
+                            <div class="col-md-4">
+                                <div class="editor-field" style="margin-top:6px;">
+                                    @Html.EditorFor(model => model.T_TXNOTH.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "TDSAMTCAL();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "TDS Amount")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "TDSAMT", @placeholder = "TDS Amount", maxlength = 15, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div id="Programme" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row">
 
-                            <div class="col-md-1">
+                            <div class="col-md-3">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Bar Code")
+                                    @Html.Label("", "Bar Code No")
                                     <b style="color:Red;">*</b>
                                 </div>
                             </div>
