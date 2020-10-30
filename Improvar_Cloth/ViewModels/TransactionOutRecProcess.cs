@@ -187,6 +187,9 @@ namespace Improvar.ViewModels
         public string TDSCALCON { get; set; }
         public double AMT { get; set; }
         public string TDSROUNDCAL { get; set; }
+        public T_VCH_GST T_VCH_GST { get; set; }
+        public string GSTSLNM { get; set; }
+        public string POS { get; set; }
 
     }
 }
