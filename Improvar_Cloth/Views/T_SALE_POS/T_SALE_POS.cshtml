@@ -162,6 +162,7 @@
 </script>
 <script>
     function CalculateTotalBarno() {
+        debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
@@ -193,6 +194,91 @@
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
 
 }
+</script>
+<script>
+    function AmountCalculation(i) {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var A_NOS = document.getElementById("T_NOS").value;
+        var B_QNTY = document.getElementById("T_QNTY").value;
+        var D_GROSS_AMT = document.getElementById("T_GROSS_AMT").value;
+        var E_NET_AMT = document.getElementById("T_NET_AMT").value;
+        var RT = document.getElementById("AMTRATE_" + i).value;
+        var IGST_PER = document.getElementById("AIGSTPER_" + i).value;
+        if (IGST_PER == "") { IGST_PER = parseFloat(0); } else { IGST_PER = parseFloat(IGST_PER) }
+        var CGST_PER = document.getElementById("ACGSTPER_" + i).value;
+        if (CGST_PER == "") { CGST_PER = parseFloat(0); } else { CGST_PER = parseFloat(CGST_PER) }
+        var SGST_PER = document.getElementById("ASGSTPER_" + i).value;
+        if (SGST_PER == "") { SGST_PER = parseFloat(0); } else { SGST_PER = parseFloat(SGST_PER) }
+        var CESS_PER = document.getElementById("ACESSPER_" + i).value;
+        if (CESS_PER == "") { CESS_PER = parseFloat(0); } else { CESS_PER = parseFloat(CESS_PER) }
+        var DUTY_PER = document.getElementById("ADUTYPER_" + i).value;
+        if (DUTY_PER == "") { DUTY_PER = parseFloat(0); } else { DUTY_PER = parseFloat(DUTY_PER) }
+        var CALC_TYPE = document.getElementById("CALCTYPE_" + i).value;
+        var CALC_FORMULA = document.getElementById("CALCFORMULA_" + i).value;
+        if (A_NOS == "") { A_NOS = parseFloat(0); }
+        if (B_QNTY == "") { B_QNTY = parseFloat(0); }
+        if (D_GROSS_AMT == "") { D_GROSS_AMT = parseFloat(0); }
+        if (E_NET_AMT == "") { E_NET_AMT = parseFloat(0); }
+        if (RT == "") { RT = parseFloat(0); }
+        var AMOUNT = 0;
+        if (CALC_TYPE == "F") { AMOUNT = parseFloat(RT); }
+        else if (CALC_TYPE == "P") {
+            if (CALC_FORMULA == "A") { AMOUNT = parseFloat(A_NOS) * parseFloat(RT); }
+            else if (CALC_FORMULA == "B") { AMOUNT = parseFloat(B_QNTY) * parseFloat(RT); }
+            else if (CALC_FORMULA == "D") { AMOUNT = parseFloat(D_GROSS_AMT) * parseFloat(RT); }
+            else if (CALC_FORMULA == "E") { AMOUNT = parseFloat(E_NET_AMT) * parseFloat(RT); }
+        }
+        document.getElementById("A_AMT_" + i).value = AMOUNT;
+        var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var DUTY_AMT = 0;
+
+        // IGST CALCULATION
+        document.getElementById("AIGSTPER_" + i).value = IGST_PER;
+        IGST_AMT = (AMOUNT * IGST_PER) / 100;
+
+        AmountChange(document.getElementById("AIGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("AIGSTPER_" + i), document.getElementById("ANETAMT_" + i),
+        document.getElementById("ACGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+        document.getElementById("AIGSTAMT_" + i).value = parseFloat(IGST_AMT).toFixed(2);
+        //END
+
+        // CGST CALCULATION
+        document.getElementById("ACGSTPER_" + i).value = CGST_PER;
+        CGST_AMT = (AMOUNT * CGST_PER) / 100;
+        AmountChange(document.getElementById("ACGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ACGSTPER_" + i), document.getElementById("ANETAMT_" + i),
+            document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+        document.getElementById("ACGSTAMT_" + i).value = parseFloat(CGST_AMT).toFixed(2);
+        //END
+        // SGST CALCULATION
+        document.getElementById("ASGSTPER_" + i).value = SGST_PER;
+        SGST_AMT = (AMOUNT * SGST_PER) / 100;
+        AmountChange(document.getElementById("ASGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ASGSTPER_" + i), document.getElementById("ANETAMT_" + i),
+            document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+        document.getElementById("ASGSTAMT_" + i).value = parseFloat(SGST_AMT).toFixed(2);
+        //END
+        // CESS CALCULATION
+        document.getElementById("ACESSPER_" + i).value = CESS_PER;
+        CESS_AMT = (AMOUNT * CESS_PER) / 100;
+        AmountChange(document.getElementById("ACESSAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ACESSPER_" + i), document.getElementById("ANETAMT_" + i),
+            document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+        document.getElementById("ACESSAMT_" + i).value = parseFloat(CESS_AMT).toFixed(2);
+        //END
+        // DUTY CALCULATION
+
+        document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
+        DUTY_AMT = (AMOUNT * DUTY_PER) / 100;
+        AmountChange(document.getElementById("ADUTYAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ADUTYPER_" + i), document.getElementById("ANETAMT_" + i),
+        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+        document.getElementById("ADUTYAMT_" + i).value = parseFloat(DUTY_AMT).toFixed(2);
+        //END
+
+        var NET_AMT = AMOUNT + parseFloat(document.getElementById("AIGSTAMT_" + i).value) + parseFloat(document.getElementById("ACGSTAMT_" + i).value) +
+                     parseFloat(document.getElementById("ASGSTAMT_" + i).value) + parseFloat(document.getElementById("ACESSAMT_" + i).value) + parseFloat(document.getElementById("ADUTYAMT_" + i).value);
+        document.getElementById("ANETAMT_" + i).value = parseFloat(NET_AMT).toFixed(2);
+
+        //GRID TOTAL CALCULATION
+        AmountCalculateTotal();
+
+    }
 </script>
 <script>
     function pageprinting() {
@@ -511,7 +597,7 @@
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivAmounts" style="margin-top:0px;">
-                                    @*@Html.Partial("_T_SALE_POS_AMOUNT")*@
+                                    @Html.Partial("_T_SALE_POS_AMOUNT")
                                 </div>
                             </div>
                         </div>
