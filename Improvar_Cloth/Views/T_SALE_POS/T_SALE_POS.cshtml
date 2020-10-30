@@ -20,6 +20,7 @@
         height: 190px;
     }
 </style>
+<script src="~/Scripts/jquery.min.js"></script>
 <script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
@@ -559,6 +560,29 @@
         });
     }
 </script>
+<script>
+    function FillImageModal(index) {
+        debugger;
+        //var OpenImageModal =
+        $('#ActiveBarRowIndex').val(index);
+        var actt = ""; $("#div_carousel_inner").html('');
+        var arr = $("#B_BarImages_" + index).val();
+        arr = arr.split(String.fromCharCode(179));
+        $.each(arr, function (index, value) {
+            var imgname = (value.split('~')[0]);
+            var id = (imgname).split('.')[0];
+            var ImageDesc = (value.split('~')[1]);
+            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+            htm += '<div id="' + id + '" class="item ' + actt + '">';
+            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+            htm += '    <span class="carousel-caption">';
+            htm += '    <p> ' + ImageDesc + ' </p>';
+            htm += '    </span>';
+            htm += '</div>';
+            $("#div_carousel_inner").append(htm);
+        });
+    }
+</script>
 @section Scripts {
     <script>
         function ReloadWithData() {
@@ -937,7 +961,7 @@
                                     <div class="pull-left">
                                         <input type="hidden" id="ActiveBarRowIndex" />
                                         <input type="hidden" id="BarImages" />
-                                        <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
+                                        @*<button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>*@
                                     </div>
                                 </div>
                                 <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
