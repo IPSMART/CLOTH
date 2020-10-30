@@ -171,7 +171,7 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 string gocd = TTXN.GOCD.retStr();
-
+                                VE.GOCD = gocd;
                                 if (gocd != "")
                                 {
                                     VE.GONM = DB.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
@@ -1930,7 +1930,7 @@ namespace Improvar.Controllers
                         TTXN.DTAG = "E";
                     }
                     TTXN.DOCTAG = VE.MENU_PARA.retStr().Length > 2 ? VE.MENU_PARA.retStr().Remove(2) : VE.MENU_PARA.retStr();
-                    TTXN.GOCD = "DH";
+                    TTXN.GOCD = VE.GOCD;
                     TTXN.DUEDAYS = VE.T_TXN.DUEDAYS;
                     TTXN.PARGLCD = parglcd; 
                     TTXN.CLASS1CD = parclass1cd; 
@@ -2116,7 +2116,7 @@ namespace Improvar.Controllers
                             TTXNDTL.BATCHNO = VE.TsalePos_TBATCHDTL[i].BATCHNO;
                             TTXNDTL.BALEYR = VE.BALEYR;// VE.TTXNDTL[i].BALEYR;
                             //TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
-                            TTXNDTL.GOCD = "DH";
+                            TTXNDTL.GOCD = VE.GOCD;
                             //TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
                             TTXNDTL.NOS = VE.TsalePos_TBATCHDTL[i].NOS == null ? 0 : VE.TsalePos_TBATCHDTL[i].NOS;
                             TTXNDTL.QNTY = VE.TsalePos_TBATCHDTL[i].QNTY;
@@ -2281,7 +2281,7 @@ namespace Improvar.Controllers
                                 TsalePos_TBATCHDTL.AUTONO = TTXN.AUTONO;
                                 TsalePos_TBATCHDTL.TXNSLNO = VE.TsalePos_TBATCHDTL[i].TXNSLNO;
                                 TsalePos_TBATCHDTL.SLNO = VE.TsalePos_TBATCHDTL[i].SLNO;  //COUNTER.retShort();
-                                TsalePos_TBATCHDTL.GOCD = VE.T_TXN.GOCD;
+                                TsalePos_TBATCHDTL.GOCD = VE.GOCD;
                                 TsalePos_TBATCHDTL.BARNO = barno;
                                 TsalePos_TBATCHDTL.MTRLJOBCD = VE.TsalePos_TBATCHDTL[i].MTRLJOBCD;
                                 TsalePos_TBATCHDTL.PARTCD = VE.TsalePos_TBATCHDTL[i].PARTCD;
