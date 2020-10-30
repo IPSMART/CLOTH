@@ -2024,7 +2024,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                string url = masterHelp.RetriveParkFromFile(value, Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString(), "Improvar.ViewModels.TransactionPackingSlipEntry");
+                string url = masterHelp.RetriveParkFromFile(value, Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString(), "Improvar.ViewModels.TransactionSaleEntry");
                 return url;
             }
             catch (Exception ex)
