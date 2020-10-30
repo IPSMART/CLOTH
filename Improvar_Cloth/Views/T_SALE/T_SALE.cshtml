@@ -742,22 +742,7 @@
                                     @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE", onchange = "changeBARGENTYPE()" })
                                 </div>
                             </div>
-
                         </div>
-
-                        <script>
-                            function changeBARGENTYPE() {
-                                var BARGENTYPE = $("#BARGENTYPE").val();
-                                if (BARGENTYPE == "C") {
-                                    $("#divImageUpload").hide();
-                                }
-                                else if (BARGENTYPE == "E") {
-                                    $("#divImageUpload").show();
-                                }
-                                return 0;
-                            }
-                        </script>
-
                         <div class="row">
                             @if (Model.MENU_PARA == "PB")
                             {
@@ -1143,7 +1128,7 @@
                             </div>
                             <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
                                 <div id="partialdivBarCodeTab">
-                                    @Html.Partial("_T_SALE_PRODUCT")
+                                    @Html.Partial("_T_SALE_BarTab")
                                 </div>
                             </div>
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")

@@ -260,7 +260,17 @@ function FillBarcodeArea(str, Table, i) {
         $("#UpdateRow_Barcode").show();
 
     }
-
+    changeBARGENTYPE();
+}
+function changeBARGENTYPE() {
+    var BARGENTYPE = $("#BARGENTYPE").val();
+    if (BARGENTYPE == "C") {
+        $("#divImageUpload").hide();
+    }
+    else if (BARGENTYPE == "E") {
+        $("#divImageUpload").show();
+    }
+    return 0;
 }
 function CloseBarnoPopup() {
     var DefaultAction = $("#DefaultAction").val();
@@ -1694,7 +1704,7 @@ function AddBarCodeGrid() {
     tr += '   </td> ';
     if (MENU_PARA != "SB") {
         tr += '        <td class="sticky-cell-opposite">';
-        tr += '            <button type="button" class="btn btn-info" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
+        tr += '            <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
         tr += '        </td>';
     }
     tr += ' </tr>';
