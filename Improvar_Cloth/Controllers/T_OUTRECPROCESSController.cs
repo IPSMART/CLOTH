@@ -2245,8 +2245,8 @@ namespace Improvar.Controllers
                             TPROGDTL.PROGAUTONO = TTXN.AUTONO;
                             TPROGDTL.PROGSLNO = VE.TPROGDTL[i].SLNO;
                             TPROGDTL.STKDRCR = stkdrcr;
-                            TPROGDTL.NOS = VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.retDcml();
-                            TPROGDTL.QNTY = VE.TPROGDTL[i].QNTY.retDcml();
+                            TPROGDTL.NOS = VE.TPROGDTL[i].NOS == null ? 0 : VE.TPROGDTL[i].NOS.retDbl();
+                            TPROGDTL.QNTY = VE.TPROGDTL[i].QNTY.retDbl();
 
                             dbsql = masterHelp.RetModeltoSql(TPROGDTL);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();

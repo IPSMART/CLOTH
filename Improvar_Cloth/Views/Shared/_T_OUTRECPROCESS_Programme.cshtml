@@ -31,23 +31,23 @@
                 </center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
-                <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_OUTRECPROCESS_Programme_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1487px;">
+                <div style="height:auto;overflow-y:scroll;max-height:235px;overflow-x:hidden;">
+                    <table id="_T_OUTRECPROCESS_Programme_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1170px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 20px;"></th>
                                 <th class="sticky-cell" style="width: 20px;text-align:center;left:27px">SL No</th>
-                                <th class="" style="width:177px;">Item Group</th>
-                                <th class="" style="width:180px;">Item</th>
+                                <th class="" style="width:100px;">Item Group</th>
+                                <th class="" style="width:160px;">Item</th>
                                 <th class="" style="width:180px;">Style No</th>
-                                <th class="" style="width:47px;">UOM</th>
-                                <th class="" style="width:100px;">Color</th>
-                                <th class="" style="width:107px;">Size</th>
-                                <th class="" style="width: 177px;">Shade</th>
-                                <th class="" style="width:111px;text-align:right;">Nos</th>
-                                <th class="" style="width:111px;text-align:right;">Quantity</th>
+                                <th class="" style="width:50px;">UOM</th>
+                                <th class="" style="width:50px;">Color</th>
+                                <th class="" style="width:50px;">Size</th>
+                                <th class="" style="width: 50px;">Shade</th>
+                                <th class="" style="width:80px;text-align:right;">Nos</th>
+                                <th class="" style="width:80px;text-align:right;">Quantity</th>
                                 <th class="" >Remarks</th>
-                                <th class="sticky-cell-opposite" style="text-align:center;">Sample</th>
+                                <th class="sticky-cell-opposite" style="text-align:center;width:27px;" >Sample</th>
                                 @*<th class="" style="width: 81px;">Material Job Code <b style="color:Red;">*</b></th>
                                     <th class="" style="width:100px;">Material Job Name</th>
                                     <th class="" style="width:100px;">Part</th>
@@ -66,7 +66,13 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
-                                            @*@Html.HiddenFor(model => model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i })*@
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].PROGAUTONO, new { id = "P_PROGAUTONO_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].PROGSLNO, new { id = "P_PROGSLNO_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].BALQNTY, new { id = "P_BALQNTY_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].PROGUNIQNO, new { id = "P_PROGUNIQNO_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].DOCNO, new { id = "P_DOCNO_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].DOCDT, new { id = "P_DOCDT_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:27px;">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -145,7 +151,7 @@
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITREMARK, new { id = "P_ITREMARK_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="sticky-cell-opposite" style="padding-left:14px;">
-                                            @Html.CheckBoxFor(model => model.TPROGDTL[i].CheckedSample, new { id = "P_CheckedSample_" + i })
+                                            @Html.CheckBoxFor(model => model.TPROGDTL[i].CheckedSample, new { id = "P_CheckedSample_" + i, @disabled = "disabled" })
                                         </td>
 
                                     </tr>

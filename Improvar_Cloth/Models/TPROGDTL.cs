@@ -26,19 +26,26 @@ namespace Improvar.Models
         [StringLength(30)]
         public string AUTONO { get; set; }
 
-        public short TXNSLNO { get; set; }
-
         [Key]
         [Column(Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public short SLNO { get; set; }
 
         [Required]
-        [StringLength(25)]
-        public string BARNO { get; set; }
+        [StringLength(5)]
+        public string DOCCD { get; set; }
 
-        [StringLength(8)]
-        public string HSNCODE { get; set; }
+        [Required]
+        [StringLength(6)]
+        public string DOCNO { get; set; }
+
+        public DateTime? DOCDT { get; set; }
+
+        [Required]
+        [StringLength(30)]
+        public string PROGAUTONO { get; set; }
+
+        public short PROGSLNO { get; set; }
 
         [Required]
         [StringLength(1)]
@@ -47,68 +54,25 @@ namespace Improvar.Models
         public double? NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? QNTY { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double? BLQNTY { get; set; }
 
-        public double? FLAGMTR { get; set; }
+        public double? STKQNTY { get; set; }
 
+        public double? RATE { get; set; }
+        
+        [StringLength(25)]
+        public string BARNO { get; set; }
+        
         [StringLength(100)]
         public string ITREMARK { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double? RATE { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double? DISCRATE { get; set; }
-
-        [StringLength(1)]
-        public string DISCTYPE { get; set; }
-        public string DISCTYPE_DESC { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double? SCMDISCRATE { get; set; }
-
-        [StringLength(1)]
-        public string SCMDISCTYPE { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double? TDDISCRATE { get; set; }
-
-        [StringLength(1)]
-        public string TDDISCTYPE { get; set; }
-
-        [StringLength(30)]
-        public string ORDAUTONO { get; set; }
-
-        public short? ORDSLNO { get; set; }
-
-        public double? DIA { get; set; }
 
         public double? CUTLENGTH { get; set; }
-
-        [StringLength(10)]
-        public string LOCABIN { get; set; }
 
         [StringLength(15)]
         public string SHADE { get; set; }
 
-        [StringLength(15)]
-        public string MILLNM { get; set; }
-
-        [StringLength(40)]
-        public string BATCHNO { get; set; }
-
-        [StringLength(30)]
-        public string RECPROGAUTONO { get; set; }
-
-        [StringLength(15)]
-        public string RECPROGLOTNO { get; set; }
-
-        public short? RECPROGSLNO { get; set; }
-
         [StringLength(30)]
         public string ISSPROGAUTONO { get; set; }
-
         public short? ISSPROGSLNO { get; set; }
-
-        [StringLength(15)]
-        public string ISSPROGLOTNO { get; set; }
         public bool Checked { get; set; }
         public string ITGRPCD { get; set; }
         public string ITGRPNM { get; set; }
@@ -119,7 +83,6 @@ namespace Improvar.Models
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }
         public string FABITCD { get; set; }
-        public string FABITNM { get; set; }
         public string STYLENO { get; set; }
         [StringLength(4)]
         public string PARTCD { get; set; }
@@ -131,23 +94,12 @@ namespace Improvar.Models
         public string SIZECD { get; set; }
         public string SIZENM { get; set; }
         public string UOM { get; set; }
-        [StringLength(1)]
-        public string STKTYPE { get; set; }
-        public List<DropDown_list1> DropDown_list1 { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public double? GSTPER { get; set; }
-        public List<DISC_TYPE> DISC_TYPE { get; set; }
-        public List<TDDISC_TYPE> TDDISC_TYPE { get; set; }
-        public List<SCMDISC_TYPE> SCMDISC_TYPE { get; set; }
-        [StringLength(15)]
-        public string STKNAME { get; set; }
         public bool  CheckedSample { get; set; }
-        public string BOMQNTY { get; set; }
-        public string EXTRAQNTY { get; set; }
         public string SAMPLE { get; set; }
-        public string tag1 { get; set; }
-        public string tag2 { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? BALQNTY { get; set; }
+        [StringLength(15)]
+        public string PROGUNIQNO { get; set; }
 
     }
 }

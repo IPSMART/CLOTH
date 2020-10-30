@@ -270,7 +270,7 @@
         });
     }
 
-    function Fill_QtyRequirementData() {
+    @*function Fill_QtyRequirementData() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillQtyRequirementData", PageControllerName)",
@@ -290,7 +290,7 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
-    }
+    }*@
 </script>
 <script>
     function AddDOCrow() {
@@ -380,25 +380,25 @@
 
     }
 
-    function CalculateTotalProgBomQnty() {
-        var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
-        var GridRow = $("#__T_OUTRECPROCESS_QtyRequirement_GRID > tbody > tr").length;
-        for (var i = 0; i <= GridRow - 1; i++) {
+    //function CalculateTotalProgBomQnty() {
+    //    var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
+    //    var GridRow = $("#__T_OUTRECPROCESS_QtyRequirement_GRID > tbody > tr").length;
+    //    for (var i = 0; i <= GridRow - 1; i++) {
 
-            var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
-            if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
-            if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
-            else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
+    //        var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
+    //        if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
+    //        if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
+    //        else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
 
-            var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
-            if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
-            if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
-            else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
+    //        var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
+    //        if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
+    //        if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
+    //        else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
 
 
-        } document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(6);
-        document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(6);
-    }
+    //    } document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(6);
+    //    document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(6);
+    //}
 
 
 </script>
@@ -440,7 +440,7 @@
         });
     }
 </script>
-<script>
+@*<script>
     function AddrowQTY(ID) {
         var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
         $.ajax({
@@ -477,8 +477,8 @@
             }
         });
     }
-</script>
-<script>
+</script>*@
+@*<script>
     function RepeatAboveRow_TPROGBOM(i) {
         debugger;
         i = parseInt(i);
@@ -516,7 +516,7 @@
 
         }
     }
-</script>
+</script>*@
 <script></script>
 
 @using (Html.BeginForm())
@@ -686,8 +686,7 @@
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
                     <li id="Programme_LI" class=""><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
-                    <li id="QtyRequird_LI" class=""><a data-toggle="tab" href="#QtyRequirement" accesskey="Q">Qty Requirement(Q)</a></li>
-                    <li id="MtrlReceive_LI" class=""><a data-toggle="tab" href="#MtrlReceive" accesskey="M">Material Receive(M)</a></li>
+                    <li id="MtrlReceive_LI" class=""><a data-toggle="tab" href="#MtrlReceive" accesskey="V">Receive(V)</a></li>
                     <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                     <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
@@ -916,25 +915,6 @@
                             </div>
                         </div>
 
-                    </div>
-                    <div id="QtyRequirement" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivQtyRequirement" style="margin-top:0px;">
-                                    @*@Html.Partial("_T_OUTRECPROCESS_QtyRequirement")*@
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading ui-icon-note">Rules</div>
-                            <div class="panel-body">
-                                <p>
-                                    1. Press <b>F7</b> for Same as program item [in the itcd/itgrpcd]<br />
-                                    2. Press <b>F8</b> for repeat above Row [in the itcd/itgrpcd]
-                                </p>
-
-                            </div>
-                        </div>
                     </div>
                     <div id="MtrlReceive" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row">

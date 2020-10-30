@@ -51,13 +51,13 @@ namespace Improvar.Models
         [StringLength(1)]
         public string STKDRCR { get; set; }
 
-        public decimal? NOS { get; set; }
+        public double? NOS { get; set; }
 
-        public decimal? QNTY { get; set; }
+        public double? QNTY { get; set; }
 
-        public decimal? STKQNTY { get; set; }
+        public double? STKQNTY { get; set; }
 
-        public decimal? RATE { get; set; }
+        public double? RATE { get; set; }
 
        
     }
