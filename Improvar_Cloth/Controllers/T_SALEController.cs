@@ -2627,14 +2627,17 @@ namespace Improvar.Controllers
                                         TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
                                         TBATCHMST.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
                                     }
-                                    if (VE.T_TXN.BARGENTYPE == "E")
+                                    if (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E")
                                     {
-                                        TBATCHMST.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
+                                       TBATCHMST.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
                                         if (VE.MENU_PARA == "PB")
                                         {
                                             TBATCHMST.OURDESIGN = VE.TBATCHDTL[i].OURDESIGN;
                                             if (VE.TBATCHDTL[i].BarImages.retStr() != "")
                                             {
+                                                dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", TTXN.AUTONO, "E",);
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+
                                                 var barimg = SaveBarImage(VE.TBATCHDTL[i].BarImages, barno, TTXN.EMD_NO.retShort());
                                                 DB.T_BATCH_IMG_HDR.AddRange(barimg.Item1);
                                                 DB.SaveChanges();
@@ -3329,7 +3332,7 @@ namespace Improvar.Controllers
             int slno = 0;
             try
             {
-                var BarImages = BarImage.retStr().Trim(Convert.ToChar(Cn.GCS())).Split(Convert.ToChar(Cn.GCS()));
+                var BarImages = BarImage.retStr().Split((char)179);
                 foreach (string image in BarImages)
                 {
                     if (image != "")
