@@ -923,30 +923,6 @@ namespace Improvar
                 Cn.SaveException(ex, "");
             }
         }
-        public string TblUpdt(string tblname, string autono, string dtag, string modcd = "", string SqlCondition = "")
-        {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
-            if (autono.IndexOf("'") < 0) autono = "'" + autono + "'";
-            if (SqlCondition != "") { SqlCondition = " and " + SqlCondition; }
-            string scmf = "";
-            if (modcd == "") modcd = Module.MODCD;
-            switch (modcd)
-            {
-                case "F":
-                    scmf = CommVar.FinSchema(UNQSNO); break;
-                case "I":
-                    scmf = CommVar.InvSchema(UNQSNO); break;
-                case "S":
-                    scmf = CommVar.SaleSchema(UNQSNO); break;
-                case "P":
-                    scmf = CommVar.PaySchema(UNQSNO); break;
-            }
-            string sql = "";
-            if (dtag == "D") sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where autono in (" + autono + ") " + SqlCondition + "~";
-            sql += "delete from " + scmf + "." + tblname + " where autono in (" + autono + ") " + SqlCondition;
-
-            return sql;
-        }
         //public List<DropDown_list> OTHER_REC_MODE()
         //{
         //    List<DropDown_list> DDL = new List<DropDown_list>();

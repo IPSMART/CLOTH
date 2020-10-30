@@ -232,7 +232,7 @@
 </script>
 
 <script>
-    function Fill_BarCodeData() {
+    @*function Fill_BarCodeData() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillBarCodeData", PageControllerName)",
@@ -268,7 +268,7 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
-    }
+    }*@
 
     @*function Fill_QtyRequirementData() {
         $.ajax({
@@ -292,59 +292,8 @@
         });
     }*@
 </script>
-<script>
-    function AddDOCrow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddDOCRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivDocument").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    function DeleteDOCrow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
-                $("#partialdivDocument").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
-    function pageprinting() {
-        var ty = $("#DOCCD").val();
-        $.ajax({
-            type: 'get',
-            url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
-            success: function (result) {
-                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
+
+@*<script>
     function CalculateQNTY(i) {
         if ("@Model.DefaultAction" != "V") {
             var NOS_ = document.getElementById('P_NOS_' + i).value;
@@ -401,45 +350,8 @@
     //}
 
 
-</script>
-<script>
-    function Addrow(ID) {
-        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddRow", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivProgramme").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
+</script>*@
 
-    function DeleteRow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
-                $("#partialdivProgramme").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
 @*<script>
         function AddrowQTY(ID) {
             var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
@@ -517,7 +429,96 @@
             }
         }
     </script>*@
-<script></script>
+<script>
+    function Addrow(ID) {
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRow", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivProgramme").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+
+    function DeleteRow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                $("#partialdivProgramme").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function pageprinting() {
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 
 @using (Html.BeginForm())
 {
@@ -692,6 +693,7 @@
                     <li id="Programme_LI" class=""><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
                     <li id="Receive_LI" class=""><a data-toggle="tab" href="#Receive" accesskey="V">Receive(V)</a></li>
                     <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
+                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="OpenAmount();" accesskey="F">Freight & Others(F)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                     <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
