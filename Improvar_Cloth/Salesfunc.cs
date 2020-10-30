@@ -338,17 +338,17 @@ namespace Improvar
 
             string sql = "";
             sql += "select a.progautono, a.progslno, a.progautoslno, d.slcd, i.slnm, nvl(i.slarea,i.district) slarea, ";
-            sql += "d.slcd||nvl(d.linecd,'') repslcd, e.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
+            sql += "d.slcd||nvl(d.linecd,'') repslcd, i.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
             sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm, f.uomcd, j.itnm fabitnm, ";
             sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, d.linecd, l.print_seq, ";
-            sql += "a.balqnty, a.balnos from ";
+            sql += "a.balqnty, a.balnos,d.itremark,d.proguniqno,d.sample from ";
 
             sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno, ";
             sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) balqnty, ";
             sql += "sum(case a.stkdrcr when 'C' then a.nos when 'D' then a.nos*-1 end) balnos ";
             sql += "from " + scm + ".t_progdtl a, " + scm + ".t_progmast b, " + scm + ".t_cntrl_hdr c ";
             sql += "where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.autono=c.autono(+) and ";
-            sql += "c.docdt <= to_date('31/03/2021','dd/mm/yyyy') and ";
+            sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
             if (skipautono.retStr() != "") sql += "a.autono <> '" + skipautono + "' and ";
             if (jobcd.retStr() != "") sql += "b.jobcd in (" + jobcd + ") and ";
             if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "', 'dd/mm/yyyy') and ";
@@ -356,7 +356,7 @@ namespace Improvar
             sql += "group by a.progautono, a.progslno, a.progautono||a.progslno ) a, ";
 
             sql += scm + ".t_progmast d, " + scm + ".t_cntrl_hdr e, ";
-            sql += scm + ".m_sitem f, " + scm + ".m_group g, " + scm + ".m_color h, " + scmf + ".m_subleg i, " + scm + ".m_sitem j, " + scm + ".m_line k, " + scm + "m_size l ";
+            sql += scm + ".m_sitem f, " + scm + ".m_group g, " + scm + ".m_color h, " + scmf + ".m_subleg i, " + scm + ".m_sitem j, " + scm + ".m_linemast k, " + scm + ".m_size l ";
             sql += "where a.progautono=d.autono(+) and a.progslno=d.slno(+) and a.progautono=e.autono(+) and ";
             sql += "d.itcd=f.itcd(+) and f.itgrpcd=g.itgrpcd(+) and d.colrcd=h.colrcd(+) and d.slcd=i.slcd(+) and ";
             if (progfromdt.retStr() != "") sql += "e.docdt >= to_date('" + progfromdt + "', 'dd/mm/yyyy') and ";
@@ -364,7 +364,7 @@ namespace Improvar
             if (linecd.retStr() != "") sql += "d.linecd in (" + linecd + ") and ";
             if (itcd.retStr() != "") sql += "d.itcd in (" + itcd + ") and ";
             sql += "nvl(a.balnos,0) <> 0 ";
-            sql += "f.fabitcd=j.itcd(+) and d.linecd=k.linecd(+) and d.sizecd=l.sizecd(+) ";
+            sql += "and f.fabitcd=j.itcd(+) and d.linecd=k.linecd(+) and d.sizecd=l.sizecd(+) ";
             sql += "order by styleno, itnm, itcd, partcd, print_seq, sizenm ";
             DataTable tbl = SQLquery(sql);
             return tbl;
@@ -1588,6 +1588,17 @@ namespace Improvar
             sql += " order by d.docdt,d.docno desc ";
             var dt = MasterHelpFa.SQLquery(sql);
             return dt;
+        }
+        public bool IsValidBarno(string barno)
+        {
+            string scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            sql += " select distinct a.SLCD,a.autono,d.docno,d.docdt,b.qnty,b.rate,e.SLNM,e.district city ";
+            //sql += " from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
+            //sql += " where a.autono=b.autono and a.autono=d.autono and a.doccd=c.DOCCD and a.slcd=e.slcd  and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and itcd='" + itcd + "' and c.doctype='" + doctype + "' ";
+            //sql += " order by d.docdt,d.docno desc ";
+            var dt = MasterHelpFa.SQLquery(sql);
+            return true;
         }
     }
 }

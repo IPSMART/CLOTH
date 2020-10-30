@@ -48,6 +48,7 @@
                                 <th class="" style="width:50px;">Disc Type</th>
                                 <th class="" style="width:50px;text-align:right;">Disc Rate</th>
                                 <th class="" style="width:30px; text-align:center">Img</th>
+                                <th class="">Image Upload</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -115,6 +116,13 @@
                                         <td class="">
                                             <button type="button" onclick="FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TBATCHDTL[i].BarImagesCount</button>
                                         </td>
+                                        <td class="">
+                                            @if (Model.DefaultAction != "V" && Model.TBATCHDTL[i].BARGENTYPE == "E")
+                                            {
+                                                <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">
+                                            }
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
+                                        </td>
                                     </tr>
                                 }
                             }
@@ -140,6 +148,7 @@
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.B_T_QNTY, new { htmlAttributes = new { id = "B_T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

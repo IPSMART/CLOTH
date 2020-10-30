@@ -15,8 +15,8 @@
             <div class="grid_title">
                 @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
                 {
-                    <input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
-                    <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="Addrow('AddRowsMain')" />
+                    @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
+                    @*<img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="Addrow('AddRowsMain')" />*@
                     <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
                 }
                 <div class="col-md-8">
@@ -68,7 +68,6 @@
                                             @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].PROGAUTONO, new { id = "P_PROGAUTONO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].PROGSLNO, new { id = "P_PROGSLNO_" + i })
-                                            @Html.HiddenFor(model => model.TPROGDTL[i].BALQNTY, new { id = "P_BALQNTY_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].PROGUNIQNO, new { id = "P_PROGUNIQNO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].DOCNO, new { id = "P_DOCNO_" + i })
@@ -139,13 +138,17 @@
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPROGDTL[i].NOS, new { htmlAttributes = new { id = "P_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateQNTY('" + i + "');", @class = " atextBoxFor", maxlength = 12 } })
-                                        </td>
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].BALNOS, new { id = "P_BALNOS_" + i })
+
+
+                                         </td>
                                         @*<td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].CUTLENGTH, new { id = "P_CUTLENGTH_" + i, @class = " atextBoxFor ", maxlength = 10, @onkeypress = "return numericOnly(this,4);", onblur = "CalculateQNTY('" + i + "');", @style = "text-align:right;" })
                                         </td>*@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPROGDTL[i].QNTY, new { htmlAttributes = new { id = "P_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
-                                        </td>
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].BALQNTY, new { id = "P_BALQNTY_" + i })
+ </td>
                                        
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITREMARK, new { id = "P_ITREMARK_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
