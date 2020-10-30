@@ -2088,7 +2088,6 @@ namespace Improvar.Controllers
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
-
                     var barcodedata = (from x in VE.TBATCHDTL
                                        group x by new { x.ITCD } into P
                                        select new
@@ -2640,8 +2639,12 @@ namespace Improvar.Controllers
 
                                                 var barimg = SaveBarImage(VE.TBATCHDTL[i].BarImages, barno, TTXN.EMD_NO.retShort());
                                                 dbsql = masterHelp.RetModeltoSql(barimg);
-                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
+                                                for (int tr = 0; tr <= barimg.Item1.Count - 1; tr++)
+                                                {
+                                                    dbsql = masterHelp.RetModeltoSql(barimg.Item1[tr]);
+                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                                }                                                
                                                 var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
                                                 foreach (var imgbar in disntImgHdr)
                                                 {
