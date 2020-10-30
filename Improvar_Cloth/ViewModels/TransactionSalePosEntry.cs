@@ -215,6 +215,8 @@ namespace Improvar.ViewModels
         public double? T_ITAMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_BLAMT { get; set; }
+        public string GOCD { get; set; }
+        
 
     }
 }

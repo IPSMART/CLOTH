@@ -1589,5 +1589,16 @@ namespace Improvar
             var dt = MasterHelpFa.SQLquery(sql);
             return dt;
         }
+        public bool IsValidBarno(string barno)
+        {
+            string scm = CommVar.CurSchema(UNQSNO);
+            string sql = "";
+            sql += " select distinct a.SLCD,a.autono,d.docno,d.docdt,b.qnty,b.rate,e.SLNM,e.district city ";
+            //sql += " from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
+            //sql += " where a.autono=b.autono and a.autono=d.autono and a.doccd=c.DOCCD and a.slcd=e.slcd  and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and itcd='" + itcd + "' and c.doctype='" + doctype + "' ";
+            //sql += " order by d.docdt,d.docno desc ";
+            var dt = MasterHelpFa.SQLquery(sql);
+            return true;
+        }
     }
 }

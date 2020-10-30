@@ -50,11 +50,11 @@
             }
         }
         if ("@Model.LINKDOCNO" != "") {
-            $('#_T_SALE_POS_DETAIL_GRID input').attr('readonly', 'readonly');
+         
             $('#_T_SALE_POS_PRODUCT_GRID input').attr('readonly', 'readonly');
             $('#_T_SALE_POS_DETAIL_GRID input').removeAttr("onblur");
             $('#_T_SALE_POS_PRODUCT_GRID input').attr('TabIndex', '-1');
-            $('#_T_SALE_POS_DETAIL_GRID input').attr('TabIndex', '-1');
+           
         }
         $("#WaitingMode").hide();
     });
@@ -62,14 +62,14 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:first-child").addClass('active');
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            return false;
-        }
+        if (!emptyFieldCheck("Please Select / Enter Party", "RTDEBCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
+        //    $("li").removeClass("active").addClass("");
+        //    $(".nav-tabs li:first-child").addClass('active');
+        //    $(".tab-content div").removeClass("active");
+        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        //    return false;
+        //}
         if ("@Model.MENU_PARA" == "PB") {
             if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
                 $("li").removeClass("active").addClass("");
@@ -631,6 +631,7 @@
         @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.INCLRATEASK, new { id = "INCLRATEASK" })
+        @Html.HiddenFor(a => a.GOCD, new { id = "GOCD" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         <div class="form-horizontal">
@@ -696,7 +697,7 @@
                     <div class="col-md-5">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Retail")
-                            @*<b style="color:Red;">*</b>*@
+                            <b style="color:Red;">*</b>
                         </div>
                     </div>
                     <div class="col-md-6">

@@ -289,7 +289,7 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0; double TOTAL_BOMQNTY = 0; double TOTAL_EXTRAQNTY = 0; double TOTAL_QQNTY = 0;
                 string str = "";
                 str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample, k.itnm||' '||k.styleno itstyle,a.barno from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
                 str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
                 str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
@@ -337,7 +337,7 @@ namespace Improvar.Controllers
                 string str2 = "";
                 str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k1.itgrpcd,n.itgrpnm, ";
                 str2 += " k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd,b.qnty qntyMst, ";
-                str2 += "a.sample,k.itnm||' '||k.styleno itstyle,k1.itnm||' '||k1.styleno itstyle1,k1.uomcd Quomcd,b.barno from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
+                str2 += "a.sample,k.styleno ||' '||k.itnm itstyle,k1.styleno||' '||k1.itnm itstyle1,k1.uomcd Quomcd,b.barno from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
                 str2 += Scm + ".M_SITEM k, " + Scm + ".M_SITEM k1, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
                 str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k1.ITCD(+) and b.ITCD = k.ITCD(+)  ";
@@ -1014,8 +1014,8 @@ namespace Improvar.Controllers
                 string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
                 string PRCCD = data[3].retStr();
                 //if(data[7].retStr()!="Y")  MTRLJOBCD = data[4].retStr();
-                string ITCD = data[5].retStr();
-                string ITGRPCD = data[6].retStr();
+                //string ITCD = data[5].retStr();
+                //string ITGRPCD = data[6].retStr();
 
                 if (val.retStr() == "")
                 {
@@ -1032,7 +1032,7 @@ namespace Improvar.Controllers
                 else
                 {
                     DataTable stock_data = new DataTable();
-                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), ITCD.retSqlformat(), MTRLJOBCD.retStr(), "", ITGRPCD.retStr(), "", PRCCD.retStr(), TAXGRPCD.retStr());
+                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
 
                     if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
                     {

@@ -72,7 +72,7 @@
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter SalesMen", "CRSLCD")) { return false; }
         return true;
@@ -396,6 +396,7 @@
         <input type="hidden" id="courierlinkcd" value="U" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
         <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
+        <input type="hidden" id="BarImages" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_TXN.DOCNO)
@@ -547,8 +548,8 @@
                     <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div class="tab-content">
-                    <div id="Programme" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                    <div id="Programme" class="tab-pane fade in active" style="">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;">
                             <div>
                                 <div id="partialdivProgramme" style="margin-top:0px;">
                                     @Html.Partial("_T_OUTISSPROCESS_Programme")
@@ -591,7 +592,7 @@
                                     <div class="col-md-8">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })@*"GetBarnoDetails(this.value);"*@
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
                                         </div>
                                     </div>
                                 }
@@ -736,9 +737,9 @@
                                             </div>
                                             @*<div class="col-md-1">
                                                 <div class="editor-field">*@
-                                                    @Html.HiddenFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR", @title = "FLAGMTR" } })
-                                                @*</div>
-                                            </div>*@
+                                            @Html.HiddenFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR", @title = "FLAGMTR" } })
+                                            @*</div>
+                                                </div>*@
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Rate", @placeholder = "Rate", @onchange = "GetGstPer('','');" } })
@@ -818,10 +819,10 @@
                                     {
                                         @*<div class="col-md-8">
                                             <div class="editor-field">*@
-                                                @Html.HiddenFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
-                                                @Html.HiddenFor(model => model.BALEYR, new { id = "BALEYR" })
-                                            @*</div>
-                                        </div>*@
+                                        @Html.HiddenFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", maxlength = 30, @placeholder = "BALENO", @title = "BALENO" } })
+                                        @Html.HiddenFor(model => model.BALEYR, new { id = "BALEYR" })
+                                        @*</div>
+                                            </div>*@
                                     }
                                     <div class="col-md-1">
                                         <div class="editor-field">
