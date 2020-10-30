@@ -1092,6 +1092,8 @@
     <Content Include="Views\T_OUTRECPROCESS\T_OUTRECPROCESS.cshtml" />
     <Content Include="Views\Shared\_T_OUTRECPROCESS_Programme.cshtml" />
     <Content Include="Views\Shared\_T_SALE_RateHistory.cshtml" />
+    <Content Include="Views\Shared\_T_OUTRECPROCESS_Receive.cshtml" />
+    <Content Include="Views\Shared\_T_OUTRECPROCESS_Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
