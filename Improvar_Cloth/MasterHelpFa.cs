@@ -1718,9 +1718,8 @@ namespace Improvar
             }
             string sql = "";
             if (whereClause.ToString() == "") whereClause = "autono in (" + autono + ")";
-            if (dtag == "D") sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where " + whereClause + "~";
+            sql += "update " + scmf + "." + tblname + " set dtag='" + dtag + "' where " + whereClause + "~";
             sql += "delete from " + scmf + "." + tblname + " where  " + whereClause;
-
             return sql;
         }
         public string T_Cntrl_Hdr_Updt_Ins(string autono, string vchrmod, string modcd, string mnthcd, string doccd, string docno, string docdt, short? emd_no, string doconlyno, double? vchrno,

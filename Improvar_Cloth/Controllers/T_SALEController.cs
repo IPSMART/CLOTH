@@ -2635,12 +2635,16 @@ namespace Improvar.Controllers
                                             TBATCHMST.OURDESIGN = VE.TBATCHDTL[i].OURDESIGN;
                                             if (VE.TBATCHDTL[i].BarImages.retStr() != "")
                                             {
-                                                dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", TTXN.AUTONO, "E",);
+                                                dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", "", "E","", "barno='"+ barno+"'");
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+
+                                                dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR_LINK", "", "E", "", "barno='" + barno + "'");
                                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
                                                 var barimg = SaveBarImage(VE.TBATCHDTL[i].BarImages, barno, TTXN.EMD_NO.retShort());
-                                                DB.T_BATCH_IMG_HDR.AddRange(barimg.Item1);
-                                                DB.SaveChanges();
+                                                dbsql = masterHelp.RetModeltoSql(barimg);
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
                                                 var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
                                                 foreach (var imgbar in disntImgHdr)
                                                 {
@@ -2649,7 +2653,9 @@ namespace Improvar.Controllers
                                                     m_batchImglink.EMD_NO = TTXN.EMD_NO;
                                                     m_batchImglink.BARNO = imgbar.BARNO;
                                                     m_batchImglink.MAINBARNO = imgbar.BARNO;
-                                                    DB.T_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
+
+                                                    dbsql = masterHelp.RetModeltoSql(m_batchImglink);
+                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                                 }
                                             }
                                         }
@@ -2868,7 +2874,6 @@ namespace Improvar.Controllers
                             DB.T_CNTRL_DOC_PASS.AddRange(TCDP_DATA.Item1);
                         }
                     }
-                    //if (docpassrem != "") DB.T_CNTRL_DOC_PASS.Add(TCDP);
                     #endregion
 
                     if (VE.UploadDOC != null)// add
