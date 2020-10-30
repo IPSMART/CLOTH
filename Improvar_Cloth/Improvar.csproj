@@ -554,6 +554,7 @@
     <Compile Include="Models\T_TXNOTH.cs" />
     <Compile Include="Models\T_TXNPYMT.cs" />
     <Compile Include="Models\T_TXNPYMT_HDR.cs" />
+    <Compile Include="Models\T_TXNSLSMN.cs" />
     <Compile Include="Models\T_TXNSTATUS.cs" />
     <Compile Include="Models\T_TXNTRANS.cs" />
     <Compile Include="Models\T_TXN_LINKNO.cs" />
