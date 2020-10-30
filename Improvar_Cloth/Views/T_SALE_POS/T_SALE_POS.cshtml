@@ -20,6 +20,7 @@
         height: 190px;
     }
 </style>
+<script src="~/Scripts/jquery.min.js"></script>
 <script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
@@ -279,6 +280,265 @@
         AmountCalculateTotal();
 
     }
+    function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var NEW_AMT = document.getElementById(id.id).value;
+        var PERCENTAGE = document.getElementById(PER.id).value;
+        var AMT = document.getElementById(AMOUNT.id).value;
+        var AMT_1 = document.getElementById(AMT1.id).value;
+        var AMT_2 = document.getElementById(AMT2.id).value;
+        var AMT_3 = document.getElementById(AMT3.id).value;
+        var AMT_4 = document.getElementById(AMT4.id).value;
+        if (PERCENTAGE != "") {
+            var CAL_ABET_AMT = parseFloat(AMT) * parseFloat(PERCENTAGE) / 100;
+            var BAL_AMT = Math.abs(parseFloat(NEW_AMT) - parseFloat(CAL_ABET_AMT));
+            if (BAL_AMT <= 1) {
+                document.getElementById(id.id).value = parseFloat(NEW_AMT).toFixed(2);
+                document.getElementById(NETAMT.id).value = parseFloat(parseFloat(NEW_AMT) + parseFloat(AMT) + parseFloat(AMT_1) + parseFloat(AMT_2) + parseFloat(AMT_3) + parseFloat(AMT_4)).toFixed(2);
+            }
+            else {
+                document.getElementById(id.id).value = parseFloat(CAL_ABET_AMT).toFixed(2);
+                document.getElementById(NETAMT.id).value = parseFloat(parseFloat(CAL_ABET_AMT) + parseFloat(AMT) + parseFloat(AMT_1) + parseFloat(AMT_2) + parseFloat(AMT_3) + parseFloat(AMT_4)).toFixed(2);
+            }
+        }
+        //GRID TOTAL CALCULATION
+        AmountCalculateTotal();
+
+    }
+    function AmountCalculateTotal() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var T_CURR_AMT = 0; var T_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_NET_AMT = 0;
+        var GridRow = $("#_T_SALE_POS_AMOUNT_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var CURR_AMT = document.getElementById("ACURR_AMT_" + i).value;
+            if (CURR_AMT != "") { T_CURR_AMT = T_CURR_AMT + parseFloat(CURR_AMT); } else { T_CURR_AMT = T_CURR_AMT + parseFloat(0); }
+
+            var AMT = document.getElementById("A_AMT_" + i).value;
+            if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
+
+            var IGST_AMT = document.getElementById("AIGSTAMT_" + i).value;
+            if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
+
+            var CGST_AMT = document.getElementById("ACGSTAMT_" + i).value;
+            if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
+
+            var SGST_AMT = document.getElementById("ASGSTAMT_" + i).value;
+            if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
+
+            var CESS_AMT = document.getElementById("ACESSAMT_" + i).value;
+            if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
+
+            var DUTY_AMT = document.getElementById("ADUTYAMT_" + i).value;
+            if (DUTY_AMT != "") { T_DUTY_AMT = T_DUTY_AMT + parseFloat(DUTY_AMT); } else { T_DUTY_AMT = T_DUTY_AMT + parseFloat(0); }
+
+            var NET_AMT = document.getElementById("ANETAMT_" + i).value;
+            if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
+
+        }
+        document.getElementById("A_T_CURR").value = parseFloat(T_CURR_AMT).toFixed(2);
+        document.getElementById("A_T_AMOUNT").value = parseFloat(T_AMT).toFixed(2);
+        document.getElementById("A_T_IGST").value = parseFloat(T_IGST_AMT).toFixed(2);
+        document.getElementById("A_T_CGST").value = parseFloat(T_CGST_AMT).toFixed(2);
+        document.getElementById("A_T_SGST").value = parseFloat(T_SGST_AMT).toFixed(2);
+        document.getElementById("A_T_CESS").value = parseFloat(T_CESS_AMT).toFixed(2);
+        document.getElementById("A_T_DUTY").value = parseFloat(T_DUTY_AMT).toFixed(2);
+        document.getElementById("A_T_NET").value = parseFloat(T_NET_AMT).toFixed(2);
+
+        //BILL AMOUNT CALCULATION
+        BillAmountCalculate();
+
+    }
+    function BillAmountCalculate() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        debugger;
+        var R_TOTAL_BILL_AMOUNT = 0;
+        var TOTAL_ROUND = 0;
+        var netamt = 0;
+        var ROUND_TAG = document.getElementById("RoundOff").checked;
+        var D_TOTALNOS = 0, D_TOTALQNTY = 0, D_TOTALTAXVAL = 0, A_TOTALTAXVAL = 0, D_TOTALIGST = 0, A_TOTALIGST = 0, D_TOTALCGST = 0, A_TOTALCGST = 0, D_TOTALSGST = 0, A_TOTALSGST = 0, D_TOTALNETAMT = 0, A_TOTALNETAMT = 0;
+        var T_NOS = $("#T_NOS").val();
+        if (T_NOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(T_NOS); } else { D_TOTALNOS = D_TOTALNOS + parseFloat(0); }
+
+        var T_QNTY = $("#T_QNTY").val();
+        if (T_QNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(T_QNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseFloat(0); }
+
+        var T_GROSS_AMT = $("#T_GROSS_AMT").val();
+        if (T_GROSS_AMT != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(T_GROSS_AMT); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(0); }
+
+        var A_T_AMOUNT = $("#A_T_AMOUNT").val();
+        if (A_T_AMOUNT != "") { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(A_T_AMOUNT); } else { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(0); }
+        //
+        var T_IGST_AMT = $("#T_IGST_AMT").val();
+        if (T_IGST_AMT != "") { D_TOTALIGST = D_TOTALIGST + parseFloat(T_IGST_AMT); } else { D_TOTALIGST = D_TOTALIGST + parseFloat(0); }
+
+        var A_T_IGST = $("#A_T_IGST").val();
+        if (A_T_IGST != "") { A_TOTALIGST = A_TOTALIGST + parseFloat(A_T_IGST); } else { A_TOTALIGST = A_TOTALIGST + parseFloat(0); }
+
+        var T_CGST_AMT = $("#T_CGST_AMT").val();
+        if (T_CGST_AMT != "") { D_TOTALCGST = D_TOTALCGST + parseFloat(T_CGST_AMT); } else { D_TOTALCGST = D_TOTALCGST + parseFloat(0); }
+
+        var A_T_CGST = $("#A_T_CGST").val();
+        if (A_T_CGST != "") { A_TOTALCGST = A_TOTALCGST + parseFloat(A_T_CGST); } else { A_TOTALCGST = A_TOTALCGST + parseFloat(0); }
+
+        var T_SGST_AMT = $("#T_SGST_AMT").val();
+        if (T_SGST_AMT != "") { D_TOTALSGST = D_TOTALSGST + parseFloat(T_SGST_AMT); } else { D_TOTALSGST = D_TOTALSGST + parseFloat(0); }
+
+        var A_T_SGST = $("#A_T_SGST").val();
+        if (A_T_SGST != "") { A_TOTALSGST = A_TOTALSGST + parseFloat(A_T_SGST); } else { A_TOTALSGST = A_TOTALSGST + parseFloat(0); }
+
+        var T_NET_AMT = $("#T_NET_AMT").val();
+        if (T_NET_AMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(T_NET_AMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(0); }
+
+        var A_T_NET = $("#A_T_NET").val();
+        if (A_T_NET != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_T_NET); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(0); }
+
+        var totaltaxval = 0;
+        totaltaxval = parseFloat(parseFloat(D_TOTALTAXVAL) + parseFloat(A_TOTALTAXVAL)).toFixed(2);
+
+        var totaltax = 0;
+        totaltax = parseFloat(parseFloat(D_TOTALIGST) + parseFloat(A_TOTALIGST) + parseFloat(D_TOTALCGST) + parseFloat(A_TOTALCGST) + parseFloat(D_TOTALSGST) + parseFloat(A_TOTALSGST)).toFixed(2);
+
+        var totalbillamt = 0;
+        totalbillamt = parseFloat(parseFloat(D_TOTALNETAMT) + parseFloat(A_TOTALNETAMT)).toFixed(2);
+
+        $("#TOTNOS").val(parseFloat(D_TOTALNOS).toFixed(0));
+        $("#TOTQNTY").val(parseFloat(D_TOTALQNTY).toFixed(2));
+        $("#TOTTAXVAL").val(parseFloat(totaltaxval).toFixed(2));
+        $("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
+
+        //tcs
+        var TCSPER = 0; TCSAMT = 0; TCSON = 0;
+        var MENU_PARA = $("#MENU_PARA").val();
+        if (MENU_PARA != "SR" || MENU_PARA != "PR") {
+            TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
+            if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
+            document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
+            if (MENU_PARA == "PB") {
+                TCSON = $("#TCSON").val();
+                if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
+            }
+            else {
+                GetTCSON(totalbillamt);
+                TCSON = $("#TCSON").val();
+                if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+            }
+            TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100);
+            TCSAMT = CalculateTcsAmt(TCSAMT);
+            if (MENU_PARA == "PB") {
+                var NEW_TCSAMT = $("#TCSAMT").val();
+                if (NEW_TCSAMT == "") { NEW_TCSAMT = parseFloat(0); } else { NEW_TCSAMT = parseFloat(NEW_TCSAMT) }
+
+                var TCSON = $("#TCSON").val();
+                if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+
+                var TCSPER = $("#TCSPER").val();
+                if (TCSPER == "") { TCSPER = parseFloat(0); } else { TCSPER = parseFloat(TCSPER) }
+
+                var CAL_TCSAMT = TCSAMT;
+                var BAL_AMT = Math.abs(parseFloat(NEW_TCSAMT) - parseFloat(CAL_TCSAMT));
+                if (BAL_AMT <= 1 && NEW_TCSAMT > 0) {
+                    $("#TCSAMT").val(parseFloat(NEW_TCSAMT).toFixed(2));
+                    TCSAMT = NEW_TCSAMT;
+                }
+                else {
+                    $("#TCSAMT").val(parseFloat(CAL_TCSAMT).toFixed(2));
+                    TCSAMT = CAL_TCSAMT;
+                }
+            }
+            else {
+                document.getElementById("TCSAMT").value = parseFloat(TCSAMT).toFixed(2);
+
+            }
+        }
+        //
+        totalbillamt = parseFloat(totalbillamt) + parseFloat(TCSAMT);
+        var REVCHRG = $("#REVCHRG").val();
+        if (REVCHRG == "Y") {
+            totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
+        }
+        if (ROUND_TAG == true) {
+            R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
+            TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
+            document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+        }
+        else {
+            TOTAL_ROUND = 0;
+            document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
+            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+        }
+
+    }
+
+    function GetTCSON(billamount) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var MENU_PARA = $("#MENU_PARA").val();
+        var TCSON = 0;
+        if ($("#TCSAPPL").val() != "Y") {
+            TCSON = parseFloat(0);
+        }
+        else {
+            var tdslimit = $("#TDSLIMIT").val();
+            if (tdslimit == "") { tdslimit = parseFloat(0); } else { tdslimit = parseFloat(tdslimit) }
+
+            var amt = $("#AMT").val();
+            if (amt == "") { amt = parseFloat(0); } else { amt = parseFloat(amt) }
+
+            var blamt = billamount;//$("#BILL_AMT").val();
+            if (blamt == "") { blamt = parseFloat(0); } else { blamt = parseFloat(blamt) }
+
+            var tcsamt = $("#TCSAMT").val();
+            if (tcsamt == "") { tcsamt = parseFloat(0); } else { tcsamt = parseFloat(tcsamt) }
+
+            var totaltaxableamt = $("#TOTTAXVAL").val();
+            if (totaltaxableamt == "") { totaltaxableamt = parseFloat(0); } else { totaltaxableamt = parseFloat(totaltaxableamt) }
+
+            var tdscalcon = $("#TDSCALCON").val();
+
+            var TL = tdslimit;	//tdslimit from m_tds_cntrl_dtl
+            var O = amt;	//amt from slcdtcscalcon func
+            var B = blamt;//parseFloat(blamt - tcsamt);//	blamt - tcsamt
+            var T = totaltaxableamt;//	total taxable amt
+
+
+            if (tdscalcon == "B") {
+                TCSON = parseFloat(parseFloat(O) + parseFloat(B) - parseFloat(TL));
+            }
+            else {// tdscalcon = "T"
+                TCSON = parseFloat(parseFloat(O) + parseFloat(T) - parseFloat(TL));
+            }
+
+            if (TCSON < 0) TCSON = parseFloat(0);
+        }
+        $("#TCSON").val(parseFloat(TCSON).toFixed(2));
+    }
+
+    function CalculateTcsAmt(TCSAMT) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var TDSROUNDCAL = $("#TDSROUNDCAL").val();
+        if (TDSROUNDCAL == "Y" || TDSROUNDCAL == "") {
+            TCSAMT = Math.round(TCSAMT); //==yes or null or blank
+        }
+        else
+            if (TDSROUNDCAL == "N") {
+                TCSAMT = Math.ceil(TCSAMT); //==nxt
+            }
+            else
+                if (TDSROUNDCAL == "L") {
+                    TCSAMT = Math.floor(TCSAMT); //==least
+                }
+                else {
+                    TCSAMT = TCSAMT; //==2
+                }
+        return TCSAMT;
+    }
 </script>
 <script>
     function pageprinting() {
@@ -297,6 +557,29 @@
                 msgError(XMLHttpRequest.responseText);
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
+        });
+    }
+</script>
+<script>
+    function FillImageModal(index) {
+        debugger;
+        //var OpenImageModal =
+        $('#ActiveBarRowIndex').val(index);
+        var actt = ""; $("#div_carousel_inner").html('');
+        var arr = $("#B_BarImages_" + index).val();
+        arr = arr.split(String.fromCharCode(179));
+        $.each(arr, function (index, value) {
+            var imgname = (value.split('~')[0]);
+            var id = (imgname).split('.')[0];
+            var ImageDesc = (value.split('~')[1]);
+            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+            htm += '<div id="' + id + '" class="item ' + actt + '">';
+            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+            htm += '    <span class="carousel-caption">';
+            htm += '    <p> ' + ImageDesc + ' </p>';
+            htm += '    </span>';
+            htm += '</div>';
+            $("#div_carousel_inner").append(htm);
         });
     }
 </script>
@@ -418,7 +701,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE/ADDR=ADDR');", @placeholder = "Code", maxlength = 8 } })
+                            @Html.EditorFor(model => model.T_TXNMEMO.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE/ADDR=ADDR');", @placeholder = "Code", maxlength = 8 } })
                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')" />
                         </div>
                     </div>
@@ -448,12 +731,12 @@
                     </div>
                     <div class="col-md-7">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.NM, new { htmlAttributes = new { @class = "form-control", id = "NM", maxlength = 15, @placeholder = "Name" } })
+                            @Html.EditorFor(model => model.T_TXNMEMO.NM, new { htmlAttributes = new { @class = "form-control", id = "NM", maxlength = 15, @placeholder = "Name" } })
                         </div>
                     </div>
                     <div class="col-md-5">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.MOBNO, new { htmlAttributes = new { @class = "form-control", id = "MOBNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Mobile No.", maxlength = 10 } })
+                            @Html.EditorFor(model => model.T_TXNMEMO.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Mobile No.", maxlength = 10 } })
                         </div>
                     </div>
                     <div class="col-md-5" style="width: auto;">
@@ -678,7 +961,7 @@
                                     <div class="pull-left">
                                         <input type="hidden" id="ActiveBarRowIndex" />
                                         <input type="hidden" id="BarImages" />
-                                        <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
+                                        @*<button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>*@
                                     </div>
                                 </div>
                                 <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>

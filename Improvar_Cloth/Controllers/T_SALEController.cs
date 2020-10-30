@@ -2080,18 +2080,14 @@ namespace Improvar.Controllers
 
             OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
             OraCmd.Transaction = OraTrans;
-            DB.Configuration.ValidateOnSaveEnabled = false;
             try
             {
-                //DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
                 OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
-
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string ContentFlg = "";
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
-
                     var barcodedata = (from x in VE.TBATCHDTL
                                        group x by new { x.ITCD } into P
                                        select new
@@ -2627,17 +2623,28 @@ namespace Improvar.Controllers
                                         TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
                                         TBATCHMST.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
                                     }
-                                    if (VE.T_TXN.BARGENTYPE == "E")
+                                    if (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E")
                                     {
-                                        TBATCHMST.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
+                                       TBATCHMST.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
                                         if (VE.MENU_PARA == "PB")
                                         {
                                             TBATCHMST.OURDESIGN = VE.TBATCHDTL[i].OURDESIGN;
                                             if (VE.TBATCHDTL[i].BarImages.retStr() != "")
                                             {
+                                                dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", "", "E","", "barno='"+ barno+"'");
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+
+                                                dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR_LINK", "", "E", "", "barno='" + barno + "'");
+                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+
                                                 var barimg = SaveBarImage(VE.TBATCHDTL[i].BarImages, barno, TTXN.EMD_NO.retShort());
-                                                DB.T_BATCH_IMG_HDR.AddRange(barimg.Item1);
-                                                DB.SaveChanges();
+                                                dbsql = masterHelp.RetModeltoSql(barimg);
+
+                                                for (int tr = 0; tr <= barimg.Item1.Count - 1; tr++)
+                                                {
+                                                    dbsql = masterHelp.RetModeltoSql(barimg.Item1[tr]);
+                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                                }                                                
                                                 var disntImgHdr = barimg.Item1.GroupBy(u => u.BARNO).Select(r => r.First()).ToList();
                                                 foreach (var imgbar in disntImgHdr)
                                                 {
@@ -2646,7 +2653,9 @@ namespace Improvar.Controllers
                                                     m_batchImglink.EMD_NO = TTXN.EMD_NO;
                                                     m_batchImglink.BARNO = imgbar.BARNO;
                                                     m_batchImglink.MAINBARNO = imgbar.BARNO;
-                                                    DB.T_BATCH_IMG_HDR_LINK.Add(m_batchImglink);
+
+                                                    dbsql = masterHelp.RetModeltoSql(m_batchImglink);
+                                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                                 }
                                             }
                                         }
@@ -2865,7 +2874,6 @@ namespace Improvar.Controllers
                             DB.T_CNTRL_DOC_PASS.AddRange(TCDP_DATA.Item1);
                         }
                     }
-                    //if (docpassrem != "") DB.T_CNTRL_DOC_PASS.Add(TCDP);
                     #endregion
 
                     if (VE.UploadDOC != null)// add
@@ -3329,7 +3337,7 @@ namespace Improvar.Controllers
             int slno = 0;
             try
             {
-                var BarImages = BarImage.retStr().Trim(Convert.ToChar(Cn.GCS())).Split(Convert.ToChar(Cn.GCS()));
+                var BarImages = BarImage.retStr().Split((char)179);
                 foreach (string image in BarImages)
                 {
                     if (image != "")

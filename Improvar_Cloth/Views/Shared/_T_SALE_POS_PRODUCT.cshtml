@@ -14,7 +14,7 @@
             @Html.ValidationSummary(true)
             <div class="grid_title">
                 @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
-                <img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />
+                @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />*@
                 <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteBarnoRow()" />
                 <div class="col-md-8">
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_POS_PRODUCT_GRID');" />
@@ -35,7 +35,7 @@
                                 <th class="" style="width: 100px;text-align:center;">ItmGrp</th>
                                 <th class="" style="width:45px;">Material Job</th>
                                 <th class="" style="width:71px;">Item Code</th>
-                                <th class="" style="width:160px;">Item Design</th>
+                                <th class="" style="">Item Design</th>
                                 <th class="" style="width: 34px;">Stock Type</th>
                                 <th class="" style="width: 50px;">Part</th>
                                 <th class="" style="width: 50px;">Color Code</th>
@@ -51,6 +51,7 @@
                                     <th class="" style="width:100px;text-align:right;font-weight: 900;">Incl.Rate</th>
                                 }
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
+                                <th class="" style="width:80px;text-align:right;">Amount</th>
                                 @*@if (Model.MENU_PARA == "PB")
                                     {
                                         <th class="" style="width:80px;text-align:right;">Wholesale Rate</th>
@@ -65,13 +66,8 @@
                                 <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>
                                 <th class="" style="width:136px;">Order No.</th>
                                 <th class="" style="width:79px;">Order Date</th>
-                                <th class="" style="width:79px;">PC Section</th>
+                                <th class="" style="width:40px;">PC Section</th>
                                 <th class="" style="width:30px; text-align:center">Img</th>
-                                <th class="">Image Upload</th>
-                                @*@if (Model.DefaultAction != "V")
-                                {
-                                    <th class="sticky-cell-opposite" style="width:40px;"></th>
-                                }*@
                             </tr>
                         </thead>
                         <tbody>
@@ -161,21 +157,24 @@
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })
                                         </td>
                                         <td class="">
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].AMT, new { htmlattributes = new { id = "B_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTPER_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ALL_GSTPER, new { id = "B_ALL_GSTPER_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].PRODGRPGSTPER, new { id = "B_PRODGRPGSTPER_" + i })
                                         </td>
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })*@
-                                            @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].DISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_DISCTYPE_"+i })
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })*@
+                                            @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].DISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_DISCTYPE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
                                         </td>
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })*@
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })*@
                                             @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].TDDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].TDDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_TDDISCTYPE_" + i })
                                         </td>
                                         <td class="">
@@ -183,7 +182,7 @@
                                         </td>
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].SCMDISCTYPE_DESC, new { id = "B_SCMDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].SCMDISCTYPE, new { id = "B_SCMDISCTYPE_" + i })*@
+                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].SCMDISCTYPE, new { id = "B_SCMDISCTYPE_" + i })*@
                                             @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].SCMDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].SCMDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_SCMDISCTYPE_" + i })
                                         </td>
                                         <td class="">
@@ -191,8 +190,8 @@
                                         </td>
                                         <td class="">
                                             @*@Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { id = "B_ORDDOCNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })*@
-                                           
-                                            @Html.EditorFor(model => model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "B_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=ORDDOCNO=0/" + "B_ORDDOCDT_" + i + "=ORDDOCDT=1/" + "B_ORDAUTONO_" + i + "=ORDAUTONO/" + "B_ORDSLNO_" + i + "=ORDSLNO','"+ "B_ORDDOCNO_" + i + "','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=PYMTCD=1/" + "B_ORDDOCDT_" + i + "=PYMTNM=0','" + "B_ORDDOCNO_" + i + "','Y');", @placeholder = "Code", maxlength = 6 } })
+
+                                            @Html.EditorFor(model => model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "B_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=ORDDOCNO=0/" + "B_ORDDOCDT_" + i + "=ORDDOCDT=1/" + "B_ORDAUTONO_" + i + "=ORDAUTONO/" + "B_ORDSLNO_" + i + "=ORDSLNO','" + "B_ORDDOCNO_" + i + "','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=PYMTCD=1/" + "B_ORDDOCDT_" + i + "=PYMTNM=0','" + "B_ORDDOCNO_" + i + "','Y');", @placeholder = "Code", maxlength = 6 } })
                                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", "T_SALE_POS")','Order Details','B_ORDDOCNO_@i','B_ORDDOCNO_@i=ORDDOCNO=0/B_ORDDOCDT_@i=ORDDOCDT=1/B_ORDAUTONO_@i=ORDAUTONO/B_ORDSLNO_@i=ORDSLNO','B_ITCD_@i','Y')" />
 
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ORDAUTONO, new { id = "B_ORDAUTONO_" + i })
@@ -207,20 +206,8 @@
 
                                         <td class="">
                                             <button type="button" onclick="FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TsalePos_TBATCHDTL[i].BarImagesCount</button>
-                                        </td>
-                                        <td class="">
-                                            @if (Model.DefaultAction != "V")
-                                            {
-                                                <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">
-                                            }
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
                                         </td>
-                                        @*@if (Model.DefaultAction != "V")
-                                        {
-                                            <td class="sticky-cell-opposite">
-                                                <button type="button" class="btn btn-primary px-3" style="padding: 0px 12px 0px 12px;color:chartreuse;" onclick="FillBarcodeArea('', '_T_SALE_POS_PRODUCT', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
-                                            </td>
-                                        }*@
                                     </tr>
                                 }
                             }
@@ -251,11 +238,15 @@
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.B_T_NOS, new { htmlAttributes = new { id = "B_T_NOS", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
+
                                 @if (Model.INCLRATEASK == "Y")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.T_AMT, new { htmlattributes = new { id = "T_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -267,11 +258,6 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @*@if (Model.DefaultAction != "V")
-                                {
-                                    <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                }*@
                             </tr>
                         </tfoot>
                     </table>

@@ -275,6 +275,7 @@
     <Compile Include="Controllers\Prepare_JSONController.cs" />
     <Compile Include="Controllers\PrintPageController.cs" />
     <Compile Include="Controllers\Rep_BarcodePrintController.cs" />
+    <Compile Include="Controllers\Rep_Bar_HistoryController.cs" />
     <Compile Include="Controllers\Rep_Doc_PrintController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
@@ -610,6 +611,7 @@
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
     <Compile Include="ViewModels\RateHistory.cs" />
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
+    <Compile Include="ViewModels\RepBarHistory.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
     <Compile Include="ViewModels\ColorEntry.cs" />
@@ -1096,6 +1098,8 @@
     <Content Include="Views\Shared\_T_OUTRECPROCESS_Detail.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_AMOUNT.cshtml" />
     <Content Include="Views\Shared\_T_OUTRECPROCESS_Amount.cshtml" />
+    <Content Include="Views\Rep_Bar_History\Rep_Bar_History.cshtml" />
+    <Content Include="Views\Shared\_Rep_Bar_History_Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
