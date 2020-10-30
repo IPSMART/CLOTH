@@ -1482,7 +1482,7 @@ namespace Improvar.Controllers
                 string sql = "", scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
                 Cn.getQueryString(VE);
                 string S_P = "";
-                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") { S_P = "P"; } else { S_P = "S"; }
+                S_P = "S"; 
 
                 sql = "";
                 sql += "select a.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, ";
@@ -1801,16 +1801,19 @@ namespace Improvar.Controllers
                                           NOS = P.Sum(A => A.NOS)
                                       }).Where(a => a.QTY != 0).ToList();
 
-                    var difList = barcodedata.Where(a => !txndtldata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))
-            .Union(txndtldata.Where(a => !barcodedata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))).ToList();
+                    //        var difList = barcodedata.Where(a => !txndtldata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))
+                    //.Union(txndtldata.Where(a => !barcodedata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))).ToList();
+                    var difList = barcodedata.Where(a => !txndtldata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS)).ToList();
+
                     if (difList != null && difList.Count > 0)
                     {
                         OraTrans.Rollback();
                         OraCon.Dispose();
-                        return Content("Barcode grid & Detail grid itcd wise qnty, nos should match !!");
+                        return Content("Barcode grid itcd wise qnty, nos should match !!");
                     }
 
                     T_TXN TTXN = new T_TXN();
+                    T_TXNMEMO TTXNMEMO = new T_TXNMEMO();
                     T_TXNTRANS TXNTRANS = new T_TXNTRANS();
                     T_TXNOTH TTXNOTH = new T_TXNOTH();
                     T_TXN_LINKNO TTXNLINKNO = new T_TXN_LINKNO();
@@ -1843,30 +1846,14 @@ namespace Improvar.Controllers
 
                     switch (VE.MENU_PARA)
                     {
-                        case "SBPCK":
-                            stkdrcr = "N"; blactpost = false; blgstpost = false; break;
-                        case "SB":
-                            stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
-                        case "SBDIR":
-                            stkdrcr = "C"; trcd = "SB"; strrem = "Sale" + strqty; break;
-                        case "SR":
-                            stkdrcr = "D"; dr = "C"; cr = "D"; trcd = "SC"; strrem = "SRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
                         case "SBCM":
-                            stkdrcr = "C"; trcd = "SB"; strrem = "Cash Sale" + strqty; break;
+                            stkdrcr = "C"; trcd = "SB"; strrem = "Cash Memo" + strqty; break;
                         case "SBCMR":
-                            stkdrcr = "D"; dr = "C"; cr = "D"; trcd = "SC"; strrem = "Cash Sale Return" + strqty; break;
-                        case "SBEXP":
-                            stkdrcr = "C"; trcd = "SB"; strrem = "Sale Export" + strqty; break;
-                        case "PI":
-                            stkdrcr = "0"; blactpost = false; blgstpost = true; break;
-                        case "PB":
-                            stkdrcr = "D"; parglcd = "purdebglcd"; dr = "C"; cr = "D"; trcd = "PB"; strrem = "Purchase Blno " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
-                        case "PR":
-                            stkdrcr = "C"; parglcd = "purdebglcd"; trcd = "PD"; strrem = "PRM agst " + VE.T_TXN.PREFNO + " dtd. " + VE.T_TXN.PREFDT.ToString().retDateStr() + strqty; break;
+                            stkdrcr = "D"; dr = "C"; cr = "D"; trcd = "SC"; strrem = "Cash Memo Credit Note" + strqty; break;
                     }
 
                     string slcdlink = "", slcdpara = VE.MENU_PARA;
-                    if (VE.MENU_PARA == "PR") slcdpara = "PB";
+                    //if (VE.MENU_PARA == "PR") slcdpara = "PB";
                     string sql = "";
                     sql = "select class1cd, " + parglcd + " glcd from " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg ";
                     DataTable tblsys = masterHelp.SQLquery(sql);
@@ -1876,10 +1863,10 @@ namespace Improvar.Controllers
                     }
 
                     sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
-                    sql += "'" + VE.TTXNDTL[0].GLCD.retStr() + "' prodglcd, ";
-                    if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
-                    else sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
-                    if (slcdpara == "PB") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
+                    sql += "'" + VE.TsalePos_TBATCHDTL[0].GLCD.retStr() + "' prodglcd, ";
+                    //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
+                    sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
+                    //if (slcdpara == "PB") sql += "a.purdebglcd parglcd, "; else sql += "a.saldebglcd parglcd, ";
                     sql += "igst_rvi, cgst_rvi, sgst_rvi, cess_rvi, igst_rvo, cgst_rvo, sgst_rvo, cess_rvo ";
                     sql += "from " + scm1 + ".m_syscnfg a, " + scmf + ".m_post b, " + scm1 + ".m_subleg_com c ";
                     sql += "where c.slcd in('" + VE.T_TXN.SLCD + "',null) and ";
@@ -1905,12 +1892,12 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-                    for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
+                    for (int i = 0; i <= VE.TsalePos_TBATCHDTL.Count - 1; i++)
                     {
-                        if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null)
+                        if (VE.TsalePos_TBATCHDTL[i].SLNO != 0 && VE.TsalePos_TBATCHDTL[i].ITCD != null)
                         {
-                            titamt = titamt + VE.TTXNDTL[i].AMT.retDbl();
-                            titqty = titqty + Convert.ToDouble(VE.TTXNDTL[i].QNTY);
+                            titamt = titamt + VE.TsalePos_TBATCHDTL[i].AMT.retDbl();
+                            titqty = titqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].QNTY);
                             lastitemno = i;
                         }
                     }
@@ -1927,7 +1914,7 @@ namespace Improvar.Controllers
                         auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TTXN.DOCNO, TTXN.DOCCD, Ddate);
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
-                        TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
+                        //TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
                         TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
@@ -1941,31 +1928,11 @@ namespace Improvar.Controllers
                         TTXN.DTAG = "E";
                     }
                     TTXN.DOCTAG = VE.MENU_PARA.retStr().Length > 2 ? VE.MENU_PARA.retStr().Remove(2) : VE.MENU_PARA.retStr();
-                    TTXN.SLCD = VE.T_TXN.SLCD;
-                    TTXN.CONSLCD = VE.T_TXN.CONSLCD;
-                    TTXN.CURR_CD = VE.T_TXN.CURR_CD;
-                    TTXN.CURRRT = VE.T_TXN.CURRRT;
-                    TTXN.BLAMT = VE.T_TXN.BLAMT;
-                    TTXN.PREFDT = VE.T_TXN.PREFDT;
-                    TTXN.PREFNO = VE.T_TXN.PREFNO;
-                    TTXN.REVCHRG = VE.T_TXN.REVCHRG;
-                    TTXN.ROAMT = VE.T_TXN.ROAMT;
-                    if (VE.RoundOff == true) { TTXN.ROYN = "Y"; } else { TTXN.ROYN = "N"; }
                     TTXN.GOCD = VE.T_TXN.GOCD;
-                    TTXN.JOBCD = VE.T_TXN.JOBCD;
-                    TTXN.MANSLIPNO = VE.T_TXN.MANSLIPNO;
                     TTXN.DUEDAYS = VE.T_TXN.DUEDAYS;
-                    TTXN.PARGLCD = parglcd; // VE.T_TXN.PARGLCD;
-                    TTXN.GLCD = VE.T_TXN.GLCD;
-                    TTXN.CLASS1CD = parclass1cd; // VE.T_TXN.CLASS1CD;
-                    TTXN.CLASS2CD = VE.T_TXN.CLASS2CD;
-                    TTXN.LINECD = VE.T_TXN.LINECD;
-                    TTXN.BARGENTYPE = VE.T_TXN.BARGENTYPE;
-                    //TTXN.WPPER = VE.T_TXN.WPPER;
-                    //TTXN.RPPER = VE.T_TXN.RPPER;
+                    TTXN.PARGLCD = parglcd; 
+                    TTXN.CLASS1CD = parclass1cd; 
                     TTXN.MENU_PARA = VE.T_TXN.MENU_PARA;
-                    TTXN.TCSPER = VE.T_TXN.TCSPER;
-                    TTXN.TCSAMT = VE.T_TXN.TCSAMT;
                     if (VE.DefaultAction == "E")
                     {
                         dbsql = masterHelp.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
