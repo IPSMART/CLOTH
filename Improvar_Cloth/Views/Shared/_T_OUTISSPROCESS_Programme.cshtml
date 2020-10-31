@@ -20,7 +20,7 @@
                     <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
                 }
                 <div class="col-md-8">
-                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PRODUCT_GRID');" />
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_OUTISSPROCESS_Programme_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <div class="col-md-1" style="width:auto;">
@@ -37,7 +37,7 @@
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="" style="width: 55px;text-align:center;">SL No.</th>
-                                <th class="" style="width:81px;">Barno</th>
+                                <th class="" style="width:161px;">Barno</th>
                                 <th class="" style="width:81px;">Group Code</th>
                                 <th class="" style="width:177px;">Group Name</th>
                                 <th class="" style="width:110px;">Item Code <b style="color:Red;">*</b></th>
@@ -52,8 +52,8 @@
                                 <th class="" style="width:111px;text-align:right;">Nos</th>
                                 <th class="" style="width:60px;text-align:right;">Cut Length</th>
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
-                                <th class="" style="width: 177px;">Shade</th>
-                                <th class="" style="width:177px;">Remarks</th>
+                                <th class="" style="width:77px;">Shade</th>
+                                <th class="" style="">Remarks</th>
                                 <th class="" style="text-align:center;">Sample</th>
                             </tr>
                         </thead>
@@ -71,8 +71,14 @@
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i, maxlength = 20, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS") + "','Barno Details','" + "P_BARNO_" + i + "','" + "P_BARNO_" + i + "=BARNO=0/P_ITCD_" + i + "=ITCD/" + "P_ITNM_" + i + "=ITSTYLE/" + "P_UOM_" + i + "=UOMCD/" + "P_ITGRPCD_" + i + "=ITGRPCD/" + "P_ITGRPNM_" + i + "=ITGRPNM/" + "P_COLRCD_" + i + "=COLRCD/" + "P_SIZECD_" + i + "=SIZECD/" + "P_COLRNM_" + i + "=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i + "/P_ITCD_" + i + "/P_ITGRPCD_" + i + "');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS") + "','Barno Details','" + "P_BARNO_" + i + "','" + "P_BARNO_" + i + "=BARNO=0/P_ITCD_" + i + "=ITCD/" + "P_ITNM_" + i + "=ITSTYLE/" + "P_UOM_" + i + "=UOMCD/" + "P_ITGRPCD_" + i + "=ITGRPCD/" + "P_ITGRPNM_" + i + "=ITGRPNM/" + "P_COLRCD_" + i + "=COLRCD/" + "P_SIZECD_" + i + "=SIZECD/" + "P_COLRNM_" + i + "=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i + "/P_ITCD_" + i + "/P_ITGRPCD_" + i + "');", @placeholder = "barno", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS")','Barno Details','P_BARNO_@i','P_BARNO_@i=BARNO=0/P_ITCD_@i=ITCD/P_ITNM_@i=ITSTYLE/P_UOM_@i=UOMCD/P_ITGRPCD_@i=ITGRPCD/P_ITGRPNM_@i=ITGRPNM/P_COLRCD_@i =COLRCD/P_SIZECD_@i =SIZECD/P_COLRNM_@i=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_@i/P_ITCD_@i/P_ITGRPCD_@i');" />
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i, maxlength = 20, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS")+"','Barno Details','P_BARNO_" + i + "','P_BARNO_" + i + "=BARNO=0/P_MTRLJOBCD_" + i + "=MTRLJOBCD=2/P_PARTCD_" + i + "=PARTCD=8/P_ITCD_" + i + "=ITCD/P_ITNM_" + i + "=ITSTYLE/P_UOM_" + i + "=UOMCD/P_ITGRPCD_" + i + "=ITGRPCD/P_ITGRPNM_" + i + "=ITGRPNM/P_COLRCD_" + i + " =COLRCD/P_SIZECD_" + i + " =SIZECD/P_COLRNM_" + i + "=COLRNM','P_MTRLJOBCD_" + i + "/P_PARTCD_" + i + "/DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i + "');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS") + "','Barno Details','P_BARNO_" + i + "','P_BARNO_" + i + "=BARNO=0/P_MTRLJOBCD_" + i + "=MTRLJOBCD=2/P_PARTCD_" + i + "=PARTCD=8/P_ITCD_" + i + "=ITCD/P_ITNM_" + i + "=ITSTYLE/P_UOM_" + i + "=UOMCD/P_ITGRPCD_" + i + "=ITGRPCD/P_ITGRPNM_" + i + "=ITGRPNM/P_COLRCD_" + i + " =COLRCD/P_SIZECD_" + i + " =SIZECD/P_COLRNM_" + i + "=COLRNM','P_MTRLJOBCD_" + i + "/P_PARTCD_" + i + "/DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_" + i + "');", @placeholder = "barno", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS")','Barno Details','P_BARNO_@i','P_BARNO_@i=BARNO=0/P_MTRLJOBCD_@i=MTRLJOBCD=2/P_PARTCD_@i=PARTCD=8/P_ITCD_@i=ITCD/P_ITNM_@i=ITSTYLE/P_UOM_@i=UOMCD/P_ITGRPCD_@i=ITGRPCD/P_ITGRPNM_@i=ITGRPNM/P_COLRCD_@i =COLRCD/P_SIZECD_@i =SIZECD/P_COLRNM_@i=COLRNM','P_MTRLJOBCD_@i/P_PARTCD_@i/DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_@i');" />
+                                        
+                                                @*<img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "T_OUTISSPROCESS")','Barno Details','P_BARNO_@i','P_BARNO_@i=BARNO=0/P_ITCD_@i=ITCD/P_ITNM_@i=ITSTYLE/P_UOM_@i=UOMCD/P_ITGRPCD_@i=ITGRPCD/P_ITGRPNM_@i=ITGRPNM/P_COLRCD_@i =COLRCD/P_SIZECD_@i =SIZECD/P_COLRNM_@i=COLRNM','DOCDT/TAXGRPCD/GOCD/PRCCD/P_MTRLJOBCD_@i/P_ITCD_@i/P_ITGRPCD_@i');" />*@
+
+                                            @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/P_PARTCD_=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />*@
+
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].ITGRPCD, new { id = "P_ITGRPCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -95,17 +101,22 @@
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].UOM, new { id = "P_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].MTRLJOBCD, new { id = "P_MTRLJOBCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS") + "','Material Job Details','" + "P_MTRLJOBCD_" + i + "','" + "P_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "P_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS") + "','Material Job Details','" + "P_MTRLJOBCD_" + i + "','" + "P_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "P_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", @placeholder = "MTRLJOBCD", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", "T_OUTISSPROCESS")','Material Job Details','P_MTRLJOBCD_@i','P_MTRLJOBCD_@i=MTRLJOBCD=1/P_MTRLJOBNM_@i=MTRLJOBNM=0')" />
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].MTRLJOBCD, new { id = "P_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+
+                                            @*@Html.TextBoxFor(model => Model.TPROGDTL[i].MTRLJOBCD, new { id = "P_MTRLJOBCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS") + "','Material Job Details','" + "P_MTRLJOBCD_" + i + "','" + "P_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "P_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_OUTISSPROCESS") + "','Material Job Details','" + "P_MTRLJOBCD_" + i + "','" + "P_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "P_MTRLJOBNM_" + i + "=MTRLJOBNM=0');", @placeholder = "MTRLJOBCD", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", "T_OUTISSPROCESS")','Material Job Details','P_MTRLJOBCD_@i','P_MTRLJOBCD_@i=MTRLJOBCD=1/P_MTRLJOBNM_@i=MTRLJOBNM=0')" />*@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPROGDTL[i].MTRLJOBNM, new { id = "P_MTRLJOBNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
 
                                         </td>
                                         <td class="">
+                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].PARTCD, new { id = "P_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
 
-                                            @Html.TextBoxFor(model => Model.TPROGDTL[i].PARTCD, new { id = "P_PARTCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1');", @placeholder = "PARTCD", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "T_OUTISSPROCESS")','Part Details','P_PARTCD_@i','P_PARTCD_@i=PARTCD=1')" />
+
+                                            @*@Html.TextBoxFor(model => Model.TPROGDTL[i].PARTCD, new { id = "P_PARTCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1');", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_OUTISSPROCESS") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1');", @placeholder = "PARTCD", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "T_OUTISSPROCESS")','Part Details','P_PARTCD_@i','P_PARTCD_@i=PARTCD=1')" />*@
 
                                         </td>
                                         <td class="">

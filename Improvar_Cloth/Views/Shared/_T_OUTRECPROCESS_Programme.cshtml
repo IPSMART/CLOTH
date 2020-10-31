@@ -24,7 +24,7 @@
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <div class="col-md-1" style="width:auto;">
-                    <input type="button" class="btn-sm btn-info" style="padding: 0px 7px 0px 7px;" name="FillQtyRequiremnt" value="Generate Qty Requirement" title="Click to Fill Data in Qty Requirement Tab" onclick="Fill_QtyRequirementData()" />
+                    <input type="button" class="btn-sm btn-info" style="padding: 0px 7px 0px 7px;" name="FillReceive" value="Qnty Update in Receive" title="Click to Fill Data in Receive Tab" onclick="FillReceiveTab()" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
                     <b>Programme Details</b>
@@ -68,6 +68,7 @@
                                             @Html.CheckBoxFor(model => model.TPROGDTL[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].PROGAUTONO, new { id = "P_PROGAUTONO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].PROGSLNO, new { id = "P_PROGSLNO_" + i })
+                                            @Html.HiddenFor(model => model.TPROGDTL[i].PROGAUTOSLNO, new { id = "P_PROGAUTOSLNO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].PROGUNIQNO, new { id = "P_PROGUNIQNO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].BARNO, new { id = "P_BARNO_" + i })
                                             @Html.HiddenFor(model => model.TPROGDTL[i].DOCNO, new { id = "P_DOCNO_" + i })

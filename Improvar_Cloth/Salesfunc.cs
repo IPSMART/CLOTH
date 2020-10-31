@@ -339,9 +339,9 @@ namespace Improvar
             string sql = "";
             sql += "select a.progautono, a.progslno, a.progautoslno, d.slcd, i.slnm, nvl(i.slarea,i.district) slarea, ";
             sql += "d.slcd||nvl(d.linecd,'') repslcd, i.slnm||decode(k.linenm,null,'',' ['||k.linenm||']') repslnm, ";
-            sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm, f.uomcd, j.itnm fabitnm, ";
+            sql += "e.docno, e.docdt, d.itcd, f.styleno, f.itnm, f.itgrpcd, g.itgrpnm,g.bargentype, f.uomcd, j.itnm fabitnm, ";
             sql += "d.sizecd, d.partcd, d.colrcd,  h.colrnm, d.cutlength, d.dia, d.shade, d.ordautono, d.ordslno, d.barno, d.linecd, l.print_seq, ";
-            sql += "a.balqnty, a.balnos,d.itremark,d.proguniqno,d.sample from ";
+            sql += "a.balqnty, a.balnos,d.itremark,d.proguniqno,d.sample,l.sizenm from ";
 
             sql += "(select a.progautono, a.progslno, a.progautono||a.progslno progautoslno, ";
             sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) balqnty, ";
@@ -1016,7 +1016,8 @@ namespace Improvar
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
-            if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
+            if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'","") + "%') and ";
+            //if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
@@ -1216,7 +1217,8 @@ namespace Improvar
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k , " + scm + ".m_size l ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
-            if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
+            if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'","") + "%') and ";
+            //if (stylelike.retStr() != "") sql += "  d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";

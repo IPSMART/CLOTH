@@ -86,7 +86,7 @@
                                     @Html.TextBoxFor(model => Model.TTXNAMT[i].HSNCODE, new { id = "HSNCODE_" + i, @class = " atextBoxFor ", maxlength = 8 })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.EditorFor(model => Model.TTXNAMT[i].AMTRATE, new { htmlattributes = new { id = "AMTRATE_" + i, onblur = "AmountCalculation('" + i + "');", @class = " atextBoxFor text-right", maxlength = 12 } })
+                                    @Html.EditorFor(model => Model.TTXNAMT[i].AMTRATE, new { htmlattributes = new { id = "AMTRATE_" + i, onblur = "AmountCalculation('" + i + "');", @class = " atextBoxFor text-right", @onkeypress = "return numericOnly(this,2);", maxlength = 12 } })
                                 </td>
                                 <td class="grid_td">
                                     @Html.EditorFor(model => Model.TTXNAMT[i].CURR_AMT, new { htmlattributes = new { id = "ACURR_AMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
@@ -144,7 +144,7 @@
                     <tr style="border:groove;background-color:thistle;">
                         <td></td>
                         <td></td>
-                        <td></td>
+                        <td></td>  
                         <td></td>
                         <td></td>
                         <td></td>
