@@ -1,7 +1,7 @@
 ﻿@model Improvar.ViewModels.TransactionOutRecProcess
 <script type="text/javascript">
     $(document).ready(function () {
-        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_DETAIL_GRID'));
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_OUTRECPROCESS_Detail_Grid'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
 
     });
@@ -17,7 +17,7 @@
                 @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />
                     <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />*@
                 <div class="col-md-8">
-                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_DETAIL_GRID');" />
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_OUTRECPROCESS_Detail_Grid');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
@@ -26,7 +26,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_SALE_DETAIL_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2256px;">
+                    <table id="_T_OUTRECPROCESS_Detail_Grid" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2256px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
@@ -120,14 +120,13 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].BLQNTY, new { htmlAttributes = new { id = "D_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#D_');" } })
+                                            @Html.EditorFor(model => Model.TTXNDTL[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].AMT, new { htmlattributes = new { id = "D_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL[i].DISCTYPE_DESC, new { id = "D_DISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE, new { id = "D_DISCTYPE_" + i })
+                                            @Html.DropDownListFor(model => Model.TTXNDTL[i].DISCTYPE, new SelectList(Model.TTXNDTL[i].DISC_TYPE, "value", "text", Model.TTXNDTL[i].DISCTYPE), new { id = "B_DISCTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].DISCRATE, new { htmlAttributes = new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })

@@ -1532,7 +1532,7 @@ namespace Improvar.Controllers
                 sql += "row_number() over (partition by a.prodgrpcd order by a.effdt desc) as rn ";
                 sql += "from " + CommVar.CurSchema(UNQSNO) + ".m_prodtax a ";
                 sql += "where a.taxgrpcd='" + VE.T_TXNOTH.TAXGRPCD + "' and a.prodgrpcd='" + PRODGRPCD.retStr() + "' and ";
-                sql += "a.effdt <= to_date('" + VE.T_TXN.retStr().Remove(10) + "','dd/mm/yyyy') ) a where a.rn=1 ";
+                sql += "a.effdt <= to_date('" + VE.T_TXN.DOCDT.retStr().Remove(10) + "','dd/mm/yyyy') ) a where a.rn=1 ";
                 DataTable Dt = masterHelp.SQLquery(sql);
                 if (Dt.Rows.Count > 0)
                 {
@@ -1542,6 +1542,7 @@ namespace Improvar.Controllers
                         VE.TTXNDTL[p].CGSTPER = Dt.Rows[0]["cgstper"].retDbl();
                         VE.TTXNDTL[p].SGSTPER = Dt.Rows[0]["sgstper"].retDbl();
                         VE.TTXNDTL[p].CESSPER = Dt.Rows[0]["cessper"].retDbl();
+                        VE.TTXNDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
                     }
                 }
 

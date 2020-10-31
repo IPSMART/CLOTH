@@ -188,5 +188,6 @@ namespace Improvar.Models
         [StringLength(4)]
         public string BALEYR { get; set; }
         public double? GSTPER { get; set; }
+        public List<DISC_TYPE> DISC_TYPE { get; set; }
     }
 }
