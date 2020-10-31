@@ -174,8 +174,9 @@ namespace Improvar.ViewModels
         [StringLength(8)]
         public string GLCD { get; set; }
         public List<TSALEBARNOPOPUP> TSALEBARNOPOPUP { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? P_T_NOS { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? P_T_QNTY { get; set; }
         public List<REV_CHRG> Reverse_Charge { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
