@@ -86,6 +86,8 @@ namespace Improvar.ViewModels
         public double? A_T_DUTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? A_T_NET { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_PYMT_AMT { get; set; }
         public string TRANSLNM { get; set; }
         public string CRSLNM { get; set; }
         public string BARCODE { get; set; }

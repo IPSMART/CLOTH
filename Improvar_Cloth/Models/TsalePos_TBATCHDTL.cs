@@ -158,6 +158,7 @@ namespace Improvar.Models
         public string OURDESIGN { get; set; }
         [StringLength(8)]
         public string GLCD { get; set; }
+        public string CLASS1CD { get; set; }
         public string BarImages { get; set; }
         public string BarImagesCount { get; set; }
         public string ChildData { get; set; }
@@ -209,5 +210,7 @@ namespace Improvar.Models
         public double? TOTDISCAMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? NETAMT { get; set; }
+        public string AGDOCNO { get; set; }
+        public string AGDOCDT { get; set; }
     }
 }

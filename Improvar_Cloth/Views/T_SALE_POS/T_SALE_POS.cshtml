@@ -70,6 +70,24 @@
         //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
         //    return false;
         //}
+        var T_PER = 0;
+        var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++)
+        {
+            var PER_ = $("#PER_" + i).val();
+            if (PER_ == "") { PER_ = parseFloat(0); } else { PER_ = parseFloat(PER_) }
+            if (PER_ != "") { T_PER = T_PER + parseFloat(PER_); } else { T_PER = T_PER + parseFloat(0); }
+            //document.getElementById("PER_" + i).value = PER_.toFixed(2);
+        }
+        if (T_PER > 100) {
+            msgWarning("Total of Percentage(%) Should be 100 !!");
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:fourth-child").addClass('active');
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:fourth-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+    
         if ("@Model.MENU_PARA" == "PB") {
             if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
                 $("li").removeClass("active").addClass("");
@@ -541,6 +559,90 @@
     }
 </script>
 <script>
+    function CalculateSalesMan_Amt_Details()
+    {
+        var T_PER = 0;
+        var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++)
+    {
+        var PER_ = $("#PER_" + i).val();
+        if (PER_ == "") { PER_ = parseFloat(0); } else { PER_ = parseFloat(PER_) }
+        if (PER_ != "") { T_PER = T_PER + parseFloat(PER_); } else { T_PER = T_PER + parseFloat(0); }
+        document.getElementById("PER_" + i).value = PER_.toFixed(2);
+    }
+    if (T_PER > 100) { msgWarning("Total of Percentage(%) Should be 100 !!"); } else { };
+    }
+  function CalculatePymtAmt_Total()
+  {
+      debugger;
+        var T_AMT = 0;
+        var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+         
+            var AMT = $("#AMT_" + i).val();
+            if (AMT == "") { AMT = parseFloat(0); } else { AMT = parseFloat(AMT) }
+            if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
+            document.getElementById("AMT_" + i).value = AMT.toFixed(2);
+        }
+        document.getElementById("T_PYMT_AMT").value = T_AMT.toFixed(2);
+
+    }
+</script>
+<script>
+    function AddRowPYMT(ID) {
+        debugger;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowPYMT", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+        data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+        success: function (result) {
+            $("#WaitingMode").hide();
+            $("#partialdivPayment").animate({ marginTop: '-10px' }, 50);
+            $("#partialdivPayment").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
+    function DeleteRow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivSalesman").animate({ marginTop: '0px' }, 50);
+                $("#partialdivSalesman").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowPYMT() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRowPYMT", PageControllerName)",
+            data: $('form').serialize(),
+        success: function (result) {
+            $("#partialdivPayment").animate({ marginTop: '0px' }, 50);
+            $("#partialdivPayment").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
+</script>
+<script>
     function pageprinting() {
         debugger;
         var ty = $("#DOCCD").val();
@@ -634,6 +736,8 @@
         @Html.HiddenFor(a => a.GOCD, new { id = "GOCD" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(model => model.T_VCH_GST.SHIPDOCNO, new { htmlAttributes = new { id = "SHIPDOCNO" } })
+        @Html.HiddenFor(model => model.T_VCH_GST.SHIPDOCDT, new { htmlAttributes = new { id = "SHIPDOCDT" } })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -889,7 +993,7 @@
                     <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div>
-                                <div id="partialdivPayment" style="margin-top:0px;">
+                                <div id="partialdivSalesman" style="margin-top:0px;">
                                     @Html.Partial("_T_SALE_POS_SALESMAN")
                                 </div>
                             </div>
