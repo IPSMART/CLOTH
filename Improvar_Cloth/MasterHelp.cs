@@ -2248,6 +2248,39 @@ namespace Improvar
                 }
             }
         }
+        public string PORTCD_help(string val)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CommSchema());
+            var query = (from c in DB.MS_PORTCD select new { PORTCD = c.PORTCD, PORTNM = c.PORTNM, STATECD = c.STATECD, STATENM = c.STATENM }).ToList();
+            if (val == null)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + query[i].PORTCD + "</td><td>" + query[i].PORTNM + "</td><td>" + query[i].STATECD + "</td><td>" + query[i].STATENM + "</td></tr>");
+                }
+                var hdr = "PORTCD" + Cn.GCS() + "PORTNM" + Cn.GCS() + "STATECD" + Cn.GCS() + "STATENM";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                query = query.Where(a => a.PORTCD == val).ToList();
+                if (query.Any())
+                {
+                    string str = "";
+                    foreach (var i in query)
+                    {
+                        str = i.PORTCD + Cn.GCS() + i.PORTNM + Cn.GCS() + i.PORTNM + Cn.GCS() + i.PORTNM;
+                    }
+                    return str;
+                }
+                else
+                {
+                    return "Invalid PORTCD ! Please Select / Enter a Valid PORTCD !!";
+                }
+            }
+        }
+
         public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "")
         {
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
@@ -2274,33 +2307,7 @@ namespace Improvar
             {
                 if (tbl.Rows.Count > 0)
                 {
-                    string str = ToReturnFieldValues("", tbl);
-                    string glcd = "";
-                    switch (menupara)
-                    {
-                        case "SBPCK"://Packing Slip
-                            glcd = str.retCompValue("SALGLCD"); break;
-                        case "SB"://Sales Bill (Agst Packing Slip)
-                            glcd = str.retCompValue("SALGLCD"); break;
-                        case "SBDIR"://Sales Bill
-                            glcd = str.retCompValue("SALGLCD"); break;
-                        case "SR"://Sales Return (SRM)
-                            glcd = str.retCompValue("SALRETGLCD"); break;
-                        case "SBCM"://Cash Memo
-                            glcd = str.retCompValue("SALGLCD"); break;
-                        case "SBCMR"://Cash Memo Return Note
-                            glcd = str.retCompValue("SALGLCD"); break;
-                        case "SBEXP"://Sales Bill (Export)
-                            glcd = str.retCompValue("SALGLCD"); break;
-                        case "PI"://Proforma Invoice
-                            glcd = ""; break;
-                        case "PB"://Purchase Bill
-                            glcd = str.retCompValue("PURGLCD"); break;
-                        case "PR"://Purchase Return (PRM)
-                            glcd = str.retCompValue("PURRETGLCD"); break;
-                        default: glcd = ""; break;
-                    }
-                    str += "^GLCD=^" + glcd + Cn.GCS();
+                    string str = ToReturnFieldValues("", tbl);              
                     return str;
                 }
                 else

@@ -655,7 +655,7 @@
     <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
     <Compile Include="ViewModels\TransactionOutRecProcess.cs" />
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
-    <Compile Include="ViewModels\TransactionPackingSlipEntry.cs" />
+    <Compile Include="ViewModels\TransactionSaleEntry.cs" />
     <Compile Include="ViewModels\TransactionSalePosEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
     <Compile Include="ViewModels\UserGroupLinkDetails.cs" />
@@ -1068,7 +1068,7 @@
     <Content Include="Views\T_OUTISSPROCESS\T_OUTISSPROCESS.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_Programme.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_DETAIL.cshtml" />
-    <Content Include="Views\Shared\_T_OUTISSPROCESS_PRODUCT.cshtml" />
+    <Content Include="Views\Shared\_T_OUTISSPROCESS_MaterialIssue.cshtml" />
     <Content Include="Views\Shared\_T_OUTISSPROCESS_QtyRequirement.cshtml" />
     <Content Include="Views\T_BiltyG_Mutia\T_BiltyG_Mutia.cshtml" />
     <Content Include="Views\Shared\_T_BiltyG_Mutia_Main.cshtml" />

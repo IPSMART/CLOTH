@@ -25,7 +25,7 @@ function GetBarnoDetails(id) {
     if (DefaultAction == "V") return true;
     debugger;
     if (id == "") {
-        // ClearBarcodeArea();
+         ClearBarcodeArea();
     }
     else {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }

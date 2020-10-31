@@ -620,6 +620,40 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
         }
+        public ActionResult GetBarCodeDetails(string val, string Code)
+        {
+            try
+            {
+                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
+                TransactionSaleEntry VE = new TransactionSaleEntry();
+                Cn.getQueryString(VE);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string barnoOrStyle = val.retStr();
+                string MTRLJOBCD = data[0].retSqlformat();
+                string PARTCD = data[1].retStr();
+                string DOCDT = data[2].retStr();
+                string TAXGRPCD = data[3].retStr();
+                string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
+                string PRCCD = data[5].retStr();
+                //if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "PB", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
         public ActionResult GetJobDetails(string val)
         {
             try
@@ -692,7 +726,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
         public ActionResult GetGodownDetails(string val)
         {
             try
@@ -1002,153 +1035,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetBarCodeDetails(string val, string Code)
-        {
-            try
-            {
-                TransactionOutIssProcess VE = new TransactionOutIssProcess();
-                Cn.getQueryString(VE); string MTRLJOBCD = "";
-                var data = Code.Split(Convert.ToChar(Cn.GCS()));
-                string DOCDT = data[0].retStr();
-                string TAXGRPCD = data[1].retStr();
-                string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
-                string PRCCD = data[3].retStr();
-                //if(data[7].retStr()!="Y")  MTRLJOBCD = data[4].retStr();
-                //string ITCD = data[5].retStr();
-                //string ITGRPCD = data[6].retStr();
-
-                if (val.retStr() == "")
-                {
-                    var str = masterHelp.T_TXN_BARNO_help(val, "", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
-                    if (str.IndexOf("='helpmnu'") >= 0)
-                    {
-                        return PartialView("_Help2", str);
-                    }
-                    else
-                    {
-                        return Content(str);
-                    }
-                }
-                else
-                {
-                    DataTable stock_data = new DataTable();
-                    stock_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val.retStr().retSqlformat(), "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
-
-                    if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
-                    {
-                        return Content("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
-                    }
-                    else if (stock_data != null && stock_data.Rows.Count > 1)//if stock return more then one row then open popup
-                    {
-                        VE.TSALEBARNOPOPUP = (from DataRow dr in stock_data.Rows
-                                              select new TSALEBARNOPOPUP
-                                              {
-                                                  //SLNO = dr["slno"].retShort(),
-                                                  BARNO = dr["BARNO"].retStr(),
-                                                  ITGRPCD = dr["ITGRPCD"].retStr(),
-                                                  ITGRPNM = dr["ITGRPNM"].retStr(),
-                                                  MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
-                                                  MTBARCODE = dr["MTBARCODE"].retStr(),
-                                                  MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
-                                                  ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
-                                                  ITCD = dr["ITCD"].retStr(),
-                                                  STYLENO = dr["STYLENO"].retStr(),
-                                                  PARTNM = dr["PARTNM"].retStr(),
-                                                  PRTBARCODE = dr["PRTBARCODE"].retStr(),
-                                                  PARTCD = dr["PARTCD"].retStr(),
-                                                  COLRCD = dr["COLRCD"].retStr(),
-                                                  COLRNM = dr["COLRNM"].retStr(),
-                                                  CLRBARCODE = dr["CLRBARCODE"].retStr(),
-                                                  SIZENM = dr["SIZENM"].retStr(),
-                                                  SZBARCODE = dr["SZBARCODE"].retStr(),
-                                                  SIZECD = dr["SIZECD"].retStr(),
-                                                  SLNM = dr["SLNM"].retStr(),
-                                                  SLCD = dr["SLCD"].retStr(),
-                                                  UOM = dr["uomcd"].retStr(),
-                                                  STKTYPE = dr["STKTYPE"].retStr(),
-                                                  DOCDT = dr["DOCDT"].retStr().Remove(10),
-                                                  BALQNTY = dr["BALQNTY"].retDbl(),
-                                                  BALNOS = dr["BALNOS"].retDbl(),
-                                                  PDESIGN = dr["PDESIGN"].retStr(),
-                                                  //OURDESIGN = dr["OURDESIGN"].retStr(),
-                                                  FLAGMTR = dr["FLAGMTR"].retDbl(),
-                                                  RATE = dr["RATE"].retDbl(),
-                                                  HSNCODE = dr["HSNCODE"].retStr(),
-                                                  PRODGRPGSTPER = dr["PRODGRPGSTPER"].retStr(),
-                                                  //ALL_GSTPER = dr["ALL_GSTPER"].retStr(),
-                                                  SHADE = dr["SHADE"].retStr(),
-                                                  LOCABIN = dr["LOCABIN"].retStr(),
-                                                  //GLCD = VE.MENU_PARA == "SBPCK" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SB" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBDIR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SR" ? dr["SALRETGLCD"].retStr() : VE.MENU_PARA == "SBCM" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBCMR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBEXP" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "PI" ? "" : VE.MENU_PARA == "PB" ? dr["PURGLCD"].retStr() : VE.MENU_PARA == "PR" ? dr["PURRETGLCD"].retStr() : "",
-                                              }).ToList();
-                        for (int p = 0; p <= VE.TSALEBARNOPOPUP.Count - 1; p++)
-                        {
-                            VE.TSALEBARNOPOPUP[p].SLNO = Convert.ToInt16(p + 1);
-                            VE.TSALEBARNOPOPUP[p].ALL_GSTPER = salesfunc.retGstPer(VE.TSALEBARNOPOPUP[p].PRODGRPGSTPER, VE.TSALEBARNOPOPUP[p].RATE.retDbl());
-                            if (VE.TSALEBARNOPOPUP[p].ALL_GSTPER.retStr() != "")
-                            {
-                                var gst = VE.TSALEBARNOPOPUP[p].ALL_GSTPER.Split(',').ToList();
-                                VE.TSALEBARNOPOPUP[p].GSTPER = (from a in gst select a.retDbl()).Sum();
-                            }
-
-                        }
-                        VE.DefaultView = true;
-                        return PartialView("_T_SALE_BARNODETAIL", VE);
-                    }
-                    else//stock return one row then return as blur
-                    {
-                        var str = masterHelp.ToReturnFieldValues("", stock_data);
-                        string all_gstper = ""; double gst = 0;
-                        if (stock_data.Rows[0]["PRODGRPGSTPER"].retStr() != "")
-                        {
-                            all_gstper = salesfunc.retGstPer(stock_data.Rows[0]["PRODGRPGSTPER"].retStr(), stock_data.Rows[0]["RATE"].retDbl());
-                            if (all_gstper.retStr() != "")
-                            {
-                                var gst_data = all_gstper.Split(',').ToList();
-                                gst = (from a in gst_data select a.retDbl()).Sum();
-                            }
-                        }
-
-                        str += "^ALL_GSTPER=^" + all_gstper + Cn.GCS();
-                        str += "^GSTPER=^" + gst + Cn.GCS();
-
-                        string glcd = "";
-                        //switch (VE.MENU_PARA)
-                        //{
-                        //    case "SBPCK"://Packing Slip
-                        //        glcd = str.retCompValue("SALGLCD"); break;
-                        //    case "SB"://Sales Bill (Agst Packing Slip)
-                        //        glcd = str.retCompValue("SALGLCD"); break;
-                        //    case "SBDIR"://Sales Bill
-                        //        glcd = str.retCompValue("SALGLCD"); break;
-                        //    case "SR"://Sales Return (SRM)
-                        //        glcd = str.retCompValue("SALRETGLCD"); break;
-                        //    case "SBCM"://Cash Memo
-                        //        glcd = str.retCompValue("SALGLCD"); break;
-                        //    case "SBCMR"://Cash Memo Return Note
-                        //        glcd = str.retCompValue("SALGLCD"); break;
-                        //    case "SBEXP"://Sales Bill (Export)
-                        //        glcd = str.retCompValue("SALGLCD"); break;
-                        //    case "PI"://Proforma Invoice
-                        //        glcd = ""; break;
-                        //    case "PB"://Purchase Bill
-                        //        glcd = str.retCompValue("PURGLCD"); break;
-                        //    case "PR"://Purchase Return (PRM)
-                        //        glcd = str.retCompValue("PURRETGLCD"); break;
-                        //    default: glcd = ""; break;
-                        //}
-                        str += "^GLCD=^" + glcd + Cn.GCS();
-                        return Content(str);
-                    }
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
         public ActionResult FillBarCodeData(TransactionOutIssProcess VE)
         {
             try
@@ -1240,7 +1126,7 @@ namespace Improvar.Controllers
 
                 }
                 VE.DefaultView = true;
-                return PartialView("_T_OUTISSPROCESS_PRODUCT", VE);
+                return PartialView("_T_OUTISSPROCESS_MaterialIssue", VE);
             }
             catch (Exception ex)
             {

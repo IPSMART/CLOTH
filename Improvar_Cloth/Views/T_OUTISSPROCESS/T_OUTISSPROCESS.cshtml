@@ -269,7 +269,7 @@
             data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
             success: function (result) {
                 $("#WaitingMode").hide();
-                $("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
+                //$("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivProgramme").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -286,7 +286,7 @@
             url: "@Url.Action("DeleteRow", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
-                $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                //$("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
                 $("#partialdivProgramme").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {

@@ -1288,13 +1288,13 @@ namespace Improvar.Controllers
                 Cn.getQueryString(VE);
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string barnoOrStyle = val.retStr();
-                string MTRLJOBCD = data[0].retStr();
+                string MTRLJOBCD = data[0].retSqlformat();
                 string PARTCD = data[1].retStr();
                 string DOCDT = data[2].retStr();
                 string TAXGRPCD = data[3].retStr();
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr();
-                if (MTRLJOBCD == "") { MTRLJOBCD = data[6].retStr(); }
+                if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -1303,7 +1303,31 @@ namespace Improvar.Controllers
                 else
                 {
                     if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
-                    string glcd = MenuDescription(VE.MENU_PARA).Rows[0]["GLCD"].ToString();
+                    string glcd = "";
+                    switch (VE.MENU_PARA)
+                    {
+                        case "SBPCK"://Packing Slip
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SB"://Sales Bill (Agst Packing Slip)
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBDIR"://Sales Bill
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SR"://Sales Return (SRM)
+                            glcd = str.retCompValue("SALRETGLCD"); break;
+                        case "SBCM"://Cash Memo
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBCMR"://Cash Memo Return Note
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "SBEXP"://Sales Bill (Export)
+                            glcd = str.retCompValue("SALGLCD"); break;
+                        case "PI"://Proforma Invoice
+                            glcd = ""; break;
+                        case "PB"://Purchase Bill
+                            glcd = str.retCompValue("PURGLCD"); break;
+                        case "PR"://Purchase Return (PRM)
+                            glcd = str.retCompValue("PURRETGLCD"); break;
+                        default: glcd = ""; break;
+                    }
                     str += "^GLCD=^" + glcd + Cn.GCS();
                     //pricegen
                     if (VE.MENU_PARA == "PB")
@@ -1826,6 +1850,35 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult GetPORTCD(string val)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                if (val == null)
+                {
+                    return PartialView("_Help2", masterHelp.PORTCD_help(val));
+                }
+                else
+                {
+                    var query = (from i in DB.MS_PORTCD where i.PORTCD == val select new { PORTCD = i.PORTCD, PORTNM = i.PORTNM }).OrderBy(s => s.PORTCD).FirstOrDefault();
+                    if (query != null)
+                    {
+                        return Content(query.PORTCD + Cn.GCS() + query.PORTNM);
+                    }
+                    else
+                    {
+                        return Content("0");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
         public ActionResult cancelRecords(TransactionSaleEntry VE, string par1)
         {
             try
