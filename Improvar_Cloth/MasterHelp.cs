@@ -2248,24 +2248,18 @@ namespace Improvar
                 }
             }
         }
-        public string T_TXN_BARNO_help(string val, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "")
+        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "")
         {
-            DataTable tbl = new DataTable(); val = val.retStr() == "" ? "" : val.retStr().retSqlformat();
+            DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             if (menupara == "PB")
             {
-
-                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), val, "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
-
+                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(),"", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(),"","",true,false,menupara);
             }
             else
             {
-
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), val, "", MTRLJOBCD.retStr(), "", "", "", PRCCD.retStr(), TAXGRPCD.retStr());
-
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr());
             }
-
-
-            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)

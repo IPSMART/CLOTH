@@ -1016,7 +1016,8 @@ namespace Improvar
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
-            if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
+            if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'","") + "%') and ";
+            //if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
@@ -1216,7 +1217,8 @@ namespace Improvar
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k , " + scm + ".m_size l ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
-            if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
+            if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'","") + "%') and ";
+            //if (stylelike.retStr() != "") sql += "  d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";

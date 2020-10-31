@@ -63,11 +63,12 @@ namespace Improvar
             string str = Cn.Indian_Number_format(amt.ToString(), style);
             return str;
         }
-        public static string retSqlformat(this string codestr)
+        public static string retSqlformat(this object codestr)
         {
+            codestr = codestr.retStr().Replace("'","");
             string rtval = "";
-            string[] cdval = codestr.retStr().Split(',');
-            if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.retStr().Trim() != "")
+            string[] cdval = codestr.ToString().Split(',');
+            if (cdval.Count() > 0 && cdval.Count() < 1000 && codestr.ToString().Trim() != "")
             {
                 rtval = "'" + string.Join("','", cdval) + "'";
             }
@@ -193,10 +194,8 @@ namespace Improvar
             Connection Cn = new Connection();
             return Cn.Encrypt_URL(UNQSNO);
         }
-        public static IEnumerable<TSource> DistinctBy<TSource>(
-         this IEnumerable<TSource> source, Func<TSource, object> predicate)
+        public static IEnumerable<TSource> DistinctBy<TSource>(this IEnumerable<TSource> source, Func<TSource, object> predicate)
         {
-            // TODO: Null-check arguments
             return from item in source.GroupBy(predicate) select item.First();
         }
         public static int CharmPrice(string ChrmType, int Rate, string RoundVal)
