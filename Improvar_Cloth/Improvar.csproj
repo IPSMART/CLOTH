@@ -303,6 +303,8 @@
     </Compile>
     <Compile Include="ListToDatatable.cs" />
     <Compile Include="Models\APPL_MENU.cs" />
+    <Compile Include="Models\BARCODEHISTORY.cs" />
+    <Compile Include="Models\BARCODEPRICE.cs" />
     <Compile Include="Models\BarcodePrint.cs" />
     <Compile Include="Models\BOM.cs" />
     <Compile Include="Models\Company.cs" />
@@ -1102,6 +1104,8 @@
     <Content Include="Views\Shared\_T_OUTRECPROCESS_Amount.cshtml" />
     <Content Include="Views\Rep_Bar_History\Rep_Bar_History.cshtml" />
     <Content Include="Views\Shared\_Rep_Bar_History_Details.cshtml" />
+    <Content Include="Views\Shared\_REP_BAR_HISTORY.cshtml" />
+    <Content Include="Views\Shared\_REP_BAR_HISTORY_PRICE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,133 @@
+﻿@model Improvar.ViewModels.RepBarHistory
+<script type="text/javascript">
+    $(document).ready(function () {
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_REP_BAR_HISTORY_GRID'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+
+    });
+
+</script>
+<div style="transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
+                @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />
+                    <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />*@
+                <div class="col-md-8">
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_REP_BAR_HISTORY_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
+                    <b> BarCode History Details</b>
+                </center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;max-height:235px;">
+                    <table id="_REP_BAR_HISTORY_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2256px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width: 20px;">SL No</th>
+                                <th class="" style="width: 100px;">Doc Date</th>
+                                <th class="" style="width:45px;">Doc No</th>
+                                <th class="" style="width:71px;">Party Ref</th>
+                                <th class="" style="width:160px;">Doc Type</th>
+                                <th class="" style="width: 34px;">Party</th>
+                                <th class="" style="width:50px;">Location</th>
+                                <th class="" style="width:60px;text-align:right;">In</th>
+                                <th class="" style="width:50px;text-align:right;">Out</th>
+                                <th class="" style="width:50px;text-align:right;">Other Qnty</th>
+                                <th class="" style="width:80px;text-align:right;">Rate</th>
+                                <th class="" style="width:50px;">Disc %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.BARCODEHISTORY != null)
+                            {
+                                for (int i = 0; i <= Model.BARCODEHISTORY.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.BARCODEHISTORY[i].Checked, new { id = "D_Checked_" + i, @TabIndex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].SLNO, new { id = "D_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.BARCODEHISTORY[i].AUTONO, new { id = "D_AUTONO_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].DOCDT, new { id = "D_DOCDT_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].DOCNO, new { id = "D_DOCNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].PREFNO, new { id = "D_PREFNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].DOCNM, new { id = "D_DOCNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].SLNM, new { id = "D_SLNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                          
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].LOCNM, new { id = "D_LOCNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.BARCODEHISTORY[i].INQNTY, new { htmlAttributes = new { id = "D_INQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.BARCODEHISTORY[i].OUTQNTY, new { htmlAttributes = new { id = "D_OUTQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.BARCODEHISTORY[i].NOS, new { htmlAttributes = new { id = "D_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.BARCODEHISTORY[i].RATE, new { htmlAttributes = new { id = "D_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#D_');" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].DISCPER, new { id = "D_DISCPER_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="sticky-footer">
+                                <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.TextBoxFor(model => Model.T_INQNTY, new { id = "T_INQNTY", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;color:red;", @readonly = "readonly" })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.T_OUTQNTY, new { htmlAttributes = new { id = "T_OUTQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.T_NOS, new { htmlattributes = new { id = "T_NOS", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
