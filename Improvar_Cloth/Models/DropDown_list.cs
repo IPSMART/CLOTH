@@ -82,7 +82,11 @@ namespace Improvar.Models
         public string Value { get; set; }
         public string Text { get; set; }
     }
- 
+    public class PCSection
+    {
+        public string Value { get; set; }
+        public string Text { get; set; }
+    }
     public class BL_TYPE
     {
         public string Value { get; set; }

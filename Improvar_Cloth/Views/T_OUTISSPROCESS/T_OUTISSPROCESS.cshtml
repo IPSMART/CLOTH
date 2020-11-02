@@ -879,16 +879,14 @@
                                         </div>*@
                                 </div>
                                                                 }
-
                             <div class="row">
-
                                 <div class="col-md-3" style="width:auto;">
 
                                 </div>
                             </div>
                             <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
                                 <div id="partialdivBarCodeTab">
-                                    @Html.Partial("_T_OUTISSPROCESS_PRODUCT")
+                                    @Html.Partial("_T_OUTISSPROCESS_MaterialIssue")
                                 </div>
                                 <div>
                                     <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
@@ -1092,6 +1090,55 @@
 
             </div>
         </div>
+
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="ViewImageModal" role="dialog">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Image Preview</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="myCarousel" class="carousel" data-ride="carousel">
+                                <div class="carousel-inner" id="div_carousel_inner">
+                                    <div class="item active">
+                                        <img src="" alt="Los Angeles" style="width:100%;">
+                                    </div>
+                                    <div class="item">
+                                        <img src="" alt="Chicago" style="width:100%;">
+                                    </div>
+                                </div>
+                                <!-- Left and right controls -->
+                                <a class="left  carousel-control arrow-left" id="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class="right  carousel-control arrow-right" id="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="pull-left">
+                                        <input type="hidden" id="ActiveBarRowIndex" />
+                                        <input type="hidden" id="BarImages" />
+                                        <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="RateHistoryModal" role="dialog">
+
+            </div>
+        </div>
+
                                                                 }
                                                                 else
                                                                 {
