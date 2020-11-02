@@ -39,3 +39,4 @@
 /// <reference path="respond.matchmedia.addlistener.min.js" />
 /// <reference path="respond.min.js" />
 /// <reference path="sale.js" />
+/// <reference path="salepos.js" />
