@@ -29,7 +29,9 @@ namespace Improvar.Models
         public string DOCNO { get; set; }
         public string DOCNM { get; set; }
         public bool Checked { get; set; }
-        
+        public string STKDRCR { get; set; }
+        public double? QNTY { get; set; }
+
 
     }
 }

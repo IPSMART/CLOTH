@@ -58,6 +58,8 @@ namespace Improvar.ViewModels
         public double? T_OUTQNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? T_NOS { get; set; }
+        public List<UploadDOC> UploadBarImages { get; set; }
+        public string BarImages { get; set; }
 
     }
 }
