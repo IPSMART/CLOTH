@@ -1,0 +1,74 @@
+﻿@model Improvar.ViewModels.RepBarHistory
+<script type="text/javascript">
+    $(document).ready(function () {
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_REP_BAR_HISTORY_PRICE_GRID'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+
+    });
+
+</script>
+<div style="transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
+                @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />
+                    <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />*@
+                <div class="col-md-8">
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_REP_BAR_HISTORY_PRICE_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
+                    <b> BarCode Price Details</b>
+                </center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;max-height:235px;">
+                    <table id="_REP_BAR_HISTORY_PRICE_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2256px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="width: 20px;">SL No</th>
+                                <th class="" style="width: 100px;">Effective Date</th>
+                                <th class="" style="width:45px;">Price Code</th>
+                                <th class="" style="width:80px;text-align:right;">Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.BARCODEPRICE != null)
+                            {
+                                for (int i = 0; i <= Model.BARCODEPRICE.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.BARCODEPRICE[i].Checked, new { id = "D_Checked_" + i, @TabIndex = -1 })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEPRICE[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                          
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEPRICE[i].EFFDT, new { id = "P_EFFDT_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.BARCODEPRICE[i].PRCCD, new { id = "P_PRCCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.BARCODEPRICE[i].RATE, new { htmlAttributes = new { id = "P_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14 } })
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

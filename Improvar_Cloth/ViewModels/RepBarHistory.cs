@@ -50,6 +50,7 @@ namespace Improvar.ViewModels
         public string SIZECD { get; set; }
         public string SIZENM { get; set; }
         public List<BARCODEHISTORY> BARCODEHISTORY { get; set; }
+        public List<BARCODEPRICE> BARCODEPRICE { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? T_INQNTY { get; set; }

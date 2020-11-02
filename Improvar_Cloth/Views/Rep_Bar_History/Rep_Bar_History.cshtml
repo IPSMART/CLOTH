@@ -17,7 +17,8 @@
 </script>
 <script>
     $(document).ready(function () {
-        $("#partialdiv1").hide();
+        $("#partialdivPRICE").hide();
+        $("#partialdivHISTORY").hide();
     });
 </script>
 <script>
@@ -225,10 +226,14 @@
     </div>
     <div class="row">
         <div class="col-lg-6">
-
+            <div class="col-lg-6">
+                <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                    @*@Html.Partial("_REP_BAR_HISTORY_PRICE")*@
+                </div>
+            </div>
         </div>
         <div class="col-lg-6">
-            <div id="partialdiv1" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+            <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                 @*@Html.Partial("_REP_BAR_HISTORY")*@
             </div>
         </div>
