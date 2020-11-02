@@ -65,9 +65,11 @@ namespace Improvar.Controllers
                     VE.HSN_CODE = (from n in DBF.M_HSNCODE
                                    select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
 
-
-
-
+                    VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                    foreach (var v in VE.DropDown_list_MTRLJOBCD)
+                    {
+                        if (v.MTRLJOBCD == "FS") { v.Checked = true; }
+                    }
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -174,7 +176,8 @@ namespace Improvar.Controllers
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH; T_TXNMEMO TXNMEMO = new T_TXNMEMO();
                                 var autono = DB.M_SYSCNFG.Select(b => b.M_AUTONO).Max();
                                 string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-                                string sql = " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate from " + scm + ".M_SYSCNFG a," + scmf + ".M_RETDEB b where a.RTDEBCD=b.RTDEBCD(+) and a.M_AUTONO='" + autono + "' ";
+                                string sql = " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate from " + scm + ".M_SYSCNFG a," 
+                                    + scmf + ".M_RETDEB b where a.RTDEBCD=b.RTDEBCD(+) and a.M_AUTONO='" + autono + "' ";
                                 DataTable syscnfg = masterHelp.SQLquery(sql);
                                 if (syscnfg != null && syscnfg.Rows.Count > 0)
                                 {
@@ -419,6 +422,26 @@ namespace Improvar.Controllers
             try
             {
                 var str = masterHelp.RTDEBCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetGodownDetails(string val)
+        {
+            try
+            {
+                var str = masterHelp.GOCD_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
