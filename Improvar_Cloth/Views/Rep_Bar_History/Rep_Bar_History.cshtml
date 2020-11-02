@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.RepBarHistory
 @{
-    ViewBag.Title = "E WAY BILL";
+    ViewBag.Title = "BarCode History";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
 }
 <script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
@@ -15,24 +15,25 @@
         $("#DATETO").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
     });
 </script>
-
 <script>
-    function ShowGrid()
-    {
+    $(document).ready(function () {
+        $("#partialdiv1").hide();
+    });
+</script>
+<script>
+    function ShowGrid() {
         $("#exampleEWB").empty();
         $.ajax({
             type: 'post',
             url: 'ShowList',
             beforesend: $("#WaitingMode").show(),
             data: $('form').serialize(),
-            success: function (result)
-            {
+            success: function (result) {
                 $("#WaitingMode").hide();
                 $('#PartialdivEWBILL').html(result);
                 $("#WaitingMode1").hide();
             },
-            error: function (XMLHttpRequest, textStatus, errorThrown)
-            {
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
                 alert("Status: " + textStatus); alert("Error: " + errorThrown);
                 $("#WaitingMode1").hide();
@@ -40,91 +41,210 @@
         });
     }
 </script>
+<script></script>
 
 @using (Html.BeginForm("Rep_Bar_History", "Rep_Bar_History", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary(true)
     <div class="row" style="margin-top: 5px; font:bold;">
-        <div class="col-md-1" style="margin-top:6px">
-            <div class="editor-label">
-                @Html.Label("", "From Date")
-            </div>
-        </div>
-        <div class="col-md-4" style="margin-top:1px;">
-            @Html.EditorFor(model => model.DATEFROM, new { htmlAttributes = new { @class = "form-control", id = "DATEFROM", @style = "text-transform:uppercase;", @placeholder = "dd/mm/yyyy", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
-        </div>
-        <div class="col-md-1" style="margin-top:6px">
-            <div class="editor-label">
-                @Html.Label("", "Upto Date")
-            </div>
-        </div>
-        <div class="col-md-4" style="margin-top:1px;">
-            @Html.EditorFor(model => model.DATETO, new { htmlAttributes = new { @class = "form-control", id = "DATETO", @style = "text-transform:uppercase;", @placeholder = "dd/mm/yyyy", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
-        </div>
-
-        <div class="col-md-3">
+        <div class="col-md-1">
             <div class="editor-label" style="margin-top: 6px;">
-                @Html.Label("", "Document Code")
+                @Html.Label("", "Bar Code")
+                <b style="color:Red;">*</b>
             </div>
         </div>
         <div class="col-md-8">
-            <select id="DOCCD" name="DOCCD" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
-                <optgroup label="Document Code">
-                    @foreach (var i in Model.DocumentType)
-                    {
-                        <option value="@i.value">
-                            @i.text
-                        </option>
-                    }
-                </optgroup>
-            </select>
-        </div>
-        <div class="col-md-7" style="margin-top:0px;">
-            <input type="button" class="btn-sm btn-default" onclick="ShowGrid()" value="PROCEED TO GET DATA" id="btnprint" />
-        </div>
-        <div class="col-md-4">
             <div class="editor-field">
-                <input class="btn-sm btn-success" style="padding: 5px;" type="submit" name="Command" formmethod="post" value="Prepare JSON" formtarget="_blank" />
-            </div>
-        </div>
-        <div class="col-md-4" style="margin-top:0px;">
-            <input class="btn-sm btn-info" type="submit" name="Command" formmethod="post" value="GENERATE EXCEL" formtarget="_blank" />
-        </div>
-    </div>
-    <div class="row" style="margin-top: 5px;">
-        <div class="col-md-6">
-            <div class="editor-label" style="margin-top: 6px;">
-                @Html.Label("", "Despatch Address from Godown")
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="editor-field" style="margin-top:6px;">
-                @Html.CheckBoxFor(model => model.Checkbox1)
+                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
+                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2">
-            <div class="editor-field" style="margin-top: 4px;">
-                @Html.Label("", "Select File")
+        <div class="col-md-1">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Group")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @placeholder = "ITGRPCD", @readonly = "readonly", @TabIndex = -1 } })
             </div>
         </div>
         <div class="col-md-7">
-            <div class="editor-field" style="margin-top: 4px;">
-                <input type="file" name="UploadedFile" />
-            </div>
-        </div>
-        <div class="col-md-4">
             <div class="editor-field">
-                <input class="btn btn-primary" style="padding: 5px;" type="submit" name="Command" formmethod="post" value="UPLOAD EXCEL" formtarget="_blank" title="to update bulk BILL'S ewaybill No from excel" />
+                @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "ITGRPNM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Fabric")
+            </div>
+        </div>
+        <div class="col-md-5" style="width:auto;">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.FABITCD, new { htmlAttributes = new { @class = "form-control", id = "FABITCD", @placeholder = "FABITCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @placeholder = "FABITNM", @readonly = "readonly", @TabIndex = -1 } })
             </div>
         </div>
     </div>
-    <div class="row" style="background-color:#c4b9b9;width:100%">
-        <div id="PartialdivEWBILL">
-            @*@Html.Partial("_Rep_Bar_History")*@
+    <div class="row">
+        <div class="col-md-1">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Item")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @placeholder = "ITCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @placeholder = "ITNM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Design")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.DESIGN, new { htmlAttributes = new { @class = "form-control", id = "DESIGN", @placeholder = "DESIGN", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Uom ")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.UOMCD, new { htmlAttributes = new { @class = "form-control", id = "UOMCD", @placeholder = "UOMCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-1">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Party")
+            </div>
+        </div>
+        <div class="col-md-5" style="width:auto;">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control", id = "SLCD", @placeholder = "SLCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7" style="width:auto;">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", @placeholder = "SLNM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-5" style="width:auto;">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @placeholder = "DISTRICT", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @placeholder = "GSTNO", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-1" style="width:auto;">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "P/Design")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "PDESIGN", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Color")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control", id = "COLRCD", @placeholder = "COLRCD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @placeholder = "COLRNM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+      
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+            <div class="editor-field" style="margin-top: 6px;">
+                @Html.Label("", "Size")
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control", id = "SIZECD", @placeholder = "SIZECD", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.SIZENM, new { htmlAttributes = new { @class = "form-control", id = "SIZENM", @placeholder = "SIZENM", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-5"></div><div class="col-md-5"></div>
+        <div class="col-md-1" style="margin-top: 6px;width:auto;">
+            <div class="editor-field">
+                @Html.Label("", "Balance")
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.TOTALIN, new { htmlAttributes = new { @class = "form-control", id = "TOTALIN", @placeholder = "TOTALIN", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.TOTALOUT, new { htmlAttributes = new { @class = "form-control", id = "TOTALOUT", @placeholder = "TOTALOUT", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+        <div class="col-md-3" style="font:bold;">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.TOTINOUT, new { htmlAttributes = new { @class = "form-control", id = "TOTINOUT", @placeholder = "TOTINOUT", @readonly = "readonly", @TabIndex = -1 } })
+            </div>
+        </div>
+       
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+
+        </div>
+        <div class="col-lg-6">
+            <div id="partialdiv1" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                @*@Html.Partial("_REP_BAR_HISTORY")*@
+            </div>
+        </div>
+            
+        </div>
+            <div class="row" style="margin-top:10PX">
+                <div class="col-lg-6">
+                    <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
+
+                </div>
+            </div>
+            @*<div class="row" style="background-color:#c4b9b9;width:100%">
+                <div id="PartialdivEWBILL">*@
+            @*@Html.Partial("_Rep_Bar_History")*@
+            @*</div>
+                </div>*@
 }
 
 
