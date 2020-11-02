@@ -240,6 +240,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
+    <Compile Include="Cloth.cs" />
     <Compile Include="CommFunc.cs" />
     <Compile Include="CommVar.cs" />
     <Compile Include="Controllers\DatalockController.cs" />
@@ -934,6 +935,7 @@
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\Sale.js" />
+    <Content Include="Scripts\SalePos.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Templates\Email\Docauth.htm" />
     <Content Include="Templates\Email\Salebill.htm" />

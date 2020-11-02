@@ -620,7 +620,15 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
         }
+        public ActionResult GetBarCodeDetailsGrid(string val, string Code)
+        {
+            return BarCodeDetails(val, Code, "PB");
+        }
         public ActionResult GetBarCodeDetails(string val, string Code)
+        {
+            return BarCodeDetails(val, Code, "SB");
+        }
+        public ActionResult BarCodeDetails(string val, string Code, string menupara)
         {
             try
             {
@@ -653,7 +661,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
         public ActionResult GetJobDetails(string val)
         {
             try
@@ -1260,7 +1267,7 @@ namespace Improvar.Controllers
                                        QITNM = x.ITNM,
                                        QUOM = x.UOM,
                                        QQNTY = x.QNTY,
-                                       BARNO=x.BARNO,
+                                       BARNO = x.BARNO,
                                        ITGRPCD = x.ITGRPCD,
                                        ITGRPNM = x.ITGRPNM,
                                        ITCD = x.ITCD,
@@ -1794,7 +1801,7 @@ namespace Improvar.Controllers
                     //TTXN.REVCHRG = VE.T_TXN.REVCHRG;
                     //TTXN.ROAMT = VE.T_TXN.ROAMT;
                     //if (VE.RoundOff == true) { TTXN.ROYN = "Y"; } else { TTXN.ROYN = "N"; }
-                   
+
                     TTXN.JOBCD = VE.T_TXN.JOBCD;
                     TTXN.GOCD = VE.T_TXN.GOCD;
                     //TTXN.MANSLIPNO = VE.T_TXN.MANSLIPNO;
@@ -1940,12 +1947,12 @@ namespace Improvar.Controllers
 
                     dbsql = masterHelp.RetModeltoSql(TTXN, VE.DefaultAction);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                     dbsql = masterHelp.RetModeltoSql(TXNTRANS);
+                    dbsql = masterHelp.RetModeltoSql(TXNTRANS);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     dbsql = masterHelp.RetModeltoSql(TTXNOTH);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                   
-                   
+
+
                     //dbsql = MasterHelpFa.RetModeltoSql(TVCHGST,"A",CommVar.FinSchema(UNQSNO));
                     //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -2373,7 +2380,7 @@ namespace Improvar.Controllers
                     {
                         dberrmsg = "Quantity not entered"; goto dbnotsave;
                     }
-                   
+
                     #endregion
                     //  -----------------------DOCUMENT PASSING DATA---------------------------//
                     //double TRAN_AMT = Convert.ToDouble(TTXN.BLAMT);
@@ -2436,7 +2443,7 @@ namespace Improvar.Controllers
                 else if (VE.DefaultAction == "V")
                 {
                     #region batch and detail data
-                    
+
 
                     #endregion
                     //dbsql = MasterHelpFa.TblUpdt("t_cntrl_doc_pass", VE.T_TXN.AUTONO, "D");
@@ -2488,7 +2495,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-            dbnotsave:;
+                dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);

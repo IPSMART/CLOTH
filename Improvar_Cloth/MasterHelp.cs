@@ -2122,6 +2122,19 @@ namespace Improvar
             DTYP.Add(DTYP4);
             return DTYP;
         }
+        public List<PCSection> PCSection()
+        {
+            List<PCSection> DropDown_list1 = new List<PCSection> {
+                new PCSection { Value = "", Text = ""},
+                new PCSection { Value = "DL", Text = "Delivered"},
+                 new PCSection { Value = "FP", Text = "Fall"},
+                  new PCSection { Value = "PO", Text = "Polish"},
+                   new PCSection { Value = "PP", Text = "Polish/Fall"},
+                    new PCSection { Value = "AL", Text = "Alteration"},
+
+            };
+            return (DropDown_list1);
+        }
         public List<DISC_TYPE> DISC_TYPE1()
         {
             List<DISC_TYPE> DTYP = new List<DISC_TYPE>();
@@ -2286,7 +2299,7 @@ namespace Improvar
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             if (menupara == "PB")
             {
-                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(),"", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(),"","",true,false,menupara);
+                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara);
             }
             else
             {
@@ -2307,7 +2320,7 @@ namespace Improvar
             {
                 if (tbl.Rows.Count > 0)
                 {
-                    string str = ToReturnFieldValues("", tbl);              
+                    string str = ToReturnFieldValues("", tbl);
                     return str;
                 }
                 else

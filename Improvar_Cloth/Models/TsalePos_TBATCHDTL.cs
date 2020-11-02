@@ -134,7 +134,7 @@ namespace Improvar.Models
         public string UOM { get; set; }
         [StringLength(1)]
         public string STKTYPE { get; set; }
-        public List<DropDown_list1> DropDown_list1 { get; set; }
+        public List<PCSection> PCSection { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GSTPER { get; set; }
         [StringLength(15)]
