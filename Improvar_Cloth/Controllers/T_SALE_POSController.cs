@@ -18,8 +18,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp(); Cloth cloth = new Cloth();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
-        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO;
-        SMS SMS = new SMS(); T_TXNMEMO TXNMEMO;
+        SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: T_SALE_POS
         public ActionResult T_SALE_POS(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "", string ThirdParty = "no", string loadOrder = "N")
@@ -138,13 +137,7 @@ namespace Improvar.Controllers
                                     VE = Navigation(VE, DB, Nindex, searchValue, loadOrder);
                                 }
                             }
-                            VE.T_TXN = TXN;
-                            VE.T_TXNTRANS = TXNTRN;
-                            VE.T_TXNOTH = TXNOTH;
-                            VE.T_TXNMEMO = TXNMEMO;
-                            VE.T_CNTRL_HDR = TCH;
-                            VE.T_CNTRL_HDR_REM = SLR;
-                            VE.T_TXN_LINKNO = TTXNLINKNO;
+
                             if (loadOrder.retStr().Length > 1)
                             {
                                 VE.T_TXN.AUTONO = "";
@@ -152,7 +145,7 @@ namespace Improvar.Controllers
                                 VE.LINKDOCNO = loadOrder.retStr();
                                 VE.T_TXN_LINKNO.LINKAUTONO = searchValue.retStr();
                             }
-                            if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
+                            if (VE.T_CNTRL_HDR != null && VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
                         }
                         if (op.ToString() == "A" && loadOrder == "N")
                         {
@@ -270,7 +263,7 @@ namespace Improvar.Controllers
                         }
                         if (parkID == "" && loadOrder == "N")
                         {
-                            FreightCharges(VE, VE.T_TXN.AUTONO);
+                            FreightCharges(VE, VE.T_TXN?.AUTONO);
                         }
                     }
                     else
@@ -279,8 +272,8 @@ namespace Improvar.Controllers
                         VE.DefaultDay = 0;
                     }
                     string docdt = "";
-                    if (TCH != null) if (TCH.DOCDT != null) docdt = TCH.DOCDT.ToString().Remove(10);
-                    Cn.getdocmaxmindate(VE.T_TXN.DOCCD, docdt, VE.DefaultAction, VE.T_TXN.DOCNO, VE);
+                    if (VE.T_CNTRL_HDR != null) if (VE.T_CNTRL_HDR.DOCDT != null) docdt = VE.T_CNTRL_HDR.DOCDT.ToString().Remove(10);
+                    Cn.getdocmaxmindate(VE.T_TXN?.DOCCD, docdt, VE.DefaultAction, VE.T_TXN?.DOCNO, VE);
                     return View(VE);
                 }
             }
@@ -1501,44 +1494,6 @@ namespace Improvar.Controllers
             {
                 return Content("//.");
             }
-
-        }
-        public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
-        {
-            List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
-            int slno = 0;
-            try
-            {
-                var BarImages = BarImage.retStr().Trim(Convert.ToChar(Cn.GCS())).Split(Convert.ToChar(Cn.GCS()));
-                foreach (string image in BarImages)
-                {
-                    if (image != "")
-                    {
-                        var imagedes = image.Split('~');
-                        T_BATCH_IMG_HDR mdoc = new T_BATCH_IMG_HDR();
-                        mdoc.CLCD = CommVar.ClientCode(UNQSNO);
-                        mdoc.EMD_NO = EMD;
-                        mdoc.SLNO = Convert.ToByte(++slno);
-                        mdoc.DOC_CTG = "PRODUCT";
-                        var extension = Path.GetExtension(imagedes[0]);
-                        mdoc.DOC_FLNAME = BARNO + "_" + slno + extension;
-                        mdoc.DOC_DESC = imagedes[1].retStr().Replace('~', ' ');
-                        mdoc.BARNO = BARNO;
-                        mdoc.DOC_EXTN = extension;
-                        doc.Add(mdoc);
-                        string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
-                        topath = Path.Combine(topath, "");
-                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
-                        Cn.CopyImage(frompath, topath);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, BarImage);
-            }
-            var result = Tuple.Create(doc);
-            return result;
         }
     }
 }

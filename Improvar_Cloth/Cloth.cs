@@ -22,8 +22,7 @@ namespace Improvar
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
-        T_TXN TXN; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXN_LINKNO TTXNLINKNO;
-        SMS SMS = new SMS(); T_TXNMEMO TXNMEMO;
+        SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         public TransactionSalePosEntry T_SALE_POS_Navigation(TransactionSalePosEntry VE, ImprovarDB DB, int index, string searchValue, string loadOrder = "N")
         {
@@ -36,9 +35,7 @@ namespace Improvar
                 string DATABASE = CommVar.CurSchema(UNQSNO).ToString();
                 string DATABASEF = CommVar.FinSchema(UNQSNO);
                 Cn.getQueryString(VE);
-
-                TXN = new T_TXN(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM(); TTXNLINKNO = new T_TXN_LINKNO();
-                TXNMEMO = new T_TXNMEMO(); string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
 
                 if (VE.IndexKey.Count != 0 || loadOrder.retStr().Length > 1)
                 {
@@ -51,41 +48,39 @@ namespace Improvar
                     {
                         aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                     }
-                    TXN = DB.T_TXN.Find(aa[0].Trim());
-                    TCH = DB.T_CNTRL_HDR.Find(TXN.AUTONO);
-                    if (TXN.ROYN == "Y") VE.RoundOff = true;
+                    VE.T_TXN = DB.T_TXN.Find(aa[0].Trim());
+                    VE.T_CNTRL_HDR = DB.T_CNTRL_HDR.Find(VE.T_TXN.AUTONO);
+                    if (VE.T_TXN.ROYN == "Y") VE.RoundOff = true;
                     else VE.RoundOff = false;
-                    TXNTRN = DB.T_TXNTRANS.Find(TXN.AUTONO);
-                    TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
-                    TXNMEMO = DB.T_TXNMEMO.Find(TXN.AUTONO);
-                    //var MGP = DB.M_GROUP.Find(TXN.ITGRPCD);
+                    VE.T_TXNTRANS = DB.T_TXNTRANS.Find(VE.T_TXN.AUTONO);
+                    VE.T_TXNOTH = DB.T_TXNOTH.Find(VE.T_TXN.AUTONO);
+                    VE.T_TXNMEMO = DB.T_TXNMEMO.Find(VE.T_TXN.AUTONO);
+                    //var MGP = DB.M_GROUP.Find(   VE.T_TXN.ITGRPCD);
 
-                    TTXNLINKNO = (from a in DB.T_TXN_LINKNO where a.AUTONO == TXN.AUTONO select a).FirstOrDefault();
+                    VE.T_TXN_LINKNO = (from a in DB.T_TXN_LINKNO where a.AUTONO == VE.T_TXN.AUTONO select a).FirstOrDefault();
                     //VE.LINKDOCNO = (from a in DB.T_CNTRL_HDR where a.AUTONO == TTXNLINKNO.LINKAUTONO select a).FirstOrDefault().DOCNO;
 
 
-                    VE.RTDEBNM = TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == TXNMEMO.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
-                    VE.MOBILE = TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == TXNMEMO.RTDEBCD).Select(b => b.MOBILE).FirstOrDefault();
-                    var add1 = TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == TXNMEMO.RTDEBCD).Select(b => b.ADD1).FirstOrDefault();
-                    var add2 = TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == TXNMEMO.RTDEBCD).Select(b => b.ADD2).FirstOrDefault();
-                    var add3 = TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == TXNMEMO.RTDEBCD).Select(b => b.ADD3).FirstOrDefault();
+                    VE.RTDEBNM = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
+                    VE.MOBILE = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.MOBILE).FirstOrDefault();
+                    var add1 = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.ADD1).FirstOrDefault();
+                    var add2 = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.ADD2).FirstOrDefault();
+                    var add3 = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.ADD3).FirstOrDefault();
                     VE.ADDR = add1 + add2 + add3;
-                    string qry = "select j.INC_RATE from " + scmf + ".M_RETDEB i," + scm + ".M_SYSCNFG j where i.RTDEBCD=j.RTDEBCD and i.RTDEBCD='" + TXNMEMO.RTDEBCD + "'";
+                    string qry = "select j.INC_RATE from " + scmf + ".M_RETDEB i," + scm + ".M_SYSCNFG j where i.RTDEBCD=j.RTDEBCD and i.RTDEBCD='" + VE.T_TXNMEMO.RTDEBCD + "'";
                     var dt = masterHelp.SQLquery(qry);
                     var incrate = (from DataRow dr in dt.Rows
                                    select new
                                    { INC_RATE = dr["INC_RATE"].retStr() }).FirstOrDefault();
                     if (incrate.INC_RATE == "Y") VE.INC_RATE = true;
-                    VE.AGSLNM = TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
-                    VE.SAGSLNM = TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
-                    VE.GONM = TXN.GOCD.retStr() == "" ? "" : DB.M_GODOWN.Where(a => a.GOCD == TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
-                    VE.GOCD = TXN.GOCD.retStr() == "" ? "" : TXN.GOCD;
+                    VE.AGSLNM = VE.T_TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == VE.T_TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
+                    VE.SAGSLNM = VE.T_TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == VE.T_TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
+                    VE.GONM = VE.T_TXN.GOCD.retStr() == "" ? "" : DB.M_GODOWN.Where(a => a.GOCD == VE.T_TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
+                    VE.GOCD = VE.T_TXN.GOCD.retStr() == "" ? "" : VE.T_TXN.GOCD;
                     //VE.PRCNM = TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
 
-                    //VE.TRANSLNM = TXNTRN.TRANSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.TRANSLCD).Select(b => b.SLNM).FirstOrDefault();
-                    //VE.CRSLNM = TXNTRN.CRSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.CRSLCD).Select(b => b.SLNM).FirstOrDefault();
-                    SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
-                    VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
+                    VE.T_CNTRL_HDR_REM = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), VE.T_TXN.AUTONO);
+                    VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), VE.T_TXN.AUTONO);
 
                     string Scm = CommVar.CurSchema(UNQSNO);
                     string str1 = "";
@@ -96,7 +91,7 @@ namespace Improvar
                     str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q ," + Scm + ".T_TXNDTL r ";
                     str1 += "where i.AUTONO = r.AUTONO(+) and i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                     str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+) ";
-                    str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
+                    str1 += "and i.AUTONO = '" + VE.T_TXN.AUTONO + "' ";
                     str1 += "order by i.SLNO ";
                     DataTable tbl = masterHelp.SQLquery(str1);
 
@@ -173,7 +168,7 @@ namespace Improvar
                     //str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT,i.ITREM ";
                     //str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_STKTYPE m ";
                     //str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=m.STKTYPE(+)  ";
-                    //str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
+                    //str1 += "and i.AUTONO = '" +    VE.T_TXN.AUTONO + "' ";
                     //str1 += "order by i.SLNO ";
                     //tbl = masterHelp.SQLquery(str1);
 
@@ -245,7 +240,7 @@ namespace Improvar
                     string MTRLJOBCD = (from a in VE.TsalePos_TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                     string ITGRPCD = (from a in VE.TsalePos_TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
 
-                    allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", SLR.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
+                    allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", VE.T_CNTRL_HDR_REM.AUTONO.retSqlformat(), ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr());
 
                     foreach (var v in VE.TsalePos_TBATCHDTL)
                     {
@@ -345,14 +340,14 @@ namespace Improvar
                     sql += "b.glcd, b.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, a.sgstper, a.sgstamt, ";
                     sql += "a.cgstper, a.cgstamt,a.cessper, a.cessamt, a.dutyper, a.dutyamt ";
                     sql += "from " + Scm + ".t_txnamt a, " + Scm + ".m_amttype b ";
-                    sql += "where a.amtcd=b.amtcd(+) and b.salpur='" + S_P + "' and a.autono='" + TXN.AUTONO + "' ";
+                    sql += "where a.amtcd=b.amtcd(+) and b.salpur='" + S_P + "' and a.autono='" + VE.T_TXN.AUTONO + "' ";
                     sql += "union ";
                     sql += "select b.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, '' amtdesc, ";
                     sql += "b.glcd, b.hsncode, 0 amtrate, 0 curr_amt, 0 amt,0 igstper, 0 igstamt, 0 sgstper, 0 sgstamt, ";
                     sql += "0 cgstper, 0 cgstamt, 0 CESSPER, 0 CESSAMT, 0 dutyper, 0 dutyamt ";
                     sql += "from " + Scm + ".m_amttype b, " + Scm + ".m_cntrl_hdr c ";
                     sql += "where b.m_autono=c.m_autono(+) and b.salpur='" + S_P + "'  and nvl(c.inactive_tag,'N') = 'N' and ";
-                    sql += "b.amtcd not in (select amtcd from " + Scm + ".t_txnamt where autono='" + TXN.AUTONO + "') ";
+                    sql += "b.amtcd not in (select amtcd from " + Scm + ".t_txnamt where autono='" + VE.T_TXN.AUTONO + "') ";
                     var AMOUNT_DATA = masterHelp.SQLquery(sql);
 
                     VE.TTXNAMT = (from DataRow dr in AMOUNT_DATA.Rows
@@ -433,7 +428,7 @@ namespace Improvar
                     VE.TOTTAX = VE.T_CGST_AMT.retDbl() + VE.A_T_CGST.retDbl() + VE.T_SGST_AMT.retDbl() + VE.A_T_SGST.retDbl() + VE.T_IGST_AMT.retDbl() + VE.A_T_IGST.retDbl();
 
                     string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT from " + Scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
-                    str += "where a.SLMSLCD=b.slcd and a.autono='" + TXN.AUTONO + "'";
+                    str += "where a.SLMSLCD=b.slcd and a.autono='" + VE.T_TXN.AUTONO + "'";
                     var SALSMN_DATA = masterHelp.SQLquery(str);
                     VE.TTXNSLSMN = (from DataRow dr in SALSMN_DATA.Rows
                                     select new TTXNSLSMN()
@@ -457,7 +452,7 @@ namespace Improvar
                     VE.T_BLAMT = T_BILL_AMT.retDbl();
 
                     string str2 = "select a.SLNO,a.PYMTCD,c.PYMTNM,a.AMT,a.CARDNO,a.INSTNO,a.INSTDT,a.PYMTREM,a.GLCD from " + Scm + ".t_txnpymt a," + Scm + ".t_txnpymt_hdr b," + Scm + ".m_payment c ";
-                    str2 += "where a.autono=b.autono and  a.PYMTCD=c.PYMTCD and a.autono='" + TXN.AUTONO + "'";
+                    str2 += "where a.autono=b.autono and  a.PYMTCD=c.PYMTCD and a.autono='" + VE.T_TXN.AUTONO + "'";
                     var PYMT_DATA = masterHelp.SQLquery(str2);
                     VE.TTXNPYMT = (from DataRow dr in PYMT_DATA.Rows
                                    select new TTXNPYMT()
@@ -481,9 +476,9 @@ namespace Improvar
                     }
                     VE.T_PYMT_AMT = T_PYMT_AMT;
 
+                    if (VE.T_CNTRL_HDR.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
                 }
-                //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
-                if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
+                //Cn.DateLock_Entry(VE, DB,   VE.T_CNTRL_HDR.DOCDT.Value);
             }
             catch (Exception ex)
             {
@@ -1515,10 +1510,15 @@ namespace Improvar
                 }
                 else if (VE.DefaultAction == "V")
                 {
-
                     dbsql = masterHelp.TblUpdt("T_TXNPYMT_HDR", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("T_TXNMEMO", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("T_TXNTRANS", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_txnoth", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("T_CNTRL_HDR_UNIQNO", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_batchdtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -1530,10 +1530,8 @@ namespace Improvar
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_txnamt", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
                     dbsql = masterHelp.TblUpdt("t_txn_linkno", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
                     dbsql = masterHelp.TblUpdt("t_txndtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_txn", VE.T_TXN.AUTONO, "D");
@@ -1547,8 +1545,6 @@ namespace Improvar
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_cntrl_hdr_rem", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                    //dbsql = masterHelp.TblUpdt("t_cntrl_hdr_uniqno", VE.T_TXN.AUTONO, "D");
-                    //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                     //   Delete from financial schema
                     dbsql = masterHelp.TblUpdt("t_cntrl_auth", VE.T_TXN.AUTONO, "D");
@@ -1588,6 +1584,6 @@ namespace Improvar
             }
             return "";
         }
-       
+
     }
 }
