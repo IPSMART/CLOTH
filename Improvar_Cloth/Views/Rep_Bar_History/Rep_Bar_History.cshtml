@@ -81,6 +81,8 @@
                         document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
                         var TINQTY = returncolvalue(res[0], "TOTALIN");
                         var TOUTQTY = returncolvalue(res[0], "TOTALOUT");
+                        if (TINQTY == "") { TINQTY = parseFloat(0); } else { TINQTY = parseFloat(TINQTY) }
+                        if (TOUTQTY == "") { TOUTQTY = parseFloat(0); } else { TOUTQTY = parseFloat(TOUTQTY) }
                         document.getElementById("TOTALIN").value = parseFloat(TINQTY).toFixed(2);
                         document.getElementById("TOTALOUT").value = parseFloat(TOUTQTY).toFixed(2);
                         document.getElementById("TOTINOUT").value = (parseFloat(TINQTY) - parseFloat(TOUTQTY)).toFixed(2)
@@ -90,7 +92,7 @@
                         $("#partialdivPRICE").show();
                         $("#partialdivPRICE").animate({ marginTop: '0px' }, 50);
                         $("#partialdivPRICE").html(res[2]);
-                        $("#" + MTRLJOBCD).val("");
+                        $("#MTRLJOBCD").val("");
                         document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
                         FillImageModal();
                       
@@ -98,9 +100,8 @@
                     else {
 
                         msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
-                        $("#" + BARNO).val("");
-                        $("#" + MTRLJOBCD).val("");
-                        message_value = BARNO;
+                        $("#" + BARNO.id).val("");
+                        message_value = BARNO.id;
 
                     }
                 },
