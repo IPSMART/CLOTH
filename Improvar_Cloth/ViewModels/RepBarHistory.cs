@@ -62,6 +62,8 @@ namespace Improvar.ViewModels
         public string BarImages { get; set; }
         public string MTRLJOBCD { get; set; }
         public string PARTCD { get; set; }
-
+        public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
+        public string ALLMTRLJOBCD { get; set; }
+        
     }
 }
