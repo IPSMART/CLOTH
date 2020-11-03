@@ -912,7 +912,7 @@ namespace Improvar
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
-            sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
+            sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, e.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
             sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode, e.wppricegen, e.rppricegen ";
             sql += "from ";
@@ -973,7 +973,7 @@ namespace Improvar
             sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
             sql += ") a where prccd='" + prccd + "') b, ";
 
-            sql += "(select a.barno, ";
+            sql += "(select a.barno, count(*) barimagecount,";
             sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
             //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";
@@ -1131,7 +1131,7 @@ namespace Improvar
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
-            sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimage, ";
+            sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
             sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm, e.wppricegen, e.rppricegen ";
             sql += "from ";
@@ -1174,7 +1174,7 @@ namespace Improvar
             sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
             sql += ") a where prccd='" + prccd + "') b, ";
 
-            sql += "(select a.barno, ";
+            sql += "(select a.barno, count(*) barimagecount, ";
             sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
             sql += "within group (order by a.barno) as barimage from ";
             //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";

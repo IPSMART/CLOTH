@@ -76,8 +76,8 @@ namespace Improvar
                     VE.AGSLNM = VE.T_TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == VE.T_TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                     VE.SAGSLNM = VE.T_TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == VE.T_TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
                     VE.GONM = VE.T_TXN.GOCD.retStr() == "" ? "" : DB.M_GODOWN.Where(a => a.GOCD == VE.T_TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
-                    VE.GOCD = VE.T_TXN.GOCD.retStr() == "" ? "" : VE.T_TXN.GOCD;
-                    //VE.PRCNM = TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
+                    //VE.GOCD = VE.T_TXN.GOCD.retStr() == "" ? "" : VE.T_TXN.GOCD;
+                    VE.PRCNM = VE.T_TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == VE.T_TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
 
                     VE.T_CNTRL_HDR_REM = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), VE.T_TXN.AUTONO);
                     VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), VE.T_TXN.AUTONO);
@@ -245,7 +245,7 @@ namespace Improvar
                     foreach (var v in VE.TsalePos_TBATCHDTL)
                     {
                         v.DISC_TYPE = masterHelp.DISC_TYPE();
-                        v.PCSection = masterHelp.PCSection();
+                        v.PCSection = masterHelp.PCSAction();
                         string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                         v.GSTPER = VE.TsalePos_TBATCHDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                         if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
@@ -659,7 +659,7 @@ namespace Improvar
                         TTXN.DTAG = "E";
                     }
                     TTXN.DOCTAG = VE.MENU_PARA.retStr().Length > 2 ? VE.MENU_PARA.retStr().Remove(2) : VE.MENU_PARA.retStr();
-                    TTXN.GOCD = VE.GOCD;
+                    TTXN.GOCD = VE.T_TXN.GOCD;
                     TTXN.DUEDAYS = VE.T_TXN.DUEDAYS;
                     TTXN.PARGLCD = parglcd;
                     TTXN.CLASS1CD = parclass1cd;
@@ -847,7 +847,7 @@ namespace Improvar
                             TTXNDTL.BATCHNO = VE.TsalePos_TBATCHDTL[i].BATCHNO;
                             TTXNDTL.BALEYR = VE.BALEYR;// VE.TTXNDTL[i].BALEYR;
                             //TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
-                            TTXNDTL.GOCD = VE.GOCD;
+                            TTXNDTL.GOCD = VE.T_TXN.GOCD;
                             //TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
                             TTXNDTL.NOS = VE.TsalePos_TBATCHDTL[i].NOS == null ? 0 : VE.TsalePos_TBATCHDTL[i].NOS;
                             TTXNDTL.QNTY = VE.TsalePos_TBATCHDTL[i].QNTY;
@@ -1013,7 +1013,7 @@ namespace Improvar
                                 TsalePos_TBATCHDTL.AUTONO = TTXN.AUTONO;
                                 TsalePos_TBATCHDTL.TXNSLNO = VE.TsalePos_TBATCHDTL[i].TXNSLNO;
                                 TsalePos_TBATCHDTL.SLNO = VE.TsalePos_TBATCHDTL[i].SLNO;  //COUNTER.retShort();
-                                TsalePos_TBATCHDTL.GOCD = VE.GOCD;
+                                TsalePos_TBATCHDTL.GOCD = VE.T_TXN.GOCD;
                                 TsalePos_TBATCHDTL.BARNO = barno;
                                 TsalePos_TBATCHDTL.MTRLJOBCD = VE.TsalePos_TBATCHDTL[i].MTRLJOBCD;
                                 TsalePos_TBATCHDTL.PARTCD = VE.TsalePos_TBATCHDTL[i].PARTCD;

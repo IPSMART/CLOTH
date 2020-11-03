@@ -60,6 +60,8 @@ namespace Improvar.ViewModels
         public double? T_NOS { get; set; }
         public List<UploadDOC> UploadBarImages { get; set; }
         public string BarImages { get; set; }
+        public string MTRLJOBCD { get; set; }
+        public string PARTCD { get; set; }
 
     }
 }
