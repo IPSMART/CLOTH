@@ -79,12 +79,11 @@
                         document.getElementById("SIZECD").value = returncolvalue(res[0], "SIZECD");
                         document.getElementById("SIZENM").value = returncolvalue(res[0], "SIZENM");
                         //$("#partialdivRawMaterials").html(res[1]);
-                        $("#partialdivHISTORY").html(res[1]);
                         $("#partialdivHISTORY").show();
                         $("#partialdivHISTORY").animate({ marginTop: '0px' }, 50);
-                      
-                        //document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
-                        //FillImageModal();
+                        $("#partialdivHISTORY").html(res[1]);
+                        document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
+                        FillImageModal();
                       
                     }
                     else {

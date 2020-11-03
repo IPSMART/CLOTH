@@ -12,6 +12,7 @@ using System.Reflection;
 using ClosedXML.Excel;
 using OfficeOpenXml;
 using OfficeOpenXml.Table;
+using System.IO;
 
 namespace Improvar
 {
@@ -2318,6 +2319,18 @@ namespace Improvar
             }
             else
             {
+                if (tbl.Rows[0]["barimage"].retStr() != "")
+                {
+                    var brimgs = tbl.Rows[0]["barimage"].retStr().Split((char)179);
+                    foreach (var barimg in brimgs)
+                    {
+                        string barfilename = barimg.Split('~')[0];
+                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                        FROMpath = Path.Combine(FROMpath, "");
+                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                        Cn.CopyImage(FROMpath, TOPATH);
+                    }
+                }
                 if (tbl.Rows.Count > 0)
                 {
                     string str = ToReturnFieldValues("", tbl);

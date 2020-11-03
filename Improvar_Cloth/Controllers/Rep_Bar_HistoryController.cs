@@ -129,7 +129,7 @@ namespace Improvar.Controllers
                                              STKDRCR = dr["STKDRCR"].retStr(),
                                              QNTY = dr["QNTY"].retDbl(),
                                              DOCNM = dr["DOCNM"].retStr()
-                                         }).ToList();
+                                         }).OrderBy(a=>a.SLNO).Distinct().ToList();
                     double TINQTY = 0, TOUTQTY = 0, TNOS = 0;
                     for (int p = 0; p <= VE.BARCODEHISTORY.Count - 1; p++)
                     {
@@ -147,24 +147,6 @@ namespace Improvar.Controllers
                     }
                     VE.T_INQNTY = TINQTY; VE.T_OUTQNTY = TOUTQTY;VE.T_NOS = TNOS;
                     VE.TOTALIN = TINQTY;VE.TOTALOUT = TOUTQTY;VE.TOTINOUT = (TINQTY - TOUTQTY).retDbl();
-                    sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".M_BATCH_IMG_HDR WHERE barno in(" + barnoOrStyle + ")";
-                    DataTable dt = masterHelp.SQLquery(sql);
-                    VE.UploadBarImages = (from DataRow dr in dt.Rows
-                                          select new UploadDOC
-                                          {
-                                              docID = Path.GetFileNameWithoutExtension(dr["DOC_FLNAME"].retStr()),
-                                              DOC_DESC = dr["DOC_DESC"].retStr(),
-                                              DOC_FILE = "/UploadDocuments/" + dr["DOC_FLNAME"].retStr(),
-                                              DOC_FILE_NAME = dr["DOC_FLNAME"].retStr(),
-                                          }).ToList();
-                    foreach (var v in VE.UploadBarImages)
-                    {
-                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + v.DOC_FILE_NAME;
-                        FROMpath = Path.Combine(FROMpath, "");
-                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath(v.DOC_FILE);
-                        Cn.CopyImage(FROMpath, TOPATH);
-                        VE.BarImages += Cn.GCS() + v.DOC_FILE_NAME + "~" + v.DOC_DESC;
-                    }
                     VE.DefaultView = true;
                     var _barcodehistory = RenderRazorViewToString(ControllerContext, "_REP_BAR_HISTORY", VE);
                     return Content(str + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + _barcodehistory);
