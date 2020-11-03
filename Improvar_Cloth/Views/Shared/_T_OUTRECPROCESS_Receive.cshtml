@@ -62,6 +62,7 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGAUTONO, new { id = "B_RECPROGAUTONO_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGSLNO, new { id = "B_RECPROGSLNO_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].SAMPLE, new { id = "B_SAMPLE_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:20px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -72,6 +73,7 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITGRPNM, new { id = "B_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ITGRPCD, new { id = "B_ITGRPCD_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })

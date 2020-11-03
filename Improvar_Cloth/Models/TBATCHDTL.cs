@@ -175,6 +175,7 @@ namespace Improvar.Models
         public double? BALSTOCK { get; set; }
         public string WPPRICEGEN { get; set; }
         public string RPPRICEGEN { get; set; }
-
+        [StringLength(1)]
+        public string SAMPLE { get; set; }
     }
 }

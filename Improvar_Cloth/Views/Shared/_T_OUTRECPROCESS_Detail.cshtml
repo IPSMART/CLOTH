@@ -126,7 +126,7 @@
                                             @Html.EditorFor(model => Model.TTXNDTL[i].AMT, new { htmlattributes = new { id = "D_AMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.DropDownListFor(model => Model.TTXNDTL[i].DISCTYPE, new SelectList(Model.TTXNDTL[i].DISC_TYPE, "value", "text", Model.TTXNDTL[i].DISCTYPE), new { id = "B_DISCTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
+                                            @Html.DropDownListFor(model => Model.TTXNDTL[i].DISCTYPE, new SelectList(Model.TTXNDTL[i].DISC_TYPE, "value", "text", Model.TTXNDTL[i].DISCTYPE), new { id = "D_DISCTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].DISCRATE, new { htmlAttributes = new { id = "D_DISCRATE_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");CalculateAmt_Details(" + i + ");" } })
