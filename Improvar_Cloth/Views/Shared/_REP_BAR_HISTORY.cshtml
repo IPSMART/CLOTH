@@ -25,23 +25,23 @@
                 </center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
-                <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_REP_BAR_HISTORY_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2256px;">
+                <div style="height:auto;overflow-y:scroll;max-height:235px;overflow-x:hidden">
+                    <table id="_REP_BAR_HISTORY_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="" style="width: 20px;">SL No</th>
-                                <th class="" style="width: 100px;">Doc Date</th>
-                                <th class="" style="width:45px;">Doc No</th>
+                                <th class="" style="width: 117px;">Doc Date</th>
+                                <th class="" style="width:86px;">Doc No</th>
                                 <th class="" style="width:71px;">Party Ref</th>
                                 <th class="" style="width:160px;">Doc Type</th>
-                                <th class="" style="width: 34px;">Party</th>
-                                <th class="" style="width:50px;">Location</th>
-                                <th class="" style="width:60px;text-align:right;">In</th>
-                                <th class="" style="width:50px;text-align:right;">Out</th>
-                                <th class="" style="width:50px;text-align:right;">Other Qnty</th>
-                                <th class="" style="width:80px;text-align:right;">Rate</th>
-                                <th class="" style="width:50px;">Disc %</th>
+                                <th class="" style="width: 380px;">Party</th>
+                                <th class="" style="width:144px;">Location</th>
+                                <th class="" style="width:90px;text-align:right;">In</th>
+                                <th class="" style="width:90px;text-align:right;">Out</th>
+                                <th class="" style="width:90px;text-align:right;">Other Qnty</th>
+                                <th class="" style="width:90px;text-align:right;">Rate</th>
+                                <th class="" style="width:90px;">Disc %</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -113,7 +113,7 @@
                                     <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
                                 </td>
                                 <td style="text-align:right;">
-                                    @Html.TextBoxFor(model => Model.T_INQNTY, new { id = "T_INQNTY", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;color:red;", @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.T_INQNTY, new { id = "T_INQNTY", @class = "atextBoxFor text-right", @style = "text-align: right;font-weight:bold;color:red;", @readonly = "readonly" })
                                 </td>
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.T_OUTQNTY, new { htmlAttributes = new { id = "T_OUTQNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })

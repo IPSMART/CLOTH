@@ -19,7 +19,7 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
-        public double? DISCPER { get; set; }
+        public string DISCPER { get; set; }
         public string PREFNO { get; set; }
         public string SLNM { get; set; }
         public string SLCD { get; set; }
@@ -29,7 +29,9 @@ namespace Improvar.Models
         public string DOCNO { get; set; }
         public string DOCNM { get; set; }
         public bool Checked { get; set; }
-        
+        public string STKDRCR { get; set; }
+        public double? QNTY { get; set; }
+
 
     }
 }

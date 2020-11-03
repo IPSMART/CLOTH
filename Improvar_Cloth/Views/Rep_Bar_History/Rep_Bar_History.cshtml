@@ -42,8 +42,116 @@
         });
     }
 </script>
-<script></script>
+<script>
+    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD) {
+        debugger;
+        var MTRLJOBCD = document.getElementById(MTRLJOBCD.id).value;
+        if (id == "") {
+            $("#" + BARNO.id).val("");
+            //$("#" + CLASS1NM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetBarCodeDetails", "Rep_Bar_History")",
+                data: $('form').serialize() + "&val=" + id + "&Code=" + MTRLJOBCD,
+                success: function (result) {
+                    //var MSG = result.indexOf('#helpDIV');
+                    if (result != "") {
+                        $("#WaitingMode").hide();
+                        var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                        document.getElementById("ITGRPCD").value = returncolvalue(res[0], "ITGRPCD");
+                        document.getElementById("ITGRPNM").value = returncolvalue(res[0], "ITGRPNM");
+                        document.getElementById("FABITCD").value = returncolvalue(res[0], "FABITCD");
+                        document.getElementById("FABITNM").value = returncolvalue(res[0], "FABITNM");
+                        document.getElementById("ITCD").value = returncolvalue(res[0], "ITCD");
+                        document.getElementById("ITNM").value = returncolvalue(res[0], "ITNM");
+                        document.getElementById("DESIGN").value = returncolvalue(res[0], "DESIGN");
+                        document.getElementById("UOMCD").value = returncolvalue(res[0], "UOMCD");
+                        document.getElementById("SLCD").value = returncolvalue(res[0], "SLCD");
+                        document.getElementById("SLNM").value = returncolvalue(res[0], "SLNM");
+                        document.getElementById("DISTRICT").value = returncolvalue(res[0], "DISTRICT");
+                        document.getElementById("GSTNO").value = returncolvalue(res[0], "GSTNO");
+                        document.getElementById("PDESIGN").value = returncolvalue(res[0], "PDESIGN");
+                        document.getElementById("COLRCD").value = returncolvalue(res[0], "COLRCD");
+                        document.getElementById("COLRNM").value = returncolvalue(res[0], "COLRNM");
+                        document.getElementById("SIZECD").value = returncolvalue(res[0], "SIZECD");
+                        document.getElementById("SIZENM").value = returncolvalue(res[0], "SIZENM");
+                        document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
+                        var TINQTY = returncolvalue(res[0], "TOTALIN");
+                        var TOUTQTY = returncolvalue(res[0], "TOTALOUT");
+                        if (TINQTY == "") { TINQTY = parseFloat(0); } else { TINQTY = parseFloat(TINQTY) }
+                        if (TOUTQTY == "") { TOUTQTY = parseFloat(0); } else { TOUTQTY = parseFloat(TOUTQTY) }
+                        document.getElementById("TOTALIN").value = parseFloat(TINQTY).toFixed(2);
+                        document.getElementById("TOTALOUT").value = parseFloat(TOUTQTY).toFixed(2);
+                        document.getElementById("TOTINOUT").value = (parseFloat(TINQTY) - parseFloat(TOUTQTY)).toFixed(2)
+                        $("#partialdivHISTORY").show();
+                        $("#partialdivHISTORY").animate({ marginTop: '0px' }, 50);
+                        $("#partialdivHISTORY").html(res[1]);
+                        $("#partialdivPRICE").show();
+                        $("#partialdivPRICE").animate({ marginTop: '0px' }, 50);
+                        $("#partialdivPRICE").html(res[2]);
+                        $("#MTRLJOBCD").val("");
+                        document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
+                        FillImageModal();
+                      
+                    }
+                    else {
 
+                        msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
+                        $("#" + BARNO.id).val("");
+                        message_value = BARNO.id;
+
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    $(document).on('click', '.arrow-left, .arrow-right', function () {
+        var next;
+        var circler;
+        if ($(this).is('.arrow-left')) {
+            next = 'prev';
+            circler = ':last';
+        } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
+            next = 'next';
+            circler = ':first';
+        }
+        var nextTarget = $('#div_carousel_inner div.active')[next]('div');
+        if (nextTarget.length == 0) {
+            nextTarget = $('#div_carousel_inner div' + circler);
+        }
+        $('#div_carousel_inner div').removeClass('active');
+        nextTarget.addClass('active');
+    });
+    function FillImageModal() {
+        debugger;
+        var actt = ""; $("#div_carousel_inner").html('');
+        var arr = $("#BarImages").val();
+        arr = arr.split(String.fromCharCode(179));
+        $.each(arr, function (index, value) {
+            var imgname = (value.split('~')[0]);
+            var id = (imgname).split('.')[0];
+            var ImageDesc = (value.split('~')[1]);
+            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+            htm += '<div id="' + id + '" class="item ' + actt + '">'; 
+            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
+            htm += '    <span class="carousel-caption">';
+            htm += '    <p> ' + ImageDesc + ' </p>';
+            htm += '    </span>';
+            htm += '</div>';
+            $("#div_carousel_inner").append(htm);
+        });
+    }
+</script>
 @using (Html.BeginForm("Rep_Bar_History", "Rep_Bar_History", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary(true)
@@ -56,8 +164,8 @@
         </div>
         <div class="col-md-8">
             <div class="editor-field">
-                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
-                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />
+                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MtrlJobCd=2','MTRLJOBCD')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD)", @placeholder = "Bar Code", maxlength = 25 } })
+                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MtrlJobCd=2','MTRLJOBCD')" />
             </div>
         </div>
     </div>
@@ -70,6 +178,7 @@
         <div class="col-md-5">
             <div class="editor-field">
                 @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @placeholder = "ITGRPCD", @readonly = "readonly", @TabIndex = -1 } })
+                @Html.HiddenFor(model => model.MTRLJOBCD, new { id = "MTRLJOBCD" })
             </div>
         </div>
         <div class="col-md-7">
@@ -183,7 +292,7 @@
                 @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @placeholder = "COLRNM", @readonly = "readonly", @TabIndex = -1 } })
             </div>
         </div>
-      
+
     </div>
     <div class="row">
         <div class="col-md-1">
@@ -222,34 +331,77 @@
                 @Html.EditorFor(model => model.TOTINOUT, new { htmlAttributes = new { @class = "form-control", id = "TOTINOUT", @placeholder = "TOTINOUT", @readonly = "readonly", @TabIndex = -1 } })
             </div>
         </div>
-       
+
     </div>
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="col-lg-6">
-                <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+    <div class="row" style="margin-top:20PX">
+        <div class="col-lg-4" style="width:fit-content;">
+            <div class="col-lg-4">
+                <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:324px">
                     @*@Html.Partial("_REP_BAR_HISTORY_PRICE")*@
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+        <div class="col-lg-8">
+            <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:974px;">
                 @*@Html.Partial("_REP_BAR_HISTORY")*@
             </div>
         </div>
-            
-        </div>
-            <div class="row" style="margin-top:10PX">
-                <div class="col-lg-6">
-                    <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
+    </div>
+    @*<div class="row">
 
+                @Html.HiddenFor(model => model.BarImages)
+                <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
+                            <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
+                            <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
+                            <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
+
+        </div>*@
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="row">
+                <div class="editor-label" style="margin-top: 10px;text-align:center;color:#428bca;">
+                    @Html.Label("", "BarCode Image")
                 </div>
             </div>
+            @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
+            <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
+                <div id="myCarousel" class="carousel" data-ride="carousel">
+                    <div class="carousel-inner" id="div_carousel_inner">
+                        <div class="item active">
+                            <img src="" alt="Los Angeles" style="width:100%;">
+                        </div>
+                        <div class="item">
+                            <img src="" alt="Chicago" style="width:100%;">
+                        </div>
+                    </div>
+                    <!-- Left and right controls -->
+                    <a class="left  carousel-control arrow-left" id="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                    </a>
+                    <a class="right  carousel-control arrow-right" id="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+        <div class="row" style="margin-top:20PX">
+            <div class="col-lg-6">
+                <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
+
+            </div>
+        </div>
             @*<div class="row" style="background-color:#c4b9b9;width:100%">
                 <div id="PartialdivEWBILL">*@
             @*@Html.Partial("_Rep_Bar_History")*@
             @*</div>
                 </div>*@
+            <div class="container">
+                <div id="helpDIV">
+
+                </div>
+            </div>
 }
 
 
