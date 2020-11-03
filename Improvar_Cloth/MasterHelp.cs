@@ -2517,7 +2517,7 @@ namespace Improvar
                 sql += ") where rn = 1 ) a, ";
                 sql += "" + scmf + ".m_tds_cntrl b ";
                 sql += "where a.tdscode = b.tdscode(+) ";
-
+                if (Caption.retStr() == "") sql += "and  nvl(b.sbilltds,'N') <> 'Y' and a.tdscode not in ('X','Y','Z') ";
                 DataTable dt = SQLquery(sql);
                 if (val == null)
                 {

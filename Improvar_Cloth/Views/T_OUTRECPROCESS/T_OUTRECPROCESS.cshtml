@@ -81,9 +81,9 @@
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter Price List", "PRCCD")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter SalesMen", "CRSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
+        if (!emptyFieldCheck("Please Enter Party Bill No", "PREFNO")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Party Bill Date", "PREFDT")) { return false; }
         return true;
     }
 </script>
@@ -92,6 +92,7 @@
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
             $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
 </script>
@@ -168,6 +169,8 @@
             $("#" + TDSHD.id).val("");
             $("#" + TDSNM.id).val("");
             $("#" + TDSPER.id).val("");
+            $("#TDSROUNDCAL").val("");
+            $("#TDSCALCON").val("");
         }
         else {
             if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
@@ -180,8 +183,7 @@
                 data:
                     {
                         val: id,
-                        PARTY: PARTY,
-                        TAG: DOCDT
+                        Code: DOCDT + String.fromCharCode(181) + PARTY,
                     },
                 success: function (result) {
                     var MSG = result.indexOf(String.fromCharCode(181));
@@ -194,11 +196,15 @@
                         } else {
                             document.getElementById(TDSPER.id).value = returncolvalue(result, "TDSPERNONCMP");
                         }
+                        document.getElementById("TDSROUNDCAL").value = returncolvalue(result, "TDSROUNDCAL");
+                        document.getElementById("TDSCALCON").value = returncolvalue(result, "TDSCALCON");
                     }
                     else {
                         $("#" + TDSHD.id).val("");
                         $("#" + TDSNM.id).val("");
                         $("#" + TDSPER.id).val("");
+                        $("#TDSROUNDCAL").val("");
+                        $("#TDSCALCON").val("");
                         msgInfo(result);
                         message_value = TDSHD.id;
                     }
@@ -762,10 +768,10 @@
         var RATE = $("#D_RATE_" + i).val();
         var DISCTYPE = $("#D_DISCTYPE_" + i).val();
         var DISCRATE = $("#D_DISCRATE_" + i).val();
-       
+
         var GridRowMain = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
         for (j = 0; j <= GridRowMain - 1; j++) {
-            if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD  && $("#B_ITCD_" + j).val() == ITCD ) {
+            if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD && $("#B_ITCD_" + j).val() == ITCD) {
                 $("#B_RATE_" + j).val(RATE);
                 $("#B_DISCTYPE_" + j).val(DISCTYPE);
                 $("#B_DISCRATE_" + j).val(DISCRATE);
@@ -1034,6 +1040,15 @@
         $("#TOTTAXVAL").val(parseFloat(totaltaxval).toFixed(2));
         $("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
 
+        //tds
+        var tdscalcon = $("#TDSCALCON").val();
+        if (tdscalcon == "B")
+        {
+            TDSAMTCAL(totalbillamt);
+        }
+        else {
+            TDSAMTCAL(totaltaxval);
+        }
         ////tcs
         //var TCSPER = 0; TCSAMT = 0; TCSON = 0;
         //var MENU_PARA = $("#MENU_PARA").val();
@@ -1084,17 +1099,24 @@
         if (REVCHRG == "Y") {
             totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
         }
+        var blamt = 0;
         if (ROUND_TAG == true) {
             R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
             TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
             document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
             document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+            blamt = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
         }
         else {
             TOTAL_ROUND = 0;
             document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
             document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+            blamt = parseFloat(totalbillamt).toFixed(2);
         }
+        var tdsamt = $("#TDSAMT").val();
+        if (tdsamt != "") { tdsamt = parseFloat(tdsamt); } else { tdsamt = parseFloat(0); }
+        var netamt = parseFloat(blamt) - parseFloat(tdsamt);
+        $("#NETAMT").val(parseFloat(netamt).toFixed(2));
 
     }
     function HasChangeBarSale() {
@@ -1252,6 +1274,54 @@
         //BILL AMOUNT CALCULATION
         BillAmountCalculate();
 
+    }
+</script>
+<script>
+    function CalulateTareWt(GRWT, NTWT, TRWT) {
+        var GROSS = document.getElementById(GRWT.id).value;
+        if (GROSS == "") {
+            GROSS = parseFloat(0);
+        }
+        var NET = document.getElementById(NTWT.id).value;
+        if (NET == "") {
+            NET = parseFloat(0);
+        }
+        var TARE = GROSS - NET;
+        document.getElementById(TRWT.id).value = TARE.toFixed(3);
+
+    }
+</script>
+<script>
+    function TDSAMTCAL(tdson) {
+        debugger;
+        $("#TDSON").val(parseFloat(tdson).toFixed(2));
+        var TDS_ROUND = $("#TDSROUNDCAL").val();
+        var TDS_PER = $("#TDSPER").val(); var TDS_ON = tdson;
+        if (TDS_PER == "") { TDS_PER = parseFloat(0); } else { TDS_PER = parseFloat(TDS_PER) }
+        if (TDS_ON == "") { TDS_ON = parseFloat(0); } else { TDS_ON = parseFloat(TDS_ON) }
+        var tdsamt1 = parseFloat(parseFloat(TDS_ON) * parseFloat(TDS_PER) / 100).toFixed(2);
+        var tdsamt2 = tdsamt1.toString().split('.');
+        if (tdsamt2[1] > 0) {
+            @*if ("@CommVar.ClientCode(Model.UNQSNO)" == "CHEM") {
+                tdsamt1 = Math.round(tdsamt1);//==yes
+            }
+        else {
+                tdsamt1 = Math.ceil(tdsamt1);//==nxt
+            tdsamt1 = Math.floor(tdsamt1);//==least
+        }*@
+            if (TDS_ROUND == "Y") {
+                tdsamt1 = Math.round(tdsamt1); //==yes
+            }
+            else
+                if (TDS_ROUND == "N") {
+                    tdsamt1 = Math.ceil(tdsamt1); //==nxt
+                }
+                else
+                    if (TDS_ROUND == "L") {
+                        tdsamt1 = Math.floor(tdsamt1); //==least
+                    }
+        }
+        $("#TDSAMT").val(tdsamt1);
     }
 </script>
 @using (Html.BeginForm())
@@ -1456,12 +1526,11 @@
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Mtrl Job Code")
-                                    <b style="color:Red;">*</b>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');GetAllMtrljobcd();", @placeholder = "Code", maxlength = 2 } })
+                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');", @placeholder = "Code", maxlength = 2 } })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')" />
                                 </div>
                             </div>
@@ -1561,7 +1630,7 @@
                             </div>
                             <div class="col-md-5">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.NETAMT, new { htmlAttributes = new { @class = "form-control", id = "NETAMT", @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
+                                    @Html.EditorFor(model => model.NETAMT, new { htmlAttributes = new { @class = "form-control", id = "NETAMT", @TabIndex = -1, @placeholder = "Net Payable", @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
@@ -1573,8 +1642,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.TDSHD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSHD", onkeyup = "GetHelp('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD',DOCDT.value)", onblur = "SelectTDSCode(this.value,TDSHD,TDSNM,TDSPER);", @placeholder = "Code", maxlength = 3 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetTDSDetails", PageControllerName)','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD',DOCDT.value)" />
+                                    @Html.EditorFor(model => model.T_TXNOTH.TDSHD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSHD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD','DOCDT/SLCD')", onblur = "SelectTDSCode(this.value,TDSHD,TDSNM,TDSPER);", @placeholder = "Code", maxlength = 3 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetTDSDetails", PageControllerName)','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD','DOCDT/SLCD')" />
                                 </div>
                             </div>
                             <div class="col-md-9">
@@ -1589,7 +1658,7 @@
                             </div>
                             <div class="col-md-5">
                                 <div class="editor-field" style="margin-top:6px;">
-                                    @Html.EditorFor(model => model.T_TXNOTH.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "TDSAMTCAL();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
+                                    @Html.EditorFor(model => model.T_TXNOTH.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "BillAmountCalculate();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -1599,7 +1668,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field" style="margin-top:6px;">
-                                    @Html.EditorFor(model => model.T_TXNOTH.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "TDSAMTCAL();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
+                                    @Html.EditorFor(model => model.T_TXNOTH.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "BillAmountCalculate();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -1609,29 +1678,32 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
+                                    @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
+                                    @Html.HiddenFor(model => model.TDSCALCON, new { id = "TDSCALCON" })
                                     @Html.EditorFor(model => model.T_TXNOTH.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "TDSAMT", @placeholder = "TDS Amount", maxlength = 15, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div id="Programme" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row">
-
-                            <div class="col-md-3">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Bar Code No")
-                                    <b style="color:Red;">*</b>
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Bar Code No")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')" />
+                                        @Html.HiddenFor(model => model.PROGAUTOSLNO, new { id = "PROGAUTOSLNO" })
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')" />
-                                    @Html.HiddenFor(model => model.PROGAUTOSLNO, new { id = "PROGAUTOSLNO" })
-                                </div>
-                            </div>
-                        </div>
-
+                        }
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                             <div>
                                 <div id="partialdivProgramme" style="margin-top:0px;">
@@ -1670,11 +1742,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-1" style="width:auto;">
-                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Finalise Data in Details Tab" onclick="Fill_DetailData()" />
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <div class="row">
+                                <div class="col-md-1" style="width:auto;">
+                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Finalise Data in Details Tab" onclick="Fill_DetailData()" />
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
 
                     <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">

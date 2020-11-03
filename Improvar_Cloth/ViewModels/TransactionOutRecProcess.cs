@@ -192,6 +192,5 @@ namespace Improvar.ViewModels
         public string GSTSLNM { get; set; }
         public string POS { get; set; }
         public string PROGAUTOSLNO { get; set; }
-
     }
 }
