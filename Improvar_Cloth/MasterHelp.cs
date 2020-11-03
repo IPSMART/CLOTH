@@ -2297,7 +2297,7 @@ namespace Improvar
         public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "")
         {
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
-            if (menupara == "PB")
+            if (menupara == "PB"|| menupara == "ALL")
             {
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara);
             }

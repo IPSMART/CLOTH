@@ -52,9 +52,9 @@ namespace Improvar.Controllers
                         foreach (var v in VE.DropDown_list_MTRLJOBCD)
                         {
                             if (v.MTRLJOBCD == "FS")
-                                {
-                                    v.Checked = true;
-                                }
+                            {
+                                v.Checked = true;
+                            }
                         }
                         VE.DefaultView = true;
                         VE.ExitMode = 1;
@@ -89,7 +89,7 @@ namespace Improvar.Controllers
                 //string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 //string PRCCD = data[5].retStr();
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[1].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, "", "", "", MTRLJOBCD);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, "", "", "", MTRLJOBCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -178,7 +178,7 @@ namespace Improvar.Controllers
                         return Content(str + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + _barcodehistory + "^^^^^^^^^^^^~~~~~~^^^^^^^^^^" + _barcodeprice);
                     }
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -237,6 +237,106 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
+        }
+        [HttpPost]
+        public ActionResult Rep_Bar_History(RepBarHistory VE)
+        {
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), Scm1 = CommVar.CurSchema(UNQSNO);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            try
+            {
+                string Excel_Header = "AtnDate" + "|" + "DEPTDESCN" + "|" + "EMPCD" + "|" + "ENM" + "|" + "DESIGNM" + "|" + "Shift" + "|" + "InTime" + "|" + "OutTime" + "|";
+                Excel_Header = Excel_Header + "LunchIn" + "|" + "LunchOut" + "|" + "WorkHrs" + "|" + "OTHrs" + "|" + "Attend" + "|" + "Absent" + "|";
+                Excel_Header = Excel_Header + "Late" + "|" + "PaidHoliday" + "|" + "Woff" + "|" + "LeaveCode" + "|" + "Leave" + "|" + "Field" + "|" + "Remarks";
+
+               
+                    //ExcelPackage ExcelPkg = new ExcelPackage();
+                    //ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
+
+                    //using (ExcelRange Rng = wsSheet1.Cells["A1:U1"])
+                    //{
+                    //    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    //    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    //    string[] Header = Excel_Header.Split('|');
+                    //    for (int i = 0; i < Header.Length; i++)
+                    //    {
+                    //        wsSheet1.Cells[1, i + 1].Value = Header[i];
+                    //    }
+                    //}
+
+                    //string E_DATE = System.DateTime.Now.ToString().Substring(0, 10);
+                    //string seletype = "", Etyp1 = "";
+                    //if (FC.AllKeys.Contains("EMPT")) seletype = FC["EMPT"].ToString().retSqlformat();
+
+                    //string sql = "";
+                    //sql = "select a.empcd, a.enm, a.leagacycd, nvl(a.doj,to_date('" + VE.FDT.retDateStr() + "','dd/mm/yyyy')) doj, b.deptcd, e.deptdescn, b.desigcd, d.designm ";
+                    //sql += "from " + Scm1 + ".m_empmas a, " + Scm1 + ".m_empmas_det b," + Scm1 + ".m_cntrl_hdr c, ";
+                    //sql += CommVar.FinSchema(UNQSNO) + ".m_designation d, " + Scm1 + ".m_dept e ";
+                    //sql += "where a.empcd = b.empcd and a.m_autono = c.m_autono and ";
+                    //if (VE.Col1.retStr() != "") sql += "a.doj >= to_date('" + VE.Col1.retDateStr() + "','dd/mm/yyyy') and ";
+                    //sql += "b.edate = (select max(edate) from " + Scm1 + ".m_empmas_det ";
+                    //sql += "where empcd = a.empcd and edate <= to_date('" + E_DATE + "', 'dd/mm/yyyy')) and ";
+                    //if (seletype != "") sql += "a.etype in (" + seletype + ") and ";
+                    //if (VE.FDT.retStr() != "") sql += "(a.dol is null or (a.dol between to_date('" + VE.FDT.retDateStr() + "','dd/mm/yyyy') and to_date('" + VE.TDT.retDateStr() + "','dd/mm/yyyy'))) and ";
+                    //sql += "b.compcd = '" + COM + "' and b.loccd = '" + LOC + "' and b.desigcd=d.desigcd(+) and b.deptcd=e.deptcd(+) ";
+                    //sql += "order by deptdescn, doj, enm ";
+                    //DataTable dailyattn = Master_Help.SQLquery(sql);
+
+                    //DateTime fdt = Convert.ToDateTime(VE.FDT);
+                    //DateTime tdt = Convert.ToDateTime(VE.TDT);
+                    //int exlrowno = 2;
+                    //if (string.IsNullOrEmpty(VE.FDT.retStr()) && string.IsNullOrEmpty(VE.TDT.retStr()))
+                    //{
+                    //    for (int i = 0; i < dailyattn.Rows.Count; i++)
+                    //    {
+                    //        wsSheet1.Cells[i + 2, 2].Value = dailyattn.Rows[i]["deptdescn"];
+                    //        wsSheet1.Cells[i + 2, 5].Value = dailyattn.Rows[i]["designm"];
+                    //        wsSheet1.Cells[i + 2, 3].Value = dailyattn.Rows[i]["empcd"];
+                    //        wsSheet1.Cells[i + 2, 4].Value = dailyattn.Rows[i]["enm"];
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    for (DateTime dt = fdt; dt <= tdt;)
+                    //    {
+                    //        for (int i = 0; i < dailyattn.Rows.Count; i++)
+                    //        {
+                    //            if (Convert.ToDateTime(dailyattn.Rows[i]["doj"]) <= dt)
+                    //            {
+                    //                wsSheet1.Cells[exlrowno, 1].Value = dt.retDateStr();
+                    //                wsSheet1.Cells[exlrowno, 3].Value = dailyattn.Rows[i]["empcd"];
+                    //                wsSheet1.Cells[exlrowno, 4].Value = dailyattn.Rows[i]["enm"];
+                    //                wsSheet1.Cells[exlrowno, 2].Value = dailyattn.Rows[i]["deptdescn"];
+                    //                wsSheet1.Cells[exlrowno, 5].Value = dailyattn.Rows[i]["designm"];
+                    //                exlrowno++;
+                    //            }
+                    //        }
+                    //        wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    //        dt = dt.AddDays(1);
+                    //    }
+                    //}
+                    //wsSheet1.View.FreezePanes(2, 6);
+                    //wsSheet1.Cells[wsSheet1.Dimension.Address].AutoFilter = true;
+                    ////for download//
+                    //Response.Clear();
+                    //Response.ClearContent();
+                    //Response.Buffer = true;
+                    //Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    //Response.AddHeader("Content-Disposition", "attachment; filename=Daily Attn Employee List.xlsx");
+                    //Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                    //Response.Flush();
+                    //Response.Close();
+                    //Response.End();
+                    //return Content("<div style='margin-top: 21%; */'><center style='color:green'><h1>Download Successfully...</h1></center></div>");
+               
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException + "  ");
+            }
+            return null;
+
         }
     }
 }
