@@ -43,9 +43,11 @@
     }
 </script>
 <script>
-    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD) {
+    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD, ALLMTRLJOBCD) {
         debugger;
         var MTRLJOBCD = document.getElementById(MTRLJOBCD.id).value;
+        var ALLMTRLJOBCD = document.getElementById(ALLMTRLJOBCD.id).value; 
+        var Code = MTRLJOBCD + String.fromCharCode(181) + ALLMTRLJOBCD
         if (id == "") {
             $("#" + BARNO.id).val("");
             //$("#" + CLASS1NM.id).val("");
@@ -55,7 +57,7 @@
                 type: 'POST',
                 beforesend: $("#WaitingMode").show(),
                 url: "@Url.Action("GetBarCodeDetails", "Rep_Bar_History")",
-                data: $('form').serialize() + "&val=" + id + "&Code=" + MTRLJOBCD,
+                data: $('form').serialize() + "&val=" + id + "&Code=" + Code,
                 success: function (result) {
                     //var MSG = result.indexOf('#helpDIV');
                     if (result != "") {
@@ -152,6 +154,30 @@
         });
     }
 </script>
+<script>
+    function GetAllMtrljobcode() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var GridRowMain = $("#exampleMTRL > tbody > tr").length;
+        var allcode = "";
+        var mtrljobcd = $("#MTRLJOBCD").val();
+        if (mtrljobcd != "") {
+            allcode += "'" + mtrljobcd + "'";
+        }
+        for (j = 0; j <= GridRowMain - 1; j++) {
+            if (document.getElementById("MaterialJobChk_" + j).checked == true) {
+                if (allcode == "") {
+                    allcode += "'" + $("#MaterialJobCode_" + j).val() + "'";
+                }
+                else {
+                    allcode += ",'" + $("#MaterialJobCode_" + j).val() + "'";
+                }
+            }
+        }
+        $("#ALLMTRLJOBCD").val(allcode);
+
+    }
+</script>
 @using (Html.BeginForm("Rep_Bar_History", "Rep_Bar_History", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary(true)
@@ -164,8 +190,8 @@
         </div>
         <div class="col-md-8">
             <div class="editor-field">
-                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MtrlJobCd=2','MTRLJOBCD')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD)", @placeholder = "Bar Code", maxlength = 25 } })
-                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MtrlJobCd=2','MTRLJOBCD')" />
+                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MtrlJobCd=2','MTRLJOBCD/ALLMTRLJOBCD')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD,ALLMTRLJOBCD);GetAllMtrljobcode();", @placeholder = "Bar Code", maxlength = 25 } })
+                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MtrlJobCd=2','MTRLJOBCD/ALLMTRLJOBCD')" />
             </div>
         </div>
     </div>
@@ -201,6 +227,32 @@
                 @Html.EditorFor(model => model.FABITNM, new { htmlAttributes = new { @class = "form-control", id = "FABITNM", @placeholder = "FABITNM", @readonly = "readonly", @TabIndex = -1 } })
             </div>
         </div>
+        <div class="col-md-4"></div>
+        <div class="col-lg-1">
+            <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
+                <table id="exampleMTRL" border="1" style="width: auto;">
+                    @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)
+                    {
+                        <tr>
+                            <td align="center">
+                                @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcode();" })
+                            </td>
+                            <td align="center">
+                                @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
+                                @Html.DisplayFor(model => STRC)
+                                @Html.HiddenFor(model => model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD, new { id = "MaterialJobCode_" + i })
+                            </td>
+                            <td align="center">
+                                @{ string STRC1 = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBNM.ToString();}
+                                @Html.DisplayFor(model => STRC1)
+                            </td>
+                        </tr>
+                                    }
+                </table>
+            </div>
+            @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
+        </div>
+
     </div>
     <div class="row">
         <div class="col-md-1">
@@ -245,7 +297,7 @@
                 @Html.Label("", "Party")
             </div>
         </div>
-        <div class="col-md-5" style="width:auto;">
+        <div class="col-md-5" >
             <div class="editor-field">
                 @Html.EditorFor(model => model.SLCD, new { htmlAttributes = new { @class = "form-control", id = "SLCD", @placeholder = "SLCD", @readonly = "readonly", @TabIndex = -1 } })
             </div>
@@ -386,12 +438,12 @@
 
         </div>
     </div>
-        <div class="row" style="margin-top:20PX">
+        @*<div class="row" style="margin-top:20PX">
             <div class="col-lg-6">
                 <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
 
             </div>
-        </div>
+        </div>*@
             @*<div class="row" style="background-color:#c4b9b9;width:100%">
                 <div id="PartialdivEWBILL">*@
             @*@Html.Partial("_Rep_Bar_History")*@

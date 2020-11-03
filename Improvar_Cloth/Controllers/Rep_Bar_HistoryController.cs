@@ -47,23 +47,15 @@ namespace Improvar.Controllers
                     using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
                     {
                         DataTable repformat = Salesfunc.getRepFormat(VE.RepType, VE.DOCCD);
-                        //if (repformat != null)
-                        //{
-                        //    VE.DropDown_list1 = (from DataRow dr in repformat.Rows
-                        //                         select new DropDown_list1()
-                        //                         {
-                        //                             text = dr["text"].ToString(),
-                        //                             value = dr["value"].ToString()
-                        //                         }).ToList();
-                        //}
-                        //else
-                        //{
-                        //    List<DropDown_list1> drplst = new List<DropDown_list1>();
-                        //    VE.DropDown_list1 = drplst;
-                        //}
 
-                        VE.DOCNM = (from j in DB.M_DOCTYPE where j.DOCCD == VE.DOCCD select j.DOCNM).SingleOrDefault();
-                        //VE = (Rep_Bar_History)Cn.EntryCommonLoading(VE, VE.PermissionID);
+                        VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                        foreach (var v in VE.DropDown_list_MTRLJOBCD)
+                        {
+                            if (v.MTRLJOBCD == "FS")
+                                {
+                                    v.Checked = true;
+                                }
+                        }
                         VE.DefaultView = true;
                         VE.ExitMode = 1;
                         VE.DefaultDay = 0;
@@ -96,7 +88,7 @@ namespace Improvar.Controllers
                 //string TAXGRPCD = data[3].retStr();
                 //string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 //string PRCCD = data[5].retStr();
-                //if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
+                if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[1].retStr(); }
                 string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, "", "", "", MTRLJOBCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
