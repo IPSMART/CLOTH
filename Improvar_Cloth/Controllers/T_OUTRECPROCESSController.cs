@@ -287,8 +287,14 @@ namespace Improvar.Controllers
                 else VE.RoundOff = false;
                 TXNTRN = DB.T_TXNTRANS.Find(TXN.AUTONO);
                 TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
-
-                string panno = "";
+                VE.NETAMT = TXN.BLAMT.retDbl() - TXNOTH.TDSAMT.retDbl() - TXN.ADVADJ.retDbl();
+                VE.TDSNM = TXNOTH.TDSHD.retStr() == "" ? "" : DBF.M_TDS_CNTRL.Where(a => a.TDSCODE == TXNOTH.TDSHD).Select(b => b.TDSNM).FirstOrDefault();
+                if(TXNOTH.TDSHD.retStr() != "")
+                {
+                    var data = masterHelp.TDSCODE_help(TXN.DOCDT.retStr(), TXNOTH.TDSHD.retStr(), TXN.SLCD.retStr(), "", "");
+                    VE.TDSROUNDCAL = data.retCompValue("TDSROUNDCAL").retStr();
+                    VE.TDSCALCON = data.retCompValue("TDSCALCON").retStr();
+                }
                 if (TXN.SLCD.retStr() != "")
                 {
                     string slcd = TXN.SLCD;
@@ -2814,7 +2820,7 @@ namespace Improvar.Controllers
                     //TTXN.TCSAMT = VE.T_TXN.TCSAMT;
                     //TTXN.TCSON = VE.T_TXN.TCSON;
                     //TTXN.TDSCODE = VE.T_TXN.TDSCODE;
-
+                    TTXN.ADVADJ = VE.T_TXN.ADVADJ;
                     if (VE.DefaultAction == "E")
                     {
                         dbsql = masterHelp.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
