@@ -2319,7 +2319,9 @@ namespace Improvar
             }
             else
             {
-                if (tbl.Rows[0]["barimage"].retStr() != "")
+               
+                if (tbl.Rows.Count > 0)
+                { if (tbl.Rows[0]["barimage"].retStr() != "")
                 {
                     var brimgs = tbl.Rows[0]["barimage"].retStr().Split((char)179);
                     foreach (var barimg in brimgs)
@@ -2331,8 +2333,6 @@ namespace Improvar
                         Cn.CopyImage(FROMpath, TOPATH);
                     }
                 }
-                if (tbl.Rows.Count > 0)
-                {
                     string str = ToReturnFieldValues("", tbl);
                     return str;
                 }

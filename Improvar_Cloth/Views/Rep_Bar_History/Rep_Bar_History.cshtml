@@ -43,9 +43,9 @@
     }
 </script>
 <script>
-    function SelectBARCODEDetail(id, BARNO) {
+    function SelectBARCODEDetail(id, BARNO, MTRLJOBCD) {
         debugger;
-        var docdt = "";
+        var MTRLJOBCD = document.getElementById(MTRLJOBCD.id).value;
         if (id == "") {
             $("#" + BARNO.id).val("");
             //$("#" + CLASS1NM.id).val("");
@@ -55,7 +55,7 @@
                 type: 'POST',
                 beforesend: $("#WaitingMode").show(),
                 url: "@Url.Action("GetBarCodeDetails", "Rep_Bar_History")",
-                data: $('form').serialize() + "&val=" + id + "&Code=" + docdt,
+                data: $('form').serialize() + "&val=" + id + "&Code=" + MTRLJOBCD,
                 success: function (result) {
                     //var MSG = result.indexOf('#helpDIV');
                     if (result != "") {
@@ -78,10 +78,19 @@
                         document.getElementById("COLRNM").value = returncolvalue(res[0], "COLRNM");
                         document.getElementById("SIZECD").value = returncolvalue(res[0], "SIZECD");
                         document.getElementById("SIZENM").value = returncolvalue(res[0], "SIZENM");
-                        //$("#partialdivRawMaterials").html(res[1]);
+                        document.getElementById("MTRLJOBCD").value = returncolvalue(res[0], "MTRLJOBCD");
+                        var TINQTY = returncolvalue(res[0], "TOTALIN");
+                        var TOUTQTY = returncolvalue(res[0], "TOTALOUT");
+                        document.getElementById("TOTALIN").value = parseFloat(TINQTY).toFixed(2);
+                        document.getElementById("TOTALOUT").value = parseFloat(TOUTQTY).toFixed(2);
+                        document.getElementById("TOTINOUT").value = (parseFloat(TINQTY) - parseFloat(TOUTQTY)).toFixed(2)
                         $("#partialdivHISTORY").show();
                         $("#partialdivHISTORY").animate({ marginTop: '0px' }, 50);
                         $("#partialdivHISTORY").html(res[1]);
+                        $("#partialdivPRICE").show();
+                        $("#partialdivPRICE").animate({ marginTop: '0px' }, 50);
+                        $("#partialdivPRICE").html(res[2]);
+                        $("#" + MTRLJOBCD).val("");
                         document.getElementById("BarImages").value = returncolvalue(res[0], "BARIMAGE");
                         FillImageModal();
                       
@@ -90,6 +99,7 @@
 
                         msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
                         $("#" + BARNO).val("");
+                        $("#" + MTRLJOBCD).val("");
                         message_value = BARNO;
 
                     }
@@ -131,8 +141,8 @@
             var id = (imgname).split('.')[0];
             var ImageDesc = (value.split('~')[1]);
             var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
-            htm += '<div id="' + id + '" class="item ' + actt + '">';
-            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+            htm += '<div id="' + id + '" class="item ' + actt + '">'; 
+            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
             htm += '    <span class="carousel-caption">';
             htm += '    <p> ' + ImageDesc + ' </p>';
             htm += '    </span>';
@@ -153,8 +163,8 @@
         </div>
         <div class="col-md-8">
             <div class="editor-field">
-                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0')", onblur = "SelectBARCODEDetail(this.value,BARCODE)", @placeholder = "Bar Code", maxlength = 25 } })
-                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0')" />
+                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", "Rep_Bar_History") + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MtrlJobCd=2','MTRLJOBCD')", onblur = "SelectBARCODEDetail(this.value,BARCODE,MTRLJOBCD)", @placeholder = "Bar Code", maxlength = 25 } })
+                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", "Rep_Bar_History")','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MtrlJobCd=2','MTRLJOBCD')" />
             </div>
         </div>
     </div>
@@ -167,6 +177,7 @@
         <div class="col-md-5">
             <div class="editor-field">
                 @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @placeholder = "ITGRPCD", @readonly = "readonly", @TabIndex = -1 } })
+                @Html.HiddenFor(model => model.MTRLJOBCD, new { id = "MTRLJOBCD" })
             </div>
         </div>
         <div class="col-md-7">
@@ -321,16 +332,16 @@
         </div>
 
     </div>
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="col-lg-6">
-                <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+    <div class="row" style="margin-top:20PX">
+        <div class="col-lg-4" style="width:fit-content;">
+            <div class="col-lg-4">
+                <div id="partialdivPRICE" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:324px">
                     @*@Html.Partial("_REP_BAR_HISTORY_PRICE")*@
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+        <div class="col-lg-8">
+            <div id="partialdivHISTORY" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:974px;">
                 @*@Html.Partial("_REP_BAR_HISTORY")*@
             </div>
         </div>
@@ -352,7 +363,7 @@
                 </div>
             </div>
             @Html.HiddenFor(model => model.BarImages, new { id = "BarImages" })
-            <div class="row" style="text-align:-webkit-center">
+            <div class="row" style="text-align:-webkit-center;width: 260px;height:300px">
                 <div id="myCarousel" class="carousel" data-ride="carousel">
                     <div class="carousel-inner" id="div_carousel_inner">
                         <div class="item active">
@@ -374,7 +385,7 @@
 
         </div>
     </div>
-        <div class="row" style="margin-top:70PX">
+        <div class="row" style="margin-top:20PX">
             <div class="col-lg-6">
                 <input class="btn btn-primary" style="padding: 5px;" type="submit" name="submitbutton" formmethod="post" value="Show Report" formtarget="_blank" />
 
