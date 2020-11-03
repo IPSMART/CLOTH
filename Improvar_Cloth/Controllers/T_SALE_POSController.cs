@@ -70,6 +70,7 @@ namespace Improvar.Controllers
                     {
                         if (v.MTRLJOBCD == "FS") { v.Checked = true; }
                     }
+                    //VE.PRCNM
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -153,6 +154,9 @@ namespace Improvar.Controllers
                         {
                             if (parkID == "")
                             {
+
+                                List<TsalePos_TBATCHDTL> sd = new List<TsalePos_TBATCHDTL>(); sd.Add(new TsalePos_TBATCHDTL() { SLNO = 1, DISC_TYPE = masterHelp.DISC_TYPE(), PCSection = masterHelp.PCSAction(), });
+                                VE.TsalePos_TBATCHDTL = sd;
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
@@ -166,45 +170,31 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 string gocd = TTXN.GOCD.retStr();
-                                VE.GOCD = gocd;
                                 if (gocd != "")
                                 {
                                     VE.GONM = DB.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
-                                VE.T_TXN = TTXN;
-
-                                T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH; T_TXNMEMO TXNMEMO = new T_TXNMEMO();
-                                var autono = DB.M_SYSCNFG.Select(b => b.M_AUTONO).Max();
+                                T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
                                 string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-                                string sql = " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate from " + scm + ".M_SYSCNFG a," 
-                                    + scmf + ".M_RETDEB b where a.RTDEBCD=b.RTDEBCD(+) and a.M_AUTONO='" + autono + "' ";
-                                DataTable syscnfg = masterHelp.SQLquery(sql);
-                                if (syscnfg != null && syscnfg.Rows.Count > 0)
+                                string sql = "";
+                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD";
+                                sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c";
+                                sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD";
+
+                                DataTable syscnfgdt = masterHelp.SQLquery(sql);
+                                if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                                 {
-                                    TXNMEMO.RTDEBCD = syscnfg.Rows[0]["RTDEBCD"].retStr();
-                                    VE.RTDEBNM = syscnfg.Rows[0]["RTDEBNM"].retStr();
-                                    VE.MOBILE = syscnfg.Rows[0]["MOBILE"].retStr();
-                                    VE.INC_RATE = syscnfg.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
-                                    VE.INCLRATEASK = syscnfg.Rows[0]["INC_RATE"].retStr();
+                                    TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
+                                    VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                    VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                    VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
+                                    VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
+                                    TXNOTH.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
+                                    TXNOTH.PRCCD = "RP"; VE.PRCNM = "Retail Price";
                                 }
                                 VE.T_TXNMEMO = TXNMEMO;
-
-                                //List<TsalePos_TBATCHDTL> TSHRTXNDTL = new List<TsalePos_TBATCHDTL>();
-                                //for (int i = 0; i <= 9; i++)
-                                //{
-                                //    TsalePos_TBATCHDTL PROGDTL = new TsalePos_TBATCHDTL();
-                                //    PROGDTL.SLNO = Convert.ToByte(i + 1);
-                                //    PROGDTL.DropDown_list1 = DropDown_list1();
-                                //    TSHRTXNDTL.Add(PROGDTL);
-                                //    VE.TsalePos_TBATCHDTL = TSHRTXNDTL;
-                                //}
-                                //VE.TsalePos_TBATCHDTL = TSHRTXNDTL;
-
-                                //List<TsalePos_TBATCHDTL> TSHRTXNDTL = new List<TsalePos_TBATCHDTL>();
-                                //TsalePos_TBATCHDTL PROGDTL = new TsalePos_TBATCHDTL();
-                                //PROGDTL.DropDown_list1 = DropDown_list1();
-                                //TSHRTXNDTL.Add(PROGDTL);
-                                //VE.TsalePos_TBATCHDTL = TSHRTXNDTL;
+                                VE.T_TXNOTH = TXNOTH;
+                                VE.T_TXN = TTXN;
 
                                 List<TTXNSLSMN> TTXNSLSMN = new List<TTXNSLSMN>();
                                 for (int i = 0; i <= 2; i++)
@@ -719,28 +709,24 @@ namespace Improvar.Controllers
             try
             {
                 TransactionSalePosEntry VE = new TransactionSalePosEntry();
+                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
                 Cn.getQueryString(VE);
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
-                string DOCDT = data[0].retStr();
-                //string TAXGRPCD = data[1].retStr();
-                //string GOCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
-                //string PRCCD = data[3].retStr();
-                //string MTRLJOBCD = data[4].retStr();
-                if (val.retStr() == "")
+                string barnoOrStyle = val.retStr();
+                string MTRLJOBCD = data[0].retSqlformat();
+                string PARTCD = data[1].retStr();
+                string DOCDT = data[2].retStr();
+                string TAXGRPCD = data[3].retStr();
+                string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
+                string PRCCD = data[5].retStr();
+                if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    var str = masterHelp.T_TXN_BARNO_help(val, VE.MENU_PARA, DOCDT, "", "", "", "");
-                    if (str.IndexOf("='helpmnu'") >= 0)
-                    {
-                        return PartialView("_Help2", str);
-                    }
-                    else
-                    {
-                        return Content(str);
-                    }
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    var str = "";
                     DataTable stock_data = new DataTable();
 
                     stock_data = salesfunc.GetStock(DOCDT.retStr(), "", val.retStr().retSqlformat(), "", "", "", "", "", "", "");
@@ -810,7 +796,7 @@ namespace Improvar.Controllers
                         {
                             VE.TsalePos_TBATCHDTL[p].SLNO = Convert.ToByte(p + 1);
                             VE.TsalePos_TBATCHDTL[p].TXNSLNO = Convert.ToByte(p + 1);
-                            VE.TsalePos_TBATCHDTL[p].PCSection = masterHelp.PCSection();
+                            VE.TsalePos_TBATCHDTL[p].PCSection = masterHelp.PCSAction();
                             VE.TsalePos_TBATCHDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
                             VE.TsalePos_TBATCHDTL[p].TDDISC_TYPE = DropDown_list2();
                             VE.TsalePos_TBATCHDTL[p].SCMDISC_TYPE = DropDown_list3();

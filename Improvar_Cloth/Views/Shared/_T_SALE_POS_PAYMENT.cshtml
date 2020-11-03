@@ -3,9 +3,7 @@
     $(document).ready(function () {
         resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_POS_PAYMENT'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
-
     });
-
 </script>
 <script>
     $(function () {
@@ -59,11 +57,11 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TTXNPYMT[i].Checked, new { id = "chkid_" + i, @TabIndex = -1 })
-                                            @Html.HiddenFor(model => model.TTXNPYMT[i].GLCD, new { id = "GLCD_" + i, @TabIndex = -1 })
+                                            @Html.CheckBoxFor(model => model.TTXNPYMT[i].Checked, new { id = "P_chkid_" + i, @TabIndex = -1 })
+                                            @Html.HiddenFor(model => model.TTXNPYMT[i].GLCD, new { id = "P_GLCD_" + i, @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => model.TTXNPYMT[i].PYMTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PYMTCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "PYMTNM_" + i + "=PYMTNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "PYMTNM_" + i + "=PYMTNM=0');", @placeholder = "Code", maxlength = 6 } })
@@ -71,24 +69,24 @@
 
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].PYMTNM, new { id = "PYMTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].PYMTNM, new { id = "P_PYMTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
 
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].AMT, "{0:0.00}", new { id = "AMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur ="CalculatePymtAmt_Total();", maxlength = 15 })
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].AMT, "{0:0.00}", new { id = "P_AMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur ="CalculatePymtAmt_Total();", maxlength = 15 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].CARDNO, new { id = "CARDNO_" + i, @class = " atextBoxFor ", maxlength = 12 })
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].CARDNO, new { id = "P_CARDNO_" + i, @class = " atextBoxFor ", maxlength = 12 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].INSTNO, new { id = "INSTNO_" + i, @class = " atextBoxFor ", maxlength = 15 })
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].INSTNO, new { id = "P_INSTNO_" + i, @class = " atextBoxFor ", maxlength = 15 })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TTXNPYMT[i].INSTDT, new { htmlAttributes = new { id = "INSTDT_" + i, @class = "atextBoxFor pytinsdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                                            @Html.EditorFor(model => Model.TTXNPYMT[i].INSTDT, new { htmlAttributes = new { id = "P_INSTDT_" + i, @class = "atextBoxFor pytinsdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
 
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].PYMTREM, new { id = "PYMTREM_" + i, @class = " atextBoxFor ", maxlength = 15 })
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].PYMTREM, new { id = "P_PYMTREM_" + i, @class = " atextBoxFor ", maxlength = 15 })
                                         </td>
 
                                     </tr>
