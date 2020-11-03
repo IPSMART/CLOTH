@@ -2123,15 +2123,14 @@ namespace Improvar
             DTYP.Add(DTYP4);
             return DTYP;
         }
-        public List<PCSection> PCSection()
+        public List<PCSection> PCSAction()
         {
             List<PCSection> DropDown_list1 = new List<PCSection> {
-                new PCSection { Value = "", Text = ""},
-                new PCSection { Value = "DL", Text = "Delivered"},
-                 new PCSection { Value = "FP", Text = "Fall"},
-                  new PCSection { Value = "PO", Text = "Polish"},
-                   new PCSection { Value = "PP", Text = "Polish/Fall"},
-                    new PCSection { Value = "AL", Text = "Alteration"},
+              new PCSection { Value = "DL", Text = "Delivered"},
+              new PCSection { Value = "FP", Text = "Fall"},
+              new PCSection { Value = "PO", Text = "Polish"},
+              new PCSection { Value = "PP", Text = "Polish/Fall"},
+              new PCSection { Value = "AL", Text = "Alteration"},
 
             };
             return (DropDown_list1);
