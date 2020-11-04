@@ -658,29 +658,6 @@
         });
     }
 </script>
-<script>
-    function FillImageModal(index) {
-        debugger;
-        //var OpenImageModal =
-        $('#ActiveBarRowIndex').val(index);
-        var actt = ""; $("#div_carousel_inner").html('');
-        var arr = $("#B_BarImages_" + index).val();
-        arr = arr.split(String.fromCharCode(179));
-        $.each(arr, function (index, value) {
-            var imgname = (value.split('~')[0]);
-            var id = (imgname).split('.')[0];
-            var ImageDesc = (value.split('~')[1]);
-            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
-            htm += '<div id="' + id + '" class="item ' + actt + '">';
-            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
-            htm += '    <span class="carousel-caption">';
-            htm += '    <p> ' + ImageDesc + ' </p>';
-            htm += '    </span>';
-            htm += '</div>';
-            $("#div_carousel_inner").append(htm);
-        });
-    }
-</script>
 @section Scripts {
     <script>
         function ReloadWithData() {
@@ -814,12 +791,17 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="editor-field">
-                                    @Html.HiddenFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View" } })
+                                    @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View" } })
                                 </div>
                             </div>
                             <div class="col-md-8">
                                 <div class="editor-field">
                                     @Html.HiddenFor(model => model.ADDR, new { htmlAttributes = new { @class = "form-control", id = "ADDR", maxlength = 15, @title = "Only for View" } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
                             </div>
 

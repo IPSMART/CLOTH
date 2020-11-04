@@ -1,5 +1,6 @@
 ﻿var DefaultAction = $("#DefaultAction").val();
 function retGstPerstr(prodgrpgstper, rate) {
+
     if (DefaultAction == "V") return true;
     //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
 
@@ -19,4 +20,60 @@ function retGstPerstr(prodgrpgstper, rate) {
     }
     if (selrow != -1) rtval = mgstrate[2] + "," + mgstrate[3] + "," + mgstrate[4];
     return rtval;
+}
+
+$(document).on('click', '.arrow-left, .arrow-right', function () {
+    var next;
+    var circler;
+    if ($(this).is('.arrow-left')) {
+        next = 'prev';
+        circler = ':last';
+    } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
+        next = 'next';
+        circler = ':first';
+    }
+    var nextTarget = $('#div_carousel_inner div.active')[next]('div');
+    if (nextTarget.length == 0) {
+        nextTarget = $('#div_carousel_inner div' + circler);
+    }
+    $('#div_carousel_inner div').removeClass('active');
+    nextTarget.addClass('active');
+});
+
+function FillImageModal() {
+    debugger;
+    var actt = ""; $("#div_carousel_inner").html('');
+    var arr = $("#BarImages").val();
+    arr = arr.split(String.fromCharCode(179));
+    $.each(arr, function (index, value) {
+        var imgname = (value.split('~')[0]);
+        var id = (imgname).split('.')[0];
+        var ImageDesc = (value.split('~')[1]);
+        var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+        htm += '<div id="' + id + '" class="item ' + actt + '">';
+        htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
+        htm += '    <span class="carousel-caption">';
+        htm += '    <p> ' + ImageDesc + ' </p>';
+        htm += '    </span>';
+        htm += '</div>';
+        $("#div_carousel_inner").append(htm);
+    });
+}
+function FillImageModal(FieldId) {
+    var actt = ""; $("#div_carousel_inner").html('');
+    var arr = $("#" + FieldId).val();
+    arr = arr.split(String.fromCharCode(179));
+    $.each(arr, function (index, value) {
+        var imgname = (value.split('~')[0]);
+        var id = (imgname).split('.')[0];
+        var ImageDesc = (value.split('~')[1]);
+        var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+        htm += '<div id="' + id + '" class="item ' + actt + '">';
+        htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+        htm += '    <span class="carousel-caption">';
+        htm += '    <p> ' + ImageDesc + ' </p>';
+        htm += '    </span>';
+        htm += '</div>';
+        $("#div_carousel_inner").append(htm);
+    });
 }

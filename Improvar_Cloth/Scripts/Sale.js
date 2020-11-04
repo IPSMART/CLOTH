@@ -1632,7 +1632,7 @@ function AddBarCodeGrid() {
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
     tr += '   <td class=""> ';
-    tr += '   <button type="button" onclick="FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
+    tr += '   <button type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
     tr += '   </td> ';
     tr += '   <td class="">  ';
     if (MENU_PARA == "PB" && ENTRYBARGENTYPE == "E") {
@@ -1760,23 +1760,7 @@ function UploadBarnoImage(i) {
         }
     });
 }
-$(document).on('click', '.arrow-left, .arrow-right', function () {
-    var next;
-    var circler;
-    if ($(this).is('.arrow-left')) {
-        next = 'prev';
-        circler = ':last';
-    } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
-        next = 'next';
-        circler = ':first';
-    }
-    var nextTarget = $('#div_carousel_inner div.active')[next]('div');
-    if (nextTarget.length == 0) {
-        nextTarget = $('#div_carousel_inner div' + circler);
-    }
-    $('#div_carousel_inner div').removeClass('active');
-    nextTarget.addClass('active');
-});
+
 function deleteBarImages() {
     debugger;
     var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
@@ -1795,7 +1779,7 @@ function deleteBarImages() {
     $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
 
 }
-function FillImageModal(index) {
+function T_Sale_FillImageModal(index) {
     debugger;
     //var OpenImageModal =
     $('#ActiveBarRowIndex').val(index);
