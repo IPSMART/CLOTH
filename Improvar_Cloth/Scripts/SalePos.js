@@ -37,7 +37,7 @@ function GetBarnoDetails(id) {
                 else {
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
-                        AddBarnoRow(hlpstr);
+                        AddBarnoRow(result);
                     }
                     else {
                         $('#helpDIV').html("");
@@ -102,7 +102,7 @@ function DeleteBarnoRow() {
 
 }
 function AddBarnoRow(hlpstr) {
-
+    debugger;
     var BARNO = returncolvalue(hlpstr, "BARNO");
     //var BARNO = returncolvalue(hlpstr, "BARNO");
     //var BARNO = returncolvalue(hlpstr, "BARNO");
@@ -136,7 +136,7 @@ function AddBarnoRow(hlpstr) {
     tr += '   <input data-val="true" data-val-number="The field CESSAMT must be a number." id="B_CESSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CESSAMT" type="hidden" value="">';
     tr += ' </td>';
     tr += ' <td class="sticky-cell" style="left:20px;" title="1">';
-    tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" type="text" value="1">';
+    tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" type="text" value="'+SLNO+'">';
     tr += ' </td>';
     tr += ' <td class="sticky-cell" style="left:50px" title="">';
     tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARNO + '">';
@@ -240,6 +240,6 @@ function AddBarnoRow(hlpstr) {
     tr += ' </td>';
     tr += '</tr>';
     $("#_T_SALE_POS_PRODUCT_GRID tbody").append(tr);
-    $("#BARNO").val('');
-    $("#BARNO").focus();
+    $("#BARCODE").val('');
+    $("#BARCODE").focus();
 }

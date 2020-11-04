@@ -286,8 +286,6 @@ namespace Improvar
                                 }
                             }
                         }
-
-
                     }
                     // fill prodgrpgstper in t_txndtl
                     double IGST_PER = 0; double CGST_PER = 0; double SGST_PER = 0; double CESS_PER = 0; double DUTY_PER = 0;

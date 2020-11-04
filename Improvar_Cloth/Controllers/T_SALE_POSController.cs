@@ -727,86 +727,8 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    DataTable stock_data = new DataTable();
-
-                    stock_data = salesfunc.GetStock(DOCDT.retStr(), "", val.retStr().retSqlformat(), "", "", "", "", "", "", "");
-
-
-                    if (stock_data == null || stock_data.Rows.Count == 0)//stock zero then return bardet from item master as blur
-                    {
-                        return Content("0");
-                    }
-                    else {
-                        str = masterHelp.ToReturnFieldValues("", stock_data);
-                        string all_gstper = ""; double gst = 0;
-                        if (stock_data.Rows[0]["PRODGRPGSTPER"].retStr() != "")
-                        {
-                            all_gstper = salesfunc.retGstPer(stock_data.Rows[0]["PRODGRPGSTPER"].retStr(), stock_data.Rows[0]["RATE"].retDbl());
-                            if (all_gstper.retStr() != "")
-                            {
-                                var gst_data = all_gstper.Split(',').ToList();
-                                gst = (from a in gst_data select a.retDbl()).Sum();
-                            }
-                        }
-
-                        str += "^ALL_GSTPER=^" + all_gstper + Cn.GCS();
-                        str += "^GSTPER=^" + gst + Cn.GCS();
-                        VE.TsalePos_TBATCHDTL = (from DataRow dr in stock_data.Rows
-                                                 select new TsalePos_TBATCHDTL
-                                                 {
-                                                     BARNO = dr["BARNO"].retStr(),
-                                                     ITGRPCD = dr["ITGRPCD"].retStr(),
-                                                     ITGRPNM = dr["ITGRPNM"].retStr(),
-                                                     MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
-                                                     MTBARCODE = dr["MTBARCODE"].retStr(),
-                                                     MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
-                                                     ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
-                                                     ITCD = dr["ITCD"].retStr(),
-                                                     STYLENO = dr["STYLENO"].retStr(),
-                                                     PARTNM = dr["PARTNM"].retStr(),
-                                                     PRTBARCODE = dr["PRTBARCODE"].retStr(),
-                                                     PARTCD = dr["PARTCD"].retStr(),
-                                                     COLRCD = dr["COLRCD"].retStr(),
-                                                     COLRNM = dr["COLRNM"].retStr(),
-                                                     CLRBARCODE = dr["CLRBARCODE"].retStr(),
-                                                     SIZENM = dr["SIZENM"].retStr(),
-                                                     SZBARCODE = dr["SZBARCODE"].retStr(),
-                                                     SIZECD = dr["SIZECD"].retStr(),
-                                                     UOM = dr["uomcd"].retStr(),
-                                                     STKTYPE = dr["STKTYPE"].retStr(),
-                                                     FLAGMTR = dr["FLAGMTR"].retDbl(),
-                                                     RATE = dr["RATE"].retDbl(),
-                                                     HSNCODE = dr["HSNCODE"].retStr(),
-                                                     PRODGRPGSTPER = dr["PRODGRPGSTPER"].retStr(),
-                                                     ALL_GSTPER = all_gstper,
-                                                     GSTPER = gst,
-                                                     SHADE = dr["SHADE"].retStr(),
-                                                     LOCABIN = dr["LOCABIN"].retStr(),
-                                                     NEGSTOCK = dr["NEGSTOCK"].retStr(),
-                                                     GLCD = dr["SALGLCD"].retStr(),
-                                                     BARGENTYPE = dr["BARGENTYPE"].retStr(),
-                                                     BarImages = dr["BARIMAGE"].retStr(),
-                                                     NOS = dr["NOS"].retDbl(),
-                                                     QNTY = dr["QNTY"].retDbl(),
-                                                     BLQNTY = dr["BLQNTY"].retDbl(),
-
-                                                 }).ToList();
-
-                        for (int p = 0; p <= VE.TsalePos_TBATCHDTL.Count - 1; p++)
-                        {
-                            VE.TsalePos_TBATCHDTL[p].SLNO = Convert.ToByte(p + 1);
-                            VE.TsalePos_TBATCHDTL[p].TXNSLNO = Convert.ToByte(p + 1);
-                            VE.TsalePos_TBATCHDTL[p].PCSection = masterHelp.PCSAction();
-                            VE.TsalePos_TBATCHDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
-                            VE.TsalePos_TBATCHDTL[p].TDDISC_TYPE = DropDown_list2();
-                            VE.TsalePos_TBATCHDTL[p].SCMDISC_TYPE = DropDown_list3();
-
-                        }
-                        VE.DefaultView = true;
-                        return PartialView("_T_SALE_POS_PRODUCT", VE);
-                    }
-
-
+                    //if (str.IndexOf(Cn.GCS()) == -1)
+                        return Content(str);
                 }
             }
             catch (Exception ex)
