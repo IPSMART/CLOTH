@@ -245,7 +245,7 @@ namespace Improvar
                     foreach (var v in VE.TsalePos_TBATCHDTL)
                     {
                         v.DISC_TYPE = masterHelp.DISC_TYPE();
-                        v.PCSection = masterHelp.PCSAction();
+                        v.PCSActionList = masterHelp.PCSAction();
                         string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                         v.GSTPER = VE.TsalePos_TBATCHDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                         if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
@@ -266,7 +266,6 @@ namespace Improvar
                                             GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
                                         }
                                         v.PRODGRPGSTPER = PRODGRPGSTPER;
-                                        v.ALL_GSTPER = ALL_GSTPER;
                                         v.GSTPER = GSTPER.retDbl();
                                     }
                                     if (tax_data.Rows[0]["barimage"].retStr() != "")
@@ -291,20 +290,17 @@ namespace Improvar
                     double IGST_PER = 0; double CGST_PER = 0; double SGST_PER = 0; double CESS_PER = 0; double DUTY_PER = 0;
                     foreach (var v in VE.TsalePos_TBATCHDTL)
                     {
-                        string PRODGRPGSTPER = "", ALL_GSTPER = "";
+                        string PRODGRPGSTPER = "";
                         var tax_data = (from a in VE.TsalePos_TBATCHDTL
                                         where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE
                                         && a.RATE == v.RATE && a.DISCTYPE == v.DISCTYPE && a.DISCRATE == v.DISCRATE && a.TDDISCTYPE == v.TDDISCTYPE
                                          && a.TDDISCRATE == v.TDDISCRATE && a.SCMDISCTYPE == v.SCMDISCTYPE && a.SCMDISCRATE == v.SCMDISCRATE
-                                        select new { a.PRODGRPGSTPER, a.ALL_GSTPER }).FirstOrDefault();
+                                        select new { a.PRODGRPGSTPER }).FirstOrDefault();
                         if (tax_data != null)
                         {
                             PRODGRPGSTPER = tax_data.PRODGRPGSTPER.retStr();
-                            ALL_GSTPER = tax_data.ALL_GSTPER.retStr();
                         }
                         v.PRODGRPGSTPER = PRODGRPGSTPER;
-                        v.ALL_GSTPER = ALL_GSTPER;
-
                         double IGST = v.IGSTPER.retDbl();
                         double CGST = v.CGSTPER.retDbl();
                         double SGST = v.SGSTPER.retDbl();

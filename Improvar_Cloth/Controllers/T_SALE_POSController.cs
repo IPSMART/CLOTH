@@ -155,8 +155,8 @@ namespace Improvar.Controllers
                             if (parkID == "")
                             {
 
-                                List<TsalePos_TBATCHDTL> sd = new List<TsalePos_TBATCHDTL>(); sd.Add(new TsalePos_TBATCHDTL() { SLNO = 1, DISC_TYPE = masterHelp.DISC_TYPE(), PCSection = masterHelp.PCSAction(), });
-                                VE.TsalePos_TBATCHDTL = sd;
+                                //List<TsalePos_TBATCHDTL> sd = new List<TsalePos_TBATCHDTL>(); sd.Add(new TsalePos_TBATCHDTL() { SLNO = 1, DISC_TYPE = masterHelp.DISC_TYPE(), PCSActionList = masterHelp.PCSAction(), });
+                                //VE.TsalePos_TBATCHDTL = sd;
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
@@ -872,7 +872,6 @@ namespace Improvar.Controllers
                                   x.SCMDISCRATE,
                                   x.TDDISCRATE,
                                   x.GSTPER,
-                                  x.ALL_GSTPER,
                                   x.FLAGMTR,
                                   x.HSNCODE,
                                   x.PRODGRPGSTPER,
@@ -908,7 +907,6 @@ namespace Improvar.Controllers
                                   SCMDISCRATE = P.Key.SCMDISCRATE,
                                   SCMDISCTYPE = P.Key.SCMDISCTYPE,
                                   SCMDISCTYPE_DESC = P.Key.SCMDISCTYPE_DESC,
-                                  ALL_GSTPER = P.Key.ALL_GSTPER.retStr() == "" ? P.Key.GSTPER.retStr() : P.Key.ALL_GSTPER,
                                   AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
                                   HSNCODE = P.Key.HSNCODE,
                                   PRODGRPGSTPER = P.Key.PRODGRPGSTPER,

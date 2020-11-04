@@ -158,10 +158,8 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })
                                         </td>
-
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTPER_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ALL_GSTPER, new { id = "B_ALL_GSTPER_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].PRODGRPGSTPER, new { id = "B_PRODGRPGSTPER_" + i })
                                         </td>
                                         <td class="">
@@ -195,7 +193,7 @@
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].ORDDOCDT, new { htmlAttributes = new { id = "B_ORDDOCDT_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.DropDownListFor(model => Model.TsalePos_TBATCHDTL[i].PCSACTION, new SelectList(Model.TsalePos_TBATCHDTL[i].PCSection, "Value", "Text", Model.TsalePos_TBATCHDTL[i].PCSACTION), new { id = "PCSACTION_" + i, @class = " atextBoxFor select_3d " })
+                                            @Html.DropDownListFor(model => Model.TsalePos_TBATCHDTL[i].PCSACTION, new SelectList(Model.TsalePos_TBATCHDTL[i].PCSActionList, "Value", "Text", Model.TsalePos_TBATCHDTL[i].PCSACTION),"", new { id = "PCSACTION_" + i, @class = " atextBoxFor select_3d " })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })

@@ -145,7 +145,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
         var RATE = returncolvalue(str, "RATE");
         var PRODGRPGSTPER = returncolvalue(str, "PRODGRPGSTPER");
-        var GSTPERstr = retGstPer(PRODGRPGSTPER, RATE);
+        var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
         var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
         $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
         debugger;
@@ -769,7 +769,7 @@ function GetGstPer(i, FieldidStarting) {
         rate = $(FieldidStarting + "RATE_" + i).val();
         if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
     }
-    var allgst = retGstPer(prodgrpgstper, rate);
+    var allgst = retGstPerstr(prodgrpgstper, rate);
     if (allgst != "") {
         var str = allgst.split(',');
         if (str.length > 0) {
@@ -793,34 +793,11 @@ function GetGstPer(i, FieldidStarting) {
     }
 
 }
-function retGstPer(prodgrpgstper, rate) {
-    var DefaultAction = $("#DefaultAction").val();
-    if (DefaultAction == "V") return true;
-    //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
 
-    var fromrt = 0, tort = 0, selrow = -1;
-    var mgstrate = [5];
-    var rtval = "0,0,0"; //igstper,cgst,sgst
-    var SP = String.fromCharCode(179);
-
-    var mrates = prodgrpgstper.split(SP);
-    for (var x = 0; x <= mrates.length - 1; x++) {
-        //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
-        mgstrate = mrates[x].split('~');
-
-        if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
-        if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
-        if (rate >= fromrt && rate <= tort) { selrow = x; break; }
-    }
-    if (selrow != -1) rtval = mgstrate[2] + "," + mgstrate[3] + "," + mgstrate[4];
-    return rtval;
-
-}
 function ItcdClr() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,HSNCODE");
-
 }
 
 function AmountCalculation(i) {
@@ -1057,7 +1034,7 @@ function ReverceCharges() {
             prodgrpgstper = $("#D_PRODGRPGSTPER_" + i).val();
             rate = $("#D_RATE_" + i).val();
             if (rate == "") { rate = parseFloat(0); } else { rate = parseFloat(rate); }
-            var allgst = retGstPer(prodgrpgstper, rate);
+            var allgst = retGstPerstr(prodgrpgstper, rate);
             if (allgst != "") {
                 var str = allgst.split(',');
                 if (str.length > 0) {
