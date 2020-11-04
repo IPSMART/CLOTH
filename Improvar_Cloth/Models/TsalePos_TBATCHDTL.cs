@@ -141,7 +141,6 @@ namespace Improvar.Models
         public string STKNAME { get; set; }
         [StringLength(30)]
         public string PDESIGN { get; set; }
-        public string ALL_GSTPER { get; set; }
         public string PRODGRPGSTPER { get; set; }
         [StringLength(30)]
         public string BALENO { get; set; }
