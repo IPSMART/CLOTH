@@ -115,7 +115,7 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
                                         </td>
                                         <td class="">
-                                            <button type="button" onclick="FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TBATCHDTL[i].BarImagesCount</button>
+                                            <button type="button" onclick="T_OUTRECPROCESS_FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TBATCHDTL[i].BarImagesCount</button>
                                         </td>
                                         <td class="">
                                             @if (Model.DefaultAction != "V" && Model.T_TXN != null && (Model.TBATCHDTL[i].BARGENTYPE == "E" || Model.T_TXN.BARGENTYPE == "E"))
