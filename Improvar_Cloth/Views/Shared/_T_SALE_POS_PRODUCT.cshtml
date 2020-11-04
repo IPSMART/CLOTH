@@ -119,12 +119,6 @@
                                             @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ITCD, new { id = "B_ITCD_" + i })*@
                                             @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].STYLENO, new { id = "B_STYLENO_" + i })*@
                                         </td>
-
-
-                                        @*<td class="">
-                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].COLRCD, new { id = "B_COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                                @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].CLRBARCODE, new { id = "B_CLRBARCODE_" + i })
-                                            </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].COLRNM, new { id = "B_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
@@ -134,20 +128,20 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].SZBARCODE, new { id = "B_SZBARCODE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1})
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].BALSTOCK, new { htmlAttributes = new { id = "B_BALSTOCK_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" } })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalBarno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalBarno();", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateTotalBarno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateTotalBarno();", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         @if (Model.INCLRATEASK == "Y")
                                         {
@@ -156,7 +150,7 @@
                                             </td>
                                         }
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].GSTPER, new { htmlAttributes = new { @class = "atextBoxFor", @style = "text-align: right;", id = "B_GSTPER_" + i, @onkeypress = "return numericOnly(this,2);", maxlength = 5, @TabIndex = -1, @readonly = "readonly" } })
@@ -168,13 +162,13 @@
                                             @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].DISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor select_3d ", id = "B_DISCTYPE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
                                         </td>
                                         @*<td class="">
                                                 @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].TDDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].TDDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_TDDISCTYPE_" + i })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
+                                                @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "" } })
                                             </td>
                                             <td class="">
                                                 @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].SCMDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].SCMDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_SCMDISCTYPE_" + i })
@@ -206,7 +200,7 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].PRTBARCODE, new { id = "B_PRTBARCODE_" + i })
                                         </td>
                                         <td class="">
-                                            <button type="button" onclick="FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TsalePos_TBATCHDTL[i].BarImagesCount</button>
+                                            <button type="button" onclick="FillImageModal('B_BarImages_@i')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TsalePos_TBATCHDTL[i].BarImagesCount</button>
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
                                         </td>
                                         <td class="">
