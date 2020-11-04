@@ -114,8 +114,8 @@ function AddBarnoRow(hlpstr) {
     var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOM");
     var NOS = returncolvalue(hlpstr, "NOS");
-    var RATE = returncolvalue(str, "RATE");
-    var PRODGRPGSTPER = returncolvalue(str, "PRODGRPGSTPER");
+    var RATE = returncolvalue(hlpstr, "RATE");
+    var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
