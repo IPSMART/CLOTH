@@ -64,6 +64,11 @@ namespace Improvar.ViewModels
         public string PARTCD { get; set; }
         public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
         public string ALLMTRLJOBCD { get; set; }
+        public string GOCD { get; set; }
+        public string PRCCD { get; set; }
+        public string TAXGRPCD { get; set; }
         
+
+
     }
 }
