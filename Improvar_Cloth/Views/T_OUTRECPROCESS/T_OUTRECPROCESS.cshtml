@@ -991,7 +991,7 @@
 
     }
 </script>@*maintab calculation*@
-@*<script>
+<script>
         function changeBARGENTYPE() {
             debugger;
             var BARGENTYPE = $("#BARGENTYPE").val();
@@ -1059,42 +1059,25 @@
                 }
             });
         }
-        $(document).on('click', '.arrow-left, .arrow-right', function () {
-            var next;
-            var circler;
-            if ($(this).is('.arrow-left')) {
-                next = 'prev';
-                circler = ':last';
-            } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
-                next = 'next';
-                circler = ':first';
+    function deleteBarImages() {
+        debugger;
+        var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
+        var id = $("#div_carousel_inner div.active").attr('id')
+        var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
+        $.each(arr, function (index, value) {
+            var divid = (value.split('~')[0]).split('.')[0];
+            if (id == divid) {
+                deleteindex = index;
             }
-            var nextTarget = $('#div_carousel_inner div.active')[next]('div');
-            if (nextTarget.length == 0) {
-                nextTarget = $('#div_carousel_inner div' + circler);
-            }
-            $('#div_carousel_inner div').removeClass('active');
-            nextTarget.addClass('active');
         });
-        function deleteBarImages() {
-            debugger;
-            var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
-            var id = $("#div_carousel_inner div.active").attr('id')
-            var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
-            $.each(arr, function (index, value) {
-                var divid = (value.split('~')[0]).split('.')[0];
-                if (id == divid) {
-                    deleteindex = index;
-                }
-            });
-            arr.splice(deleteindex, 1);
-            $("#" + id).remove();
-            var newimg = arr.join(String.fromCharCode(179));
-            $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
-            $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
+        arr.splice(deleteindex, 1);
+        $("#" + id).remove();
+        var newimg = arr.join(String.fromCharCode(179));
+        $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
+        $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
 
-        }
-        function FillImageModal(index) {
+    }
+        function T_OUTRECPROCESS_FillImageModal(index) {
             debugger;
             //var OpenImageModal =
             $('#ActiveBarRowIndex').val(index);
@@ -1128,7 +1111,7 @@
                 fileReader.readAsDataURL(fileToLoad);
             }
         }
-    </script>*@@*bar image*@
+    </script>@*bar image*@
     <script>
     function DeleteRow() {
         $.ajax({
