@@ -2297,9 +2297,13 @@ namespace Improvar
         public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "")
         {
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
-            if (menupara == "PB"|| menupara == "ALL")
+            if (menupara == "PB" )
             {
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara);
+            }
+            else if(menupara == "ALL")
+            {
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(),"","",true,false);
             }
             else
             {

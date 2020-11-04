@@ -114,8 +114,8 @@ function AddBarnoRow(hlpstr) {
     var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOM");
     var NOS = returncolvalue(hlpstr, "NOS");
-    var RATE = returncolvalue(str, "RATE");
-    var PRODGRPGSTPER = returncolvalue(str, "PRODGRPGSTPER");
+    var RATE = returncolvalue(hlpstr, "RATE");
+    var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
@@ -198,7 +198,6 @@ function AddBarnoRow(hlpstr) {
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="' + GSTPER + '">';
-    tr += '     <input id="B_ALL_GSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ALL_GSTPER" type="hidden" value="">';
     tr += '     <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
     tr += ' </td>';
     tr += ' <td class="">';

@@ -7,6 +7,8 @@ using CrystalDecisions.CrystalReports.Engine;
 using System.Data;
 using System.IO;
 using System.Collections.Generic;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace Improvar.Controllers
 {
@@ -85,11 +87,11 @@ namespace Improvar.Controllers
                 string barnoOrStyle = val.retStr();
                 string MTRLJOBCD = data[0].retSqlformat();
                 string DOCDT = System.DateTime.Today.ToString().retDateStr();   /*data[2].retStr()*/
-                //string TAXGRPCD = data[3].retStr();
-                //string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
-                //string PRCCD = data[5].retStr();
-                if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[1].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, "", "", "", MTRLJOBCD);
+                string TAXGRPCD = data[3].retStr();
+                string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
+                string PRCCD = data[5].retStr();
+                if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -198,137 +200,88 @@ namespace Improvar.Controllers
                 return stringWriter.GetStringBuilder().ToString();
             }
         }
-        public ActionResult GetDOC_Code(string val)
-        {
-            try
-            {
-                if (val == null)
-                {
-                    return PartialView("_Help2", masterHelp.DOCCD_help(val, "", ""));
-                }
-                else
-                {
-                    string str = masterHelp.DOCCD_help(val, "", "");
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult GetDOC_Number(string val, string Code)
-        {
-            try
-            {
-                if (val == null)
-                {
-                    return PartialView("_Help2", masterHelp.DOCNO_help(val, Code));
-                }
-                else
-                {
-                    string str = masterHelp.DOCNO_help(val, Code);
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
         [HttpPost]
         public ActionResult Rep_Bar_History(RepBarHistory VE)
         {
-            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), Scm1 = CommVar.CurSchema(UNQSNO);
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), Scmf = CommVar.FinSchema(UNQSNO);
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             try
             {
-                string Excel_Header = "AtnDate" + "|" + "DEPTDESCN" + "|" + "EMPCD" + "|" + "ENM" + "|" + "DESIGNM" + "|" + "Shift" + "|" + "InTime" + "|" + "OutTime" + "|";
-                Excel_Header = Excel_Header + "LunchIn" + "|" + "LunchOut" + "|" + "WorkHrs" + "|" + "OTHrs" + "|" + "Attend" + "|" + "Absent" + "|";
-                Excel_Header = Excel_Header + "Late" + "|" + "PaidHoliday" + "|" + "Woff" + "|" + "LeaveCode" + "|" + "Leave" + "|" + "Field" + "|" + "Remarks";
+                string Excel_Header = "SL No" + "|" + "Doc Date" + "|" + "Doc No" + "|" + "Party Ref" + "|" + "Doc Type" + "|" + "Party" + "|" + "Location" + "|" + "In" + "|";
+                Excel_Header = Excel_Header + "Out" + "|" + "Other Qnty" + "|" + "Rate" + "|" + "Disc %";
 
-               
-                    //ExcelPackage ExcelPkg = new ExcelPackage();
-                    //ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
 
-                    //using (ExcelRange Rng = wsSheet1.Cells["A1:U1"])
-                    //{
-                    //    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    //    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
-                    //    string[] Header = Excel_Header.Split('|');
-                    //    for (int i = 0; i < Header.Length; i++)
-                    //    {
-                    //        wsSheet1.Cells[1, i + 1].Value = Header[i];
-                    //    }
-                    //}
+                ExcelPackage ExcelPkg = new ExcelPackage();
+                ExcelWorksheet wsSheet1 = ExcelPkg.Workbook.Worksheets.Add("Sheet1");
 
-                    //string E_DATE = System.DateTime.Now.ToString().Substring(0, 10);
-                    //string seletype = "", Etyp1 = "";
-                    //if (FC.AllKeys.Contains("EMPT")) seletype = FC["EMPT"].ToString().retSqlformat();
+                using (ExcelRange Rng = wsSheet1.Cells["A1:L1"])
+                {
+                    Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    string[] Header = Excel_Header.Split('|');
+                    for (int i = 0; i < Header.Length; i++)
+                    {
+                        wsSheet1.Cells[1, i + 1].Value = Header[i];
+                    }
+                }
 
-                    //string sql = "";
-                    //sql = "select a.empcd, a.enm, a.leagacycd, nvl(a.doj,to_date('" + VE.FDT.retDateStr() + "','dd/mm/yyyy')) doj, b.deptcd, e.deptdescn, b.desigcd, d.designm ";
-                    //sql += "from " + Scm1 + ".m_empmas a, " + Scm1 + ".m_empmas_det b," + Scm1 + ".m_cntrl_hdr c, ";
-                    //sql += CommVar.FinSchema(UNQSNO) + ".m_designation d, " + Scm1 + ".m_dept e ";
-                    //sql += "where a.empcd = b.empcd and a.m_autono = c.m_autono and ";
-                    //if (VE.Col1.retStr() != "") sql += "a.doj >= to_date('" + VE.Col1.retDateStr() + "','dd/mm/yyyy') and ";
-                    //sql += "b.edate = (select max(edate) from " + Scm1 + ".m_empmas_det ";
-                    //sql += "where empcd = a.empcd and edate <= to_date('" + E_DATE + "', 'dd/mm/yyyy')) and ";
-                    //if (seletype != "") sql += "a.etype in (" + seletype + ") and ";
-                    //if (VE.FDT.retStr() != "") sql += "(a.dol is null or (a.dol between to_date('" + VE.FDT.retDateStr() + "','dd/mm/yyyy') and to_date('" + VE.TDT.retDateStr() + "','dd/mm/yyyy'))) and ";
-                    //sql += "b.compcd = '" + COM + "' and b.loccd = '" + LOC + "' and b.desigcd=d.desigcd(+) and b.deptcd=e.deptcd(+) ";
-                    //sql += "order by deptdescn, doj, enm ";
-                    //DataTable dailyattn = Master_Help.SQLquery(sql);
+                string E_DATE = System.DateTime.Now.ToString().Substring(0, 10);
+                string seletype = "", Etyp1 = "";
 
-                    //DateTime fdt = Convert.ToDateTime(VE.FDT);
-                    //DateTime tdt = Convert.ToDateTime(VE.TDT);
-                    //int exlrowno = 2;
-                    //if (string.IsNullOrEmpty(VE.FDT.retStr()) && string.IsNullOrEmpty(VE.TDT.retStr()))
-                    //{
-                    //    for (int i = 0; i < dailyattn.Rows.Count; i++)
-                    //    {
-                    //        wsSheet1.Cells[i + 2, 2].Value = dailyattn.Rows[i]["deptdescn"];
-                    //        wsSheet1.Cells[i + 2, 5].Value = dailyattn.Rows[i]["designm"];
-                    //        wsSheet1.Cells[i + 2, 3].Value = dailyattn.Rows[i]["empcd"];
-                    //        wsSheet1.Cells[i + 2, 4].Value = dailyattn.Rows[i]["enm"];
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    for (DateTime dt = fdt; dt <= tdt;)
-                    //    {
-                    //        for (int i = 0; i < dailyattn.Rows.Count; i++)
-                    //        {
-                    //            if (Convert.ToDateTime(dailyattn.Rows[i]["doj"]) <= dt)
-                    //            {
-                    //                wsSheet1.Cells[exlrowno, 1].Value = dt.retDateStr();
-                    //                wsSheet1.Cells[exlrowno, 3].Value = dailyattn.Rows[i]["empcd"];
-                    //                wsSheet1.Cells[exlrowno, 4].Value = dailyattn.Rows[i]["enm"];
-                    //                wsSheet1.Cells[exlrowno, 2].Value = dailyattn.Rows[i]["deptdescn"];
-                    //                wsSheet1.Cells[exlrowno, 5].Value = dailyattn.Rows[i]["designm"];
-                    //                exlrowno++;
-                    //            }
-                    //        }
-                    //        wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    //        dt = dt.AddDays(1);
-                    //    }
-                    //}
-                    //wsSheet1.View.FreezePanes(2, 6);
-                    //wsSheet1.Cells[wsSheet1.Dimension.Address].AutoFilter = true;
-                    ////for download//
-                    //Response.Clear();
-                    //Response.ClearContent();
-                    //Response.Buffer = true;
-                    //Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    //Response.AddHeader("Content-Disposition", "attachment; filename=Daily Attn Employee List.xlsx");
-                    //Response.BinaryWrite(ExcelPkg.GetAsByteArray());
-                    //Response.Flush();
-                    //Response.Close();
-                    //Response.End();
-                    //return Content("<div style='margin-top: 21%; */'><center style='color:green'><h1>Download Successfully...</h1></center></div>");
-               
+
+                string sql1 = " select distinct a.SLNO,a.AUTONO,a.BARNO,b.DOCNO,b.DOCDT,b.PREFNO,c.DOCNM,b.SLCD,d.SLNM,d.DISTRICT, ";
+                sql1 += "a.STKDRCR,a.QNTY,a.NOS,a.RATE,a.DISCTYPE,A.DISCRATE, ";
+                sql1 += "a.GOCD,e.GONM,f.LOCCD,g.LOCNM,decode(f.loccd, '" + CommVar.Loccd(UNQSNO) + "', e.GONM, g.LOCNM) LOCANM ";
+                sql1 += "from " + scm + ".t_batchdtl a, " + scm + ".t_txn b, " + scm + ".m_doctype c, ";
+                sql1 += "" + scmf + ".m_subleg d, " + scm + ".m_godown e, " + scm + ".t_cntrl_hdr f, " + scmf + ".m_loca g ";
+                sql1 += "where a.AUTONO = b.AUTONO(+) and b.DOCCD = c.DOCCD(+) and b.SLCD = d.SLCD(+) and a.GOCD = e.GOCD(+) and ";
+                sql1 += "f.COMPCD = '" + CommVar.Compcd(UNQSNO) + "' and ";
+                sql1 += "a.AUTONO = f.AUTONO(+) and f.LOCCD = g.LOCCD(+) and A.STKDRCR in ('D','C') and a.BARNO = '" + VE.BARCODE + "' ";
+                sql1 += "order by b.DOCDT,b.DOCNO ";
+                DataTable barcdhistory = masterHelp.SQLquery(sql1);
+             
+                int exlrowno = 2; double TINQTY = 0, TOUTQTY = 0,TNOS=0;
+                for (int i = 0; i < barcdhistory.Rows.Count; i++)
+                {
+                    wsSheet1.Cells[i + 2, 1].Value = barcdhistory.Rows[i]["SLNO"].retShort();
+                    wsSheet1.Cells[i + 2, 2].Value = barcdhistory.Rows[i]["DOCDT"].retDateStr();
+                    wsSheet1.Cells[i + 2, 3].Value = barcdhistory.Rows[i]["DOCNO"].retStr();
+                    wsSheet1.Cells[i + 2, 4].Value = barcdhistory.Rows[i]["PREFNO"].retStr();
+                    wsSheet1.Cells[i + 2, 5].Value = barcdhistory.Rows[i]["DOCNM"].retStr();
+                    wsSheet1.Cells[i + 2, 6].Value = barcdhistory.Rows[i]["SLCD"].retStr() == "" ? "" : barcdhistory.Rows[i]["SLNM"].retStr() + "[" + barcdhistory.Rows[i]["SLCD"].retStr() + "]" + "[" + barcdhistory.Rows[i]["DISTRICT"].retStr() + "]";
+                    wsSheet1.Cells[i + 2, 7].Value = barcdhistory.Rows[i]["LOCANM"].retStr();
+                    var inqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr()=="D" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
+                    var outqty = (from DataRow dr in barcdhistory.Rows where dr["STKDRCR"].retStr() == "C" select new { QNTY = dr["QNTY"].retDbl() }).FirstOrDefault();
+                    wsSheet1.Cells[i + 2, 8].Value = inqty.QNTY.retDbl();
+                    wsSheet1.Cells[i + 2, 9].Value = outqty.QNTY.retDbl();
+                    wsSheet1.Cells[i + 2, 10].Value = barcdhistory.Rows[i]["NOS"].retDbl();
+                    wsSheet1.Cells[i + 2, 11].Value = barcdhistory.Rows[i]["RATE"].retDbl();
+                    wsSheet1.Cells[i + 2, 12].Value = barcdhistory.Rows[i]["RATE"].retStr() + " " + barcdhistory.Rows[i]["DISCTYPE"].retStr();
+                    TINQTY = TINQTY + inqty.QNTY.retDbl();
+                    TOUTQTY = TOUTQTY + outqty.QNTY.retDbl();
+                    TNOS = TNOS + barcdhistory.Rows[i]["NOS"].retDbl();
+                    exlrowno++;
+                }
+                wsSheet1.Row(exlrowno).Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                wsSheet1.Row(exlrowno).Style.Font.Bold = true;
+                wsSheet1.Cells[exlrowno, 7].Value ="TOTAL";
+                wsSheet1.Cells[exlrowno, 8].Value = TINQTY;
+                wsSheet1.Cells[exlrowno, 9].Value = TOUTQTY;
+
+                wsSheet1.Row(++exlrowno).Style.Font.Bold = true;
+                wsSheet1.Cells[exlrowno, 7].Value = "Balance Qnty";
+                wsSheet1.Cells[exlrowno,9].Value = (TINQTY - TOUTQTY);
+                //wsSheet1.Cells[wsSheet1.Dimension.Address].AutoFilter = true;
+                //for download//
+                Response.Clear();
+                Response.ClearContent();
+                Response.Buffer = true;
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                Response.AddHeader("Content-Disposition", "attachment; filename=BarCode History.xlsx");
+                Response.BinaryWrite(ExcelPkg.GetAsByteArray());
+                Response.Flush();
+                Response.Close();
+                Response.End();
             }
             catch (Exception ex)
             {
@@ -336,7 +289,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException + "  ");
             }
             return null;
-
         }
     }
 }
