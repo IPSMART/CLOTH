@@ -25,15 +25,15 @@
                 </center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
-                <div style="height:auto;overflow-y:scroll;max-height:100px;overflow-x:hidden">
+                <div style="height:auto;max-height:100px;width:309px">
                     <table id="_REP_BAR_HISTORY_PRICE_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 20px;"></th>
+                                @*<th></th>*@
                                 <th class="" style="width: 20px;">SL No</th>
-                                <th class="" style="width: 61px;">Effective Date</th>
+                                <th class="" style="width: 89px;">Effective Date</th>
                                 <th class="" style="width:45px;">Price Code</th>
-                                <th class="" style="width:80px;text-align:right;">Rate</th>
+                                <th class="" style="text-align:right;">Rate</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,9 +42,9 @@
                                 for (int i = 0; i <= Model.BARCODEPRICE.Count - 1; i++)
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
-                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                        @*<td>
                                             @Html.CheckBoxFor(model => model.BARCODEPRICE[i].Checked, new { id = "D_Checked_" + i, @TabIndex = -1 })
-                                        </td>
+                                        </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.BARCODEPRICE[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                           
@@ -58,7 +58,7 @@
 
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.BARCODEPRICE[i].RATE, new { htmlAttributes = new { id = "P_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14 } })
+                                            @Html.EditorFor(model => Model.BARCODEPRICE[i].RATE, new { htmlAttributes = new { id = "P_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly",maxlength = 14 } })
                                         </td>
 
                                     </tr>

@@ -37,6 +37,7 @@
     }
 </style>
 <script src="~/Scripts/jquery.min.js"></script>
+<script src="~/Scripts/Cloth.js"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
@@ -255,8 +256,6 @@
             }
         });
     }
-</script>
-<script>
     function GetBarnoDetails(id) {
         debugger;
         if (id == "") {
@@ -303,45 +302,6 @@
         }
 
     }
-</script>
-<script>
-    @*function Fill_BarCodeData() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("FillBarCodeData", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivBarCodeTab").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    function Fill_DetailData() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("FillDetailData", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivDetail").html(result);
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(3)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }*@
 
     function FillReceiveTab() {
         $.ajax({
@@ -363,373 +323,6 @@
             }
         });
     }
-</script>
-
-@*<script>
-        function CalculateQNTY(i) {
-            if ("@Model.DefaultAction" != "V") {
-                var NOS_ = document.getElementById('P_NOS_' + i).value;
-                if (NOS_ == "") { NOS_ = parseFloat(0) } else { NOS_ = parseFloat(NOS_) }
-                var CUTLENGTH_ = document.getElementById('P_CUTLENGTH_' + i).value;
-                if (CUTLENGTH_ == "") { CUTLENGTH_ = parseFloat(0) } else { CUTLENGTH_ = parseFloat(CUTLENGTH_) }
-                if (NOS_ > 0 && CUTLENGTH_ > 0) {
-                    var qnty = (parseFloat(NOS_) * parseFloat(CUTLENGTH_));
-                    document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
-                }
-
-            } CalculateTotal();
-        }
-
-        function CalculateTotal() {
-            debugger;
-            var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
-            var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
-            var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
-            for (var i = 0; i <= GridRow - 1; i++) {
-                var NOS = document.getElementById("P_NOS_" + i).value;
-                if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
-
-                var QNTY = document.getElementById("P_QNTY_" + i).value;
-                if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
-                else { T_QNTY = T_QNTY + parseFloat(0); }
-
-
-            }
-            document.getElementById("P_T_NOS").value = parseFloat(T_NOS).toFixed(0);
-            document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
-
-
-        }
-
-        //function CalculateTotalProgBomQnty() {
-        //    var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
-        //    var GridRow = $("#__T_OUTRECPROCESS_QtyRequirement_GRID > tbody > tr").length;
-        //    for (var i = 0; i <= GridRow - 1; i++) {
-
-        //        var BOMQNTY = document.getElementById("Q_BOMQNTY_" + i).value;
-        //        if (BOMQNTY == "") { BOMQNTY = parseFloat(0) } else { BOMQNTY = parseFloat(BOMQNTY) }
-        //        if (BOMQNTY != "") { T_BOMQNTY = T_BOMQNTY + parseFloat(BOMQNTY); }
-        //        else { T_BOMQNTY = T_BOMQNTY + parseFloat(0); }
-
-        //        var EXTRAQNTY = document.getElementById("Q_EXTRAQNTY_" + i).value;
-        //        if (EXTRAQNTY == "") { EXTRAQNTY = parseFloat(0) } else { EXTRAQNTY = parseFloat(EXTRAQNTY) }
-        //        if (EXTRAQNTY != "") { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(EXTRAQNTY); }
-        //        else { T_EXTRAQNTY = T_EXTRAQNTY + parseFloat(0); }
-
-
-        //    } document.getElementById("T_BOMQNTY").value = parseFloat(T_BOMQNTY).toFixed(6);
-        //    document.getElementById("T_EXTRAQNTY").value = parseFloat(T_EXTRAQNTY).toFixed(6);
-        //}
-
-
-    </script>*@
-
-@*<script>
-        function AddrowQTY(ID) {
-            var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("AddRowQTY", PageControllerName)",
-                beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-                success: function (result) {
-                    $("#WaitingMode").hide();
-                    $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
-                    $("#partialdivQtyRequirement").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-
-        function DeleteRowQTY() {
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("DeleteRowQTY", PageControllerName)",
-                data: $('form').serialize(),
-                success: function (result) {
-                    $("#partialdivQtyRequirement").animate({ marginTop: '0px' }, 50);
-                    $("#partialdivQtyRequirement").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    </script>*@
-@*<script>
-        function RepeatAboveRow_TPROGBOM(i) {
-            debugger;
-            i = parseInt(i);
-            if (event.key == "F7") {
-                var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
-                for (var J = 0; J <= GridRow - 1; J++) {
-                    var slno = $("#P_SLNO_" + J).val();
-                    if (parseInt(slno) == i) {
-                        $("#Q_ITGRPCD_" + i).val($("#P_ITGRPCD_" + J).val());
-                        $("#Q_ITGRPNM_" + i).val($("#P_ITGRPNM_" + J).val());
-                        $("#Q_ITCD_" + i).val($("#P_ITCD_" + J).val());
-                        $("#Q_ITNM_" + i).val($("#P_ITNM_" + J).val());
-                        $("#Q_COLRCD_" + i).val($("#P_COLRCD_" + J).val());
-                        $("#Q_SIZECD_" + i).val($("#P_SIZECD_" + J).val());
-                    }
-                }
-            }
-            if (event.key == "F8" && i > 0) {
-                $.ajax({
-                    type: 'POST',
-                    url: "@Url.Action("RepeatAboveRow", PageControllerName)",
-                    beforesend: $("#WaitingMode").show(),
-                    data: $('form').serialize() + "&RowIndex=" + i,
-                    success: function (result) {
-                        $("#WaitingMode").hide();
-                        $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
-                        $("#partialdivQtyRequirement").html(result);
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        $("#WaitingMode").hide();
-                        msgError(XMLHttpRequest.responseText);
-                        $("body span h1").remove(); $("#msgbody_error style").remove();
-                    }
-                });
-
-            }
-        }
-    </script>*@
-<script>
-    @*function Addrow(ID) {
-        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddRow", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivProgramme").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivProgramme").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }*@
-
-    function DeleteRow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
-                $("#partialdivProgramme").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
-    function AddDOCrow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddDOCRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivDocument").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    function DeleteDOCrow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
-                $("#partialdivDocument").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
-    function pageprinting() {
-        var ty = $("#DOCCD").val();
-        $.ajax({
-            type: 'get',
-            url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
-            success: function (result) {
-                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
-    function changeBARGENTYPE() {
-        debugger;
-        var BARGENTYPE = $("#BARGENTYPE").val();
-        if (BARGENTYPE == "C") {
-            $("#divImageUpload").hide();
-        }
-        else if (BARGENTYPE == "E") {
-            $("#divImageUpload").show();
-        }
-        return 0;
-    }
-    function UploadBarnoImage(i) {
-        debugger;
-        var ImageDesc = $('#ImageDesc').val();
-        if (document.getElementById("ImageName").value == "") return;
-        var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
-        if (OpenImageModal == "") {
-            OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
-        } else {
-            OpenImageModal = parseInt(OpenImageModal) + 1;
-            actt = "";
-        }
-        $('#OpenImageModal_' + i).html(OpenImageModal);
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("UploadImages", PageControllerName )",
-            beforesend: $("#WaitingMode").show(),
-            data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
-            success: function (result) {
-                $("#WaitingMode").hide(); var newid = '';
-                if ($("#B_BarImages_" + i).val() != "") {
-                    newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
-                }
-                else {
-                    newid = (result.split('/')[2] + '~' + ImageDesc);
-                }
-                $("#B_BarImages_" + i).val(newid);
-                //var htm = '';
-                //htm += '<div class="item ' + actt + '">';
-                //htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
-                //htm += '    <span class="carousel-caption">';
-                //htm += '    <p> ' + ImageDesc + ' </p>';
-                //htm += '    </span>';
-                //htm += '</div>';
-                //$("#div_carousel_inner").append(htm);
-
-                //$('.carousel').carousel(); // $("#carousel").carousel();
-                //htm += '<div class="col-lg-4" id="' + id + '">';
-                //htm += '       <div class="thumbnail">';
-                //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
-                //htm += '           <a href="' + result + '" target="_blank">';
-                //htm += '                <img src="' + result + '" alt="" style="width:100%">';
-                //htm += '                <div class="caption">';
-                //htm += '                   ' + ImageDesc;
-                //htm += '          </div>';
-                //htm += '      </a>';
-                //htm += '  </div>';
-                //htm += '</div>';
-                //$("#divUploadImage").append(htm);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    $(document).on('click', '.arrow-left, .arrow-right', function () {
-        var next;
-        var circler;
-        if ($(this).is('.arrow-left')) {
-            next = 'prev';
-            circler = ':last';
-        } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
-            next = 'next';
-            circler = ':first';
-        }
-        var nextTarget = $('#div_carousel_inner div.active')[next]('div');
-        if (nextTarget.length == 0) {
-            nextTarget = $('#div_carousel_inner div' + circler);
-        }
-        $('#div_carousel_inner div').removeClass('active');
-        nextTarget.addClass('active');
-    });
-    function deleteBarImages() {
-        debugger;
-        var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
-        var id = $("#div_carousel_inner div.active").attr('id')
-        var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
-        $.each(arr, function (index, value) {
-            var divid = (value.split('~')[0]).split('.')[0];
-            if (id == divid) {
-                deleteindex = index;
-            }
-        });
-        arr.splice(deleteindex, 1);
-        $("#" + id).remove();
-        var newimg = arr.join(String.fromCharCode(179));
-        $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
-        $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
-
-    }
-    function FillImageModal(index) {
-        debugger;
-        //var OpenImageModal =
-        $('#ActiveBarRowIndex').val(index);
-        var actt = ""; $("#div_carousel_inner").html('');
-        var arr = $("#B_BarImages_" + index).val();
-        arr = arr.split(String.fromCharCode(179));
-        $.each(arr, function (index, value) {
-            var imgname = (value.split('~')[0]);
-            var id = (imgname).split('.')[0];
-            var ImageDesc = (value.split('~')[1]);
-            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
-            htm += '<div id="' + id + '" class="item ' + actt + '">';
-            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
-            htm += '    <span class="carousel-caption">';
-            htm += '    <p> ' + ImageDesc + ' </p>';
-            htm += '    </span>';
-            htm += '</div>';
-            $("#div_carousel_inner").append(htm);
-        });
-    }
-    function fileTypeCheck(id) {
-        var fileUpload = $(id).get(0);
-        var filesSelected = fileUpload.files;
-        if (filesSelected.length > 0) {
-            var fileToLoad = filesSelected[0];
-            document.getElementById("ImageName").value = fileToLoad.name;
-            var fileReader = new FileReader();
-            fileReader.onload = function (fileLoadedEvent) {
-                document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
-            };
-            fileReader.readAsDataURL(fileToLoad);
-        }
-    }
-</script>
-<script>
     function Fill_DetailData() {
         if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
         $.ajax({
@@ -737,29 +330,100 @@
             beforesend: $("#WaitingMode").show(),
             url: "@Url.Action("FillDetailData", PageControllerName)",
             data: $('form').serialize(),
-            success: function (result) {
-                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivDetail").html(result);
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(4)").addClass('active');
-                //below set the  child sequence
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                var GridRow = $("#_T_OUTRECPROCESS_Detail_Grid > tbody > tr").length;
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    CalculateAmt_Details(i);
-                }
-                $("#bardatachng").val("N");
-                $("#WaitingMode").hide();
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+        success: function (result) {
+            //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+            $("#partialdivDetail").html(result);
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(4)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            var GridRow = $("#_T_OUTRECPROCESS_Detail_Grid > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                CalculateAmt_Details(i);
             }
-        });
+            $("#bardatachng").val("N");
+            $("#WaitingMode").hide();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
 
     }
+</script>
+<script>
+    function ChkQntyNosProgramme(i) {
+        var T_NOS = 0; var T_QNTY = 0;
+        var PROGAUTOSLNO = $("#P_PROGAUTOSLNO_" + i).val();
+        var BALNOS = $("#P_BALNOS_" + i).val();
+        if (BALNOS != "") { BALNOS = parseFloat(BALNOS); } else { BALNOS = parseFloat(0); }
+        var BALQNTY = $("#P_BALQNTY_" + i).val();
+        if (BALQNTY != "") { BALQNTY = parseFloat(BALQNTY); } else { BALQNTY = parseFloat(0); }
+        var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
+        for (var j = 0; j <= GridRow - 1; j++) {
+
+            if ($("#P_PROGAUTOSLNO_" + j).val() == PROGAUTOSLNO) {
+                var NOS = document.getElementById("P_NOS_" + j).value;
+                if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+
+                var QNTY = document.getElementById("P_QNTY_" + j).value;
+                if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
+            }
+        }
+        //if (T_NOS > BALNOS) {
+        //    msgInfo("total Nos is grater than balance nos..");
+        //    message_value = "P_NOS_" + i;
+        //    return false;
+        //}
+        if (T_QNTY > BALQNTY) {
+            msgInfo("total Qnty is grater than balance qnty..");
+            message_value = "P_QNTY_" + i;
+            return false;
+        }
+        else {
+
+            CalculateTotalProgramme();
+        }
+
+    }
+    function CalculateTotalProgramme() {
+        var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
+        var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
+        var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var NOS = document.getElementById("P_NOS_" + i).value;
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+
+            var QNTY = document.getElementById("P_QNTY_" + i).value;
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); }
+            else { T_QNTY = T_QNTY + parseFloat(0); }
+
+
+        }
+        document.getElementById("P_T_NOS").value = parseFloat(T_NOS).toFixed(0);
+        document.getElementById("P_T_QNTY").value = parseFloat(T_QNTY).toFixed(6);
+    }
+</script>@*Programme calculation*@
+<script>
+    function CalculateTotal_Barno() {
+
+        var T_QNTY = 0, T_NOS = 0;
+        var GridRow = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var QNTY = $("#B_QNTY_" + i).val();
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
+            var NOS = $("#B_NOS_" + i).val();
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+        }
+        $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
+        $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
+
+    }
+</script>@*receive calculation*@
+<script>
     function UpdateBarCodeRow_FrmDet(i) {
         var TXNSLNO = $("#D_SLNO_" + i).val();
         var ITGRPCD = $("#D_ITGRPCD_" + i).val();
@@ -779,8 +443,6 @@
         }
 
     }
-</script>
-<script>
     function CalculateAmt_Details(i) {
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
@@ -981,154 +643,12 @@
         BillAmountCalculate();
 
     }
-    function BillAmountCalculate() {
-        var DefaultAction = $("#DefaultAction").val();
-        if (DefaultAction == "V") return true;
-        debugger;
-        var R_TOTAL_BILL_AMOUNT = 0;
-        var TOTAL_ROUND = 0;
-        var netamt = 0;
-        var ROUND_TAG = document.getElementById("RoundOff").checked;
-        var D_TOTALNOS = 0, D_TOTALQNTY = 0, D_TOTALTAXVAL = 0, A_TOTALTAXVAL = 0, D_TOTALIGST = 0, A_TOTALIGST = 0, D_TOTALCGST = 0, A_TOTALCGST = 0, D_TOTALSGST = 0, A_TOTALSGST = 0, D_TOTALNETAMT = 0, A_TOTALNETAMT = 0;
-        var T_NOS = $("#T_NOS").val();
-        if (T_NOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(T_NOS); } else { D_TOTALNOS = D_TOTALNOS + parseFloat(0); }
-
-        var T_QNTY = $("#T_QNTY").val();
-        if (T_QNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(T_QNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseFloat(0); }
-
-        var T_GROSS_AMT = $("#T_GROSS_AMT").val();
-        if (T_GROSS_AMT != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(T_GROSS_AMT); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(0); }
-
-        var A_T_AMOUNT = $("#A_T_AMOUNT").val();
-        if (A_T_AMOUNT != "") { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(A_T_AMOUNT); } else { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(0); }
-        //
-        var T_IGST_AMT = $("#T_IGST_AMT").val();
-        if (T_IGST_AMT != "") { D_TOTALIGST = D_TOTALIGST + parseFloat(T_IGST_AMT); } else { D_TOTALIGST = D_TOTALIGST + parseFloat(0); }
-
-        var A_T_IGST = $("#A_T_IGST").val();
-        if (A_T_IGST != "") { A_TOTALIGST = A_TOTALIGST + parseFloat(A_T_IGST); } else { A_TOTALIGST = A_TOTALIGST + parseFloat(0); }
-
-        var T_CGST_AMT = $("#T_CGST_AMT").val();
-        if (T_CGST_AMT != "") { D_TOTALCGST = D_TOTALCGST + parseFloat(T_CGST_AMT); } else { D_TOTALCGST = D_TOTALCGST + parseFloat(0); }
-
-        var A_T_CGST = $("#A_T_CGST").val();
-        if (A_T_CGST != "") { A_TOTALCGST = A_TOTALCGST + parseFloat(A_T_CGST); } else { A_TOTALCGST = A_TOTALCGST + parseFloat(0); }
-
-        var T_SGST_AMT = $("#T_SGST_AMT").val();
-        if (T_SGST_AMT != "") { D_TOTALSGST = D_TOTALSGST + parseFloat(T_SGST_AMT); } else { D_TOTALSGST = D_TOTALSGST + parseFloat(0); }
-
-        var A_T_SGST = $("#A_T_SGST").val();
-        if (A_T_SGST != "") { A_TOTALSGST = A_TOTALSGST + parseFloat(A_T_SGST); } else { A_TOTALSGST = A_TOTALSGST + parseFloat(0); }
-
-        var T_NET_AMT = $("#T_NET_AMT").val();
-        if (T_NET_AMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(T_NET_AMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(0); }
-
-        var A_T_NET = $("#A_T_NET").val();
-        if (A_T_NET != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_T_NET); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(0); }
-
-        var totaltaxval = 0;
-        totaltaxval = parseFloat(parseFloat(D_TOTALTAXVAL) + parseFloat(A_TOTALTAXVAL)).toFixed(2);
-
-        var totaltax = 0;
-        totaltax = parseFloat(parseFloat(D_TOTALIGST) + parseFloat(A_TOTALIGST) + parseFloat(D_TOTALCGST) + parseFloat(A_TOTALCGST) + parseFloat(D_TOTALSGST) + parseFloat(A_TOTALSGST)).toFixed(2);
-
-        var totalbillamt = 0;
-        totalbillamt = parseFloat(parseFloat(D_TOTALNETAMT) + parseFloat(A_TOTALNETAMT)).toFixed(2);
-
-        $("#TOTNOS").val(parseFloat(D_TOTALNOS).toFixed(0));
-        $("#TOTQNTY").val(parseFloat(D_TOTALQNTY).toFixed(2));
-        $("#TOTTAXVAL").val(parseFloat(totaltaxval).toFixed(2));
-        $("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
-
-        //tds
-        var tdscalcon = $("#TDSCALCON").val();
-        if (tdscalcon == "B")
-        {
-            TDSAMTCAL(totalbillamt);
-        }
-        else {
-            TDSAMTCAL(totaltaxval);
-        }
-        ////tcs
-        //var TCSPER = 0; TCSAMT = 0; TCSON = 0;
-        //var MENU_PARA = $("#MENU_PARA").val();
-        //if (MENU_PARA != "SR" || MENU_PARA != "PR") {
-        //    TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
-        //    if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
-        //    document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
-        //    if (MENU_PARA == "PB") {
-        //        TCSON = $("#TCSON").val();
-        //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
-        //    }
-        //    else {
-        //        GetTCSON(totalbillamt);
-        //        TCSON = $("#TCSON").val();
-        //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
-        //    }
-        //    TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100);
-        //    TCSAMT = CalculateTcsAmt(TCSAMT);
-        //    if (MENU_PARA == "PB") {
-        //        var NEW_TCSAMT = $("#TCSAMT").val();
-        //        if (NEW_TCSAMT == "") { NEW_TCSAMT = parseFloat(0); } else { NEW_TCSAMT = parseFloat(NEW_TCSAMT) }
-
-        //        var TCSON = $("#TCSON").val();
-        //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
-
-        //        var TCSPER = $("#TCSPER").val();
-        //        if (TCSPER == "") { TCSPER = parseFloat(0); } else { TCSPER = parseFloat(TCSPER) }
-
-        //        var CAL_TCSAMT = TCSAMT;
-        //        var BAL_AMT = Math.abs(parseFloat(NEW_TCSAMT) - parseFloat(CAL_TCSAMT));
-        //        if (BAL_AMT <= 1 && NEW_TCSAMT > 0) {
-        //            $("#TCSAMT").val(parseFloat(NEW_TCSAMT).toFixed(2));
-        //            TCSAMT = NEW_TCSAMT;
-        //        }
-        //        else {
-        //            $("#TCSAMT").val(parseFloat(CAL_TCSAMT).toFixed(2));
-        //            TCSAMT = CAL_TCSAMT;
-        //        }
-        //    }
-        //    else {
-        //        document.getElementById("TCSAMT").value = parseFloat(TCSAMT).toFixed(2);
-
-        //    }
-        //}
-        ////
-        //totalbillamt = parseFloat(totalbillamt) + parseFloat(TCSAMT);
-        var REVCHRG = $("#REVCHRG").val();
-        if (REVCHRG == "Y") {
-            totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
-        }
-        var blamt = 0;
-        if (ROUND_TAG == true) {
-            R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
-            TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
-            document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
-            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
-            blamt = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
-        }
-        else {
-            TOTAL_ROUND = 0;
-            document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
-            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
-            blamt = parseFloat(totalbillamt).toFixed(2);
-        }
-        var tdsamt = $("#TDSAMT").val();
-        if (tdsamt != "") { tdsamt = parseFloat(tdsamt); } else { tdsamt = parseFloat(0); }
-
-        var ADVAMT = document.getElementById("ADVADJ").value;
-        if (ADVAMT == "") { ADVAMT = parseFloat(0); } else { ADVAMT = parseFloat(ADVAMT) }
-
-        var netamt = parseFloat(blamt) - parseFloat(tdsamt) - parseFloat(ADVAMT);
-        $("#NETAMT").val(parseFloat(netamt).toFixed(2));
-
-    }
     function HasChangeBarSale() {
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
         $("#bardatachng").val("Y");
     }
-</script>
+</script>@*detailtab calculation*@
 <script>
     function AmountCalculation(i) {
         var A_NOS = document.getElementById("T_NOS").value;
@@ -1279,7 +799,7 @@
         BillAmountCalculate();
 
     }
-</script>
+</script>@*amount tab calculation*@
 <script>
     function CalulateTareWt(GRWT, NTWT, TRWT) {
         var GROSS = document.getElementById(GRWT.id).value;
@@ -1294,8 +814,6 @@
         document.getElementById(TRWT.id).value = TARE.toFixed(3);
 
     }
-</script>
-<script>
     function TDSAMTCAL(tdson) {
         debugger;
         var ADVAMT = document.getElementById("ADVADJ").value;
@@ -1304,7 +822,7 @@
         var TDS_ON = parseFloat(tdson) - parseFloat(ADVAMT);
         $("#TDSON").val(parseFloat(TDS_ON).toFixed(2));
         var TDS_ROUND = $("#TDSROUNDCAL").val();
-        var TDS_PER = $("#TDSPER").val(); 
+        var TDS_PER = $("#TDSPER").val();
         if (TDS_PER == "") { TDS_PER = parseFloat(0); } else { TDS_PER = parseFloat(TDS_PER) }
         if (TDS_ON == "") { TDS_ON = parseFloat(0); } else { TDS_ON = parseFloat(TDS_ON) }
         var tdsamt1 = parseFloat(parseFloat(TDS_ON) * parseFloat(TDS_PER) / 100).toFixed(2);
@@ -1320,699 +838,1040 @@
             if (TDS_ROUND == "Y") {
                 tdsamt1 = Math.round(tdsamt1); //==yes
             }
-            else
-                if (TDS_ROUND == "N") {
-                    tdsamt1 = Math.ceil(tdsamt1); //==nxt
-                }
-                else
-                    if (TDS_ROUND == "L") {
-                        tdsamt1 = Math.floor(tdsamt1); //==least
-                    }
-        }
-        $("#TDSAMT").val(tdsamt1);
+    else
+               if (TDS_ROUND == "N") {
+                   tdsamt1 = Math.ceil(tdsamt1); //==nxt
+               }
+    else
+                   if (TDS_ROUND == "L") {
+                       tdsamt1 = Math.floor(tdsamt1); //==least
+                   }
     }
-</script>
-@using (Html.BeginForm())
-{
-    if (Model.DefaultView == true)
-    {
-        @Html.HiddenFor(a => Model.maxdate)
-        @Html.HiddenFor(a => Model.mindate)
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
-        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-        <input type="hidden" id="UrlBarnoDetails" value="@Url.Action("GetBarCodeDetails", PageControllerName)" />
-        <input type="hidden" id="UrlAddBarCodeRow" value="@Url.Action("FillBarCodeData", PageControllerName)" />
-        <input type="hidden" id="UrlFillDetailData" value="@Url.Action("FillDetailData", PageControllerName)" />
-        <input type="hidden" id="UrlDeleteRow" value="@Url.Action("DeleteRowBarno", PageControllerName)" />
-        <input type="hidden" id="UrlAddDOCRow" value="@Url.Action("AddDOCRow", PageControllerName)" />
-        <input type="hidden" id="UrlDeleteDOCRow" value="@Url.Action("DeleteDOCRow", PageControllerName)" />
-        <input type="hidden" id="partylinkcd" value="D" />
-        <input type="hidden" id="agentlinkcd" value="A" />
-        <input type="hidden" id="courierlinkcd" value="U" />
-        <input type="hidden" id="trnsportlinkcd" value="T" />
-        <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
-        <input type="hidden" id="bardatachng" value="N" />
-        @Html.HiddenFor(s => s.DefaultAction)
-        @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
-        @Html.HiddenFor(a => a.T_TXN.DOCNO)
-        @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
-        @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
-        <div class="form-horizontal">
-            @if (Model.DefaultAction == "V")
-            {
-                @Html.Partial("_FilteredSearch")
+    $("#TDSAMT").val(tdsamt1);
+    }
+    function BillAmountCalculate() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        debugger;
+        var R_TOTAL_BILL_AMOUNT = 0;
+        var TOTAL_ROUND = 0;
+        var netamt = 0;
+        var ROUND_TAG = document.getElementById("RoundOff").checked;
+        var D_TOTALNOS = 0, D_TOTALQNTY = 0, D_TOTALTAXVAL = 0, A_TOTALTAXVAL = 0, D_TOTALIGST = 0, A_TOTALIGST = 0, D_TOTALCGST = 0, A_TOTALCGST = 0, D_TOTALSGST = 0, A_TOTALSGST = 0, D_TOTALNETAMT = 0, A_TOTALNETAMT = 0;
+        var T_NOS = $("#T_NOS").val();
+        if (T_NOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(T_NOS); } else { D_TOTALNOS = D_TOTALNOS + parseFloat(0); }
+
+        var T_QNTY = $("#T_QNTY").val();
+        if (T_QNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(T_QNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseFloat(0); }
+
+        var T_GROSS_AMT = $("#T_GROSS_AMT").val();
+        if (T_GROSS_AMT != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(T_GROSS_AMT); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(0); }
+
+        var A_T_AMOUNT = $("#A_T_AMOUNT").val();
+        if (A_T_AMOUNT != "") { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(A_T_AMOUNT); } else { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(0); }
+        //
+        var T_IGST_AMT = $("#T_IGST_AMT").val();
+        if (T_IGST_AMT != "") { D_TOTALIGST = D_TOTALIGST + parseFloat(T_IGST_AMT); } else { D_TOTALIGST = D_TOTALIGST + parseFloat(0); }
+
+        var A_T_IGST = $("#A_T_IGST").val();
+        if (A_T_IGST != "") { A_TOTALIGST = A_TOTALIGST + parseFloat(A_T_IGST); } else { A_TOTALIGST = A_TOTALIGST + parseFloat(0); }
+
+        var T_CGST_AMT = $("#T_CGST_AMT").val();
+        if (T_CGST_AMT != "") { D_TOTALCGST = D_TOTALCGST + parseFloat(T_CGST_AMT); } else { D_TOTALCGST = D_TOTALCGST + parseFloat(0); }
+
+        var A_T_CGST = $("#A_T_CGST").val();
+        if (A_T_CGST != "") { A_TOTALCGST = A_TOTALCGST + parseFloat(A_T_CGST); } else { A_TOTALCGST = A_TOTALCGST + parseFloat(0); }
+
+        var T_SGST_AMT = $("#T_SGST_AMT").val();
+        if (T_SGST_AMT != "") { D_TOTALSGST = D_TOTALSGST + parseFloat(T_SGST_AMT); } else { D_TOTALSGST = D_TOTALSGST + parseFloat(0); }
+
+        var A_T_SGST = $("#A_T_SGST").val();
+        if (A_T_SGST != "") { A_TOTALSGST = A_TOTALSGST + parseFloat(A_T_SGST); } else { A_TOTALSGST = A_TOTALSGST + parseFloat(0); }
+
+        var T_NET_AMT = $("#T_NET_AMT").val();
+        if (T_NET_AMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(T_NET_AMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(0); }
+
+        var A_T_NET = $("#A_T_NET").val();
+        if (A_T_NET != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_T_NET); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(0); }
+
+        var totaltaxval = 0;
+        totaltaxval = parseFloat(parseFloat(D_TOTALTAXVAL) + parseFloat(A_TOTALTAXVAL)).toFixed(2);
+
+        var totaltax = 0;
+        totaltax = parseFloat(parseFloat(D_TOTALIGST) + parseFloat(A_TOTALIGST) + parseFloat(D_TOTALCGST) + parseFloat(A_TOTALCGST) + parseFloat(D_TOTALSGST) + parseFloat(A_TOTALSGST)).toFixed(2);
+
+        var totalbillamt = 0;
+        totalbillamt = parseFloat(parseFloat(D_TOTALNETAMT) + parseFloat(A_TOTALNETAMT)).toFixed(2);
+
+        $("#TOTNOS").val(parseFloat(D_TOTALNOS).toFixed(0));
+        $("#TOTQNTY").val(parseFloat(D_TOTALQNTY).toFixed(2));
+        $("#TOTTAXVAL").val(parseFloat(totaltaxval).toFixed(2));
+        $("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
+
+        //tds
+        var tdscalcon = $("#TDSCALCON").val();
+        if (tdscalcon == "B") {
+            TDSAMTCAL(totalbillamt);
+        }
+        else {
+            TDSAMTCAL(totaltaxval);
+        }
+        ////tcs
+        //var TCSPER = 0; TCSAMT = 0; TCSON = 0;
+        //var MENU_PARA = $("#MENU_PARA").val();
+        //if (MENU_PARA != "SR" || MENU_PARA != "PR") {
+        //    TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
+        //    if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
+        //    document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
+        //    if (MENU_PARA == "PB") {
+        //        TCSON = $("#TCSON").val();
+        //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
+        //    }
+        //    else {
+        //        GetTCSON(totalbillamt);
+        //        TCSON = $("#TCSON").val();
+        //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+        //    }
+        //    TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100);
+        //    TCSAMT = CalculateTcsAmt(TCSAMT);
+        //    if (MENU_PARA == "PB") {
+        //        var NEW_TCSAMT = $("#TCSAMT").val();
+        //        if (NEW_TCSAMT == "") { NEW_TCSAMT = parseFloat(0); } else { NEW_TCSAMT = parseFloat(NEW_TCSAMT) }
+
+        //        var TCSON = $("#TCSON").val();
+        //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+
+        //        var TCSPER = $("#TCSPER").val();
+        //        if (TCSPER == "") { TCSPER = parseFloat(0); } else { TCSPER = parseFloat(TCSPER) }
+
+        //        var CAL_TCSAMT = TCSAMT;
+        //        var BAL_AMT = Math.abs(parseFloat(NEW_TCSAMT) - parseFloat(CAL_TCSAMT));
+        //        if (BAL_AMT <= 1 && NEW_TCSAMT > 0) {
+        //            $("#TCSAMT").val(parseFloat(NEW_TCSAMT).toFixed(2));
+        //            TCSAMT = NEW_TCSAMT;
+        //        }
+        //        else {
+        //            $("#TCSAMT").val(parseFloat(CAL_TCSAMT).toFixed(2));
+        //            TCSAMT = CAL_TCSAMT;
+        //        }
+        //    }
+        //    else {
+        //        document.getElementById("TCSAMT").value = parseFloat(TCSAMT).toFixed(2);
+
+        //    }
+        //}
+        ////
+        //totalbillamt = parseFloat(totalbillamt) + parseFloat(TCSAMT);
+        var REVCHRG = $("#REVCHRG").val();
+        if (REVCHRG == "Y") {
+            totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
+        }
+        var blamt = 0;
+        if (ROUND_TAG == true) {
+            R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
+            TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
+            document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+            blamt = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+        }
+        else {
+            TOTAL_ROUND = 0;
+            document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
+            document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+            blamt = parseFloat(totalbillamt).toFixed(2);
+        }
+        var tdsamt = $("#TDSAMT").val();
+        if (tdsamt != "") { tdsamt = parseFloat(tdsamt); } else { tdsamt = parseFloat(0); }
+
+        var ADVAMT = document.getElementById("ADVADJ").value;
+        if (ADVAMT == "") { ADVAMT = parseFloat(0); } else { ADVAMT = parseFloat(ADVAMT) }
+
+        var netamt = parseFloat(blamt) - parseFloat(tdsamt) - parseFloat(ADVAMT);
+        $("#NETAMT").val(parseFloat(netamt).toFixed(2));
+
+    }
+</script>@*maintab calculation*@
+@*<script>
+        function changeBARGENTYPE() {
+            debugger;
+            var BARGENTYPE = $("#BARGENTYPE").val();
+            if (BARGENTYPE == "C") {
+                $("#divImageUpload").hide();
             }
-            <div class="row" style="margin-top: 5px;">
-                <div class="row">
-                    <div class="col-md-5" style="margin-top: 6px;">
-                        <div class="editor-label">
-                            @Html.Label("", "Document Code")
-                            <b style="color:Red;">*</b>
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="editor-field">
-                            @if (Model.DefaultAction == "A")
-                            {
-                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
-                            }
-                            else
-                            {
-                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
-                            }
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Document Date")
-                            <b style="color:Red;">*</b>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Document No.")
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Job")
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Party Code")
-                            <b style="color:Red;">*</b>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT');", @placeholder = "Code", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartyDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT')" />
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Only for View", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
-                            @Html.HiddenFor(model => Model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD" } })
-
-
-                        </div>
-                    </div>
-                    <div class="col-md-1" style="width:auto;">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Due Days")
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DUEDAYS, new { htmlAttributes = new { @class = "form-control", id = "DUEDAYS", maxlength = 3, @placeholder = "Due Days" } })
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="editor-field" style="margin-top: 6px;">
-                            @Html.Label("", "Party Bill No")
-                            <b style="color:Red;">*</b>
-                        </div>
-                    </div>
-                    <div class="col-md-10">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO" } })
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="editor-field" style="margin-top: 6px;">
-                            @Html.Label("", "Party Bill Date")
-                            <b style="color:Red;">*</b>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                        </div>
-                    </div>
-                    @if (Model.DefaultAction != "V")
-                    {
-                        <div class="col-md-8">
-                            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="PendProgramme" value="Get Pending Programme" title="Click to Get Pending Programme" onclick="PendingProgramme()" />
-                        </div>
+            else if (BARGENTYPE == "E") {
+                $("#divImageUpload").show();
+            }
+            return 0;
+        }
+        function UploadBarnoImage(i) {
+            debugger;
+            var ImageDesc = $('#ImageDesc').val();
+            if (document.getElementById("ImageName").value == "") return;
+            var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
+            if (OpenImageModal == "") {
+                OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
+            } else {
+                OpenImageModal = parseInt(OpenImageModal) + 1;
+                actt = "";
+            }
+            $('#OpenImageModal_' + i).html(OpenImageModal);
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("UploadImages", PageControllerName )",
+                beforesend: $("#WaitingMode").show(),
+                data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
+                success: function (result) {
+                    $("#WaitingMode").hide(); var newid = '';
+                    if ($("#B_BarImages_" + i).val() != "") {
+                        newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
                     }
+                    else {
+                        newid = (result.split('/')[2] + '~' + ImageDesc);
+                    }
+                    $("#B_BarImages_" + i).val(newid);
+                    //var htm = '';
+                    //htm += '<div class="item ' + actt + '">';
+                    //htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
+                    //htm += '    <span class="carousel-caption">';
+                    //htm += '    <p> ' + ImageDesc + ' </p>';
+                    //htm += '    </span>';
+                    //htm += '</div>';
+                    //$("#div_carousel_inner").append(htm);
 
-                </div>
-            </div>
-            <div class="row" style="margin-top:5px;">
-                <ul class="nav nav-tabs">
-                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
-                    <li id="Programme_LI" class=""><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
-                    <li id="Receive_LI" class=""><a data-toggle="tab" href="#Receive" accesskey="V">Receive(V)</a></li>
-                    <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
-                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" accesskey="F">Freight & Others(F)</a></li>
-                    <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
-                    <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
-                    <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Godown")
-                                    <b style="color:Red;">*</b>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Mtrl Job Code")
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');", @placeholder = "Code", maxlength = 2 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')" />
-                                </div>
-                            </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.MTRLJOBNM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Mtrl Job Name", @placeholder = "Mtrl Job Name", @readonly = "readonly" } })
-                                </div>
+                    //$('.carousel').carousel(); // $("#carousel").carousel();
+                    //htm += '<div class="col-lg-4" id="' + id + '">';
+                    //htm += '       <div class="thumbnail">';
+                    //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
+                    //htm += '           <a href="' + result + '" target="_blank">';
+                    //htm += '                <img src="' + result + '" alt="" style="width:100%">';
+                    //htm += '                <div class="caption">';
+                    //htm += '                   ' + ImageDesc;
+                    //htm += '          </div>';
+                    //htm += '      </a>';
+                    //htm += '  </div>';
+                    //htm += '</div>';
+                    //$("#divUploadImage").append(htm);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+        $(document).on('click', '.arrow-left, .arrow-right', function () {
+            var next;
+            var circler;
+            if ($(this).is('.arrow-left')) {
+                next = 'prev';
+                circler = ':last';
+            } else {     // or if there would be more arrows, use : else if ($(this).is('.arrow-right'))
+                next = 'next';
+                circler = ':first';
+            }
+            var nextTarget = $('#div_carousel_inner div.active')[next]('div');
+            if (nextTarget.length == 0) {
+                nextTarget = $('#div_carousel_inner div' + circler);
+            }
+            $('#div_carousel_inner div').removeClass('active');
+            nextTarget.addClass('active');
+        });
+        function deleteBarImages() {
+            debugger;
+            var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
+            var id = $("#div_carousel_inner div.active").attr('id')
+            var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
+            $.each(arr, function (index, value) {
+                var divid = (value.split('~')[0]).split('.')[0];
+                if (id == divid) {
+                    deleteindex = index;
+                }
+            });
+            arr.splice(deleteindex, 1);
+            $("#" + id).remove();
+            var newimg = arr.join(String.fromCharCode(179));
+            $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
+            $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
+
+        }
+        function FillImageModal(index) {
+            debugger;
+            //var OpenImageModal =
+            $('#ActiveBarRowIndex').val(index);
+            var actt = ""; $("#div_carousel_inner").html('');
+            var arr = $("#B_BarImages_" + index).val();
+            arr = arr.split(String.fromCharCode(179));
+            $.each(arr, function (index, value) {
+                var imgname = (value.split('~')[0]);
+                var id = (imgname).split('.')[0];
+                var ImageDesc = (value.split('~')[1]);
+                var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+                htm += '<div id="' + id + '" class="item ' + actt + '">';
+                htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+                htm += '    <span class="carousel-caption">';
+                htm += '    <p> ' + ImageDesc + ' </p>';
+                htm += '    </span>';
+                htm += '</div>';
+                $("#div_carousel_inner").append(htm);
+            });
+        }
+        function fileTypeCheck(id) {
+            var fileUpload = $(id).get(0);
+            var filesSelected = fileUpload.files;
+            if (filesSelected.length > 0) {
+                var fileToLoad = filesSelected[0];
+                document.getElementById("ImageName").value = fileToLoad.name;
+                var fileReader = new FileReader();
+                fileReader.onload = function (fileLoadedEvent) {
+                    document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
+                };
+                fileReader.readAsDataURL(fileToLoad);
+            }
+        }
+    </script>*@@*bar image*@
+    <script>
+    function DeleteRow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRow", PageControllerName)",
+            data: $('form').serialize(),
+        success: function (result) {
+            $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+            $("#partialdivProgramme").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    </script>
+    <script>
+    function pageprinting() {
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'get',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    </script>
+    @using (Html.BeginForm())
+    {
+        if (Model.DefaultView == true)
+        {
+            @Html.HiddenFor(a => Model.maxdate)
+            @Html.HiddenFor(a => Model.mindate)
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="hidden" id="partylinkcd" value="D" />
+            <input type="hidden" id="agentlinkcd" value="A" />
+            <input type="hidden" id="courierlinkcd" value="U" />
+            <input type="hidden" id="trnsportlinkcd" value="T" />
+            <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
+            <input type="hidden" id="bardatachng" value="N" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
+            @Html.HiddenFor(a => a.T_TXN.DOCNO)
+            @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+            @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+            <div class="form-horizontal">
+                @if (Model.DefaultAction == "V")
+                {
+                    @Html.Partial("_FilteredSearch")
+                }
+                <div class="row" style="margin-top: 5px;">
+                    <div class="row">
+                        <div class="col-md-5" style="margin-top: 6px;">
+                            <div class="editor-label">
+                                @Html.Label("", "Document Code")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-5" style="margin-top: 6px;">
-                                <div class="editor-label">
-                                    @Html.Label("", "Barcode")
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE", onchange = "changeBARGENTYPE()" })
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Total Taxable")
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTTAXVAL, new { htmlAttributes = new { @class = "form-control", id = "TOTTAXVAL", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Taxable Value", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Total Qnty")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Total Nos.")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.TOTNOS, new { htmlAttributes = new { @class = "form-control", id = "TOTNOS", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Qnty Nos", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Reverse Charge")
-                                </div>
-                            </div>
-                            <div class="col-md-7" style="width:auto;">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text", Model.T_TXN.REVCHRG), "No", new { @class = "form-control", id = "REVCHRG", onchange = "ReverceCharges();" })
-                                </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @if (Model.DefaultAction == "A")
+                                {
+                                    @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                                }
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Rounded off")
-                                </div>
-                            </div>
-                            <div class="col-md-1" style="margin-right: -41px;">
-                                <div class="editor-field" style="margin-top:6px;">
-                                    @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                            <div class="col-md-1" style="width:auto;">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Bill Amount")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
-                                </div>
-                            </div>
-                            <div class="col-md-1" style="width:auto;">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Adv. Amt")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXN.ADVADJ, new { htmlAttributes = new { @class = "form-control", id = "ADVADJ", maxlength = 12, @placeholder = "ADVADJ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur = "BillAmountCalculate();" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Net Payable")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.NETAMT, new { htmlAttributes = new { @class = "form-control", id = "NETAMT", @TabIndex = -1, @placeholder = "Net Payable", @readonly = "readonly" } })
-                                </div>
+                        <div class="col-md-4">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Document Date")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "TDS Head")
-                                </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                             </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.TDSHD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSHD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD','DOCDT/SLCD')", onblur = "SelectTDSCode(this.value,TDSHD,TDSNM,TDSPER);", @placeholder = "Code", maxlength = 3 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetTDSDetails", PageControllerName)','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD','DOCDT/SLCD')" />
-                                </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Document No.")
                             </div>
-                            <div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.TDSNM, new { htmlAttributes = new { @class = "form-control", id = "TDSNM", @placeholder = "TDS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
-                                </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                             </div>
-                            <div class="col-md-2">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "TDS On")
-                                </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Job")
                             </div>
-                            <div class="col-md-5">
-                                <div class="editor-field" style="margin-top:6px;">
-                                    @Html.EditorFor(model => model.T_TXNOTH.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "BillAmountCalculate();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
-                                </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetJobDetails", PageControllerName) + "','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0');", @placeholder = "Job Code", maxlength = 2 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetJobDetails", PageControllerName)','Job Details','JOBCD','JOBCD=jobcd=1/JOBNM=jobnm=0')" />
                             </div>
-                            <div class="col-md-1">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "TDS %")
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field" style="margin-top:6px;">
-                                    @Html.EditorFor(model => model.T_TXNOTH.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "BillAmountCalculate();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "TDS Amount")
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "TDSAMT", @placeholder = "TDS Amount", maxlength = 15, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
-                                    @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
-                                    @Html.HiddenFor(model => model.TDSCALCON, new { id = "TDSCALCON" })
-                                 </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", maxlength = 45, @title = "Only for View", @placeholder = "Job Name", @readonly = "readonly", tabindex = "-1" } })
                             </div>
                         </div>
                     </div>
-                    <div id="Programme" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party Code")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetPartyDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartyDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/DUEDAYS=crdays','DOCDT')" />
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.DISTRICT, new { htmlAttributes = new { @class = "form-control", id = "DISTRICT", @title = "Only for View", @placeholder = "District", @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Only for View", @placeholder = "GST No.", @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
+                                @Html.HiddenFor(model => Model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD" } })
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-1" style="width:auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Due Days")
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.DUEDAYS, new { htmlAttributes = new { @class = "form-control", id = "DUEDAYS", maxlength = 3, @placeholder = "Due Days" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-field" style="margin-top: 6px;">
+                                @Html.Label("", "Party Bill No")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO" } })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top: 6px;">
+                                @Html.Label("", "Party Bill Date")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            </div>
+                        </div>
                         @if (Model.DefaultAction != "V")
-                        {
+                    {
+                            <div class="col-md-8">
+                                <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="PendProgramme" value="Get Pending Programme" title="Click to Get Pending Programme" onclick="PendingProgramme()" />
+                            </div>
+                        }
+
+                    </div>
+                </div>
+                <div class="row" style="margin-top:5px;">
+                    <ul class="nav nav-tabs">
+                        <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
+                        <li id="Programme_LI" class=""><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
+                        <li id="Receive_LI" class=""><a data-toggle="tab" href="#Receive" accesskey="V">Receive(V)</a></li>
+                        <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
+                        <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" accesskey="F">Freight & Others(F)</a></li>
+                        <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
+                        <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
+                        <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-5">
                                     <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Bar Code No")
+                                        @Html.Label("", "Godown")
                                         <b style="color:Red;">*</b>
                                     </div>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-4">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')" />
-                                        @Html.HiddenFor(model => model.PROGAUTOSLNO, new { id = "PROGAUTOSLNO" })
+                                        @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Mtrl Job Code")
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');", @placeholder = "Code", maxlength = 2 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.MTRLJOBNM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Mtrl Job Name", @placeholder = "Mtrl Job Name", @readonly = "readonly" } })
                                     </div>
                                 </div>
                             </div>
-                        }
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivProgramme" style="margin-top:0px;">
-                                    @Html.Partial("_T_OUTRECPROCESS_Programme")
+                            <div class="row">
+                                <div class="col-md-5" style="margin-top: 6px;">
+                                    <div class="editor-label">
+                                        @Html.Label("", "Barcode")
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE", onchange = "changeBARGENTYPE()" })
+                                    </div>
+                                </div>
 
-                    </div>
-                    <div id="Receive" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row">
-                            <input type="hidden" id="ImageName" value="" />
-                            <input type="hidden" id="ImageStr" value="" />
-                            <div id="divImageUpload" style="display:none;">
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Total Taxable")
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.TOTTAXVAL, new { htmlAttributes = new { @class = "form-control", id = "TOTTAXVAL", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Taxable Value", @readonly = "readonly" } })
+                                    </div>
+                                </div>
                                 <div class="col-md-1">
-                                    <div class="editor-label" style="margin-top: 5px;">
-                                        @Html.Label("", "Image Desc")
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Total Qnty")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.TOTQNTY, new { htmlAttributes = new { @class = "form-control", id = "TOTQNTY", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Quantity", @readonly = "readonly" } })
                                     </div>
                                 </div>
                                 <div class="col-md-2">
-                                    <div class="editor-label" style="margin-top: 0px;">
-                                        <input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" />
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Total Nos.")
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="editor-label" style="margin-top: 0px;">
-                                        <input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" />
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.TOTNOS, new { htmlAttributes = new { @class = "form-control", id = "TOTNOS", @style = "text-align: right;", @TabIndex = -1, @placeholder = "Qnty Nos", @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Reverse Charge")
+                                    </div>
+                                </div>
+                                <div class="col-md-7" style="width:auto;">
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text", Model.T_TXN.REVCHRG), "No", new { @class = "form-control", id = "REVCHRG", onchange = "ReverceCharges();" })
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content">
-                            <div>
-                                <div id="partialdivReceive" style="margin-top:0px;">
-                                    @Html.Partial("_T_OUTRECPROCESS_Receive")
-                                </div>
-                            </div>
-                        </div>
-                        @if (Model.DefaultAction != "V")
-                        {
                             <div class="row">
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Rounded off")
+                                    </div>
+                                </div>
+                                <div class="col-md-1" style="margin-right: -41px;">
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
+                                    </div>
+                                </div>
                                 <div class="col-md-1" style="width:auto;">
-                                    <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Finalise Data in Details Tab" onclick="Fill_DetailData()" />
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Bill Amount")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1" style="width:auto;">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Adv. Amt")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.ADVADJ, new { htmlAttributes = new { @class = "form-control", id = "ADVADJ", maxlength = 12, @placeholder = "ADVADJ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur = "BillAmountCalculate();" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Net Payable")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.NETAMT, new { htmlAttributes = new { @class = "form-control", id = "NETAMT", @TabIndex = -1, @placeholder = "Net Payable", @readonly = "readonly" } })
+                                    </div>
                                 </div>
                             </div>
-                        }
-                    </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "TDS Head")
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNOTH.TDSHD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDSHD", onkeyup = "GetHelp_WithId('" + @Url.Action("GetTDSDetails", PageControllerName) + "','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD','DOCDT/SLCD')", onblur = "SelectTDSCode(this.value,TDSHD,TDSNM,TDSPER);", @placeholder = "Code", maxlength = 3 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetTDSDetails", PageControllerName)','TDSHD/TDSNM/TDSPER','1/0/2','TDS Details','TDSHD','DOCDT/SLCD')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.TDSNM, new { htmlAttributes = new { @class = "form-control", id = "TDSNM", @placeholder = "TDS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "TDS On")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.EditorFor(model => model.T_TXNOTH.TDSON, new { htmlAttributes = new { @class = "form-control", id = "TDSON", onblur = "BillAmountCalculate();", @placeholder = "TDS On", maxlength = 15, @onkeypress = "return numericOnly(this,2);" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "TDS %")
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field" style="margin-top:6px;">
+                                        @Html.EditorFor(model => model.T_TXNOTH.TDSPER, new { htmlAttributes = new { @class = "form-control", id = "TDSPER", onblur = "BillAmountCalculate();", @placeholder = "TDS Per", maxlength = 10, @onkeypress = "return numericOnly(this,2);" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "TDS Amount")
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNOTH.TDSAMT, new { htmlAttributes = new { @class = "form-control", id = "TDSAMT", @placeholder = "TDS Amount", maxlength = 15, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
+                                        @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
+                                        @Html.HiddenFor(model => model.TDSCALCON, new { id = "TDSCALCON" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Programme" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            @if (Model.DefaultAction != "V")
+                            {
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Bar Code No")
+                                            <b style="color:Red;">*</b>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=3/PROGAUTOSLNO=PROGAUTOSLNO=9','PROGAUTOSLNO','Y')" />
+                                            @Html.HiddenFor(model => model.PROGAUTOSLNO, new { id = "PROGAUTOSLNO" })
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivProgramme" style="margin-top:0px;">
+                                        @Html.Partial("_T_OUTRECPROCESS_Programme")
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivDetail" style="margin-top:0px;">
-                                    @Html.Partial("_T_OUTRECPROCESS_Detail")
+                        </div>
+                        <div id="Receive" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            <div class="row">
+                                <input type="hidden" id="ImageName" value="" />
+                                <input type="hidden" id="ImageStr" value="" />
+                                <div id="divImageUpload" style="display:none;">
+                                    <div class="col-md-1">
+                                        <div class="editor-label" style="margin-top: 5px;">
+                                            @Html.Label("", "Image Desc")
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="editor-label" style="margin-top: 0px;">
+                                            <input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="editor-label" style="margin-top: 0px;">
+                                            <input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content">
+                                <div>
+                                    <div id="partialdivReceive" style="margin-top:0px;">
+                                        @Html.Partial("_T_OUTRECPROCESS_Receive")
+                                    </div>
+                                </div>
+                            </div>
+                            @if (Model.DefaultAction != "V")
+                            {
+                                <div class="row">
+                                    <div class="col-md-1" style="width:auto;">
+                                        <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" id="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Finalise Data in Details Tab" onclick="Fill_DetailData()" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div id="DetailTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                                <div>
+                                    <div id="partialdivDetail" style="margin-top:0px;">
+                                        @Html.Partial("_T_OUTRECPROCESS_Detail")
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div id="FreightOthers" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivAmounts" style="margin-top:0px;">
-                                    @Html.Partial("_T_OUTRECPROCESS_Amount")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="Transport" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Transporter")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
-                                </div>
-                            </div>
-                            <div class="col-md-10">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Courier")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.CRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CRSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd');", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd')" />
-                                </div>
-                            </div>
-                            <div class="col-md-10">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.CRSLNM, new { htmlAttributes = new { @class = "form-control", id = "CRSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Courier Name", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Eway Bill Number")
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.EWAYBILLNO, new { htmlAttributes = new { @class = "form-control", id = "EWAYBILLNO", maxlength = 20, @placeholder = "Eway Bill Number" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "LR Number")
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.LRNO, new { htmlAttributes = new { @class = "form-control", id = "LRNO", maxlength = 15, @placeholder = "LR Number" } })
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "LR Date")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.LRDT, new { htmlAttributes = new { @class = "form-control", id = "LRDT", maxlength = 10, onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Vechicle Number")
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.LORRYNO, new { htmlAttributes = new { @class = "form-control", id = "LORRYNO", maxlength = 16, @placeholder = "Vechicle Number" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Gross Weight")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.GRWT, new { htmlAttributes = new { @class = "form-control", id = "GRWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Gross Weight" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Net Weight")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.NTWT, new { htmlAttributes = new { @class = "form-control", id = "NTWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Net Weight" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Tare Weight")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNTRANS.TRWT, new { htmlAttributes = new { @class = "form-control", id = "TRWT", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Tare Weight", @readonly = "readonly" } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Cases Nos.")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.CASENOS, new { htmlAttributes = new { @class = "form-control", id = "CASENOS", maxlength = 500, @placeholder = "Cases Nos" } })
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "No of Cases")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "No of Cases" } })
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="Remarks" class="tab-pane fade">
-                        <div class="row">
-                            <div>
-                                <div id="partialdivRemarks">
-                                    @Html.Partial("_TRANSACTIONREMARKS")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
-                        <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
-                            <div>
-                                <div id="partialdivDocument" style="margin-top:0px;">
-                                    @Html.Partial("_UPLOADDOCUMENTS")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div id="FreightOthers" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                             <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
                                 <div>
                                     <div id="partialdivAmounts" style="margin-top:0px;">
-                                        @Html.Partial("_T_SALE_AMOUNT")
+                                        @Html.Partial("_T_OUTRECPROCESS_Amount")
                                     </div>
                                 </div>
                             </div>
-                        </div>*@
-
-                    @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
-
-                        </div>*@
-                </div>
-
-            </div>
-        </div>
-
-        <div class="container">
-            <!-- Modal -->
-            <div class="modal fade" id="ViewImageModal" role="dialog">
-                <div class="modal-dialog modal-md">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Image Preview</h4>
                         </div>
-                        <div class="modal-body">
-                            <div id="myCarousel" class="carousel" data-ride="carousel">
-                                <div class="carousel-inner" id="div_carousel_inner">
-                                    <div class="item active">
-                                        <img src="" alt="Los Angeles" style="width:100%;">
-                                    </div>
-                                    <div class="item">
-                                        <img src="" alt="Chicago" style="width:100%;">
-                                    </div>
-                                </div>
-                                <!-- Left and right controls -->
-                                <a class="left  carousel-control arrow-left" id="prev">
-                                    <span class="glyphicon glyphicon-chevron-left"></span>
-                                </a>
-                                <a class="right  carousel-control arrow-right" id="next">
-                                    <span class="glyphicon glyphicon-chevron-right"></span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
+                        <div id="Transport" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="pull-left">
-                                        <input type="hidden" id="ActiveBarRowIndex" />
-                                        <input type="hidden" id="BarImages" />
-                                        <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Transporter")
                                     </div>
                                 </div>
-                                <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Courier")
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.CRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CRSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Courier Details','CRSLCD','CRSLCD=slcd=1/CRSLNM=slnm=0','courierlinkcd')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.CRSLNM, new { htmlAttributes = new { @class = "form-control", id = "CRSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Courier Name", @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Eway Bill Number")
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.EWAYBILLNO, new { htmlAttributes = new { @class = "form-control", id = "EWAYBILLNO", maxlength = 20, @placeholder = "Eway Bill Number" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "LR Number")
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.LRNO, new { htmlAttributes = new { @class = "form-control", id = "LRNO", maxlength = 15, @placeholder = "LR Number" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "LR Date")
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.LRDT, new { htmlAttributes = new { @class = "form-control", id = "LRDT", maxlength = 10, onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Vechicle Number")
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.LORRYNO, new { htmlAttributes = new { @class = "form-control", id = "LORRYNO", maxlength = 16, @placeholder = "Vechicle Number" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Gross Weight")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.GRWT, new { htmlAttributes = new { @class = "form-control", id = "GRWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Gross Weight" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Net Weight")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.NTWT, new { htmlAttributes = new { @class = "form-control", id = "NTWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Net Weight" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Tare Weight")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNTRANS.TRWT, new { htmlAttributes = new { @class = "form-control", id = "TRWT", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Tare Weight", @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Cases Nos.")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNOTH.CASENOS, new { htmlAttributes = new { @class = "form-control", id = "CASENOS", maxlength = 500, @placeholder = "Cases Nos" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "No of Cases")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNOTH.NOOFCASES, new { htmlAttributes = new { @class = "form-control", id = "NOOFCASES", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "No of Cases" } })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Remarks" class="tab-pane fade">
+                            <div class="row">
+                                <div>
+                                    <div id="partialdivRemarks">
+                                        @Html.Partial("_TRANSACTIONREMARKS")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                            <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                                <div>
+                                    <div id="partialdivDocument" style="margin-top:0px;">
+                                        @Html.Partial("_UPLOADDOCUMENTS")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div id="Amounts" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                                <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                                    <div>
+                                        <div id="partialdivAmounts" style="margin-top:0px;">
+                                            @Html.Partial("_T_SALE_AMOUNT")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+
+                        @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
+
+                            </div>*@
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="container">
+                <!-- Modal -->
+                <div class="modal fade" id="ViewImageModal" role="dialog">
+                    <div class="modal-dialog modal-md">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Image Preview</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div id="myCarousel" class="carousel" data-ride="carousel">
+                                    <div class="carousel-inner" id="div_carousel_inner">
+                                        <div class="item active">
+                                            <img src="" alt="Los Angeles" style="width:100%;">
+                                        </div>
+                                        <div class="item">
+                                            <img src="" alt="Chicago" style="width:100%;">
+                                        </div>
+                                    </div>
+                                    <!-- Left and right controls -->
+                                    <a class="left  carousel-control arrow-left" id="prev">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                    </a>
+                                    <a class="right  carousel-control arrow-right" id="next">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="pull-left">
+                                            <input type="hidden" id="ActiveBarRowIndex" />
+                                            <input type="hidden" id="BarImages" />
+                                            <button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        }
+        else
+        {
+            @ViewBag.ErrorMessage
+        }
+
+        <div class="container">
+            <div id="helpDIV">
+
+            </div>
         </div>
     }
-    else
-    {
-        @ViewBag.ErrorMessage
-    }
-
-    <div class="container">
-        <div id="helpDIV">
-
-        </div>
-    </div>
-}
