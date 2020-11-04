@@ -231,7 +231,7 @@ namespace Improvar.Controllers
                                 INI INIF = new INI();
                                 INIF.DeleteKey(Session["UR_ID"].ToString(), parkID, Server.MapPath("~/Park.ini"));
                             }
-                            VE = (TransactionOutRecProcess)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+                            VE = (TransactionOutRecProcess)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COM, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
                         if (parkID == "")
                         {
@@ -289,7 +289,7 @@ namespace Improvar.Controllers
                 TXNOTH = DB.T_TXNOTH.Find(TXN.AUTONO);
                 VE.NETAMT = TXN.BLAMT.retDbl() - TXNOTH.TDSAMT.retDbl() - TXN.ADVADJ.retDbl();
                 VE.TDSNM = TXNOTH.TDSHD.retStr() == "" ? "" : DBF.M_TDS_CNTRL.Where(a => a.TDSCODE == TXNOTH.TDSHD).Select(b => b.TDSNM).FirstOrDefault();
-                if(TXNOTH.TDSHD.retStr() != "")
+                if (TXNOTH.TDSHD.retStr() != "")
                 {
                     var data = masterHelp.TDSCODE_help(TXN.DOCDT.retStr(), TXNOTH.TDSHD.retStr(), TXN.SLCD.retStr(), "", "");
                     VE.TDSROUNDCAL = data.retCompValue("TDSROUNDCAL").retStr();
@@ -330,31 +330,66 @@ namespace Improvar.Controllers
                 str += "order by a.slno ";
 
                 DataTable Progdtltbl = masterHelp.SQLquery(str);
-                VE.TPROGDTL = (from DataRow dr in Progdtltbl.Rows
+                var pendprogramme = salesfunc.getPendProg(TXN.DOCDT.retStr().Remove(10), "", TXN.SLCD.retStr().retSqlformat(), "", TXN.JOBCD.retStr().retSqlformat(), TXN.AUTONO.retStr());
+                if (VE.DefaultAction == "E")
+                {
+                    TempData["PENDPROGRAMME" + VE.MENU_PARA] = pendprogramme;
+                }
+                //VE.TPROGDTL = (from DataRow dr in Progdtltbl.Rows
+                //               select new TPROGDTL()
+                //               {
+                //                   SLNO = dr["SLNO"].retShort(),
+                //                   PROGAUTONO = dr["PROGAUTONO"].retStr(),
+                //                   PROGSLNO = dr["PROGSLNO"].retShort(),
+                //                   PROGAUTOSLNO = dr["PROGAUTOSLNO"].retStr(),
+                //                   PROGUNIQNO = dr["PROGUNIQNO"].retStr(),
+                //                   BARNO = dr["BARNO"].retStr(),
+                //                   ITGRPNM = dr["ITGRPNM"].retStr(),
+                //                   ITGRPCD = dr["ITGRPCD"].retStr(),
+                //                   ITNM = dr["FABITNM"].retStr() + " " + dr["ITNM"].retStr(),
+                //                   ITCD = dr["ITCD"].retStr(),
+                //                   //FABITCD = dr["FABITCD"].retStr(),
+                //                   STYLENO = dr["STYLENO"].retStr(),
+                //                   UOM = dr["UOMCD"].retStr(),
+                //                   COLRNM = dr["COLRNM"].retStr(),
+                //                   COLRCD = dr["COLRCD"].retStr(),
+                //                   SIZECD = dr["SIZECD"].retStr(),
+                //                   SHADE = dr["SHADE"].retStr(),
+                //                   NOS = dr["NOS"].retDbl(),
+                //                   QNTY = dr["QNTY"].retDbl(),
+                //                   ITREMARK = dr["ITREMARK"].retStr(),
+                //                   SAMPLE = dr["sample"].retStr(),
+                //                   CheckedSample = dr["sample"].retStr() == "Y" ? true : false,
+                //               }).OrderBy(s => s.SLNO).ToList();
+                VE.TPROGDTL = (from dr in Progdtltbl.AsEnumerable()
+                               join dr1 in pendprogramme.AsEnumerable() on dr.Field<string>("PROGAUTOSLNO") equals dr1.Field<string>("PROGAUTOSLNO") into Z
+                               from dr1 in Z.DefaultIfEmpty()
                                select new TPROGDTL()
                                {
-                                   SLNO = dr["SLNO"].retShort(),
-                                   PROGAUTONO = dr["PROGAUTONO"].retStr(),
-                                   PROGSLNO = dr["PROGSLNO"].retShort(),
-                                   PROGAUTOSLNO = dr["PROGAUTOSLNO"].retStr(),
-                                   PROGUNIQNO = dr["PROGUNIQNO"].retStr(),
-                                   BARNO = dr["BARNO"].retStr(),
-                                   ITGRPNM = dr["ITGRPNM"].retStr(),
-                                   ITGRPCD = dr["ITGRPCD"].retStr(),
-                                   ITNM = dr["FABITNM"].retStr() + " " + dr["ITNM"].retStr(),
-                                   ITCD = dr["ITCD"].retStr(),
+                                   SLNO = dr.Field<short>("SLNO").retShort(),
+                                   PROGAUTONO = dr.Field<string>("PROGAUTONO").retStr(),
+                                   PROGSLNO = dr.Field<short>("PROGSLNO").retShort(),
+                                   PROGAUTOSLNO = dr.Field<string>("PROGAUTOSLNO").retStr(),
+                                   PROGUNIQNO = dr.Field<string>("PROGUNIQNO").retStr(),
+                                   BARNO = dr.Field<string>("BARNO").retStr(),
+                                   ITGRPNM = dr.Field<string>("ITGRPNM").retStr(),
+                                   ITGRPCD = dr.Field<string>("ITGRPCD").retStr(),
+                                   ITNM = dr.Field<string>("FABITNM").retStr() + " " + dr.Field<string>("ITNM").retStr(),
+                                   ITCD = dr.Field<string>("ITCD").retStr(),
                                    //FABITCD = dr["FABITCD"].retStr(),
-                                   STYLENO = dr["STYLENO"].retStr(),
-                                   UOM = dr["UOMCD"].retStr(),
-                                   COLRNM = dr["COLRNM"].retStr(),
-                                   COLRCD = dr["COLRCD"].retStr(),
-                                   SIZECD = dr["SIZECD"].retStr(),
-                                   SHADE = dr["SHADE"].retStr(),
-                                   NOS = dr["NOS"].retDbl(),
-                                   QNTY = dr["QNTY"].retDbl(),
-                                   ITREMARK = dr["ITREMARK"].retStr(),
-                                   SAMPLE = dr["sample"].retStr(),
-                                   CheckedSample = dr["sample"].retStr() == "Y" ? true : false,
+                                   STYLENO = dr.Field<string>("STYLENO").retStr(),
+                                   UOM = dr.Field<string>("UOMCD").retStr(),
+                                   COLRNM = dr.Field<string>("COLRNM").retStr(),
+                                   COLRCD = dr.Field<string>("COLRCD").retStr(),
+                                   SIZECD = dr.Field<string>("SIZECD").retStr(),
+                                   SHADE = dr.Field<string>("SHADE").retStr(),
+                                   NOS = dr.Field<double>("NOS").retDbl(),
+                                   QNTY = dr.Field<double>("QNTY").retDbl(),
+                                   ITREMARK = dr.Field<string>("ITREMARK").retStr(),
+                                   SAMPLE = dr.Field<string>("sample").retStr(),
+                                   CheckedSample = dr.Field<string>("sample").retStr() == "Y" ? true : false,
+                                   BALNOS = dr1.Field<decimal>("BALNOS").retDbl(),
+                                   BALQNTY = dr1.Field<decimal>("BALQNTY").retDbl(),
                                }).OrderBy(s => s.SLNO).ToList();
 
                 VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
@@ -1332,12 +1367,25 @@ namespace Improvar.Controllers
             try
             {
                 Cn.getQueryString(VE);
-                var tbl = (DataTable)TempData["PENDPROGRAMME" + VE.MENU_PARA]; TempData.Keep();
-                if (tbl == null) { return Content("Please click on pending programme to get data!! "); }
+                var temptbl = (DataTable)TempData["PENDPROGRAMME" + VE.MENU_PARA]; TempData.Keep();
+                if (temptbl == null) { return Content("Please click on pending programme to get data!! "); }
+                DataTable tbl = new DataView(temptbl).ToTable();
+
                 if (VE.TPROGDTL != null)
                 {
-                    string[] progautoslno = VE.TPROGDTL.Select(x => x.PROGAUTOSLNO).ToArray();
-                    var tbl_data = tbl.AsEnumerable().Where(r => !progautoslno.Any(b => r.Field<string>("PROGAUTOSLNO") == b));
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        string progautoslno = tbl.Rows[i]["PROGAUTOSLNO"].retStr();
+                        var griddata = VE.TPROGDTL.Where(a => a.PROGAUTOSLNO == progautoslno).Select(b => new { b.QNTY, b.NOS }).ToList();
+                        if (griddata.Count > 0)
+                        {
+                            var totalgridqnty = griddata.Select(a => a.QNTY).Sum();
+                            var totalgridnos = griddata.Select(a => a.NOS).Sum();
+                            tbl.Rows[i]["balnos"] = tbl.Rows[i]["balnos"].retDbl() - totalgridnos.retDbl();
+                            tbl.Rows[i]["balqnty"] = tbl.Rows[i]["balqnty"].retDbl() - totalgridqnty.retDbl();
+                        }
+                    }
+                    var tbl_data = (from DataRow dr in tbl.Rows where dr["balqnty"].retDbl() != 0 select dr);
                     if (tbl_data != null && tbl_data.Count() > 0)
                     {
                         tbl = tbl_data.CopyToDataTable();
@@ -1346,6 +1394,16 @@ namespace Improvar.Controllers
                     {
                         tbl = tbl.Clone();
                     }
+                    //string[] progautoslno = VE.TPROGDTL.Select(x => x.PROGAUTOSLNO).ToArray();
+                    //var tbl_data = tbl.AsEnumerable().Where(r => !progautoslno.Any(b => r.Field<string>("PROGAUTOSLNO") == b));
+                    //if (tbl_data != null && tbl_data.Count() > 0)
+                    //{
+                    //    tbl = tbl_data.CopyToDataTable();
+                    //}
+                    //else
+                    //{
+                    //    tbl = tbl.Clone();
+                    //}
                 }
                 if (val.retStr() != "")
                 {
@@ -1405,8 +1463,8 @@ namespace Improvar.Controllers
                                         SHADE = dr["SHADE"].retStr(),
                                         NOS = dr["BALNOS"].retDbl(),
                                         QNTY = dr["BALQNTY"].retDbl(),
-                                        BALNOS = dr["BALNOS"].retDbl(),
-                                        BALQNTY = dr["BALQNTY"].retDbl(),
+                                        //BALNOS = dr["BALNOS"].retDbl(),
+                                        //BALQNTY = dr["BALQNTY"].retDbl(),
                                         ITREMARK = dr["ITREMARK"].retStr(),
                                         SAMPLE = dr["sample"].retStr(),
                                     }).ToList();
@@ -1423,6 +1481,17 @@ namespace Improvar.Controllers
                         {
                             VE.TPROGDTL[p].SLNO = slno.retShort();
                             VE.TPROGDTL[p].CheckedSample = VE.TPROGDTL[p].SAMPLE.retStr() == "Y" ? true : false;
+
+                            string progautoslno = VE.TPROGDTL[p].PROGAUTOSLNO;
+                            var balnosqnty = (from DataRow dr in temptbl.Rows
+                                              where dr["PROGAUTOSLNO"].retStr() == progautoslno
+                                              select new
+                                              {
+                                                  balnos = dr["balnos"].retDbl(),
+                                                  balqnty = dr["balqnty"].retDbl(),
+                                              }).FirstOrDefault();
+                            VE.TPROGDTL[p].BALNOS = balnosqnty.balnos.retDbl();
+                            VE.TPROGDTL[p].BALQNTY = balnosqnty.balqnty.retDbl();
                             slno++;
                         }
                         VE.P_T_NOS = VE.TPROGDTL.Sum(a => a.NOS).retDbl();
@@ -1451,35 +1520,65 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE);
                 var tempdata = (DataTable)TempData["PENDPROGRAMME" + VE.MENU_PARA]; TempData.Keep();
-                string[] progautoslno = VE.TPROGDTL.Select(x => x.PROGAUTOSLNO).ToArray();
 
-                VE.TBATCHDTL = (from DataRow dr in tempdata.Rows
-                                where progautoslno.Contains(dr["PROGAUTOSLNO"].retStr())
+                VE.TBATCHDTL = (from a in VE.TPROGDTL
+                                join b in tempdata.AsEnumerable() on a.PROGAUTOSLNO equals b.Field<string>("PROGAUTOSLNO") into Z
+                                from b in Z.DefaultIfEmpty()
                                 select new TBATCHDTL
                                 {
-                                    BARNO = dr["BARNO"].retStr(),
-                                    RECPROGAUTONO = dr["PROGAUTONO"].retStr(),
-                                    RECPROGSLNO = dr["PROGSLNO"].retShort(),
-                                    ITGRPNM = dr["ITGRPNM"].retStr(),
-                                    ITGRPCD = dr["ITGRPCD"].retStr(),
-                                    ITCD = dr["ITCD"].retStr(),
-                                    ITSTYLE = dr["STYLENO"].retStr() + " " + dr["ITNM"].retStr(),
-                                    COLRCD = dr["COLRCD"].retStr(),
-                                    COLRNM = dr["COLRNM"].retStr(),
-                                    SIZECD = dr["SIZECD"].retStr(),
-                                    SIZENM = dr["SIZENM"].retStr(),
-                                    SHADE = dr["SHADE"].retStr(),
-                                    UOM = dr["UOMCD"].retStr(),
-                                    NOS = dr["BALNOS"].retDbl(),
-                                    QNTY = dr["BALQNTY"].retDbl(),
-                                    BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                                    BARNO = a.BARNO,
+                                    RECPROGAUTONO = a.PROGAUTONO.retStr(),
+                                    RECPROGSLNO = a.PROGSLNO.retShort(),
+                                    ITGRPNM = a.ITGRPNM.retStr(),
+                                    ITGRPCD = a.ITGRPCD.retStr(),
+                                    ITCD = a.ITCD.retStr(),
+                                    ITSTYLE = a.STYLENO.retStr() + " " + a.ITNM.retStr(),
+                                    COLRCD = a.COLRCD.retStr(),
+                                    COLRNM = a.COLRNM.retStr(),
+                                    SIZECD = a.SIZECD.retStr(),
+                                    SIZENM = a.SIZENM.retStr(),
+                                    SHADE = a.SHADE.retStr(),
+                                    UOM = a.UOM.retStr(),
+                                    NOS = a.NOS.retDbl(),
+                                    QNTY = a.QNTY.retDbl(),
+                                    BARGENTYPE = b.Field<string>("BARGENTYPE"),
                                     //RATE = dr["RATE"].retDbl(),
                                     //DISCTYPE_DESC = dr["DISCTYPE_DESC"].retStr(),
                                     //DISCTYPE = dr["DISCTYPE"].retStr(),
                                     //DISCRATE = dr["DISCRATE"].retDbl(),
                                     //BarImages = dr["BarImages"].retStr()
-                                    SAMPLE = dr["sample"].retStr(),
+                                    SAMPLE = a.SAMPLE.retStr(),
                                 }).ToList();
+
+                //string[] progautoslno = VE.TPROGDTL.Select(x => x.PROGAUTOSLNO).ToArray();
+
+                //VE.TBATCHDTL = (from DataRow dr in tempdata.Rows
+                //                where progautoslno.Contains(dr["PROGAUTOSLNO"].retStr())
+                //                select new TBATCHDTL
+                //                {
+                //                    BARNO = dr["BARNO"].retStr(),
+                //                    RECPROGAUTONO = dr["PROGAUTONO"].retStr(),
+                //                    RECPROGSLNO = dr["PROGSLNO"].retShort(),
+                //                    ITGRPNM = dr["ITGRPNM"].retStr(),
+                //                    ITGRPCD = dr["ITGRPCD"].retStr(),
+                //                    ITCD = dr["ITCD"].retStr(),
+                //                    ITSTYLE = dr["STYLENO"].retStr() + " " + dr["ITNM"].retStr(),
+                //                    COLRCD = dr["COLRCD"].retStr(),
+                //                    COLRNM = dr["COLRNM"].retStr(),
+                //                    SIZECD = dr["SIZECD"].retStr(),
+                //                    SIZENM = dr["SIZENM"].retStr(),
+                //                    SHADE = dr["SHADE"].retStr(),
+                //                    UOM = dr["UOMCD"].retStr(),
+                //                    NOS = dr["BALNOS"].retDbl(),
+                //                    QNTY = dr["BALQNTY"].retDbl(),
+                //                    BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                //                    //RATE = dr["RATE"].retDbl(),
+                //                    //DISCTYPE_DESC = dr["DISCTYPE_DESC"].retStr(),
+                //                    //DISCTYPE = dr["DISCTYPE"].retStr(),
+                //                    //DISCRATE = dr["DISCRATE"].retDbl(),
+                //                    //BarImages = dr["BarImages"].retStr()
+                //                    SAMPLE = dr["sample"].retStr(),
+                //                }).ToList();
 
                 string barno = VE.TPROGDTL.Select(x => x.BARNO).Distinct().ToArray().retSqlfromStrarray();
                 string TAXGRPCD = VE.T_TXNOTH.TAXGRPCD.retStr();
@@ -1730,715 +1829,6 @@ namespace Improvar.Controllers
             var result = Tuple.Create(doc);
             return result;
         }
-        //public ActionResult GetPriceDetails(string val)
-        //{
-        //    try
-        //    {
-        //        var str = masterHelp.PRCCD_help(val);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult GetItemGroupDetails(string val, string Code)
-        //{
-        //    try
-        //    {
-        //        TransactionOutRecProcess VE = new TransactionOutRecProcess();
-        //        Cn.getQueryString(VE);
-        //        string str = masterHelp.ITGRPCD_help(val, "", Code);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            string glcd = "";
-        //            //switch (VE.MENU_PARA)
-        //            //{
-        //            //    case "SBPCK"://Packing Slip
-        //            //        glcd = str.retCompValue("SALGLCD"); break;
-        //            //    case "SB"://Sales Bill (Agst Packing Slip)
-        //            //        glcd = str.retCompValue("SALGLCD"); break;
-        //            //    case "SBDIR"://Sales Bill
-        //            //        glcd = str.retCompValue("SALGLCD"); break;
-        //            //    case "SR"://Sales Return (SRM)
-        //            //        glcd = str.retCompValue("SALRETGLCD"); break;
-        //            //    case "SBCM"://Cash Memo
-        //            //        glcd = str.retCompValue("SALGLCD"); break;
-        //            //    case "SBCMR"://Cash Memo Return Note
-        //            //        glcd = str.retCompValue("SALGLCD"); break;
-        //            //    case "SBEXP"://Sales Bill (Export)
-        //            //        glcd = str.retCompValue("SALGLCD"); break;
-        //            //    case "PI"://Proforma Invoice
-        //            //        glcd = ""; break;
-        //            //    case "PB"://Purchase Bill
-        //            //        glcd = str.retCompValue("PURGLCD"); break;
-        //            //    case "PR"://Purchase Return (PRM)
-        //            //        glcd = str.retCompValue("PURRETGLCD"); break;
-        //            //    default: glcd = ""; break;
-        //            //}
-        //            str += "^GLCD=^" + glcd + Cn.GCS();
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-
-        //public ActionResult GetItemDetails(string val, string Code)
-        //{
-        //    try
-        //    {
-        //        TransactionOutRecProcess VE = new TransactionOutRecProcess();
-        //        Cn.getQueryString(VE);
-        //        var data = Code.Split(Convert.ToChar(Cn.GCS()));
-        //        string ITGRPCD = data[0].retStr() == "" ? "" : data[0].retStr().retSqlformat();
-        //        string DOCDT = data[1].retStr();
-        //        if (DOCDT == "")
-        //        {
-        //            return Content("Please Select Document Date");
-        //        }
-        //        string TAXGRPCD = data[2].retStr();
-        //        string GOCD = "";// data[3].retStr() == "" ? "" : data[3].retStr().retSqlformat();
-        //        string PRCCD = data[4].retStr();
-        //        string MTRLJOBCD = data[5].retStr() == "" ? "" : data[5].retStr().retSqlformat();
-        //        string BARNO = data[6].retStr() == "" ? "" : data[6].retStr().retSqlformat();
-        //        double RATE = data[7].retDbl();
-        //        var str = masterHelp.ITCD_help(val, "", data[0].retStr());
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else if (str.IndexOf(Convert.ToChar(Cn.GCS())) >= 0)
-        //        {
-        //            string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
-        //            DataTable tax_data = new DataTable();
-
-        //            tax_data = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), val.retStr().retSqlformat(), MTRLJOBCD.retStr(), "", ITGRPCD, "", PRCCD.retStr(), TAXGRPCD.retStr());
-
-        //            if (tax_data != null && tax_data.Rows.Count > 0)
-        //            {
-        //                PRODGRPGSTPER = tax_data.Rows[0]["PRODGRPGSTPER"].retStr();
-        //                if (PRODGRPGSTPER != "")
-        //                {
-        //                    ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, RATE);
-        //                    if (ALL_GSTPER.retStr() != "")
-        //                    {
-        //                        var gst = ALL_GSTPER.Split(',').ToList();
-        //                        GSTPER = (from a in gst select a.retDbl()).Sum().retStr();
-        //                    }
-        //                }
-        //            }
-        //            str += "^PRODGRPGSTPER=^" + PRODGRPGSTPER + Cn.GCS();
-        //            str += "^ALL_GSTPER=^" + ALL_GSTPER + Cn.GCS();
-        //            str += "^GSTPER=^" + GSTPER + Cn.GCS();
-        //            return Content(str);
-        //        }
-        //        else
-        //        {
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult GetGridItemDetails(string val, string Code)
-        //{
-        //    try
-        //    {
-        //        var str = masterHelp.ITCD_help(val, "", Code);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-
-        //            return Content(str);//
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult GetPartDetails(string val)
-        //{
-        //    try
-        //    {
-        //        var str = masterHelp.PARTCD_help(val);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult GetColorDetails(string val)
-        //{
-        //    try
-        //    {
-        //        var str = masterHelp.COLRCD_help(val);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult GetMaterialDetails(string val)
-        //{
-        //    try
-        //    {
-        //        var str = masterHelp.MTRLJOBCD_help(val);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult GetSizeDetails(string val)
-        //{
-        //    try
-        //    {
-        //        var str = masterHelp.SIZECD_help(val);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult GetStockDetails(string val)
-        //{
-        //    try
-        //    {
-        //        var str = masterHelp.STKTYPE_help(val);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult GetLocationBinDetails(string val)
-        //{
-        //    try
-        //    {
-        //        var str = masterHelp.LOCABIN_help(val);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-
-        //public ActionResult FillBarCodeData(TransactionOutRecProcess VE)
-        //{
-        //    try
-        //    {
-        //        if (VE.TBATCHDTL == null)
-        //        {
-        //            List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
-        //            TBATCHDTL TBATCHDTL1 = new TBATCHDTL();
-        //            TBATCHDTL1.SLNO = 1;
-        //            TBATCHDTL1.TXNSLNO = VE.TXNSLNO.retShort();
-        //            TBATCHDTL1.ITGRPCD = VE.ITGRPCD;
-        //            TBATCHDTL1.ITGRPNM = VE.ITGRPNM;
-        //            TBATCHDTL1.MTRLJOBCD = VE.MTRLJOBCD;
-        //            TBATCHDTL1.MTRLJOBNM = VE.MTRLJOBNM;
-        //            TBATCHDTL1.ITCD = VE.ITCD;
-        //            TBATCHDTL1.ITNM = VE.ITNM;
-        //            TBATCHDTL1.STYLENO = VE.STYLENO;
-        //            TBATCHDTL1.STKTYPE = VE.STKTYPE;
-        //            TBATCHDTL1.STKNAME = VE.STKNAME;
-        //            TBATCHDTL1.PARTCD = VE.PARTCD;
-        //            TBATCHDTL1.PARTNM = VE.PARTNM;
-        //            TBATCHDTL1.COLRCD = VE.COLRCD;
-        //            TBATCHDTL1.COLRNM = VE.COLRNM;
-        //            TBATCHDTL1.SIZECD = VE.SIZECD;
-        //            TBATCHDTL1.SIZENM = VE.SIZENM;
-        //            TBATCHDTL1.SHADE = VE.SHADE;
-        //            TBATCHDTL1.QNTY = VE.QNTY;
-        //            TBATCHDTL1.UOM = VE.UOM;
-        //            TBATCHDTL1.NOS = VE.NOS;
-        //            TBATCHDTL1.RATE = VE.RATE;
-        //            TBATCHDTL1.GSTPER = VE.GSTPER;
-        //            TBATCHDTL1.DISCRATE = VE.DISCRATE;
-        //            TBATCHDTL1.DISCTYPE = VE.DISCTYPE;
-        //            TBATCHDTL1.DISCTYPE_DESC = VE.DISCTYPE == "P" ? "%" : VE.DISCTYPE == "N" ? "Nos" : VE.DISCTYPE == "Q" ? "Qnty" : "Fixed";
-        //            TBATCHDTL1.TDDISCRATE = VE.TDDISCRATE;
-        //            TBATCHDTL1.TDDISCTYPE = VE.TDDISCTYPE;
-        //            TBATCHDTL1.SCMDISCRATE = VE.SCMDISCRATE;
-        //            TBATCHDTL1.SCMDISCTYPE = VE.SCMDISCTYPE;
-        //            TBATCHDTL1.BARNO = VE.BARCODE;
-        //            TBATCHDTL.Add(TBATCHDTL1);
-        //            VE.TBATCHDTL = TBATCHDTL;
-        //        }
-        //        else
-        //        {
-        //            List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
-        //            for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
-        //            {
-        //                TBATCHDTL MIB = new TBATCHDTL();
-        //                MIB = VE.TBATCHDTL[i];
-        //                TBATCHDTL.Add(MIB);
-        //            }
-
-        //            TBATCHDTL TBATCHDTL1 = new TBATCHDTL();
-        //            var max = VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO));
-        //            int SLNO = Convert.ToInt32(max) + 1;
-        //            TBATCHDTL1.SLNO = Convert.ToSByte(SLNO);
-        //            TBATCHDTL1.TXNSLNO = VE.TXNSLNO.retShort();
-        //            TBATCHDTL1.ITGRPCD = VE.ITGRPCD;
-        //            TBATCHDTL1.ITGRPNM = VE.ITGRPNM;
-        //            TBATCHDTL1.MTRLJOBCD = VE.MTRLJOBCD;
-        //            TBATCHDTL1.MTRLJOBNM = VE.MTRLJOBNM;
-        //            TBATCHDTL1.ITCD = VE.ITCD;
-        //            TBATCHDTL1.ITNM = VE.ITNM;
-        //            TBATCHDTL1.STYLENO = VE.STYLENO;
-        //            TBATCHDTL1.STKTYPE = VE.STKTYPE;
-        //            TBATCHDTL1.STKNAME = VE.STKNAME;
-        //            TBATCHDTL1.PARTCD = VE.PARTCD;
-        //            TBATCHDTL1.PARTNM = VE.PARTNM;
-        //            TBATCHDTL1.COLRCD = VE.COLRCD;
-        //            TBATCHDTL1.COLRNM = VE.COLRNM;
-        //            TBATCHDTL1.SIZECD = VE.SIZECD;
-        //            TBATCHDTL1.SIZENM = VE.SIZENM;
-        //            TBATCHDTL1.SHADE = VE.SHADE;
-        //            TBATCHDTL1.QNTY = VE.QNTY;
-        //            TBATCHDTL1.UOM = VE.UOM;
-        //            TBATCHDTL1.NOS = VE.NOS;
-        //            TBATCHDTL1.RATE = VE.RATE;
-        //            TBATCHDTL1.GSTPER = VE.GSTPER;
-        //            TBATCHDTL1.DISCRATE = VE.DISCRATE;
-        //            TBATCHDTL1.DISCTYPE = VE.DISCTYPE;
-        //            TBATCHDTL1.DISCTYPE_DESC = VE.DISCTYPE == "P" ? "%" : VE.DISCTYPE == "N" ? "Nos" : VE.DISCTYPE == "Q" ? "Qnty" : "Fixed";
-        //            TBATCHDTL1.TDDISCRATE = VE.TDDISCRATE;
-        //            TBATCHDTL1.TDDISCTYPE = VE.TDDISCTYPE;
-        //            TBATCHDTL1.SCMDISCRATE = VE.SCMDISCRATE;
-        //            TBATCHDTL1.SCMDISCTYPE = VE.SCMDISCTYPE;
-        //            TBATCHDTL1.BARNO = VE.BARCODE;
-        //            TBATCHDTL.Add(TBATCHDTL1);
-        //            VE.TBATCHDTL = TBATCHDTL;
-
-        //        }
-        //        VE.DefaultView = true;
-        //        return PartialView("_T_OUTRECPROCESS_PRODUCT", VE);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult FillDetailData(TransactionOutRecProcess VE)
-        //{
-        //    try
-        //    {
-        //        Cn.getQueryString(VE);
-        //        VE.TTXNDTL = (from x in VE.TBATCHDTL
-        //                      group x by new
-        //                      {
-        //                          x.TXNSLNO,
-        //                          x.ITGRPCD,
-        //                          x.ITGRPNM,
-        //                          x.MTRLJOBCD,
-        //                          x.MTRLJOBNM,
-        //                          x.MTBARCODE,
-        //                          x.ITCD,
-        //                          x.ITSTYLE,
-        //                          x.STYLENO,
-        //                          x.DISCTYPE,
-        //                          x.DISCTYPE_DESC,
-        //                          x.TDDISCTYPE,
-        //                          x.TDDISCTYPE_DESC,
-        //                          x.SCMDISCTYPE,
-        //                          x.SCMDISCTYPE_DESC,
-        //                          x.UOM,
-        //                          x.STKTYPE,
-        //                          x.RATE,
-        //                          x.DISCRATE,
-        //                          x.SCMDISCRATE,
-        //                          x.TDDISCRATE,
-        //                          x.GSTPER,
-        //                          x.ALL_GSTPER,
-        //                          x.FLAGMTR,
-        //                          x.HSNCODE,
-        //                          x.PRODGRPGSTPER,
-        //                          x.BALENO,
-        //                          x.GLCD,
-        //                      } into P
-        //                      select new TTXNDTL
-        //                      {
-        //                          SLNO = P.Key.TXNSLNO.retShort(),
-        //                          ITGRPCD = P.Key.ITGRPCD,
-        //                          ITGRPNM = P.Key.ITGRPNM,
-        //                          MTRLJOBCD = P.Key.MTRLJOBCD,
-        //                          MTRLJOBNM = P.Key.MTRLJOBNM,
-        //                          //MTBARCODE = P.Key.MTBARCODE,
-        //                          ITCD = P.Key.ITCD,
-        //                          //ITNM = P.Key.STYLENO + "" + P.Key.ITNM,
-        //                          ITSTYLE = P.Key.ITSTYLE,
-        //                          STYLENO = P.Key.STYLENO,
-        //                          STKTYPE = P.Key.STKTYPE,
-        //                          UOM = P.Key.UOM,
-        //                          NOS = P.Sum(A => A.NOS),
-        //                          QNTY = P.Sum(A => A.QNTY),
-        //                          FLAGMTR = P.Sum(A => A.FLAGMTR),
-        //                          BLQNTY = P.Sum(A => A.BLQNTY),
-        //                          RATE = P.Key.RATE,
-        //                          DISCTYPE = P.Key.DISCTYPE,
-        //                          DISCTYPE_DESC = P.Key.DISCTYPE_DESC,
-        //                          DISCRATE = P.Key.DISCRATE,
-        //                          TDDISCRATE = P.Key.TDDISCRATE,
-        //                          TDDISCTYPE = P.Key.TDDISCTYPE,
-        //                          TDDISCTYPE_DESC = P.Key.TDDISCTYPE_DESC,
-        //                          SCMDISCRATE = P.Key.SCMDISCRATE,
-        //                          SCMDISCTYPE = P.Key.SCMDISCTYPE,
-        //                          SCMDISCTYPE_DESC = P.Key.SCMDISCTYPE_DESC,
-        //                          ALL_GSTPER = P.Key.ALL_GSTPER.retStr() == "" ? P.Key.GSTPER.retStr() : P.Key.ALL_GSTPER,
-        //                          //AMT = P.Sum(A => A.BLQNTY).retDbl() == 0 ? (P.Sum(A => A.QNTY).retDbl() - P.Sum(A => A.FLAGMTR).retDbl()) * P.Key.RATE.retDbl() : P.Sum(A => A.BLQNTY).retDbl() * P.Key.RATE.retDbl(),
-        //                          HSNCODE = P.Key.HSNCODE,
-        //                          PRODGRPGSTPER = P.Key.PRODGRPGSTPER,
-        //                          BALENO = P.Key.BALENO,
-        //                          GLCD = P.Key.GLCD,
-        //                      }).ToList();
-
-        //        for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
-        //        {
-        //            if (VE.TTXNDTL[p].ALL_GSTPER.retStr() != "")
-        //            {
-        //                var tax_data = VE.TTXNDTL[p].ALL_GSTPER.Split(',').ToList();
-        //                if (tax_data.Count == 1)
-        //                {
-        //                    VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl() / 3;
-        //                    VE.TTXNDTL[p].CGSTPER = tax_data[0].retDbl() / 3;
-        //                    VE.TTXNDTL[p].SGSTPER = tax_data[0].retDbl() / 3;
-        //                }
-        //                else
-        //                {
-        //                    VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl();
-        //                    VE.TTXNDTL[p].CGSTPER = tax_data[1].retDbl();
-        //                    VE.TTXNDTL[p].SGSTPER = tax_data[2].retDbl();
-        //                }
-
-        //            }
-        //        }
-        //        //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
-        //        //VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
-        //        //VE.T_AMT = VE.TTXNDTL.Select(a => a.AMT).Sum().retDbl();
-        //        //VE.T_GROSS_AMT = VE.TTXNDTL.Select(a => a.TXBLVAL).Sum().retDbl();
-        //        //VE.T_IGST_AMT = VE.TTXNDTL.Select(a => a.IGSTAMT).Sum().retDbl();
-        //        //VE.T_CGST_AMT = VE.TTXNDTL.Select(a => a.CGSTAMT).Sum().retDbl();
-        //        //VE.T_SGST_AMT = VE.TTXNDTL.Select(a => a.SGSTAMT).Sum().retDbl();
-        //        //VE.T_CESS_AMT = VE.TTXNDTL.Select(a => a.CESSAMT).Sum().retDbl();
-        //        //VE.T_NET_AMT = VE.TTXNDTL.Select(a => a.NETAMT).Sum().retDbl();
-        //        ModelState.Clear();
-        //        VE.DefaultView = true;
-        //        return PartialView("_T_OUTRECPROCESS_DETAIL", VE);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-
-        //public ActionResult DeleteRowBarno(TransactionOutRecProcess VE)
-        //{
-        //    try
-        //    {
-        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-        //        List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
-        //        int count = 0;
-        //        for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
-        //        {
-        //            if (VE.TBATCHDTL[i].Checked == false)
-        //            {
-        //                count += 1;
-        //                TBATCHDTL item = new TBATCHDTL();
-        //                item = VE.TBATCHDTL[i];
-        //                if (VE.DefaultAction == "A")
-        //                {
-        //                    item.SLNO = Convert.ToSByte(count);
-        //                }
-
-        //                TBATCHDTL.Add(item);
-        //            }
-        //        }
-        //        VE.TBATCHDTL = TBATCHDTL;
-        //        ModelState.Clear();
-        //        VE.DefaultView = true;
-        //        return PartialView("_T_SALE_PRODUCT", VE);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-
-        //public ActionResult AddRowQTY(TransactionOutRecProcess VE, int COUNT, string TAG)
-        //{
-        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-        //    Cn.getQueryString(VE);
-        //    if (VE.TPROGBOM == null)
-        //    {
-        //        List<TPROGBOM> TPROGBOM1 = new List<TPROGBOM>();
-        //        if (COUNT > 0 && TAG == "Y")
-        //        {
-        //            int SERIAL = 0, rslno = 0;
-        //            for (int j = 0; j <= COUNT - 1; j++)
-        //            {
-        //                SERIAL = SERIAL + 1;
-        //                rslno = rslno + 1;
-        //                TPROGBOM MBILLDET = new TPROGBOM();
-        //                MBILLDET.SLNO = SERIAL.retShort();
-        //                MBILLDET.RSLNO = rslno.retShort();
-        //                TPROGBOM1.Add(MBILLDET);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            TPROGBOM MBILLDET = new TPROGBOM();
-        //            MBILLDET.SLNO = 1;
-        //            MBILLDET.RSLNO = 1;
-        //            TPROGBOM1.Add(MBILLDET);
-        //        }
-        //        VE.TPROGBOM = TPROGBOM1;
-        //    }
-        //    else
-        //    {
-        //        List<TPROGBOM> TPROGBOM = new List<TPROGBOM>();
-        //        for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
-        //        {
-        //            TPROGBOM MBILLDET = new TPROGBOM();
-        //            MBILLDET = VE.TPROGBOM[i];
-        //            TPROGBOM.Add(MBILLDET);
-        //        }
-        //        TPROGBOM MBILLDET1 = new TPROGBOM();
-        //        if (COUNT > 0 && TAG == "Y")
-        //        {
-        //            int SERIAL = Convert.ToInt32(VE.TPROGBOM.Max(a => Convert.ToInt32(a.SLNO)));
-        //            int rslno = Convert.ToInt32(VE.TPROGBOM.Max(a => Convert.ToInt32(a.RSLNO)));
-        //            for (int j = 0; j <= COUNT - 1; j++)
-        //            {
-        //                SERIAL = SERIAL + 1;
-        //                rslno = rslno + 1;
-        //                TPROGBOM OPENING_BL = new TPROGBOM();
-        //                OPENING_BL.SLNO = SERIAL.retShort();
-        //                OPENING_BL.RSLNO = rslno.retShort();
-        //                TPROGBOM.Add(OPENING_BL);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            MBILLDET1.SLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGBOM.Max(a => Convert.ToInt32(a.SLNO))) + 1);
-        //            MBILLDET1.RSLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGBOM.Max(a => Convert.ToInt32(a.RSLNO))) + 1);
-        //            TPROGBOM.Add(MBILLDET1);
-        //        }
-        //        VE.TPROGBOM = TPROGBOM;
-        //    }
-        //    //VE.TPROGDTL.ForEach(a => a.DRCRTA = masterHelp.DR_CR().OrderByDescending(s => s.text).ToList());
-        //    VE.DefaultView = true;
-        //    return PartialView("_T_OUTRECPROCESS_QtyRequirement", VE);
-        //}
-        //public ActionResult DeleteRowQTY(TransactionOutRecProcess VE)
-        //{
-        //    try
-        //    {
-        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-        //        List<TPROGBOM> ITEMSIZE = new List<TPROGBOM>();
-        //        int count = 0;
-        //        for (int i = 0; i <= VE.TPROGBOM.Count - 1; i++)
-        //        {
-        //            if (VE.TPROGBOM[i].Checked == false)
-        //            {
-        //                count += 1;
-        //                TPROGBOM item = new TPROGBOM();
-        //                item = VE.TPROGBOM[i];
-        //                item.SLNO = count.retShort();
-        //                ITEMSIZE.Add(item);
-        //            }
-
-        //        }
-        //        VE.TPROGBOM = ITEMSIZE;
-        //        ModelState.Clear();
-        //        VE.DefaultView = true;
-        //        return PartialView("_T_OUTRECPROCESS_QtyRequirement", VE);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        //public ActionResult RepeatAboveRow(TransactionOutRecProcess VE, int RowIndex)
-        //{
-        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-        //    Cn.getQueryString(VE);
-
-        //    List<TPROGBOM> TPROGBOM = new List<TPROGBOM>(); bool copied = false;
-        //    for (int k = 0; k <= VE.TPROGBOM.Count; k++)
-        //    {
-        //        TPROGBOM MBILLDET = new TPROGBOM();
-        //        if (RowIndex == k || copied == true)
-        //        {
-        //            foreach (PropertyInfo propA in VE.TPROGBOM[k - 1].GetType().GetProperties())
-        //            {
-        //                PropertyInfo propB = VE.TPROGBOM[k - 1].GetType().GetProperty(propA.Name);
-        //                propB.SetValue(MBILLDET, propA.GetValue(VE.TPROGBOM[k - 1], null), null);
-        //            }
-        //            MBILLDET.RSLNO = (k + 1).retShort();
-        //            TPROGBOM.Add(MBILLDET);
-        //            copied = true;
-        //        }
-        //        else
-        //        {
-        //            MBILLDET = VE.TPROGBOM[k]; MBILLDET.RSLNO = (k + 1).retShort();
-        //            TPROGBOM.Add(MBILLDET);
-        //        }
-        //    }
-        //    VE.TPROGBOM = TPROGBOM;
-        //    VE.DefaultView = true;
-        //    ModelState.Clear();
-        //    return PartialView("_T_OUTRECPROCESS_QtyRequirement", VE);
-        //}
-        //public ActionResult AddRow(TransactionOutRecProcess VE, int COUNT, string TAG)
-        //{
-        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-        //    Cn.getQueryString(VE);
-        //    //ViewBag.formname = formnamebydoccd(VE.DOC_CODE);
-
-        //    //List<DebitCreditType> DCT = new List<DebitCreditType>();
-        //    //DebitCreditType DCT1 = new DebitCreditType(); DCT1.text = "DR"; DCT1.value = "D"; DCT.Add(DCT1);
-        //    //DebitCreditType DCT2 = new DebitCreditType(); DCT2.text = "CR"; DCT2.value = "C"; DCT.Add(DCT2); VE.DebitCreditType = DCT;
-        //    //VE.Database_Combo2 = (from i in DB.T_VCH_DET select new Database_Combo2() { FIELD_VALUE = i.BANK_NAME }).DistinctBy(a => a.FIELD_VALUE).ToList();
-        //    //VE.Database_Combo3 = (from i in DB.T_VCH_DET select new Database_Combo3() { FIELD_VALUE = i.T_REM }).DistinctBy(a => a.FIELD_VALUE).ToList();
-        //    //VE.DropDown_list_TDS = INT_TDS();
-        //    if (VE.TPROGDTL == null)
-        //    {
-        //        List<TPROGDTL> TPROGDTL1 = new List<TPROGDTL>();
-        //        if (COUNT > 0 && TAG == "Y")
-        //        {
-        //            int SERIAL = 0;
-        //            for (int j = 0; j <= COUNT - 1; j++)
-        //            {
-        //                SERIAL = SERIAL + 1;
-        //                TPROGDTL MBILLDET = new TPROGDTL();
-        //                MBILLDET.SLNO = SERIAL.retShort();
-        //                TPROGDTL1.Add(MBILLDET);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            TPROGDTL MBILLDET = new TPROGDTL();
-        //            MBILLDET.SLNO = 1;
-        //            TPROGDTL1.Add(MBILLDET);
-        //        }
-        //        VE.TPROGDTL = TPROGDTL1;
-        //    }
-        //    else
-        //    {
-        //        List<TPROGDTL> TPROGDTL = new List<TPROGDTL>();
-        //        for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
-        //        {
-        //            TPROGDTL MBILLDET = new TPROGDTL();
-        //            MBILLDET = VE.TPROGDTL[i];
-        //            TPROGDTL.Add(MBILLDET);
-        //        }
-        //        TPROGDTL MBILLDET1 = new TPROGDTL();
-        //        if (COUNT > 0 && TAG == "Y")
-        //        {
-        //            int SERIAL = Convert.ToInt32(VE.TPROGDTL.Max(a => Convert.ToInt32(a.SLNO)));
-        //            for (int j = 0; j <= COUNT - 1; j++)
-        //            {
-        //                SERIAL = SERIAL + 1;
-        //                TPROGDTL OPENING_BL = new TPROGDTL();
-        //                OPENING_BL.SLNO = SERIAL.retShort();
-        //                TPROGDTL.Add(OPENING_BL);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            MBILLDET1.SLNO = Convert.ToInt16(Convert.ToByte(VE.TPROGDTL.Max(a => Convert.ToInt32(a.SLNO))) + 1);
-        //            TPROGDTL.Add(MBILLDET1);
-        //        }
-        //        VE.TPROGDTL = TPROGDTL;
-        //    }
-        //    //VE.TPROGDTL.ForEach(a => a.DRCRTA = masterHelp.DR_CR().OrderByDescending(s => s.text).ToList());
-        //    VE.DefaultView = true;
-        //    return PartialView("_T_OUTRECPROCESS_Programme", VE);
-        //}
         public ActionResult DeleteRow(TransactionOutRecProcess VE)
         {
             try
@@ -2580,22 +1970,28 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ParkRecord(FormCollection FC, TransactionOutRecProcess stream, string menuID, string menuIndex)
+        public ActionResult ParkRecord(FormCollection FC, TransactionOutRecProcess stream, string MNUDET, string UNQSNO)
         {
             try
             {
-                Connection cn = new Connection();
-                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO).ToString() + "*" + DateTime.Now;
+                if (stream.T_TXN.DOCCD.retStr() != "")
+                {
+                    stream.T_CNTRL_HDR.DOCCD = stream.T_TXN.DOCCD.retStr();
+                }
+                var menuID = MNUDET.Split('~')[0];
+                var menuIndex = MNUDET.Split('~')[1];
+                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
                 ID = ID.Replace(" ", "_");
                 string Userid = Session["UR_ID"].ToString();
                 INI Handel_ini = new INI();
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 string JR = javaScriptSerializer.Serialize(stream);
-                Handel_ini.IniWriteValue(Userid, ID, cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
+                Handel_ini.IniWriteValue(Userid, ID, Cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
                 return Content("1");
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message);
             }
         }
@@ -2608,6 +2004,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return ex.Message;
             }
         }

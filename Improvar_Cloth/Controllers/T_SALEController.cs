@@ -2553,6 +2553,24 @@ namespace Improvar.Controllers
                                         TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
                                         TBATCHMST.ORDSLNO = VE.TBATCHDTL[i].ORDSLNO;
                                     }
+                                    //TBATCHMST.ORGBATCHAUTONO = VE.TBATCHDTL[i].ORGBATCHAUTONO;
+                                    //TBATCHMST.ORGBATCHSLNO = VE.TBATCHDTL[i].ORGBATCHSLNO;
+                                    TBATCHMST.DIA = VE.TBATCHDTL[i].DIA;
+                                    TBATCHMST.CUTLENGTH = VE.TBATCHDTL[i].CUTLENGTH;
+                                    TBATCHMST.LOCABIN = VE.TBATCHDTL[i].LOCABIN;
+                                    TBATCHMST.SHADE = VE.TBATCHDTL[i].SHADE;
+                                    TBATCHMST.MILLNM = VE.TBATCHDTL[i].MILLNM;
+                                    TBATCHMST.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
+                                    TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
+                                    if ((VE.MENU_PARA == "PB") && ((VE.T_TXN.BARGENTYPE == "E") || (VE.T_TXN.BARGENTYPE == "C" && VE.TBATCHDTL[i].BARGENTYPE == "E")))
+                                    {
+                                        TBATCHMST.WPRATE = VE.TBATCHDTL[i].WPRATE;
+                                        TBATCHMST.RPRATE = VE.TBATCHDTL[i].RPRATE;
+                                    }
+                                    //dbsql = masterHelp.RetModeltoSql(TBATCHMST);
+                                    dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
+                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
                                     if (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E")
                                     {
                                         TBATCHMST.HSNCODE = VE.TBATCHDTL[i].HSNCODE;
@@ -2590,23 +2608,6 @@ namespace Improvar.Controllers
                                             }
                                         }
                                     }
-                                    //TBATCHMST.ORGBATCHAUTONO = VE.TBATCHDTL[i].ORGBATCHAUTONO;
-                                    //TBATCHMST.ORGBATCHSLNO = VE.TBATCHDTL[i].ORGBATCHSLNO;
-                                    TBATCHMST.DIA = VE.TBATCHDTL[i].DIA;
-                                    TBATCHMST.CUTLENGTH = VE.TBATCHDTL[i].CUTLENGTH;
-                                    TBATCHMST.LOCABIN = VE.TBATCHDTL[i].LOCABIN;
-                                    TBATCHMST.SHADE = VE.TBATCHDTL[i].SHADE;
-                                    TBATCHMST.MILLNM = VE.TBATCHDTL[i].MILLNM;
-                                    TBATCHMST.BATCHNO = VE.TBATCHDTL[i].BATCHNO;
-                                    TBATCHMST.ORDAUTONO = VE.TBATCHDTL[i].ORDAUTONO;
-                                    if ((VE.MENU_PARA == "PB") && ((VE.T_TXN.BARGENTYPE == "E") || (VE.T_TXN.BARGENTYPE == "C" && VE.TBATCHDTL[i].BARGENTYPE == "E")))
-                                    {
-                                        TBATCHMST.WPRATE = VE.TBATCHDTL[i].WPRATE;
-                                        TBATCHMST.RPRATE = VE.TBATCHDTL[i].RPRATE;
-                                    }
-                                    //dbsql = masterHelp.RetModeltoSql(TBATCHMST);
-                                    dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
-                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                                 COUNTER = COUNTER + 1;
                                 T_BATCHDTL TBATCHDTL = new T_BATCHDTL();
@@ -3209,10 +3210,10 @@ namespace Improvar.Controllers
                     return Content("");
                 }
                 goto dbok;
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
-                dbok:;
+            dbok:;
             }
             catch (Exception ex)
             {
