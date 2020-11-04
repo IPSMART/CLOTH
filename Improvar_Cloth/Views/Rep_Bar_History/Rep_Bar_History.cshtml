@@ -186,7 +186,12 @@
 
     }
 </script>
-<script></script>
+<script>  function Barcodeprinting() {
+      debugger;
+      var AUTONO = $("#AUTONO").val();
+      var DOCDT = $("#DOCDT").val();
+      window.open("@Url.Action("T_SALE", "T_SALE")?US=" + '@Model.UNQSNO_ENCRYPTED' + "&autono=" + AUTONO + "&docdt=" + DOCDT, "_blank")
+  }</script>
 @using (Html.BeginForm("Rep_Bar_History", "Rep_Bar_History", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary(true)
@@ -207,6 +212,10 @@
                 @Html.HiddenFor(model => model.PRCCD, new { id = "PRCCD" })
                 @Html.HiddenFor(model => model.TAXGRPCD, new { id = "TAXGRPCD" })
             </div>
+        </div>
+        <div class="col-lg-7"></div>
+        <div class="col-md-1">
+            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
         </div>
     </div>
     <div class="row">
