@@ -13,6 +13,7 @@
 /// <reference path="bootstrap-datetimepicker.min.js" />
 /// <reference path="bootstrap-select.js" />
 /// <reference path="capslock.js" />
+/// <reference path="cloth.js" />
 /// <reference path="custom.js" />
 /// <reference path="customcombo.js" />
 /// <reference path="datatables.js" />

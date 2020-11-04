@@ -901,6 +901,7 @@
     <Content Include="Report\JobIssue.rpt" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\capsLock.js" />
+    <Content Include="Scripts\Cloth.js" />
     <Content Include="Scripts\Custom.js" />
     <Content Include="Scripts\CustomCombo.js" />
     <Content Include="Scripts\datatables.js" />

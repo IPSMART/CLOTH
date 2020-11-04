@@ -195,7 +195,7 @@
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].ORDDOCDT, new { htmlAttributes = new { id = "B_ORDDOCDT_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.DropDownListFor(model => Model.TsalePos_TBATCHDTL[i].PCSACTION, new SelectList(Model.TsalePos_TBATCHDTL[i].PCSection, "Value", "Text", Model.TsalePos_TBATCHDTL[i].PCSACTION), new { id = "PCSACTION_" + i, @class = " atextBoxFor select_3d " })
+                                            @Html.DropDownListFor(model => Model.TsalePos_TBATCHDTL[i].PCSACTION, new SelectList(Model.TsalePos_TBATCHDTL[i].PCSActionList, "Value", "Text", Model.TsalePos_TBATCHDTL[i].PCSACTION),"", new { id = "PCSACTION_" + i, @class = " atextBoxFor select_3d " })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })

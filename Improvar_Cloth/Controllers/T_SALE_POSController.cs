@@ -155,8 +155,8 @@ namespace Improvar.Controllers
                             if (parkID == "")
                             {
 
-                                List<TsalePos_TBATCHDTL> sd = new List<TsalePos_TBATCHDTL>(); sd.Add(new TsalePos_TBATCHDTL() { SLNO = 1, DISC_TYPE = masterHelp.DISC_TYPE(), PCSection = masterHelp.PCSAction(), });
-                                VE.TsalePos_TBATCHDTL = sd;
+                                //List<TsalePos_TBATCHDTL> sd = new List<TsalePos_TBATCHDTL>(); sd.Add(new TsalePos_TBATCHDTL() { SLNO = 1, DISC_TYPE = masterHelp.DISC_TYPE(), PCSActionList = masterHelp.PCSAction(), });
+                                //VE.TsalePos_TBATCHDTL = sd;
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();

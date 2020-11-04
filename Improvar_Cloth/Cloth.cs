@@ -245,7 +245,7 @@ namespace Improvar
                     foreach (var v in VE.TsalePos_TBATCHDTL)
                     {
                         v.DISC_TYPE = masterHelp.DISC_TYPE();
-                        v.PCSection = masterHelp.PCSAction();
+                        v.PCSActionList = masterHelp.PCSAction();
                         string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                         v.GSTPER = VE.TsalePos_TBATCHDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                         if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
