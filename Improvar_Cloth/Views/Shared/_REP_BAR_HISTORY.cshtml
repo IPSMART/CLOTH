@@ -75,7 +75,7 @@
 
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].SLNM, new { id = "D_SLNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                          
+
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.BARCODEHISTORY[i].LOCNM, new { id = "D_LOCNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -127,6 +127,7 @@
                         </tfoot>
                     </table>
                 </div>
+                <input class="btn-xs btn-info" style="float:right" type="submit" name="submitbutton" formmethod="post" value="Download Excel" formtarget="_blank" />
             </div>
         }
     </div>
