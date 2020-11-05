@@ -662,23 +662,26 @@ namespace Improvar.Controllers
                 }
                 foreach (MSITEMBARCODE bar in VE.MSITEMBARCODE)
                 {
-                    dt.Rows.Add("");
-                    int rNo = dt.Rows.Count - 1;
-                    dt.Rows[rNo]["SIZECD"] = bar.SIZECD.retStr();
-                    dt.Rows[rNo]["SIZENM"] = bar.SIZENM;
-                    dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
-                    dt.Rows[rNo]["COLRCD"] = bar.COLRCD.retStr();
-                    dt.Rows[rNo]["COLRNM"] = bar.COLRNM;
-                    dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
-                    dt.Rows[rNo]["BARNO"] = bar.BARNO;
-                    if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
+                    if (bar.SRLNO == 1 || bar.SIZECD != null || bar.COLRCD != null)
                     {
-                        foreach (var plist in M_PRCLST)
+                        dt.Rows.Add("");
+                        int rNo = dt.Rows.Count - 1;
+                        dt.Rows[rNo]["SIZECD"] = bar.SIZECD.retStr();
+                        dt.Rows[rNo]["SIZENM"] = bar.SIZENM;
+                        dt.Rows[rNo]["SZBARCODE"] = bar.SZBARCODE;
+                        dt.Rows[rNo]["COLRCD"] = bar.COLRCD.retStr();
+                        dt.Rows[rNo]["COLRNM"] = bar.COLRNM;
+                        dt.Rows[rNo]["CLRBARCODE"] = bar.CLRBARCODE;
+                        dt.Rows[rNo]["BARNO"] = bar.BARNO;
+                        if (dt_prcrt != null && dt_prcrt.Rows.Count > 0)
                         {
-                            string rate = (from DataRow dr in dt_prcrt.Rows
-                                           where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr()
-                                           select dr["rate"].retStr()).FirstOrDefault();
-                            dt.Rows[rNo][plist.PRCCD] = rate;
+                            foreach (var plist in M_PRCLST)
+                            {
+                                string rate = (from DataRow dr in dt_prcrt.Rows
+                                               where dr["sizecd"].retStr() == bar.SIZECD.retStr() && dr["colrcd"].retStr() == bar.COLRCD.retStr() && dr["prccd"].retStr() == plist.PRCCD.retStr()
+                                               select dr["rate"].retStr()).FirstOrDefault();
+                                dt.Rows[rNo][plist.PRCCD] = rate;
+                            }
                         }
                     }
                 }
@@ -1455,7 +1458,6 @@ namespace Improvar.Controllers
             {
                 try
                 {
-                    System.Web.HttpPostedFileBase file = Request.Files["user_image_data"];
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
                         //checking bar code grid contain distinct value
