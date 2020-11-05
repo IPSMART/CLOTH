@@ -1,6 +1,5 @@
 ﻿var DefaultAction = $("#DefaultAction").val();
 function retGstPerstr(prodgrpgstper, rate) {
-
     if (DefaultAction == "V") return true;
     //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
 
@@ -21,6 +20,14 @@ function retGstPerstr(prodgrpgstper, rate) {
     if (selrow != -1) rtval = mgstrate[2] + "," + mgstrate[3] + "," + mgstrate[4];
     return rtval;
 }
+
+function retGstPer(prodgrpgstper, rate) {
+    var gstRate = retGstPerstr(prodgrpgstper, rate);
+    var typ = gstRate.split(',');
+    gstRate = retFloat(mgstrate[0]) + retFloat(mgstrate[1]) + retFloat(mgstrate[2]);
+    return rtval;
+}
+
 
 $(document).on('click', '.arrow-left, .arrow-right', function () {
     var next;
@@ -76,4 +83,26 @@ function FillImageModal(FieldId) {
         htm += '</div>';
         $("#div_carousel_inner").append(htm);
     });
+}
+function CalculateDiscount(DiscTypeId, DiscRateId, QntyId, NosId, AmtId, STDDiscId) {
+    var DISCAMT = 0;
+    var DiscType = $("#" + DiscTypeId).val();
+    var DiscRate = retFloat($("#" + DiscRateId).val());
+    if (DiscType == "Q") {
+        var Qnty = retFloat($("#" + QntyId).val());
+        DISCAMT = DiscRate * Qnty;
+    }
+    else if (DiscType == "N") {
+        var Nos = retFloat($("#" + NosId).val());
+        DISCAMT = DiscRate * Nos;
+    }
+    else if (DiscType == "P") {
+        var Amt = retFloat($("#" + AmtId).val());
+        DISCAMT = (DiscRate * Amt) / 100;
+    }
+    else if (DiscType == "F") { DISCAMT = DiscRate; }
+    else if (DiscType == "A") { DISCAMT = DiscRate; }
+    else { DISCAMT = 0; }
+    DISCAMT = parseFloat(DISCAMT).toFixed(2);
+    return DISCAMT;
 }

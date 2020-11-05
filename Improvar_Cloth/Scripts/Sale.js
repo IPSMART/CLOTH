@@ -753,7 +753,7 @@ function CalculateTotal_Details() {
 
 }
 
-function GetGstPer(i, FieldidStarting) {
+function Sale_GetGstPer(i, FieldidStarting) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     debugger;
@@ -1579,7 +1579,7 @@ function AddBarCodeGrid() {
     tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History">Rate Hist</button>';
     tr += '    </td>';
     tr += '    <td class="" title="' + RATE + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ');HasChangeBarSale();" value="' + RATE + '" >';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="Sale_GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ');HasChangeBarSale();" value="' + RATE + '" >';
     tr += '    </td>';
     if (MENU_PARA == "PB") {
         tr += '    <td class="">';
