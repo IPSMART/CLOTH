@@ -19,12 +19,13 @@ namespace Improvar.Controllers
         //BarCode CnBarCode = new BarCode();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         string sql = "";
-        string LOC =  CommVar.Loccd(CommVar.getQueryStringUNQSNO()), COM = CommVar.Compcd(CommVar.getQueryStringUNQSNO()), scm1 = CommVar.CurSchema(CommVar.getQueryStringUNQSNO()), scmf = CommVar.FinSchema(CommVar.getQueryStringUNQSNO());
+        string LOC = CommVar.Loccd(CommVar.getQueryStringUNQSNO()), COM = CommVar.Compcd(CommVar.getQueryStringUNQSNO()), scm1 = CommVar.CurSchema(CommVar.getQueryStringUNQSNO()), scmf = CommVar.FinSchema(CommVar.getQueryStringUNQSNO());
 
         // GET: Rep_Doc_Print
         public ActionResult Rep_Doc_Print(string reptype = "")
         {
-            try {
+            try
+            {
                 if (Session["UR_ID"] == null)
                 {
                     return RedirectToAction("Login", "Login");
@@ -68,7 +69,8 @@ namespace Improvar.Controllers
                         VE.DefaultDay = 0;
                         return View(VE);
                     }
-                } }
+                }
+            }
             catch (Exception ex)
             {
                 Rep_Doc_Print VE = new Rep_Doc_Print();
@@ -220,195 +222,122 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult Rep_IssueChallan_Print(Rep_Doc_Print VE)
         {
-            string scmI = CommVar.InvSchema(UNQSNO);
-            string hddsp = "", chlntype = "";
-            string gooditem = "", jobnm = "", barcode = "";
             string repname = "JobIssue";
-            string QntyIn = "", jobcd = "", gocd = "";
-            string[] otherpara = VE.OtherPara.Split(',');
-            jobcd = otherpara[0];
-            if (otherpara.Count() > 1) gocd = otherpara[1];
-            bool progprint = false;
-
-            sql = "select a.autono, a.doctag, max(c.mtrljobcd) mtrljobcd ";
-            sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scm1 + ".t_txndtl c ";
-            sql += "where a.autono = b.autono(+) and a.autono=c.autono(+) and b.doccd = '" + VE.DOCCD + "' and ";
-            sql += "b.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
-            sql += "b.doconlyno >= '" + VE.FDOCNO + "' and b.doconlyno <= '" + VE.TDOCNO + "' and ";
-            sql += "b.compcd = '" + COM + "' and b.loccd = '" + LOC + "' ";
-            sql += "group by a.autono, a.doctag ";
-            DataTable tbltmp = masterHelp.SQLquery(sql);
-            if (tbltmp.Rows.Count > 0)
+            if (VE.TEXTBOX6 != null) repname = VE.TEXTBOX6;
+            string hddsp = "";
+            string mp = VE.OtherPara.Split(',')[0];
+            switch (mp)
             {
-                if (tbltmp.Rows[0]["mtrljobcd"].ToString() == "TO") jobcd = tbltmp.Rows[0]["mtrljobcd"].ToString();
-            }
-
-            switch (jobcd)
-            {
-                case "KT": hddsp = "Issue Challan (Knitter)"; gooditem = "Yarn"; jobnm = "Knitting Job"; repname = "YarnIssue"; progprint = true; break;
-                case "YD": hddsp = "Issue Challan (Yarn Dyer)"; gooditem = "Yarn"; jobnm = "Dying Job"; repname = "YarnIssue"; progprint = true; break;
-                case "FP": hddsp = "Issue to Processor"; gooditem = "Fabrics"; jobnm = "Processing Job"; repname = "FabIssue"; progprint = true; break;
-                case "DY": hddsp = "Issue Challan (Dyer)"; gooditem = "Fabrics"; jobnm = "Dying Job"; repname = "FabIssue"; progprint = true; break;
-                case "BL": hddsp = "Issue Challan (Bleacher)"; gooditem = "Fabrics"; jobnm = "Bleaching Job"; repname = "FabIssue"; progprint = true; break;
-                case "CT": hddsp = "Issue Challan (Cutter)"; gooditem = "Fabrics"; jobnm = "Cutting Job"; QntyIn = "D"; progprint = true; break;
-                case "PR": hddsp = "Issue Challan Printer"; gooditem = "Cut fabrics"; jobnm = "Printing Job"; QntyIn = "B"; break;
-                case "EM": hddsp = "Issue Challan (Embroider)"; gooditem = "cut fabrics"; jobnm = "Embriodery Job"; QntyIn = "B"; break;
-                case "JW": hddsp = "Issue Challan (Job Work)"; gooditem = "cut fabrics"; jobnm = "Jow Work"; QntyIn = "B"; break;
-                case "ST": hddsp = "Issue to Challan (Sticher)"; gooditem = "cut fabrics"; jobnm = "Stiching Job"; QntyIn = "B"; break;
-                case "OJ": hddsp = "Issue Challan (Other Job)"; gooditem = "Fabrics"; jobnm = "Other Job"; QntyIn = "B"; break;
-                case "WA": hddsp = "Issue Challan (Washing)"; gooditem = "Fabrics"; jobnm = "Washing"; QntyIn = "B"; break;
-                case "IR": hddsp = "Issue Challan (Ironing)"; gooditem = "Fabrics"; jobnm = "Ironing"; QntyIn = "B"; break;
+                case "DY":
+                    hddsp = "Issue for Dyer"; break;
+                case "PR":
+                    hddsp = "Issue for Printing"; break;
+                case "ST":
+                    hddsp = "Issue for Stiching"; break;
+                case "EM":
+                    hddsp = "Issue for Embroidery"; break;
+                case "JW":
+                    hddsp = "Issue for Other Jobs"; break;
                 default: hddsp = ""; break;
             }
-            if (tbltmp.Rows.Count > 0)
-            {
-                if (tbltmp.Rows[0]["doctag"].ToString() == "TO") hddsp = "Stock Transfer";
-            }
-            if (VE.TEXTBOX6 != null) repname = VE.TEXTBOX6;
-            string sql_c = "c.batchautono, c.batchslno, ";
-            if (jobcd == "DY" || jobcd == "BL" || jobcd == "YP") sql_c = "'' batchautono, 0 batchslno, ";
-            string sql_g = "c.batchautono, c.batchslno, ";
-            if (jobcd == "DY" || jobcd == "BL" || jobcd == "YP") sql_g = "'', 0, ";
 
-            sql = "";
-            sql += "select a.autono, b.slno, '', b.itcd, b.mtrljobcd, n.partnm, b.stktype, l.qntyin, b.itnm, o.sizenm, o.print_seq, b.uomcd, m.styleno, p.itgrptype, nvl(m.pcsperbox,0) pcsperbox, decode(nvl(m.mergepcs,0),0,1,m.mergepcs) mergepcs, ";
-            sql += "h.uomnm, nvl(h.decimals,0) decimals, b.qnty, nvl(b.nos, 0) nos, nvl(b.stkqnty, 0) stkqnty, nvl(b.lpcs,0) lpcs, b.itrem, nvl(b.batchno, l.batchno) batchno, ";
-            sql += "b.rate, b.hsncode, l.millnm, l.colrnm, nvl(l.gsm, 0) gsm, nvl(l.dia, 0) dia, nvl(l.ll, 0) ll, l.texture, nvl(l.gauge, 0) gauge, ";
-            sql += "l.cutlength, l.mchnname, l.fabtype, l.orgbatchautono, l.orgbatchslno, q.docdt orgbatchdocdt, q.doconlyno orgbatchdocno, q.doccd orgbatchdoccd, ";
-            sql += "l.autono recautono, l.docno recdocno, l.docdt recdocdt, l.doccd recdoccd from ";
-            sql += "(select a.autono ";
-            sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b ";
-            sql += "where a.autono = b.autono(+) and b.doccd = '" + VE.DOCCD + "' and ";
-            sql += "b.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
-            sql += "b.doconlyno >= '" + VE.FDOCNO + "' and b.doconlyno <= '" + VE.TDOCNO + "' and ";
-            sql += "b.compcd = '" + COM + "' and b.loccd = '" + LOC + "' ) a,  ";
+            string str = "";
+            str += "select a.autono,a.slcd,b.cancel, b.docno, b.docdt, b.usr_id, d.recvperson, d.lorryno, ";
+            str += "c.slnm, c.add1, c.add2, c.add3, c.add4, c.add5, c.add6, c.add7, c.statecd, c.panno, c.gstno, c.regmobile ";
+            str += "from " + scm1 + ".T_TXN a," + scm1 + ".T_CNTRL_HDR b ," + scmf + ".m_subleg c, " + scm1 + ".t_txntrans d ";
+            str += " where a.autono=b.autono and a.slcd=c.slcd(+) and a.autono=d.autono(+) ";
+            str += " and b.doccd = '" + VE.DOCCD + "' and ";
+            str += "b.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
+            str += "b.doconlyno >= '" + VE.FDOCNO + "' and b.doconlyno <= '" + VE.TDOCNO + "' and ";
+            str += "b.compcd = '" + COM + "' and b.loccd = '" + LOC + "' ";
+            str += "order by a.autono ";
+            DataTable tblhdr = masterHelp.SQLquery(str);
 
-            sql += "(select a.autono, a.mtrljobcd, 0 slno, " + sql_c + " a.itcd, a.stktype, a.qntyin, b.itnm, b.uomcd, ";
-            sql += "sum(nvl(c.qnty, a.qnty)) qnty, sum(nvl(c.nos, a.nos)) nos, sum(nvl(c.stkqnty,a.stkqnty)) stkqnty, ";
-            sql += "a.rate, b.hsnsaccd hsncode, '' itrem, a.batchno, a.sizecd, a.partcd, ";
-            sql += "(select sum(qnty) qnty from " + scm1 + ".t_txndtl where a.stktype <> stktype and ";
-            sql += "autono||itcd||sizecd = a.autono||a.itcd||a.sizecd) lpcs ";
-            sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".m_sitem b, " + scm1 + ".t_batchdtl c, " + scm1 + ".t_cntrl_hdr d ";
-            sql += "where a.itcd = b.itcd(+) and a.autono = c.autono(+) and a.slno = c.slno(+) and a.autono=d.autono and ";
-            sql += "d.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and d.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
-            sql += "d.doconlyno >= '" + VE.FDOCNO + "' and d.doconlyno <= '" + VE.TDOCNO + "' and ";
-            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' ";
-            sql += "group by a.autono, a.mtrljobcd, 0, " + sql_g + " a.itcd, a.stktype, a.qntyin, b.itnm, b.uomcd, ";
-            sql += "a.rate, b.hsnsaccd, '', a.batchno, a.sizecd, a.partcd ";
-            sql += "union all ";
-            sql += "select a.autono, '' mtrljobcd, a.slno+1000 slno, '' batchautono, 0 batchslno, a.itcd, '' stktype, '' qntyin, b.itdescn itnm, b.uom uomcd, a.qnty, 0 nos,  ";
-            sql += "0 stkqnty, a.rate, b.hsncd hsncode, a.itrem, a.batchno, '' sizecd, '' partcd, 0 lpcs ";
-            sql += "from " + scm1 + ".t_txninvdtl a, " + scmI + ".m_item b ";
-            sql += "where a.itcd = b.itcd(+) ) b, ";
-            sql += "" + scm1 + ".t_txn c, " + scm1 + ".t_txntrans d, " + scm1 + ".t_cntrl_hdr e, ";
-            sql += " " + scmf + ".m_uom h,  " + scmf + ".m_subleg i, " + scm1 + ".t_batchmst l, ";
-            sql += scm1 + ".m_sitem m, " + scm1 + ".m_parts n, " + scm1 + ".m_size o, " + scm1 + ".m_group p, " + scm1 + ".t_cntrl_hdr q ";
-            sql += "where a.autono = b.autono and a.autono = c.autono and a.autono = d.autono(+) and a.autono = e.autono(+) and ";
-            sql += "b.uomcd = h.uomcd(+) and c.slcd = i.slcd(+) and b.batchautono = l.batchautono(+) and b.batchslno = l.batchslno(+) and ";
-            sql += "b.itcd=m.itcd(+) and b.partcd=n.partcd(+) and b.sizecd=o.sizecd(+) and m.itgrpcd=p.itgrpcd(+) and l.orgbatchautono=q.autono(+) ";
-            sql += "order by autono, slno, itcd, print_seq";
-            DataTable rstbl = masterHelp.SQLquery(sql);
+            str = "";
+            str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
+            str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,r.itnm fabitnm from " + scm1 + ".T_PROGMAST a," + scm1 + ".T_PROGDTL b ,";
+            str += scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
+            str += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".T_CNTRL_HDR q," + scm1 + ".M_SITEM r ";
+            str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
+            str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+            str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono=q.autono(+) and k.fabitcd=r.itcd(+) ";
+            str += " and q.doccd = '" + VE.DOCCD + "' and ";
+            str += "q.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and q.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
+            str += "q.doconlyno >= '" + VE.FDOCNO + "' and q.doconlyno <= '" + VE.TDOCNO + "' and ";
+            str += "q.compcd = '" + COM + "' and q.loccd = '" + LOC + "' ";
+            str += "order by a.slno ";
+            DataTable tblprgrm = masterHelp.SQLquery(str);
 
-            sql = "";
-            sql += "select a.autono, a.slno, a.progautono, a.progslno, j.batchno, j.proguniqno, a.slcd, a.itcd, a.stktype, a.partcd, ";
-            sql += "a.sizecd, d.itnm, d.styleno, d.hsnsaccd hsncode, nvl(d.pcsperbox,0) pcsperbox, d.mixsize, h.uomnm, nvl(h.decimals,0) decimals, e.sizenm, e.print_seq, f.partnm, ";
-            sql += "a.stkdrcr, nvl(a.qnty,0) qnty, nvl(a.shortqnty,0) shortqnty, nvl(j.gsm, 0) gsm, j.texture, nvl(j.gauge,0) gauge, nvl(j.ll,0) ll, nvl(j.dia, 0) dia, j.qntyin, ";
-            sql += "j.millnm, j.colrnm, j.mchnname, j.fabtype, l.slnm||decode(k.linecd,null,'',' ['||k.linecd||']') recslnm, k.linecd reclinecd, ";
-            sql += "nvl(a.nos, 0) nos, nvl(a.stkqnty, 0) stkqnty from ";
-            sql += "( select a.autono, a.slno, a.progautono, a.progslno, b.slcd, b.itcd, b.stktype, b.partcd, b.sizecd, a.stkdrcr, a.qnty, c.shortqnty, ";
-            sql += "nvl(b.nos, 0) nos,nvl(b.stkqnty, 0) stkqnty ";
-            sql += "from " + scm1 + ".t_progdtl a, " + scm1 + ".t_progmast b, " + scm1 + ".t_txndtl c, " + scm1 + ".t_cntrl_hdr d ";
-            sql += "where a.progautono=b.autono(+) and a.progslno=b.slno(+) and a.autono=c.autono(+) and a.slno=c.slno(+) and ";
-            sql += "a.autono=d.autono(+) and d.doccd = '" + VE.DOCCD + "' and ";
-            sql += "d.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and d.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
-            sql += "d.doconlyno >= '" + VE.FDOCNO + "' and d.doconlyno <= '" + VE.TDOCNO + "' and ";
-            sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' ) a,  ";
+            string str1 = "";
+            str1 += "select i.autono,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO, ";
+            str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
+            str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,s.itnm fabitnm,i.cutlength ";
+            str1 += "from " + scm1 + ".T_BATCHDTL i, " + scm1 + ".T_BATCHMST j, " + scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
+            str1 += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".M_STKTYPE q," + scm1 + ".T_CNTRL_HDR r," + scm1 + ".M_SITEM s ";
+            str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
+            str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+)  and i.autono=r.autono(+)  and k.fabitcd=s.itcd(+) ";
+            str1 += " and r.doccd = '" + VE.DOCCD + "' and ";
+            str1 += "r.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and r.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
+            str1 += "r.doconlyno >= '" + VE.FDOCNO + "' and r.doconlyno <= '" + VE.TDOCNO + "' and ";
+            str1 += "r.compcd = '" + COM + "' and r.loccd = '" + LOC + "' ";
+            str1 += "order by i.SLNO ";
+            DataTable tbliss = masterHelp.SQLquery(str1);
 
-            sql += scm1 + ".t_cntrl_hdr b, " + scm1 + ".t_txntrans c, " + scm1 + ".m_sitem d, " + scm1 + ".m_size e, " + scm1 + ".m_parts f, ";
-            sql += scmf + ".m_subleg g, " + scmf + ".m_uom h, " + scm1 + ".t_progmast j, " + scm1 + ".t_txn k, " + scmf + ".m_subleg l ";
-            sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.itcd=d.itcd(+) and a.sizecd=e.sizecd(+) and a.partcd=f.partcd(+) and ";
-            sql += "a.slcd=g.slcd(+) and d.uomcd=h.uomcd(+) and a.progautono=j.autono(+) and a.progslno=j.slno(+) and ";
-            sql += "j.recautono=k.autono(+) and k.slcd=l.slcd(+) ";
-            sql += "order by autono, slno, print_seq";
-            DataTable rsprog = masterHelp.SQLquery(sql);
-
-            string sqlc = "";
-            sqlc += "where a.autono = b.autono(+) and b.doccd = '" + VE.DOCCD + "' and ";
-            sqlc += "b.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
-            sqlc += "b.doconlyno >= '" + VE.FDOCNO + "' and b.doconlyno <= '" + VE.TDOCNO + "' and ";
-            sqlc += "b.compcd = '" + COM + "' and b.loccd = '" + LOC + "' ";
-
-            sql = "";
-            sql += "select a.autono, c.slcd, c.linecd, g.linenm, f.cancel, f.docno, f.docdt, f.usr_id, e.recvperson, e.lorryno, g.linenm, ";
-            sql += "d.slnm, d.add1, d.add2, d.add3, d.add4, d.add5, d.add6, d.add7, d.statecd, d.panno, d.gstno, d.regmobile, ";
-            sql += "c.mcpautono, j.docno mcpno, j.docdt mcpdt, j.refno mcprefno, c.cutrecdocautono, i.docno cutdocno, i.docdt cutdocdt, ";
-            sql += "nvl(b.docrem,'') docrem from ";
-            sql += "( ";
-            sql += "select distinct a.autono from " + scm1 + ".t_txndtl a, " + scm1 + ".t_cntrl_hdr b ";
-            sql += sqlc;
-            sql += "union ";
-            sql += "select distinct a.autono from " + scm1 + ".t_progdtl a, " + scm1 + ".t_cntrl_hdr b ";
-            sql += sqlc;
-            sql += ") a, ";
-            sql += "( select a.autono, listagg(a.docrem, '') within group (order by a.slno) docrem ";
-            sql += "from " + scm1 + ".t_cntrl_hdr_rem a group by a.autono ) b, " + scm1 + ".t_txn c, " + scmf + ".m_subleg d, " + scm1 + ".t_txntrans e, ";
-            sql += scm1 + ".t_cntrl_hdr f, " + scm1 + ".m_linemast g, " + scm1 + ".t_cntrl_hdr h, " + scm1 + ".t_cntrl_hdr i, " + scm1 + ".t_mcp j ";
-            sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.slcd=d.slcd(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and c.linecd=g.linecd(+) and ";
-            sql += "c.mcpautono=h.autono(+) and c.cutrecdocautono=i.autono(+) and c.mcpautono=j.autono(+) ";
-            sql += "order by docdt, docno ";
-            DataTable tblauto = masterHelp.SQLquery(sql);
-
-            DataTable IR = new DataTable("");
-            IR.Columns.Add("autono", typeof(string), "");
-            IR.Columns.Add("slcd", typeof(string), "");
-            IR.Columns.Add("slnm", typeof(string), "");
-            IR.Columns.Add("sladd1", typeof(string), "");
-            IR.Columns.Add("sladd2", typeof(string), "");
-            IR.Columns.Add("sladd3", typeof(string), "");
-            IR.Columns.Add("sladd4", typeof(string), "");
-            IR.Columns.Add("sladd5", typeof(string), "");
-            IR.Columns.Add("sladd6", typeof(string), "");
-            IR.Columns.Add("sladd7", typeof(string), "");
-            IR.Columns.Add("sladd8", typeof(string), "");
-            IR.Columns.Add("docno", typeof(string), "");
-            IR.Columns.Add("docdt", typeof(string), "");
-            IR.Columns.Add("vechlno", typeof(string), "");
-            IR.Columns.Add("recvperson", typeof(string), "");
             //programme
-            IR.Columns.Add("slno", typeof(string), "");
-            IR.Columns.Add("itdescn", typeof(string), "");
-            IR.Columns.Add("partnm", typeof(string), "");
-            IR.Columns.Add("styleno", typeof(string), "");
-            IR.Columns.Add("colrnm", typeof(string), "");
-            IR.Columns.Add("sizenm", typeof(string), "");
-            IR.Columns.Add("uomnm", typeof(string), "");
-            IR.Columns.Add("nos", typeof(double), "");
-            IR.Columns.Add("cutlength", typeof(double), "");
-            IR.Columns.Add("qnty", typeof(double), "");
-            IR.Columns.Add("uniqno", typeof(string), "");
-            IR.Columns.Add("itremark", typeof(string), "");
-            IR.Columns.Add("totalqnty", typeof(double), "");
+            DataTable IR_PROG = new DataTable("");
+            IR_PROG.Columns.Add("autono", typeof(string), "");
+            IR_PROG.Columns.Add("slcd", typeof(string), "");
+            IR_PROG.Columns.Add("slnm", typeof(string), "");
+            IR_PROG.Columns.Add("sladd1", typeof(string), "");
+            IR_PROG.Columns.Add("sladd2", typeof(string), "");
+            IR_PROG.Columns.Add("sladd3", typeof(string), "");
+            IR_PROG.Columns.Add("sladd4", typeof(string), "");
+            IR_PROG.Columns.Add("sladd5", typeof(string), "");
+            IR_PROG.Columns.Add("sladd6", typeof(string), "");
+            IR_PROG.Columns.Add("sladd7", typeof(string), "");
+            IR_PROG.Columns.Add("sladd8", typeof(string), "");
+            IR_PROG.Columns.Add("docno", typeof(string), "");
+            IR_PROG.Columns.Add("docdt", typeof(string), "");
+            IR_PROG.Columns.Add("vechlno", typeof(string), "");
+            IR_PROG.Columns.Add("recvperson", typeof(string), "");
+            IR_PROG.Columns.Add("user_nm", typeof(string), "");
+            IR_PROG.Columns.Add("slno", typeof(string), "");
+            IR_PROG.Columns.Add("itdescn", typeof(string), "");
+            IR_PROG.Columns.Add("partnm", typeof(string), "");
+            IR_PROG.Columns.Add("styleno", typeof(string), "");
+            IR_PROG.Columns.Add("colrnm", typeof(string), "");
+            IR_PROG.Columns.Add("sizenm", typeof(string), "");
+            IR_PROG.Columns.Add("uomnm", typeof(string), "");
+            IR_PROG.Columns.Add("nos", typeof(double), "");
+            IR_PROG.Columns.Add("cutlength", typeof(double), "");
+            IR_PROG.Columns.Add("qnty", typeof(double), "");
+            IR_PROG.Columns.Add("uniqno", typeof(string), "");
+            IR_PROG.Columns.Add("itremark", typeof(string), "");
+            IR_PROG.Columns.Add("totalqnty", typeof(double), "");
+
+
             //issue
-            IR.Columns.Add("progslno", typeof(string), "");
-            IR.Columns.Add("iss_slno", typeof(string), "");
-            IR.Columns.Add("iss_itdescn", typeof(string), "");
-            IR.Columns.Add("iss_styleno", typeof(string), "");
-            IR.Columns.Add("iss_colrnm", typeof(string), "");
-            IR.Columns.Add("iss_sizenm", typeof(string), "");
-            IR.Columns.Add("iss_uomnm", typeof(string), "");
-            IR.Columns.Add("iss_nos", typeof(double), "");
-            IR.Columns.Add("iss_cutlength", typeof(double), "");
-            IR.Columns.Add("iss_qnty", typeof(double), "");
-            IR.Columns.Add("iss_totalqnty", typeof(double), "");
+            DataTable IR_ISSUE = new DataTable("");
+            IR_ISSUE.Columns.Add("autono", typeof(string), "");
+            IR_ISSUE.Columns.Add("progslno", typeof(string), "");
+            IR_ISSUE.Columns.Add("iss_slno", typeof(string), "");
+            IR_ISSUE.Columns.Add("iss_itdescn", typeof(string), "");
+            IR_ISSUE.Columns.Add("iss_styleno", typeof(string), "");
+            IR_ISSUE.Columns.Add("iss_colrnm", typeof(string), "");
+            IR_ISSUE.Columns.Add("iss_sizenm", typeof(string), "");
+            IR_ISSUE.Columns.Add("iss_hsncode", typeof(string), "");
+            IR_ISSUE.Columns.Add("iss_uomnm", typeof(string), "");
+            IR_ISSUE.Columns.Add("iss_nos", typeof(double), "");
+            IR_ISSUE.Columns.Add("iss_cutlength", typeof(double), "");
+            IR_ISSUE.Columns.Add("iss_qnty", typeof(double), "");
+            IR_ISSUE.Columns.Add("iss_totalqnty", typeof(double), "");
 
-            IR.Columns.Add("user_nm", typeof(string), "");
 
-            bool hdrprint = true;
             ReportDocument reportdocument = new ReportDocument();
+
             Int32 maxR = 0, i = 0;
-            Int32 x = 0, maxX = tblauto.Rows.Count - 1;
+            Int32 x = 0, maxX = tblhdr.Rows.Count - 1;
             Int32 rNo = 0, sln = 0;
-            double maxDeci = 0, currdeci = 0;
             while (x <= maxX)
             {
                 //address
@@ -417,407 +346,149 @@ namespace Improvar.Controllers
                 for (int f = 1; f <= 7; f++)
                 {
                     cfld = "add" + Convert.ToString(f).ToString();
-                    if (tblauto.Rows[x][cfld].ToString() != "")
+                    if (tblhdr.Rows[x][cfld].ToString() != "")
                     {
                         rf = rf + 1;
                         if (add == "")
                         {
-                            add = add + tblauto.Rows[x][cfld].ToString();
+                            add = add + tblhdr.Rows[x][cfld].ToString();
                         }
                         else
                         {
-                            add = add + Cn.GCS() + tblauto.Rows[x][cfld].ToString();
+                            add = add + Cn.GCS() + tblhdr.Rows[x][cfld].ToString();
                         }
                     }
                 }
-                if (tblauto.Rows[x]["gstno"].ToString() != "")
+                if (tblhdr.Rows[x]["gstno"].ToString() != "")
                 {
                     rf = rf + 1;
-                    add = add + Cn.GCS() + "GST # " + tblauto.Rows[x]["gstno"].ToString();
+                    add = add + Cn.GCS() + "GST # " + tblhdr.Rows[x]["gstno"].ToString();
                 }
-                if (tblauto.Rows[x]["panno"].ToString() != "")
+                if (tblhdr.Rows[x]["panno"].ToString() != "")
                 {
                     rf = rf + 1;
-                    add = add + Cn.GCS() + "PAN # " + tblauto.Rows[x]["panno"].ToString();
+                    add = add + Cn.GCS() + "PAN # " + tblhdr.Rows[x]["panno"].ToString();
                 }
                 address = add.Split(Convert.ToChar(Cn.GCS()));
 
-                double t_qnty = 0, t_nos = 0, t_stkqnty = 0, t_lqnty = 0, nslno = 0;
-                string autono = tblauto.Rows[x]["autono"].ToString();
-                string trem = tblauto.Rows[x]["docrem"].ToString(), usr_id = tblauto.Rows[x]["usr_id"].ToString();
-                string recrefno = "", mcprefno = "", orgrefno = "";
-                mcprefno = tblauto.Rows[x]["mcprefno"].ToString();
-                if (mcprefno != "") mcprefno += " dtd." + tblauto.Rows[x]["mcpdt"].ToString().retDateStr();
-                #region Issue Material Printing
-                string sel1 = "autono='" + autono + "'";
+                double t_qnty = 0, t_nos = 0;
+                string autono = tblhdr.Rows[x]["autono"].ToString();
+
+                #region Programme Printing
 
                 DataTable tbl = new DataTable();
-
-                string actof = "";
-                tbl = new DataTable();
-                var rowsx = rsprog.AsEnumerable()
+                var rowsx = tblprgrm.AsEnumerable()
                     .Where(t => ((string)t["autono"]) == autono);
                 if (rowsx.Any()) tbl = rowsx.CopyToDataTable();
-                if (tbl.Rows.Count > 0) actof = tbl.Rows[0]["recslnm"].ToString();
 
-                var rows1 = rstbl.AsEnumerable()
-                    .Where(q => ((string)q["autono"]) == autono);
-                if (rows1.Any()) tbl = rows1.CopyToDataTable();
-
-                var recvchdata = (from DataRow dr in tbl.Rows
-                                  select new
-                                  {
-                                      recdocno = dr["recdocno"],
-                                      recdoccd = dr["recdoccd"],
-                                      recdocdt = dr["recdocdt"]
-                                  }).Distinct().ToList();
-
-                recrefno = string.Join(",", (from a in recvchdata select a.recdoccd.ToString() + "-" + a.recdocno.ToString() + " dt " + a.recdocdt.ToString().retDateStr()).Distinct());
-
-                var orgbatchdata = (from DataRow dr in tbl.Rows
-                                    select new
-                                    {
-                                        recdocno = dr["orgbatchdocno"],
-                                        recdoccd = dr["orgbatchdoccd"],
-                                        recdocdt = dr["orgbatchdocdt"]
-                                    }).Distinct().ToList();
-
-                orgrefno = string.Join(",", (from a in orgbatchdata select a.recdoccd.ToString() + "-" + a.recdocno.ToString() + " dt " + a.recdocdt.ToString().retDateStr()).Distinct());
-                bool datahave = false;
-                maxR = tbl.Rows.Count - 1; i = 0; sln = 0; hdrprint = true;
+                maxR = tbl.Rows.Count - 1; i = 0; sln = 0;
+                t_nos = 0; t_qnty = 0;
                 while (i <= maxR)
                 {
-                    datahave = true;
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                prnloop:
+                    t_qnty = t_qnty + Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                    //t_nos = t_nos + Convert.ToDouble(tbl.Rows[i]["nos"]);
 
-                    IR.Rows[rNo]["recotype"] = "2";
-                    IR.Rows[rNo]["autono"] = tbl.Rows[i]["autono"];
-                    IR.Rows[rNo]["slcd"] = tblauto.Rows[x]["slcd"];
-                    IR.Rows[rNo]["slnm"] = tblauto.Rows[x]["slnm"];
-                    IR.Rows[rNo]["mcprefno"] = mcprefno;
-                    IR.Rows[rNo]["recrefno"] = recrefno;
-                    IR.Rows[rNo]["orgrefno"] = orgrefno;
-                    IR.Rows[rNo]["cutrecvhno"] = tblauto.Rows[x]["cutdocno"].ToString() + " dtd. " + tblauto.Rows[x]["cutdocdt"].ToString().retDateStr();
-                    if (tblauto.Rows[x]["linenm"].ToString().retStr() != "") IR.Rows[rNo]["linenm"] = "Unit - " + tblauto.Rows[x]["linenm"].ToString();
-                    if (tblauto.Rows[x]["linenm"].ToString().retStr() != "") chlntype = "INTER FACTORY CHALLAN"; else chlntype = "ROAD CHALLAN";
+                    IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
+                    IR_PROG.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
+                    IR_PROG.Rows[rNo]["docno"] = tblhdr.Rows[x]["docno"].ToString();
+                    IR_PROG.Rows[rNo]["docdt"] = tblhdr.Rows[x]["docdt"];
+                    IR_PROG.Rows[rNo]["vechlno"] = tblhdr.Rows[x]["lorryno"];
+                    IR_PROG.Rows[rNo]["recvperson"] = tblhdr.Rows[x]["recvperson"];
+                    IR_PROG.Rows[rNo]["user_nm"] = tblhdr.Rows[x]["usr_id"].ToString();
+                    IR_PROG.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].ToString();
+                    IR_PROG.Rows[rNo]["itdescn"] = tbl.Rows[i]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
+                    IR_PROG.Rows[rNo]["partnm"] = tbl.Rows[i]["partnm"].ToString();
+                    IR_PROG.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"];
+                    IR_PROG.Rows[rNo]["colrnm"] = tbl.Rows[i]["colrnm"];
+                    IR_PROG.Rows[rNo]["sizenm"] = tbl.Rows[i]["sizenm"];
+                    IR_PROG.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomcd"];
+                    IR_PROG.Rows[rNo]["nos"] = tbl.Rows[i]["nos"];
+                    IR_PROG.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"];
+                    IR_PROG.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"];
+                    //IR_PROG.Rows[rNo]["uniqno"] = tbl.Rows[i]["uniqno"];
+                    IR_PROG.Rows[rNo]["itremark"] = tbl.Rows[i]["itremark"];
+                    IR_PROG.Rows[rNo]["totalqnty"] = t_qnty;
 
                     int coutadd = 0;
                     for (int g = 0; g <= address.Count() - 1; g++)
                     {
                         coutadd++;
                         rfld = "sladd" + Convert.ToString(coutadd);
-                        IR.Rows[rNo][rfld] = address[g].ToString();
+                        IR_PROG.Rows[rNo][rfld] = address[g].ToString();
                     }
+                    i++;
+                    if (i > maxR) break;
+                }
 
-                    IR.Rows[rNo]["user_nm"] = usr_id;
-                    IR.Rows[rNo]["gooditem"] = gooditem;
-                    IR.Rows[rNo]["jobnm"] = jobnm;
-                    IR.Rows[rNo]["docno"] = tblauto.Rows[x]["docno"];
-                    IR.Rows[rNo]["docdt"] = tblauto.Rows[x]["docdt"].ToString().retDateStr();
-                    IR.Rows[rNo]["vechlno"] = tblauto.Rows[x]["lorryno"];
-                    IR.Rows[rNo]["recvperson"] = tblauto.Rows[x]["recvperson"];
-                    IR.Rows[rNo]["trem"] = trem;
-                    IR.Rows[rNo]["user_nm"] = usr_id;
-                    IR.Rows[rNo]["actof"] = actof == "" ? "" : "A/c of " + actof;
+                #endregion
 
-                    if (hdrprint == false)
-                    {
-                        t_qnty = t_qnty + Convert.ToDouble(tbl.Rows[i]["qnty"]);
-                        t_nos = t_nos + Convert.ToDouble(tbl.Rows[i]["nos"]);
+                #region Issue Material Printing
+                string sel1 = "autono='" + autono + "'";
 
-                        sln++;
-                        IR.Rows[rNo]["iisuomnm"] = tbl.Rows[i]["uomnm"].ToString();
-                        IR.Rows[rNo]["slno"] = sln;
-                        IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"];
-                        IR.Rows[rNo]["mtrljobcd"] = tbl.Rows[i]["mtrljobcd"];
-                        string dsc = tbl.Rows[i]["itnm"].ToString();
-                        if (tbl.Rows[i]["mchnname"].ToString() != "") dsc += " " + tbl.Rows[i]["mchnname"].ToString();
-                        if (tbl.Rows[i]["itgrptype"].ToString() == "F")
-                        {
-                            dsc = tbl.Rows[i]["styleno"].ToString() + " - " + tbl.Rows[i]["sizenm"].ToString();
-                            if (tbl.Rows[i]["partnm"].ToString() != "") dsc += " [" + tbl.Rows[i]["partnm"].ToString() + "] ";
-                        }
-                        IR.Rows[rNo]["orgbatchdocno"] = tbl.Rows[i]["orgbatchdocno"];
-                        IR.Rows[rNo]["orgbatchdocdt"] = tbl.Rows[i]["orgbatchdocdt"].ToString().retDateStr("yy");
-                        IR.Rows[rNo]["itnm"] = dsc;
-                        IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"];
-                        IR.Rows[rNo]["pcsperbox"] = Convert.ToDouble(tbl.Rows[i]["pcsperbox"]);
-                        IR.Rows[rNo]["partnm"] = tbl.Rows[i]["partnm"];
-                        IR.Rows[rNo]["sizenm"] = tbl.Rows[i]["sizenm"];
-                        //IR.Rows[rNo]["qntyin"] = Salesfunc.retQtyInDesc(tbl.Rows[i]["qntyin"].ToString().retStr());
-                        IR.Rows[rNo]["hsncode"] = tbl.Rows[i]["hsncode"];
-                        IR.Rows[rNo]["millnm"] = tbl.Rows[i]["millnm"];
-                        IR.Rows[rNo]["nos"] = Convert.ToDouble(tbl.Rows[i]["nos"]);
-                        double pp = 12;
-                        if (QntyIn == "B") pp = Convert.ToDouble(tbl.Rows[i]["pcsperbox"]);
-                        if (jobcd != "CT")
-                        {
-                            IR.Rows[rNo]["stkqnty"] = QntyIn != "" ? Salesfunc.ConvPcstoBox(Convert.ToDouble(tbl.Rows[i]["qnty"]), pp) : Convert.ToDouble(tbl.Rows[i]["stkqnty"]);
-                            if (Convert.ToDouble(IR.Rows[rNo]["stkqnty"] == null ? 0 : Convert.ToDouble(IR.Rows[rNo]["stkqnty"])) == 0) IR.Rows[rNo]["qntyin"] = "";
-                        }
-                        IR.Rows[rNo]["qnty"] = Convert.ToDouble(tbl.Rows[i]["qnty"].ToString());
-                        if (Convert.ToDouble(tbl.Rows[i]["lpcs"].ToString()) == 0 && tbl.Rows[i]["stktype"].ToString() == "L")
-                        {
-                            nslno++;
-                            IR.Rows[rNo]["lpcs"] = Convert.ToDouble(tbl.Rows[i]["qnty"].ToString());
-                            IR.Rows[rNo]["qnty"] = Convert.ToDouble(tbl.Rows[i]["qnty"].ToString());
-                            t_lqnty = t_lqnty + Convert.ToDouble(tbl.Rows[i]["qnty"].ToString());
-                            IR.Rows[rNo]["recoskip"] = "N";
-                            IR.Rows[rNo]["nslno"] = nslno;
-                            IR.Rows[rNo]["stkqnty"] = 0; IR.Rows[rNo]["qntyin"] = "";
-                        }
-                        else
-                        {
-                            if (tbl.Rows[i]["stktype"].ToString() == "F" || Convert.ToDouble(tbl.Rows[i]["slno"]) > 1000)
-                            {
-                                nslno++;
-                                if (jobcd == "ST" && Convert.ToDouble(tbl.Rows[i]["mergepcs"].ToString()) > 1)
-                                {
-                                    IR.Rows[rNo]["nqnty"] = Convert.ToDouble(tbl.Rows[i]["qnty"].ToString()) / Convert.ToDouble(tbl.Rows[i]["mergepcs"].ToString());
-                                    IR.Rows[rNo]["lpcs"] = Convert.ToDouble(tbl.Rows[i]["lpcs"].ToString()) / Convert.ToDouble(tbl.Rows[i]["mergepcs"].ToString());
-                                    IR.Rows[rNo]["stkqnty"] = QntyIn != "" ? Salesfunc.ConvPcstoBox(Convert.ToDouble(tbl.Rows[i]["qnty"]) / Convert.ToDouble(tbl.Rows[i]["mergepcs"].ToString()), pp) : Convert.ToDouble(tbl.Rows[i]["stkqnty"]);
-                                }
-                                else
-                                {
-                                    IR.Rows[rNo]["nqnty"] = Convert.ToDouble(tbl.Rows[i]["qnty"].ToString());
-                                    IR.Rows[rNo]["lpcs"] = Convert.ToDouble(tbl.Rows[i]["lpcs"].ToString());
-                                }
-                                t_lqnty = t_lqnty + Convert.ToDouble(tbl.Rows[i]["lpcs"].ToString());
-                                IR.Rows[rNo]["recoskip"] = "N";
-                                IR.Rows[rNo]["nslno"] = nslno;
-                            }
-                        }
-                        IR.Rows[rNo]["tlqnty"] = t_lqnty.ToString();
-                        IR.Rows[rNo]["tqnty"] = t_qnty.ToString();
-                        IR.Rows[rNo]["tnos"] = t_nos;
-                        currdeci = Convert.ToDouble(tbl.Rows[i]["decimals"].ToString());
-                        if (maxDeci < currdeci) maxDeci = currdeci;
-                        IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
-                        IR.Rows[rNo]["decimals"] = currdeci;
-                        IR.Rows[rNo]["maxdecimals"] = maxDeci;
-                        IR.Rows[rNo]["gsm"] = Convert.ToDouble(tbl.Rows[i]["gsm"]) == 0 ? "" : tbl.Rows[i]["gsm"];
-                        IR.Rows[rNo]["texture"] = tbl.Rows[i]["texture"];
-                        IR.Rows[rNo]["gauge"] = Convert.ToDouble(tbl.Rows[i]["gauge"]) == 0 ? "" : tbl.Rows[i]["gauge"];
-                        IR.Rows[rNo]["ll"] = Convert.ToDouble(tbl.Rows[i]["ll"]) == 0 ? "" : tbl.Rows[i]["ll"];
-                        IR.Rows[rNo]["dia"] = Convert.ToDouble(tbl.Rows[i]["dia"]) == 0 ? "" : tbl.Rows[i]["dia"];
-                        IR.Rows[rNo]["batchno"] = tbl.Rows[i]["batchno"];
-                        IR.Rows[rNo]["colrnm"] = tbl.Rows[i]["colrnm"];
-                        IR.Rows[rNo]["mchnname"] = tbl.Rows[i]["mchnname"];
-                    }
+                tbl = new DataTable();
 
-                    if (hdrprint == true)
-                    {
-                        IR.Rows[rNo]["recotype"] = "1";
-                        hdrprint = false;
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        goto prnloop;
-                    }
+                string actof = "";
+                tbl = new DataTable();
+                rowsx = tbliss.AsEnumerable()
+                    .Where(t => ((string)t["autono"]) == autono);
+                if (rowsx.Any()) tbl = rowsx.CopyToDataTable();
+
+
+                maxR = tbl.Rows.Count - 1; i = 0; sln = 0; t_qnty = 0;
+                while (i <= maxR)
+                {
+
+                    t_qnty = t_qnty + Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                    //t_nos = t_nos + Convert.ToDouble(tbl.Rows[i]["nos"]);
+                    sln++;
+                    IR_ISSUE.Rows.Add(""); rNo = IR_ISSUE.Rows.Count - 1;
+                    IR_ISSUE.Rows[rNo]["autono"] = tbl.Rows[i]["autono"].ToString();
+                    //IR_ISSUE.Rows[rNo]["progslno"] = tbl.Rows[i]["progslno"].ToString();
+                    IR_ISSUE.Rows[rNo]["iss_slno"] = tbl.Rows[i]["slno"].ToString();
+                    IR_ISSUE.Rows[rNo]["iss_itdescn"] = tbl.Rows[i]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
+                    IR_ISSUE.Rows[rNo]["iss_styleno"] = tbl.Rows[i]["styleno"];
+                    IR_ISSUE.Rows[rNo]["iss_colrnm"] = tbl.Rows[i]["colrnm"];
+                    IR_ISSUE.Rows[rNo]["iss_sizenm"] = tbl.Rows[i]["sizenm"];
+                    IR_ISSUE.Rows[rNo]["iss_hsncode"] = tbl.Rows[i]["sizenm"];
+                    IR_ISSUE.Rows[rNo]["iss_uomnm"] = tbl.Rows[i]["uomcd"];
+                    IR_ISSUE.Rows[rNo]["iss_nos"] = tbl.Rows[i]["nos"];
+                    IR_ISSUE.Rows[rNo]["iss_cutlength"] = tbl.Rows[i]["cutlength"];
+                    IR_ISSUE.Rows[rNo]["iss_qnty"] = tbl.Rows[i]["qnty"];
+                    IR_ISSUE.Rows[rNo]["iss_totalqnty"] = t_qnty;
+
 
                     i++;
                     if (i > maxR) break;
                 }
-                if (tbl.Rows.Count > 0)
-                {
-                    if (jobcd == "ST" && Convert.ToDouble(tbl.Rows[0]["mergepcs"].ToString()) > 1)
-                    {
-                        trem = (t_qnty + t_lqnty).ToString() + " Pcs converted to " + (t_qnty + t_lqnty) / Convert.ToDouble(tbl.Rows[0]["mergepcs"].ToString()) + " Pcs";
-                    }
-                }
-
-                if (datahave == true)
-                {
-                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["recotype"] = "3";
-                    IR.Rows[rNo]["autono"] = autono;
-                    IR.Rows[rNo]["tlqnty"] = t_lqnty.ToString();
-                    IR.Rows[rNo]["tqnty"] = t_qnty.ToString();
-                    IR.Rows[rNo]["tnos"] = t_nos;
-                    IR.Rows[rNo]["maxdecimals"] = maxDeci;
-                    IR.Rows[rNo]["trem"] = trem;
-                    IR.Rows[rNo]["user_nm"] = usr_id;
-
-                    IR.Rows[rNo]["slnm"] = tblauto.Rows[x]["slnm"];
-                    IR.Rows[rNo]["docno"] = tblauto.Rows[x]["docno"];
-                    IR.Rows[rNo]["docdt"] = tblauto.Rows[x]["docdt"].ToString().retDateStr();
-                }
                 #endregion
 
-                if (repname != "JobIssueOld")
-                {
-                    #region Programme Printing
-                    datahave = false;
-                    string sel2 = "autono='" + autono + "'";
+                //eof 
 
-                    tbl = new DataTable();
-                    var rows2 = rsprog.AsEnumerable()
-                        .Where(t => ((string)t["autono"]) == autono);
-                    if (rows2.Any()) tbl = rows2.CopyToDataTable();
-
-                    //tbl = (from DataRow DR in rsprog.Rows where DR["autono"].ToString() == autono select DR).CopyToDataTable();
-
-                    maxR = tbl.Rows.Count - 1; i = 0; sln = 0;
-                    t_nos = 0; t_qnty = 0; hdrprint = true;
-                    maxDeci = 0; currdeci = 0;
-                    while (i <= maxR)
-                    {
-                        datahave = true;
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    progloop:
-                        IR.Rows[rNo]["actof"] = tbl.Rows[i]["recslnm"].ToString();
-                        IR.Rows[rNo]["recotype"] = "12";
-                        IR.Rows[rNo]["autono"] = tbl.Rows[i]["autono"];
-                        IR.Rows[rNo]["slcd"] = tblauto.Rows[x]["slcd"];
-                        IR.Rows[rNo]["slnm"] = tblauto.Rows[x]["slnm"];
-                        IR.Rows[rNo]["mcprefno"] = mcprefno;
-                        IR.Rows[rNo]["recrefno"] = recrefno;
-                        IR.Rows[rNo]["orgrefno"] = orgrefno;
-                        IR.Rows[rNo]["cutrecvhno"] = tblauto.Rows[x]["cutdocno"].ToString() + " dtd. " + tblauto.Rows[x]["cutdocdt"].ToString().retDateStr();
-                        if (tblauto.Rows[x]["linenm"].ToString().retStr() != "") IR.Rows[rNo]["linenm"] = "Unit - " + tblauto.Rows[x]["linenm"].ToString();
-                        if (tblauto.Rows[x]["linenm"].ToString().retStr() != "") chlntype = "INTER FACTORY CHALLAN"; else chlntype = "ROAD CHALLAN";
-
-                        int coutadd = 0;
-                        for (int g = 0; g <= address.Count() - 1; g++)
-                        {
-                            coutadd++;
-                            rfld = "sladd" + Convert.ToString(coutadd);
-                            IR.Rows[rNo][rfld] = address[g].ToString();
-                        }
-
-                        IR.Rows[rNo]["gooditem"] = gooditem;
-                        IR.Rows[rNo]["jobnm"] = jobnm;
-                        IR.Rows[rNo]["docno"] = tblauto.Rows[x]["docno"];
-                        IR.Rows[rNo]["docdt"] = tblauto.Rows[x]["docdt"].ToString().retDateStr();
-                        IR.Rows[rNo]["vechlno"] = tblauto.Rows[x]["lorryno"];
-                        IR.Rows[rNo]["recvperson"] = tblauto.Rows[x]["recvperson"];
-                        IR.Rows[rNo]["trem"] = trem;
-                        IR.Rows[rNo]["user_nm"] = usr_id;
-                        IR.Rows[rNo]["recoskip"] = "";
-                        if (hdrprint == false)
-                        {
-                            sln++;
-                            IR.Rows[rNo]["slno"] = sln;
-                            IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"];
-                            string dsc = tbl.Rows[i]["itnm"].ToString();
-                            if (tbl.Rows[i]["mchnname"].ToString() != "") dsc += " " + tbl.Rows[i]["mchnname"].ToString();
-                            IR.Rows[rNo]["itnm"] = dsc;
-                            IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"];
-                            IR.Rows[rNo]["pcsperbox"] = Convert.ToDouble(tbl.Rows[i]["pcsperbox"]);
-                            IR.Rows[rNo]["partnm"] = tbl.Rows[i]["partnm"];
-                            IR.Rows[rNo]["sizenm"] = tbl.Rows[i]["sizenm"];
-                            IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
-                            IR.Rows[rNo]["hsncode"] = tbl.Rows[i]["hsncode"];
-                            IR.Rows[rNo]["millnm"] = tbl.Rows[i]["millnm"];
-                            currdeci = Convert.ToDouble(tbl.Rows[i]["decimals"].ToString());
-                            IR.Rows[rNo]["nos"] = Convert.ToDouble(tbl.Rows[i]["nos"]);
-                            double qnty = Convert.ToDouble(tbl.Rows[i]["qnty"]), s_qnty = Convert.ToDouble(tbl.Rows[i]["stkqnty"]);
-                            if (progprint == true) IR.Rows[i]["progprint"] = "Y";
-                            IR.Rows[rNo]["qnty"] = qnty;
-                            s_qnty = 0;
-                            switch (QntyIn)
-                            {
-                                case "D":
-                                    IR.Rows[rNo]["qntyin"] = "Dzn";
-                                    s_qnty = Salesfunc.ConvPcstoBox(qnty, 12);
-                                    IR.Rows[rNo]["stkqnty"] = s_qnty;
-                                    currdeci = 2;
-                                    break;
-                                case "B":
-                                    IR.Rows[rNo]["qntyin"] = "Box";
-                                    s_qnty = Salesfunc.ConvPcstoBox(qnty, Convert.ToDouble(tbl.Rows[i]["pcsperbox"]));
-                                    IR.Rows[rNo]["stkqnty"] = s_qnty;
-                                    break;
-                                default:
-                                    IR.Rows[rNo]["qntyin"] = tbl.Rows[i]["qntyin"];
-                                    IR.Rows[rNo]["stkqnty"] = Convert.ToDouble(tbl.Rows[i]["stkqnty"]);
-                                    break;
-                            }
-                            if (jobcd != "CT") if (tbl.Rows[i]["stktype"].ToString() != "L") t_stkqnty = t_stkqnty + s_qnty;
-                            IR.Rows[rNo]["decimals"] = currdeci;
-                            if (maxDeci < currdeci) maxDeci = currdeci;
-                            IR.Rows[rNo]["maxdecimals"] = maxDeci;
-                            IR.Rows[rNo]["gsm"] = Convert.ToDouble(tbl.Rows[i]["gsm"]) == 0 ? "" : tbl.Rows[i]["gsm"];
-                            IR.Rows[rNo]["texture"] = tbl.Rows[i]["texture"];
-                            IR.Rows[rNo]["gauge"] = Convert.ToDouble(tbl.Rows[i]["gauge"]) == 0 ? "" : tbl.Rows[i]["gauge"];
-                            IR.Rows[rNo]["ll"] = Convert.ToDouble(tbl.Rows[i]["ll"]) == 0 ? "" : tbl.Rows[i]["ll"];
-                            IR.Rows[rNo]["dia"] = Convert.ToDouble(tbl.Rows[i]["dia"]) == 0 ? "" : tbl.Rows[i]["dia"];
-                            IR.Rows[rNo]["batchno"] = tbl.Rows[i]["batchno"];
-                            IR.Rows[rNo]["colrnm"] = tbl.Rows[i]["colrnm"];
-                            IR.Rows[rNo]["proguniqno"] = tbl.Rows[i]["proguniqno"];
-                            IR.Rows[rNo]["mchnname"] = tbl.Rows[i]["mchnname"];
-                            if (tbl.Rows[i]["proguniqno"].ToString() != "")
-                            {
-                                IR.Rows[rNo]["proguniqnojpg"] = "c:\\improvar\\" + tbl.Rows[i]["proguniqno"] + ".jpg";
-                                barcode = tbl.Rows[i]["proguniqno"].ToString();
-                                //CnBarCode.BarcodeGeneratre(tbl.Rows[i]["proguniqno"].ToString());
-                                //CnBarCode.genBarCode(tbl.Rows[i]["proguniqno"].ToString(), true);
-                            }
-                        }
-
-                        if (hdrprint == true)
-                        {
-                            IR.Rows[rNo]["recotype"] = "11";
-                            hdrprint = false;
-                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            goto progloop;
-                        }
-
-                        t_qnty = t_qnty + Convert.ToDouble(tbl.Rows[i]["qnty"]);
-                        t_nos = t_nos + Convert.ToDouble(tbl.Rows[i]["nos"]);
-
-                        i++;
-                        if (i > maxR) break;
-                    }
-
-                    if (datahave == true)
-                    {
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["recotype"] = "13";
-                        IR.Rows[rNo]["autono"] = autono;
-                        IR.Rows[rNo]["tqnty"] = t_qnty;
-                        IR.Rows[rNo]["tstkqnty"] = t_stkqnty;
-                        IR.Rows[rNo]["tnos"] = t_nos;
-                        IR.Rows[rNo]["trem"] = trem;
-                        IR.Rows[rNo]["maxdecimals"] = maxDeci;
-                        IR.Rows[rNo]["tlqnty"] = t_lqnty;
-                        IR.Rows[rNo]["user_nm"] = usr_id;
-                    }
-                    #endregion
-                    //eof 
-                }
                 x++;
             }
 
+            DataSet IR = new DataSet();
+            IR.Tables.Add(IR_PROG);
+            IR.Tables.Add(IR_ISSUE);
             string[] compaddress;
-            compaddress = Salesfunc.retCompAddress(gocd).Split(Convert.ToChar(Cn.GCS()));
+            compaddress = Salesfunc.retCompAddress().Split(Convert.ToChar(Cn.GCS()));
             string rptname = "~/Report/" + repname + ".rpt";
 
             reportdocument.Load(Server.MapPath(rptname));
             reportdocument.SetDataSource(IR);
-            reportdocument.SetParameterValue("complogo", Salesfunc.retCompLogo());
+            //reportdocument.SetParameterValue("complogo", Salesfunc.retCompLogo());
             reportdocument.SetParameterValue("compnm", compaddress[0]);
             reportdocument.SetParameterValue("compadd", compaddress[1]);
             reportdocument.SetParameterValue("compstat", compaddress[2]);
             reportdocument.SetParameterValue("locaadd", compaddress[3]);
             reportdocument.SetParameterValue("locastat", compaddress[4]);
             reportdocument.SetParameterValue("billheading", hddsp);
-            reportdocument.SetParameterValue("chlntype", chlntype);
+            reportdocument.SetParameterValue("chlntype", "");
 
             Response.Buffer = false;
             Response.ClearContent();
             Response.ClearHeaders();
             Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-
-            for (Int32 f = 0; f <= rsprog.Rows.Count - 1; f++)
-            {
-                barcode = rsprog.Rows[f]["proguniqno"].ToString();
-
-                string path1 = @"C:\Improvar\" + barcode + ".jpg";
-                if (System.IO.File.Exists(path1))
-                {
-                    System.IO.File.Delete(path1);
-                }
-            }
 
             stream.Seek(0, SeekOrigin.Begin);
             reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
@@ -913,7 +584,7 @@ namespace Improvar.Controllers
             sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.slcd=d.slcd(+) and a.autono=e.autono(+) and a.autono=f.autono(+) and c.linecd=g.linecd(+) and ";
             sql += "c.mcpautono=h.autono(+) and c.cutrecdocautono=i.autono(+) and c.mcpautono=j.autono(+) ";
             sql += "order by docdt, docno ";
-            DataTable tblauto = masterHelp.SQLquery(sql);
+            DataTable tblhdr = masterHelp.SQLquery(sql);
 
             DataTable IR = new DataTable("");
             IR.Columns.Add("autono", typeof(string), "");
@@ -987,7 +658,7 @@ namespace Improvar.Controllers
             bool hdrprint = true;
             ReportDocument reportdocument = new ReportDocument();
             Int32 maxR = 0, i = 0;
-            Int32 x = 0, maxX = tblauto.Rows.Count - 1;
+            Int32 x = 0, maxX = tblhdr.Rows.Count - 1;
             Int32 rNo = 0, sln = 0;
             double maxDeci = 0, currdeci = 0;
             while (x <= maxX)
@@ -998,28 +669,28 @@ namespace Improvar.Controllers
                 for (int f = 1; f <= 7; f++)
                 {
                     cfld = "add" + Convert.ToString(f).ToString();
-                    if (tblauto.Rows[x][cfld].ToString() != "")
+                    if (tblhdr.Rows[x][cfld].ToString() != "")
                     {
                         rf = rf + 1;
                         if (add == "")
                         {
-                            add = add + tblauto.Rows[x][cfld].ToString();
+                            add = add + tblhdr.Rows[x][cfld].ToString();
                         }
                         else
                         {
-                            add = add + Cn.GCS() + tblauto.Rows[x][cfld].ToString();
+                            add = add + Cn.GCS() + tblhdr.Rows[x][cfld].ToString();
                         }
                     }
                 }
-                if (tblauto.Rows[x]["gstno"].ToString() != "")
+                if (tblhdr.Rows[x]["gstno"].ToString() != "")
                 {
                     rf = rf + 1;
-                    add = add + Cn.GCS() + "GST # " + tblauto.Rows[x]["gstno"].ToString();
+                    add = add + Cn.GCS() + "GST # " + tblhdr.Rows[x]["gstno"].ToString();
                 }
-                if (tblauto.Rows[x]["panno"].ToString() != "")
+                if (tblhdr.Rows[x]["panno"].ToString() != "")
                 {
                     rf = rf + 1;
-                    add = add + Cn.GCS() + "PAN # " + tblauto.Rows[x]["panno"].ToString();
+                    add = add + Cn.GCS() + "PAN # " + tblhdr.Rows[x]["panno"].ToString();
                 }
                 address = add.Split(Convert.ToChar(Cn.GCS()));
 
@@ -1027,11 +698,11 @@ namespace Improvar.Controllers
                 selitgrptype = "C,F,Y";
                 double t_qnty = 0, t_nos = 0, t_stkqnty = 0, t_wght = 0;
                 double tusedwt = 0, twaswt = 0;
-                string autono = tblauto.Rows[x]["autono"].ToString();
-                string trem = tblauto.Rows[x]["docrem"].ToString(), usr_id = tblauto.Rows[x]["usr_id"].ToString();
+                string autono = tblhdr.Rows[x]["autono"].ToString();
+                string trem = tblhdr.Rows[x]["docrem"].ToString(), usr_id = tblhdr.Rows[x]["usr_id"].ToString();
                 string recrefno = "", mcprefno = "", orgrefno = "";
-                mcprefno = tblauto.Rows[x]["mcprefno"].ToString();
-                if (mcprefno != "") mcprefno += " dtd." + tblauto.Rows[x]["mcpdt"].ToString().retDateStr();
+                mcprefno = tblhdr.Rows[x]["mcprefno"].ToString();
+                if (mcprefno != "") mcprefno += " dtd." + tblhdr.Rows[x]["mcpdt"].ToString().retDateStr();
                 #region Receive Material Printing
 
                 DataTable tbl = new DataTable();
@@ -1069,14 +740,14 @@ namespace Improvar.Controllers
                     IR.Rows[rNo]["cloth_was"] = tbl.Rows[i]["cloth_was"];
                     IR.Rows[rNo]["recotype"] = "2";
                     IR.Rows[rNo]["autono"] = tbl.Rows[i]["autono"];
-                    IR.Rows[rNo]["slcd"] = tblauto.Rows[x]["slcd"];
-                    IR.Rows[rNo]["slnm"] = tblauto.Rows[x]["slnm"];
+                    IR.Rows[rNo]["slcd"] = tblhdr.Rows[x]["slcd"];
+                    IR.Rows[rNo]["slnm"] = tblhdr.Rows[x]["slnm"];
                     IR.Rows[rNo]["mcprefno"] = mcprefno;
                     IR.Rows[rNo]["recrefno"] = recrefno;
                     IR.Rows[rNo]["orgrefno"] = orgrefno;
-                    IR.Rows[rNo]["cutrecvhno"] = tblauto.Rows[x]["cutdocno"].ToString() + " dtd. " + tblauto.Rows[x]["cutdocdt"].ToString().retDateStr();
-                    if (tblauto.Rows[x]["linenm"].ToString().retStr() != "") IR.Rows[rNo]["linenm"] = "Unit - " + tblauto.Rows[x]["linenm"].ToString();
-                    if (tblauto.Rows[x]["linenm"].ToString().retStr() != "") chlntype = "INTER FACTORY CHALLAN"; else chlntype = "ROAD CHALLAN";
+                    IR.Rows[rNo]["cutrecvhno"] = tblhdr.Rows[x]["cutdocno"].ToString() + " dtd. " + tblhdr.Rows[x]["cutdocdt"].ToString().retDateStr();
+                    if (tblhdr.Rows[x]["linenm"].ToString().retStr() != "") IR.Rows[rNo]["linenm"] = "Unit - " + tblhdr.Rows[x]["linenm"].ToString();
+                    if (tblhdr.Rows[x]["linenm"].ToString().retStr() != "") chlntype = "INTER FACTORY CHALLAN"; else chlntype = "ROAD CHALLAN";
 
                     int coutadd = 0;
                     for (int g = 0; g <= address.Count() - 1; g++)
@@ -1088,10 +759,10 @@ namespace Improvar.Controllers
 
                     IR.Rows[rNo]["gooditem"] = gooditem;
                     IR.Rows[rNo]["jobnm"] = jobnm;
-                    IR.Rows[rNo]["docno"] = tblauto.Rows[x]["docno"];
-                    IR.Rows[rNo]["docdt"] = tblauto.Rows[x]["docdt"].ToString().retDateStr();
-                    IR.Rows[rNo]["vechlno"] = tblauto.Rows[x]["lorryno"];
-                    IR.Rows[rNo]["recvperson"] = tblauto.Rows[x]["recvperson"];
+                    IR.Rows[rNo]["docno"] = tblhdr.Rows[x]["docno"];
+                    IR.Rows[rNo]["docdt"] = tblhdr.Rows[x]["docdt"].ToString().retDateStr();
+                    IR.Rows[rNo]["vechlno"] = tblhdr.Rows[x]["lorryno"];
+                    IR.Rows[rNo]["recvperson"] = tblhdr.Rows[x]["recvperson"];
                     IR.Rows[rNo]["trem"] = trem;
                     IR.Rows[rNo]["user_nm"] = usr_id;
 
@@ -1184,14 +855,14 @@ namespace Improvar.Controllers
 
                     IR.Rows[rNo]["recotype"] = "12";
                     IR.Rows[rNo]["autono"] = tbl.Rows[i]["autono"];
-                    IR.Rows[rNo]["slcd"] = tblauto.Rows[x]["slcd"];
-                    IR.Rows[rNo]["slnm"] = tblauto.Rows[x]["slnm"];
+                    IR.Rows[rNo]["slcd"] = tblhdr.Rows[x]["slcd"];
+                    IR.Rows[rNo]["slnm"] = tblhdr.Rows[x]["slnm"];
                     IR.Rows[rNo]["mcprefno"] = mcprefno;
                     IR.Rows[rNo]["recrefno"] = recrefno;
                     IR.Rows[rNo]["orgrefno"] = orgrefno;
-                    IR.Rows[rNo]["cutrecvhno"] = tblauto.Rows[x]["cutdocno"].ToString() + " dtd. " + tblauto.Rows[x]["cutdocdt"].ToString().retDateStr();
-                    if (tblauto.Rows[x]["linenm"].ToString().retStr() != "") IR.Rows[rNo]["linenm"] = "Unit - " + tblauto.Rows[x]["linenm"].ToString();
-                    if (tblauto.Rows[x]["linenm"].ToString().retStr() != "") chlntype = "INTER FACTORY CHALLAN"; else chlntype = "ROAD CHALLAN";
+                    IR.Rows[rNo]["cutrecvhno"] = tblhdr.Rows[x]["cutdocno"].ToString() + " dtd. " + tblhdr.Rows[x]["cutdocdt"].ToString().retDateStr();
+                    if (tblhdr.Rows[x]["linenm"].ToString().retStr() != "") IR.Rows[rNo]["linenm"] = "Unit - " + tblhdr.Rows[x]["linenm"].ToString();
+                    if (tblhdr.Rows[x]["linenm"].ToString().retStr() != "") chlntype = "INTER FACTORY CHALLAN"; else chlntype = "ROAD CHALLAN";
 
                     int coutadd = 0;
                     for (int g = 0; g <= address.Count() - 1; g++)
@@ -1203,10 +874,10 @@ namespace Improvar.Controllers
 
                     IR.Rows[rNo]["gooditem"] = gooditem;
                     IR.Rows[rNo]["jobnm"] = jobnm;
-                    IR.Rows[rNo]["docno"] = tblauto.Rows[x]["docno"];
-                    IR.Rows[rNo]["docdt"] = tblauto.Rows[x]["docdt"].ToString().retDateStr();
-                    IR.Rows[rNo]["vechlno"] = tblauto.Rows[x]["lorryno"];
-                    IR.Rows[rNo]["recvperson"] = tblauto.Rows[x]["recvperson"];
+                    IR.Rows[rNo]["docno"] = tblhdr.Rows[x]["docno"];
+                    IR.Rows[rNo]["docdt"] = tblhdr.Rows[x]["docdt"].ToString().retDateStr();
+                    IR.Rows[rNo]["vechlno"] = tblhdr.Rows[x]["lorryno"];
+                    IR.Rows[rNo]["recvperson"] = tblhdr.Rows[x]["recvperson"];
                     IR.Rows[rNo]["trem"] = trem;
                     IR.Rows[rNo]["user_nm"] = usr_id;
 
