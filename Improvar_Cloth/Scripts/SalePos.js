@@ -1,7 +1,6 @@
-﻿
-var DefaultAction = $("#DefaultAction").val();
+﻿var DefaultAction = $("#DefaultAction").val();
 function GetBarnoDetails(id) {
-    debugger;
+  
     if (DefaultAction == "V") return true;
     debugger;
     if (id == "") {
@@ -252,3 +251,244 @@ function AddBarnoRow(hlpstr) {
     $("#BARCODE").val('');
     $("#BARCODE").focus();
 }
+
+function CalculateBarRowAmt(i) {
+    debugger;
+    if (DefaultAction == "V") return true;
+    var B_QNTY_ = retFloat($("#B_QNTY_"+i).val());
+    var B_RATE_ = retFloat($("#B_RATE_"+i).val());
+    var grsAmt=B_QNTY_*B_RATE_;    
+    var B_DISCTYPE_ = $("#B_DISCTYPE_"+i).val();
+    var B_DISCRATE_ = retFloat($("#B_DISCRATE_"+i).val());
+
+    B_QNTY_0
+    var R_TOTAL_BILL_AMOUNT = 0;
+    var TOTAL_ROUND = 0;
+    var netamt = 0;
+    var ROUND_TAG = document.getElementById("RoundOff").checked;
+
+
+
+
+    if (PRODUCT_TOTAL_AMT == "") { PRODUCT_TOTAL_AMT = parseFloat(0); } else { PRODUCT_TOTAL_AMT = parseFloat(PRODUCT_TOTAL_AMT); }
+    var T_GROSS_AMT = document.getElementById("T_GROSS_AMT").value;
+    if (T_GROSS_AMT == "") { T_GROSS_AMT = parseFloat(0); } else { T_GROSS_AMT = parseFloat(T_GROSS_AMT); }
+    var A_T_AMOUNT = document.getElementById("A_T_AMOUNT").value;
+    if (A_T_AMOUNT == "") { A_T_AMOUNT = parseFloat(0); } else { A_T_AMOUNT = parseFloat(A_T_AMOUNT); }
+    var PRODUCT_TOTAL_IGST = document.getElementById("T_IGST_AMT").value;
+    if (PRODUCT_TOTAL_IGST == "") { PRODUCT_TOTAL_IGST = parseFloat(0); } else { PRODUCT_TOTAL_IGST = parseFloat(PRODUCT_TOTAL_IGST); }
+    var PRODUCT_TOTAL_CGST = document.getElementById("T_CGST_AMT").value;
+    if (PRODUCT_TOTAL_CGST == "") { PRODUCT_TOTAL_CGST = parseFloat(0); } else { PRODUCT_TOTAL_CGST = parseFloat(PRODUCT_TOTAL_CGST); }
+    var PRODUCT_TOTAL_SGST = document.getElementById("T_SGST_AMT").value;
+    if (PRODUCT_TOTAL_SGST == "") { PRODUCT_TOTAL_SGST = parseFloat(0); } else { PRODUCT_TOTAL_SGST = parseFloat(PRODUCT_TOTAL_SGST); }
+
+    var AMOUNT_TOTAL_AMT = 0; var AMOUNT_TOTAL_IGST = 0; var AMOUNT_TOTAL_CGST = 0; var AMOUNT_TOTAL_SGST = 0;
+    var AmountGridRow = $("#AMOUNT_GRID > tbody > tr").length;
+    if (AmountGridRow > 0) {
+        AMOUNT_TOTAL_AMT = document.getElementById("A_T_NET").value;
+        if (AMOUNT_TOTAL_AMT == "") { AMOUNT_TOTAL_AMT = parseFloat(0); } else { AMOUNT_TOTAL_AMT = parseFloat(AMOUNT_TOTAL_AMT); }
+        AMOUNT_TOTAL_IGST = document.getElementById("A_T_IGST").value;
+        if (AMOUNT_TOTAL_IGST == "") { AMOUNT_TOTAL_IGST = parseFloat(0); } else { AMOUNT_TOTAL_IGST = parseFloat(AMOUNT_TOTAL_IGST); }
+        AMOUNT_TOTAL_CGST = document.getElementById("A_T_CGST").value;
+        if (AMOUNT_TOTAL_CGST == "") { AMOUNT_TOTAL_CGST = parseFloat(0); } else { AMOUNT_TOTAL_CGST = parseFloat(AMOUNT_TOTAL_CGST); }
+        AMOUNT_TOTAL_SGST = document.getElementById("A_T_SGST").value;
+        if (AMOUNT_TOTAL_SGST == "") { AMOUNT_TOTAL_SGST = parseFloat(0); } else { AMOUNT_TOTAL_SGST = parseFloat(AMOUNT_TOTAL_SGST); }
+    }
+
+    document.getElementById("TOTAL_TAX").value = parseFloat(PRODUCT_TOTAL_IGST + PRODUCT_TOTAL_CGST + PRODUCT_TOTAL_SGST + AMOUNT_TOTAL_IGST + AMOUNT_TOTAL_CGST + AMOUNT_TOTAL_SGST).toFixed(2);
+    document.getElementById("TOTAL_TXBL").value = parseFloat(T_GROSS_AMT + A_T_AMOUNT).toFixed(2);
+
+    var TOTAL_BILL_AMOUNT = parseFloat(PRODUCT_TOTAL_AMT) + parseFloat(AMOUNT_TOTAL_AMT);
+    var TCSPER = 0; TCSAMT = 0; TCSON = 0;
+        @*if ("@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SD" || "@Model.MENU_PARA" == "SBPOS" ) {*@
+        if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PDWOQ" || "@Model.MENU_PARA" == "PCWOQ" || "@Model.MENU_PARA" == "PR" || "@Model.MENU_PARA" == "SB" || "@Model.MENU_PARA" == "SD" ||  "@Model.MENU_PARA" == "PI"  || "@Model.MENU_PARA" == "CI"  ) {
+            TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
+            if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
+            document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
+            if ("@Model.MENU_PARA" == "PB"  || "@Model.MENU_PARA" == "PI"   ) {
+                TCSON=  $("#TCSON").val();
+                if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
+            }
+            else if ( "@Model.MENU_PARA" == "PDWOQ" || "@Model.MENU_PARA" == "PCWOQ" || "@Model.MENU_PARA" == "PR" ) {
+                $("#TCSON").val(TCSON);
+            }
+            else{
+                GetTCSON(TOTAL_BILL_AMOUNT);
+                TCSON=$("#TCSON").val();
+                if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+            }
+            TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100);
+            TCSAMT=  CalculateTcsAmt(TCSAMT);
+            if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "PDWOQ" || "@Model.MENU_PARA" == "PCWOQ" || "@Model.MENU_PARA" == "PR" || "@Model.MENU_PARA" == "PI")
+            {
+                var NEW_TCSAMT=$("#TCSAMT").val();
+                if (NEW_TCSAMT == "") { NEW_TCSAMT = parseFloat(0); } else { NEW_TCSAMT = parseFloat(NEW_TCSAMT) }
+
+                var TCSON=$("#TCSON").val();
+                if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+
+                var TCSPER=$("#TCSPER").val();
+                if (TCSPER == "") { TCSPER = parseFloat(0); } else { TCSPER = parseFloat(TCSPER) }
+
+                var CAL_TCSAMT = TCSAMT;
+                var BAL_AMT = Math.abs(parseFloat(NEW_TCSAMT) - parseFloat(CAL_TCSAMT));
+                if (BAL_AMT <= 1 && NEW_TCSAMT>0) {
+                    $("#TCSAMT").val(parseFloat(NEW_TCSAMT).toFixed(2));
+                    TCSAMT=NEW_TCSAMT;
+                }
+                else {
+                    $("#TCSAMT").val(parseFloat(CAL_TCSAMT).toFixed(2));
+                    TCSAMT=CAL_TCSAMT;
+                }
+            }
+            else{
+                document.getElementById("TCSAMT").value = parseFloat(TCSAMT).toFixed(2);
+
+            }
+        }
+
+
+            var BLQNTY = $("#D_BLQNTY_" + i).val();
+            if (BLQNTY != "") { BLQNTY = parseFloat(BLQNTY); } else { BLQNTY = parseFloat(0); }
+
+            var QNTY = $("#D_QNTY_" + i).val();
+            if (QNTY != "") { QNTY = parseFloat(QNTY); } else { QNTY = parseFloat(0); }
+
+            var NOS = $("#D_NOS_" + i).val();
+            if (NOS != "") { NOS = parseFloat(NOS); } else { NOS = parseFloat(0); }
+
+            var FLAGMTR = $("#D_FLAGMTR_" + i).val();
+            if (FLAGMTR != "") { FLAGMTR = parseFloat(FLAGMTR); } else { FLAGMTR = parseFloat(0); }
+
+            var RATE = $("#D_RATE_" + i).val();
+            if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
+
+            var IGSTPER = $("#D_IGSTPER_" + i).val();
+            if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
+
+            var CGSTPER = $("#D_CGSTPER_" + i).val();
+            if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
+
+            var SGSTPER = $("#D_SGSTPER_" + i).val();
+            if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
+
+            var CESSPER = $("#D_CESSPER_" + i).val();
+            if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
+
+            var DISCTYPE = $("#D_DISCTYPE_" + i).val();
+            var DISCRATE = $("#D_DISCRATE_" + i).val();
+            if (DISCRATE != "") { DISCRATE = parseFloat(DISCRATE); } else { DISCRATE = parseFloat(0); }
+
+            var TDDISCTYPE = $("#D_TDDISCTYPE_" + i).val();
+            var TDDISCRATE = $("#D_TDDISCRATE_" + i).val();
+            if (TDDISCRATE != "") { TDDISCRATE = parseFloat(TDDISCRATE); } else { TDDISCRATE = parseFloat(0); }
+
+            var SCMDISCTYPE = $("#D_SCMDISCTYPE_" + i).val();
+            var SCMDISCRATE = $("#D_SCMDISCRATE_" + i).val();
+            if (SCMDISCRATE != "") { SCMDISCRATE = parseFloat(SCMDISCRATE); } else { SCMDISCRATE = parseFloat(0); }
+
+
+            //AMOUNT CALCULATION
+            var amount = 0;
+            if (BLQNTY == 0) {
+                amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
+            }
+            else {
+                amount = parseFloat(BLQNTY) * parseFloat(RATE);
+            }
+            amount = parseFloat(amount).toFixed(2);
+            $("#D_AMT_" + i).val(amount);
+
+            //DISCOUNT AMOUNT CALCULATION
+            var DISCAMT = 0;
+            if (DISCTYPE == "Q") { DISCAMT = DISCRATE * QNTY; }
+            else if (DISCTYPE == "N") { DISCAMT = DISCRATE * NOS; }
+            else if (DISCTYPE == "P") { DISCAMT = (amount * DISCRATE) / 100; }
+            else if (DISCTYPE == "F") { DISCAMT = DISCRATE; }
+            else { DISCAMT = 0; }
+            DISCAMT = parseFloat(DISCAMT).toFixed(2);
+            $("#D_DISCAMT_" + i).val(DISCAMT);
+
+            //TDDISCOUNT AMOUNT CALCULATION
+            var TDDISCAMT = 0;
+            if (TDDISCTYPE == "Q") { TDDISCAMT = TDDISCRATE * QNTY; }
+            else if (TDDISCTYPE == "N") { TDDISCAMT = TDDISCRATE * NOS; }
+            else if (TDDISCTYPE == "P") { TDDISCAMT = (amount * TDDISCRATE) / 100; }
+            else if (TDDISCTYPE == "F") { TDDISCAMT = TDDISCRATE; }
+            else { TDDISCAMT = 0; }
+            TDDISCAMT = parseFloat(TDDISCAMT).toFixed(2);
+            $("#D_TDDISCAMT_" + i).val(TDDISCAMT);
+
+            //SCMDISCOUNT AMOUNT CALCULATION
+            var SCMDISCAMT = 0;
+            if (SCMDISCTYPE == "Q") { SCMDISCAMT = SCMDISCRATE * QNTY; }
+            else if (SCMDISCTYPE == "N") { SCMDISCAMT = SCMDISCRATE * NOS; }
+            else if (SCMDISCTYPE == "P") { SCMDISCAMT = (amount * SCMDISCRATE) / 100; }
+            else if (SCMDISCTYPE == "F") { SCMDISCAMT = SCMDISCRATE; }
+            else { SCMDISCAMT = 0; }
+            SCMDISCAMT = parseFloat(SCMDISCAMT).toFixed(2);
+            $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
+
+            //TOTAL DISCOUNT AMOUNT CALCULATION
+            var TOTDISCAMT = parseFloat(DISCAMT + TDDISCAMT + SCMDISCAMT).toFixed(2);
+            $("#D_TOTDISCAMT_" + i).val(TOTDISCAMT);
+
+            //TAXABLE CALCULATION
+            var taxbleamt = parseFloat(amount) - parseFloat(TOTDISCAMT);
+            taxbleamt = parseFloat(taxbleamt).toFixed(2);
+            $("#D_TXBLVAL_" + i).val(taxbleamt);
+            //IGST,CGST,SGST,CESS AMOUNT CALCULATION
+
+            var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
+
+            //IGST
+            if (IGSTPER == 0 || IGSTPER == "") {
+                IGSTPER = 0; IGST_AMT = 0;
+            }
+            else {
+                IGST_AMT = parseFloat((taxbleamt * IGSTPER) / 100).toFixed(2);
+                chkAmt = $("#D_IGSTAMT_" + i).val();
+                if (chkAmt == "") chkAmt = 0;
+                if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
+            }
+            $("#D_IGSTAMT_" + i).val(IGST_AMT);
+            //CGST
+            if (CGSTPER == "" || CGSTPER == 0) {
+                CGSTPER = 0; CGST_AMT = 0;
+            }
+            else {
+                CGST_AMT = parseFloat((taxbleamt * CGSTPER) / 100).toFixed(2);
+                chkAmt = $("#D_CGSTAMT_" + i).val();
+                if (chkAmt == "") chkAmt = 0;
+                if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
+            }
+            $("#D_CGSTAMT_" + i).val(CGST_AMT);
+            //SGST
+            if (SGSTPER == "" || SGSTPER == 0) {
+                SGSTPER = 0; SGST_AMT = 0;
+            }
+            else {
+                SGST_AMT = parseFloat((taxbleamt * SGSTPER) / 100).toFixed(2);
+                chkAmt = $("#D_SGSTAMT_" + i).val();
+                if (chkAmt == "") chkAmt = 0;
+                if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
+            }
+            $("#D_SGSTAMT_" + i).val(SGST_AMT);
+
+            //CESS
+            if (CESSPER == "" || CESSPER == 0) {
+                CESSPER = 0; CESS_AMT = 0;
+            }
+            else {
+                CESS_AMT = parseFloat((taxbleamt * CESSPER) / 100).toFixed(2);
+                chkAmt = $("#D_CESSAMT_" + i).val();
+                if (chkAmt == "") chkAmt = 0;
+                if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
+            }
+            $("#D_CESSAMT_" + i).val(CESS_AMT);
+
+            var netamt = parseFloat(parseFloat(taxbleamt) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
+            $("#D_NETAMT_" + i).val(netamt);
+            CalculateTotal_Details();
+
+        }
