@@ -28,7 +28,7 @@
 </style>
 <script src="~/Scripts/jquery.min.js"></script>
 <script src="~/Scripts/Cloth.js"></script>
-<script src="~/Scripts/OutIssProcess.js"></script>
+<script src="~/Scripts/Sale.js"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
@@ -106,7 +106,7 @@
             }
         });
     }
-    @*function Fill_DetailData() {
+    function Fill_DetailData() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillDetailData", PageControllerName)",
@@ -119,6 +119,12 @@
                 //below set the  child sequence
                 $(".tab-content div").removeClass("active");
                 $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    CalculateOutIssProcessAmt_Details(i);
+                }
+                $("#bardatachng").val("N");
+                $("#WaitingMode").hide();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -126,7 +132,7 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
-    }*@
+    }
 
     function Fill_QtyRequirementData() {
         $.ajax({
