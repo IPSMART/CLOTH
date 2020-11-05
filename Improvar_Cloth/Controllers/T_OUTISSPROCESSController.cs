@@ -1739,6 +1739,8 @@ namespace Improvar.Controllers
                 repDoc.TDOCNO = VE.T_TXN.DOCNO;
                 repDoc.FDT = VE.T_TXN.DOCDT.ToString().retDateStr();
                 repDoc.TDT = VE.T_TXN.DOCDT.ToString().retDateStr();
+                repDoc.SLCD = VE.T_TXN.SLCD;
+                repDoc.SLNM = VE.SLNM;
                 repDoc.AskSlCd = true;
                 repDoc.CaptionName = capname;
                 repDoc.ActionName = "Rep_IssueChallan_Print";
