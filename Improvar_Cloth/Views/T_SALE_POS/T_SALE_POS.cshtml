@@ -791,7 +791,7 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View" } })
+                                    @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @readonly = "readonly" } })
                                 </div>
                             </div>
                             <div class="col-md-8">
@@ -804,7 +804,6 @@
                                     @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
                                 </div>
                             </div>
-
                         </div>
                         <div class="row">
                             <div class="col-md-5">
