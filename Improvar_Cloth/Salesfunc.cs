@@ -929,7 +929,7 @@ namespace Improvar
             if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
             if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
             if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
-            if (skipautono.retStr() != "") sql += "a.autono not in ('" + skipautono + ") and ";
+            if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
             if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
             sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
@@ -946,7 +946,7 @@ namespace Improvar
                 if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
                 if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
                 if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
-                if (skipautono.retStr() != "") sql += "a.autono not in ('" + skipautono + ") and ";
+                if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
                 if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
                 sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
                 sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
