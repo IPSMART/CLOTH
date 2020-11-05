@@ -28,7 +28,7 @@
 </style>
 <script src="~/Scripts/jquery.min.js"></script>
 <script src="~/Scripts/Cloth.js"></script>
-<script src="~/Scripts/Sale.js"></script>
+<script src="~/Scripts/OutIssProcess.js"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
@@ -106,7 +106,7 @@
             }
         });
     }
-    function Fill_DetailData() {
+    @*function Fill_DetailData() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillDetailData", PageControllerName)",
@@ -126,7 +126,7 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
-    }
+    }*@
 
     function Fill_QtyRequirementData() {
         $.ajax({
@@ -717,6 +717,7 @@
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.BALSTOCK, new { htmlAttributes = new { @class = "form-control", id = "BALSTOCK", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Stock", @readonly = "readonly", @TabIndex = -1, @title = "Stock" } })
+                                                    @Html.HiddenFor(model => model.NEGSTOCK, new { id = "NEGSTOCK" })
                                                 </div>
                                             </div>
 
