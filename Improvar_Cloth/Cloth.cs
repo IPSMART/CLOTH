@@ -1005,8 +1005,8 @@ namespace Improvar
                                 TsalePos_TBATCHDTL.DTAG = TTXN.DTAG;
                                 TsalePos_TBATCHDTL.TTAG = TTXN.TTAG;
                                 TsalePos_TBATCHDTL.AUTONO = TTXN.AUTONO;
-                                TsalePos_TBATCHDTL.TXNSLNO = VE.TsalePos_TBATCHDTL[i].TXNSLNO;
                                 TsalePos_TBATCHDTL.SLNO = VE.TsalePos_TBATCHDTL[i].SLNO;  //COUNTER.retShort();
+                                TsalePos_TBATCHDTL.TXNSLNO = VE.TsalePos_TBATCHDTL[i].SLNO;
                                 TsalePos_TBATCHDTL.GOCD = VE.T_TXN.GOCD;
                                 TsalePos_TBATCHDTL.BARNO = barno;
                                 TsalePos_TBATCHDTL.MTRLJOBCD = VE.TsalePos_TBATCHDTL[i].MTRLJOBCD;
@@ -1034,7 +1034,7 @@ namespace Improvar
                                 TsalePos_TBATCHDTL.MILLNM = VE.TsalePos_TBATCHDTL[i].MILLNM;
                                 TsalePos_TBATCHDTL.BATCHNO = VE.TsalePos_TBATCHDTL[i].BATCHNO;
                                 TsalePos_TBATCHDTL.BALEYR = VE.BALEYR;// VE.TsalePos_TBATCHDTL[i].BALEYR;
-                                //TsalePos_TBATCHDTL.BALENO = VE.TsalePos_TBATCHDTL[i].BALENO;
+                                TsalePos_TBATCHDTL.TXNSLNO = VE.TsalePos_TBATCHDTL[i].SLNO;
                                 TsalePos_TBATCHDTL.INCRATE = VE.TsalePos_TBATCHDTL[i].INCLRATE.retDbl();
 
                                 dbsql = masterHelp.RetModeltoSql(TsalePos_TBATCHDTL);

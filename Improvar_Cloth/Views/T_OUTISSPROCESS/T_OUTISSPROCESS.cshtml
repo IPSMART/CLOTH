@@ -26,8 +26,9 @@
         height: 190px;
     }
 </style>
-<script src="~/Scripts/Sale.js"></script>
 <script src="~/Scripts/jquery.min.js"></script>
+<script src="~/Scripts/Cloth.js"></script>
+<script src="~/Scripts/Sale.js"></script>
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
@@ -185,18 +186,12 @@
 </script>
 <script>
     function pageprinting() {
-        var ty = $("#DOCCD").val();
         $.ajax({
-            type: 'get',
+            type: 'post',
             url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            data: $('form').serialize(),
             success: function (result) {
-                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                window.open("@Url.Action("Rep_Doc_Print", "Rep_Doc_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             }
         });
     }
@@ -623,10 +618,11 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD'),FillBarcodeArea('', 'COPYLROW')", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD');", @onchange = "ItcdClr();", @placeholder = "Item Group Code", @title = "Item Group Code" })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD')" />
+                                                    @*@Html.TextBoxFor(model => Model.ITGRPCD, new { id = "ITGRPCD", maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD'),FillBarcodeArea('', 'COPYLROW')", @class = "form-control textbox_image", onblur = "GetHelpBlur('" + @Url.Action("GetItemGroupDetails", PageControllerName) + "','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD');", @onchange = "ItcdClr();", @placeholder = "Item Group Code", @title = "Item Group Code" })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", PageControllerName)','Item Group Details','ITGRPCD','ITGRPCD=ITGRPCD=1/ITGRPNM=ITGRPNM=0/BARGENTYPETEMP=BARGENTYPE/ITCD=ITCD/GLCD=GLCD','ITCD')" />*@
                                                     <input type="hidden" id="BARGENTYPETEMP" value="" />
                                                     @*@Html.HiddenFor(model => model.ITGRPNM, new { id = "ITGRPNM" })*@
+                                                    @Html.EditorFor(model => model.ITGRPCD, new { htmlAttributes = new { @class = "form-control", id = "ITGRPCD", @title = "Item Group Code", @placeholder = "Item Group Code", @readonly = "readonly", @TabIndex = -1 } })
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -636,16 +632,18 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');GetAllMtrljobcd();", @placeholder = "Material Job Code", maxlength = 2, @title = "Material Job Code" } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')" />
+                                                    @*@Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');GetAllMtrljobcd();", @placeholder = "Material Job Code", maxlength = 2, @title = "Material Job Code" } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')" />*@
+                                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control", id = "MTRLJOBCD", @title = "Material Job Code", @placeholder = "Material Job Code", @readonly = "readonly", @TabIndex = -1 } })
                                                     @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
                                                     @Html.HiddenFor(model => model.MTBARCODE, new { id = "MTBARCODE" })
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE')" />
+                                                    @*@Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE')" />*@
+                                                    @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control", id = "ITCD", @title = "Item Code", @placeholder = "Item Code", @readonly = "readonly", @TabIndex = -1 } })
 
                                                     @*@Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
                                                         <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd =2/ITSTYLE =ITSTYLE =1/UOM =uomcd =3/STYLENO =styleno =0/ITGRPCD =itgrpcd =5/ITGRPNM =itgrpnm =4/HSNCODE =hsncode','ITGRPCD')" />*@
@@ -679,16 +677,18 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE');", @placeholder = "Part Code", maxlength = 4, @title = "Part Code" } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE')" />
+                                                    @*@Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PARTCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", PageControllerName) + "','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE');", @placeholder = "Part Code", maxlength = 4, @title = "Part Code" } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", PageControllerName)','Part Details','PARTCD','PARTCD=PARTCD=1/PARTNM=PARTNM=0/PRTBARCODE=PRTBARCODE')" />*@
+                                                    @Html.EditorFor(model => model.PARTCD, new { htmlAttributes = new { @class = "form-control", id = "PARTCD", @title = "Part Code", @placeholder = "Part Code", @readonly = "readonly", @TabIndex = -1 } })
                                                     @Html.HiddenFor(model => model.PARTNM, new { id = "PARTNM" })
                                                     @Html.HiddenFor(model => model.PRTBARCODE, new { id = "PRTBARCODE" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE');", @placeholder = "Color Code", maxlength = 4, @title = "Color Code" } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE')" />
+                                                    @*@Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "COLRCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", PageControllerName) + "','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE');", @placeholder = "Color Code", maxlength = 4, @title = "Color Code" } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", PageControllerName)','Color Details','COLRCD','COLRCD=COLRCD=1/COLRNM=COLRNM=0/CLRBARCODE=CLRBARCODE')" />*@
+                                                    @Html.EditorFor(model => model.COLRCD, new { htmlAttributes = new { @class = "form-control", id = "COLRCD", @title = "Color Code", @placeholder = "Color Code", @readonly = "readonly", @TabIndex = -1 } })
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -699,8 +699,9 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE');", @placeholder = "Size Code", maxlength = 4, @title = "Size Code" } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE')" />
+                                                    @*@Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SIZECD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", PageControllerName) + "','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE');", @placeholder = "Size Code", maxlength = 4, @title = "Size Code" } })
+                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", PageControllerName)','Size Details','SIZECD','SIZECD=SIZECD=1/SIZENM=SIZENM=0/SZBARCODE=SZBARCODE')" />*@
+                                                    @Html.EditorFor(model => model.SIZECD, new { htmlAttributes = new { @class = "form-control", id = "SIZECD", @title = "Size Name", @placeholder = "Size Name", @readonly = "readonly", @TabIndex = -1 } })
                                                     @Html.HiddenFor(model => model.SIZENM, new { id = "SIZENM" })
                                                     @Html.HiddenFor(model => model.SZBARCODE, new { id = "SZBARCODE" })
                                                 </div>

@@ -644,7 +644,7 @@ namespace Improvar.Controllers
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr();
                 //if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "PB", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1318,21 +1318,8 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        private string TranBarcodeGenerate(string doccd, string lbatchini, string docbarcode, string UNIQNO, int slno)
-        {//YRCODE	2,lbatchini	2,TXN UNIQ NO	7,SLNO	4
-            var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2);
-            return yrcd + lbatchini + UNIQNO + slno.ToString().PadLeft(4, '0');
-        }
-        private string CommonBarcodeGenerate(string itgrpcd, string itcd, string MTBARCODE, string PRTBARCODE, string CLRBARCODE, string SZBARCODE)
-        {
-            //itgrpcd last 3  3
-            //itcd last 7  7
-            //mtrljobcd mtrlbarcode 1
-            //partcode prtbarcode  1
-            //color clrbarcode  4
-            //size szbarcode   3
-            return itgrpcd.retStr().Substring(1, 3) + itcd.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
-        }
+   
+  
         public ActionResult DeleteRowBarno(TransactionSaleEntry VE)
         {
             try
@@ -1727,6 +1714,47 @@ namespace Improvar.Controllers
             catch (Exception ex)
             {
                 return ex.Message;
+            }
+        }
+        public ActionResult Print(TransactionOutIssProcess VE)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                Rep_Doc_Print repDoc = new Rep_Doc_Print();
+                string capname, reptype = "";
+                capname = "Challan Printing"; reptype = "JOBISSUE";
+
+                //switch (VE.MENU_PARA)
+                //{
+                //    case "KT": reptype = "YARNISSUE"; break;
+                //    case "YD": reptype = "YARNISSUE"; break;
+                //    case "FP": reptype = "FABISSUE"; break;
+                //    case "DY": reptype = "FABISSUE"; break;
+                //    case "BL": reptype = "FABISSUE"; break;
+                //}
+
+                repDoc.DOCCD = VE.T_TXN.DOCCD;
+                repDoc.FDOCNO = VE.T_TXN.DOCNO;
+                repDoc.TDOCNO = VE.T_TXN.DOCNO;
+                repDoc.FDT = VE.T_TXN.DOCDT.ToString().retDateStr();
+                repDoc.TDT = VE.T_TXN.DOCDT.ToString().retDateStr();
+                repDoc.AskSlCd = true;
+                repDoc.CaptionName = capname;
+                repDoc.ActionName = "Rep_IssueChallan_Print";
+                repDoc.RepType = reptype;
+                repDoc.OtherPara = VE.MENU_PARA + "," + VE.T_TXN.GOCD;
+                if (TempData["printparameter"] != null)
+                {
+                    TempData.Remove("printparameter");
+                }
+                TempData["printparameter"] = repDoc;
+                return Content("");
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult SAVE(FormCollection FC, TransactionOutIssProcess VE)
@@ -2254,8 +2282,7 @@ namespace Improvar.Controllers
                             {
                                 bool flagbatch = false;
                                 string barno = "";
-
-                                barno = CommonBarcodeGenerate(VE.TBATCHDTL[i].ITGRPCD, VE.TBATCHDTL[i].ITCD, VE.TBATCHDTL[i].MTBARCODE, VE.TBATCHDTL[i].PRTBARCODE, VE.TBATCHDTL[i].CLRBARCODE, VE.TBATCHDTL[i].SZBARCODE);
+                                barno = VE.TBATCHDTL[i].BARNO;
                                 sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                 OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
                                 if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
