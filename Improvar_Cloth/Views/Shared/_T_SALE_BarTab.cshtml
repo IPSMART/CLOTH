@@ -166,7 +166,7 @@
                                             <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('@i')" data-toggle="modal" data-target="#RateHistoryModal">Rate Hist</button>
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })
                                         </td>
                                         @if (Model.MENU_PARA == "PB")
                                         {
