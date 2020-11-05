@@ -297,6 +297,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DSPrintBarcode.xsd</DependentUpon>
     </Compile>
+    <Compile Include="DataSets\DSPrintJobissue.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DSPrintJobissue.xsd</DependentUpon>
+    </Compile>
     <Compile Include="DropDownHelp.cs" />
     <Compile Include="EmailControl.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -572,6 +577,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ENVELOPE.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\JobIssue.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobIssue.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\PrintBarcode.cs">
@@ -895,10 +906,21 @@
     <Content Include="DataSets\DSPrintBarcode.xss">
       <DependentUpon>DSPrintBarcode.xsd</DependentUpon>
     </Content>
+    <Content Include="DataSets\DSPrintJobissue.xsc">
+      <DependentUpon>DSPrintJobissue.xsd</DependentUpon>
+    </Content>
+    <None Include="DataSets\DSPrintJobissue.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DSPrintJobissue.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="DataSets\DSPrintJobissue.xss">
+      <DependentUpon>DSPrintJobissue.xsd</DependentUpon>
+    </Content>
     <None Include="Metadata\PublishProfiles\Improvar_ERP.pubxml" />
     <Content Include="Report\CORRES.rpt" />
     <None Include="Properties\PublishProfiles\IpSmart_Sales.pubxml" />
-    <Content Include="Report\JobIssue.rpt" />
+    <Content Include="Report\JobIssue1.rpt" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\capsLock.js" />
     <Content Include="Scripts\Cloth.js" />
@@ -1143,6 +1165,10 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Report\JobIssue.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>JobIssue.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\PrintBarcode.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>PrintBarcode.cs</LastGenOutput>
