@@ -1716,6 +1716,47 @@ namespace Improvar.Controllers
                 return ex.Message;
             }
         }
+        public ActionResult Print(TransactionOutIssProcess VE)
+        {
+            try
+            {
+                Cn.getQueryString(VE);
+                Rep_Doc_Print repDoc = new Rep_Doc_Print();
+                string capname, reptype = "";
+                capname = "Challan Printing"; reptype = "JOBISSUE";
+
+                //switch (VE.MENU_PARA)
+                //{
+                //    case "KT": reptype = "YARNISSUE"; break;
+                //    case "YD": reptype = "YARNISSUE"; break;
+                //    case "FP": reptype = "FABISSUE"; break;
+                //    case "DY": reptype = "FABISSUE"; break;
+                //    case "BL": reptype = "FABISSUE"; break;
+                //}
+
+                repDoc.DOCCD = VE.T_TXN.DOCCD;
+                repDoc.FDOCNO = VE.T_TXN.DOCNO;
+                repDoc.TDOCNO = VE.T_TXN.DOCNO;
+                repDoc.FDT = VE.T_TXN.DOCDT.ToString().retDateStr();
+                repDoc.TDT = VE.T_TXN.DOCDT.ToString().retDateStr();
+                repDoc.AskSlCd = true;
+                repDoc.CaptionName = capname;
+                repDoc.ActionName = "Rep_IssueChallan_Print";
+                repDoc.RepType = reptype;
+                repDoc.OtherPara = VE.MENU_PARA + "," + VE.T_TXN.GOCD;
+                if (TempData["printparameter"] != null)
+                {
+                    TempData.Remove("printparameter");
+                }
+                TempData["printparameter"] = repDoc;
+                return Content("");
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         public ActionResult SAVE(FormCollection FC, TransactionOutIssProcess VE)
         {
             Cn.getQueryString(VE);

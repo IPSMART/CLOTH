@@ -186,18 +186,12 @@
 </script>
 <script>
     function pageprinting() {
-        var ty = $("#DOCCD").val();
         $.ajax({
-            type: 'get',
+            type: 'post',
             url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            data: $('form').serialize(),
             success: function (result) {
-                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+                window.open("@Url.Action("Rep_Doc_Print", "Rep_Doc_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             }
         });
     }
