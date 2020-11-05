@@ -1560,8 +1560,21 @@ function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds,formda
         });
     }
 }
-
 function RoundOff(num, decimals) {
     var sign = num >= 0 ? 1 : -1;
     return (Math.round((num * Math.pow(10, decimals)) + (sign * 0.001)) / Math.pow(10, decimals)).toFixed(decimals);
+}
+function retStr(val) {
+    var rtval = "";
+    if (val == null || val == "") rtval = "";
+    else rtval = String(val);
+    return rtval;
+}
+function retInt(val) {
+    if (val == null || retStr(val) == "") return 0;
+    else return parseInt(val);
+}
+function retFloat(val) {
+    if (val == null || retStr(val) == "") return 0;
+    else return parseFloat(val);
 }

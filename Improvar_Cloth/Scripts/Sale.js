@@ -2011,21 +2011,7 @@ function SelectPendOrder() {
         }
     });
 }
-function retStr(val) {
-    var rtval = "";
-    if (val == null) rtval = "";
-    else if (String(val) == "") rtval = "";
-    else rtval = String(val);
-    return rtval;
-}
-function retInt(val) {
-    if (val == null || retStr(val) == "") return 0;
-    else return parseInt(val);
-}
-function retFloat(val) {
-    if (val == null || retStr(val) == "") return 0;
-    else return parseFloat(val);
-}
+
 function CharmPrice(ChrmType, Rate, RoundVal) {
     debugger;
     RoundVal = RoundVal.padStart(2, '0');
