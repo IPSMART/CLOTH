@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Mvc;
+using System.Reflection;
 
 namespace Improvar.Controllers
 {
@@ -284,8 +285,10 @@ namespace Improvar.Controllers
                                                        PARTNM = dr["PARTNM"].ToString(),
                                                        RATE = dr["RATE"].retDbl(),
                                                    }).OrderBy(s => s.SLNO).ToList();
-
-
+                                    double tqty = 0;
+                                    foreach(var v in VE.TSORDDTL)
+                                    { tqty = tqty + v.QNTY.retDbl(); }
+                                    VE.TOTAL_QNTY = tqty;
                                     if (VE.DefaultAction == "E")
                                     {
                                         int ROW_COUNT = 0;
@@ -316,9 +319,9 @@ namespace Improvar.Controllers
                                         }
                                     }
 
-                                    VE.TOTAL_BOXES = TOTAL_BOXES.Value;
-                                    VE.TOTAL_QNTY = TOTAL_QNTY.Value;
-                                    VE.TOTAL_SETS = TOTAL_SETS.Value;
+                                    //VE.TOTAL_BOXES = TOTAL_BOXES.Value;
+                                    //VE.TOTAL_QNTY = TOTAL_QNTY.Value;
+                                    //VE.TOTAL_SETS = TOTAL_SETS.Value;
                                     VE.T_CNTRL_HDR = sll;
                                     if (VE.T_CNTRL_HDR.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
                                     VE.Edit_Tag = true;
@@ -1268,6 +1271,38 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
+        }
+        public ActionResult RepeatAboveRow(SalesOrderEntry VE, int RowIndex)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Cn.getQueryString(VE);
+            List<TSORDDTL> TSORDDTL = new List<TSORDDTL>(); bool copied = false;
+            for (int k = 0; k <= VE.TSORDDTL.Count; k++)
+            {
+                TSORDDTL TSORDDTLl = new TSORDDTL();
+                if (RowIndex == k || copied == true)
+                {
+                    foreach (PropertyInfo propA in VE.TSORDDTL[k - 1].GetType().GetProperties())
+                    {
+                        PropertyInfo propB = VE.TSORDDTL[k - 1].GetType().GetProperty(propA.Name);
+                        propB.SetValue(TSORDDTLl, propA.GetValue(VE.TSORDDTL[k - 1], null), null);
+                    }
+                    TSORDDTLl.SLNO = (k + 1).retShort();
+                    TSORDDTL.Add(TSORDDTLl);
+                    copied = true;
+                }
+                else
+                {
+                    TSORDDTLl = VE.TSORDDTL[k]; TSORDDTLl.SLNO = (k + 1).retShort();
+                    TSORDDTL.Add(TSORDDTLl);
+                    
+                }
+                
+            }
+            VE.TSORDDTL = TSORDDTL;
+            VE.DefaultView = true;
+            ModelState.Clear();
+            return PartialView("_T_SORD_MAIN", VE);
         }
     }
 }

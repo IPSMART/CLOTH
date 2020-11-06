@@ -1252,6 +1252,49 @@
         });
     }
 </script>
+<script>
+    function Calculate_Total() {
+        debugger;
+        var T_QNTY = 0;
+        var GridRow = $("#_T_SORD_MAIN_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+
+            var QNTY_ = $("#QNTY_" + i).val();
+            if (QNTY_ == "") { QNTY_ = parseFloat(0); } else { QNTY_ = parseFloat(QNTY_) }
+            if (QNTY_ != "") { T_QNTY = T_QNTY + parseFloat(QNTY_); } else { T_QNTY = T_QNTY + parseFloat(0); }
+            document.getElementById("QNTY_" + i).value = QNTY_.toFixed(2);
+        }
+        document.getElementById("TOTAL_QNTY").value = T_QNTY.toFixed(2);
+
+    }
+
+</script>
+<script>
+    function RepeatAboveRow_TPROGBOM(i) {
+        debugger;
+        i = parseInt(i);
+        if (event.key == "F8" && i > 0) {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("RepeatAboveRow", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data: $('form').serialize() + "&RowIndex=" + i,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    //$("#partialdivItemTab").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivItemTab").html(result);
+                    Calculate_Total();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+    }
+</script>
 @section Scripts {
     <script>
         function ReloadWithData() {
@@ -1680,6 +1723,15 @@
                             <div class="PopUp_Backround">
                                 <div id="popup" class="row" style="margin-top: 11px;top:40%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
                                 </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading ui-icon-note">Rules</div>
+                            <div class="panel-body">
+                                <p>
+                                    1. Press <b>F8</b> for repeat above Row [in the table]
+                                </p>
+
                             </div>
                         </div>
                     </div>
