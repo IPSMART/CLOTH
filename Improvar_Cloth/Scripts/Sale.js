@@ -2284,5 +2284,10 @@ function CalculateOutIssProcessTotal_Details() {
     
 
 }
+function ClosePendOrder() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    $("#popup").html("");
+}
 
 

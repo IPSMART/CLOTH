@@ -1444,7 +1444,7 @@ namespace Improvar.Controllers
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
                 var distnctslno = VE.TTXNDTL.Select(a => a.SLNO).Distinct().Count();
-                if(allslno != distnctslno)
+                if (allslno != distnctslno)
                 {
                     return Content("0");
                 }
@@ -1642,15 +1642,21 @@ namespace Improvar.Controllers
                                            BALQTY = dr["BALQNTY"].retDbl(),
                                            ITCD = dr["ITCD"].retStr(),
                                            COLRCD = dr["COLRCD"].retStr(),
+                                           PDESIGN = dr["PDESIGN"].retStr(),
+                                           RATE = dr["RATE"].retDbl(),
                                        }).ToList();
                 }
             }
-            int slno = 1;
-            for (int p = 0; p <= VE.PENDINGORDER.Count - 1; p++)
+            if (VE.PENDINGORDER != null)
             {
-                VE.PENDINGORDER[p].SLNO = slno.retShort();
-                slno++;
+                int slno = 1;
+                for (int p = 0; p <= VE.PENDINGORDER.Count - 1; p++)
+                {
+                    VE.PENDINGORDER[p].SLNO = slno.retShort();
+                    slno++;
+                }
             }
+
 
             VE.DefaultView = true;
             return PartialView("_T_SALE_PENDINGORDER", VE);
@@ -1714,7 +1720,7 @@ namespace Improvar.Controllers
                 {
                     tbl = tbl.Where(a => a.ORDDOCNO == val).ToList();
                 }
-
+                tbl.Select(a => new { a.ORDAUTONO, a.ORDSLNO, a.ORDDOCNO, a.ORDDOCDT }).Distinct().ToList();
                 if (val.retStr() == "" || tbl.Count > 1)
                 {
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
