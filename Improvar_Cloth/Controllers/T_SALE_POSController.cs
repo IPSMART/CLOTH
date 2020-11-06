@@ -728,7 +728,7 @@ namespace Improvar.Controllers
                 else
                 {
                     //if (str.IndexOf(Cn.GCS()) == -1)
-                        return Content(str);
+                    return Content(str);
                 }
             }
             catch (Exception ex)
@@ -1080,11 +1080,9 @@ namespace Improvar.Controllers
                         count += 1;
                         TsalePos_TBATCHDTL item = new TsalePos_TBATCHDTL();
                         item = VE.TsalePos_TBATCHDTL[i];
-                        if (VE.DefaultAction == "A")
-                        {
-                            item.SLNO = Convert.ToSByte(count);
-                        }
-
+                        item.SLNO = Convert.ToInt16(count);
+                        item.DISC_TYPE = masterHelp.DISC_TYPE();
+                        item.PCSActionList = masterHelp.PCSAction();
                         TsalePos_TBATCHDTL.Add(item);
                     }
                 }
