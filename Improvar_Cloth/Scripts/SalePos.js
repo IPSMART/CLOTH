@@ -181,7 +181,7 @@ function AddBarnoRow(hlpstr) {
     tr += '     <input id="B_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onblur="CalculateTotalBarno();" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onblur="CalculateTotalBarno();" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onchange="CalculateBarRowAmt(' + rowindex + ');" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -190,7 +190,7 @@ function AddBarnoRow(hlpstr) {
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange="CalculateTotalBarno();" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += '     <td class="" title="">';
-    tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].INCLRATE" onblur="CalculateRATE(' + rowindex + ');" onkeypress="return numericOnly(this,4);" style="font-weight:bold;background-color: bisque;" type="text" value="">';
+    tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].INCLRATE" onchange = "CalculateInclusiveRate(' + rowindex + ');CalculateBarRowAmt(' + rowindex + ');", onkeypress="return numericOnly(this,4);" style="font-weight:bold;background-color: bisque;" type="text" value="">';
     tr += '     </td>';
     tr += ' <td class="" title="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" onchange="CalculateBarRowAmt(' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
@@ -207,7 +207,7 @@ function AddBarnoRow(hlpstr) {
     tr += '     </select>';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onchange="CalculateBarRowAmt(' + rowindex + ');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += ' ';
     tr += ' <td class="" title="">';
@@ -259,26 +259,47 @@ function CalculateBarRowAmt(i) {
     var B_RATE_ = retFloat($("#B_RATE_" + i).val());
     var B_AMT_ = B_QNTY_ * B_RATE_;
     $("#B_AMT_" + i).val(B_AMT_);
-    var B_QNTY_ = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
+    var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
     var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
     var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
     var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
     $("#B_GSTPER_" + i).val(GSTPER);
     var rownetamt = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
+    $("#INCLRATE_" + i).val(rownetamt);
     $("#B_NETAMT_" + i).val(rownetamt);
 }
 function CalculateInclusiveRate(i) {
-    debugger;
+    debugger; var itemrate = 0;
     if (DefaultAction == "V") return true;
+    var INCLRATE_ = retFloat($("#INCLRATE_" + i).val());
     var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
-    var B_RATE_ = retFloat($("#B_RATE_" + i).val());
-    var B_AMT_ = B_QNTY_ * B_RATE_;
-    $("#B_AMT_" + i).val(B_AMT_);
-    var B_QNTY_ = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
     var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
     var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
-    var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
-    $("#B_GSTPER_" + i).val(GSTPER);
-    var rownetamt = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
-    $("#B_NETAMT_" + i).val(rownetamt);
+    //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
+    var fromrt = 0, tort = 0, selrow = -1;
+    var mgstrate = [5];
+    var rtval = "0,0,0"; //igstper,cgst,sgst
+    var SP = String.fromCharCode(179);
+    var mrates = B_PRODGRPGSTPER_.split(SP);
+    for (var x = 0; x <= mrates.length - 1; x++) {
+        //mgstrate = mrates[x].Split(Convert.ToChar(Cn.GCS())).ToArray();
+        mgstrate = mrates[x].split('~');
+        if (mgstrate[0] == "") { fromrt = parseFloat(0); } else { fromrt = parseFloat(mgstrate[0]); }
+        if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
+        var taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]); var tmprt = tort;
+        if (B_DISCRATE_ != 0) {
+            $("#B_AMT_" + i).val(tort);
+            var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
+            tmprt = tort - discamt;
+        }
+        tmprt = tmprt * (taxpercent + 100) / 100;
+        if (INCLRATE_ <= tmprt) {
+            var itemrate = (INCLRATE_ * 100 / (100 + taxpercent)).toFixed(2);
+            var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
+            $("#B_RATE_" + i).val(itemrate);
+            $("#B_GSTPER_" + i).val(taxpercent);
+            break;
+        }
+    }
+    return itemrate;
 }
