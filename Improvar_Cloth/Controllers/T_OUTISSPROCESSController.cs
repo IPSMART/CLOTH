@@ -449,18 +449,19 @@ namespace Improvar.Controllers
                                     //GLCD = VE.MENU_PARA == "SBPCK" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SB" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBDIR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SR" ? dr["SALRETGLCD"].retStr() : VE.MENU_PARA == "SBCM" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBCMR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBEXP" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "PI" ? "" : VE.MENU_PARA == "PB" ? dr["PURGLCD"].retStr() : VE.MENU_PARA == "PR" ? dr["PURRETGLCD"].retStr() : "",
                                 }).OrderBy(s => s.SLNO).ToList();
 
-                //foreach (var v in VE.TBATCHDTL)
-                //{ stock = salesfunc.GetStock(TXN.DOCDT.retDateStr(), TXN.GOCD.retSqlformat(), "", "", v.MTRLJOBCD.retSqlformat(), TXN.AUTONO.retSqlformat(), "", v.BARNO, "", "", "", "", true, false);
-                //    if(stock!=null)
-                //    {
-                //        var balstock = (from DataRow dr in stock.Rows
-                //                        select new
-                //                        { balstock = dr["BALQNTY"].retStr() }).FirstOrDefault();
-                //        v.BALSTOCK = balstock.retDbl();
-                //    }
-              
-                //     }
-        
+                foreach (var v in VE.TBATCHDTL)
+                {
+                    stock = salesfunc.GetStock(TXN.DOCDT.retDateStr(), TXN.GOCD.retSqlformat(), "", "", v.MTRLJOBCD.retSqlformat(), TXN.AUTONO.retSqlformat(), "", v.BARNO, "", "", "", "", true, false);
+                    if (stock != null)
+                    {
+                        var balstock = (from DataRow dr in stock.Rows
+                                        select new
+                                        { balstock = dr["BALQNTY"].retStr() }).FirstOrDefault();
+                        v.BALSTOCK = balstock.balstock.retDbl();
+                    }
+
+                }
+
 
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
