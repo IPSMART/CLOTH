@@ -20,15 +20,12 @@ function retGstPerstr(prodgrpgstper, rate) {
     if (selrow != -1) rtval = mgstrate[2] + "," + mgstrate[3] + "," + mgstrate[4];
     return rtval;
 }
-
 function retGstPer(prodgrpgstper, rate) {
     var gstRate = retGstPerstr(prodgrpgstper, rate);
-    var typ = gstRate.split(',');
-    gstRate = retFloat(mgstrate[0]) + retFloat(mgstrate[1]) + retFloat(mgstrate[2]);
-    return rtval;
+    var gstarr = gstRate.split(',');
+    gstRate = retFloat(gstarr[0]) + retFloat(gstarr[1]) + retFloat(gstarr[2]);
+    return gstRate;
 }
-
-
 $(document).on('click', '.arrow-left, .arrow-right', function () {
     var next;
     var circler;

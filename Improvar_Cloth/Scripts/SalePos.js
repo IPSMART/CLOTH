@@ -264,8 +264,8 @@ function CalculateBarRowAmt(i) {
     var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
     var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
     $("#B_GSTPER_" + i).val(GSTPER);
-    var net = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
-    $("#B_NETAMT_" + i).val(GSTPER);
+    var rownetamt = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
+    $("#B_NETAMT_" + i).val(rownetamt);
 }
 function CalculateInclusiveRate(i) {
     debugger;
@@ -279,6 +279,6 @@ function CalculateInclusiveRate(i) {
     var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
     var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
     $("#B_GSTPER_" + i).val(GSTPER);
-    var net = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
-    $("#B_NETAMT_" + i).val(GSTPER);
+    var rownetamt = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
+    $("#B_NETAMT_" + i).val(rownetamt);
 }
