@@ -78,7 +78,6 @@ namespace Improvar.Models
         public double? TOTAL_PCS { get; set; }
         public string ALL_SIZE { get; set; }
         public string RATE_DISPLAY { get; set; }
-        public string ChildData { get; set; }
         public bool Checked { get; set; }
         public List<DropDown_list2> DropDown_list2 { get; set; }
         public List<DropDown_list3> DropDown_list3 { get; set; }
@@ -122,5 +121,7 @@ namespace Improvar.Models
         public string PARTNM { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
+        public string PDESIGN { get; set; }
+        
     }
 }

@@ -244,13 +244,13 @@ namespace Improvar.Controllers
                                     //str1 += " from " + CommVar.CurSchema(UNQSNO) + ".T_SORDDTL i, " + CommVar.CurSchema(UNQSNO) + ".M_SITEM j  where i.ITCD = j.ITCD(+)   and i.AUTONO = '" + sl.AUTONO + "' ";
                                     //str1 += " group by i.AUTONO, i.STKDRCR, i.STKTYPE, i.FREESTK, i.ITCD, j.ITNM, j.STYLENO, j.PCSPERBOX, j.PCSPERSET, j.UOMCD ";
 
-                                    str1 += "select a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERSET, c.UOMCD, ";
-                                    str1 += "a.sizecd, b.ratedsp, a.scmdiscamt, a.discamt, a.qnty,A.DELVDT,a.ITREM,c.itgrpcd, d.itgrpnm,c.fabitcd, ";
+                                    str1 += "select a.SLNO,a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERSET, c.UOMCD, ";
+                                    str1 += "a.sizecd, a.rate, a.scmdiscamt, a.discamt, a.qnty,A.DELVDT,a.ITREM,a.PDESIGN,c.itgrpcd, d.itgrpnm,c.fabitcd, ";
                                     str1 += "e.itnm fabitnm,a.colrcd,a.partcd,f.colrnm,g.sizenm,h.partnm,a.rate from ";
-                                    str1 += SCM + ".T_SORDDTL a, " + SCM + ".T_CNTRL_HDR b ";
-                                    str1 += SCM + ".m_sitem c, " + SCM + ".m_group d, " + SCM + ".m_sitem e, " + SCM + ".m_color f, " + SCM + ".m_size g, " + SCM + ".m_part h ";
-                                    str1 += "where a.autoitcd = b.autoitcd(+) and a.itcd = c.itcd(+) and c.itgrpcd=d.itgrpcd and c.fabitcd=e.itcd(+) ";
-                                    str1 += "and a.colrcd=f.colrcd(+) and a.sizecd=g.sizecd(+) and a.partcd=h.partcd(+) ";
+                                    str1 += SCM + ".T_SORDDTL a, " + SCM + ".T_CNTRL_HDR b, ";
+                                    str1 += SCM + ".m_sitem c, " + SCM + ".m_group d, " + SCM + ".m_sitem e, " + SCM + ".m_color f, " + SCM + ".m_size g, " + SCM + ".m_parts h ";
+                                    str1 += "where a.autono = b.autono(+) and a.itcd = c.itcd(+) and c.itgrpcd=d.itgrpcd and c.fabitcd=e.itcd(+) ";
+                                    str1 += "and a.colrcd=f.colrcd(+) and a.sizecd=g.sizecd(+) and a.partcd=h.partcd(+) and a.autono='"+sl.AUTONO+"' ";
                                     str1 += "order by styleno ";
 
                                     DataTable tbl = Master_Help.SQLquery(str1);
@@ -271,6 +271,7 @@ namespace Improvar.Controllers
                                                        QNTY = dr["QNTY"].retDbl(),
                                                        DELVDT = dr["DELVDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["DELVDT"].retDateStr()),
                                                        ITREM = dr["ITREM"].ToString(),
+                                                       PDESIGN = dr["PDESIGN"].ToString(),
                                                        ITGRPCD = dr["ITGRPCD"].ToString(),
                                                        ITGRPNM = dr["ITGRPNM"].ToString(),
                                                        FABITCD = dr["FABITCD"].ToString(),
@@ -999,6 +1000,7 @@ namespace Improvar.Controllers
                                     TSORDDTL.PRCEFFDT = VE.TSORDDTL[i].PRCEFFDT;
                                     TSORDDTL.DELVDT = VE.TSORDDTL[i].DELVDT;
                                     TSORDDTL.ITREM = VE.TSORDDTL[i].ITREM;
+                                    TSORDDTL.PDESIGN = VE.TSORDDTL[i].PDESIGN;
 
                                     dbsql = MasterHelpFa.RetModeltoSql(TSORDDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
