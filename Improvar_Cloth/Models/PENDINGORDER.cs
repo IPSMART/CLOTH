@@ -27,6 +27,7 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double CURRENTADJQTY { get; set; }
         public string PDESIGN { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
     }
 }

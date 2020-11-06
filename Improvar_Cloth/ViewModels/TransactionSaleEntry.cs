@@ -198,5 +198,6 @@ namespace Improvar.ViewModels
         public string NEGSTOCK { get; set; }
         public string WPPRICEGEN { get; set; }
         public string RPPRICEGEN { get; set; }
+        public bool showallitcd { get; set; }
     }
 }

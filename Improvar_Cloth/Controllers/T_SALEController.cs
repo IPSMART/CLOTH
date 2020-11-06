@@ -1605,7 +1605,7 @@ namespace Improvar.Controllers
             if (SUBMITBTN == "SHOWBTN")
             {
                 VE.PENDINGORDER = (List<PENDINGORDER>)TempData["PENDORDER" + VE.MENU_PARA]; TempData.Keep();
-                if (ITCD.retStr() != "")
+                if (ITCD.retStr() != "" && VE.showallitcd == false)
                 {
                     VE.PENDINGORDER = VE.PENDINGORDER.Where(a => a.ITCD == ITCD).ToList();
                 }
@@ -1661,31 +1661,79 @@ namespace Improvar.Controllers
             VE.DefaultView = true;
             return PartialView("_T_SALE_PENDINGORDER", VE);
         }
-        public JsonResult SelectPendOrder(TransactionSaleEntry VE)
+        public ActionResult SelectPendOrder(TransactionSaleEntry VE, string SUBMITBTN)
         {
             Cn.getQueryString(VE);
 
-            var dt = (from a in VE.PENDINGORDER
-                      where a.Ord_Checked == true
-                      select new PENDINGORDER
-                      {
-                          ORDDOCNO = a.ORDDOCNO.retStr(),
-                          ORDAUTONO = a.ORDAUTONO.retStr(),
-                          ORDSLNO = a.ORDSLNO.retStr(),
-                          ORDDOCDT = a.ORDDOCDT.retStr(),
-                          ITGRPNM = a.ITGRPNM.retStr(),
-                          ITSTYLE = a.ITSTYLE.retStr(),
-                          COLRNM = a.COLRNM.retStr(),
-                          SIZECD = a.SIZECD.retStr(),
-                          ORDQTY = a.ORDQTY.retDbl(),
-                          BALQTY = a.BALQTY.retDbl(),
-                          ITCD = a.ITCD.retStr(),
-                          COLRCD = a.COLRCD.retStr(),
-                      }).ToList();
-            TempData["PENDORDER" + VE.MENU_PARA] = dt;
+            if (SUBMITBTN == "SHOWBTN")
+            {
+                var dt = (from a in VE.PENDINGORDER
+                          where a.Ord_Checked == true
+                          select new TBATCHDTL
+                          {
+                              ORDDOCNO = a.ORDDOCNO.retStr(),
+                              ORDAUTONO = a.ORDAUTONO.retStr(),
+                              ORDSLNO = a.ORDSLNO.retShort(),
+                              ORDDOCDT = a.ORDDOCDT.retStr(),
+                              ITGRPNM = a.ITGRPNM.retStr(),
+                              ITSTYLE = a.ITSTYLE.retStr(),
+                              COLRNM = a.COLRNM.retStr(),
+                              SIZECD = a.SIZECD.retStr(),
+                              QNTY = a.BALQTY.retDbl() - a.CURRENTADJQTY.retDbl(),
+                              ITCD = a.ITCD.retStr(),
+                              COLRCD = a.COLRCD.retStr(),
+                          }).ToList();
+                if (VE.TBATCHDTL != null)
+                {
+                    VE.TBATCHDTL.AddRange(dt);
+                }
+                else
+                {
+                    VE.TBATCHDTL = dt;
+                }
+                int slno = 0, txnslno = 0;
+                if (VE.TBATCHDTL.Count() > 1)
+                {
+                    slno = Convert.ToInt32(VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO)));
+                    txnslno = Convert.ToInt32(VE.TBATCHDTL.Max(a => Convert.ToInt32(a.TXNSLNO)));
+                }
 
-            VE.DefaultView = true;
-            return Json(new { dt }, JsonRequestBehavior.AllowGet);
+                for (int i = 0; i <= VE.TBATCHDTL.Count() - 1; i++)
+                {
+                    if (VE.TBATCHDTL[i].SLNO.retDbl() == 0)
+                    {
+                        slno++;
+                        txnslno++;
+                        VE.TBATCHDTL[i].SLNO = (slno).retShort();
+                        VE.TBATCHDTL[i].TXNSLNO = (txnslno).retShort();
+                    }
+
+                }
+                VE.DefaultView = true;
+                return PartialView("_T_SALE_BarTab", VE);
+            }
+            else
+            {
+                var dt = (from a in VE.PENDINGORDER
+                          where a.Ord_Checked == true
+                          select new PENDINGORDER
+                          {
+                              ORDDOCNO = a.ORDDOCNO.retStr(),
+                              ORDAUTONO = a.ORDAUTONO.retStr(),
+                              ORDSLNO = a.ORDSLNO.retStr(),
+                              ORDDOCDT = a.ORDDOCDT.retStr(),
+                              ITGRPNM = a.ITGRPNM.retStr(),
+                              ITSTYLE = a.ITSTYLE.retStr(),
+                              COLRNM = a.COLRNM.retStr(),
+                              SIZECD = a.SIZECD.retStr(),
+                              ORDQTY = a.ORDQTY.retDbl(),
+                              BALQTY = a.BALQTY.retDbl(),
+                              ITCD = a.ITCD.retStr(),
+                              COLRCD = a.COLRCD.retStr(),
+                          }).ToList();
+                TempData["PENDORDER" + VE.MENU_PARA] = dt;
+                return Content("0");
+            }
         }
         public ActionResult GetOrderDetails(TransactionSaleEntry VE, string val, string Code)
         {
