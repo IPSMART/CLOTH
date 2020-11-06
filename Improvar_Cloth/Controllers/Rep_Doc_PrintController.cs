@@ -385,7 +385,7 @@ namespace Improvar.Controllers
                 t_nos = 0; t_qnty = 0;
                 while (i <= maxR)
                 {
-                    t_qnty = t_qnty + Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                    t_qnty = t_qnty + (tbl.Rows[i]["qnty"]).retDbl();
                     //t_nos = t_nos + Convert.ToDouble(tbl.Rows[i]["nos"]);
 
                     IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
@@ -438,7 +438,7 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
 
-                    t_qnty = t_qnty + Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                    t_qnty = t_qnty + (tbl.Rows[i]["qnty"]).retDbl();
                     //t_nos = t_nos + Convert.ToDouble(tbl.Rows[i]["nos"]);
                     sln++;
                     IR_ISSUE.Rows.Add(""); rNo = IR_ISSUE.Rows.Count - 1;
