@@ -7,6 +7,7 @@ using CrystalDecisions.CrystalReports.Engine;
 using System.Data;
 using System.IO;
 using System.Collections.Generic;
+using Improvar.DataSets;
 
 namespace Improvar.Controllers
 {
@@ -284,7 +285,7 @@ namespace Improvar.Controllers
             DataTable tbliss = masterHelp.SQLquery(str1);
 
             //programme
-            DataTable IR_PROG = new DataTable("");
+            DataTable IR_PROG = new DataTable("DTProgramme");
             IR_PROG.Columns.Add("autono", typeof(string), "");
             IR_PROG.Columns.Add("slcd", typeof(string), "");
             IR_PROG.Columns.Add("slnm", typeof(string), "");
@@ -317,7 +318,7 @@ namespace Improvar.Controllers
 
 
             //issue
-            DataTable IR_ISSUE = new DataTable("");
+            DataTable IR_ISSUE = new DataTable("DTIssue");
             IR_ISSUE.Columns.Add("autono", typeof(string), "");
             IR_ISSUE.Columns.Add("progslno", typeof(string), "");
             IR_ISSUE.Columns.Add("iss_slno", typeof(string), "");
@@ -333,7 +334,6 @@ namespace Improvar.Controllers
             IR_ISSUE.Columns.Add("iss_totalqnty", typeof(double), "");
 
 
-            ReportDocument reportdocument = new ReportDocument();
 
             Int32 maxR = 0, i = 0;
             Int32 x = 0, maxX = tblhdr.Rows.Count - 1;
@@ -471,12 +471,14 @@ namespace Improvar.Controllers
             IR.Tables.Add(IR_PROG);
             IR.Tables.Add(IR_ISSUE);
             string[] compaddress;
-            compaddress = Salesfunc.retCompAddress().Split(Convert.ToChar(Cn.GCS()));
+            compaddress = Salesfunc.retCompAddress(VE.OtherPara.Split(',')[1].retStr()).Split(Convert.ToChar(Cn.GCS()));
             string rptname = "~/Report/" + repname + ".rpt";
-
+            
+            ReportDocument reportdocument = new ReportDocument();
             reportdocument.Load(Server.MapPath(rptname));
-            reportdocument.SetDataSource(IR);
-            //reportdocument.SetParameterValue("complogo", Salesfunc.retCompLogo());
+            DSPrintJobissue DSP = new DSPrintJobissue();
+            DSP.Merge(IR);
+            reportdocument.SetDataSource(DSP);
             reportdocument.SetParameterValue("compnm", compaddress[0]);
             reportdocument.SetParameterValue("compadd", compaddress[1]);
             reportdocument.SetParameterValue("compstat", compaddress[2]);
@@ -484,12 +486,10 @@ namespace Improvar.Controllers
             reportdocument.SetParameterValue("locastat", compaddress[4]);
             reportdocument.SetParameterValue("billheading", hddsp);
             reportdocument.SetParameterValue("chlntype", "");
-
             Response.Buffer = false;
             Response.ClearContent();
             Response.ClearHeaders();
             Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
-
             stream.Seek(0, SeekOrigin.Begin);
             reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
             return new FileStreamResult(stream, "application/pdf");
