@@ -79,7 +79,12 @@ namespace Improvar.Models
 
         [StringLength(500)]
         public string ITREM { get; set; }
-
+        [StringLength(4)]
+        public string PARTCD { get; set; }
+        [StringLength(30)]
+        public string PDESIGN { get; set; }
         
+
+
     }
 }

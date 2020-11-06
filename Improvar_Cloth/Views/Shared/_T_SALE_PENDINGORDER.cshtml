@@ -48,6 +48,8 @@
                                 <th class="" style="width:50px;text-align:right;">Current Adj. Qnty</th>
                                 <th class="" style="width:71px;">Item Code</th>
                                 <th class="" style="width: 50px;">Color Code</th>
+                                <th class="" style="width:71px;">Party Design</th>
+                                <th class="" style="width:50px;text-align:right;">Rate</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -98,6 +100,12 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].COLRCD, new { id = "Ord_COLRCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDINGORDER[i].PDESIGN, new { id = "Ord_PDESIGN_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.PENDINGORDER[i].RATE, new { id = "Ord_RATE_" + i, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
                                     </tr>
                                 }
                             }
@@ -128,6 +136,6 @@
     </div>
     <div class="row" style="padding:5px;text-align:center;">
         <input type="button" class="btn btn-success" id="btnSelectPendOrder" value="Select" style="padding: 2px 5px 2px 5px;" onclick="SelectPendOrder();" />
-        <input type="button" class="btn btn-danger" id="btnCancelPendOrder" value="Close" style="padding: 2px 5px 2px 5px;" onclick="CloseBarnoPopup();" />
+        <input type="button" class="btn btn-danger" id="btnCancelPendOrder" value="Close" style="padding: 2px 5px 2px 5px;" onclick="ClosePendOrder();" />
     </div>
 </div>

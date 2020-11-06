@@ -454,18 +454,24 @@ function Fill_DetailData() {
         url: $("#UrlFillDetailData").val(),//"@Url.Action("FillDetailData", PageControllerName)",
         data: $('form').serialize(),
         success: function (result) {
-            //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-            $("#partialdivDetail").html(result);
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:nth-child(3)").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
-            for (var i = 0; i <= GridRow - 1; i++) {
-                CalculateAmt_Details(i);
+            if (result == "0") {
+                msgInfo("Bill Sl# duplicate in barcode tab!");
+                return false;
             }
-            $("#bardatachng").val("N");
+            else {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDetail").html(result);
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(3)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    CalculateAmt_Details(i);
+                }
+                $("#bardatachng").val("N");
+            }
             $("#WaitingMode").hide();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -2277,6 +2283,11 @@ function CalculateOutIssProcessTotal_Details() {
     //$("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
     
 
+}
+function ClosePendOrder() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    $("#popup").html("");
 }
 
 

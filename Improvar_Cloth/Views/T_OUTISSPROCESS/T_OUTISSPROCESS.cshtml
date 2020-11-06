@@ -362,7 +362,7 @@
                 data: $('form').serialize() + "&RowIndex=" + i,
                 success: function (result) {
                     $("#WaitingMode").hide();
-                    $("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
+                    //$("#partialdivQtyRequirement").animate({ marginTop: '-10px' }, 50);
                     $("#partialdivQtyRequirement").html(result);
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {

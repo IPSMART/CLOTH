@@ -1074,7 +1074,6 @@
     <Content Include="Views\Shared\_T_SORD_MAIN.cshtml" />
     <Content Include="Views\Shared\_T_SORD_SCHEME.cshtml" />
     <Content Include="Views\Shared\_T_SORD_SEARCH_PANEL.cshtml" />
-    <Content Include="Views\Shared\_T_SORD_SIZE.cshtml" />
     <Content Include="Views\M_BOM\M_BOM.cshtml" />
     <Content Include="Views\Shared\_M_BOM_MAIN.cshtml" />
     <Content Include="Views\Shared\_M_BOM_MATERIAL.cshtml" />

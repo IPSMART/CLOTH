@@ -26,5 +26,7 @@ namespace Improvar.Models
         public short SLNO { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double CURRENTADJQTY { get; set; }
+        public string PDESIGN { get; set; }
+        public double? RATE { get; set; }
     }
 }

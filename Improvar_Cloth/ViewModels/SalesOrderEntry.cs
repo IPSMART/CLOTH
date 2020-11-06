@@ -97,6 +97,7 @@ namespace Improvar.ViewModels
         [StringLength(45)]
         public string SaleBillMade { get; set; }
         public double TOTAL_NOOFSETS { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
         public double TOTAL_QNTY { get; set; }
         public double TOTAL_BOXES { get; set; }
         public double TOTAL_SETS { get; set; }
