@@ -22,7 +22,7 @@ namespace Improvar
             string itgrpcd = "";
 
             sql += "select z.slcd, b.taxgrpcd, a.agslcd, a.areacd, a.prccd, a.discrtcd, a.crdays, a.crlimit, a.cod, a.gstno, a.docth, b.trslcd, b.courcd, nvl(c.agslcd,a.agslcd) agslcd, ";
-            sql += "g.slnm, g.slarea, h.slnm agslnm, i.slnm trslnm, e.taxgrpnm, f.prcnm, ";
+            sql += "g.slnm,nvl(g.slarea,g.district) slarea, h.slnm agslnm, i.slnm trslnm, e.taxgrpnm, f.prcnm, ";
             //sql += "f.prcnm, "; // c.prcdesc, c.effdt, c.itmprccd, ";
             sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno ";
             sql += "from ";
