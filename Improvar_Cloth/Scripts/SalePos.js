@@ -261,7 +261,22 @@ function CalculateBarRowAmt(i) {
     $("#B_AMT_" + i).val(B_AMT_);
     var B_QNTY_ = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
     var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
-    var B_PRODGRPGSTPER_ = retFloat($("#B_PRODGRPGSTPER_" + i).val());
+    var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
+    var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
+    $("#B_GSTPER_" + i).val(GSTPER);
+    var net = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
+    $("#B_NETAMT_" + i).val(GSTPER);
+}
+function CalculateInclusiveRate(i) {
+    debugger;
+    if (DefaultAction == "V") return true;
+    var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
+    var B_RATE_ = retFloat($("#B_RATE_" + i).val());
+    var B_AMT_ = B_QNTY_ * B_RATE_;
+    $("#B_AMT_" + i).val(B_AMT_);
+    var B_QNTY_ = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
+    var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
+    var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
     var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
     $("#B_GSTPER_" + i).val(GSTPER);
     var net = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;

@@ -728,7 +728,7 @@
                         <div class="col-md-7">
                             <div class="editor-field">
                                 @if (Model.DefaultAction == "A")
-                    {
+                                {
                                     @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
                                 }
                                 else
