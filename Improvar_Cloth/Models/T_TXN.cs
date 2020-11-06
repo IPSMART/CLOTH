@@ -100,7 +100,7 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string BARGENTYPE { get; set; }
-      
+
 
         [StringLength(50)]
         public string MENU_PARA { get; set; }
@@ -108,7 +108,8 @@ namespace Improvar.Models
         public string TDSCODE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? TCSON { get; set; }
-        public double? INC_RATE { get; set; }
+        [StringLength(1)]
+        public string INCL_RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? ADVADJ { get; set; }
     }

@@ -455,7 +455,7 @@ namespace Improvar
         }
         public static string SaveFolderPath()
         {
-            return "C://IPSMART";
+            return @"\\ipsmart-ibm\C\IPSMART";
         }
     }
 }

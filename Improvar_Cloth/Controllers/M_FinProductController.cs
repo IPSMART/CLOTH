@@ -643,10 +643,9 @@ namespace Improvar.Controllers
                                 select new
                                 {
                                     PRCCD = p.PRCCD,
-                                    PRCNM = p.PRCNM
-                                }).ToList();
-
-
+                                    PRCNM = p.PRCNM,
+                                    SEQNO = p.SEQNO
+                                }).OrderBy(S => S.SEQNO).ToList();
                 DataColumn column;
                 column = dt.Columns.Add("COLRCD", typeof(string)); column.Caption = "COLRCD";
                 column = dt.Columns.Add("COLRNM", typeof(string)); column.Caption = "COLRNM";

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Web.Mvc;                                                   
+using System.Web.Mvc;
 using Improvar.Models;
 using Improvar.ViewModels;
 using System.Data;
@@ -38,7 +38,7 @@ namespace Improvar.Controllers
                     DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
-                  
+
                     //=================For Price List Group ================//
                     List<DropDown_list> DDl = new List<DropDown_list>();
                     DropDown_list DDl1 = new DropDown_list();
@@ -68,7 +68,7 @@ namespace Improvar.Controllers
                         VE.IndexKey = (from p in DBF.M_PRCLST orderby p.PRCCD select new IndexKey() { Navikey = p.PRCCD }).ToList();
                         if (op == "E" || op == "D" || op == "V")
                         {
-                          
+
                             if (searchValue.Length != 0)
                             {
                                 VE.Index = Nindex;
@@ -160,7 +160,6 @@ namespace Improvar.Controllers
                 sl = DB.M_PRCLST.Find(aa[0].Trim());
                 sSBLDGE = DB.M_SUBLEG.Find(sl.SLCD);
                 sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
-
                 if (sll.INACTIVE_TAG == "Y")
                 {
                     VE.Deactive = true;
@@ -180,18 +179,21 @@ namespace Improvar.Controllers
         {
             DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             var MDT = (from j in DBF.M_PRCLST
-                       join p in DBF.M_CNTRL_HDR on j.M_AUTONO 
-                       equals (p.M_AUTONO) where (p.M_AUTONO == j.M_AUTONO)
-                       select new 
+                       join p in DBF.M_CNTRL_HDR on j.M_AUTONO
+                       equals (p.M_AUTONO)
+                       where (p.M_AUTONO == j.M_AUTONO)
+                       select new
                        {
+                           SEQNO = j.SEQNO,
                            PRCCD = j.PRCCD,
-                           PRCNM = j.PRCNM }).Distinct().OrderBy(s => s.PRCCD).ToList();
+                           PRCNM = j.PRCNM
+                       }).Distinct().OrderBy(s => s.PRCCD).ToList();
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Price List Code" + Cn.GCS() + "Price List Name";
+            var hdr = "Price List Code" + Cn.GCS() + "Price List Name" + Cn.GCS() + "Seq";
             for (int j = 0; j <= MDT.Count - 1; j++)
             {
-                SB.Append("<tr><td>" + MDT[j].PRCCD + "</td><td>" + MDT[j].PRCNM + "</td></tr>");
+                SB.Append("<tr><td>" + MDT[j].PRCCD + "</td><td>" + MDT[j].PRCNM + "</td><td>" + MDT[j].SEQNO + "</td></tr>");
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0"));
         }
@@ -260,7 +262,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MGOD.EMD_NO = Convert.ToByte( MAXEMDNO+1);
+                                MGOD.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
                         }
 
@@ -268,6 +270,7 @@ namespace Improvar.Controllers
                         MGOD.PRCNM = VE.M_PRCLST.PRCNM;
                         MGOD.PRCGRP = FC["PRCGRP"].ToString();
                         MGOD.SLCD = VE.M_PRCLST.SLCD;
+                        MGOD.SEQNO = VE.M_PRCLST.SEQNO;
                         //Control header 
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_PRCLST", MGOD.M_AUTONO.Value, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
                         if (VE.DefaultAction == "A")

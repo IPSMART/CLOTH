@@ -1444,22 +1444,20 @@ namespace Improvar.Controllers
 
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
                 {
-                    if (VE.TTXNDTL[p].ALL_GSTPER.retStr() != "")
+                    if (VE.TTXNDTL[p].PRODGRPGSTPER.retStr() != "")
                     {
-                        var tax_data = VE.TTXNDTL[p].ALL_GSTPER.Split(',').ToList();
-                        if (tax_data.Count == 1)
+                        var gstdata = salesfunc.retGstPer(VE.TTXNDTL[p].PRODGRPGSTPER.retStr(), VE.TTXNDTL[p].RATE.retDbl());
+                        if (gstdata.retStr() != "")
                         {
-                            VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl() / 3;
-                            VE.TTXNDTL[p].CGSTPER = tax_data[0].retDbl() / 3;
-                            VE.TTXNDTL[p].SGSTPER = tax_data[0].retDbl() / 3;
-                        }
-                        else
-                        {
-                            VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl();
-                            VE.TTXNDTL[p].CGSTPER = tax_data[1].retDbl();
-                            VE.TTXNDTL[p].SGSTPER = tax_data[2].retDbl();
-                        }
+                            var gst = gstdata.Split(',');
+                            if (gst.Count() > 0)
+                            {
+                                VE.TTXNDTL[p].IGSTPER = gst[0].retDbl();
+                                VE.TTXNDTL[p].CGSTPER = gst[1].retDbl();
+                                VE.TTXNDTL[p].SGSTPER = gst[2].retDbl();
+                            }
 
+                        }
                     }
                 }
                 //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
