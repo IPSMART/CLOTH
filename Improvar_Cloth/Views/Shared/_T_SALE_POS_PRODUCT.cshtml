@@ -135,7 +135,7 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalBarno();", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotalBarno();", @class = " atextBoxFor", maxlength = 12, @onchange = "CalculateBarRowAmt(" + i + ");" } })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -146,7 +146,7 @@
                                         @if (Model.INCLRATEASK == "Y")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].INCLRATE, "{0:0.00}", new { id = "INCLRATE_" + i, onblur = "CalculateRATE('" + i + "');", @onkeypress = "return numericOnly(this,4);", maxlength = 12, style = "font-weight:bold;background-color: bisque;", @class = "atextBoxFor text-right" })
+                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].INCLRATE, "{0:0.00}", new { id = "INCLRATE_" + i, onchange = "CalculateInclusiveRate(" + i + ");CalculateBarRowAmt(" + i + ");", @onkeypress = "return numericOnly(this,4);", maxlength = 12, style = "font-weight:bold;background-color: bisque;", @class = "atextBoxFor text-right" })
                                             </td>
                                         }
                                         <td class="">
@@ -162,7 +162,7 @@
                                             @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].DISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor select_3d ", id = "B_DISCTYPE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 ,@onchange = "CalculateBarRowAmt(" + i + ");" } })
                                         </td>
                                         @*<td class="">
                                                 @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].TDDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].TDDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_TDDISCTYPE_" + i })
