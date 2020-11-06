@@ -315,6 +315,7 @@ namespace Improvar.Controllers
             IR_PROG.Columns.Add("uniqno", typeof(string), "");
             IR_PROG.Columns.Add("itremark", typeof(string), "");
             IR_PROG.Columns.Add("totalqnty", typeof(double), "");
+            IR_PROG.Columns.Add("totalnos", typeof(double), "");
 
 
             //issue
@@ -332,7 +333,7 @@ namespace Improvar.Controllers
             IR_ISSUE.Columns.Add("iss_cutlength", typeof(double), "");
             IR_ISSUE.Columns.Add("iss_qnty", typeof(double), "");
             IR_ISSUE.Columns.Add("iss_totalqnty", typeof(double), "");
-
+            IR_PROG.Columns.Add("iss_totalnos", typeof(double), "");
 
 
             Int32 maxR = 0, i = 0;
@@ -386,7 +387,7 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     t_qnty = t_qnty + (tbl.Rows[i]["qnty"]).retDbl();
-                    //t_nos = t_nos + Convert.ToDouble(tbl.Rows[i]["nos"]);
+                    t_nos = t_nos + (tbl.Rows[i]["nos"]).retDbl();
 
                     IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
                     IR_PROG.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
@@ -408,6 +409,7 @@ namespace Improvar.Controllers
                     //IR_PROG.Rows[rNo]["uniqno"] = tbl.Rows[i]["uniqno"];
                     IR_PROG.Rows[rNo]["itremark"] = tbl.Rows[i]["itremark"];
                     IR_PROG.Rows[rNo]["totalqnty"] = t_qnty;
+                    IR_PROG.Rows[rNo]["totalnos"] = t_nos;
 
                     int coutadd = 0;
                     for (int g = 0; g <= address.Count() - 1; g++)
@@ -439,7 +441,7 @@ namespace Improvar.Controllers
                 {
 
                     t_qnty = t_qnty + (tbl.Rows[i]["qnty"]).retDbl();
-                    //t_nos = t_nos + Convert.ToDouble(tbl.Rows[i]["nos"]);
+                    t_nos = t_nos + (tbl.Rows[i]["nos"]).retDbl();
                     sln++;
                     IR_ISSUE.Rows.Add(""); rNo = IR_ISSUE.Rows.Count - 1;
                     IR_ISSUE.Rows[rNo]["autono"] = tbl.Rows[i]["autono"].ToString();
@@ -455,6 +457,7 @@ namespace Improvar.Controllers
                     IR_ISSUE.Rows[rNo]["iss_cutlength"] = tbl.Rows[i]["cutlength"];
                     IR_ISSUE.Rows[rNo]["iss_qnty"] = tbl.Rows[i]["qnty"];
                     IR_ISSUE.Rows[rNo]["iss_totalqnty"] = t_qnty;
+                    IR_ISSUE.Rows[rNo]["iss_totalnos"] = t_nos;
 
 
                     i++;
@@ -470,8 +473,7 @@ namespace Improvar.Controllers
             DataSet IR = new DataSet();
             IR.Tables.Add(IR_PROG);
             IR.Tables.Add(IR_ISSUE);
-            string[] compaddress;
-            compaddress = Salesfunc.retCompAddress(VE.OtherPara.Split(',')[1].retStr()).Split(Convert.ToChar(Cn.GCS()));
+            string compaddress = masterHelp.retCompAddress(VE.OtherPara.Split(',')[1].retStr());
             string rptname = "~/Report/" + repname + ".rpt";
             
             ReportDocument reportdocument = new ReportDocument();
@@ -479,11 +481,11 @@ namespace Improvar.Controllers
             DSPrintJobissue DSP = new DSPrintJobissue();
             DSP.Merge(IR);
             reportdocument.SetDataSource(DSP);
-            reportdocument.SetParameterValue("compnm", compaddress[0]);
-            reportdocument.SetParameterValue("compadd", compaddress[1]);
-            reportdocument.SetParameterValue("compstat", compaddress[2]);
-            reportdocument.SetParameterValue("locaadd", compaddress[3]);
-            reportdocument.SetParameterValue("locastat", compaddress[4]);
+            reportdocument.SetParameterValue("compnm", compaddress.retCompValue("compnm"));
+            reportdocument.SetParameterValue("compadd", compaddress.retCompValue("compadd"));
+            reportdocument.SetParameterValue("compstat", compaddress.retCompValue("compstat"));
+            reportdocument.SetParameterValue("locaadd", compaddress.retCompValue("locaadd"));
+            reportdocument.SetParameterValue("locastat", compaddress.retCompValue("locastat"));
             reportdocument.SetParameterValue("billheading", hddsp);
             reportdocument.SetParameterValue("chlntype", "");
             Response.Buffer = false;

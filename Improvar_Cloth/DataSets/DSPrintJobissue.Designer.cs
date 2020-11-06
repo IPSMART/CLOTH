@@ -340,6 +340,8 @@ namespace Improvar.DataSets {
             
             private global::System.Data.DataColumn columniss_hsncode;
             
+            private global::System.Data.DataColumn columniss_totalnos;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public DTIssueDataTable() {
@@ -479,6 +481,14 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn iss_totalnosColumn {
+                get {
+                    return this.columniss_totalnos;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -514,7 +524,7 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public DTIssueRow AddDTIssueRow(string autono, string progslno, string iss_slno, string iss_itdescn, string iss_styleno, string iss_colrnm, string iss_sizenm, string iss_uomnm, double iss_nos, double iss_cutlength, double iss_qnty, double iss_totalqnty, string iss_hsncode) {
+            public DTIssueRow AddDTIssueRow(string autono, string progslno, string iss_slno, string iss_itdescn, string iss_styleno, string iss_colrnm, string iss_sizenm, string iss_uomnm, double iss_nos, double iss_cutlength, double iss_qnty, double iss_totalqnty, string iss_hsncode, double iss_totalnos) {
                 DTIssueRow rowDTIssueRow = ((DTIssueRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         autono,
@@ -529,7 +539,8 @@ namespace Improvar.DataSets {
                         iss_cutlength,
                         iss_qnty,
                         iss_totalqnty,
-                        iss_hsncode};
+                        iss_hsncode,
+                        iss_totalnos};
                 rowDTIssueRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowDTIssueRow);
                 return rowDTIssueRow;
@@ -565,6 +576,7 @@ namespace Improvar.DataSets {
                 this.columniss_qnty = base.Columns["iss_qnty"];
                 this.columniss_totalqnty = base.Columns["iss_totalqnty"];
                 this.columniss_hsncode = base.Columns["iss_hsncode"];
+                this.columniss_totalnos = base.Columns["iss_totalnos"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -596,6 +608,8 @@ namespace Improvar.DataSets {
                 base.Columns.Add(this.columniss_totalqnty);
                 this.columniss_hsncode = new global::System.Data.DataColumn("iss_hsncode", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columniss_hsncode);
+                this.columniss_totalnos = new global::System.Data.DataColumn("iss_totalnos", typeof(double), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columniss_totalnos);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -786,6 +800,8 @@ namespace Improvar.DataSets {
             private global::System.Data.DataColumn columnitremark;
             
             private global::System.Data.DataColumn columntotalqnty;
+            
+            private global::System.Data.DataColumn columntotalnos;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -1054,6 +1070,14 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn totalnosColumn {
+                get {
+                    return this.columntotalnos;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -1118,7 +1142,8 @@ namespace Improvar.DataSets {
                         double qnty, 
                         string uniqno, 
                         string itremark, 
-                        double totalqnty) {
+                        double totalqnty, 
+                        double totalnos) {
                 DTProgrammeRow rowDTProgrammeRow = ((DTProgrammeRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         autono,
@@ -1149,7 +1174,8 @@ namespace Improvar.DataSets {
                         qnty,
                         uniqno,
                         itremark,
-                        totalqnty};
+                        totalqnty,
+                        totalnos};
                 rowDTProgrammeRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowDTProgrammeRow);
                 return rowDTProgrammeRow;
@@ -1201,6 +1227,7 @@ namespace Improvar.DataSets {
                 this.columnuniqno = base.Columns["uniqno"];
                 this.columnitremark = base.Columns["itremark"];
                 this.columntotalqnty = base.Columns["totalqnty"];
+                this.columntotalnos = base.Columns["totalnos"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1264,6 +1291,8 @@ namespace Improvar.DataSets {
                 base.Columns.Add(this.columnitremark);
                 this.columntotalqnty = new global::System.Data.DataColumn("totalqnty", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columntotalqnty);
+                this.columntotalnos = new global::System.Data.DataColumn("totalnos", typeof(double), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columntotalnos);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1614,6 +1643,22 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public double iss_totalnos {
+                get {
+                    try {
+                        return ((double)(this[this.tableDTIssue.iss_totalnosColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'iss_totalnos\' in table \'DTIssue\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTIssue.iss_totalnosColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool IsautonoNull() {
                 return this.IsNull(this.tableDTIssue.autonoColumn);
             }
@@ -1766,6 +1811,18 @@ namespace Improvar.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void Setiss_hsncodeNull() {
                 this[this.tableDTIssue.iss_hsncodeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool Isiss_totalnosNull() {
+                return this.IsNull(this.tableDTIssue.iss_totalnosColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void Setiss_totalnosNull() {
+                this[this.tableDTIssue.iss_totalnosColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -2249,6 +2306,22 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public double totalnos {
+                get {
+                    try {
+                        return ((double)(this[this.tableDTProgramme.totalnosColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'totalnos\' in table \'DTProgramme\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDTProgramme.totalnosColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public bool IsautonoNull() {
                 return this.IsNull(this.tableDTProgramme.autonoColumn);
             }
@@ -2593,6 +2666,18 @@ namespace Improvar.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public void SettotalqntyNull() {
                 this[this.tableDTProgramme.totalqntyColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public bool IstotalnosNull() {
+                return this.IsNull(this.tableDTProgramme.totalnosColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public void SettotalnosNull() {
+                this[this.tableDTProgramme.totalnosColumn] = global::System.Convert.DBNull;
             }
         }
         

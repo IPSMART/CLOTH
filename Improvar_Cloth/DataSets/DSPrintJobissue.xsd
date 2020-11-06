@@ -28,6 +28,7 @@
               <xs:element name="iss_qnty" msprop:Generator_ColumnVarNameInTable="columniss_qnty" msprop:Generator_ColumnPropNameInRow="iss_qnty" msprop:Generator_ColumnPropNameInTable="iss_qntyColumn" msprop:Generator_UserColumnName="iss_qnty" type="xs:double" minOccurs="0" />
               <xs:element name="iss_totalqnty" msprop:Generator_ColumnVarNameInTable="columniss_totalqnty" msprop:Generator_ColumnPropNameInRow="iss_totalqnty" msprop:Generator_ColumnPropNameInTable="iss_totalqntyColumn" msprop:Generator_UserColumnName="iss_totalqnty" type="xs:double" minOccurs="0" />
               <xs:element name="iss_hsncode" msprop:Generator_ColumnVarNameInTable="columniss_hsncode" msprop:Generator_ColumnPropNameInRow="iss_hsncode" msprop:Generator_ColumnPropNameInTable="iss_hsncodeColumn" msprop:Generator_UserColumnName="iss_hsncode" type="xs:string" minOccurs="0" />
+              <xs:element name="iss_totalnos" msprop:Generator_ColumnVarNameInTable="columniss_totalnos" msprop:Generator_ColumnPropNameInRow="iss_totalnos" msprop:Generator_ColumnPropNameInTable="iss_totalnosColumn" msprop:Generator_UserColumnName="iss_totalnos" type="xs:double" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -63,6 +64,7 @@
               <xs:element name="uniqno" msprop:Generator_ColumnVarNameInTable="columnuniqno" msprop:Generator_ColumnPropNameInRow="uniqno" msprop:Generator_ColumnPropNameInTable="uniqnoColumn" msprop:Generator_UserColumnName="uniqno" type="xs:string" minOccurs="0" />
               <xs:element name="itremark" msprop:Generator_ColumnVarNameInTable="columnitremark" msprop:Generator_ColumnPropNameInRow="itremark" msprop:Generator_ColumnPropNameInTable="itremarkColumn" msprop:Generator_UserColumnName="itremark" type="xs:string" minOccurs="0" />
               <xs:element name="totalqnty" msprop:Generator_ColumnVarNameInTable="columntotalqnty" msprop:Generator_ColumnPropNameInRow="totalqnty" msprop:Generator_ColumnPropNameInTable="totalqntyColumn" msprop:Generator_UserColumnName="totalqnty" type="xs:double" minOccurs="0" />
+              <xs:element name="totalnos" msprop:Generator_ColumnVarNameInTable="columntotalnos" msprop:Generator_ColumnPropNameInRow="totalnos" msprop:Generator_ColumnPropNameInTable="totalnosColumn" msprop:Generator_UserColumnName="totalnos" type="xs:double" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
