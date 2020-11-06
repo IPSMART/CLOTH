@@ -1441,6 +1441,13 @@ namespace Improvar.Controllers
                                   GLCD = P.Key.GLCD,
                                   ITREM = P.Key.ITREM,
                               }).ToList();
+                //chk duplicate slno
+                var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
+                var distnctslno = VE.TTXNDTL.Select(a => a.SLNO).Distinct().Count();
+                if(allslno != distnctslno)
+                {
+                    return Content("0");
+                }
 
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
                 {
