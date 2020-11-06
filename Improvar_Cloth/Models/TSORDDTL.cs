@@ -117,5 +117,10 @@ namespace Improvar.Models
         public string PRCCD { get; set; }
 
         public DateTime? PRCEFFDT { get; set; }
+        [StringLength(4)]
+        public string PARTCD { get; set; }
+        public string PARTNM { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? RATE { get; set; }
     }
 }
