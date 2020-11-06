@@ -231,6 +231,21 @@
                     </div>
                 </div>
             </div>
+           <div class="row">
+               <div class="col-md-6">
+                   <div class="editor-field" style="margin-top: 4px;">
+                       @Html.Label("", "Price List Seq  ")
+                       <b style="color:red"><sup>*</sup></b>
+                   </div>
+               </div>
+
+               <div class="col-md-8">
+                   <div class="editor-field">
+                       @Html.EditorFor(model => model.M_PRCLST.SEQNO, new { htmlAttributes = new { @class = "form-control ", id = "SEQNO", @placeholder = "SEQNO", maxlength = 2, onkeypress = "return numericOnly(this,0);" } })
+
+                   </div>
+               </div>
+           </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">

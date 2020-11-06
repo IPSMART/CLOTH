@@ -1153,16 +1153,19 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Pcs. Per Set")
+                            @if (Model.MENU_PARA == "F")
+                            {
+                                <div class="col-md-6">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Pcs. Per Set")
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_SITEM.PCSPERSET, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERSET", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
+                                <div class="col-md-6">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.M_SITEM.PCSPERSET, new { htmlAttributes = new { @class = "form-control", @title = "Only Numeric", id = "PCSPERSET", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 4, @placeholder = "eg.1,2" } })
+                                    </div>
                                 </div>
-                            </div>
+                            }
                             <div class="col-md-6">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Colors Per Set")
@@ -1222,13 +1225,13 @@
                             </div>
                         </div>
                         <div class="row">
-                            @if(Model.DefaultAction != "V")
+                            @if (Model.DefaultAction != "V")
                             {
-                            @Html.HiddenFor(model => model.BarImages)
-                            <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
-                            <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
-                            <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
-                            <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
+                                @Html.HiddenFor(model => model.BarImages)
+                                <div class="col-md-6"><div class="editor-label" style="margin-top: 6px;">@Html.Label("", "Upload Product Image") </div></div>
+                                <div class="col-lg-2"><input type="text" id="ImageDesc" value="" class="form-control" placeholder="Description" /></div>
+                                <div class="col-lg-3"><input type="file" class="form-control" name="Imageupload" accept="image/*" onchange="fileTypeCheck(this);" /></div>
+                                <div class="col-lg-1"><input type="button" value="Upload" class="btn-sm" onclick="UploadBarnoImage();"></div>
                             }
                         </div>
                     </div>
@@ -1350,28 +1353,28 @@
                             @Html.Partial("_M_FinProduct_BARCD")
                         </div>
                         @*<div class="col-lg-4">
-                            @if (Model.DefaultAction != "A")
-                            {
-                                <div class="row">
-                                    <div class="col-lg-3" style="width:auto">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Item Bar Code")
+                                @if (Model.DefaultAction != "A")
+                                {
+                                    <div class="row">
+                                        <div class="col-lg-3" style="width:auto">
+                                            <div class="editor-label" style="margin-top: 6px;">
+                                                @Html.Label("", "Item Bar Code")
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <div class="editor-field">
+                                                @if (Model.HASTRANSACTION == true)
+                                                {
+                                                    @Html.EditorFor(model => model.ITEM_BARCODE, new { htmlAttributes = new { @class = "form-control", id = "ITEM_BARCODE", @TabIndex = -1, @placeholder = "Item Bar Code", @readonly = "readonly" } })
+                                                }
+                                                else {
+                                                    @Html.EditorFor(model => model.ITEM_BARCODE, new { htmlAttributes = new { @class = "form-control", id = "ITEM_BARCODE", @TabIndex = -1, @placeholder = "Item Bar Code" } })
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-5">
-                                        <div class="editor-field">
-                                            @if (Model.HASTRANSACTION == true)
-                                            {
-                                                @Html.EditorFor(model => model.ITEM_BARCODE, new { htmlAttributes = new { @class = "form-control", id = "ITEM_BARCODE", @TabIndex = -1, @placeholder = "Item Bar Code", @readonly = "readonly" } })
-                                            }
-                                            else {
-                                                @Html.EditorFor(model => model.ITEM_BARCODE, new { htmlAttributes = new { @class = "form-control", id = "ITEM_BARCODE", @TabIndex = -1, @placeholder = "Item Bar Code" } })
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>*@
+                                }
+                            </div>*@
                     </div>
                 </div>
                 <div id="Measurement" class="tab-pane fade" style="margin-top: 10px;">
