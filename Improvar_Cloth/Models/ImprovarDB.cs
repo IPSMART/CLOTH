@@ -77,7 +77,7 @@ namespace Improvar.Models
         public virtual DbSet<M_USR_ACS_DOCCD> M_USR_ACS_DOCCD { get; set; }
         public virtual DbSet<T_PSLIP> T_PSLIP { get; set; }
         public virtual DbSet<T_TXN> T_TXN { get; set; }
-
+        
         public virtual DbSet<M_PRCLST> M_PRCLST { get; set; }
         public virtual DbSet<T_TXNSTATUS> T_TXNSTATUS { get; set; }
         public virtual DbSet<M_CNTRL_HDR_REM> M_CNTRL_HDR_REM { get; set; }

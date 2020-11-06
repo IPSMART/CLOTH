@@ -25,14 +25,15 @@
 </script>
 <script>
     function requiredFieldValidator() {
-        if (!emptyFieldCheck("Enter Group Name", "GRPNM")) { return false; }
         if (!emptyFieldCheck("Enter Item Group Name", "ITGRPNM")) { return false; }
         var grptyp = $("#grptype").val();
         if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
+        if (!emptyFieldCheck("Enter Group Name", "GRPNM")) { return false; }
+        if (!emptyFieldCheck("Enter Product group", "PRODGRPCD")) { return false; }
+        if (!emptyFieldCheck("Enter HSNCODE", "HSNCODE")) { return false; }
         if (!emptyFieldCheck("Enter Sales General Ledger Code", "SALGLCD")) { return false; }
         if (!emptyFieldCheck("Enter Purchase General Ledger Code", "PURGLCD")) { return false; }
-        if (!emptyFieldCheck("Enter Product group", "PRODGRPCD")) { return false; }
-        
+      
         return true;
     }
 </script>
@@ -168,7 +169,7 @@
         $("#btnprint").click();
     }
 </script>
-<script></script>
+
 
 @using (Html.BeginForm())
 {
@@ -227,26 +228,26 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Group Name")
+                                @Html.Label("", " Item Group Name")
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        @*<div class="col-md-9">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 30 } })
-                                </div>
-                            </div>*@
-                        <div class="col-md-8">
+                        <div class="col-md-9">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.GRPNM, new { htmlAttributes = new { @class = "form-control", id = "GRPNM", @placeholder = "Group Name", autocomplete = "off", maxlength = 25, @list = "GRPNMlist" } })
-                                <datalist id="GRPNMlist">
-                                    @foreach (var jg in Model.Database_Combo1)
-                                    {
-                                        <option value="@jg.FIELD_VALUE" />
-                                    }
-                                </datalist>
+                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Item Group Name", maxlength = 30 } })
                             </div>
                         </div>
+                        @*<div class="col-md-8">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 40, @list = "ITGRPNMlist" } })
+                                    <datalist id="ITGRPNMlist">
+                                        @foreach (var jg in Model.Database_Combo1)
+                                        {
+                                            <option value="@jg.FIELD_VALUE" />
+                                        }
+                                    </datalist>
+                                </div>
+                            </div>*@
                     </div>
                     <div class="row">
                         <div class="col-md-7">
@@ -284,27 +285,29 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", " Item Group Name")
+                                @Html.Label("", "Group Name")
                                 <b style="color:Red;">*</b>
                             </div>
                         </div>
-                        <div class="col-md-9">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Item Group Name", maxlength = 30 } })
-                            </div>
-                        </div>
-                        @*<div class="col-md-8">
+                        @*<div class="col-md-9">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 40, @list = "ITGRPNMlist" } })
-                                    <datalist id="ITGRPNMlist">
-                                        @foreach (var jg in Model.Database_Combo1)
-                                        {
-                                            <option value="@jg.FIELD_VALUE" />
-                                        }
-                                    </datalist>
+                                    @Html.EditorFor(model => model.M_GROUP.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @placeholder = "Group Name", maxlength = 30 } })
                                 </div>
                             </div>*@
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_GROUP.GRPNM, new { htmlAttributes = new { @class = "form-control", id = "GRPNM", @placeholder = "Group Name", autocomplete = "off", maxlength = 25, @list = "GRPNMlist" } })
+                                <datalist id="GRPNMlist">
+                                    @foreach (var jg in Model.Database_Combo1)
+                                    {
+                                        <option value="@jg.FIELD_VALUE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
                     </div>
+                 
+
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -317,12 +320,12 @@
                             </div>
                         </div>
                     </div>
-               
+
                     <div class="row">
                         <div class="col-md-7">
                             <div class="editor-field" style="margin-top: 4px;">
-                                                                @Html.Label("", "Product Group")
-                                                                <b style="color:Red;">*</b>
+                                @Html.Label("", "Product Group")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-5">
@@ -341,6 +344,7 @@
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "HSNCODE")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -396,7 +400,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                              
+
                                 @Html.EditorFor(model => model.M_GROUP.PURGLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PURGLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGenLedgerDetails", PageControllerName) + "','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0');", @placeholder = "PURGLCD", maxlength = 8 } })
                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGenLedgerDetails", PageControllerName)','PUR Ledger Details','PURGLCD','PURGLCD=GLCD=1/PURGLNM=GLNM=0')" />
                             </div>
@@ -473,21 +477,21 @@
                                 @Html.CheckBoxFor(model => model.NEGSTOCK)
                             </div>
                         </div>
-                        
+
                     </div>
                     @*<div class="row">
-                        <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Group Barcode")
+                            <div class="col-md-7">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Group Barcode")
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="editor-field" style="margin-top:6px;">
-                                @Html.EditorFor(model => model.M_GROUP.GRPBARCODE, new { htmlAttributes = new { @class = "form-control", id = "GRPBARCODE", @placeholder = "GRPBARCODE", @onkeyup = "toUpper(this);", maxlength = 4, @readonly = "readonly" } })
+                            <div class="col-md-3">
+                                <div class="editor-field" style="margin-top:6px;">
+                                    @Html.EditorFor(model => model.M_GROUP.GRPBARCODE, new { htmlAttributes = new { @class = "form-control", id = "GRPBARCODE", @placeholder = "GRPBARCODE", @onkeyup = "toUpper(this);", maxlength = 4, @readonly = "readonly" } })
+                                </div>
                             </div>
-                        </div>
-                    </div>*@
-                  
+                        </div>*@
+
                     <div class="row">
                         <div class="col-md-3">
                             <div class="editor-label" style="margin-top: 6px;">
