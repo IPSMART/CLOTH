@@ -1,6 +1,6 @@
 ﻿var DefaultAction = $("#DefaultAction").val();
 function GetBarnoDetails(id) {
-  
+
     if (DefaultAction == "V") return true;
     debugger;
     if (id == "") {
@@ -129,7 +129,7 @@ function AddBarnoRow(hlpstr) {
     tr += '<tr style="font-size:12px; font-weight:bold;">';
     tr += ' <td class="sticky-cell" title="true">';
     tr += '   <input tabindex="-1" data-val="true" data-val-required="The Checked field is required." id="B_Checked_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].Checked" type="checkbox" value="true"><input name="TsalePos_TBATCHDTL[' + rowindex + '].Checked" type="hidden" value="false">';
-    tr += '   <input data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXNSLNO" type="hidden" value="0">';
+    tr += '   <input data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXNSLNO" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
     tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field BLQNTY must be a number." id="B_BLQNTY_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BLQNTY" type="hidden" value="">';
@@ -190,10 +190,10 @@ function AddBarnoRow(hlpstr) {
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange="CalculateTotalBarno();" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += '     <td class="" title="">';
-    tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].INCLRATE" onblur="CalculateRATE("0");" onkeypress="return numericOnly(this,4);" style="font-weight:bold;background-color: bisque;" type="text" value="">';
+    tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].INCLRATE" onblur="CalculateRATE(' + rowindex + ');" onkeypress="return numericOnly(this,4);" style="font-weight:bold;background-color: bisque;" type="text" value="">';
     tr += '     </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" onchange="GetGstPer(0,\'#B_\');RateUpdate(0);" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" onchange="CalculateBarRowAmt(' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="' + GSTPER + '">';
@@ -255,16 +255,15 @@ function AddBarnoRow(hlpstr) {
 function CalculateBarRowAmt(i) {
     debugger;
     if (DefaultAction == "V") return true;
-    var B_QNTY_ = retFloat($("#B_QNTY_"+i).val());
-    var B_RATE_ = retFloat($("#B_RATE_"+i).val());
-    var B_AMT_=B_QNTY_*B_RATE_;  
-    $("#B_AMT_"+i).val(B_AMT_);    
-    var B_QNTY_=  CalculateDiscount("B_DISCTYPE_"+i,"B_DISCRATE_"+i,  "B_NOS_"+i, "B_QNTY_"+i,"B_AMT_"+i,"B_DISCRATE_"+i);
-    var B_DISCRATE_ = retFloat($("#B_DISCRATE_"+i).val());
-    var B_PRODGRPGSTPER_ = retFloat($("#B_PRODGRPGSTPER_"+i).val());
+    var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
+    var B_RATE_ = retFloat($("#B_RATE_" + i).val());
+    var B_AMT_ = B_QNTY_ * B_RATE_;
+    $("#B_AMT_" + i).val(B_AMT_);
+    var B_QNTY_ = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
+    var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
+    var B_PRODGRPGSTPER_ = retFloat($("#B_PRODGRPGSTPER_" + i).val());
     var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
     $("#B_GSTPER_" + i).val(GSTPER);
     var net = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
     $("#B_NETAMT_" + i).val(GSTPER);
-
-        }
+}
