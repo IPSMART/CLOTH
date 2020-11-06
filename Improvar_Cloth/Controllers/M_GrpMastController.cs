@@ -94,10 +94,10 @@ namespace Improvar.Controllers
                     obj1.text = "Common";
                     obj1.value = "C";
                     list1.Add(obj1);
-                    DropDown_list1 obj2 = new DropDown_list1();
-                    obj2.text = "Individual";
-                    obj2.value = "I";
-                    list1.Add(obj2);
+                    //DropDown_list1 obj2 = new DropDown_list1();
+                    //obj2.text = "Individual";
+                    //obj2.value = "I";
+                    //list1.Add(obj2);
                     DropDown_list1 obj3 = new DropDown_list1();
                     obj3.text = "Entry";
                     obj3.value = "E";
@@ -449,12 +449,28 @@ namespace Improvar.Controllers
                     DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".M_CNTRL_HDR in  row share mode");
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
-                        M_GROUP MGROUP = new M_GROUP();
+                       
+                            M_GROUP MGROUP = new M_GROUP();
+                        string qry = " select ITGRPNM FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP where ITGRPNM = '" + VE.M_GROUP.ITGRPNM + "' and M_AUTONO != '" + VE.M_GROUP.M_AUTONO + "' ";
+                        DataTable ChkITGRPNM = Master_Help.SQLquery(qry);
+                        if (ChkITGRPNM != null && ChkITGRPNM.Rows.Count > 0)
+                        {
+                            if (ChkITGRPNM.Rows[0]["ITGRPNM"].ToString() == VE.M_GROUP.ITGRPNM)
+                            { transaction.Rollback(); return Content("Item Group Name already exsist.Please enter unique Item Group Name !"); }
+                        }
                         MGROUP.CLCD = CommVar.ClientCode(UNQSNO);
                         if (VE.DefaultAction == "A")
                         {
+                            //string qry = " select ITGRPNM FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP where ITGRPNM = " + VE.M_GROUP.ITGRPNM + "";
+                            //DataTable ChkITGRPNM = Master_Help.SQLquery(qry);
+                            //if (ChkITGRPNM != null && ChkITGRPNM.Rows.Count > 0)
+                            //{
+                            //    if (ChkITGRPNM.Rows[0]["ITGRPNM"].ToString() == VE.M_GROUP.ITGRPNM)
+                            //    { transaction.Rollback(); return Content("Item Group Name already exsist.Please enter unique Item Group Name !"); }
+                            //}
                             MGROUP.EMD_NO = 0;
                             MGROUP.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
+
                             string txtst = VE.M_GROUP.ITGRPNM.Substring(0, 1).Trim().ToUpper();
                             string sql = " select max(SUBSTR(ITGRPCD, 2)) ITGRPCD FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
                             string sql1 = " select max(GRPBARCODE) GRPBARCODE FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
@@ -480,6 +496,8 @@ namespace Improvar.Controllers
                         }
                         if (VE.DefaultAction == "E")
                         {
+                  
+                           
 
                             MGROUP.ITGRPCD = VE.M_GROUP.ITGRPCD;
                             MGROUP.GRPBARCODE = VE.M_GROUP.GRPBARCODE;
