@@ -38,6 +38,7 @@
                                 <th class="" style="width: 179px;">Item Name</th>
                                 <th class="" style="width: 179px;">Fabric Item Name</th>
                                 <th class="" style="width:96px;">Design</th>
+                                <th class="" style="width:96px;">Party Design</th>
                                 <th class="" style="width:47px;">UOM</th>
 
                                 <th class="" style="width: 81px;">Color Code</th>
@@ -58,7 +59,6 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.TSORDDTL[i].Checked, new { id = "chkid_" + i, @TabIndex = -1 })
-                                            @Html.HiddenFor(model => model.TSORDDTL[i].ChildData, new { id = "ChildData_" + i, Value = @Model.TSORDDTL[i].ChildData })
                                             @*@Html.HiddenFor(model => model.TSORDDTL[i].AMOUNT, new { id = "AMOUNT_" + i })*@
                                         </td>
                                         <td class="">
@@ -84,6 +84,9 @@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].STYLENO, new { id = "STYLENO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].PDESIGN, new { id = "PDESIGN_" + i, @class = " atextBoxFor", maxlength = 30 })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].UOM, new { id = "UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -139,6 +142,7 @@
                         <tfoot>
                             <tr class="sticky-footer">
                                 <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
