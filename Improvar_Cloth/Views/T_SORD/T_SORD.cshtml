@@ -33,6 +33,9 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
+            $("#print_nav").hide();
+            $("#check_nav").hide();
+            
         }
         else if ("@Model.DefaultAction" == "E") {
             if ("@Model.Edit_Tag" == "False") {
@@ -1380,6 +1383,7 @@
         <input type="hidden" id="urlnameAGENT" value="@Url.Action("GetAgentDetails", PageControllerName)" />
         <input type="hidden" id="urlnameSALESMEN" value="@Url.Action("GetSalesMenDetails", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="party" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="salesmanlinkcd" value="S" />
