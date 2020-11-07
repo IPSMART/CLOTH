@@ -179,46 +179,14 @@
     }
 </script>
 <script>
-    function CalculateTotalBarno() {
-        debugger;
-        var DefaultAction = $("#DefaultAction").val();
-        if (DefaultAction == "V") return true;
-        var MENU_PARA = $("#MENU_PARA").val();
-        var T_QNTY = 0, T_NOS = 0;
-        var GridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
-        for (var i = 0; i <= GridRow - 1; i++) {
-            var QNTY = $("#B_QNTY_" + i).val();
-            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
-            var NOS = $("#B_NOS_" + i).val();
-            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
 
-            //if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB") {
-            var NEGSTOCK = $("#B_NEGSTOCK_" + i).val();
-            var BALSTOCK = $("#B_BALSTOCK_" + i).val();
-            if (BALSTOCK == "") { BALSTOCK = parseFloat(0); } else { BALSTOCK = parseFloat(BALSTOCK); }
-            if (QNTY == "") { QNTY = parseFloat(0); } else { QNTY = parseFloat(QNTY); }
-            var balancestock = BALSTOCK - QNTY;
-            if (balancestock < 0) {
-                if (NEGSTOCK != "Y") {
-                    msgInfo("Quantity should not be grater than Stock !");
-                    message_value = "B_QNTY_" + i;
-                    return false;
-                }
-
-            }
-            //}
-        }
-        $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
-        $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
-
-    }
 </script>
 <script>
     function AmountCalculation(i) {
         var DefaultAction = $("#DefaultAction").val();
         if (DefaultAction == "V") return true;
-        var A_NOS = document.getElementById("T_NOS").value;
-        var B_QNTY = document.getElementById("T_QNTY").value;
+        var A_NOS = document.getElementById("B_T_NOS").value;
+        var B_QNTY = document.getElementById("B_T_QNTY").value;
         var D_GROSS_AMT = document.getElementById("T_GROSS_AMT").value;
         var E_NET_AMT = document.getElementById("T_NET_AMT").value;
         var RT = document.getElementById("AMTRATE_" + i).value;

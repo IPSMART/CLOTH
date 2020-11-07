@@ -282,6 +282,7 @@ namespace Improvar.Controllers
             if (dr != null) return dr.CopyToDataTable(); else return dt;
         }
 
+
         public TransactionSaleEntry Navigation(TransactionSaleEntry VE, ImprovarDB DB, int index, string searchValue, string loadOrder = "N")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -1627,6 +1628,7 @@ namespace Improvar.Controllers
                 dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", VE.MENU_PARA);
                 if (dt != null && dt.Rows.Count > 0)
                 {
+                    string glcd = MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].ToString();
                     VE.PENDINGORDER = (from DataRow dr in dt.Rows
                                        select new PENDINGORDER
                                        {
@@ -1644,7 +1646,31 @@ namespace Improvar.Controllers
                                            COLRCD = dr["COLRCD"].retStr(),
                                            PDESIGN = dr["PDESIGN"].retStr(),
                                            RATE = dr["RATE"].retDbl(),
+                                           ITGRPCD = dr["ITGRPCD"].retStr(),
+                                           BARGENTYPE = dr["BARGENTYPE"].retStr(),
+                                           PARTCD = dr["PARTCD"].retStr(),
+                                           PARTNM = dr["PARTNM"].retStr(),
+                                           PRTBARCODE = dr["PRTBARCODE"].retStr(),
+                                           CLRBARCODE = dr["CLRBARCODE"].retStr(),
+                                           SIZENM = dr["SIZENM"].retStr(),
+                                           SZBARCODE = dr["SZBARCODE"].retStr(),
+                                           UOM = dr["UOMCD"].retStr(),
+                                           HSNCODE = dr["HSNCODE"].retStr(),
+                                           GLCD = glcd,
                                        }).ToList();
+
+                    if (VE.MENU_PARA == "PB")
+                    {
+                        tbl = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr(), VE.T_TXN.GOCD.retStr(), "", "", VE.T_TXN.MTRLJOBCD.retStr(), "", "", barnoOrStyle, VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
+                    }
+                    else if (VE.MENU_PARA == "ALL")
+                    {
+                        tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false);
+                    }
+                    else
+                    {
+                        tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr());
+                    }
                 }
             }
             if (VE.PENDINGORDER != null)
@@ -1664,7 +1690,7 @@ namespace Improvar.Controllers
         public ActionResult SelectPendOrder(TransactionSaleEntry VE, string SUBMITBTN)
         {
             Cn.getQueryString(VE);
-
+            string glcd = MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].ToString();
             if (SUBMITBTN == "SHOWBTN")
             {
                 var dt = (from a in VE.PENDINGORDER
@@ -1676,13 +1702,27 @@ namespace Improvar.Controllers
                               ORDSLNO = a.ORDSLNO.retShort(),
                               ORDDOCDT = a.ORDDOCDT.retStr(),
                               ITGRPNM = a.ITGRPNM.retStr(),
-                              ITSTYLE = a.ITSTYLE.retStr(),
-                              COLRNM = a.COLRNM.retStr(),
-                              SIZECD = a.SIZECD.retStr(),
-                              QNTY = a.BALQTY.retDbl() - a.CURRENTADJQTY.retDbl(),
+                              ITGRPCD = a.ITGRPCD.retStr(),
                               ITCD = a.ITCD.retStr(),
+                              ITSTYLE = a.ITSTYLE.retStr(),
+                              PARTCD = a.PARTCD.retStr(),
+                              PARTNM = a.PARTNM.retStr(),
+                              PRTBARCODE = a.PRTBARCODE.retStr(),
                               COLRCD = a.COLRCD.retStr(),
+                              COLRNM = a.COLRNM.retStr(),
+                              CLRBARCODE = a.CLRBARCODE.retStr(),
+                              SIZECD = a.SIZECD.retStr(),
+                              SIZENM = a.SIZENM.retStr(),
+                              SZBARCODE = a.SZBARCODE.retStr(),
+                              QNTY = a.BALQTY.retDbl() - a.CURRENTADJQTY.retDbl(),
+                              UOM = a.UOM,
+                              RATE = a.RATE.retDbl(),
+                              HSNCODE = a.HSNCODE,
+                              PDESIGN = a.PDESIGN,
+                              BARGENTYPE = a.BARGENTYPE.retStr(),
+                              GLCD = glcd,
                           }).ToList();
+
                 if (VE.TBATCHDTL != null)
                 {
                     VE.TBATCHDTL.AddRange(dt);
@@ -1718,18 +1758,31 @@ namespace Improvar.Controllers
                           where a.Ord_Checked == true
                           select new PENDINGORDER
                           {
-                              ORDDOCNO = a.ORDDOCNO.retStr(),
+                              ORDDOCNO =a.ORDDOCNO.retStr(),
                               ORDAUTONO = a.ORDAUTONO.retStr(),
                               ORDSLNO = a.ORDSLNO.retStr(),
                               ORDDOCDT = a.ORDDOCDT.retStr(),
                               ITGRPNM = a.ITGRPNM.retStr(),
-                              ITSTYLE = a.ITSTYLE.retStr(),
+                              ITSTYLE = a.ITSTYLE.retStr() ,
                               COLRNM = a.COLRNM.retStr(),
                               SIZECD = a.SIZECD.retStr(),
                               ORDQTY = a.ORDQTY.retDbl(),
                               BALQTY = a.BALQTY.retDbl(),
                               ITCD = a.ITCD.retStr(),
                               COLRCD = a.COLRCD.retStr(),
+                              PDESIGN = a.PDESIGN.retStr(),
+                              RATE = a.RATE.retDbl(),
+                              ITGRPCD = a.ITGRPCD.retStr(),
+                              BARGENTYPE = a.BARGENTYPE.retStr(),
+                              PARTCD = a.PARTCD.retStr(),
+                              PARTNM = a.PARTNM.retStr(),
+                              PRTBARCODE = a.PRTBARCODE.retStr(),
+                              CLRBARCODE = a.CLRBARCODE.retStr(),
+                              SIZENM = a.SIZENM.retStr(),
+                              SZBARCODE = a.SZBARCODE.retStr(),
+                              UOM = a.UOM.retStr(),
+                              HSNCODE = a.HSNCODE.retStr(),
+                              GLCD = glcd,
                           }).ToList();
                 TempData["PENDORDER" + VE.MENU_PARA] = dt;
                 return Content("0");

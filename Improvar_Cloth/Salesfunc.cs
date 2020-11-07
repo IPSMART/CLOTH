@@ -1397,9 +1397,9 @@ namespace Improvar
             sql += "select a.autono,a.slno, n.slcd, j.slnm, j.district, j.slarea, o.doccd, o.docno, o.docdt, nvl(m.stktype,'') stktype, nvl(m.freestk,'') freestk, nvl(m.rate,0) rate, ";
             sql += "n.agslcd, n.slmslcd, k.slnm agslnm, l.slnm slmslnm, ";
             sql += "d.styleno, m.itcd, m.sizecd, m.colrcd, d.itnm, m.delvdt, m.itrem, ";
-            sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm, d.brandcd, i.brandnm, ";
+            sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm,h.bargentype, d.brandcd, i.brandnm, ";
             sql += "e.sizenm, e.print_seq, f.colrnm, nvl(a.qnty,0) ordqnty, ";
-            sql += "nvl(a.qnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty,m.pdesign from ";
+            sql += "nvl(a.qnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty,m.pdesign,m.partcd,p.partnm ,p.prtbarcode,f.clrbarcode,e.szbarcode,nvl(d.hsncode,h.hsncode)hsncode from ";
 
             sql += "( select a.autono, a.slno, a.qnty ";
             sql += "from " + scm + ".t_sorddtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_sord c, " + scm + ".m_doctype d ";
@@ -1435,12 +1435,12 @@ namespace Improvar
             sql += "group by a.ordautono, a.ordslno ) c, ";
 
             sql += scm + ".m_sitem d, " + scm + ".m_size e, " + scm + ".m_color f, " + scmf + ".m_uom g, " + scm + ".m_group h, " + scm + ".m_brand i, " + scmf + ".m_subleg j, ";
-            sql += scmf + ".m_subleg k, " + scmf + ".m_subleg l, " + scm + ".t_sorddtl m, " + scm + ".t_sord n, " + scm + ".t_cntrl_hdr o ";
+            sql += scmf + ".m_subleg k, " + scmf + ".m_subleg l, " + scm + ".t_sorddtl m, " + scm + ".t_sord n, " + scm + ".t_cntrl_hdr o, " + scm + ".m_parts p ";
             sql += "where a.autono=b.ordautono(+) and a.autono=c.ordautono(+) and ";
             sql += "a.slno=b.ordslno(+) and a.slno=c.ordslno(+) and ";
             sql += "a.autono=m.autono(+) and a.slno=m.slno(+) and a.autono=n.autono(+) and a.autono=o.autono(+) and ";
             sql += "m.itcd=d.itcd(+) and m.sizecd=e.sizecd(+) and m.colrcd=f.colrcd(+) and d.uomcd=g.uomcd(+) and d.itgrpcd=h.itgrpcd(+) and d.brandcd=i.brandcd(+) and n.slcd=j.slcd(+) and ";
-            sql += "n.agslcd=k.slcd(+) and n.slmslcd=l.slcd(+) and ";
+            sql += "n.agslcd=k.slcd(+) and n.slmslcd=l.slcd(+)  and m.partcd=p.partcd(+)  and ";
             if (brandcd != "") sql += "h.brandcd in (" + brandcd + ") and ";
             if (itgrpcd != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             sql += "nvl(a.qnty,0) - nvl(b.qnty,0) - nvl(c.qnty,0) <> 0 ";
