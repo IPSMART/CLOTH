@@ -1628,7 +1628,9 @@ function AddBarCodeGrid() {
         tr += '    <td class="" title="' + ORDDOCNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCNO" readonly="readonly" type="text" value="' + ORDDOCNO + '">';
         tr += '        <input id="B_ORDAUTONO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="' + ORDAUTONO + '">';
-        tr += '        <input id="B_ORDSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDSLNO" type="hidden" value="' + ORDSLNO + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + ORDSLNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDSLNO" readonly="readonly" type="text" value="' + ORDSLNO + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + ORDDOCDT + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCDT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCDT" readonly="readonly" type="text" value="' + ORDDOCDT + '">';
@@ -2021,6 +2023,12 @@ function SelectPendOrder(btnid) {
             }
             else {
                 $("#partialdivBarCodeTab").html(result);
+                var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    Sale_GetGstPer(i, '#B_');
+                    RateUpdate(i);
+                }
+                HasChangeBarSale();
             }
             $("#popup").html("");
             $("#WaitingMode").hide();
@@ -2317,11 +2325,11 @@ function FillOrderToBarcode() {
         }
     }
     if (Count > 1) {
-        msgInfo("Please select one Order !");
+        msgInfo("Please select single order ");
         return false;
     }
     for (var i = 0; i <= GridRow - 1; i++) {
-        if (document.getElementById("Ord_Checked_" + j).checked == true) {
+        if (document.getElementById("Ord_Checked_" + i).checked == true) {
             $("#ORDDOCNO").val($("#Ord_ORDDOCNO_" + i).val());
             $("#ORDDOCDT").val($("#Ord_ORDDOCDT_" + i).val());
             $("#ORDAUTONO").val($("#Ord_ORDAUTONO_" + i).val());

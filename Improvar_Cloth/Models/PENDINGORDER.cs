@@ -29,5 +29,17 @@ namespace Improvar.Models
         public string PDESIGN { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
+        public string ITGRPCD { get; set; }
+        public string BARGENTYPE { get; set; }
+        [StringLength(4)]
+        public string PARTCD { get; set; }
+        public string PARTNM { get; set; }
+        public string SIZENM { get; set; }
+        public string UOM { get; set; }
+        public string HSNCODE { get; set; }
+        public string PRTBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }
+        public string SZBARCODE { get; set; }
+        public string GLCD { get; set; }
     }
 }
