@@ -181,13 +181,13 @@ function AddBarnoRow(hlpstr) {
     tr += '     <input id="B_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onblur="CalculateTotalBarno();" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onchange="CalculateBarRowAmt(' + rowindex + ');" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onchange="CalculateBarRowAmt(' + rowindex + ');" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange="CalculateTotalBarno();" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += '     <td class="" title="">';
     tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].INCLRATE" onchange = "CalculateInclusiveRate(' + rowindex + ');CalculateBarRowAmt(' + rowindex + ');", onkeypress="return numericOnly(this,4);" style="font-weight:bold;background-color: bisque;" type="text" value="">';
@@ -200,7 +200,7 @@ function AddBarnoRow(hlpstr) {
     tr += '     <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
     tr += ' </td>';
     tr += ' <td class="">';
-    tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCTYPE"><option value="P">%</option>';
+    tr += '     <select class="atextBoxFor" data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCTYPE" onchange="CalculateBarRowAmt(' + rowindex + ');" ><option value="P">%</option>';
     tr += '         <option value="N">Nos</option>';
     tr += '         <option value="Q">Qnty</option>';
     tr += '         <option value="F">Fixed</option>';
@@ -260,13 +260,14 @@ function CalculateBarRowAmt(i) {
     var B_AMT_ = B_QNTY_ * B_RATE_;
     $("#B_AMT_" + i).val(B_AMT_);
     var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
-    var B_DISCRATE_ = retFloat($("#B_DISCRATE_" + i).val());
+    B_AMT_ = (B_AMT_ - discamt);
     var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
     var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
-    $("#B_GSTPER_" + i).val(GSTPER);
-    var rownetamt = ((B_AMT_ - B_DISCRATE_) * GSTPER / 100) + B_AMT_;
+    $("#B_GSTPER_" + i).val(GSTPER); 
+    var rownetamt = (((B_AMT_ * GSTPER) / 100) + B_AMT_).toFixed(3);
     $("#INCLRATE_" + i).val(rownetamt);
     $("#B_NETAMT_" + i).val(rownetamt);
+    CalculateBarTotal();
 }
 function CalculateInclusiveRate(i) {
     debugger; var itemrate = 0;
@@ -302,4 +303,32 @@ function CalculateInclusiveRate(i) {
         }
     }
     return itemrate;
+}
+
+function CalculateBarTotal() {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
+    var T_QNTY = 0, T_NOS = 0, T_NET = 0;
+    var GridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        var QNTY = retFloat($("#B_QNTY_" + i).val());
+        var NOS = retFloat($("#B_NOS_" + i).val());
+        var NEGSTOCK = $("#B_NEGSTOCK_" + i).val();
+        var BALSTOCK = retFloat($("#B_BALSTOCK_" + i).val());
+        var NETAMT = retFloat($("#B_NETAMT_" + i).val());
+        T_QNTY += QNTY; T_NOS += NOS; T_NET += NETAMT;
+        var balancestock = BALSTOCK - QNTY;
+        if (balancestock < 0) {
+            if (NEGSTOCK != "Y") {
+                msgInfo("Quantity should not be grater than Stock !");
+                message_value = "B_QNTY_" + i;
+                return false;
+            }
+        }
+    }
+    $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
+    $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
+    $("#B_T_NET").val(parseFloat(T_NET).toFixed(2));
 }

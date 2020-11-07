@@ -101,5 +101,5 @@ function CalculateDiscount(DiscTypeId, DiscRateId, QntyId, NosId, AmtId, STDDisc
     else if (DiscType == "A") { DISCAMT = DiscRate; }
     else { DISCAMT = 0; }
     DISCAMT = parseFloat(DISCAMT).toFixed(2);
-    return DISCAMT;
+    return parseFloat(DISCAMT);
 }
