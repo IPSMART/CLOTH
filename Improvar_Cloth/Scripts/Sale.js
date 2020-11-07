@@ -2343,6 +2343,21 @@ function FillOrderToBarcode() {
             $("#COLRCD").val($("#Ord_COLRCD_" + i).val());
             $("#PDESIGN").val($("#Ord_PDESIGN_" + i).val());
             $("#RATE").val($("#Ord_RATE_" + i).val());
+            $("#ITGRPCD").val($("#Ord_ITGRPCD_" + i).val());
+            $("#PARTCD").val($("#Ord_PARTCD_" + i).val());
+            $("#PARTNM").val($("#Ord_PARTNM_" + i).val());
+            $("#PRTBARCODE").val($("#Ord_PRTBARCODE_" + i).val());
+            $("#CLRBARCODE").val($("#Ord_CLRBARCODE_" + i).val());
+            $("#SIZENM").val($("#Ord_SIZENM_" + i).val());
+            $("#SZBARCODE").val($("#Ord_SZBARCODE_" + i).val());
+            $("#UOM").val($("#Ord_UOM_" + i).val());
+            $("#HSNCODE").val($("#Ord_HSNCODE_" + i).val());
+            $("#BARGENTYPE").val($("#Ord_BARGENTYPE_" + i).val());
+            $("#GLCD").val($("#Ord_GLCD_" + i).val());
+            $("#PRODGRPGSTPER").val($("#Ord_PRODGRPGSTPER_" + i).val());
+            $("#GSTPER").val($("#Ord_GSTPER_" + i).val());
+            $("#WPPRICEGEN").val($("#Ord_WPPRICEGEN_" + i).val());
+            $("#RPPRICEGEN").val($("#Ord_RPPRICEGEN_" + i).val());
 
             var BALQTY = retFloat($("#Ord_BALQTY_" + i).val());
             var CURRENTADJQTY = retFloat($("#Ord_CURRENTADJQTY_" + i).val());
@@ -2351,6 +2366,15 @@ function FillOrderToBarcode() {
         }
     }
     $("#popup").html("");
+}
+function CopyMtrljobcd() {
+        var GridRow = $("#_T_SALE_PENDINGORDER_GRID > tbody > tr").length;
+        if (GridRow != 0) {
+            var prev_mtrljobcd = $("#B_MTRLJOBCD_0").val();
+            for (var i = 0; i <= GridRow - 1; i++) {
+                $("#B_MTRLJOBCD_" + i).val(prev_mtrljobcd);
+            }
+        }
 }
 
 
