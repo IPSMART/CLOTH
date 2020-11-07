@@ -44,5 +44,9 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GSTPER { get; set; }
         public string PRODGRPGSTPER { get; set; }
+        public double? WPRATE { get; set; }
+        public double? RPRATE { get; set; }
+        public string WPPRICEGEN { get; set; }
+        public string RPPRICEGEN { get; set; }
     }
 }

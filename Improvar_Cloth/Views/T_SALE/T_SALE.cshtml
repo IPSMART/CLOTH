@@ -95,7 +95,7 @@
             //below set the  child sequence
             $(".tab-content div").removeClass("active");
             $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            $("#FillDetail").focus();
+            message_value = "FillDetail";
             return false;
         }
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -823,6 +823,19 @@
                                     <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
 
                                     </div>*@
+                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
+                                { <div class="col-md-1" style="width:auto;">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Order Item Filter")
+                                    </div>
+                                </div>
+                                    <div class="col-md-1" style="width:auto;">
+                                        <div class="editor-field" style="margin-top:6px;">
+                                            @Html.CheckBoxFor(model => model.itemfilter, new { id = "itemfilter" })
+                                        </div>
+                                    </div>
+                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
+                                }
                             </div>
 
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
@@ -1085,27 +1098,13 @@
                                             @Html.HiddenFor(model => model.GLCD, new { id = "GLCD" })
                                         </div>
                                     </div>
-                                    @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
-                                    { <div class="col-md-1" style="width:auto;">
-                                        <div class="editor-field" style="margin-top: 6px;">
-                                            @Html.Label("", "Show all Item")
-                                        </div>
-                                    </div>
-                                        <div class="col-md-1" style="width:auto;">
-                                            <div class="editor-field" style="margin-top:6px;">
-                                                @Html.CheckBoxFor(model => model.showallitcd, new { id = "showallitcd" })
-                                            </div>
-                                        </div>
-                                    }
+                                   
                                     <div class="col-md-1" style="width:auto;">
                                         @*<input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />*@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(Alt+A)" title="Click to Fill Data in Barcode Details" onclick="AddBarCodeGrid()" />
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="UpdateRow_Barcode" accesskey="W" value="Update Row(Alt+W)" title="Click to Update Data in Barcode Details" onclick="UpdateBarCodeRow()" />
                                         <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Alt+Z)" title="Click to Clear" onclick="ClearBarcodeArea('Y')" />
-                                        @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
-                                        {
-                                            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
-                                        }
+                                       
                                     </div>
                                     @*iamge*@
                                     <input type="hidden" id="ImageName" value="" />
