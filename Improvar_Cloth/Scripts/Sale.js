@@ -383,8 +383,8 @@ function UpdateBarCodeRow() {
             $("#B_SCMDISCRATE_" + j).val($("#SCMDISCRATE").val());
             $("#B_LOCABIN_" + j).val($("#LOCABIN").val());
             var DISCTYPE = $("#DISCTYPE").val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : "Fixed";
-            var TDDISCTYPE = $("#TDDISCTYPE").val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : "Fixed";
-            var SCMDISCTYPE = $("#SCMDISCTYPE").val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : "Fixed";
+            var TDDISCTYPE = $("#TDDISCTYPE").val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
+            var SCMDISCTYPE = $("#SCMDISCTYPE").val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
             $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE);
             $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
             $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
@@ -448,6 +448,26 @@ function ClearBarcodeArea(TAG) {
 function Fill_DetailData() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+    var mtrlcdblank = false;
+    if (GridRow != 0) {
+        for (var i = 0; i <= GridRow - 1; i++) {
+            if ($("#B_MTRLJOBCD_" + i).val() == "") {
+                mtrlcdblank = true;
+                break;
+            }
+        }
+    }
+    if (mtrlcdblank == true) {
+        msgInfo("Please Fill Material Job in Barcode Grid !!");
+        $("li").removeClass("active").addClass("");
+        $(".nav-tabs li:nth-child(2)").addClass('active');
+        //below set the  child sequence
+        $(".tab-content div").removeClass("active");
+        $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        message_value = "B_MTRLJOBCD_" + i;
+        return false;
+    }
     $.ajax({
         type: 'POST',
         beforesend: $("#WaitingMode").show(),
@@ -1479,10 +1499,10 @@ function AddBarCodeGrid() {
         RPPRICEGEN = $("#RPPRICEGEN").val();
     }
     var TDDISCTYPE = $("#TDDISCTYPE").val();
-    var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : "Fixed";
+    var TDDISCTYPE_DESC = TDDISCTYPE == "P" ? "%" : TDDISCTYPE == "N" ? "Nos" : TDDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" : "Fixed";
     var TDDISCRATE = $("#TDDISCRATE").val();
     var SCMDISCTYPE = $("#SCMDISCTYPE").val();
-    var SCMDISCTYPE_DESC = SCMDISCTYPE == "P" ? "%" : SCMDISCTYPE == "N" ? "Nos" : SCMDISCTYPE == "Q" ? "Qnty" : "Fixed";
+    var SCMDISCTYPE_DESC = SCMDISCTYPE == "P" ? "%" : SCMDISCTYPE == "N" ? "Nos" : SCMDISCTYPE == "Q" ? "Qnty" : TDDISCTYPE == "A" ? "AftDsc%" : "Fixed";
     var SCMDISCRATE = $("#SCMDISCRATE").val();
     var LOCABIN = $("#LOCABIN").val();
     var GLCD = $("#GLCD").val();
@@ -1523,7 +1543,7 @@ function AddBarCodeGrid() {
     tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
     tr += '    </td>';
-    tr += '    <td class="sticky-cell" style="left:20px;" title="' + SLNO + '">';
+    tr += '    <td class="sticky-cell" style="left:17px;" title="' + SLNO + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
     tr += '    </td>';
     tr += '    <td class="sticky-cell" style="left:40px" title="' + TXNSLNO + '">';
@@ -1582,7 +1602,7 @@ function AddBarCodeGrid() {
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateTotal_Barno();HasChangeBarSale();" value="' + NOS + '">';
     tr += '    </td>';
     tr += '    <td class="">';
-    tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History">Rate Hist</button>';
+    tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(' + rowindex + ')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
     tr += '    </td>';
     tr += '    <td class="" title="' + RATE + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="Sale_GetGstPer(' + rowindex + ',\'#B_\');RateUpdate(' + rowindex + ');HasChangeBarSale();" value="' + RATE + '" >';
@@ -2021,6 +2041,7 @@ function SelectPendOrder(btnid) {
                 if (Count > 0) {
                     $("#show_order").show();
                 }
+                msgInfo("Order Data selected ");
             }
             else {
                 $("#partialdivBarCodeTab").html(result);
@@ -2029,6 +2050,7 @@ function SelectPendOrder(btnid) {
                     Sale_GetGstPer(i, '#B_');
                     RateUpdate(i);
                 }
+                CalculateTotal_Barno();
                 HasChangeBarSale();
             }
             $("#popup").html("");
@@ -2368,7 +2390,7 @@ function FillOrderToBarcode() {
     $("#popup").html("");
 }
 function CopyMtrljobcd() {
-        var GridRow = $("#_T_SALE_PENDINGORDER_GRID > tbody > tr").length;
+    var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         if (GridRow != 0) {
             var prev_mtrljobcd = $("#B_MTRLJOBCD_0").val();
             for (var i = 0; i <= GridRow - 1; i++) {

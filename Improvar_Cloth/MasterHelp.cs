@@ -2043,7 +2043,7 @@ namespace Improvar
                 }
                 else
                 {
-                    return "Invalid Stock Type ! Please Enter a Valid Stock Type !!";
+                    return "Invalid Location Bin ! Please Enter a Valid Location Bin !!";
                 }
             }
         }
