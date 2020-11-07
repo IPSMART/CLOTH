@@ -32,7 +32,7 @@ namespace Improvar
                 {
                     if (ITGTYPE.IndexOf(',') == -1 && ITGTYPE.IndexOf("'") == -1) ITGTYPE = "'" + ITGTYPE + "'";
                 }
-                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrpnm, b.itgrptype,a.styleno, a.PCSPERSET,nvl(a.hsncode,b.hsncode)hsncode, a.fabitcd, c.itnm fabitnm, a.itnm||' '||a.styleno itstyle ";
+                sql += "select a.itcd, a.itnm, a.uomcd, a.itgrpcd, b.itgrpnm, b.itgrptype,a.styleno, a.PCSPERSET,nvl(a.hsncode,b.hsncode)hsncode, a.fabitcd, c.itnm fabitnm, a.styleno||' '||a.itnm itstyle ";
                 sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_group b, " + scm1 + ".m_sitem c ";
                 sql += "where a.itgrpcd=b.itgrpcd and a.fabitcd=c.itcd(+) ";
                 if (DOC_EFF_DT.retStr() != "" || JOB_CD.retStr() != "")
