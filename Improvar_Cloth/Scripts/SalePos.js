@@ -78,6 +78,7 @@ function GetAllMtrljobcd() {
 
 }
 
+
 function DeleteBarnoRow() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
@@ -113,6 +114,9 @@ function AddBarnoRow(hlpstr) {
     var UOM = returncolvalue(hlpstr, "UOMCD");
     var NOS = returncolvalue(hlpstr, "NOS");
     var RATE = returncolvalue(hlpstr, "RATE");
+    var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
+    var GLCD = returncolvalue(hlpstr, "GLCD");
+    
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
@@ -136,7 +140,7 @@ function AddBarnoRow(hlpstr) {
     tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="">';
     tr += '   <input id="B_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '   <input id="B_CLASS1CD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CLASS1CD" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="B_AMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].AMT" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" type="hidden" value="">';
@@ -231,7 +235,7 @@ function AddBarnoRow(hlpstr) {
     tr += '     </select>';
     tr += ' </td>';
     tr += ' <td class="">';
-    tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';
     tr += '     ';
     tr += ' </td>';
     tr += ' <td class="">';
@@ -331,4 +335,23 @@ function CalculateBarTotal() {
     $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
     $("#B_T_NET").val(parseFloat(T_NET).toFixed(2));
+}
+function Checked_Disable() {
+    var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        if ($("#B_ChildData_" + i).val() == "Y") {
+            document.getElementById("B_Checked_" + i).disabled = true;
+        }
+    }
+}
+function changeBARGENTYPE() {
+    debugger;
+    var BARGENTYPE = $("#BARGENTYPE").val();
+    if (BARGENTYPE == "C") {
+        $("#divImageUpload").hide();
+    }
+    else if (BARGENTYPE == "E") {
+        $("#divImageUpload").show();
+    }
+    return 0;
 }

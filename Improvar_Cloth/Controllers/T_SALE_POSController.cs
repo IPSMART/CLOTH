@@ -728,6 +728,10 @@ namespace Improvar.Controllers
                 else
                 {
                     //if (str.IndexOf(Cn.GCS()) == -1)
+                    string glcd = "";
+                    glcd = str.retCompValue("SALGLCD");
+
+                    str += "^GLCD=^" + glcd + Cn.GCS();
                     return Content(str);
                 }
             }
