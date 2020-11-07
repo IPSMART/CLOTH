@@ -66,6 +66,8 @@
                                             @Html.HiddenFor(model => model.PENDINGORDER[i].UOM, new { id = "Ord_UOM_" + i })
                                             @Html.HiddenFor(model => model.PENDINGORDER[i].HSNCODE, new { id = "Ord_HSNCODE_" + i })
                                             @Html.HiddenFor(model => model.PENDINGORDER[i].GLCD, new { id = "Ord_GLCD_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].PRODGRPGSTPER, new { id = "Ord_PRODGRPGSTPER_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].GSTPER, new { id = "Ord_GSTPER_" + i })
                                         </td>
                                         <td class="sticky-cell">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].SLNO, new { id = "Ord_SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })

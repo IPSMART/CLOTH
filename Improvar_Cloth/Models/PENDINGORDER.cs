@@ -41,5 +41,8 @@ namespace Improvar.Models
         public string CLRBARCODE { get; set; }
         public string SZBARCODE { get; set; }
         public string GLCD { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? GSTPER { get; set; }
+        public string PRODGRPGSTPER { get; set; }
     }
 }

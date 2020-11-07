@@ -465,7 +465,7 @@ namespace Improvar.Controllers
 
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
-                str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
+                str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT,i.ITREM,  ";
                 str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT ";
                 str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_STKTYPE m ";
                 str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=m.STKTYPE(+)  ";
@@ -519,7 +519,8 @@ namespace Improvar.Controllers
                                   BALENO = dr["BALENO"].retStr(),
                                   GLCD = dr["GLCD"].retStr(),
                                   BALEYR = dr["BALEYR"].retStr(),
-                                  TOTDISCAMT = dr["TOTDISCAMT"].retDbl()
+                                  TOTDISCAMT = dr["TOTDISCAMT"].retDbl(),
+                                  ITREM= dr["ITREM"].retStr()
                               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -1234,26 +1235,46 @@ namespace Improvar.Controllers
                                   GLCD = P.Key.GLCD,
                               }).ToList();
 
+                //for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
+                //{
+                //    if (VE.TTXNDTL[p].ALL_GSTPER.retStr() != "")
+                //    {
+                //        var tax_data = VE.TTXNDTL[p].ALL_GSTPER.Split(',').ToList();
+                //        if (tax_data.Count == 1)
+                //        {
+                //            VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl() / 3;
+                //            VE.TTXNDTL[p].CGSTPER = tax_data[0].retDbl() / 3;
+                //            VE.TTXNDTL[p].SGSTPER = tax_data[0].retDbl() / 3;
+                //        }
+                //        else
+                //        {
+                //            VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl();
+                //            VE.TTXNDTL[p].CGSTPER = tax_data[1].retDbl();
+                //            VE.TTXNDTL[p].SGSTPER = tax_data[2].retDbl();
+                //        }
+
+                //    }
+                //}
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
                 {
-                    if (VE.TTXNDTL[p].ALL_GSTPER.retStr() != "")
+                    if (VE.TTXNDTL[p].PRODGRPGSTPER.retStr() != "")
                     {
-                        var tax_data = VE.TTXNDTL[p].ALL_GSTPER.Split(',').ToList();
-                        if (tax_data.Count == 1)
+                        var gstdata = salesfunc.retGstPer(VE.TTXNDTL[p].PRODGRPGSTPER.retStr(), VE.TTXNDTL[p].RATE.retDbl());
+                        if (gstdata.retStr() != "")
                         {
-                            VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl() / 3;
-                            VE.TTXNDTL[p].CGSTPER = tax_data[0].retDbl() / 3;
-                            VE.TTXNDTL[p].SGSTPER = tax_data[0].retDbl() / 3;
-                        }
-                        else
-                        {
-                            VE.TTXNDTL[p].IGSTPER = tax_data[0].retDbl();
-                            VE.TTXNDTL[p].CGSTPER = tax_data[1].retDbl();
-                            VE.TTXNDTL[p].SGSTPER = tax_data[2].retDbl();
-                        }
+                            var gst = gstdata.Split(',');
+                            if (gst.Count() > 0)
+                            {
+                                VE.TTXNDTL[p].IGSTPER = gst[0].retDbl();
+                                VE.TTXNDTL[p].CGSTPER = gst[1].retDbl();
+                                VE.TTXNDTL[p].SGSTPER = gst[2].retDbl();
+                            }
 
+                        }
                     }
                 }
+                
+
                 //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
                 //VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
                 //VE.T_AMT = VE.TTXNDTL.Select(a => a.AMT).Sum().retDbl();

@@ -1599,7 +1599,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
             }
         }
-        public ActionResult GetPendOrder(TransactionSaleEntry VE, string SLCD, string SUBMITBTN, string ITCD)
+        public ActionResult GetPendOrder(TransactionSaleEntry VE, string SLCD, string SUBMITBTN, string ITCD,string MTRLJOBCD)
         {
             Cn.getQueryString(VE);
             DataTable dt = new DataTable();
@@ -1626,6 +1626,7 @@ namespace Improvar.Controllers
             else
             {
                 dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", VE.MENU_PARA);
+                DataTable PRODGRPDATA = new DataTable();
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     string glcd = MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].ToString();
@@ -1658,30 +1659,43 @@ namespace Improvar.Controllers
                                            HSNCODE = dr["HSNCODE"].retStr(),
                                            GLCD = glcd,
                                        }).ToList();
-
+                    string ITCDLIST = VE.PENDINGORDER.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
+                    
                     if (VE.MENU_PARA == "PB")
                     {
-                        tbl = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr(), VE.T_TXN.GOCD.retStr(), "", "", VE.T_TXN.MTRLJOBCD.retStr(), "", "", barnoOrStyle, VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
+                        PRODGRPDATA = salesfunc.GetBarHelp(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "","", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false, VE.MENU_PARA);
                     }
                     else if (VE.MENU_PARA == "ALL")
                     {
-                        tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false);
+                        PRODGRPDATA = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false);
                     }
                     else
                     {
-                        tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", "", MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr());
+                        PRODGRPDATA = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr());
+                    }
+                    
+                }
+                if (VE.PENDINGORDER != null)
+                {
+                    int slno = 1;
+                    for (int p = 0; p <= VE.PENDINGORDER.Count - 1; p++)
+                    {
+                        VE.PENDINGORDER[p].SLNO = slno.retShort();
+                        if(PRODGRPDATA != null)
+                        {
+                            string itcd = VE.PENDINGORDER[p].ITCD.retStr();
+                            VE.PENDINGORDER[p].PRODGRPGSTPER = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("prodgrpgstper")).FirstOrDefault();
+                            var gstper = salesfunc.retGstPer(VE.PENDINGORDER[p].PRODGRPGSTPER.retStr(), VE.PENDINGORDER[p].RATE.retDbl());
+                            if(gstper.retStr()!= "")
+                            {
+                                VE.PENDINGORDER[p].GSTPER = gstper.Split(',').Sum(a=>a.retDbl());
+                            }
+                        }
+                        slno++;
                     }
                 }
             }
-            if (VE.PENDINGORDER != null)
-            {
-                int slno = 1;
-                for (int p = 0; p <= VE.PENDINGORDER.Count - 1; p++)
-                {
-                    VE.PENDINGORDER[p].SLNO = slno.retShort();
-                    slno++;
-                }
-            }
+           
 
 
             VE.DefaultView = true;
