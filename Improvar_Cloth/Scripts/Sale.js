@@ -1954,11 +1954,12 @@ function GetPendOrder(BtnId) {
     if (DefaultAction == "V") return true;
     var slcd = $("#SLCD").val();
     var itcd = $("#ITCD").val();
+    var allmtrljobcd = $("#ALLMTRLJOBCD").val();
     $.ajax({
         type: 'POST',
         url: $("#UrlPendOrder").val(),// "@Url.Action("GetPendOrder", PageControllerName )",
         beforesend: $("#WaitingMode").show(),
-        data: $('form').serialize() + "&SLCD=" + slcd + "&SUBMITBTN=" + BtnId + "&ITCD=" + itcd,
+        data: $('form').serialize() + "&SLCD=" + slcd + "&SUBMITBTN=" + BtnId + "&ITCD=" + itcd + "&MTRLJOBCD=" + allmtrljobcd,
         success: function (result) {
             $("#popup").animate({ marginTop: '-10px' }, 50);
             $("#popup").html(result);
