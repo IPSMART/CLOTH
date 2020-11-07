@@ -119,7 +119,7 @@ namespace Improvar.Controllers
                                            FIELD_VALUE = I.DOCNOPATTERN
                                        }).Distinct().Take(10).ToList();
                 //=================End LASTDOCNOPATTERN================//
-                VE.CompanyLocationChk = (from i in DBF.M_LOCA join l in DBF.M_COMP on i.COMPCD equals (l.COMPCD) select new CompanyLocationName() { COMPCD = l.COMPCD, COMPNM = l.COMPNM, LOCCD = i.LOCCD, LOCNM = i.LOCNM }).OrderBy(s => s.COMPNM).ThenBy(k=>k.LOCNM).ToList();
+                VE.CompanyLocationChk = (from i in DBF.M_LOCA join l in DBF.M_COMP on i.COMPCD equals (l.COMPCD) select new CompanyLocationName() { COMPCD = l.COMPCD, COMPNM = l.COMPNM, LOCCD = i.LOCCD, LOCNM = i.LOCNM }).OrderBy(s => s.COMPNM).ThenBy(k => k.LOCNM).ToList();
 
                 if (op.Length != 0)
                 {
@@ -217,7 +217,7 @@ namespace Improvar.Controllers
             {
                 module = "";
             }
-            string sql = "select distinct COMPCD,COMPNM,LOCCD,LOCNM from " + module + " where MODULE_CODE = '" + CommVar.ModuleCode() + "' ";
+            string sql = "select distinct COMPCD,COMPNM,LOCCD,LOCNM from " + module + " where MODULE_CODE like '%" + CommVar.ModuleCode() + "%' AND CLIENT_CODE='" + CommVar.ClientCode(UNQSNO) + "'";
             DataTable data = masterHelp.SQLquery(sql);
             VE.CompanyLocationName = (from DataRow dr in data.Rows
                                       select new CompanyLocationName()
@@ -227,15 +227,15 @@ namespace Improvar.Controllers
                                           LOCCD = dr["LOCCD"].ToString(),
                                           LOCNM = dr["LOCNM"].ToString(),
 
-                                      }).OrderBy(s => s.COMPNM).ThenBy(s=> s.LOCNM).ToList();
+                                      }).OrderBy(s => s.COMPNM).ThenBy(s => s.LOCNM).ToList();
             if (VE.M_DOCTYPE.DOCCD != null)
             {
-                string DocPattern1 = DocPattern(VE.M_DOCTYPE.DOCNOPATTERN, VE.M_DOCTYPE.DOCNOWOZERO, (VE.M_DOCTYPE.DOCNOMAXLENGTH).ToString(), VE.M_DOCTYPE.DOCPRFX,
-               Convert.ToInt64("1"), VE.M_DOCTYPE.DOCCD, CommVar.CurSchema(UNQSNO), CommVar.FinSchema(UNQSNO));
-
-
                 foreach (var i in VE.CompanyLocationName)
-                { i.Docpattern = DocPattern1; }
+                {
+                    string DocPattern1 = DocPattern(VE.M_DOCTYPE.DOCNOPATTERN, VE.M_DOCTYPE.DOCNOWOZERO, (VE.M_DOCTYPE.DOCNOMAXLENGTH).ToString(), VE.M_DOCTYPE.DOCPRFX,
+            Convert.ToInt64("1"), VE.M_DOCTYPE.DOCCD, CommVar.CurSchema(UNQSNO), CommVar.FinSchema(UNQSNO), i.COMPCD, i.LOCCD, "");
+                    i.Docpattern = DocPattern1;
+                }
             }
             if (tag == "fill")
             {
@@ -244,16 +244,14 @@ namespace Improvar.Controllers
             else {
                 return PartialView("_MS_DOCTYPE_Compcod", VE);
             }
-
-
         }
 
-        private string DocPattern(string DOCNOPATTERN, string DOCNOWOZERO, string DOCNOMAXLENGTH, string DOCPRFX, long docno, string doc_type_code, string schema, string FIN_SCHEMAS, string docdt = "")
+        private string DocPattern(string DOCNOPATTERN, string DOCNOWOZERO, string DOCNOMAXLENGTH, string DOCPRFX, long docno, string doc_type_code, string schema, string FIN_SCHEMA, string COMPCD, string LOCCD, string GOCD, string docdt = "")
         {
             Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(Cn.GetConnectionString(), schema);
 
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            string[] pattern = new[] { "&comprefix&", "&locprefix&", "&docprefix&", "&mm&-&docno&", "&mmm&", "&docno&", "&finyr&", "&finyrs&", "&finyrf&" };
+            string[] pattern = new[] { "&comprefix&", "&locprefix&", "&docprefix&", "&mm&-&docno&", "&mmm&", "&docno&", "&yy&", "&finyr&", "&finyrs&", "&finyrf&", "&para&" };
             string newPattern = DOCNOPATTERN;
             string docno1 = "";
             DateTime ddate;
@@ -267,24 +265,29 @@ namespace Improvar.Controllers
             {
                 docno1 = docno.ToString();
             }
-            string[] finyr = CommVar.FinPeriod(UNQSNO).Split('-');
-            string[] finyrs = CommVar.FinPeriod(UNQSNO).Split('-');
-            string Finyr = ""; string Finyrs = "";
-            if (finyr[0].ToString().Trim().Substring(8) == finyr[1].ToString().Trim().Substring(8)) Finyr = finyr[0].ToString().Trim().Substring(8);
-            else Finyr = finyr[0].ToString().Trim().Substring(8) + "-" + finyr[1].ToString().Trim().Substring(8);
-
-            if (finyrs[0].ToString().Trim().Substring(8) == finyrs[1].ToString().Trim().Substring(8)) Finyrs = finyrs[0].ToString().Trim().Substring(8);
-            else Finyrs = finyrs[0].ToString().Trim().Substring(8) + finyrs[1].ToString().Trim().Substring(8);
-            Improvar.Models.ImprovarDB DB1 = new Models.ImprovarDB(Cn.GetConnectionString(), FIN_SCHEMAS);
-            M_LOCA MLOCA = DB1.M_LOCA.Find(CommVar.Loccd(UNQSNO), CommVar.Compcd(UNQSNO));
-            string[] pattern1 = new[] { CommVar.Compcd(UNQSNO), MLOCA.LOCA_CODE, DOCPRFX, ddate.Month.ToString().PadLeft(2, '0') + "-" + docno1.ToString(), CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(ddate.Month), docno1.ToString(), Finyr, Finyrs };
+            string[] dfinyr = CommVar.FinPeriod(UNQSNO).Split('-');
+            string finyr = "", finyrs = "", yy = "";
+            yy = dfinyr[0].ToString().Trim().Substring(8);
+            if (yy == dfinyr[1].ToString().Trim().Substring(8)) finyr = yy;
+            else finyr = yy + "-" + dfinyr[1].ToString().Trim().Substring(8);
+            finyrs = finyr.Replace("-", "");
+            string finyrf = dfinyr[0].ToString().Trim().Substring(6) + "-" + yy;
+            Improvar.Models.ImprovarDB DB1 = new Models.ImprovarDB(Cn.GetConnectionString(), FIN_SCHEMA);
+            M_LOCA MLOCA = DB1.M_LOCA.Find(LOCCD, COMPCD);
+            string sql = "select BLINIT from " + CommVar.CurSchema(UNQSNO) + ".M_GODOWN  WHERE GOCD='" + GOCD + "'";
+            DataTable dt = masterHelp.SQLquery(sql); string docpara = "";
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                docpara = dt.Rows[0]["BLINIT"].ToString();
+            }
+            string[] pattern1 = new[] { CommVar.Compcd(UNQSNO), MLOCA.LOCA_CODE, DOCPRFX, ddate.Month.ToString().PadLeft(2, '0') + "-" + docno1.ToString(), CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(ddate.Month), docno1.ToString(), yy, finyr, finyrs, finyrf, docpara };
+            //string[] pattern1 = new[] { COMPCD, MLOCA.LOCA_CODE, DOCPRFX, ddate.Month.ToString().PadLeft(2, '0') + "-" + docno1.ToString(), CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(ddate.Month), docno1.ToString(), Finyr, Finyrs, BLINIT };
             for (int i = 0; i <= pattern.Length - 1; i++)
             {
                 int index = newPattern.IndexOf(pattern[i]);
                 if (index >= 0)
                 {
                     newPattern = newPattern.Replace(pattern[i], pattern1[i]);
-
                 }
             }
             return newPattern;
@@ -319,19 +322,19 @@ namespace Improvar.Controllers
                 var doccd = sl.DOCCD;
                 string str = "select p.COMPCD,s.COMPNM,p.LOCCD,x.LOCNM from " + CommVar.CurSchema(UNQSNO) + ".M_CNTRL_LOCA p,"
                     + CommVar.FinSchema(UNQSNO) + ".M_COMP s," + CommVar.FinSchema(UNQSNO) + ".M_LOCA x where ";
-                   str += "p.COMPCD=s.COMPCD and p.LOCCD=x.LOCCD and p.M_AUTONO ='" + sl.M_AUTONO + "'";
+                str += "p.COMPCD=s.COMPCD and p.LOCCD=x.LOCCD and p.M_AUTONO ='" + sl.M_AUTONO + "'";
                 var DATA_CLN = masterHelp.SQLquery(str);
 
                 var CLN = (from DataRow DR in DATA_CLN.Rows
-                               select new CompanyLocationName()
-                               {
-                                   COMPCD = DR["COMPCD"].ToString(),
-                                   COMPNM = DR["COMPNM"].ToString(),
-                                   LOCCD = DR["LOCCD"].ToString(),
-                                   LOCNM = DR["LOCNM"].ToString(),
-                                   Checked = true
-                               }).ToList();
-                
+                           select new CompanyLocationName()
+                           {
+                               COMPCD = DR["COMPCD"].ToString(),
+                               COMPNM = DR["COMPNM"].ToString(),
+                               LOCCD = DR["LOCCD"].ToString(),
+                               LOCNM = DR["LOCNM"].ToString(),
+                               Checked = true
+                           }).ToList();
+
 
                 if (VE.CompanyLocationChk != null)
                     foreach (var i in VE.CompanyLocationChk)
@@ -408,44 +411,6 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "0"));
         }
-        //public ActionResult SearchPannelData()
-        //{
-        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-        //    var module = Module.MODULE;
-        //    if (Module.MODULE == "FINANCE")
-        //    {
-        //        module = "F";
-        //    }
-        //    else if (Module.MODULE == "INVENTORY")
-        //    {
-        //        module = "I";
-        //    }
-        //    else if (Module.MODULE == "SALES")
-        //    {
-        //        module = "S";
-        //    }
-        //    else if (Module.MODULE == "PAYROLL")
-        //    {
-        //        module = "P";
-        //    }
-        //    var MDT = (from j in DB.M_DOCTYPE
-        //               join o in DB.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
-        //               where (o.M_AUTONO == j.M_AUTONO && j.DOCCD.Remove(1) == module)
-        //               select new
-        //               {
-        //                   DOCCD = j.DOCCD,
-        //                   DOCNM = j.DOCNM,
-        //                   M_AUTONO = o.M_AUTONO
-        //               }).OrderBy(s => s.DOCCD).ToList();
-
-        //    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-        //    var hdr = "Document Code" + Cn.GCS() + "Document Name" + Cn.GCS() + "AUTO NO";
-        //    for (int j = 0; j <= MDT.Count - 1; j++)
-        //    {
-        //        SB.Append("<tr><td>" + MDT[j].DOCCD + "</td><td>" + MDT[j].DOCNM + "</td><td>" + MDT[j].M_AUTONO + "</td></tr>");
-        //    }
-        //    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "0", "2"));
-        //}
         public ActionResult CheckDocumentCode(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
@@ -484,7 +449,7 @@ namespace Improvar.Controllers
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string str = "";
                 var query = (from c in DB.M_DOCTYPE where (c.DOCTYPE == val) select c).ToList();
-                if (query != null&& query.Count != 0)
+                if (query != null && query.Count != 0)
                 {
                     var data1 = query.FirstOrDefault();
                     List<M_DOCTYPE> M_DOCTYPElist = new List<M_DOCTYPE>();
@@ -553,7 +518,7 @@ namespace Improvar.Controllers
                         var SL = (from j in DB.M_DOCTYPE where (j.DOCCD == VE.M_DOCTYPE.DOCCD) select j).FirstOrDefault();
                         var SLOCA = (from j in DB.M_CNTRL_LOCA where (j.M_AUTONO == VE.M_DOCTYPE.M_AUTONO) select j).ToList();
                         var SL1 = (from j in DBF.M_DOCTYPE where (j.DOCCD == VE.M_DOCTYPE.DOCCD) select j).FirstOrDefault();
-                        
+
                         string fintag = "";
                         M_DTYPE dcdfin = DB.M_DTYPE.Find(SL.DOCTYPE);
                         if (dcdfin != null) fintag = dcdfin.FIN.ToUpper();
@@ -570,7 +535,7 @@ namespace Improvar.Controllers
                             MDOCTYPE_PREVYR.M_AUTONO = AUTONO_PREVYR;
                             DB_PREVYR.M_DOCTYPE.Add(MDOCTYPE_PREVYR);
                             DB_PREVYR.SaveChanges();
-                         
+
                             if (SLOCA.Count != 0)
                             {
                                 foreach (var v in SLOCA)
@@ -601,7 +566,7 @@ namespace Improvar.Controllers
                             DB_PREVYR.SaveChanges();
 
                         }//END  CurSchema
-                       
+
                         // SAVE TO FIN SCHEMA//
                         if (fintag == "Y" && Module.MODULE != "FINANCE")
                         {
@@ -637,7 +602,7 @@ namespace Improvar.Controllers
                                     MDOCTYPE_PREVYR1.M_AUTONO = 0;
                                     DBF_PREVYR.Entry(MDOCTYPE_PREVYR1).State = System.Data.Entity.EntityState.Modified;
                                 }
-                               
+
                                 DBF_PREVYR.SaveChanges();
 
                             }
@@ -674,13 +639,12 @@ namespace Improvar.Controllers
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
                         M_DOCTYPE MDOCTYPE = new M_DOCTYPE();
-                        MDOCTYPE.CLCD =CommVar.ClientCode(UNQSNO);
+                        MDOCTYPE.CLCD = CommVar.ClientCode(UNQSNO);
                         if (VE.DefaultAction == "A")
                         {
-                            
                             MDOCTYPE.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO));
                             MDOCTYPE.EMD_NO = 0;
-                            string DCD = VE.M_DOCTYPE.DOCCD;
+                            string DCD = VE.M_DOCTYPE.DOCCD.Replace(" ","");
                             string DCODE = "";
                             if (Module.MODULE == "FINANCE")
                             {
@@ -740,12 +704,12 @@ namespace Improvar.Controllers
                         if (VE.FDATE == true) MDOCTYPE.FDATE = "Y"; else MDOCTYPE.FDATE = "N";
                         if (VE.BACKDATE == true) MDOCTYPE.BACKDATE = "Y"; else MDOCTYPE.BACKDATE = "N";
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOCTYPE", MDOCTYPE.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
-                        if (VE.DefaultAction=="E")
+                        if (VE.DefaultAction == "E")
                         {
                             DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MDOCTYPE.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_LOCA.RemoveRange(DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MDOCTYPE.M_AUTONO));
                         }
-                       
+
                         if (VE.CompanyLocationChk != null)
                         {
                             for (int i = 0; i <= VE.CompanyLocationChk.Count - 1; i++)
@@ -875,7 +839,7 @@ namespace Improvar.Controllers
                 {
                     transaction.Rollback();
                     Cn.SaveException(ex, "");
-                    return Content(ex.Message);
+                    return Content(ex.Message+"     "+ex.InnerException);
                 }
             }
         }
@@ -892,7 +856,7 @@ namespace Improvar.Controllers
             exdt[0] = dt;
             string[] sheetname = new string[1];
             sheetname[0] = "Sheet1";
-            mas.ExcelfromDataTables(exdt, sheetname,"Document Type Master",true);
+            mas.ExcelfromDataTables(exdt, sheetname, "Document Type Master", true);
             return Content("Downloded");
         }
     }
