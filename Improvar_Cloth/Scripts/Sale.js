@@ -25,7 +25,7 @@ function GetBarnoDetails(id) {
     if (DefaultAction == "V") return true;
     debugger;
     if (id == "") {
-         ClearBarcodeArea();
+        ClearBarcodeArea();
     }
     else {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -1628,7 +1628,9 @@ function AddBarCodeGrid() {
         tr += '    <td class="" title="' + ORDDOCNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCNO" readonly="readonly" type="text" value="' + ORDDOCNO + '">';
         tr += '        <input id="B_ORDAUTONO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="' + ORDAUTONO + '">';
-        tr += '        <input id="B_ORDSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDSLNO" type="hidden" value="' + ORDSLNO + '">';
+        tr += '    </td>';
+        tr += '    <td class="" title="' + ORDSLNO + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDSLNO" readonly="readonly" type="text" value="' + ORDSLNO + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + ORDDOCDT + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCDT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCDT" readonly="readonly" type="text" value="' + ORDDOCDT + '">';
@@ -1960,14 +1962,24 @@ function GetPendOrder(BtnId) {
         success: function (result) {
             $("#popup").animate({ marginTop: '-10px' }, 50);
             $("#popup").html(result);
-            if (BtnId == "SHOWBTN") {
-                $("#btnSelectPendOrder").hide();
-                $("#allchkord").attr('disabled', true);
-                var GridRow = $("#_T_SALE_PENDINGORDER_GRID > tbody > tr").length;
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    $("#Ord_Checked_" + i).attr('disabled', true);
-                }
+            if (BtnId != "SHOWBTN") {
+                $("#btnSelectPendOrder").show();
+                $("#btnSlctPOBar").hide();
+                $("#btnSlctPOGrid").hide();
             }
+            else {
+                $("#btnSelectPendOrder").hide();
+                $("#btnSlctPOBar").show();
+                $("#btnSlctPOGrid").show();
+            }
+            //if (BtnId == "SHOWBTN") {
+            //    $("#btnSelectPendOrder").hide();
+            //    $("#allchkord").attr('disabled', true);
+            //    var GridRow = $("#_T_SALE_PENDINGORDER_GRID > tbody > tr").length;
+            //    for (var i = 0; i <= GridRow - 1; i++) {
+            //        $("#Ord_Checked_" + i).attr('disabled', true);
+            //    }
+            //}
             $("#WaitingMode").hide();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1977,7 +1989,7 @@ function GetPendOrder(BtnId) {
         }
     });
 }
-function SelectPendOrder() {
+function SelectPendOrder(btnid) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var Count = 0;
@@ -1988,11 +2000,11 @@ function SelectPendOrder() {
             Count = Count + 1;
         }
     }
-    if (Count > 0) {
+    if (Count > 0 && btnid != "SHOWBTN") {
         $("#haspendorddata").val("Y");
         //$("#show_order").show();
     }
-    else {
+    else if (Count == 0) {
         msgInfo("Please select Order !");
         return false;
     }
@@ -2000,15 +2012,26 @@ function SelectPendOrder() {
         type: 'post',
         beforesend: $("#WaitingMode").show(),
         url: $("#UrlSelectPendOrder").val(),//"@Url.Action("SelectPendOrder", PageControllerName)",
-        data: $('form').serialize(),
+        data: $('form').serialize() + "&SUBMITBTN=" + btnid,
         success: function (result) {
-            $("#WaitingMode").hide();
-            $("#hiddenpendordJSON").val(result);
-            $("#Pending_Order").hide();
-            if (Count > 0) {
-                $("#show_order").show();
+            if (result == "0") {
+                //$("#hiddenpendordJSON").val(result);
+                $("#Pending_Order").hide();
+                if (Count > 0) {
+                    $("#show_order").show();
+                }
+            }
+            else {
+                $("#partialdivBarCodeTab").html(result);
+                var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    Sale_GetGstPer(i, '#B_');
+                    RateUpdate(i);
+                }
+                HasChangeBarSale();
             }
             $("#popup").html("");
+            $("#WaitingMode").hide();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -2016,6 +2039,7 @@ function SelectPendOrder() {
             $("body span h1").remove(); $("#msgbody_error style").remove();
         }
     });
+
 }
 
 function CharmPrice(ChrmType, Rate, RoundVal) {
@@ -2281,7 +2305,7 @@ function CalculateOutIssProcessTotal_Details() {
     //$("#TOTQNTY").val(parseFloat(T_QNTY).toFixed(2));
     //$("#TOTTAXVAL").val(parseFloat(T_GROSS_AMT).toFixed(2));
     //$("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
-    
+
 
 }
 function ClosePendOrder() {
@@ -2289,5 +2313,44 @@ function ClosePendOrder() {
     if (DefaultAction == "V") return true;
     $("#popup").html("");
 }
+function FillOrderToBarcode() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var Count = 0;
+    var GridRow = $("#_T_SALE_PENDINGORDER_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        var Check = document.getElementById("Ord_Checked_" + i).checked;
+        if (Check == true) {
+            Count = Count + 1;
+        }
+    }
+    if (Count > 1) {
+        msgInfo("Please select single order ");
+        return false;
+    }
+    for (var i = 0; i <= GridRow - 1; i++) {
+        if (document.getElementById("Ord_Checked_" + i).checked == true) {
+            $("#ORDDOCNO").val($("#Ord_ORDDOCNO_" + i).val());
+            $("#ORDDOCDT").val($("#Ord_ORDDOCDT_" + i).val());
+            $("#ORDAUTONO").val($("#Ord_ORDAUTONO_" + i).val());
+            $("#ORDSLNO").val($("#Ord_ORDSLNO_" + i).val());
+            $("#ITGRPNM").val($("#Ord_ITGRPNM_" + i).val());
+            $("#ITSTYLE").val($("#Ord_ITSTYLE_" + i).val());
+            $("#COLRNM").val($("#Ord_COLRNM_" + i).val());
+            $("#SIZECD").val($("#Ord_SIZECD_" + i).val());
+            $("#ITCD").val($("#Ord_ITCD_" + i).val());
+            $("#COLRCD").val($("#Ord_COLRCD_" + i).val());
+            $("#PDESIGN").val($("#Ord_PDESIGN_" + i).val());
+            $("#RATE").val($("#Ord_RATE_" + i).val());
+
+            var BALQTY = retFloat($("#Ord_BALQTY_" + i).val());
+            var CURRENTADJQTY = retFloat($("#Ord_CURRENTADJQTY_" + i).val());
+            var qnty = retFloat(BALQTY - CURRENTADJQTY).toFixed(2);
+            $("#QNTY").val(qnty);
+        }
+    }
+    $("#popup").html("");
+}
+
 
 

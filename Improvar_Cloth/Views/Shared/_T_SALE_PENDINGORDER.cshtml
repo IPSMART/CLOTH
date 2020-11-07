@@ -60,6 +60,12 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.PENDINGORDER[i].Ord_Checked, new { id = "Ord_Checked_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].PARTCD, new { id = "Ord_PARTCD_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].PARTNM, new { id = "Ord_PARTNM_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].PRTBARCODE, new { id = "Ord_PRTBARCODE_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].UOM, new { id = "Ord_UOM_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].HSNCODE, new { id = "Ord_HSNCODE_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].GLCD, new { id = "Ord_GLCD_" + i })
                                         </td>
                                         <td class="sticky-cell">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].SLNO, new { id = "Ord_SLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
@@ -74,6 +80,8 @@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].ITGRPNM, new { id = "Ord_ITGRPNM_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => Model.PENDINGORDER[i].ITGRPCD, new { id = "Ord_ITGRPCD_" + i })
+                                            @Html.HiddenFor(model => Model.PENDINGORDER[i].BARGENTYPE, new { id = "Ord_BARGENTYPE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].ITSTYLE, new { id = "Ord_ITSTYLE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -83,6 +91,8 @@
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].SIZECD, new { id = "Ord_SIZECD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].SIZENM, new { id = "Ord_SIZENM_" + i })
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].SZBARCODE, new { id = "Ord_SZBARCODE_" + i })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.PENDINGORDER[i].ORDQTY, new { htmlattributes = new { id = "Ord_ORDQTY_" + i, @class = " atextBoxFor  text-right", @TabIndex = -1, @readonly = "readonly" } })
@@ -99,12 +109,13 @@
 
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].COLRCD, new { id = "Ord_COLRCD_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>
+                                            @Html.HiddenFor(model => model.PENDINGORDER[i].CLRBARCODE, new { id = "Ord_CLRBARCODE_" + i })
+                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.PENDINGORDER[i].PDESIGN, new { id = "Ord_PDESIGN_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.PENDINGORDER[i].RATE, new { id = "Ord_RATE_" + i, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.EditorFor(model => Model.PENDINGORDER[i].RATE, new { htmlattributes = new { id = "Ord_RATE_" + i, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                     </tr>
                                 }
@@ -125,6 +136,8 @@
                                 <th title="Current Adj. Qnty"></th>
                                 <th title="Item Code"></th>
                                 <th title="Color Code"></th>
+                                <th title="Party Design"></th>
+                                <th title="Rate"></th>
                             </tr>
                         </tfoot>
 
@@ -135,7 +148,10 @@
 
     </div>
     <div class="row" style="padding:5px;text-align:center;">
-        <input type="button" class="btn btn-success" id="btnSelectPendOrder" value="Select" style="padding: 2px 5px 2px 5px;" onclick="SelectPendOrder();" />
+        <input type="hidden" id="pendorderpopup" />
+        <input type="button" class="btn btn-success" id="btnSelectPendOrder" value="Select" style="padding: 2px 5px 2px 5px;display:none" onclick="SelectPendOrder();" />
+        <input type="button" class="btn btn-success" id="btnSlctPOBar" value="Add to Barcode Area" style="padding: 2px 5px 2px 5px;display:none" onclick="FillOrderToBarcode();" />
+        <input type="button" class="btn btn-success" id="btnSlctPOGrid" value="Add to Grid" style="padding: 2px 5px 2px 5px;display:none" onclick="SelectPendOrder('SHOWBTN');" />
         <input type="button" class="btn btn-danger" id="btnCancelPendOrder" value="Close" style="padding: 2px 5px 2px 5px;" onclick="ClosePendOrder();" />
     </div>
 </div>
