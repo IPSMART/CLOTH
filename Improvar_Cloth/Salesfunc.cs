@@ -1351,14 +1351,13 @@ namespace Improvar
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
-        public string IsTransactionFound(string ITCD, string BARNO)
+        public string IsTransactionFound(string ITCD, string BARNO, string skipautono)
         {
             var sql = "";
             sql += "select AUTONO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST a WHERE ";
             if (ITCD.retStr() != "") sql += "  a.ITCD in(" + ITCD + ") and ";
             if (BARNO.retStr() != "") sql += "  a.BARNO in(" + BARNO + ") and ";
-            //sql += "ITCD IN('F0000006') AND ";
-            //sql += "BARNO IN('01000000068004904') AND ";
+            if (skipautono.retStr() != "") sql += " a.autono not in(" + skipautono + ") and ";
             sql += "ROWNUM = 1 ";
             DataTable dt = MasterHelpFa.SQLquery(sql);
             if (dt.Rows.Count > 0)
