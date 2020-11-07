@@ -311,7 +311,7 @@ namespace Improvar.Controllers
                     slb = DB.M_BRAND.Find(sl.BRANDCD);
                     slc = DB.M_COLLECTION.Find(sl.COLLCD);
                     sluom = DBF.M_UOM.Find(sl.UOMCD);
-                    VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "") != "" ? true : false;
+                    VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "","") != "" ? true : false;
                     string fitcd = sl.FABITCD.retStr();
                     if (fitcd != "")
                     {
