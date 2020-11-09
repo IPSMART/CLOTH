@@ -51,6 +51,7 @@ namespace Improvar.Controllers
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     //VE.DISC_TYPE = masterHelp.DISC_TYPE();
+                  
                     VE.BARGEN_TYPE = masterHelp.BARGEN_TYPE();
                     VE.INVTYPE_list = masterHelp.INVTYPE_list();
                     //VE.EXPCD_list = masterHelp.EXPCD_list(VE.MENU_PARA == "PB" ? "P" : "S");
@@ -195,7 +196,7 @@ namespace Improvar.Controllers
                                 VE.T_TXNMEMO = TXNMEMO;
                                 VE.T_TXNOTH = TXNOTH;
                                 VE.T_TXN = TTXN;
-
+                                VE.RoundOff = true;
                                 List<TTXNSLSMN> TTXNSLSMN = new List<TTXNSLSMN>();
                                 for (int i = 0; i <= 2; i++)
                                 {
@@ -958,6 +959,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+     
         public ActionResult GetPackingSlip(string val, string Code)
         {
             try
@@ -1426,5 +1428,6 @@ namespace Improvar.Controllers
                 return Content("//.");
             }
         }
+     
     }
 }
