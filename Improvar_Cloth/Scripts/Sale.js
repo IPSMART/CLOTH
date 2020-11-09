@@ -58,6 +58,7 @@ function GetBarnoDetails(id) {
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
                         FillBarcodeArea(result);
+                        changeBARGENTYPE();
                     }
                     else {
                         $('#helpDIV').html("");
@@ -246,12 +247,15 @@ function FillBarcodeArea(str, Table, i) {
 function changeBARGENTYPE() {
     debugger;
     var BARGENTYPE = $("#BARGENTYPE").val();
-    if (BARGENTYPE == "C") {
-        $("#divImageUpload").hide();
-    }
-    else if (BARGENTYPE == "E") {
+    var GRPBARGENTYPE = $("#BARGENTYPETEMP").val();
+
+    if (BARGENTYPE == "E" || GRPBARGENTYPE == "E") {
         $("#divImageUpload").show();
     }
+    else if (BARGENTYPE == "C") {
+        $("#divImageUpload").hide();
+    }
+
     return 0;
 }
 
@@ -1663,7 +1667,7 @@ function AddBarCodeGrid() {
     tr += '   <button type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
     tr += '   </td> ';
     tr += '   <td class="">  ';
-    if (MENU_PARA == "PB" && ENTRYBARGENTYPE == "E") {
+    if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE== "E")) {
         tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px" readonly="readonly" placeholder=""> ';
     }
     tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder="" value=' + BarImages + '> ';
@@ -2391,12 +2395,71 @@ function FillOrderToBarcode() {
 }
 function CopyMtrljobcd() {
     var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-        if (GridRow != 0) {
-            var prev_mtrljobcd = $("#B_MTRLJOBCD_0").val();
-            for (var i = 0; i <= GridRow - 1; i++) {
-                $("#B_MTRLJOBCD_" + i).val(prev_mtrljobcd);
-            }
+    if (GridRow != 0) {
+        var prev_mtrljobcd = $("#B_MTRLJOBCD_0").val();
+        for (var i = 0; i <= GridRow - 1; i++) {
+            $("#B_MTRLJOBCD_" + i).val(prev_mtrljobcd);
         }
+    }
+}
+function GetItcd(id) {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    debugger;
+    if (id == "") {
+        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+    }
+    else {
+        var code = $("#ITGRPCD").val() + String.fromCharCode(181) + $("#DOCDT").val() + String.fromCharCode(181) + $("#TAXGRPCD").val() + String.fromCharCode(181) + $("#GOCD").val() + String.fromCharCode(181) + $("#PRCCD").val() + String.fromCharCode(181) + $("#MTRLJOBCD").val() + String.fromCharCode(181) + $("#BARCODE").val() + String.fromCharCode(181) + $("#RATE").val();
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: $("#UrlItemDetails").val(),// "@Url.Action("GetItemDetails", PageControllerName)",
+            data: "&Code=" + code + "&val=" + id,
+            success: function (result) {
+                var MSG = result.indexOf('#helpDIV');
+                if (MSG >= 0) {
+                    ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+                    $('#SearchFldValue').val("ITCD");
+                    $('#helpDIV').html(result);
+                    $('#ReferanceFieldID').val("ITCD/ITSTYLE/UOM/STYLENO/ITGRPCD/ITGRPNM/HSNCODE/PRODGRPGSTPER/GSTPER/BarImages/GLCD");
+                    $('#ReferanceColumn').val("2/1/3/0/5/4");
+                    $('#helpDIV_Header').html("Item Details");
+                }
+                else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#ITCD").val(returncolvalue(result, "itcd"));
+                        $("#ITSTYLE").val(returncolvalue(result, "ITSTYLE"));
+                        $("#UOM").val(returncolvalue(result, "uomcd"));
+                        $("#STYLENO").val(returncolvalue(result, "STYLENO"));
+                        $("#ITGRPCD").val(returncolvalue(result, "ITGRPCD"));
+                        $("#ITGRPNM").val(returncolvalue(result, "ITGRPNM"));
+                        $("#HSNCODE").val(returncolvalue(result, "HSNCODE"));
+                        $("#PRODGRPGSTPER").val(returncolvalue(result, "PRODGRPGSTPER"));
+                        $("#GSTPER").val(returncolvalue(result, "GSTPER"));
+                        $("#BarImages").val(returncolvalue(result, "BarImages"));
+                        $("#GLCD").val(returncolvalue(result, "GLCD"));
+                        $("#BARGENTYPETEMP").val(returncolvalue(result, "bargentype"));
+                        changeBARGENTYPE();
+                    }
+                    else {
+                        $('#helpDIV').html("");
+                        msgInfo("" + result + " !");
+                        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+                        message_value = "ITCD";
+                    }
+                }
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+
+    }
 }
 
 
