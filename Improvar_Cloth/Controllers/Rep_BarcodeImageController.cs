@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System;
-using System.Linq;
-using System.Web.Mvc;
 using Improvar.Models;
 using Improvar.ViewModels;
 using CrystalDecisions.CrystalReports.Engine;
@@ -73,34 +70,7 @@ namespace Improvar.Controllers
 
        
             DataTable DtBarImage = (DataTable)Session["DtRepBarcodeImage"];
-            var sql = "select * from " + scm1 + ".m_batch_img_hdr where barno='1700001'";
-
-            sql = "(select a.barno, count(*) barimagecount, ";
-            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
-            sql += "within group (order by a.barno) as barimage from ";
-            //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
-            sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-            sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-            sql += "from " + scm1 + ".m_batch_img_hdr a ";
-            sql += "union ";
-            sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-            sql += "from " + scm1 + ".m_batch_img_hdr_link a, " + scm1 + ".m_batch_img_hdr b ";
-            sql += "where a.mainbarno=b.barno(+) ) a, ";
-            sql += "" + scm1 + ".m_batch_img_hdr b ";
-            sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
-            sql += "union ";
-            sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-            sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-            sql += "from " + scm1 + ".t_batch_img_hdr a ";
-            sql += "union ";
-            sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-            sql += "from " + scm1 + ".t_batch_img_hdr_link a, " + scm1 + ".t_batch_img_hdr b ";
-            sql += "where a.mainbarno=b.barno(+) ) a, ";
-            sql += "" + scm1 + ".t_batch_img_hdr b ";
-            sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
-            sql += "group by a.barno ) y, ";
-
-
+        
             var dt = masterHelp.SQLquery(sql);
             var path = CommVar.SaveFolderPath() + "/ItemImages/" + dt.Rows[0]["doc_flname"].ToString();
             path = Path.Combine(path, "");
