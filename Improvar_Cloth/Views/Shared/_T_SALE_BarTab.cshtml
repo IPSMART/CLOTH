@@ -227,7 +227,11 @@
                                         <td class="">
                                             @if (Model.DefaultAction != "V" && Model.MENU_PARA == "PB" && Model.T_TXN != null && (Model.TBATCHDTL[i].BARGENTYPE == "E" || Model.T_TXN.BARGENTYPE == "E"))
                                             {
-                                                <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px">
+                                                <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px" id="UploadBarnoImage_@i">
+                                            }
+                                            else
+                                            {
+                                                <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage('@i');" style="padding:0px;display:none;" id="UploadBarnoImage_@i">
                                             }
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BarImages, new { id = "B_BarImages_" + i })
                                         </td>

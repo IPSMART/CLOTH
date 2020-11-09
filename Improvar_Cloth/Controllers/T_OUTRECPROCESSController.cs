@@ -2515,7 +2515,7 @@ namespace Improvar.Controllers
                                     }
                                     else
                                     {
-                                        barno = salesfunc.GenerateBARNO(VE.TBATCHDTL[i].ITCD, VE.TBATCHDTL[i].MTBARCODE, VE.TBATCHDTL[i].PRTBARCODE, VE.TBATCHDTL[i].CLRBARCODE, VE.TBATCHDTL[i].SZBARCODE);
+                                        barno = salesfunc.GenerateBARNO(VE.TBATCHDTL[i].ITCD, VE.TBATCHDTL[i].CLRBARCODE, VE.TBATCHDTL[i].SZBARCODE);
                                         sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                         OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
                                         if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();

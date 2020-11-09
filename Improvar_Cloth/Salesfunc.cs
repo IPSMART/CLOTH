@@ -1016,7 +1016,7 @@ namespace Improvar
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
-            if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'","") + "%') and ";
+            if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
             //if (stylelike.retStr() != "") sql += "d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
@@ -1217,7 +1217,7 @@ namespace Improvar
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k , " + scm + ".m_size l ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
-            if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'","") + "%') and ";
+            if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
             //if (stylelike.retStr() != "") sql += "  d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
@@ -1454,14 +1454,13 @@ namespace Improvar
             return tbl;
         }
 
-        public string GenerateBARNO(string ITCD, string MTBARCODE = "", string PRTBARCODE = "", string CLRBARCODE = "", string SZBARCODE = "")
+        public string GenerateBARNO(string ITCD, string CLRBARCODE, string SZBARCODE)
         {
             //itcd last 7  7
-            //mtrljobcd mtrlbarcode 1
-            //partcode prtbarcode  1
             //color clrbarcode  3
             //size szbarcode   2
-            return ITCD.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
+            //return ITCD.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
+            return ITCD.retStr().Substring(1, 7) + CLRBARCODE.retStr() + SZBARCODE.retStr();
         }
         public DataTable GetSyscnfgData(string EFFDT)
         {

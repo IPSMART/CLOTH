@@ -173,6 +173,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#GLCD").val(returncolvalue(str, "GLCD"));
         $("#BARGENTYPETEMP").val(returncolvalue(str, "BARGENTYPE"));
         $("#NEGSTOCK").val(returncolvalue(str, "NEGSTOCK"));
+        $("#BarImages").val(returncolvalue(str, "BARIMAGE"));
     }
     else {
         var FieldidStarting = "";
@@ -344,6 +345,7 @@ function UpdateBarCodeRow() {
             $("#B_TXNSLNO_" + j).val(TXNSLNO);
             $("#B_ITGRPCD_" + j).val($("#ITGRPCD").val());
             $("#B_ITGRPNM_" + j).val($("#ITGRPNM").val());
+            $("#B_BARGENTYPE_" + j).val($("#BARGENTYPETEMP").val());
             $("#B_MTRLJOBCD_" + j).val($("#MTRLJOBCD").val());
             $("#B_MTRLJOBNM_" + j).val($("#MTRLJOBNM").val());
             $("#B_MTBARCODE_" + j).val($("#MTBARCODE").val());
@@ -400,10 +402,24 @@ function UpdateBarCodeRow() {
                 $("#B_ORDDOCDT_" + j).val($("#ORDDOCDT").val());
             }
             if (MENU_PARA == "PB") {
+
+                var BarImages = $("#BarImages").val();
+                var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
+                if (BarImages == '') { NoOfBarImages = ''; }
+                $("#OpenImageModal_" + j).html(NoOfBarImages);
+                $("#B_BarImages_" + j).val(BarImages);
+
+                if ($("#BARGENTYPE").val() == "E" || $("#B_BARGENTYPE_" + j).val() == "E") {
+                    $("#UploadBarnoImage_" + j).show();
+                }
+                else {
+                    $("#UploadBarnoImage_" + j).hide();
+                }
                 RateUpdate(j);
 
             }
         }
+
     }
     CalculateTotal_Barno();
     ClearBarcodeArea();
@@ -1667,8 +1683,11 @@ function AddBarCodeGrid() {
     tr += '   <button type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
     tr += '   </td> ';
     tr += '   <td class="">  ';
-    if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE== "E")) {
-        tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px" readonly="readonly" placeholder=""> ';
+    if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
+        tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px" readonly="readonly" placeholder="" id="UploadBarnoImage_' + rowindex + '"> ';
+    }
+    else {
+        tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px;display:none;" readonly="readonly" placeholder="" id="UploadBarnoImage_' + rowindex + '"> ';
     }
     tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder="" value=' + BarImages + '> ';
     tr += '   </td> ';
@@ -2405,6 +2424,7 @@ function CopyMtrljobcd() {
 function GetItcd(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
     debugger;
     if (id == "") {
         ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
@@ -2441,7 +2461,10 @@ function GetItcd(id) {
                         $("#BarImages").val(returncolvalue(result, "BarImages"));
                         $("#GLCD").val(returncolvalue(result, "GLCD"));
                         $("#BARGENTYPETEMP").val(returncolvalue(result, "bargentype"));
-                        changeBARGENTYPE();
+                        hlpblurval = id;
+                        if (MENU_PARA == "PB") {
+                            changeBARGENTYPE();
+                        }
                     }
                     else {
                         $('#helpDIV').html("");

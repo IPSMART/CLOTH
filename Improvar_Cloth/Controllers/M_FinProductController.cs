@@ -311,7 +311,7 @@ namespace Improvar.Controllers
                     slb = DB.M_BRAND.Find(sl.BRANDCD);
                     slc = DB.M_COLLECTION.Find(sl.COLLCD);
                     sluom = DBF.M_UOM.Find(sl.UOMCD);
-                    VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "","") != "" ? true : false;
+                    VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "", "") != "" ? true : false;
                     string fitcd = sl.FABITCD.retStr();
                     if (fitcd != "")
                     {
@@ -1720,7 +1720,7 @@ namespace Improvar.Controllers
                                 }
                                 else
                                 {
-                                    MSITEMBARCODE1.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, "", "", VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
+                                    MSITEMBARCODE1.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
                                 }
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                                 barnos.Add(MSITEMBARCODE1.BARNO);
@@ -1812,7 +1812,7 @@ namespace Improvar.Controllers
                                 }
                                 else
                                 {
-                                    MIP.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, "", "", VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
+                                    MIP.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
                                 }
                                 //if (i == 0)
                                 //{
@@ -1930,7 +1930,7 @@ namespace Improvar.Controllers
                 dt.Columns.Add("DOC_FLNAME", typeof(string));
                 dt.Columns.Add("LINE1", typeof(string));
                 dt.Columns.Add("LINE2", typeof(string));
-               string sql = "(select a.barno, count(*) barimagecount, ";
+                string sql = "(select a.barno, count(*) barimagecount, ";
                 sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
                 sql += "within group (order by a.barno) as barimage from ";
                 //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
@@ -1955,7 +1955,7 @@ namespace Improvar.Controllers
                 sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
                 sql += "group by a.barno ) y, ";
                 var dttt = masterHelp.SQLquery(sql);
-                for(int i=0;i< dttt.Rows.Count; i++)
+                for (int i = 0; i < dttt.Rows.Count; i++)
                 {
                     DataRow dr1 = dt.NewRow();
                     dr1["BARNO"] = dttt.Rows[i]["BARNO"].ToString();
