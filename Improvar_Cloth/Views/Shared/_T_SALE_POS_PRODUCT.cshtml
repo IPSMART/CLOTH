@@ -88,11 +88,13 @@
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].AMT, new { id = "B_AMT_" + i })
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].DISCAMT, new { id = "B_DISCAMT_" + i })
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].TXBLVAL, new { id = "B_TXBLVAL_" + i })
+                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].TXBLVAL, new { id = "R_TXBLVAL_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].TOTDISCAMT, new { id = "B_TOTDISCAMT_" + i })
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].IGSTPER, new { id = "B_IGSTPER_" + i })
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].IGSTAMT, new { id = "B_IGSTAMT_" + i })
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].CGSTPER, new { id = "B_CGSTPER_" + i })
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].CGSTAMT, new { id = "B_CGSTAMT_" + i })
+                                            @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].SGSTAMT, new { id = "B_SGSTAMT_" + i })
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].CESSPER, new { id = "B_CESSPER_" + i })
                                             @Html.HiddenFor(model => Model.TsalePos_TBATCHDTL[i].CESSAMT, new { id = "B_CESSAMT_" + i })
                                         </td>
@@ -160,9 +162,12 @@
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                                 @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })*@
                                             @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].DISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].DISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor select_3d ", id = "B_DISCTYPE_" + i })
+                                         
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 ,@onchange = "CalculateBarRowAmt(" + i + ");" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10 ,@onchange = "CalculateBarRowAmt(" + i + ");CalculateAmt_Details(" + i + ");" } })
+                                     
+
                                         </td>
                                         @*<td class="">
                                                 @Html.DropDownListFor(model => model.TsalePos_TBATCHDTL[i].TDDISCTYPE, new SelectList(Model.TsalePos_TBATCHDTL[i].TDDISC_TYPE, "Value", "Text"), new { @class = "atextBoxFor", id = "B_TDDISCTYPE_" + i })
@@ -256,6 +261,13 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.B_T_NET, new { htmlAttributes = new { id = "B_T_NET", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                    @Html.HiddenFor(model => Model.T_GROSS_AMT, new { id = "T_GROSS_AMT" })
+                                    @Html.HiddenFor(model => Model.R_T_GROSS_AMT, new { id = "R_T_GROSS_AMT" })
+                                    @Html.HiddenFor(model => Model.T_IGST_AMT, new  { id = "T_IGST_AMT" })
+                                    @Html.HiddenFor(model => Model.T_CGST_AMT, new { id = "T_CGST_AMT" })
+                                    @Html.HiddenFor(model => Model.T_SGST_AMT, new { id = "T_SGST_AMT" })
+                                    @Html.HiddenFor(model => Model.T_CESS_AMT, new { id = "T_CESS_AMT" })
+                                    @Html.HiddenFor(model => Model.T_NET_AMT, new { id = "T_NET_AMT" })
                                 </td>
                             </tr>
                         </tfoot>
