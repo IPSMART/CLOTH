@@ -282,7 +282,6 @@ namespace Improvar.Controllers
             if (dr != null) return dr.CopyToDataTable(); else return dt;
         }
 
-
         public TransactionSaleEntry Navigation(TransactionSaleEntry VE, ImprovarDB DB, int index, string searchValue, string loadOrder = "N")
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -3394,7 +3393,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-            dbnotsave:;
+                dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
             }
