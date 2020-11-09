@@ -667,6 +667,10 @@ namespace Improvar
                     TTXN.PARGLCD = parglcd;
                     TTXN.CLASS1CD = parclass1cd;
                     TTXN.MENU_PARA = VE.T_TXN.MENU_PARA;
+                    TTXN.REVCHRG = VE.T_TXN.REVCHRG;
+                    TTXN.ROAMT = VE.T_TXN.ROAMT;
+                    TTXN.BLAMT = VE.T_TXN.BLAMT;
+                    if (VE.RoundOff == true) { TTXN.ROYN = "Y"; } else { TTXN.ROYN = "N"; }
                     if (VE.DefaultAction == "E")
                     {
                         dbsql = masterHelp.TblUpdt("t_batchdtl", TTXN.AUTONO, "E");
@@ -752,13 +756,13 @@ namespace Improvar
                     TTXNMEMO.ADDR = "XYZ";
                     //----------------------------------------------------------//
                     // -------------------------T_TXNPYMT_HDR--------------------------//   
-                    //TTXNPYMTHDR.EMD_NO = TTXN.EMD_NO;
-                    //TTXNPYMTHDR.CLCD = TTXN.CLCD;
-                    //TTXNPYMTHDR.DTAG = TTXN.DTAG;
-                    //TTXNPYMTHDR.TTAG = TTXN.TTAG;
-                    //TTXNPYMTHDR.AUTONO = TTXN.AUTONO;
-                    //TTXNPYMTHDR.RTDEBCD = VE.T_TXNMEMO.RTDEBCD;
-                    //TTXNPYMTHDR.DRCR = stkdrcr;
+                    TTXNPYMTHDR.EMD_NO = TTXN.EMD_NO;
+                    TTXNPYMTHDR.CLCD = TTXN.CLCD;
+                    TTXNPYMTHDR.DTAG = TTXN.DTAG;
+                    TTXNPYMTHDR.TTAG = TTXN.TTAG;
+                    TTXNPYMTHDR.AUTONO = TTXN.AUTONO;
+                    TTXNPYMTHDR.RTDEBCD = VE.T_TXNMEMO.RTDEBCD;
+                    TTXNPYMTHDR.DRCR = stkdrcr;
 
                     //----------------------------------------------------------//
 
@@ -775,8 +779,8 @@ namespace Improvar
                     //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     dbsql = masterHelp.RetModeltoSql(TTXNMEMO);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    ////dbsql = masterHelp.RetModeltoSql(TTXNPYMTHDR);
-                    ////dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    dbsql = masterHelp.RetModeltoSql(TTXNPYMTHDR);
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                     // SAVE T_CNTRL_HDR_UNIQNO
                     //string docbarcode = ""; string UNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO);
@@ -1503,11 +1507,11 @@ namespace Improvar
                         #endregion
                     }
 
-                    if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
-                    {
-                        dberrmsg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
-                        goto dbnotsave;
-                    }
+                    //if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
+                    //{
+                    //    dberrmsg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
+                    //    goto dbnotsave;
+                    //}
 
                     #endregion
                     if (VE.DefaultAction == "A")
@@ -1524,8 +1528,8 @@ namespace Improvar
                 }
                 else if (VE.DefaultAction == "V")
                 {
-                    //dbsql = masterHelp.TblUpdt("T_TXNPYMT_HDR", VE.T_TXN.AUTONO, "D");
-                    //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("T_TXNPYMT_HDR", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("T_TXNMEMO", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("T_TXNTRANS", VE.T_TXN.AUTONO, "D");
