@@ -116,7 +116,7 @@ function AddBarnoRow(hlpstr) {
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
     var GLCD = returncolvalue(hlpstr, "GLCD");
-    
+
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
@@ -267,7 +267,7 @@ function CalculateBarRowAmt(i) {
     B_AMT_ = (B_AMT_ - discamt);
     var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
     var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
-    $("#B_GSTPER_" + i).val(GSTPER); 
+    $("#B_GSTPER_" + i).val(GSTPER);
     var rownetamt = (((B_AMT_ * GSTPER) / 100) + B_AMT_).toFixed(3);
     $("#INCLRATE_" + i).val(rownetamt);
     $("#B_NETAMT_" + i).val(rownetamt);
@@ -298,8 +298,8 @@ function CalculateInclusiveRate(i) {
             tmprt = tort - discamt;
         }
         tmprt = tmprt * (taxpercent + 100) / 100;
-        if (INCLRATE_ <= tmprt) {
-            var itemrate = (INCLRATE_ * 100 / (100 + taxpercent)).toFixed(2);
+        if (INCLRATE_ <= tmprt && B_QNTY_ != 0) {
+            var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent)) / B_QNTY_).toFixed(2);
             var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
             $("#B_RATE_" + i).val(itemrate);
             $("#B_GSTPER_" + i).val(taxpercent);
@@ -307,7 +307,7 @@ function CalculateInclusiveRate(i) {
         }
     }
     return itemrate;
-   
+
 }
 
 function CalculateBarTotal() {
@@ -335,7 +335,7 @@ function CalculateBarTotal() {
     }
     $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
-    $("#B_T_NET").val(parseFloat(T_NET).toFixed(2));
+    $("#B_T_NET_AMT").val(parseFloat(T_NET).toFixed(2));
     BillAmountCalculate();
 }
 function Checked_Disable() {
@@ -363,7 +363,7 @@ function AmountCalculation(i) {
     var A_NOS = document.getElementById("B_T_NOS").value;
     var B_QNTY = document.getElementById("B_T_QNTY").value;
     var D_GROSS_AMT = document.getElementById("T_GROSS_AMT").value;
-    var E_NET_AMT = document.getElementById("T_NET_AMT").value;
+    var E_NET_AMT = document.getElementById("B_T_NET_AMT").value;
     var RT = document.getElementById("AMTRATE_" + i).value;
     var IGST_PER = document.getElementById("AIGSTPER_" + i).value;
     if (IGST_PER == "") { IGST_PER = parseFloat(0); } else { IGST_PER = parseFloat(IGST_PER) }
@@ -549,7 +549,7 @@ function BillAmountCalculate() {
     var A_T_SGST = $("#A_T_SGST").val();
     if (A_T_SGST != "") { A_TOTALSGST = A_TOTALSGST + parseFloat(A_T_SGST); } else { A_TOTALSGST = A_TOTALSGST + parseFloat(0); }
 
-    var T_NET_AMT = $("#B_T_NET").val();
+    var T_NET_AMT = $("#B_T_NET_AMT").val();
     if (T_NET_AMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(T_NET_AMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(0); }
 
     var A_T_NET = $("#A_T_NET").val();
@@ -823,7 +823,7 @@ function CalculateTotal_Details() {
     $("#T_CGST_AMT").val(parseFloat(T_CGST_AMT).toFixed(2));
     $("#T_SGST_AMT").val(parseFloat(T_SGST_AMT).toFixed(2));
     $("#T_CESS_AMT").val(parseFloat(T_CESS_AMT).toFixed(2));
-    $("#T_NET_AMT").val(parseFloat(T_NET_AMT).toFixed(2));
+    $("#B_T_NET_AMT").val(parseFloat(T_NET_AMT).toFixed(2));
 
     //main tab
     //$("#TOTNOS").val(parseFloat(T_NOS).toFixed(2));
