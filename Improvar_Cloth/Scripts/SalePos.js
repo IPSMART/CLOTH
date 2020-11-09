@@ -519,10 +519,10 @@ function BillAmountCalculate() {
     var netamt = 0;
     var ROUND_TAG = document.getElementById("RoundOff").checked;
     var D_TOTALNOS = 0, D_TOTALQNTY = 0, D_TOTALTAXVAL = 0, A_TOTALTAXVAL = 0, D_TOTALIGST = 0, A_TOTALIGST = 0, D_TOTALCGST = 0, A_TOTALCGST = 0, D_TOTALSGST = 0, A_TOTALSGST = 0, D_TOTALNETAMT = 0, A_TOTALNETAMT = 0;
-    var T_NOS = $("#T_NOS").val();
+    var T_NOS = $("#B_T_NOS").val();
     if (T_NOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(T_NOS); } else { D_TOTALNOS = D_TOTALNOS + parseFloat(0); }
 
-    var T_QNTY = $("#T_QNTY").val();
+    var T_QNTY = $("#B_T_QNTY").val();
     if (T_QNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(T_QNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseFloat(0); }
 
     var T_GROSS_AMT = $("#T_GROSS_AMT").val();
