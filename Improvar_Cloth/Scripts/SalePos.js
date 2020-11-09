@@ -307,6 +307,7 @@ function CalculateInclusiveRate(i) {
         }
     }
     return itemrate;
+   
 }
 
 function CalculateBarTotal() {
@@ -335,6 +336,7 @@ function CalculateBarTotal() {
     $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
     $("#B_T_NET").val(parseFloat(T_NET).toFixed(2));
+    BillAmountCalculate();
 }
 function Checked_Disable() {
     var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
@@ -354,4 +356,480 @@ function changeBARGENTYPE() {
         $("#divImageUpload").show();
     }
     return 0;
+}
+function AmountCalculation(i) {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var A_NOS = document.getElementById("B_T_NOS").value;
+    var B_QNTY = document.getElementById("B_T_QNTY").value;
+    var D_GROSS_AMT = document.getElementById("T_GROSS_AMT").value;
+    var E_NET_AMT = document.getElementById("T_NET_AMT").value;
+    var RT = document.getElementById("AMTRATE_" + i).value;
+    var IGST_PER = document.getElementById("AIGSTPER_" + i).value;
+    if (IGST_PER == "") { IGST_PER = parseFloat(0); } else { IGST_PER = parseFloat(IGST_PER) }
+    var CGST_PER = document.getElementById("ACGSTPER_" + i).value;
+    if (CGST_PER == "") { CGST_PER = parseFloat(0); } else { CGST_PER = parseFloat(CGST_PER) }
+    var SGST_PER = document.getElementById("ASGSTPER_" + i).value;
+    if (SGST_PER == "") { SGST_PER = parseFloat(0); } else { SGST_PER = parseFloat(SGST_PER) }
+    var CESS_PER = document.getElementById("ACESSPER_" + i).value;
+    if (CESS_PER == "") { CESS_PER = parseFloat(0); } else { CESS_PER = parseFloat(CESS_PER) }
+    var DUTY_PER = document.getElementById("ADUTYPER_" + i).value;
+    if (DUTY_PER == "") { DUTY_PER = parseFloat(0); } else { DUTY_PER = parseFloat(DUTY_PER) }
+    var CALC_TYPE = document.getElementById("CALCTYPE_" + i).value;
+    var CALC_FORMULA = document.getElementById("CALCFORMULA_" + i).value;
+    if (A_NOS == "") { A_NOS = parseFloat(0); }
+    if (B_QNTY == "") { B_QNTY = parseFloat(0); }
+    if (D_GROSS_AMT == "") { D_GROSS_AMT = parseFloat(0); }
+    if (E_NET_AMT == "") { E_NET_AMT = parseFloat(0); }
+    if (RT == "") { RT = parseFloat(0); }
+    var AMOUNT = 0;
+    if (CALC_TYPE == "F") { AMOUNT = parseFloat(RT); }
+    else if (CALC_TYPE == "P") {
+        if (CALC_FORMULA == "A") { AMOUNT = parseFloat(A_NOS) * parseFloat(RT); }
+        else if (CALC_FORMULA == "B") { AMOUNT = parseFloat(B_QNTY) * parseFloat(RT); }
+        else if (CALC_FORMULA == "D") { AMOUNT = parseFloat(D_GROSS_AMT) * parseFloat(RT); }
+        else if (CALC_FORMULA == "E") { AMOUNT = parseFloat(E_NET_AMT) * parseFloat(RT); }
+    }
+    document.getElementById("A_AMT_" + i).value = AMOUNT;
+    var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var DUTY_AMT = 0;
+
+    // IGST CALCULATION
+    document.getElementById("AIGSTPER_" + i).value = IGST_PER;
+    IGST_AMT = (AMOUNT * IGST_PER) / 100;
+
+    AmountChange(document.getElementById("AIGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("AIGSTPER_" + i), document.getElementById("ANETAMT_" + i),
+    document.getElementById("ACGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+    document.getElementById("AIGSTAMT_" + i).value = parseFloat(IGST_AMT).toFixed(2);
+    //END
+
+    // CGST CALCULATION
+    document.getElementById("ACGSTPER_" + i).value = CGST_PER;
+    CGST_AMT = (AMOUNT * CGST_PER) / 100;
+    AmountChange(document.getElementById("ACGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ACGSTPER_" + i), document.getElementById("ANETAMT_" + i),
+        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+    document.getElementById("ACGSTAMT_" + i).value = parseFloat(CGST_AMT).toFixed(2);
+    //END
+    // SGST CALCULATION
+    document.getElementById("ASGSTPER_" + i).value = SGST_PER;
+    SGST_AMT = (AMOUNT * SGST_PER) / 100;
+    AmountChange(document.getElementById("ASGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ASGSTPER_" + i), document.getElementById("ANETAMT_" + i),
+        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+    document.getElementById("ASGSTAMT_" + i).value = parseFloat(SGST_AMT).toFixed(2);
+    //END
+    // CESS CALCULATION
+    document.getElementById("ACESSPER_" + i).value = CESS_PER;
+    CESS_AMT = (AMOUNT * CESS_PER) / 100;
+    AmountChange(document.getElementById("ACESSAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ACESSPER_" + i), document.getElementById("ANETAMT_" + i),
+        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+    document.getElementById("ACESSAMT_" + i).value = parseFloat(CESS_AMT).toFixed(2);
+    //END
+    // DUTY CALCULATION
+
+    document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
+    DUTY_AMT = (AMOUNT * DUTY_PER) / 100;
+    AmountChange(document.getElementById("ADUTYAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ADUTYPER_" + i), document.getElementById("ANETAMT_" + i),
+    document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
+    document.getElementById("ADUTYAMT_" + i).value = parseFloat(DUTY_AMT).toFixed(2);
+    //END
+
+    var NET_AMT = AMOUNT + parseFloat(document.getElementById("AIGSTAMT_" + i).value) + parseFloat(document.getElementById("ACGSTAMT_" + i).value) +
+                 parseFloat(document.getElementById("ASGSTAMT_" + i).value) + parseFloat(document.getElementById("ACESSAMT_" + i).value) + parseFloat(document.getElementById("ADUTYAMT_" + i).value);
+    document.getElementById("ANETAMT_" + i).value = parseFloat(NET_AMT).toFixed(2);
+
+    //GRID TOTAL CALCULATION
+    AmountCalculateTotal();
+
+}
+function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var NEW_AMT = document.getElementById(id.id).value;
+    var PERCENTAGE = document.getElementById(PER.id).value;
+    var AMT = document.getElementById(AMOUNT.id).value;
+    var AMT_1 = document.getElementById(AMT1.id).value;
+    var AMT_2 = document.getElementById(AMT2.id).value;
+    var AMT_3 = document.getElementById(AMT3.id).value;
+    var AMT_4 = document.getElementById(AMT4.id).value;
+    if (PERCENTAGE != "") {
+        var CAL_ABET_AMT = parseFloat(AMT) * parseFloat(PERCENTAGE) / 100;
+        var BAL_AMT = Math.abs(parseFloat(NEW_AMT) - parseFloat(CAL_ABET_AMT));
+        if (BAL_AMT <= 1) {
+            document.getElementById(id.id).value = parseFloat(NEW_AMT).toFixed(2);
+            document.getElementById(NETAMT.id).value = parseFloat(parseFloat(NEW_AMT) + parseFloat(AMT) + parseFloat(AMT_1) + parseFloat(AMT_2) + parseFloat(AMT_3) + parseFloat(AMT_4)).toFixed(2);
+        }
+        else {
+            document.getElementById(id.id).value = parseFloat(CAL_ABET_AMT).toFixed(2);
+            document.getElementById(NETAMT.id).value = parseFloat(parseFloat(CAL_ABET_AMT) + parseFloat(AMT) + parseFloat(AMT_1) + parseFloat(AMT_2) + parseFloat(AMT_3) + parseFloat(AMT_4)).toFixed(2);
+        }
+    }
+    //GRID TOTAL CALCULATION
+    AmountCalculateTotal();
+
+}
+function AmountCalculateTotal() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var T_CURR_AMT = 0; var T_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_NET_AMT = 0;
+    var GridRow = $("#_T_SALE_POS_AMOUNT_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        var CURR_AMT = document.getElementById("ACURR_AMT_" + i).value;
+        if (CURR_AMT != "") { T_CURR_AMT = T_CURR_AMT + parseFloat(CURR_AMT); } else { T_CURR_AMT = T_CURR_AMT + parseFloat(0); }
+
+        var AMT = document.getElementById("A_AMT_" + i).value;
+        if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
+
+        var IGST_AMT = document.getElementById("AIGSTAMT_" + i).value;
+        if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
+
+        var CGST_AMT = document.getElementById("ACGSTAMT_" + i).value;
+        if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
+
+        var SGST_AMT = document.getElementById("ASGSTAMT_" + i).value;
+        if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
+
+        var CESS_AMT = document.getElementById("ACESSAMT_" + i).value;
+        if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
+
+        var DUTY_AMT = document.getElementById("ADUTYAMT_" + i).value;
+        if (DUTY_AMT != "") { T_DUTY_AMT = T_DUTY_AMT + parseFloat(DUTY_AMT); } else { T_DUTY_AMT = T_DUTY_AMT + parseFloat(0); }
+
+        var NET_AMT = document.getElementById("ANETAMT_" + i).value;
+        if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
+
+    }
+    document.getElementById("A_T_CURR").value = parseFloat(T_CURR_AMT).toFixed(2);
+    document.getElementById("A_T_AMOUNT").value = parseFloat(T_AMT).toFixed(2);
+    document.getElementById("A_T_IGST").value = parseFloat(T_IGST_AMT).toFixed(2);
+    document.getElementById("A_T_CGST").value = parseFloat(T_CGST_AMT).toFixed(2);
+    document.getElementById("A_T_SGST").value = parseFloat(T_SGST_AMT).toFixed(2);
+    document.getElementById("A_T_CESS").value = parseFloat(T_CESS_AMT).toFixed(2);
+    document.getElementById("A_T_DUTY").value = parseFloat(T_DUTY_AMT).toFixed(2);
+    document.getElementById("A_T_NET").value = parseFloat(T_NET_AMT).toFixed(2);
+
+    //BILL AMOUNT CALCULATION
+    BillAmountCalculate();
+
+}
+function BillAmountCalculate() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    debugger;
+    var R_TOTAL_BILL_AMOUNT = 0;
+    var TOTAL_ROUND = 0;
+    var netamt = 0;
+    var ROUND_TAG = document.getElementById("RoundOff").checked;
+    var D_TOTALNOS = 0, D_TOTALQNTY = 0, D_TOTALTAXVAL = 0, A_TOTALTAXVAL = 0, D_TOTALIGST = 0, A_TOTALIGST = 0, D_TOTALCGST = 0, A_TOTALCGST = 0, D_TOTALSGST = 0, A_TOTALSGST = 0, D_TOTALNETAMT = 0, A_TOTALNETAMT = 0;
+    var T_NOS = $("#T_NOS").val();
+    if (T_NOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(T_NOS); } else { D_TOTALNOS = D_TOTALNOS + parseFloat(0); }
+
+    var T_QNTY = $("#T_QNTY").val();
+    if (T_QNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(T_QNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseFloat(0); }
+
+    var T_GROSS_AMT = $("#T_GROSS_AMT").val();
+    if (T_GROSS_AMT != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(T_GROSS_AMT); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(0); }
+
+    var A_T_AMOUNT = $("#A_T_AMOUNT").val();
+    if (A_T_AMOUNT != "") { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(A_T_AMOUNT); } else { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(0); }
+    //
+    var T_IGST_AMT = $("#T_IGST_AMT").val();
+    if (T_IGST_AMT != "") { D_TOTALIGST = D_TOTALIGST + parseFloat(T_IGST_AMT); } else { D_TOTALIGST = D_TOTALIGST + parseFloat(0); }
+
+    var A_T_IGST = $("#A_T_IGST").val();
+    if (A_T_IGST != "") { A_TOTALIGST = A_TOTALIGST + parseFloat(A_T_IGST); } else { A_TOTALIGST = A_TOTALIGST + parseFloat(0); }
+
+    var T_CGST_AMT = $("#T_CGST_AMT").val();
+    if (T_CGST_AMT != "") { D_TOTALCGST = D_TOTALCGST + parseFloat(T_CGST_AMT); } else { D_TOTALCGST = D_TOTALCGST + parseFloat(0); }
+
+    var A_T_CGST = $("#A_T_CGST").val();
+    if (A_T_CGST != "") { A_TOTALCGST = A_TOTALCGST + parseFloat(A_T_CGST); } else { A_TOTALCGST = A_TOTALCGST + parseFloat(0); }
+
+    var T_SGST_AMT = $("#T_SGST_AMT").val();
+    if (T_SGST_AMT != "") { D_TOTALSGST = D_TOTALSGST + parseFloat(T_SGST_AMT); } else { D_TOTALSGST = D_TOTALSGST + parseFloat(0); }
+
+    var A_T_SGST = $("#A_T_SGST").val();
+    if (A_T_SGST != "") { A_TOTALSGST = A_TOTALSGST + parseFloat(A_T_SGST); } else { A_TOTALSGST = A_TOTALSGST + parseFloat(0); }
+
+    var T_NET_AMT = $("#B_T_NET").val();
+    if (T_NET_AMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(T_NET_AMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(0); }
+
+    var A_T_NET = $("#A_T_NET").val();
+    if (A_T_NET != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_T_NET); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(0); }
+
+    var totaltaxval = 0;
+    totaltaxval = parseFloat(parseFloat(D_TOTALTAXVAL) + parseFloat(A_TOTALTAXVAL)).toFixed(2);
+
+    var totaltax = 0;
+    totaltax = parseFloat(parseFloat(D_TOTALIGST) + parseFloat(A_TOTALIGST) + parseFloat(D_TOTALCGST) + parseFloat(A_TOTALCGST) + parseFloat(D_TOTALSGST) + parseFloat(A_TOTALSGST)).toFixed(2);
+
+    var totalbillamt = 0;
+    totalbillamt = parseFloat(parseFloat(D_TOTALNETAMT) + parseFloat(A_TOTALNETAMT)).toFixed(2);
+
+    $("#TOTNOS").val(parseFloat(D_TOTALNOS).toFixed(0));
+    $("#TOTQNTY").val(parseFloat(D_TOTALQNTY).toFixed(2));
+    $("#TOTTAXVAL").val(parseFloat(totaltaxval).toFixed(2));
+    $("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
+
+    //tcs
+    var TCSPER = 0; TCSAMT = 0; TCSON = 0;
+    var MENU_PARA = $("#MENU_PARA").val();
+    //if (MENU_PARA != "SR" || MENU_PARA != "PR") {
+    //    TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
+    //    if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
+    //    document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
+    //    if (MENU_PARA == "PB") {
+    //        TCSON = $("#TCSON").val();
+    //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
+    //    }
+    //    else {
+    //        GetTCSON(totalbillamt);
+    //        TCSON = $("#TCSON").val();
+    //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+    //    }
+    //    TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100);
+    //    TCSAMT = CalculateTcsAmt(TCSAMT);
+    //    if (MENU_PARA == "PB") {
+    //        var NEW_TCSAMT = $("#TCSAMT").val();
+    //        if (NEW_TCSAMT == "") { NEW_TCSAMT = parseFloat(0); } else { NEW_TCSAMT = parseFloat(NEW_TCSAMT) }
+
+    //        var TCSON = $("#TCSON").val();
+    //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
+
+    //        var TCSPER = $("#TCSPER").val();
+    //        if (TCSPER == "") { TCSPER = parseFloat(0); } else { TCSPER = parseFloat(TCSPER) }
+
+    //        var CAL_TCSAMT = TCSAMT;
+    //        var BAL_AMT = Math.abs(parseFloat(NEW_TCSAMT) - parseFloat(CAL_TCSAMT));
+    //        if (BAL_AMT <= 1 && NEW_TCSAMT > 0) {
+    //            $("#TCSAMT").val(parseFloat(NEW_TCSAMT).toFixed(2));
+    //            TCSAMT = NEW_TCSAMT;
+    //        }
+    //        else {
+    //            $("#TCSAMT").val(parseFloat(CAL_TCSAMT).toFixed(2));
+    //            TCSAMT = CAL_TCSAMT;
+    //        }
+    //    }
+    //    else {
+    //        document.getElementById("TCSAMT").value = parseFloat(TCSAMT).toFixed(2);
+
+    //    }
+    //}
+    //
+    totalbillamt = parseFloat(totalbillamt) + parseFloat(TCSAMT);
+    var REVCHRG = $("#REVCHRG").val();
+    if (REVCHRG == "Y") {
+        totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
+    }
+    if (ROUND_TAG == true) {
+        R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
+        TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
+        document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+    }
+    else {
+        TOTAL_ROUND = 0;
+        document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
+        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+    }
+
+}
+function CalculateAmt_Details(i) {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var BLQNTY = $("#B_BLQNTY_" + i).val();
+    if (BLQNTY != "") { BLQNTY = parseFloat(BLQNTY); } else { BLQNTY = parseFloat(0); }
+
+    var QNTY = $("#B_QNTY_" + i).val();
+    if (QNTY != "") { QNTY = parseFloat(QNTY); } else { QNTY = parseFloat(0); }
+
+    var NOS = $("#B_NOS_" + i).val();
+    if (NOS != "") { NOS = parseFloat(NOS); } else { NOS = parseFloat(0); }
+
+    var FLAGMTR = $("#B_FLAGMTR_" + i).val();
+    if (FLAGMTR != "") { FLAGMTR = parseFloat(FLAGMTR); } else { FLAGMTR = parseFloat(0); }
+
+    var RATE = $("#B_RATE_" + i).val();
+    if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
+
+    var IGSTPER = $("#B_IGSTPER_" + i).val();
+    if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
+
+    var CGSTPER = $("#B_CGSTPER_" + i).val();
+    if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
+
+    var SGSTPER = $("#B_SGSTPER_" + i).val();
+    if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
+
+    var CESSPER = $("#B_CESSPER_" + i).val();
+    if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
+
+    var DISCTYPE = $("#B_DISCTYPE_" + i).val();
+    var DISCRATE = $("#B_DISCRATE_" + i).val();
+    if (DISCRATE != "") { DISCRATE = parseFloat(DISCRATE); } else { DISCRATE = parseFloat(0); }
+
+    var TDDISCTYPE = $("#B_TDDISCTYPE_" + i).val();
+    var TDDISCRATE = $("#B_TDDISCRATE_" + i).val();
+    if (TDDISCRATE != "") { TDDISCRATE = parseFloat(TDDISCRATE); } else { TDDISCRATE = parseFloat(0); }
+
+    var SCMDISCTYPE = $("#B_SCMDISCTYPE_" + i).val();
+    var SCMDISCRATE = $("#B_SCMDISCRATE_" + i).val();
+    if (SCMDISCRATE != "") { SCMDISCRATE = parseFloat(SCMDISCRATE); } else { SCMDISCRATE = parseFloat(0); }
+
+
+    //AMOUNT CALCULATION
+    var amount = 0;
+    if (BLQNTY == 0) {
+        amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
+    }
+    else {
+        amount = parseFloat(BLQNTY) * parseFloat(RATE);
+    }
+    amount = parseFloat(amount).toFixed(2);
+    $("#D_AMT_" + i).val(amount);
+
+    //DISCOUNT AMOUNT CALCULATION
+    var DISCAMT = 0;
+    if (DISCTYPE == "Q") { DISCAMT = DISCRATE * QNTY; }
+    else if (DISCTYPE == "N") { DISCAMT = DISCRATE * NOS; }
+    else if (DISCTYPE == "P") { DISCAMT = (amount * DISCRATE) / 100; }
+    else if (DISCTYPE == "F") { DISCAMT = DISCRATE; }
+    else { DISCAMT = 0; }
+    DISCAMT = parseFloat(DISCAMT).toFixed(2);
+    $("#B_DISCAMT_" + i).val(DISCAMT);
+
+    //TDDISCOUNT AMOUNT CALCULATION
+    //var TDDISCAMT = 0;
+    //if (TDDISCTYPE == "Q") { TDDISCAMT = TDDISCRATE * QNTY; }
+    //else if (TDDISCTYPE == "N") { TDDISCAMT = TDDISCRATE * NOS; }
+    //else if (TDDISCTYPE == "P") { TDDISCAMT = (amount * TDDISCRATE) / 100; }
+    //else if (TDDISCTYPE == "F") { TDDISCAMT = TDDISCRATE; }
+    //else { TDDISCAMT = 0; }
+    //TDDISCAMT = parseFloat(TDDISCAMT).toFixed(2);
+    //$("#B_TDDISCAMT_" + i).val(TDDISCAMT);
+
+    //SCMDISCOUNT AMOUNT CALCULATION
+    //var SCMDISCAMT = 0;
+    //if (SCMDISCTYPE == "Q") { SCMDISCAMT = SCMDISCRATE * QNTY; }
+    //else if (SCMDISCTYPE == "N") { SCMDISCAMT = SCMDISCRATE * NOS; }
+    //else if (SCMDISCTYPE == "P") { SCMDISCAMT = (amount * SCMDISCRATE) / 100; }
+    //else if (SCMDISCTYPE == "F") { SCMDISCAMT = SCMDISCRATE; }
+    //else { SCMDISCAMT = 0; }
+    //SCMDISCAMT = parseFloat(SCMDISCAMT).toFixed(2);
+    //$("#B_SCMDISCAMT_" + i).val(SCMDISCAMT);
+
+    //TOTAL DISCOUNT AMOUNT CALCULATION
+    var TOTDISCAMT = parseFloat(DISCAMT).toFixed(2);
+    $("#B_TOTDISCAMT_" + i).val(TOTDISCAMT);
+
+    //TAXABLE CALCULATION
+    var taxbleamt = parseFloat(amount) - parseFloat(TOTDISCAMT);
+    taxbleamt = parseFloat(taxbleamt).toFixed(2);
+    $("#B_TXBLVAL_" + i).val(taxbleamt);
+    //IGST,CGST,SGST,CESS AMOUNT CALCULATION
+
+    var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
+
+    //IGST
+    if (IGSTPER == 0 || IGSTPER == "") {
+        IGSTPER = 0; IGST_AMT = 0;
+    }
+    else {
+        IGST_AMT = parseFloat((taxbleamt * IGSTPER) / 100).toFixed(2);
+        chkAmt = $("#B_IGSTAMT_" + i).val();
+        if (chkAmt == "") chkAmt = 0;
+        if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
+    }
+    $("#B_IGSTAMT_" + i).val(IGST_AMT);
+    //CGST
+    if (CGSTPER == "" || CGSTPER == 0) {
+        CGSTPER = 0; CGST_AMT = 0;
+    }
+    else {
+        CGST_AMT = parseFloat((taxbleamt * CGSTPER) / 100).toFixed(2);
+        chkAmt = $("#B_CGSTAMT_" + i).val();
+        if (chkAmt == "") chkAmt = 0;
+        if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
+    }
+    $("#B_CGSTAMT_" + i).val(CGST_AMT);
+    //SGST
+    if (SGSTPER == "" || SGSTPER == 0) {
+        SGSTPER = 0; SGST_AMT = 0;
+    }
+    else {
+        SGST_AMT = parseFloat((taxbleamt * SGSTPER) / 100).toFixed(2);
+        chkAmt = $("#B_SGSTAMT_" + i).val();
+        if (chkAmt == "") chkAmt = 0;
+        if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
+    }
+    $("#B_SGSTAMT_" + i).val(SGST_AMT);
+
+    //CESS
+    if (CESSPER == "" || CESSPER == 0) {
+        CESSPER = 0; CESS_AMT = 0;
+    }
+    else {
+        CESS_AMT = parseFloat((taxbleamt * CESSPER) / 100).toFixed(2);
+        chkAmt = $("#B_CESSAMT_" + i).val();
+        if (chkAmt == "") chkAmt = 0;
+        if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
+    }
+    $("#B_CESSAMT_" + i).val(CESS_AMT);
+
+    var netamt = parseFloat(parseFloat(taxbleamt) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
+    $("#B_NETAMT_" + i).val(netamt);
+    CalculateTotal_Details();
+
+}
+function CalculateTotal_Details() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var T_NOS = 0; var T_QNTY = 0; var T_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_NET_AMT = 0;
+
+    var GridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        var NOS = $("#D_NOS_" + i).val();
+        if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+
+        var QNTY = $("#D_QNTY_" + i).val();
+        if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
+
+        var AMT = $("#D_AMT_" + i).val();
+        if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
+
+        var GROSS_AMT = $("#D_TXBLVAL_" + i).val();
+        if (GROSS_AMT != "") { T_GROSS_AMT = T_GROSS_AMT + parseFloat(GROSS_AMT); } else { T_GROSS_AMT = T_GROSS_AMT + parseFloat(0); }
+
+        var IGST_AMT = $("#D_IGSTAMT_" + i).val();
+        if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
+
+        var CGST_AMT = $("#D_CGSTAMT_" + i).val();
+        if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
+
+        var SGST_AMT = $("#D_SGSTAMT_" + i).val();
+        if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
+
+        var CESS_AMT = $("#D_CESSAMT_" + i).val();
+        if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
+
+        var NET_AMT = $("#D_NETAMT_" + i).val();
+        if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
+    }
+    var totaltax = parseFloat(T_IGST_AMT) + parseFloat(T_CGST_AMT) + parseFloat(T_SGST_AMT) + parseFloat(T_CESS_AMT);
+    $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
+    $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
+    $("#T_AMT").val(parseFloat(T_AMT).toFixed(2));
+    $("#T_GROSS_AMT").val(parseFloat(T_GROSS_AMT).toFixed(2));
+    $("#T_IGST_AMT").val(parseFloat(T_IGST_AMT).toFixed(2));
+    $("#T_CGST_AMT").val(parseFloat(T_CGST_AMT).toFixed(2));
+    $("#T_SGST_AMT").val(parseFloat(T_SGST_AMT).toFixed(2));
+    $("#T_CESS_AMT").val(parseFloat(T_CESS_AMT).toFixed(2));
+    $("#T_NET_AMT").val(parseFloat(T_NET_AMT).toFixed(2));
+
+    //main tab
+    //$("#TOTNOS").val(parseFloat(T_NOS).toFixed(2));
+    //$("#TOTQNTY").val(parseFloat(T_QNTY).toFixed(2));
+    //$("#TOTTAXVAL").val(parseFloat(T_GROSS_AMT).toFixed(2));
+    //$("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
+    BillAmountCalculate();
+
 }
