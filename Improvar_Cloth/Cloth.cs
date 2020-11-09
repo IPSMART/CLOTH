@@ -911,7 +911,7 @@ namespace Improvar
                                 bool flagbatch = false;
                                 string barno = "";
 
-                                barno = salesfunc.GenerateBARNO(VE.TsalePos_TBATCHDTL[i].ITCD, VE.TsalePos_TBATCHDTL[i].MTBARCODE, VE.TsalePos_TBATCHDTL[i].PRTBARCODE, VE.TsalePos_TBATCHDTL[i].CLRBARCODE, VE.TsalePos_TBATCHDTL[i].SZBARCODE);
+                                barno = salesfunc.GenerateBARNO(VE.TsalePos_TBATCHDTL[i].ITCD,VE.TsalePos_TBATCHDTL[i].CLRBARCODE, VE.TsalePos_TBATCHDTL[i].SZBARCODE);
                                 sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                 OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
                                 if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
