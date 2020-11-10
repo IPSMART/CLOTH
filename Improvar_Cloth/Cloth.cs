@@ -67,12 +67,17 @@ namespace Improvar
                     var add2 = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.ADD2).FirstOrDefault();
                     var add3 = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.ADD3).FirstOrDefault();
                     VE.ADDR = add1 + add2 + add3;
-                    string qry = "select j.INC_RATE from " + scmf + ".M_RETDEB i," + scm + ".M_SYSCNFG j where i.RTDEBCD=j.RTDEBCD and i.RTDEBCD='" + VE.T_TXNMEMO.RTDEBCD + "'";
-                    var dt = masterHelp.SQLquery(qry);
-                    var incrate = (from DataRow dr in dt.Rows
-                                   select new
-                                   { INC_RATE = dr["INC_RATE"].retStr() }).FirstOrDefault();
-                    //if (incrate.INC_RATE == "Y") VE.INC_RATE = true;
+                    //string qry = "select j.INC_RATE from " + scmf + ".M_RETDEB i," + scm + ".M_SYSCNFG j where i.RTDEBCD=j.RTDEBCD and i.RTDEBCD='" + VE.T_TXNMEMO.RTDEBCD + "'";
+                    //string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                    //string sql = "";
+                    //sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,d.NM,d.MOBILE mob";
+                    //sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c," + scm + ".T_TXNMEMO d";
+                    //sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD and a.RTDEBCD='" + VE.T_TXNMEMO.RTDEBCD + "' and d.autono='" + VE.T_TXN.AUTONO + "' ";
+                    //var dt = masterHelp.SQLquery(sql);
+                    //var incrate = (from DataRow dr in dt.Rows
+                    //               select new
+                    //               { TAXGRPCD = dr["TAXGRPCD"].retStr() }).FirstOrDefault();
+                 
                     VE.INC_RATE = VE.T_TXN.INCL_RATE == "Y".retStr() ? true : false;
                     VE.AGSLNM = VE.T_TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == VE.T_TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                     VE.SAGSLNM = VE.T_TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == VE.T_TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -85,7 +90,7 @@ namespace Improvar
 
                     string Scm = CommVar.CurSchema(UNQSNO);
                     string str1 = "";
-                    str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO,i.INCLRATE,i.PCSACTION, ";
+                    str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO,i.INCLRATE,i.PCSACTION,i.ORDSLNO,i.ORDAUTONO,  ";
                     str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                     str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM ,r.DISCAMT,r.TDDISCAMT,r.SCMDISCAMT,r.TXBLVAL,r.IGSTPER,r.CGSTPER,r.SGSTPER,r.CESSPER,r.IGSTAMT,r.CGSTAMT,r.SGSTAMT,r.CESSAMT,r.NETAMT,r.TOTDISCAMT ,r.AMT,r.BLQNTY ";
                     str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
@@ -160,7 +165,8 @@ namespace Improvar
                                                  AMT = dr["AMT"].retDbl(),
                                                  INCLRATE = dr["INCLRATE"].retDbl(),
                                                  PCSACTION = dr["PCSACTION"].retStr(),
-
+                                                 ORDAUTONO = dr["ORDAUTONO"].retStr(),
+                                                 ORDSLNO = dr["ORDSLNO"].retStr()
                                              }).OrderBy(s => s.SLNO).ToList();
 
                     //str1 = "";
@@ -740,6 +746,7 @@ namespace Improvar
                     TTXNOTH.EMD_NO = TTXN.EMD_NO;
                     TTXNOTH.CLCD = TTXN.CLCD;
                     TTXNOTH.DTAG = TTXN.DTAG;
+                    TTXNOTH.TAXGRPCD = VE.T_TXNOTH.TAXGRPCD;
                     //----------------------------------------------------------//
 
                     //TTXNLINKNO.EMD_NO = TTXN.EMD_NO;
@@ -1013,6 +1020,7 @@ namespace Improvar
                                     TBATCHMST.MILLNM = VE.TsalePos_TBATCHDTL[i].MILLNM;
                                     TBATCHMST.BATCHNO = VE.TsalePos_TBATCHDTL[i].BATCHNO;
                                     TBATCHMST.ORDAUTONO = VE.TsalePos_TBATCHDTL[i].ORDAUTONO;
+                                    TBATCHMST.ORDSLNO = VE.TsalePos_TBATCHDTL[i].ORDSLNO.retShort();
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMST);
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -1045,7 +1053,7 @@ namespace Improvar
                                 TsalePos_TBATCHDTL.TDDISCRATE = VE.TsalePos_TBATCHDTL[i].TDDISCRATE;
                                 TsalePos_TBATCHDTL.TDDISCTYPE = VE.TsalePos_TBATCHDTL[i].TDDISCTYPE;
                                 TsalePos_TBATCHDTL.ORDAUTONO = VE.TsalePos_TBATCHDTL[i].ORDAUTONO;
-                                TsalePos_TBATCHDTL.ORDSLNO = VE.TsalePos_TBATCHDTL[i].ORDSLNO;
+                                TsalePos_TBATCHDTL.ORDSLNO = VE.TsalePos_TBATCHDTL[i].ORDSLNO.retShort();
                                 TsalePos_TBATCHDTL.DIA = VE.TsalePos_TBATCHDTL[i].DIA;
                                 TsalePos_TBATCHDTL.CUTLENGTH = VE.TsalePos_TBATCHDTL[i].CUTLENGTH;
                                 TsalePos_TBATCHDTL.LOCABIN = VE.TsalePos_TBATCHDTL[i].LOCABIN;

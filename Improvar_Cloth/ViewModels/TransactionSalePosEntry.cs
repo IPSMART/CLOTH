@@ -221,7 +221,7 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_BLAMT { get; set; }
         public double B_T_NET { get; set; }
-
-
+        public string RETDEBSLCD { get; set; }
+        
     }
 }

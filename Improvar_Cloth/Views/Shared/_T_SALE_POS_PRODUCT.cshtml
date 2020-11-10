@@ -60,6 +60,7 @@
                                     <th class="" style="width:50px;">Disc-2</th>
                                     <th class="" style="width:50px;text-align:right;">Disc2 Rate</th>*@
                                 <th class="" style="width:136px;">Order No.</th>
+                                <th class="" style="width:30px;">Order Slno.</th>
                                 <th class="" style="width:79px;">Order Date</th>
                                 <th class="" style="width:40px;">PCS Action</th>
                                 <th class="" style="width: 34px;">Stock Type</th>
@@ -182,11 +183,14 @@
                                         <td class="">
                                             @*@Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { id = "B_ORDDOCNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })*@
 
-                                            @Html.EditorFor(model => model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "B_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=ORDDOCNO=0/" + "B_ORDDOCDT_" + i + "=ORDDOCDT=1/" + "B_ORDAUTONO_" + i + "=ORDAUTONO/" + "B_ORDSLNO_" + i + "=ORDSLNO','" + "B_ORDDOCNO_" + i + "','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=PYMTCD=1/" + "B_ORDDOCDT_" + i + "=PYMTNM=0','" + "B_ORDDOCNO_" + i + "','Y');", @placeholder = "Code", maxlength = 6 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", "T_SALE_POS")','Order Details','B_ORDDOCNO_@i','B_ORDDOCNO_@i=ORDDOCNO=0/B_ORDDOCDT_@i=ORDDOCDT=1/B_ORDAUTONO_@i=ORDAUTONO/B_ORDSLNO_@i=ORDSLNO','B_ITCD_@i','Y')" />
+                                            @Html.EditorFor(model => model.TsalePos_TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "B_ORDDOCNO_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDDOCNO_" + i + "','" + "B_ORDDOCNO_" + i + "=docno=0/" + "B_ORDDOCDT_" + i + "=docdt=2/" + "B_ORDAUTONO_" + i + "=autono=7/" + "B_ORDSLNO_" + i + "=slno=1','" + "B_ITCD_" + i + "/" + "B_ORDSLNO_" + i + "/RETDEBSLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", "T_SALE_POS") + "','Order Details','" + "B_ORDAUTONO_" + i + "','" + "B_ORDDOCNO_" + i + "=docno=0/" + "B_ORDDOCDT_" + i + "=docdt=2/" + "B_ORDAUTONO_" + i + "=autono=7/" + "B_ORDSLNO_" + i + "=slno=1','" + "B_ITCD_" + i + "/" + "B_ORDSLNO_" + i + "/RETDEBSLCD');", @placeholder = "Code", maxlength = 6 } })
+                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetOrderDetails", "T_SALE_POS")','Order Details','B_ORDDOCNO_@i','B_ORDDOCNO_@i=docno=0/B_ORDDOCDT_@i=docdt=2/B_ORDAUTONO_@i=autono=7/B_ORDSLNO_@i=slno=1','B_ITCD_@i/B_ORDSLNO_@i/RETDEBSLCD')" />
 
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ORDAUTONO, new { id = "B_ORDAUTONO_" + i })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ORDSLNO, new { id = "B_ORDSLNO_" + i })
+                                            @*@Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].ORDSLNO, new { id = "B_ORDSLNO_" + i })*@
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].ORDSLNO, new { htmlAttributes = new { id = "B_ORDSLNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].ORDDOCDT, new { htmlAttributes = new { id = "B_ORDDOCDT_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
@@ -253,6 +257,7 @@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

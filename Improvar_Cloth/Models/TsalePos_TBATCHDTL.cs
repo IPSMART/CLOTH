@@ -76,7 +76,7 @@ namespace Improvar.Models
         [StringLength(30)]
         public string ORDAUTONO { get; set; }
 
-        public short? ORDSLNO { get; set; }
+        public string  ORDSLNO { get; set; }
 
         public double? DIA { get; set; }
 
@@ -168,6 +168,7 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? MRPRATE { get; set; }
         public string ORDDOCNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string ORDDOCDT { get; set; }
         public string NEGSTOCK { get; set; }
         public double? BALSTOCK { get; set; }
