@@ -178,7 +178,7 @@ namespace Improvar.Controllers
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
                                 string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
                                 string sql = "";
-                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD";
+                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd ";
                                 sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c";
                                 sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD";
 
@@ -190,6 +190,7 @@ namespace Improvar.Controllers
                                     VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
                                     VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
                                     VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
+                                    VE.RETDEBSLCD= syscnfgdt.Rows[0]["retdebslcd"].retStr(); 
                                     TXNOTH.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
                                     TXNOTH.PRCCD = "RP"; VE.PRCNM = "Retail Price";
                                 }
@@ -258,6 +259,32 @@ namespace Improvar.Controllers
                         if (parkID == "" && loadOrder == "N")
                         {
                             FreightCharges(VE, VE.T_TXN?.AUTONO);
+                        }
+                        if(op.ToString()=="E" && loadOrder=="N")
+                        {
+                            T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
+                            string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                            string sql = "";
+                            sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,d.NM,d.MOBILE mob,a.retdebslcd ";
+                            sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c," + scm + ".T_TXNMEMO d";
+                            sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD and a.RTDEBCD='"+VE.T_TXNMEMO.RTDEBCD+"' and d.autono='"+VE.T_TXN.AUTONO+"' ";
+
+                            DataTable syscnfgdt = masterHelp.SQLquery(sql);
+                            if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                            {
+                                TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
+                                VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                TXNMEMO.NM= syscnfgdt.Rows[0]["NM"].retStr();
+                                TXNMEMO.MOBILE = syscnfgdt.Rows[0]["mob"].retStr();
+                                VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
+                                VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
+                                VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                                TXNOTH.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
+                                TXNOTH.PRCCD = "RP"; VE.PRCNM = "Retail Price";
+                            }
+                            VE.T_TXNMEMO = TXNMEMO;
+                            VE.T_TXNOTH = TXNOTH;
                         }
                     }
                     else
@@ -784,61 +811,25 @@ namespace Improvar.Controllers
             DTYP.Add(DTYP4);
             return DTYP;
         }
-        public ActionResult GetOrderDetails(TransactionSaleEntry VE, string val, string Code)
+        public ActionResult GetOrderDetails(string val, string Code)
         {
             try
             {
+                TransactionSalePosEntry VE = new TransactionSalePosEntry();
                 Cn.getQueryString(VE);
-                var tbl = (List<PENDINGORDER>)TempData["PENDORDER" + VE.MENU_PARA]; TempData.Keep();
-                if (tbl == null || tbl.Count == 0)
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string Orderautono = val.retSqlformat();
+                string Itcd = data[0].retSqlformat();
+                string Orderslno = data[1].retStr();
+                string slcd = data[2].retStr();
+                var str = masterHelp.GetOrderDetails(Orderautono.retSqlformat(), VE.MENU_PARA, Itcd.retSqlformat(),Orderslno.retSqlformat(), slcd.retSqlformat());
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return Content("Please Select Order!");
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-
-                    foreach (var v in tbl)
-                    {
-                        double currentadjqnty = 0;
-                        if (VE.TBATCHDTL != null)
-                        {
-                            currentadjqnty = VE.TBATCHDTL.Where(a => a.ORDAUTONO == v.ORDAUTONO && a.ORDSLNO.retStr() == v.ORDSLNO).Sum(b => b.QNTY).retDbl();
-                        }
-                        v.CURRENTADJQTY = currentadjqnty.retDbl();
-                    }
-                    tbl = tbl.Where(a => a.BALQTY - a.CURRENTADJQTY > 0).ToList();
-
-                }
-                if (Code.retStr() != "")
-                {
-                    tbl = tbl.Where(a => a.ITCD == Code).ToList();
-                }
-                if (val.retStr() != "")
-                {
-                    tbl = tbl.Where(a => a.ORDDOCNO == val).ToList();
-                }
-
-                if (val.retStr() == "" || tbl.Count > 1)
-                {
-                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= tbl.Count - 1; i++)
-                    {
-                        SB.Append("<tr><td>" + tbl[i].ORDDOCNO + "</td><td>" + tbl[i].ORDDOCDT + " </td></tr>");
-                    }
-                    var hdr = "Order No." + Cn.GCS() + "Order Date";
-                    return PartialView("_Help2", masterHelp.Generate_help(hdr, SB.ToString()));
-                }
-                else
-                {
-                    if (tbl.Count > 0)
-                    {
-                        string str = masterHelp.ToReturnFieldValues(tbl);
-                        return Content(str);
-                    }
-                    else
-                    {
-                        return Content("Invalid Order No ! Please Enter a Valid Order No !!");
-                    }
+                    return Content(str);
                 }
             }
             catch (Exception ex)
@@ -1428,6 +1419,7 @@ namespace Improvar.Controllers
                 return Content("//.");
             }
         }
-     
+       
+
     }
 }
