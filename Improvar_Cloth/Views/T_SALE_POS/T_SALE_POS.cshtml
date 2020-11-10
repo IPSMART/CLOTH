@@ -884,7 +884,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.MEMOAMT, new { htmlAttributes = new { @class = "form-control", id = "MEMOAMT", maxlength = 15, @placeholder = "Memo Amount", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 15, @placeholder = "Memo Amount", @style = "font-weight:bold;font-size:15px;text-align:right" , @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-5" style="width: auto;">
@@ -967,7 +967,7 @@
                             @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    @*<div class="col-md-4">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Bill Amount")
                         </div>
@@ -976,7 +976,7 @@
                         <div class="editor-field">
                             @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
                         </div>
-                    </div>
+                    </div>*@
                  
                 </div>
 

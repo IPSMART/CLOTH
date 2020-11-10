@@ -79,6 +79,7 @@ namespace Improvar
                     //               { TAXGRPCD = dr["TAXGRPCD"].retStr() }).FirstOrDefault();
                  
                     VE.INC_RATE = VE.T_TXN.INCL_RATE == "Y".retStr() ? true : false;
+                    VE.INCLRATEASK = VE.T_TXN.INCL_RATE.retStr();
                     VE.AGSLNM = VE.T_TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == VE.T_TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                     VE.SAGSLNM = VE.T_TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == VE.T_TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
                     VE.GONM = VE.T_TXN.GOCD.retStr() == "" ? "" : DB.M_GODOWN.Where(a => a.GOCD == VE.T_TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
@@ -90,7 +91,7 @@ namespace Improvar
 
                     string Scm = CommVar.CurSchema(UNQSNO);
                     string str1 = "";
-                    str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO,i.INCLRATE,i.PCSACTION,i.ORDSLNO,i.ORDAUTONO,  ";
+                    str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO,i.INCLRATE,i.PCSACTION,i.ORDSLNO,i.ORDAUTONO,r.PRCCD,  ";
                     str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                     str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM ,r.DISCAMT,r.TDDISCAMT,r.SCMDISCAMT,r.TXBLVAL,r.IGSTPER,r.CGSTPER,r.SGSTPER,r.CESSPER,r.IGSTAMT,r.CGSTAMT,r.SGSTAMT,r.CESSAMT,r.NETAMT,r.TOTDISCAMT ,r.AMT,r.BLQNTY ";
                     str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
@@ -166,7 +167,7 @@ namespace Improvar
                                                  INCLRATE = dr["INCLRATE"].retDbl(),
                                                  PCSACTION = dr["PCSACTION"].retStr(),
                                                  ORDAUTONO = dr["ORDAUTONO"].retStr(),
-                                                 ORDSLNO = dr["ORDSLNO"].retStr()
+                                                 ORDSLNO = dr["ORDSLNO"].retStr(),
                                              }).OrderBy(s => s.SLNO).ToList();
 
                     //str1 = "";
@@ -247,7 +248,7 @@ namespace Improvar
                     string ITCD = (from a in VE.TsalePos_TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
                     string MTRLJOBCD = (from a in VE.TsalePos_TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                     string ITGRPCD = (from a in VE.TsalePos_TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
-
+                    
                     allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", VE.T_CNTRL_HDR_REM.AUTONO.retSqlformat(), ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr());
 
                     foreach (var v in VE.TsalePos_TBATCHDTL)
@@ -747,6 +748,8 @@ namespace Improvar
                     TTXNOTH.CLCD = TTXN.CLCD;
                     TTXNOTH.DTAG = TTXN.DTAG;
                     TTXNOTH.TAXGRPCD = VE.T_TXNOTH.TAXGRPCD;
+                    TTXNOTH.PRCCD = VE.T_TXNOTH.PRCCD;
+                    
                     //----------------------------------------------------------//
 
                     //TTXNLINKNO.EMD_NO = TTXN.EMD_NO;
@@ -901,7 +904,7 @@ namespace Improvar
                             //TTXNDTL.TDDISCTYPE = VE.TsalePos_TBATCHDTL[i].TDDISCTYPE;
                             //TTXNDTL.TDDISCRATE = VE.TsalePos_TBATCHDTL[i].TDDISCRATE;
                             //TTXNDTL.TDDISCAMT = VE.TsalePos_TBATCHDTL[i].TDDISCAMT;
-                            //TTXNDTL.PRCCD = VE.T_TXNOTH.PRCCD;
+                            TTXNDTL.PRCCD = VE.T_TXNOTH.PRCCD;
                             //TTXNDTL.PRCEFFDT = VE.TsalePos_TBATCHDTL[i].PRCEFFDT;
                             TTXNDTL.GLCD = VE.TsalePos_TBATCHDTL[i].GLCD;
                             dbsql = masterHelp.RetModeltoSql(TTXNDTL);
