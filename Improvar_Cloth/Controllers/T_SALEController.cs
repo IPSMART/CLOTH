@@ -1817,7 +1817,11 @@ namespace Improvar.Controllers
                         VE.TBATCHDTL[i].SLNO = (slno).retShort();
                         VE.TBATCHDTL[i].TXNSLNO = (txnslno).retShort();
                     }
-
+                    if (VE.MENU_PARA == "PB" && (VE.TBATCHDTL[i].BARGENTYPE == "E" ||VE.T_TXN.BARGENTYPE == "E"))
+                    {
+                        VE.TBATCHDTL[i].BarImages = "";
+                        VE.TBATCHDTL[i].BarImagesCount = "";
+                    }
                 }
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_BarTab", VE);

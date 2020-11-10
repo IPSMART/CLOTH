@@ -113,7 +113,7 @@
                         $("#partialdivDetail").html(result);
                         var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
                         for (var i = 0; i <= GridRow - 1; i++) {
-                            CalculateAmt_Details(i);
+                            OutCalculateAmt_Details(i);
                         }
                         $("#bardatachng").val("N");
                     }
@@ -431,7 +431,203 @@
         }
     }
 </script>
-<script></script>
+<script>
+
+    function OutCalculateAmt_Details(i) {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var BLQNTY = $("#D_BLQNTY_" + i).val();
+        if (BLQNTY != "") { BLQNTY = parseFloat(BLQNTY); } else { BLQNTY = parseFloat(0); }
+
+        var QNTY = $("#D_QNTY_" + i).val();
+        if (QNTY != "") { QNTY = parseFloat(QNTY); } else { QNTY = parseFloat(0); }
+
+        var NOS = $("#D_NOS_" + i).val();
+        if (NOS != "") { NOS = parseFloat(NOS); } else { NOS = parseFloat(0); }
+
+        var FLAGMTR = $("#D_FLAGMTR_" + i).val();
+        if (FLAGMTR != "") { FLAGMTR = parseFloat(FLAGMTR); } else { FLAGMTR = parseFloat(0); }
+
+        var RATE = $("#D_RATE_" + i).val();
+        if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
+
+        var IGSTPER = $("#D_IGSTPER_" + i).val();
+        if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
+
+        var CGSTPER = $("#D_CGSTPER_" + i).val();
+        if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
+
+        var SGSTPER = $("#D_SGSTPER_" + i).val();
+        if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
+
+        var CESSPER = $("#D_CESSPER_" + i).val();
+        if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
+
+        var DISCTYPE = $("#D_DISCTYPE_" + i).val();
+        var DISCRATE = $("#D_DISCRATE_" + i).val();
+        if (DISCRATE != "") { DISCRATE = parseFloat(DISCRATE); } else { DISCRATE = parseFloat(0); }
+
+        var TDDISCTYPE = $("#D_TDDISCTYPE_" + i).val();
+        var TDDISCRATE = $("#D_TDDISCRATE_" + i).val();
+        if (TDDISCRATE != "") { TDDISCRATE = parseFloat(TDDISCRATE); } else { TDDISCRATE = parseFloat(0); }
+
+        var SCMDISCTYPE = $("#D_SCMDISCTYPE_" + i).val();
+        var SCMDISCRATE = $("#D_SCMDISCRATE_" + i).val();
+        if (SCMDISCRATE != "") { SCMDISCRATE = parseFloat(SCMDISCRATE); } else { SCMDISCRATE = parseFloat(0); }
+
+
+        //AMOUNT CALCULATION
+        var amount = 0;
+        if (BLQNTY == 0) {
+            amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
+        }
+        else {
+            amount = parseFloat(BLQNTY) * parseFloat(RATE);
+        }
+        amount = parseFloat(amount).toFixed(2);
+        $("#D_AMT_" + i).val(amount);
+
+        //DISCOUNT AMOUNT CALCULATION
+        var DISCAMT = 0;
+        if (DISCTYPE == "Q") { DISCAMT = DISCRATE * QNTY; }
+        else if (DISCTYPE == "N") { DISCAMT = DISCRATE * NOS; }
+        else if (DISCTYPE == "P") { DISCAMT = (amount * DISCRATE) / 100; }
+        else if (DISCTYPE == "F") { DISCAMT = DISCRATE; }
+        else { DISCAMT = 0; }
+        DISCAMT = parseFloat(DISCAMT).toFixed(2);
+        $("#D_DISCAMT_" + i).val(DISCAMT);
+
+        //TDDISCOUNT AMOUNT CALCULATION
+        var TDDISCAMT = 0;
+        if (TDDISCTYPE == "Q") { TDDISCAMT = TDDISCRATE * QNTY; }
+        else if (TDDISCTYPE == "N") { TDDISCAMT = TDDISCRATE * NOS; }
+        else if (TDDISCTYPE == "P") { TDDISCAMT = (amount * TDDISCRATE) / 100; }
+        else if (TDDISCTYPE == "F") { TDDISCAMT = TDDISCRATE; }
+        else { TDDISCAMT = 0; }
+        TDDISCAMT = parseFloat(TDDISCAMT).toFixed(2);
+        $("#D_TDDISCAMT_" + i).val(TDDISCAMT);
+
+        //SCMDISCOUNT AMOUNT CALCULATION
+        var SCMDISCAMT = 0;
+        if (SCMDISCTYPE == "Q") { SCMDISCAMT = SCMDISCRATE * QNTY; }
+        else if (SCMDISCTYPE == "N") { SCMDISCAMT = SCMDISCRATE * NOS; }
+        else if (SCMDISCTYPE == "P") { SCMDISCAMT = (amount * SCMDISCRATE) / 100; }
+        else if (SCMDISCTYPE == "F") { SCMDISCAMT = SCMDISCRATE; }
+        else { SCMDISCAMT = 0; }
+        SCMDISCAMT = parseFloat(SCMDISCAMT).toFixed(2);
+        $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
+
+        //TOTAL DISCOUNT AMOUNT CALCULATION
+        var TOTDISCAMT = parseFloat(DISCAMT + TDDISCAMT + SCMDISCAMT).toFixed(2);
+        $("#D_TOTDISCAMT_" + i).val(TOTDISCAMT);
+
+        //TAXABLE CALCULATION
+        var taxbleamt = parseFloat(amount) - parseFloat(TOTDISCAMT);
+        taxbleamt = parseFloat(taxbleamt).toFixed(2);
+        $("#D_TXBLVAL_" + i).val(taxbleamt);
+        //IGST,CGST,SGST,CESS AMOUNT CALCULATION
+
+        var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
+
+        //IGST
+        if (IGSTPER == 0 || IGSTPER == "") {
+            IGSTPER = 0; IGST_AMT = 0;
+        }
+        else {
+            IGST_AMT = parseFloat((taxbleamt * IGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_IGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
+        }
+        $("#D_IGSTAMT_" + i).val(IGST_AMT);
+        //CGST
+        if (CGSTPER == "" || CGSTPER == 0) {
+            CGSTPER = 0; CGST_AMT = 0;
+        }
+        else {
+            CGST_AMT = parseFloat((taxbleamt * CGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_CGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
+        }
+        $("#D_CGSTAMT_" + i).val(CGST_AMT);
+        //SGST
+        if (SGSTPER == "" || SGSTPER == 0) {
+            SGSTPER = 0; SGST_AMT = 0;
+        }
+        else {
+            SGST_AMT = parseFloat((taxbleamt * SGSTPER) / 100).toFixed(2);
+            chkAmt = $("#D_SGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
+        }
+        $("#D_SGSTAMT_" + i).val(SGST_AMT);
+
+        //CESS
+        if (CESSPER == "" || CESSPER == 0) {
+            CESSPER = 0; CESS_AMT = 0;
+        }
+        else {
+            CESS_AMT = parseFloat((taxbleamt * CESSPER) / 100).toFixed(2);
+            chkAmt = $("#D_CESSAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
+        }
+        $("#D_CESSAMT_" + i).val(CESS_AMT);
+
+        var netamt = parseFloat(parseFloat(taxbleamt) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
+        $("#D_NETAMT_" + i).val(netamt);
+        OutCalculateTotal_Details();
+    }
+
+    function OutCalculateTotal_Details() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var T_NOS = 0; var T_QNTY = 0; var T_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_NET_AMT = 0;
+
+        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var NOS = $("#D_NOS_" + i).val();
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+
+            var QNTY = $("#D_QNTY_" + i).val();
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
+
+            var AMT = $("#D_AMT_" + i).val();
+            if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
+
+            var GROSS_AMT = $("#D_TXBLVAL_" + i).val();
+            if (GROSS_AMT != "") { T_GROSS_AMT = T_GROSS_AMT + parseFloat(GROSS_AMT); } else { T_GROSS_AMT = T_GROSS_AMT + parseFloat(0); }
+
+            var IGST_AMT = $("#D_IGSTAMT_" + i).val();
+            if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
+
+            var CGST_AMT = $("#D_CGSTAMT_" + i).val();
+            if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
+
+            var SGST_AMT = $("#D_SGSTAMT_" + i).val();
+            if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
+
+            var CESS_AMT = $("#D_CESSAMT_" + i).val();
+            if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
+
+            var NET_AMT = $("#D_NETAMT_" + i).val();
+            if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
+        }
+        var totaltax = parseFloat(T_IGST_AMT) + parseFloat(T_CGST_AMT) + parseFloat(T_SGST_AMT) + parseFloat(T_CESS_AMT);
+        $("#T_NOS").val(parseFloat(T_NOS).toFixed(0));
+        $("#T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
+        $("#T_AMT").val(parseFloat(T_AMT).toFixed(2));
+        $("#T_GROSS_AMT").val(parseFloat(T_GROSS_AMT).toFixed(2));
+        $("#T_IGST_AMT").val(parseFloat(T_IGST_AMT).toFixed(2));
+        $("#T_CGST_AMT").val(parseFloat(T_CGST_AMT).toFixed(2));
+        $("#T_SGST_AMT").val(parseFloat(T_SGST_AMT).toFixed(2));
+        $("#T_CESS_AMT").val(parseFloat(T_CESS_AMT).toFixed(2));
+        $("#T_NET_AMT").val(parseFloat(T_NET_AMT).toFixed(2));
+    }
+
+
+</script>
 
 @using (Html.BeginForm())
 {
@@ -456,6 +652,7 @@
         <input type="hidden" id="itgrptype" value="'A','C','L','P','Y'" />
         <input type="hidden" id="BarImages" />
         <input type="hidden" id="bardatachng" value="N" />
+        <input type="hidden" id="RoundOff" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_TXN.DOCNO)
@@ -615,7 +812,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div id="QtyRequirement" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
@@ -650,7 +846,7 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })@*"GetBarnoDetails(this.value);"*@
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
                                         </div>
                                     </div>
@@ -1204,8 +1400,7 @@
 
             </div>
         </div>
-
-                                                                }
+                                                             }
                                                                 else
                                                                 {
                                                                     @ViewBag.ErrorMessage

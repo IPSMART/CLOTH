@@ -286,7 +286,7 @@ function UpdateBarCodeRow() {
         message_value = "QNTY";
         return false;
     }
-    if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB") {
+    if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && $("#BALSTOCK").val()!= "") {
         var NEGSTOCK = $("#NEGSTOCK").val();
         var BALSTOCK = $("#BALSTOCK").val();
         if (BALSTOCK == "") { BALSTOCK = parseFloat(0); } else { BALSTOCK = parseFloat(BALSTOCK); }
@@ -405,6 +405,9 @@ function UpdateBarCodeRow() {
             if (MENU_PARA == "PB") {
 
                 var BarImages = $("#BarImages").val();
+                if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
+                    BarImages = "";
+                }
                 var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
                 if (BarImages == '') { NoOfBarImages = ''; }
                 $("#BarImagesCount_" + j).val(NoOfBarImages);
@@ -579,7 +582,7 @@ function CalculateTotal_Barno() {
         var NOS = $("#B_NOS_" + i).val();
         if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
 
-        if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB") {
+        if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && $("#B_BALSTOCK_" + i).val()!= "") {
             var NEGSTOCK = $("#B_NEGSTOCK_" + i).val();
             var BALSTOCK = $("#B_BALSTOCK_" + i).val();
             if (BALSTOCK == "") { BALSTOCK = parseFloat(0); } else { BALSTOCK = parseFloat(BALSTOCK); }
@@ -1421,7 +1424,7 @@ function AddBarCodeGrid() {
         message_value = "QNTY";
         return false;
     }
-    if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB") {
+    if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && $("#BALSTOCK").val()!= "") {
         var NEGSTOCK = $("#NEGSTOCK").val();
         var BALSTOCK = $("#BALSTOCK").val();
         if (BALSTOCK == "") { BALSTOCK = parseFloat(0); } else { BALSTOCK = parseFloat(BALSTOCK); }
@@ -1537,7 +1540,10 @@ function AddBarCodeGrid() {
         var ORDAUTONO = $("#ORDAUTONO").val();
         var ORDSLNO = $("#ORDSLNO").val();
     }
-    var BarImages = $("#BarImages").val();
+    var BarImages = $("#BarImages").val();    
+    if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
+        BarImages = "";
+    }
     var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
     if (BarImages == '') { NoOfBarImages = ''; }
     var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
@@ -1684,11 +1690,11 @@ function AddBarCodeGrid() {
     tr += '    </td>';
     tr += '   <td class=""> ';
     tr += ' <input type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="' + NoOfBarImages + '" readonly="readonly" placeholder="">';
-    //tr += '   <button type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
     tr += '   </td> ';
     tr += '   <td class="">  ';
     if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
         tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px" readonly="readonly" placeholder="" id="UploadBarnoImage_' + rowindex + '"> ';
+
     }
     else {
         tr += '   <input type="button" value="Upload" class="btn-sm atextBoxFor" onclick="UploadBarnoImage(' + rowindex + ');" style="padding:0px;display:none;" readonly="readonly" placeholder="" id="UploadBarnoImage_' + rowindex + '"> ';
@@ -2351,10 +2357,18 @@ function CalculateOutIssProcessTotal_Details() {
 
 
 }
+
 function ClosePendOrder() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    $("#popup").html("");
+    //$("#popup").html("");
+    var KeyID = (window.event) ? event.keyCode : e.keyCode;
+    if (KeyID == 27) {
+        $("#popup").html("");
+    }
+    else if (KeyID == undefined) {
+        $("#popup").html("");
+    }
 }
 function FillOrderToBarcode() {
     var DefaultAction = $("#DefaultAction").val();
