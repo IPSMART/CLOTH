@@ -256,12 +256,12 @@ namespace Improvar.Controllers
 
             str = "";
             str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
-            str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,r.itnm fabitnm from " + scm1 + ".T_PROGMAST a," + scm1 + ".T_PROGDTL b ,";
+            str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,r.itnm fabitnm,s.uniqno from " + scm1 + ".T_PROGMAST a," + scm1 + ".T_PROGDTL b ,";
             str += scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
-            str += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".T_CNTRL_HDR q," + scm1 + ".M_SITEM r ";
+            str += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".T_CNTRL_HDR q," + scm1 + ".M_SITEM r," + scm1 + ".T_CNTRL_HDR_UNIQNO s ";
             str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
             str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
-            str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono=q.autono(+) and k.fabitcd=r.itcd(+) ";
+            str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono=q.autono(+) and k.fabitcd=r.itcd(+) and a.autono=s.autono(+) ";
             str += " and q.doccd = '" + VE.DOCCD + "' and ";
             str += "q.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and q.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
             str += "q.doconlyno >= '" + VE.FDOCNO + "' and q.doconlyno <= '" + VE.TDOCNO + "' and ";
@@ -406,7 +406,7 @@ namespace Improvar.Controllers
                     IR_PROG.Rows[rNo]["nos"] = tbl.Rows[i]["nos"];
                     IR_PROG.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"];
                     IR_PROG.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"];
-                    //IR_PROG.Rows[rNo]["uniqno"] = tbl.Rows[i]["uniqno"];
+                    IR_PROG.Rows[rNo]["uniqno"] = tbl.Rows[i]["uniqno"];
                     IR_PROG.Rows[rNo]["itremark"] = tbl.Rows[i]["itremark"];
                     IR_PROG.Rows[rNo]["totalqnty"] = t_qnty;
                     IR_PROG.Rows[rNo]["totalnos"] = t_nos;
@@ -451,7 +451,7 @@ namespace Improvar.Controllers
                     IR_ISSUE.Rows[rNo]["iss_styleno"] = tbl.Rows[i]["styleno"];
                     IR_ISSUE.Rows[rNo]["iss_colrnm"] = tbl.Rows[i]["colrnm"];
                     IR_ISSUE.Rows[rNo]["iss_sizenm"] = tbl.Rows[i]["sizenm"];
-                    IR_ISSUE.Rows[rNo]["iss_hsncode"] = tbl.Rows[i]["sizenm"];
+                    IR_ISSUE.Rows[rNo]["iss_hsncode"] = tbl.Rows[i]["hsncode"];
                     IR_ISSUE.Rows[rNo]["iss_uomnm"] = tbl.Rows[i]["uomcd"];
                     IR_ISSUE.Rows[rNo]["iss_nos"] = tbl.Rows[i]["nos"];
                     IR_ISSUE.Rows[rNo]["iss_cutlength"] = tbl.Rows[i]["cutlength"];
