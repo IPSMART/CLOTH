@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System;
-using System.Linq;
-using System.Web.Mvc;
 using Improvar.Models;
 using Improvar.ViewModels;
 using CrystalDecisions.CrystalReports.Engine;
@@ -70,43 +67,7 @@ namespace Improvar.Controllers
         public void barcodeTest(RepBarcodeImage VE)
         {
             int COLPERPAGE = VE.COLPERPAGE.retInt() == 0 ? 1 : VE.COLPERPAGE.retInt();
-
-       
-            DataTable DtBarImage = (DataTable)Session["DtRepBarcodeImage"];
-            var sql = "select * from " + scm1 + ".m_batch_img_hdr where barno='1700001'";
-
-            sql = "(select a.barno, count(*) barimagecount, ";
-            sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
-            sql += "within group (order by a.barno) as barimage from ";
-            //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
-            sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-            sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-            sql += "from " + scm1 + ".m_batch_img_hdr a ";
-            sql += "union ";
-            sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-            sql += "from " + scm1 + ".m_batch_img_hdr_link a, " + scm1 + ".m_batch_img_hdr b ";
-            sql += "where a.mainbarno=b.barno(+) ) a, ";
-            sql += "" + scm1 + ".m_batch_img_hdr b ";
-            sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
-            sql += "union ";
-            sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-            sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-            sql += "from " + scm1 + ".t_batch_img_hdr a ";
-            sql += "union ";
-            sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-            sql += "from " + scm1 + ".t_batch_img_hdr_link a, " + scm1 + ".t_batch_img_hdr b ";
-            sql += "where a.mainbarno=b.barno(+) ) a, ";
-            sql += "" + scm1 + ".t_batch_img_hdr b ";
-            sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
-            sql += "group by a.barno ) y, ";
-
-
-            var dt = masterHelp.SQLquery(sql);
-            var path = CommVar.SaveFolderPath() + "/ItemImages/" + dt.Rows[0]["doc_flname"].ToString();
-            path = Path.Combine(path, "");
-            byte[] imgdata = System.IO.File.ReadAllBytes(path);
-
-            float Pwidth = CommFunc.MMtoPointFloat(210);
+            DataTable DtBarImage = (DataTable)Session["DtRepBarcodeImage"];//BARNO,DOC_FLNAME,INE1,LINE2   
             var pgSize = new iTextSharp.text.Rectangle(CommFunc.MMtoPointFloat(210), CommFunc.MMtoPointFloat(297));
             var doc = new iTextSharp.text.Document(pgSize, 5.5f, 10f, 0.1f, 0.1f);
             try
@@ -116,20 +77,40 @@ namespace Improvar.Controllers
                 //PdfWriter writer = PdfWriter.GetInstance(doc, PDFData);
                 PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(pdfFilePath + "/Default.pdf", FileMode.Create));
                 doc.Open();
-                iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imgdata);
-                Font font2 = new Font(Font.FontFamily.TIMES_ROMAN, 9f   );
+                Font font2 = new Font(Font.FontFamily.TIMES_ROMAN, 9f);
                 PdfPTable maintable = new PdfPTable(COLPERPAGE);//NO OF COLUMN
                 maintable.WidthPercentage = 100;
                 //table.TotalWidth = 300f;
                 //table.LockedWidth = true;
                 maintable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                PdfPTable table = new PdfPTable(1);
-                PdfPCell cell = new PdfPCell(new Phrase("Header spanning 3 columns"));
-                doc.NewPage();
-                for (int i = 0; i < COLPERPAGE + 8; i++)
-                {
-                    table = new PdfPTable(1);
 
+                doc.NewPage();
+
+
+                PdfPCell cell = new PdfPCell(new Phrase(CommVar.CompName(UNQSNO)));
+                cell.Border = Rectangle.NO_BORDER;
+                cell.Colspan = COLPERPAGE;
+                maintable.AddCell(cell);
+
+                cell = new PdfPCell(new Phrase(CommVar.LocName(UNQSNO)));
+                cell.Border = Rectangle.NO_BORDER;
+                cell.Colspan = COLPERPAGE;
+                maintable.AddCell(cell);
+
+                cell = new PdfPCell(new Phrase("Sales data"));
+                cell.Border = Rectangle.NO_BORDER;
+                cell.Colspan = COLPERPAGE;
+                maintable.AddCell(cell);
+
+                for (int i = 0; i < DtBarImage.Rows.Count; i++)
+                {
+                    PdfPTable table = new PdfPTable(1);
+                    ///////////
+                    var path = CommVar.SaveFolderPath() + "/ItemImages/" + DtBarImage.Rows[i]["doc_flname"].ToString();
+                    path = Path.Combine(path, "");
+                    byte[] imgdata = System.IO.File.ReadAllBytes(path);
+                    iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imgdata);
+                    //////design//////////
                     cell = new PdfPCell();
                     cell.AddElement(jpg);
                     cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
@@ -137,14 +118,14 @@ namespace Improvar.Controllers
                     table.AddCell(cell);
 
                     cell = new PdfPCell();
-                    cell.AddElement(new Phrase("Color :Red ", font2));
+                    cell.AddElement(new Phrase(DtBarImage.Rows[i]["LINE1"].ToString(), font2));
                     cell.UseAscender = true;
                     cell.PaddingTop = 0f;
                     cell.Border = Rectangle.NO_BORDER;
                     table.AddCell(cell);
 
                     cell = new PdfPCell();
-                    cell.AddElement(new Phrase( "Size:Small", font2));
+                    cell.AddElement(new Phrase(DtBarImage.Rows[i]["LINE2"].ToString(), font2));
                     cell.UseAscender = true;
                     cell.PaddingTop = 3f;
                     cell.Border = Rectangle.NO_BORDER;
@@ -159,6 +140,28 @@ namespace Improvar.Controllers
             {
                 doc.Close();
             }
+            AddPageNumber();
+        }
+
+        protected void AddPageNumber()
+        {
+            string pdfFilePath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/Default.pdf");
+            byte[] bytes = System.IO.File.ReadAllBytes(pdfFilePath);
+            Font blackFont = FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                PdfReader reader = new PdfReader(bytes);
+                using (PdfStamper stamper = new PdfStamper(reader, stream))
+                {
+                    int pages = reader.NumberOfPages;
+                    for (int i = 1; i <= pages; i++)
+                    {
+                        ColumnText.ShowTextAligned(stamper.GetUnderContent(i), Element.ALIGN_RIGHT, new Phrase(i.ToString(), blackFont), 568f, 15f, 0);
+                    }
+                }
+                bytes = stream.ToArray();
+            }
+            System.IO.File.WriteAllBytes(pdfFilePath, bytes);
         }
     }
 }

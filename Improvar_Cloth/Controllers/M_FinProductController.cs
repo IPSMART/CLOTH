@@ -1930,11 +1930,8 @@ namespace Improvar.Controllers
                 dt.Columns.Add("DOC_FLNAME", typeof(string));
                 dt.Columns.Add("LINE1", typeof(string));
                 dt.Columns.Add("LINE2", typeof(string));
-                string sql = "(select a.barno, count(*) barimagecount, ";
-                sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
-                sql += "within group (order by a.barno) as barimage from ";
-                //sql += "listagg(a.imgbarno||chr(181)||a.imgslno||chr(181)||a.doc_flname||chr(181)||a.doc_extn||chr(181)||substr(a.doc_desc,50),chr(179)) ";
-                sql += "(select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+                string sql = "";
+                sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
                 sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
                 sql += "from " + scm1 + ".m_batch_img_hdr a ";
                 sql += "union ";
@@ -1952,8 +1949,7 @@ namespace Improvar.Controllers
                 sql += "from " + scm1 + ".t_batch_img_hdr_link a, " + scm1 + ".t_batch_img_hdr b ";
                 sql += "where a.mainbarno=b.barno(+) ) a, ";
                 sql += "" + scm1 + ".t_batch_img_hdr b ";
-                sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ) a ";
-                sql += "group by a.barno ) y, ";
+                sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+)  ";
                 var dttt = masterHelp.SQLquery(sql);
                 for (int i = 0; i < dttt.Rows.Count; i++)
                 {
