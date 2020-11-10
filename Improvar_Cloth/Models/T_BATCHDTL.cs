@@ -118,6 +118,9 @@ namespace Improvar.Models
 
         public short? RECPROGSLNO { get; set; }
         public double? INCLRATE { get; set; }
+        [StringLength(2)]
+        public string PCSACTION { get; set; }
+        
 
     }
 }

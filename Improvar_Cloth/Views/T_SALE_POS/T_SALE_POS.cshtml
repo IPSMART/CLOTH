@@ -957,7 +957,7 @@
                     <div class="col-md-1" style="margin-right: -41px;">
                         <div class="editor-field" style="margin-top:6px;">
                             @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
-                            @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text", Model.T_TXN.REVCHRG), "No", new {  id = "REVCHRG", @style = "display:none", onchange = "ReverceCharges();" })
+                            @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text"), "No", new {  id = "REVCHRG", @style = "display:none", onchange = "ReverceCharges();" })
                         </div>
                     </div>
                     <div class="col-md-2">
