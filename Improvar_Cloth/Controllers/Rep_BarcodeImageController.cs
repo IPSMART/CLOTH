@@ -76,10 +76,7 @@ namespace Improvar.Controllers
                     //table.TotalWidth = 300f;
                     //table.LockedWidth = true;
                     maintable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-
                     doc.NewPage();
-
-
                     PdfPCell cell = new PdfPCell(new Phrase(CommVar.CompName(UNQSNO)));
                     cell.Border = Rectangle.NO_BORDER;
                     cell.Colspan = COLPERPAGE;
@@ -154,8 +151,8 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
-                Cn.SaveException(ex,"");
-                return Content(ex.Message) ;
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
             }
         }
     }
