@@ -1,5 +1,6 @@
 ﻿var DefaultAction = $("#DefaultAction").val();
 function retGstPerstr(prodgrpgstper, rate) {
+    debugger;
     if (DefaultAction == "V") return true;
     //Searchstr value like listagg(b.fromrt||chr(126)||b.tort||chr(126)||b.igstper||chr(126)||b.cgstper||chr(126)||b.sgstper,chr(179))
 

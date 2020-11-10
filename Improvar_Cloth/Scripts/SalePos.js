@@ -90,7 +90,7 @@ function DeleteBarnoRow() {
             $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
             $("#partialdivBarCodeTab").html(result);
             Checked_Disable();
-            CalculateTotal_Barno();
+            CalculateBarRowAmt();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -214,13 +214,22 @@ function AddBarnoRow(hlpstr) {
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onchange="CalculateBarRowAmt(' + rowindex + ');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += ' ';
+    //tr += ' <td class="" title="">';
+    //tr += '     <input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDAUTONO_' + rowindex + '","B_ORDDOCNO_0=PYMTCD=1/B_ORDDOCDT_0=PYMTNM=0","B_ORDDOCNO_' + rowindex + '","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '"/RETDEBSLCD);" onkeydown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=docno=0/B_ORDDOCDT_0=docdt=2/B_ORDAUTONO_0=autono=7/B_ORDSLNO_0=slno=1","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '","RETDEBSLCD")" placeholder="Code" type="text" value="">';
+    //tr += '     <img src="/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=ORDDOCNO=0/B_ORDDOCDT_0=ORDDOCDT=1/B_ORDAUTONO_0=ORDAUTONO/B_ORDSLNO_0=ORDSLNO","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '"/RETDEBSLCD)">';
+   
+    //tr += '     <input data-val="true" data-val-length="The field ORDAUTONO must be a string with a maximum length of 30." data-val-length-max="30" id="B_ORDAUTONO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="">';
+    ////tr += '     <input data-val="true" data-val-number="The field ORDSLNO must be a number." id="B_ORDSLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDSLNO" type="hidden" value="">';
+    //tr += ' </td>';
+    
+    tr += '<td class="" title="">'; 
+    tr += '<input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_0\',\'B_ORDDOCNO_0=docno=0/B_ORDDOCDT_0=docdt=2/B_ORDAUTONO_0=autono=7/B_ORDSLNO_0=slno=1\',\'B_ITCD_0/B_ORDSLNO_0/RETDEBSLCD\');" onkeydown="GetHelpBlur(\'T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDDOCNO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex + '=slno=1\',\'B_ITCD_' + rowindex + '/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\')" placeholder="Code" type="text" value="">';
+    tr += '<img src="/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDDOCNO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex + '=slno=1\',\'B_ITCD_' + rowindex + '/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\')">';
+    tr += '<input data-val="true" data-val-length="The field ORDAUTONO must be a string with a maximum length of 30." data-val-length-max="30" id="B_ORDAUTONO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="">';
+    tr += '</td>';
+                                        ///
     tr += ' <td class="" title="">';
-    tr += '     ';
-    tr += '     <input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=PYMTCD=1/B_ORDDOCDT_0=PYMTNM=0","B_ORDDOCNO_' + rowindex + '","Y");" onkeydown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=ORDDOCNO=0/B_ORDDOCDT_0=ORDDOCDT=1/B_ORDAUTONO_0=ORDAUTONO/B_ORDSLNO_0=ORDSLNO","B_ORDDOCNO_' + rowindex + '","Y")" placeholder="Code" type="text" value="">';
-    tr += '     <img src="/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=ORDDOCNO=0/B_ORDDOCDT_0=ORDDOCDT=1/B_ORDAUTONO_0=ORDAUTONO/B_ORDSLNO_0=ORDSLNO","B_ITCD_' + rowindex + '","Y")">';
-    tr += ' ';
-    tr += '     <input data-val="true" data-val-length="The field ORDAUTONO must be a string with a maximum length of 30." data-val-length-max="30" id="B_ORDAUTONO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="">';
-    tr += '     <input data-val="true" data-val-number="The field ORDSLNO must be a number." id="B_ORDSLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDSLNO" type="hidden" value="">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor text-box single-line" id="B_ORDSLNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDSLNO" readonly="readonly" type="text" value="">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor text-box single-line" id="B_ORDDOCDT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCDT" readonly="readonly" type="text" value="">';
@@ -630,6 +639,11 @@ function BillAmountCalculate() {
         document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
         document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
     }
+    document.getElementById("RETAMT").value = parseFloat(document.getElementById("RETAMT").value).toFixed(2);
+    document.getElementById("PAYABLE").value = parseFloat(document.getElementById("BLAMT").value) - parseFloat(document.getElementById("RETAMT").value).toFixed(2);
+    document.getElementById("PAYAMT").value = parseFloat(document.getElementById("T_PYMT_AMT").value).toFixed(2).toFixed(2);
+    document.getElementById("NETDUE").value = parseFloat(document.getElementById("PAYABLE").value) - parseFloat(document.getElementById("PAYAMT").value).toFixed(2);
+
 
 }
 function CalculateAmt_Details(i) {

@@ -212,5 +212,7 @@ namespace Improvar.Models
         public double? NETAMT { get; set; }
         public string AGDOCNO { get; set; }
         public string AGDOCDT { get; set; }
+        public string PRCCD { get; set; }
+        
     }
 }
