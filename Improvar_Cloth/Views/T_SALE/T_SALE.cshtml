@@ -88,16 +88,7 @@
 </script>
 <script>
     function requiredFieldValidator() {
-        if ($("#bardatachng").val() == "Y") {
-            msgInfo("Please Click on Finalise Detail Data !!");
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:nth-child(2)").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            message_value = "FillDetail";
-            return false;
-        }
+
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Party", "SLCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
@@ -123,7 +114,65 @@
                 return false;
             }
         }
-        return true;
+        //start of finalise
+        if ($("#bardatachng").val() == "Y") {
+            debugger;
+            var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+            var mtrlcdblank = false;
+            if (GridRow != 0) {
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    if ($("#B_MTRLJOBCD_" + i).val() == "") {
+                        mtrlcdblank = true;
+                        break;
+                    }
+                }
+            }
+            if (mtrlcdblank == true) {
+                msgInfo("Please Fill Material Job in Barcode Grid !!");
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                message_value = "B_MTRLJOBCD_" + i;
+                return false;
+            }
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#UrlFillDetailData").val(),
+                data: $('form').serialize(),
+                success: function (result) {
+                    if (result == "0") {
+                        msgInfo("Bill Sl# duplicate in barcode tab!");
+                        $("#WaitingMode").hide();
+                        return false;
+                    }
+                    else {
+                        $("#partialdivDetail").html(result);
+                        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+                        for (var i = 0; i <= GridRow - 1; i++) {
+                            CalculateAmt_Details(i);
+                        }
+                        $("#bardatachng").val("N");
+                    }
+                    debugger;
+                    pageValidation("@Model.DefaultAction");
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+            return false;
+        }
+            //start of finalise
+        else {
+            return true;
+        }
+
     }
 </script>
 <script>
@@ -825,7 +874,7 @@
                                     <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
 
                                     </div>*@
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
+                                @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB"))
                                 { <div class="col-md-1" style="width:auto;">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Order Item Filter")

@@ -23,7 +23,6 @@
 function GetBarnoDetails(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    debugger;
     if (id == "") {
         ClearBarcodeArea();
     }
@@ -149,7 +148,7 @@ function FillBarcodeArea(str, Table, i) {
         var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
         var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
         $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
-        debugger;
+
         $("#RATE").val(RATE);
         $("#GSTPER").val(GSTPER);
         $("#PRODGRPGSTPER").val(PRODGRPGSTPER);
@@ -233,6 +232,9 @@ function FillBarcodeArea(str, Table, i) {
             $("#PDESIGN").val($(FieldidStarting + "PDESIGN_" + i).val());
             $("#WPPRICEGEN").val($(FieldidStarting + "WPPRICEGEN_" + i).val());
             $("#RPPRICEGEN").val($(FieldidStarting + "RPPRICEGEN_" + i).val());
+            if (FieldidStarting == "#B_") {
+                $("#BarImages").val($(FieldidStarting + "BarImages_" + i).val());
+            }
         }
         $("#LOCABIN").val($(FieldidStarting + "LOCABIN_" + i).val());
         $("#UOM").val($(FieldidStarting + "UOM_" + i).val());
@@ -246,7 +248,6 @@ function FillBarcodeArea(str, Table, i) {
     changeBARGENTYPE();
 }
 function changeBARGENTYPE() {
-    debugger;
     var BARGENTYPE = $("#BARGENTYPE").val();
     var GRPBARGENTYPE = $("#BARGENTYPETEMP").val();
 
@@ -264,7 +265,7 @@ function UpdateBarCodeRow() {
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
-    debugger;
+
     if ($("#ITGRPCD").val() == "") {
         msgInfo("Please enter/select Item Group Code !");
         message_value = "ITGRPCD";
@@ -406,7 +407,7 @@ function UpdateBarCodeRow() {
                 var BarImages = $("#BarImages").val();
                 var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
                 if (BarImages == '') { NoOfBarImages = ''; }
-                $("#OpenImageModal_" + j).html(NoOfBarImages);
+                $("#BarImagesCount_" + j).val(NoOfBarImages);
                 $("#B_BarImages_" + j).val(BarImages);
 
                 if ($("#BARGENTYPE").val() == "E" || $("#B_BARGENTYPE_" + j).val() == "E") {
@@ -802,7 +803,7 @@ function CalculateTotal_Details() {
 function Sale_GetGstPer(i, FieldidStarting) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    debugger;
+
     var prodgrpgstper = "";
     var rate = 0;
     if (FieldidStarting == "") {
@@ -1122,7 +1123,7 @@ function ReverceCharges() {
 function BillAmountCalculate() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    debugger;
+
     var R_TOTAL_BILL_AMOUNT = 0;
     var TOTAL_ROUND = 0;
     var netamt = 0;
@@ -1272,6 +1273,7 @@ function DeleteBarnoRow() {
     if (DefaultAction == "V") return true;
     $.ajax({
         type: 'POST',
+        beforesend: $("#WaitingMode").show(),
         url: $("#UrlDeleteRow").val(),// "@Url.Action("DeleteRow", PageControllerName)",
         data: $('form').serialize(),
         success: function (result) {
@@ -1280,6 +1282,7 @@ function DeleteBarnoRow() {
             Checked_Disable();
             CalculateTotal_Barno();
             HasChangeBarSale();
+            $("#WaitingMode").hide();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -1680,7 +1683,8 @@ function AddBarCodeGrid() {
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
     tr += '   <td class=""> ';
-    tr += '   <button type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
+    tr += ' <input type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="' + NoOfBarImages + '" readonly="readonly" placeholder="">';
+    //tr += '   <button type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
     tr += '   </td> ';
     tr += '   <td class="">  ';
     if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
@@ -1756,17 +1760,16 @@ function fileTypeCheck(id) {
 }
 
 function UploadBarnoImage(i) {
-    debugger;
     var ImageDesc = $('#ImageDesc').val();
     if (document.getElementById("ImageName").value == "") return;
-    var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
+    var OpenImageModal = $('#BarImagesCount_' + i).val(); var actt = "";
     if (OpenImageModal == "") {
         OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
     } else {
         OpenImageModal = parseInt(OpenImageModal) + 1;
         actt = "";
     }
-    $('#OpenImageModal_' + i).html(OpenImageModal);
+    $('#BarImagesCount_' + i).val(OpenImageModal);
     $.ajax({
         type: 'POST',
         url: $("#UrlUploadImages").val(),// "@Url.Action("UploadImages", PageControllerName )",
@@ -1813,7 +1816,6 @@ function UploadBarnoImage(i) {
 }
 
 function deleteBarImages() {
-    debugger;
     var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
     var id = $("#div_carousel_inner div.active").attr('id')
     var arr = $("#B_BarImages_" + ActiveBarRowIndex).val().split(String.fromCharCode(179)); var deleteindex = 0;
@@ -1827,11 +1829,10 @@ function deleteBarImages() {
     $("#" + id).remove();
     var newimg = arr.join(String.fromCharCode(179));
     $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
-    $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
+    $("#BarImagesCount_" + ActiveBarRowIndex).val(arr.length);
 
 }
 function T_Sale_FillImageModal(index) {
-    debugger;
     //var OpenImageModal =
     $('#ActiveBarRowIndex').val(index);
     var actt = ""; $("#div_carousel_inner").html('');
@@ -1854,7 +1855,6 @@ function T_Sale_FillImageModal(index) {
 function GetPartyDetails(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    debugger;
     if (id == "") {
         ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
     }
@@ -1923,7 +1923,6 @@ function GetPartyDetails(id) {
 
 }
 function GetTCSON(billamount) {
-    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
@@ -1967,7 +1966,6 @@ function GetTCSON(billamount) {
     $("#TCSON").val(parseFloat(TCSON).toFixed(2));
 }
 function CalculateTcsAmt(TCSAMT) {
-    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var TDSROUNDCAL = $("#TDSROUNDCAL").val();
@@ -2089,7 +2087,6 @@ function SelectPendOrder(btnid) {
 }
 
 function CharmPrice(ChrmType, Rate, RoundVal) {
-    debugger;
     RoundVal = RoundVal.padStart(2, '0');
     if (Rate < 10) Rate = 10 + Rate;
     var RoundAmt = retInt(RoundVal);
@@ -2362,6 +2359,7 @@ function ClosePendOrder() {
 function FillOrderToBarcode() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
     var Count = 0;
     var GridRow = $("#_T_SALE_PENDINGORDER_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
@@ -2397,17 +2395,22 @@ function FillOrderToBarcode() {
             $("#SZBARCODE").val($("#Ord_SZBARCODE_" + i).val());
             $("#UOM").val($("#Ord_UOM_" + i).val());
             $("#HSNCODE").val($("#Ord_HSNCODE_" + i).val());
-            $("#BARGENTYPE").val($("#Ord_BARGENTYPE_" + i).val());
+            $("#BARGENTYPETEMP").val($("#Ord_BARGENTYPE_" + i).val());
             $("#GLCD").val($("#Ord_GLCD_" + i).val());
             $("#PRODGRPGSTPER").val($("#Ord_PRODGRPGSTPER_" + i).val());
             $("#GSTPER").val($("#Ord_GSTPER_" + i).val());
             $("#WPPRICEGEN").val($("#Ord_WPPRICEGEN_" + i).val());
             $("#RPPRICEGEN").val($("#Ord_RPPRICEGEN_" + i).val());
+            $("#BarImages").val($("#Ord_BarImages_" + i).val());
 
             var BALQTY = retFloat($("#Ord_BALQTY_" + i).val());
             var CURRENTADJQTY = retFloat($("#Ord_CURRENTADJQTY_" + i).val());
             var qnty = retFloat(BALQTY - CURRENTADJQTY).toFixed(2);
             $("#QNTY").val(qnty);
+
+            if (MENU_PARA == "PB") {
+                changeBARGENTYPE();
+            }
         }
     }
     $("#popup").html("");
@@ -2425,7 +2428,6 @@ function GetItcd(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
-    debugger;
     if (id == "") {
         ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
     }
@@ -2458,7 +2460,7 @@ function GetItcd(id) {
                         $("#HSNCODE").val(returncolvalue(result, "HSNCODE"));
                         $("#PRODGRPGSTPER").val(returncolvalue(result, "PRODGRPGSTPER"));
                         $("#GSTPER").val(returncolvalue(result, "GSTPER"));
-                        $("#BarImages").val(returncolvalue(result, "BarImages"));
+                        $("#BarImages").val(returncolvalue(result, "BARIMAGE"));
                         $("#GLCD").val(returncolvalue(result, "GLCD"));
                         $("#BARGENTYPETEMP").val(returncolvalue(result, "bargentype"));
                         hlpblurval = id;

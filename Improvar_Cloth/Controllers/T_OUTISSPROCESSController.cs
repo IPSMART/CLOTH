@@ -1359,8 +1359,38 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-   
-  
+        public ActionResult GetRateHistoryDetails(string ITCD)
+        {
+            try
+            {
+                RateHistory RH = new RateHistory();
+                TransactionOutIssProcess VE = new TransactionOutIssProcess();
+                Cn.getQueryString(VE);
+                var DTRateHistory = salesfunc.GetRateHistory(VE.DOC_CODE, ITCD);
+                var doctP = (from DataRow dr in DTRateHistory.Rows
+                             select new RateHistoryGrid()
+                             {
+                                 AUTONO = dr["AUTONO"].ToString(),
+                                 DOCDT = dr["DOCDT"].retDateStr(),
+                                 DOCNO = dr["DOCNO"].ToString(),
+                                 QNTY = dr["QNTY"].ToString(),
+                                 RATE = dr["RATE"].ToString(),
+                                 SLCD = dr["SLCD"].ToString(),
+                                 SLNM = dr["SLNM"].ToString(),
+                                 CITY = dr["CITY"].ToString(),
+                             }).ToList();
+                RH.RateHistoryGrid = doctP;
+                ModelState.Clear();
+                return PartialView("_T_SALE_RateHistory", RH);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+
+
         public ActionResult DeleteRowBarno(TransactionSaleEntry VE)
         {
             try

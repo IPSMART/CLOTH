@@ -112,7 +112,7 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ITGRPCD, new { id = "B_ITGRPCD_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly"})
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].MTRLJOBNM, new { id = "B_MTRLJOBNM_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].MTBARCODE, new { id = "B_MTBARCODE_" + i })
                                         </td>
@@ -222,7 +222,7 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "HasChangeBarSale();" })
                                         </td>
                                         <td class="">
-                                            <button type="button" onclick="T_Sale_FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TBATCHDTL[i].BarImagesCount</button>
+                                            <input type="button" onclick="T_Sale_FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_@i" name="TBATCHDTL[@i].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="@Model.TBATCHDTL[i].BarImagesCount" />
                                         </td>
                                         <td class="">
                                             @if (Model.DefaultAction != "V" && Model.MENU_PARA == "PB" && Model.T_TXN != null && (Model.TBATCHDTL[i].BARGENTYPE == "E" || Model.T_TXN.BARGENTYPE == "E"))
@@ -252,10 +252,17 @@
                                 <td class="sticky-cell" style="left:40px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>design*@
-                                <td>
-                                @*<input type="text" class="atextBoxFor" readonly="readonly"/>*@
-                                    <a title="Add first Row Material Job to all Row" onclick="CopyMtrljobcd()" style="cursor:pointer;color: red;">Repeat</a>
-                                </td>
+                                @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB"))
+                                {
+                                    <td>
+                                        @*<input type="text" class="atextBoxFor" readonly="readonly"/>*@
+                                        <a title="Add first Row Material Job to all Row" onclick="CopyMtrljobcd()" style="cursor:pointer;color: red;">Repeat</a>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
