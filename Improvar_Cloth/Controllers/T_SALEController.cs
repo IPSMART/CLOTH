@@ -1699,7 +1699,21 @@ namespace Improvar.Controllers
                             {
                                 VE.PENDINGORDER[p].GSTPER = gstper.Split(',').Sum(a => a.retDbl());
                             }
-
+                            var barimage = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("barimage")).FirstOrDefault();
+                            if (barimage.retStr() != "")
+                            {
+                                VE.PENDINGORDER[p].BarImages = barimage.retStr();
+                                var brimgs = VE.PENDINGORDER[p].BarImages.retStr().Split((char)179);
+                                VE.PENDINGORDER[p].BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                                foreach (var barimg in brimgs)
+                                {
+                                    string barfilename = barimg.Split('~')[0];
+                                    string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                                    FROMpath = Path.Combine(FROMpath, "");
+                                    string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                    Cn.CopyImage(FROMpath, TOPATH);
+                                }
+                            }
                             if (VE.MENU_PARA == "PB")
                             {
                                 VE.PENDINGORDER[p].WPPRICEGEN = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("WPPRICEGEN")).FirstOrDefault();
@@ -1768,6 +1782,15 @@ namespace Improvar.Controllers
                               GSTPER = a.GSTPER.retDbl(),
                               WPPRICEGEN = a.WPPRICEGEN.retStr(),
                               RPPRICEGEN = a.RPPRICEGEN.retStr(),
+                              STKTYPE = "F",
+                              BarImages = a.BarImages.retStr(),
+                              BarImagesCount = a.BarImagesCount.retStr(),
+                              DISCTYPE = "P",
+                              DISCTYPE_DESC = "%",
+                              TDDISCTYPE = "P",
+                              TDDISCTYPE_DESC = "%",
+                              SCMDISCTYPE = "P",
+                              SCMDISCTYPE_DESC = "%",
                           }).ToList();
 
                 if (VE.TBATCHDTL != null)
@@ -1834,6 +1857,8 @@ namespace Improvar.Controllers
                               GSTPER = a.GSTPER.retDbl(),
                               WPPRICEGEN = a.WPPRICEGEN.retStr(),
                               RPPRICEGEN = a.RPPRICEGEN.retStr(),
+                              BarImages = a.BarImages.retStr(),
+                              BarImagesCount = a.BarImagesCount.retStr(),
                           }).ToList();
                 TempData["PENDORDER" + VE.MENU_PARA] = dt;
                 return Content("0");
@@ -2090,14 +2115,16 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ParkRecord(FormCollection FC, TransactionSaleEntry stream, string MNUDET, string UNQSNO)
+        public ActionResult ParkRecord(FormCollection FC, TransactionSaleEntry stream)
         {
             try
             {
+                Cn.getQueryString(stream);
                 if (stream.T_TXN.DOCCD.retStr() != "")
                 {
                     stream.T_CNTRL_HDR.DOCCD = stream.T_TXN.DOCCD.retStr();
                 }
+                string MNUDET = stream.MENU_DETAILS;
                 var menuID = MNUDET.Split('~')[0];
                 var menuIndex = MNUDET.Split('~')[1];
                 string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
