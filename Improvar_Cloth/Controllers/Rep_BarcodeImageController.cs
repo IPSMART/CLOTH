@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Mvc;
 using Improvar.Models;
 using Improvar.ViewModels;
-using CrystalDecisions.CrystalReports.Engine;
 using System.Data;
 using System.IO;
 using iTextSharp.text.pdf;
@@ -60,108 +59,104 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult Rep_BarcodeImage(RepBarcodeImage VE)
         {
-            barcodeTest(VE);
-            VE.DefaultView = true;
-            return View(VE);
-        }
-        public void barcodeTest(RepBarcodeImage VE)
-        {
-            int COLPERPAGE = VE.COLPERPAGE.retInt() == 0 ? 1 : VE.COLPERPAGE.retInt();
-            DataTable DtBarImage = (DataTable)Session["DtRepBarcodeImage"];//BARNO,DOC_FLNAME,INE1,LINE2   
-            var pgSize = new iTextSharp.text.Rectangle(CommFunc.MMtoPointFloat(210), CommFunc.MMtoPointFloat(297));
-            var doc = new iTextSharp.text.Document(pgSize, 5.5f, 10f, 0.1f, 0.1f);
             try
             {
-                string pdfFilePath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments");
-                MemoryStream PDFData = new MemoryStream();
-                //PdfWriter writer = PdfWriter.GetInstance(doc, PDFData);
-                PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(pdfFilePath + "/Default.pdf", FileMode.Create));
-                doc.Open();
-                Font font2 = new Font(Font.FontFamily.TIMES_ROMAN, 9f);
-                PdfPTable maintable = new PdfPTable(COLPERPAGE);//NO OF COLUMN
-                maintable.WidthPercentage = 100;
-                //table.TotalWidth = 300f;
-                //table.LockedWidth = true;
-                maintable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                int COLPERPAGE = VE.COLPERPAGE.retInt() == 0 ? 1 : VE.COLPERPAGE.retInt();
+                DataTable DtBarImage = (DataTable)Session["DtRepBarcodeImage"];//BARNO,DOC_FLNAME,INE1,LINE2   
 
-                doc.NewPage();
-
-
-                PdfPCell cell = new PdfPCell(new Phrase(CommVar.CompName(UNQSNO)));
-                cell.Border = Rectangle.NO_BORDER;
-                cell.Colspan = COLPERPAGE;
-                maintable.AddCell(cell);
-
-                cell = new PdfPCell(new Phrase(CommVar.LocName(UNQSNO)));
-                cell.Border = Rectangle.NO_BORDER;
-                cell.Colspan = COLPERPAGE;
-                maintable.AddCell(cell);
-
-                cell = new PdfPCell(new Phrase("Sales data"));
-                cell.Border = Rectangle.NO_BORDER;
-                cell.Colspan = COLPERPAGE;
-                maintable.AddCell(cell);
-
-                for (int i = 0; i < DtBarImage.Rows.Count; i++)
+                using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
                 {
-                    PdfPTable table = new PdfPTable(1);
-                    ///////////
-                    var path = CommVar.SaveFolderPath() + "/ItemImages/" + DtBarImage.Rows[i]["doc_flname"].ToString();
-                    path = Path.Combine(path, "");
-                    byte[] imgdata = System.IO.File.ReadAllBytes(path);
-                    iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imgdata);
-                    //////design//////////
-                    cell = new PdfPCell();
-                    cell.AddElement(jpg);
-                    cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                    cell.HorizontalAlignment = 0;
-                    table.AddCell(cell);
+                    var pgSize = new iTextSharp.text.Rectangle(CommFunc.MMtoPointFloat(210), CommFunc.MMtoPointFloat(297));
+                    var doc = new iTextSharp.text.Document(pgSize, 5.5f, 10f, 0.1f, 0.1f);
+                    PdfWriter writer = PdfWriter.GetInstance(doc, ms);
+                    doc.Open();
+                    Font font2 = new Font(Font.FontFamily.TIMES_ROMAN, 9f);
+                    PdfPTable maintable = new PdfPTable(COLPERPAGE);//NO OF COLUMN
+                    maintable.WidthPercentage = 100;
+                    //table.TotalWidth = 300f;
+                    //table.LockedWidth = true;
+                    maintable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
 
-                    cell = new PdfPCell();
-                    cell.AddElement(new Phrase(DtBarImage.Rows[i]["LINE1"].ToString(), font2));
-                    cell.UseAscender = true;
-                    cell.PaddingTop = 0f;
-                    cell.Border = Rectangle.NO_BORDER;
-                    table.AddCell(cell);
+                    doc.NewPage();
 
-                    cell = new PdfPCell();
-                    cell.AddElement(new Phrase(DtBarImage.Rows[i]["LINE2"].ToString(), font2));
-                    cell.UseAscender = true;
-                    cell.PaddingTop = 3f;
+
+                    PdfPCell cell = new PdfPCell(new Phrase(CommVar.CompName(UNQSNO)));
                     cell.Border = Rectangle.NO_BORDER;
-                    table.AddCell(cell);
-                    maintable.AddCell(table);
+                    cell.Colspan = COLPERPAGE;
+                    maintable.AddCell(cell);
+
+                    cell = new PdfPCell(new Phrase(CommVar.LocName(UNQSNO)));
+                    cell.Border = Rectangle.NO_BORDER;
+                    cell.Colspan = COLPERPAGE;
+                    maintable.AddCell(cell);
+
+                    cell = new PdfPCell(new Phrase("Sales data"));
+                    cell.Border = Rectangle.NO_BORDER;
+                    cell.Colspan = COLPERPAGE;
+                    maintable.AddCell(cell);
+
+                    for (int i = 0; i < DtBarImage.Rows.Count; i++)
+                    {
+                        PdfPTable table = new PdfPTable(1);
+                        ///////////
+                        var path = CommVar.SaveFolderPath() + "/ItemImages/" + DtBarImage.Rows[i]["doc_flname"].ToString();
+                        path = Path.Combine(path, "");
+                        byte[] imgdata = System.IO.File.ReadAllBytes(path);
+                        iTextSharp.text.Image jpg = iTextSharp.text.Image.GetInstance(imgdata);
+                        //////design//////////
+                        cell = new PdfPCell();
+                        cell.AddElement(jpg);
+                        cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                        cell.HorizontalAlignment = 0;
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell();
+                        cell.AddElement(new Phrase(DtBarImage.Rows[i]["LINE1"].ToString(), font2));
+                        cell.UseAscender = true;
+                        cell.PaddingTop = 0f;
+                        cell.Border = Rectangle.NO_BORDER;
+                        table.AddCell(cell);
+
+                        cell = new PdfPCell();
+                        cell.AddElement(new Phrase(DtBarImage.Rows[i]["LINE2"].ToString(), font2));
+                        cell.UseAscender = true;
+                        cell.PaddingTop = 3f;
+                        cell.Border = Rectangle.NO_BORDER;
+                        table.AddCell(cell);
+                        maintable.AddCell(table);
+                    }
+                    doc.Add(maintable);
+                    doc.Close();
+                    //AddPageNumber;
+                    byte[] result = ms.ToArray();
+                    Font blackFont = FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK);
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        PdfReader reader = new PdfReader(result);
+                        using (PdfStamper stamper = new PdfStamper(reader, stream))
+                        {
+                            int pages = reader.NumberOfPages;
+                            for (int i = 1; i <= pages; i++)
+                            {
+                                ColumnText.ShowTextAligned(stamper.GetUnderContent(i), Element.ALIGN_RIGHT, new Phrase(i.ToString() + " of " + pages, blackFont), 568f, 15f, 0);
+                            }
+                        }
+                        result = stream.ToArray();
+                    }
+                    Response.Buffer = false;
+                    Response.ClearContent();
+                    Response.ClearHeaders();
+                    Stream outstream = new MemoryStream(result);
+                    outstream.Seek(0, SeekOrigin.Begin);
+                    GC.Collect();
+                    return new FileStreamResult(outstream, "application/pdf");
                 }
-                doc.Add(maintable);
             }
             catch (Exception ex)
-            { }
-            finally
             {
-                doc.Close();
+                Cn.SaveException(ex,"");
+                return Content(ex.Message) ;
             }
-            AddPageNumber();
-        }
-
-        protected void AddPageNumber()
-        {
-            string pdfFilePath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/Default.pdf");
-            byte[] bytes = System.IO.File.ReadAllBytes(pdfFilePath);
-            Font blackFont = FontFactory.GetFont("Arial", 12, Font.NORMAL, BaseColor.BLACK);
-            using (MemoryStream stream = new MemoryStream())
-            {
-                PdfReader reader = new PdfReader(bytes);
-                using (PdfStamper stamper = new PdfStamper(reader, stream))
-                {
-                    int pages = reader.NumberOfPages;
-                    for (int i = 1; i <= pages; i++)
-                    {
-                        ColumnText.ShowTextAligned(stamper.GetUnderContent(i), Element.ALIGN_RIGHT, new Phrase(i.ToString(), blackFont), 568f, 15f, 0);
-                    }
-                }
-                bytes = stream.ToArray();
-            }
-            System.IO.File.WriteAllBytes(pdfFilePath, bytes);
         }
     }
 }
