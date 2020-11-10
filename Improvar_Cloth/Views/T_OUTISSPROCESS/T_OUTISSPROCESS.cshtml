@@ -76,6 +76,12 @@
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter Agent", "AGSLCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter SalesMen", "CRSLCD")) { return false; }
+        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+        if (GridRow == 0) {
+            msgInfo("Details tab data not found should not be grater than Stock !");
+            message_value = "B_QNTY_" + i;
+            return false;
+        }
         return true;
     }
 </script>
