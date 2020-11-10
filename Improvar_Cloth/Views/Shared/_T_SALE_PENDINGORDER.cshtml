@@ -157,7 +157,10 @@
         <input type="hidden" id="pendorderpopup" />
         <input type="button" class="btn btn-success" id="btnSelectPendOrder" value="Select" style="padding: 2px 5px 2px 5px;display:none" onclick="SelectPendOrder();" />
         <input type="button" class="btn btn-success" id="btnSlctPOBar" value="Add to Barcode Area" style="padding: 2px 5px 2px 5px;display:none" onclick="FillOrderToBarcode();" />
+       @if (Model.MENU_PARA == "PB")
+       {
         <input type="button" class="btn btn-success" id="btnSlctPOGrid" value="Add to Grid" style="padding: 2px 5px 2px 5px;display:none" onclick="SelectPendOrder('SHOWBTN');" />
+       }
         <input type="button" class="btn btn-danger" id="btnCancelPendOrder" value="Close" style="padding: 2px 5px 2px 5px;" onclick="ClosePendOrder();" />
     </div>
 </div>
