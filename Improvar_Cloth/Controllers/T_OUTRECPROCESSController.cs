@@ -3096,7 +3096,12 @@ namespace Improvar.Controllers
 
                     foreach (var v in VE.TBATCHDTL)
                     {
-                        if (VE.T_TXN.BARGENTYPE == "E" && v.SAMPLE.retStr() != "Y")
+                        var IsTransactionFound = salesfunc.IsTransactionFound("", v.BARNO.retSqlformat(), VE.T_TXN.AUTONO.retSqlformat());
+                        if (VE.MENU_PARA == "PB" && IsTransactionFound != "")
+                        {
+                            dberrmsg = "We cant delete this Bill. Transaction found at " + IsTransactionFound; goto dbnotsave;
+                        }
+                        else if ((VE.T_TXN.BARGENTYPE == "E" || v.BARGENTYPE == "E") && v.SAMPLE.retStr() != "Y")
                         {
                             dbsql = masterHelp.TblUpdt("T_BATCH_IMG_HDR", "", "D", "", "barno='" + v.BARNO + "'");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
