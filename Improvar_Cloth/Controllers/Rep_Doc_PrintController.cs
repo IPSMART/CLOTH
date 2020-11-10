@@ -333,7 +333,7 @@ namespace Improvar.Controllers
             IR_ISSUE.Columns.Add("iss_cutlength", typeof(double), "");
             IR_ISSUE.Columns.Add("iss_qnty", typeof(double), "");
             IR_ISSUE.Columns.Add("iss_totalqnty", typeof(double), "");
-            IR_PROG.Columns.Add("iss_totalnos", typeof(double), "");
+            IR_ISSUE.Columns.Add("iss_totalnos", typeof(double), "");
 
 
             Int32 maxR = 0, i = 0;
@@ -392,7 +392,7 @@ namespace Improvar.Controllers
                     IR_PROG.Rows.Add(""); rNo = IR_PROG.Rows.Count - 1;
                     IR_PROG.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
                     IR_PROG.Rows[rNo]["docno"] = tblhdr.Rows[x]["docno"].ToString();
-                    IR_PROG.Rows[rNo]["docdt"] = tblhdr.Rows[x]["docdt"];
+                    IR_PROG.Rows[rNo]["docdt"] = tblhdr.Rows[x]["docdt"].retStr().Remove(10);
                     IR_PROG.Rows[rNo]["vechlno"] = tblhdr.Rows[x]["lorryno"];
                     IR_PROG.Rows[rNo]["recvperson"] = tblhdr.Rows[x]["recvperson"];
                     IR_PROG.Rows[rNo]["user_nm"] = tblhdr.Rows[x]["usr_id"].ToString();
@@ -436,7 +436,7 @@ namespace Improvar.Controllers
                 if (rowsx.Any()) tbl = rowsx.CopyToDataTable();
 
 
-                maxR = tbl.Rows.Count - 1; i = 0; sln = 0; t_qnty = 0;
+                maxR = tbl.Rows.Count - 1; i = 0; sln = 0; t_qnty = 0; t_nos = 0;
                 while (i <= maxR)
                 {
 
@@ -445,7 +445,7 @@ namespace Improvar.Controllers
                     sln++;
                     IR_ISSUE.Rows.Add(""); rNo = IR_ISSUE.Rows.Count - 1;
                     IR_ISSUE.Rows[rNo]["autono"] = tbl.Rows[i]["autono"].ToString();
-                    //IR_ISSUE.Rows[rNo]["progslno"] = tbl.Rows[i]["progslno"].ToString();
+                    IR_ISSUE.Rows[rNo]["progslno"] = tbl.Rows[i]["TXNSLNO"].ToString();
                     IR_ISSUE.Rows[rNo]["iss_slno"] = tbl.Rows[i]["slno"].ToString();
                     IR_ISSUE.Rows[rNo]["iss_itdescn"] = tbl.Rows[i]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
                     IR_ISSUE.Rows[rNo]["iss_styleno"] = tbl.Rows[i]["styleno"];
