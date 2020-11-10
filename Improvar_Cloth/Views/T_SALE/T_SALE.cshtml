@@ -825,7 +825,7 @@
                                     <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
 
                                     </div>*@
-                                @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
+                                @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB"))
                                 { <div class="col-md-1" style="width:auto;">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Order Item Filter")

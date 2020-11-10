@@ -1354,15 +1354,17 @@ namespace Improvar
         public string IsTransactionFound(string ITCD, string BARNO, string skipautono)
         {
             var sql = "";
-            sql += "select AUTONO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST a WHERE ";
-            if (ITCD.retStr() != "") sql += "  a.ITCD in(" + ITCD + ") and ";
-            if (BARNO.retStr() != "") sql += "  a.BARNO in(" + BARNO + ") and ";
-            if (skipautono.retStr() != "") sql += " a.autono not in(" + skipautono + ") and ";
-            sql += "ROWNUM = 1 ";
+            sql += "select b.AUTONO,c.docno,c.docdt from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST a," + CommVar.CurSchema(UNQSNO) + ".T_BATCHDTL b," + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR c ";
+            sql += "WHERE a.barno=b.barno and b.autono=C.AUTONO(+) ";
+            if (ITCD.retStr() != "") sql += "and  a.ITCD in(" + ITCD + ")  ";
+            if (BARNO.retStr() != "") sql += "and  a.BARNO in(" + BARNO + ")  ";
+            if (skipautono.retStr() != "") sql += "and b.autono not in(" + skipautono + ")  ";
+            sql += "and ROWNUM = 1 ";
             DataTable dt = MasterHelpFa.SQLquery(sql);
             if (dt.Rows.Count > 0)
             {
-                return dt.Rows[0]["AUTONO"].retStr();
+                return "</br>" + "DOCNO : " +dt.Rows[0]["docno"].retStr()+"</br>"+ "DOCDATE : " + dt.Rows[0]["docdt"].retStr().Remove(10) + "</br>"+ 
+                    "AUTONO : " + dt.Rows[0]["AUTONO"].retStr() + "</br>";
             }
             else
             {

@@ -427,7 +427,7 @@ namespace Improvar.Controllers
                                     RPRATE = VE.MENU_PARA == "PB" ? dr["RPRATE"].retDbl() : (double?)null,
                                     ITREM = dr["ITREM"].retStr(),
                                     ORDAUTONO = dr["ORDAUTONO"].retStr(),
-                                    ORDSLNO = dr["ORDSLNO"].retShort(),
+                                    ORDSLNO = dr["ORDSLNO"].retStr() == ""?(short ?)null:dr["ORDSLNO"].retShort(),
                                     ORDDOCNO = dr["ORDDOCNO"].retStr(),
                                     ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
                                     WPPRICEGEN = VE.MENU_PARA == "PB" ? dr["WPPRICEGEN"].retStr() : "",
@@ -1920,7 +1920,8 @@ namespace Improvar.Controllers
                         {
                             item.SLNO = Convert.ToSByte(count);
                         }
-
+                        var brimgs = VE.TBATCHDTL[i].BarImages.retStr().Split((char)179);
+                        VE.TBATCHDTL[i].BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
                         TBATCHDTL.Add(item);
                     }
                 }
@@ -3393,7 +3394,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
             }

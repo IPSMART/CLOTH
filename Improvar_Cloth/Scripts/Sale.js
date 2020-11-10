@@ -233,6 +233,9 @@ function FillBarcodeArea(str, Table, i) {
             $("#PDESIGN").val($(FieldidStarting + "PDESIGN_" + i).val());
             $("#WPPRICEGEN").val($(FieldidStarting + "WPPRICEGEN_" + i).val());
             $("#RPPRICEGEN").val($(FieldidStarting + "RPPRICEGEN_" + i).val());
+            if (FieldidStarting == "#B_" && ($("#BARGENTYPE").val() == "E" || $("#B_BARGENTYPE_").val() == "E")) {
+                $("#BarImages").val($(FieldidStarting + "BarImages_" + i).val());
+            }
         }
         $("#LOCABIN").val($(FieldidStarting + "LOCABIN_" + i).val());
         $("#UOM").val($(FieldidStarting + "UOM_" + i).val());
@@ -406,7 +409,7 @@ function UpdateBarCodeRow() {
                 var BarImages = $("#BarImages").val();
                 var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
                 if (BarImages == '') { NoOfBarImages = ''; }
-                $("#OpenImageModal_" + j).html(NoOfBarImages);
+                $("#BarImagesCount_" + j).val(NoOfBarImages);
                 $("#B_BarImages_" + j).val(BarImages);
 
                 if ($("#BARGENTYPE").val() == "E" || $("#B_BARGENTYPE_" + j).val() == "E") {
@@ -1680,7 +1683,8 @@ function AddBarCodeGrid() {
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field ITREM must be a number." id="B_ITREM_' + rowindex + '" maxlength="100" name="TBATCHDTL[' + rowindex + '].ITREM"   type="text"  onclick = "OpenZoomTextBoxModal(this.id)" data_toggle = "modal" data_target = "#ZoomTextBoxModal" onblur = "HasChangeBarSale();" >';
     tr += '    </td>';
     tr += '   <td class=""> ';
-    tr += '   <button type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
+    tr += ' <input type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImagesCount" class="btn atextBoxFor text-info" style="padding:0px" value="' + NoOfBarImages + '" readonly="readonly" placeholder="">';
+    //tr += '   <button type="button" onclick="T_Sale_FillImageModal(' + rowindex + ')" data-toggle="modal" data-target="#ViewImageModal" id="BarImagesCount_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button> ';
     tr += '   </td> ';
     tr += '   <td class="">  ';
     if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
@@ -1759,14 +1763,14 @@ function UploadBarnoImage(i) {
     debugger;
     var ImageDesc = $('#ImageDesc').val();
     if (document.getElementById("ImageName").value == "") return;
-    var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
+    var OpenImageModal = $('#BarImagesCount_' + i).val(); var actt = "";
     if (OpenImageModal == "") {
         OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
     } else {
         OpenImageModal = parseInt(OpenImageModal) + 1;
         actt = "";
     }
-    $('#OpenImageModal_' + i).html(OpenImageModal);
+    $('#BarImagesCount_' + i).val(OpenImageModal);
     $.ajax({
         type: 'POST',
         url: $("#UrlUploadImages").val(),// "@Url.Action("UploadImages", PageControllerName )",
@@ -1827,7 +1831,7 @@ function deleteBarImages() {
     $("#" + id).remove();
     var newimg = arr.join(String.fromCharCode(179));
     $("#B_BarImages_" + ActiveBarRowIndex).val(newimg);
-    $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
+    $("#BarImagesCount_" + ActiveBarRowIndex).val(arr.length);
 
 }
 function T_Sale_FillImageModal(index) {
@@ -2458,7 +2462,7 @@ function GetItcd(id) {
                         $("#HSNCODE").val(returncolvalue(result, "HSNCODE"));
                         $("#PRODGRPGSTPER").val(returncolvalue(result, "PRODGRPGSTPER"));
                         $("#GSTPER").val(returncolvalue(result, "GSTPER"));
-                        $("#BarImages").val(returncolvalue(result, "BarImages"));
+                        $("#BarImages").val(returncolvalue(result, "BARIMAGE"));
                         $("#GLCD").val(returncolvalue(result, "GLCD"));
                         $("#BARGENTYPETEMP").val(returncolvalue(result, "bargentype"));
                         hlpblurval = id;
