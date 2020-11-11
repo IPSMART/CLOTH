@@ -348,7 +348,7 @@ namespace Improvar
                                         BLAMT = dr["BLAMT"].retDbl(),
                                     }).ToList();
                     double S_T_GROSS_AMT = 0; double T_BILL_AMT = 0;
-
+                     //c
                     for (int p = 0; p <= VE.TTXNSLSMN.Count - 1; p++)
                     {
                         VE.TTXNSLSMN[p].SLNO = (p + 1).retShort();
