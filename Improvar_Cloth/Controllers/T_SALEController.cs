@@ -427,7 +427,7 @@ namespace Improvar.Controllers
                                     RPRATE = VE.MENU_PARA == "PB" ? dr["RPRATE"].retDbl() : (double?)null,
                                     ITREM = dr["ITREM"].retStr(),
                                     ORDAUTONO = dr["ORDAUTONO"].retStr(),
-                                    ORDSLNO = dr["ORDSLNO"].retStr() == ""?(short ?)null:dr["ORDSLNO"].retShort(),
+                                    ORDSLNO = dr["ORDSLNO"].retStr() == "" ? (short?)null : dr["ORDSLNO"].retShort(),
                                     ORDDOCNO = dr["ORDDOCNO"].retStr(),
                                     ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
                                     WPPRICEGEN = VE.MENU_PARA == "PB" ? dr["WPPRICEGEN"].retStr() : "",
@@ -499,6 +499,9 @@ namespace Improvar.Controllers
                 VE.T_NOS = VE.TTXNDTL.Sum(a => a.NOS).retDbl();
                 VE.T_QNTY = VE.TTXNDTL.Sum(a => a.QNTY).retDbl();
                 VE.T_AMT = VE.TTXNDTL.Sum(a => a.AMT).retDbl();
+                VE.T_DISCAMT = VE.TTXNDTL.Sum(a => a.DISCAMT).retDbl();
+                VE.T_TDDISCAMT = VE.TTXNDTL.Sum(a => a.TDDISCAMT).retDbl();
+                VE.T_SCMDISCAMT = VE.TTXNDTL.Sum(a => a.SCMDISCAMT).retDbl();
                 VE.T_GROSS_AMT = VE.TTXNDTL.Sum(a => a.TXBLVAL).retDbl();
                 VE.T_IGST_AMT = VE.TTXNDTL.Sum(a => a.IGSTAMT).retDbl();
                 VE.T_CGST_AMT = VE.TTXNDTL.Sum(a => a.CGSTAMT).retDbl();
@@ -1817,7 +1820,7 @@ namespace Improvar.Controllers
                         VE.TBATCHDTL[i].SLNO = (slno).retShort();
                         VE.TBATCHDTL[i].TXNSLNO = (txnslno).retShort();
                     }
-                    if (VE.MENU_PARA == "PB" && (VE.TBATCHDTL[i].BARGENTYPE == "E" ||VE.T_TXN.BARGENTYPE == "E"))
+                    if (VE.MENU_PARA == "PB" && (VE.TBATCHDTL[i].BARGENTYPE == "E" || VE.T_TXN.BARGENTYPE == "E"))
                     {
                         VE.TBATCHDTL[i].BarImages = "";
                         VE.TBATCHDTL[i].BarImagesCount = "";
@@ -2231,7 +2234,7 @@ namespace Improvar.Controllers
                                       }).Where(a => a.QTY != 0).ToList();
 
                     var difList = barcodedata.Where(a => !txndtldata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))
-            .Union(txndtldata.Where(a => !barcodedata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))).ToList();
+                     .Union(txndtldata.Where(a => !barcodedata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))).ToList();
                     if (difList != null && difList.Count > 0)
                     {
                         OraTrans.Rollback();
@@ -2672,6 +2675,31 @@ namespace Improvar.Controllers
                         {
                             if (VE.TBATCHDTL[i].ITCD != null && VE.TBATCHDTL[i].QNTY != 0)
                             {
+                                //double batchamt = (VE.TBATCHDTL[i].QNTY * VE.TBATCHDTL[i].RATE).retDbl().toRound(2);
+                                //double batchdsic = (batchamt * VE.TBATCHDTL[i].DISC)xxxxx
+                                //if (i == lastitemno) { _rpldist = _baldist; _rpldistq = _baldistq; }
+                                //else
+                                //{
+                                //    if (_amtdist + _amtdistq == 0) { _rpldist = 0; _rpldistq = 0; }
+                                //    else
+                                //    {
+                                //        _rpldist = ((_amtdist / titamt) * VE.TTXNDTL[i].AMT).retDbl().toRound();
+                                //        _rpldistq = ((_amtdistq / titqty) * Convert.ToDouble(VE.TBATCHDTL[i].QNTY)).toRound();
+                                //    }
+                                //}
+                                //_baldist = _baldist - _rpldist; _baldistq = _baldistq - _rpldistq;
+
+                                var TTXNDTLmp = (from x in VE.TTXNDTL
+                                                 where x.TXNSLNO == VE.TBATCHDTL[i].TXNSLNO
+                                                 select new TTXNDTL
+                                                 {
+                                                     TXBLVAL = x.TXBLVAL,
+                                                     QNTY = x.QNTY,
+                                                     //FLAGMTR = P.Sum(A => A.FLAGMTR),
+                                                     //BLQNTY = P.Sum(A => A.BLQNTY)
+                                                 }).FirstOrDefault();
+                                double mtrlcost = (((TTXNDTLmp.TXBLVAL + _amtdist) / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound(2);
+                                double batchamt = (((TTXNDTLmp.TXBLVAL) / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound();
                                 bool flagbatch = false;
                                 string barno = "";
                                 if (VE.MENU_PARA == "PB" && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
@@ -2713,9 +2741,7 @@ namespace Improvar.Controllers
                                     {
                                         Action = "A";
                                     }
-
                                 }
-
                                 if (flagbatch == true)
                                 {
                                     T_BATCHMST TBATCHMST = new T_BATCHMST();
@@ -2737,9 +2763,9 @@ namespace Improvar.Controllers
                                     TBATCHMST.NOS = VE.TBATCHDTL[i].NOS;
                                     TBATCHMST.QNTY = VE.TBATCHDTL[i].QNTY;
                                     TBATCHMST.RATE = VE.TBATCHDTL[i].RATE;
-                                    //TBATCHMST.AMT = VE.TBATCHDTL[i].AMT;
+                                    TBATCHMST.AMT = batchamt;
                                     TBATCHMST.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
-                                    //TBATCHMST.MTRL_COST = VE.TBATCHDTL[i].MTRL_COST;
+                                    TBATCHMST.MTRL_COST = mtrlcost;
                                     //TBATCHMST.OTH_COST = VE.TBATCHDTL[i].OTH_COST;
                                     TBATCHMST.ITREM = VE.TBATCHDTL[i].ITREM;
                                     TBATCHMST.PDESIGN = VE.TBATCHDTL[i].PDESIGN;
@@ -3425,7 +3451,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-            dbnotsave:;
+                dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
             }
