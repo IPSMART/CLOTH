@@ -256,12 +256,12 @@ namespace Improvar.Controllers
 
             str = "";
             str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
-            str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,r.itnm fabitnm,s.uniqno from " + scm1 + ".T_PROGMAST a," + scm1 + ".T_PROGDTL b ,";
+            str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,r.itnm fabitnm,a.proguniqno from " + scm1 + ".T_PROGMAST a," + scm1 + ".T_PROGDTL b ,";
             str += scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
-            str += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".T_CNTRL_HDR q," + scm1 + ".M_SITEM r," + scm1 + ".T_CNTRL_HDR_UNIQNO s ";
+            str += scm1 + ".M_GROUP n," + scm1 + ".M_MTRLJOBMST o," + scm1 + ".M_PARTS p," + scm1 + ".T_CNTRL_HDR q," + scm1 + ".M_SITEM r ";
             str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
             str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
-            str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono=q.autono(+) and k.fabitcd=r.itcd(+) and a.autono=s.autono(+) ";
+            str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono=q.autono(+) and k.fabitcd=r.itcd(+) ";
             str += " and q.doccd = '" + VE.DOCCD + "' and ";
             str += "q.docdt >= to_date('" + VE.FDT + "','dd/mm/yyyy') and q.docdt <= to_date('" + VE.FDT + "','dd/mm/yyyy') and ";
             str += "q.doconlyno >= '" + VE.FDOCNO + "' and q.doconlyno <= '" + VE.TDOCNO + "' and ";
@@ -312,7 +312,7 @@ namespace Improvar.Controllers
             IR_PROG.Columns.Add("nos", typeof(double), "");
             IR_PROG.Columns.Add("cutlength", typeof(double), "");
             IR_PROG.Columns.Add("qnty", typeof(double), "");
-            IR_PROG.Columns.Add("uniqno", typeof(string), "");
+            IR_PROG.Columns.Add("progunqbarimg", typeof(byte[]), "");
             IR_PROG.Columns.Add("itremark", typeof(string), "");
             IR_PROG.Columns.Add("totalqnty", typeof(double), "");
             IR_PROG.Columns.Add("totalnos", typeof(double), "");
@@ -407,7 +407,8 @@ namespace Improvar.Controllers
                     IR_PROG.Rows[rNo]["nos"] = tbl.Rows[i]["nos"];
                     IR_PROG.Rows[rNo]["cutlength"] = tbl.Rows[i]["cutlength"];
                     IR_PROG.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"];
-                    IR_PROG.Rows[rNo]["uniqno"] = tbl.Rows[i]["uniqno"];
+                    byte[] brcodeImage = (byte[])Cn.GenerateBarcode(tbl.Rows[i]["proguniqno"].retStr(), "byte");
+                    IR_PROG.Rows[rNo]["progunqbarimg"] = brcodeImage;
                     IR_PROG.Rows[rNo]["itremark"] = tbl.Rows[i]["itremark"];
                     IR_PROG.Rows[rNo]["totalqnty"] = t_qnty;
                     IR_PROG.Rows[rNo]["totalnos"] = t_nos;

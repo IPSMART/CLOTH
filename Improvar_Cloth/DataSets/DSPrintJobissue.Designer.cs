@@ -795,7 +795,7 @@ namespace Improvar.DataSets {
             
             private global::System.Data.DataColumn columnqnty;
             
-            private global::System.Data.DataColumn columnuniqno;
+            private global::System.Data.DataColumn columnprogunqbarimg;
             
             private global::System.Data.DataColumn columnitremark;
             
@@ -1046,9 +1046,9 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn uniqnoColumn {
+            public global::System.Data.DataColumn progunqbarimgColumn {
                 get {
-                    return this.columnuniqno;
+                    return this.columnprogunqbarimg;
                 }
             }
             
@@ -1140,7 +1140,7 @@ namespace Improvar.DataSets {
                         double nos, 
                         double cutlength, 
                         double qnty, 
-                        string uniqno, 
+                        byte[] progunqbarimg, 
                         string itremark, 
                         double totalqnty, 
                         double totalnos) {
@@ -1172,7 +1172,7 @@ namespace Improvar.DataSets {
                         nos,
                         cutlength,
                         qnty,
-                        uniqno,
+                        progunqbarimg,
                         itremark,
                         totalqnty,
                         totalnos};
@@ -1224,7 +1224,7 @@ namespace Improvar.DataSets {
                 this.columnnos = base.Columns["nos"];
                 this.columncutlength = base.Columns["cutlength"];
                 this.columnqnty = base.Columns["qnty"];
-                this.columnuniqno = base.Columns["uniqno"];
+                this.columnprogunqbarimg = base.Columns["progunqbarimg"];
                 this.columnitremark = base.Columns["itremark"];
                 this.columntotalqnty = base.Columns["totalqnty"];
                 this.columntotalnos = base.Columns["totalnos"];
@@ -1285,8 +1285,8 @@ namespace Improvar.DataSets {
                 base.Columns.Add(this.columncutlength);
                 this.columnqnty = new global::System.Data.DataColumn("qnty", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnqnty);
-                this.columnuniqno = new global::System.Data.DataColumn("uniqno", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnuniqno);
+                this.columnprogunqbarimg = new global::System.Data.DataColumn("progunqbarimg", typeof(byte[]), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnprogunqbarimg);
                 this.columnitremark = new global::System.Data.DataColumn("itremark", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnitremark);
                 this.columntotalqnty = new global::System.Data.DataColumn("totalqnty", typeof(double), null, global::System.Data.MappingType.Element);
@@ -2258,17 +2258,17 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string uniqno {
+            public byte[] progunqbarimg {
                 get {
                     try {
-                        return ((string)(this[this.tableDTProgramme.uniqnoColumn]));
+                        return ((byte[])(this[this.tableDTProgramme.progunqbarimgColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'uniqno\' in table \'DTProgramme\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'progunqbarimg\' in table \'DTProgramme\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableDTProgramme.uniqnoColumn] = value;
+                    this[this.tableDTProgramme.progunqbarimgColumn] = value;
                 }
             }
             
@@ -2634,14 +2634,14 @@ namespace Improvar.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public bool IsuniqnoNull() {
-                return this.IsNull(this.tableDTProgramme.uniqnoColumn);
+            public bool IsprogunqbarimgNull() {
+                return this.IsNull(this.tableDTProgramme.progunqbarimgColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void SetuniqnoNull() {
-                this[this.tableDTProgramme.uniqnoColumn] = global::System.Convert.DBNull;
+            public void SetprogunqbarimgNull() {
+                this[this.tableDTProgramme.progunqbarimgColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
