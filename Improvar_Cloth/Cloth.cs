@@ -358,7 +358,7 @@ namespace Improvar
                     string S_P = "";
                     S_P = "S";
                     string sql = "select a.amtcd, b.amtnm, b.calccode, b.addless, b.taxcode, b.calctype, b.calcformula, a.amtdesc, ";
-                    sql += "b.glcd, b.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, a.sgstper, a.sgstamt, ";
+                    sql += "b.glcd, a.hsncode, a.amtrate, a.curr_amt, a.amt,a.igstper, a.igstamt, a.sgstper, a.sgstamt, ";
                     sql += "a.cgstper, a.cgstamt,a.cessper, a.cessamt, a.dutyper, a.dutyamt ";
                     sql += "from " + Scm + ".t_txnamt a, " + Scm + ".m_amttype b ";
                     sql += "where a.amtcd=b.amtcd(+) and b.salpur='" + S_P + "' and a.autono='" + VE.T_TXN.AUTONO + "' ";
