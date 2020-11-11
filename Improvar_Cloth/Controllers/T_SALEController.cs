@@ -2713,9 +2713,7 @@ namespace Improvar.Controllers
                                     {
                                         Action = "A";
                                     }
-
                                 }
-
                                 if (flagbatch == true)
                                 {
                                     T_BATCHMST TBATCHMST = new T_BATCHMST();
