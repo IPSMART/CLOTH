@@ -2093,10 +2093,21 @@ namespace Improvar.Controllers
                         case "JW":
                             stkdrcr = "C"; break;
                     }
+                    string docbarcode = ""; string UNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO);
+                    sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='" + TTXN.DOCCD + "'";
+                    DataTable dt = masterHelp.SQLquery(sql);
+                    if (dt != null && dt.Rows.Count > 0) docbarcode = dt.Rows[0]["docbarcode"].retStr();
 
+                    string lbatchini = "";
+                    sql = "select lbatchini from " + CommVar.FinSchema(UNQSNO) + ".m_loca where loccd='" + CommVar.Loccd(UNQSNO) + "' and compcd='" + CommVar.Compcd(UNQSNO) + "'";
+                    dt = masterHelp.SQLquery(sql);
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        lbatchini = dt.Rows[0]["lbatchini"].retStr();
+                    }
                     for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
                     {
-                        if (VE.TPROGDTL[i].SLNO != 0 && VE.TPROGDTL[i].ITCD != null)
+                        if (VE.TPROGDTL[i].SLNO != 0 && VE.TPROGDTL[i].ITCD != null &&  VE.TPROGDTL[i].QNTY.retDbl() != 0)
                         {
                             COUNTER = COUNTER + 1;
                             T_PROGMAST TPROGMAST = new T_PROGMAST();
@@ -2117,7 +2128,8 @@ namespace Improvar.Controllers
                             TPROGMAST.SHADE = VE.TPROGDTL[i].SHADE;
                             TPROGMAST.CUTLENGTH = VE.TPROGDTL[i].CUTLENGTH.retDcml();
                             TPROGMAST.JOBCD = TTXN.JOBCD;
-                            TPROGMAST.PROGUNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO) + COUNTER.retStr();
+                            //TPROGMAST.PROGUNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO) + COUNTER.retStr();
+                            TPROGMAST.PROGUNIQNO = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TPROGDTL[i].SLNO));
                             if (VE.TPROGDTL[i].CheckedSample == true) TPROGMAST.SAMPLE = "Y"; else TPROGMAST.SAMPLE = "N";
                             dbsql = masterHelp.RetModeltoSql(TPROGMAST);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -2237,10 +2249,7 @@ namespace Improvar.Controllers
 
                     #region batch and detail data
                     // SAVE T_CNTRL_HDR_UNIQNO
-                    string docbarcode = ""; string UNIQNO = salesfunc.retVchrUniqId(TTXN.DOCCD, TTXN.AUTONO);
-                    sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='" + TTXN.DOCCD + "'";
-                    DataTable dt = masterHelp.SQLquery(sql);
-                    if (dt != null && dt.Rows.Count > 0) docbarcode = dt.Rows[0]["docbarcode"].retStr();
+                   
                     if (VE.DefaultAction == "A")
                     {
                         T_CNTRL_HDR_UNIQNO TCHUNIQNO = new T_CNTRL_HDR_UNIQNO();
@@ -2250,13 +2259,7 @@ namespace Improvar.Controllers
                         dbsql = masterHelp.RetModeltoSql(TCHUNIQNO);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     }
-                    string lbatchini = "";
-                    sql = "select lbatchini from " + CommVar.FinSchema(UNQSNO) + ".m_loca where loccd='" + CommVar.Loccd(UNQSNO) + "' and compcd='" + CommVar.Compcd(UNQSNO) + "'";
-                    dt = masterHelp.SQLquery(sql);
-                    if (dt != null && dt.Rows.Count > 0)
-                    {
-                        lbatchini = dt.Rows[0]["lbatchini"].retStr();
-                    }
+                   
                     //END T_CNTRL_HDR_UNIQNO 
 
                     double _amtdist = 0, _baldist = 0, _rpldist = 0, _mult = 1;

@@ -785,11 +785,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        private string TranBarcodeGenerate(string doccd, string lbatchini, string docbarcode, string UNIQNO, int slno)
-        {//YRCODE	2,lbatchini	2,TXN UNIQ NO	7,SLNO	4
-            var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2);
-            return yrcd + lbatchini + UNIQNO + slno.ToString().PadLeft(4, '0');
-        }
+
         public ActionResult GetTDSDetails(string val, string TAG, string PARTY, string AUTONO)
         {
             try
@@ -2705,7 +2701,7 @@ namespace Improvar.Controllers
                                 if (VE.MENU_PARA == "PB" && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
                                     //barno = TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (COUNTERBATCH + 1));
-                                    barno = TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL[i].SLNO));
+                                    barno = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL[i].SLNO));
                                     flagbatch = true;
                                 }
                                 else
@@ -3451,7 +3447,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
             }

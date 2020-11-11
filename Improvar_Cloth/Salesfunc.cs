@@ -1603,5 +1603,10 @@ namespace Improvar
             var dt = MasterHelpFa.SQLquery(sql);
             return true;
         }
+        public string TranBarcodeGenerate(string doccd, string lbatchini, string docbarcode, string UNIQNO, int slno)
+        {//YRCODE	2,lbatchini	2,TXN UNIQ NO	7,SLNO	4
+            var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2);
+            return yrcd + lbatchini + UNIQNO + slno.ToString().PadLeft(4, '0');
+        }
     }
 }
