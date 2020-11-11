@@ -520,7 +520,7 @@ namespace Improvar.Controllers
                                   GLCD = dr["GLCD"].retStr(),
                                   BALEYR = dr["BALEYR"].retStr(),
                                   TOTDISCAMT = dr["TOTDISCAMT"].retDbl(),
-                                  ITREM= dr["ITREM"].retStr()
+                                  ITREM = dr["ITREM"].retStr()
                               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -542,7 +542,8 @@ namespace Improvar.Controllers
                 string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
 
-                allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
+                //allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
+                allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", SLR.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
 
                 foreach (var v in VE.TBATCHDTL)
                 {
@@ -568,6 +569,20 @@ namespace Improvar.Controllers
                                     v.PRODGRPGSTPER = PRODGRPGSTPER;
                                     v.ALL_GSTPER = ALL_GSTPER;
                                     v.GSTPER = GSTPER.retDbl();
+                                }
+                                if (tax_data.Rows[0]["barimage"].retStr() != "")
+                                {
+                                    v.BarImages = tax_data.Rows[0]["barimage"].retStr();
+                                    var brimgs = v.BarImages.retStr().Split((char)179);
+                                    v.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                                    foreach (var barimg in brimgs)
+                                    {
+                                        string barfilename = barimg.Split('~')[0];
+                                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                                        FROMpath = Path.Combine(FROMpath, "");
+                                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                                        Cn.CopyImage(FROMpath, TOPATH);
+                                    }
                                 }
                             }
                         }
@@ -671,7 +686,7 @@ namespace Improvar.Controllers
                     if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
 
                     string glcd = "";
-                     glcd = str.retCompValue("SALGLCD");
+                    glcd = str.retCompValue("SALGLCD");
                     str += "^GLCD=^" + glcd + Cn.GCS();
                     return Content(str);
                 }
@@ -1273,7 +1288,7 @@ namespace Improvar.Controllers
                         }
                     }
                 }
-                
+
 
                 //VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
                 //VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
@@ -1319,6 +1334,7 @@ namespace Improvar.Controllers
                                        UOM = x.UOM,
                                        MTRLJOBCD = x.MTRLJOBCD,
                                        MTRLJOBNM = x.MTRLJOBNM,
+                                       Q_CheckedSample = x.CheckedSample == true ? true : false,
                                    }).ToList();
                 }
                 else
@@ -2595,7 +2611,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);
