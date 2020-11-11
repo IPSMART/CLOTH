@@ -199,5 +199,11 @@ namespace Improvar.ViewModels
         public string WPPRICEGEN { get; set; }
         public string RPPRICEGEN { get; set; }
         public bool itemfilter { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_DISCAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_TDDISCAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_SCMDISCAMT { get; set; }
     }
 }

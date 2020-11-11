@@ -753,7 +753,7 @@ function CalculateTotal_Details() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var T_NOS = 0; var T_QNTY = 0; var T_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_NET_AMT = 0;
-
+    var T_DISCAMT = 0; var T_TDDISCAMT = 0; var T_SCMDISCAMT = 0;
     var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var NOS = $("#D_NOS_" + i).val();
@@ -764,6 +764,15 @@ function CalculateTotal_Details() {
 
         var AMT = $("#D_AMT_" + i).val();
         if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
+
+        var DISCAMT = $("#D_DISCAMT_" + i).val();
+        if (DISCAMT != "") { T_DISCAMT = T_DISCAMT + parseFloat(DISCAMT); } else { T_DISCAMT = T_DISCAMT + parseFloat(0); }
+
+        var TDDISCAMT = $("#D_TDDISCAMT_" + i).val();
+        if (TDDISCAMT != "") { T_TDDISCAMT = T_TDDISCAMT + parseFloat(TDDISCAMT); } else { T_TDDISCAMT = T_TDDISCAMT + parseFloat(0); }
+
+        var SCMDISCAMT = $("#D_SCMDISCAMT_" + i).val();
+        if (SCMDISCAMT != "") { T_SCMDISCAMT = T_SCMDISCAMT + parseFloat(SCMDISCAMT); } else { T_SCMDISCAMT = T_SCMDISCAMT + parseFloat(0); }
 
         var GROSS_AMT = $("#D_TXBLVAL_" + i).val();
         if (GROSS_AMT != "") { T_GROSS_AMT = T_GROSS_AMT + parseFloat(GROSS_AMT); } else { T_GROSS_AMT = T_GROSS_AMT + parseFloat(0); }
@@ -793,6 +802,10 @@ function CalculateTotal_Details() {
     $("#T_SGST_AMT").val(parseFloat(T_SGST_AMT).toFixed(2));
     $("#T_CESS_AMT").val(parseFloat(T_CESS_AMT).toFixed(2));
     $("#T_NET_AMT").val(parseFloat(T_NET_AMT).toFixed(2));
+
+    $("#T_DISCAMT").val(parseFloat(T_DISCAMT).toFixed(2));
+    $("#T_TDDISCAMT").val(parseFloat(T_TDDISCAMT).toFixed(2));
+    $("#T_SCMDISCAMT").val(parseFloat(T_SCMDISCAMT).toFixed(2));
 
     //main tab
     //$("#TOTNOS").val(parseFloat(T_NOS).toFixed(2));

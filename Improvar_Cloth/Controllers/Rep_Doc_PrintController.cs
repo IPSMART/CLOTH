@@ -393,6 +393,7 @@ namespace Improvar.Controllers
                     IR_PROG.Rows[rNo]["autono"] = tblhdr.Rows[x]["autono"].ToString();
                     IR_PROG.Rows[rNo]["docno"] = tblhdr.Rows[x]["docno"].ToString();
                     IR_PROG.Rows[rNo]["docdt"] = tblhdr.Rows[x]["docdt"].retStr().Remove(10);
+                    IR_PROG.Rows[rNo]["slnm"] = tblhdr.Rows[x]["slnm"].ToString();
                     IR_PROG.Rows[rNo]["vechlno"] = tblhdr.Rows[x]["lorryno"];
                     IR_PROG.Rows[rNo]["recvperson"] = tblhdr.Rows[x]["recvperson"];
                     IR_PROG.Rows[rNo]["user_nm"] = tblhdr.Rows[x]["usr_id"].ToString();
