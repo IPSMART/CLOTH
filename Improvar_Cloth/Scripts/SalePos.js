@@ -90,7 +90,8 @@ function DeleteBarnoRow() {
             $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
             $("#partialdivBarCodeTab").html(result);
             Checked_Disable();
-            CalculateBarRowAmt();
+            //CalculateBarRowAmt();
+            CalculateBarTotal();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -223,8 +224,8 @@ function AddBarnoRow(hlpstr) {
     //tr += ' </td>';
     
     tr += '<td class="" title="">'; 
-    tr += '<input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_0\',\'B_ORDDOCNO_0=docno=0/B_ORDDOCDT_0=docdt=2/B_ORDAUTONO_0=autono=7/B_ORDSLNO_0=slno=1\',\'B_ITCD_0/B_ORDSLNO_0/RETDEBSLCD\');" onkeydown="GetHelpBlur(\'T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDDOCNO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex + '=slno=1\',\'B_ITCD_' + rowindex + '/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\')" placeholder="Code" type="text" value="">';
-    tr += '<img src="/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDDOCNO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex + '=slno=1\',\'B_ITCD_' + rowindex + '/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\')">';
+    tr += '<input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex +'=slno=1\',\'B_ITCD_' + rowindex +'/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\');" onkeydown="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex +'=slno=1\',\'B_ITCD_' + rowindex +'/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\');" placeholder="Ord Code" type="text" >';
+    tr += '<img src="/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex + '=slno=1\',\'B_ITCD_' + rowindex + '/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\');">';
     tr += '<input data-val="true" data-val-length="The field ORDAUTONO must be a string with a maximum length of 30." data-val-length-max="30" id="B_ORDAUTONO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="">';
     tr += '</td>';
                                         ///
@@ -639,10 +640,18 @@ function BillAmountCalculate() {
         document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
         document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
     }
-    document.getElementById("RETAMT").value = parseFloat(document.getElementById("RETAMT").value).toFixed(2);
-    document.getElementById("PAYABLE").value = parseFloat(document.getElementById("BLAMT").value) - parseFloat(document.getElementById("RETAMT").value).toFixed(2);
-    document.getElementById("PAYAMT").value = parseFloat(document.getElementById("T_PYMT_AMT").value).toFixed(2).toFixed(2);
-    document.getElementById("NETDUE").value = parseFloat(document.getElementById("PAYABLE").value) - parseFloat(document.getElementById("PAYAMT").value).toFixed(2);
+    var RETAMT = document.getElementById("RETAMT").value;
+    if (RETAMT == "") { RETAMT = parseFloat(0); } else { RETAMT = parseFloat(RETAMT) }
+    var T_PYMT_AMT = document.getElementById("T_PYMT_AMT").value;
+    if (T_PYMT_AMT == "") { T_PYMT_AMT = parseFloat(0); } else { T_PYMT_AMT = parseFloat(T_PYMT_AMT) }
+    var PAYABLE = document.getElementById("PAYABLE").value;
+    if (PAYABLE == "") { PAYABLE = parseFloat(0); } else { PAYABLE = parseFloat(PAYABLE) }
+    var PAYAMT = document.getElementById("PAYAMT").value;
+    if (PAYAMT == "") { PAYAMT = parseFloat(0); } else { PAYAMT = parseFloat(PAYAMT) }
+    document.getElementById("RETAMT").value = parseFloat(RETAMT).toFixed(2);
+    document.getElementById("PAYABLE").value = parseFloat(document.getElementById("BLAMT").value) - parseFloat(RETAMT).toFixed(2);
+    document.getElementById("PAYAMT").value = parseFloat(T_PYMT_AMT).toFixed(2);
+    document.getElementById("NETDUE").value = parseFloat(PAYABLE) - parseFloat(PAYAMT).toFixed(2);
 
 
 }
