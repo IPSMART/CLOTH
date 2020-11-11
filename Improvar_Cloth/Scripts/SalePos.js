@@ -856,3 +856,41 @@ function CalculateTotal_Details() {
     BillAmountCalculate();
 
 }
+function AddDOCrow() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlAddDOCRow").val(),//"@Url.Action("AddDOCRow", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+            $("#partialdivDocument").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+
+}
+function DeleteDOCrow() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlDeleteDOCRow").val(),// "@Url.Action("DeleteDOCRow", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+            $("#partialdivDocument").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+
+}
