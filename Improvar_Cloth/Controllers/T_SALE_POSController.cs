@@ -939,7 +939,7 @@ namespace Improvar.Controllers
                 VE.T_NOS = VE.TTXNDTL.Select(a => a.NOS).Sum().retDbl();
                 VE.T_QNTY = VE.TTXNDTL.Select(a => a.QNTY).Sum().retDbl();
                 VE.T_AMT = VE.TTXNDTL.Select(a => a.AMT).Sum().retDbl();
-                VE.T_GROSS_AMT = VE.TTXNDTL.Select(a => a.TXBLVAL).Sum().retDbl();
+                VE.T_B_GROSSAMT = VE.TTXNDTL.Select(a => a.TXBLVAL).Sum().retDbl();
                 VE.T_IGST_AMT = VE.TTXNDTL.Select(a => a.IGSTAMT).Sum().retDbl();
                 VE.T_CGST_AMT = VE.TTXNDTL.Select(a => a.CGSTAMT).Sum().retDbl();
                 VE.T_SGST_AMT = VE.TTXNDTL.Select(a => a.SGSTAMT).Sum().retDbl();
