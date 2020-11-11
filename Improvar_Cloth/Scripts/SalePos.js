@@ -714,7 +714,7 @@ function CalculateAmt_Details(i) {
         amount = parseFloat(BLQNTY) * parseFloat(RATE);
     }
     amount = parseFloat(amount).toFixed(2);
-    $("#D_AMT_" + i).val(amount);
+    $("#T_AMT_" + i).val(amount);
 
     //DISCOUNT AMOUNT CALCULATION
     var DISCAMT = 0;
