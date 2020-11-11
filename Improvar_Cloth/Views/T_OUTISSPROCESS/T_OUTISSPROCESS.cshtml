@@ -171,10 +171,10 @@
                 //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivDetail").html(result);
                 $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:nth-child(3)").addClass('active');
+                $(".nav-tabs li:nth-child(4)").addClass('active');
                 //below set the  child sequence
                 $(".tab-content div").removeClass("active");
-                $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
                 for (var i = 0; i <= GridRow - 1; i++) {
                     CalculateOutIssProcessAmt_Details(i);

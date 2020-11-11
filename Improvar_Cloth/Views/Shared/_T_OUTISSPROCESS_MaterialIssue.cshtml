@@ -32,7 +32,7 @@
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 20px;"></th>
-                                <th class="sticky-cell" style="width: 20px;text-align:center;left:20px">SL No</th>
+                                <th class="sticky-cell" style="width: 20px;text-align:center;left:17px">SL No</th>
                                 <th class="sticky-cell" style="width: 40px;text-align:center;left:40px">Bill Sl #</th>
                                 <th class="" style="width: 100px;text-align:center;">ItmGrp</th>
                                 <th class="" style="width:45px;">Material Job</th>
@@ -50,7 +50,7 @@
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
                                 <th class="" style="width:50px;">UOM</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
-                                <th class="" style="width:80px;text-align:right;">Rate Hist</th>
+                                <th class="" style="width:43px;text-align:right;">Rate Hist</th>
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 @if (Model.MENU_PARA == "PB")
                                 {
@@ -100,7 +100,7 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].GLCD, new { id = "B_GLCD_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ChildData, new { id = "B_ChildData_" + i })
                                         </td>
-                                        <td class="sticky-cell" style="left:20px;">
+                                        <td class="sticky-cell" style="left:17px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="sticky-cell" style="left:40px">
@@ -163,7 +163,7 @@
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @onchange = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
-                                            <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('@i')" data-toggle="modal" data-target="#RateHistoryModal">Rate Hist</button>
+                                            <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('@i')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })
@@ -219,7 +219,7 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "HasChangeBarSale();" })
                                         </td>
                                         <td class="">
-                                            <button type="button" onclick="FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TBATCHDTL[i].BarImagesCount</button>
+                                            <button type="button" onclick="T_Sale_FillImageModal(@i)" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TBATCHDTL[i].BarImagesCount</button>
                                         </td>
                                         <td class="">
                                             @if (Model.DefaultAction != "V" && Model.MENU_PARA == "PB" && Model.T_TXN != null && (Model.TBATCHDTL[i].BARGENTYPE == "E" || Model.T_TXN.BARGENTYPE == "E"))
