@@ -2739,7 +2739,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.RATE = VE.TBATCHDTL[i].RATE;
                                     //TBATCHMST.AMT = VE.TBATCHDTL[i].AMT;
                                     TBATCHMST.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
-                                    //TBATCHMST.MTRL_COST = VE.TBATCHDTL[i].MTRL_COST;
+                                    TBATCHMST.MTRL_COST =( TBATCHMST.QNTY * TBATCHMST.RATE) - _baldist;
                                     //TBATCHMST.OTH_COST = VE.TBATCHDTL[i].OTH_COST;
                                     TBATCHMST.ITREM = VE.TBATCHDTL[i].ITREM;
                                     TBATCHMST.PDESIGN = VE.TBATCHDTL[i].PDESIGN;
