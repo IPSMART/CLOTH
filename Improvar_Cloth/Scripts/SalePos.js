@@ -143,7 +143,7 @@ function AddBarnoRow(hlpstr) {
     tr += '   <input id="B_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '   <input id="B_CLASS1CD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CLASS1CD" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="B_AMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].AMT" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="B_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].AMT" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="B_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
@@ -212,14 +212,12 @@ function AddBarnoRow(hlpstr) {
     tr += ' </td>';
     tr += ' ';
     tr += ' <td class="" title="">';
-    tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXBLVAL" readonly="readonly" type="text" value="">';
+    tr += '     <input tabindex="-1" class=" atextBoxFor " id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXBLVAL" readonly="readonly" type="text" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="' + GSTPER + '">';
     tr += '     <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
-    tr += ' </td>';
-   
-   
+    tr += ' </td>';   
     //tr += ' <td class="" title="">';
     //tr += '     <input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDAUTONO_' + rowindex + '","B_ORDDOCNO_0=PYMTCD=1/B_ORDDOCDT_0=PYMTNM=0","B_ORDDOCNO_' + rowindex + '","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '"/RETDEBSLCD);" onkeydown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=docno=0/B_ORDDOCDT_0=docdt=2/B_ORDAUTONO_0=autono=7/B_ORDSLNO_0=slno=1","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '","RETDEBSLCD")" placeholder="Code" type="text" value="">';
     //tr += '     <img src="/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=ORDDOCNO=0/B_ORDDOCDT_0=ORDDOCDT=1/B_ORDAUTONO_0=ORDAUTONO/B_ORDSLNO_0=ORDSLNO","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '"/RETDEBSLCD)">';
@@ -276,14 +274,15 @@ function CalculateBarRowAmt(i) {
     if (DefaultAction == "V") return true;
     var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
     var B_RATE_ = retFloat($("#B_RATE_" + i).val());
-    var B_AMT_ = B_QNTY_ * B_RATE_;
-    $("#B_AMT_" + i).val(B_AMT_);
-    var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
-    B_AMT_ = (B_AMT_ - discamt);
+    var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
+    $("#B_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
+    var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
+    var TXBLVAL_ = (B_GROSSAMT_ - discamt);
     var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
     var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
+    $("#B_TXBLVAL_" + i).val(TXBLVAL_);
     $("#B_GSTPER_" + i).val(GSTPER);
-    var rownetamt = (((B_AMT_ * GSTPER) / 100) + B_AMT_).toFixed(3);
+    var rownetamt = (((TXBLVAL_ * GSTPER) / 100) + TXBLVAL_).toFixed(3);
     $("#INCLRATE_" + i).val(rownetamt);
     $("#B_NETAMT_" + i).val(rownetamt);
     CalculateBarTotal();
@@ -308,14 +307,14 @@ function CalculateInclusiveRate(i) {
         if (mgstrate[1] == "") { tort = parseFloat(0); } else { tort = parseFloat(mgstrate[1]); }
         var taxpercent = parseFloat(mgstrate[2]) + parseFloat(mgstrate[3]) + parseFloat(mgstrate[4]); var tmprt = tort;
         if (B_DISCRATE_ != 0) {
-            $("#B_AMT_" + i).val(tort);
-            var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
+            $("#B_GROSSAMT_" + i).val(tort);
+            var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
             tmprt = tort - discamt;
         }
         tmprt = tmprt * (taxpercent + 100) / 100;
         if (INCLRATE_ <= tmprt && B_QNTY_ != 0) {
             var itemrate = ((INCLRATE_ * 100 / (100 + taxpercent)) / B_QNTY_).toFixed(2);
-            var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_AMT_" + i, "B_DISCRATE_" + i);
+            var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
             $("#B_RATE_" + i).val(itemrate);
             $("#B_GSTPER_" + i).val(taxpercent);
             break;
@@ -377,7 +376,7 @@ function AmountCalculation(i) {
     if (DefaultAction == "V") return true;
     var A_NOS = document.getElementById("B_T_NOS").value;
     var B_QNTY = document.getElementById("B_T_QNTY").value;
-    var D_GROSS_AMT = document.getElementById("T_GROSS_AMT").value;
+    var D_GROSS_AMT = document.getElementById("T_B_GROSSAMT").value;
     var E_NET_AMT = document.getElementById("B_T_NET_AMT").value;
     var RT = document.getElementById("AMTRATE_" + i).value;
     var IGST_PER = document.getElementById("AIGSTPER_" + i).value;
@@ -540,9 +539,9 @@ function BillAmountCalculate() {
     var T_QNTY = $("#B_T_QNTY").val();
     if (T_QNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(T_QNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseFloat(0); }
 
-    var T_GROSS_AMT = $("#T_GROSS_AMT").val();
-    if (T_GROSS_AMT == "") { T_GROSS_AMT = parseFloat(0); } else { T_GROSS_AMT = parseFloat(T_GROSS_AMT) }
-    if (T_GROSS_AMT != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(T_GROSS_AMT); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(0); }
+    var T_B_GROSSAMT_ = $("#T_B_GROSSAMT").val();
+    if (T_B_GROSSAMT_ == "") { T_B_GROSSAMT_ = parseFloat(0); } else { T_B_GROSSAMT_ = parseFloat(T_B_GROSSAMT_) }
+    if (T_B_GROSSAMT_ != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(T_B_GROSSAMT_); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(0); }
 
     var A_T_AMOUNT = $("#A_T_AMOUNT").val();
     if (A_T_AMOUNT != "") { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(A_T_AMOUNT); } else { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(0); }
@@ -661,158 +660,10 @@ function BillAmountCalculate() {
 
 
 }
-function CalculateAmt_Details(i) {
-    debugger;
-    var DefaultAction = $("#DefaultAction").val();
-    if (DefaultAction == "V") return true;
-    var BLQNTY = $("#B_BLQNTY_" + i).val();
-    if (BLQNTY != "") { BLQNTY = parseFloat(BLQNTY); } else { BLQNTY = parseFloat(0); }
-
-    var QNTY = $("#B_QNTY_" + i).val();
-    if (QNTY != "") { QNTY = parseFloat(QNTY); } else { QNTY = parseFloat(0); }
-
-    var NOS = $("#B_NOS_" + i).val();
-    if (NOS != "") { NOS = parseFloat(NOS); } else { NOS = parseFloat(0); }
-
-    var FLAGMTR = $("#B_FLAGMTR_" + i).val();
-    if (FLAGMTR != "") { FLAGMTR = parseFloat(FLAGMTR); } else { FLAGMTR = parseFloat(0); }
-
-    var RATE = $("#B_RATE_" + i).val();
-    if (RATE != "") { RATE = parseFloat(RATE); } else { RATE = parseFloat(0); }
-
-    var IGSTPER = $("#B_IGSTPER_" + i).val();
-    if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
-
-    var CGSTPER = $("#B_CGSTPER_" + i).val();
-    if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
-
-    var SGSTPER = $("#B_SGSTPER_" + i).val();
-    if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
-
-    var CESSPER = $("#B_CESSPER_" + i).val();
-    if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
-
-    var DISCTYPE = $("#B_DISCTYPE_" + i).val();
-    var DISCRATE = $("#B_DISCRATE_" + i).val();
-    if (DISCRATE != "") { DISCRATE = parseFloat(DISCRATE); } else { DISCRATE = parseFloat(0); }
-
-    var TDDISCTYPE = $("#B_TDDISCTYPE_" + i).val();
-    var TDDISCRATE = $("#B_TDDISCRATE_" + i).val();
-    if (TDDISCRATE != "") { TDDISCRATE = parseFloat(TDDISCRATE); } else { TDDISCRATE = parseFloat(0); }
-
-    var SCMDISCTYPE = $("#B_SCMDISCTYPE_" + i).val();
-    var SCMDISCRATE = $("#B_SCMDISCRATE_" + i).val();
-    if (SCMDISCRATE != "") { SCMDISCRATE = parseFloat(SCMDISCRATE); } else { SCMDISCRATE = parseFloat(0); }
-
-
-    //AMOUNT CALCULATION
-    var amount = 0;
-    if (BLQNTY == 0) {
-        amount = (parseFloat(QNTY) - parseFloat(FLAGMTR)) * parseFloat(RATE);
-    }
-    else {
-        amount = parseFloat(BLQNTY) * parseFloat(RATE);
-    }
-    amount = parseFloat(amount).toFixed(2);
-    $("#T_AMT_" + i).val(amount);
-
-    //DISCOUNT AMOUNT CALCULATION
-    var DISCAMT = 0;
-    if (DISCTYPE == "Q") { DISCAMT = DISCRATE * QNTY; }
-    else if (DISCTYPE == "N") { DISCAMT = DISCRATE * NOS; }
-    else if (DISCTYPE == "P") { DISCAMT = (amount * DISCRATE) / 100; }
-    else if (DISCTYPE == "F") { DISCAMT = DISCRATE; }
-    else { DISCAMT = 0; }
-    DISCAMT = parseFloat(DISCAMT).toFixed(2);
-    $("#B_DISCAMT_" + i).val(DISCAMT);
-
-    //TDDISCOUNT AMOUNT CALCULATION
-    //var TDDISCAMT = 0;
-    //if (TDDISCTYPE == "Q") { TDDISCAMT = TDDISCRATE * QNTY; }
-    //else if (TDDISCTYPE == "N") { TDDISCAMT = TDDISCRATE * NOS; }
-    //else if (TDDISCTYPE == "P") { TDDISCAMT = (amount * TDDISCRATE) / 100; }
-    //else if (TDDISCTYPE == "F") { TDDISCAMT = TDDISCRATE; }
-    //else { TDDISCAMT = 0; }
-    //TDDISCAMT = parseFloat(TDDISCAMT).toFixed(2);
-    //$("#B_TDDISCAMT_" + i).val(TDDISCAMT);
-
-    //SCMDISCOUNT AMOUNT CALCULATION
-    //var SCMDISCAMT = 0;
-    //if (SCMDISCTYPE == "Q") { SCMDISCAMT = SCMDISCRATE * QNTY; }
-    //else if (SCMDISCTYPE == "N") { SCMDISCAMT = SCMDISCRATE * NOS; }
-    //else if (SCMDISCTYPE == "P") { SCMDISCAMT = (amount * SCMDISCRATE) / 100; }
-    //else if (SCMDISCTYPE == "F") { SCMDISCAMT = SCMDISCRATE; }
-    //else { SCMDISCAMT = 0; }
-    //SCMDISCAMT = parseFloat(SCMDISCAMT).toFixed(2);
-    //$("#B_SCMDISCAMT_" + i).val(SCMDISCAMT);
-
-    //TOTAL DISCOUNT AMOUNT CALCULATION
-    var TOTDISCAMT = parseFloat(DISCAMT).toFixed(2);
-    $("#B_TOTDISCAMT_" + i).val(TOTDISCAMT);
-
-    //TAXABLE CALCULATION
-    var taxbleamt = parseFloat(amount) - parseFloat(TOTDISCAMT);
-    taxbleamt = parseFloat(taxbleamt).toFixed(2);
-    $("#B_TXBLVAL_" + i).val(taxbleamt);
-    //IGST,CGST,SGST,CESS AMOUNT CALCULATION
-
-    var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
-
-    //IGST
-    if (IGSTPER == 0 || IGSTPER == "") {
-        IGSTPER = 0; IGST_AMT = 0;
-    }
-    else {
-        IGST_AMT = parseFloat((taxbleamt * IGSTPER) / 100).toFixed(2);
-        chkAmt = $("#B_IGSTAMT_" + i).val();
-        if (chkAmt == "") chkAmt = 0;
-        if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
-    }
-    $("#B_IGSTAMT_" + i).val(IGST_AMT);
-    //CGST
-    if (CGSTPER == "" || CGSTPER == 0) {
-        CGSTPER = 0; CGST_AMT = 0;
-    }
-    else {
-        CGST_AMT = parseFloat((taxbleamt * CGSTPER) / 100).toFixed(2);
-        chkAmt = $("#B_CGSTAMT_" + i).val();
-        if (chkAmt == "") chkAmt = 0;
-        if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
-    }
-    $("#B_CGSTAMT_" + i).val(CGST_AMT);
-    //SGST
-    if (SGSTPER == "" || SGSTPER == 0) {
-        SGSTPER = 0; SGST_AMT = 0;
-    }
-    else {
-        SGST_AMT = parseFloat((taxbleamt * SGSTPER) / 100).toFixed(2);
-        chkAmt = $("#B_SGSTAMT_" + i).val();
-        if (chkAmt == "") chkAmt = 0;
-        if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
-    }
-    $("#B_SGSTAMT_" + i).val(SGST_AMT);
-
-    //CESS
-    if (CESSPER == "" || CESSPER == 0) {
-        CESSPER = 0; CESS_AMT = 0;
-    }
-    else {
-        CESS_AMT = parseFloat((taxbleamt * CESSPER) / 100).toFixed(2);
-        chkAmt = $("#B_CESSAMT_" + i).val();
-        if (chkAmt == "") chkAmt = 0;
-        if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
-    }
-    $("#B_CESSAMT_" + i).val(CESS_AMT);
-
-    var netamt = parseFloat(parseFloat(taxbleamt) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
-    $("#B_NETAMT_" + i).val(netamt);
-    CalculateTotal_Details();
-
-}
 function CalculateTotal_Details() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    var T_NOS = 0; var T_QNTY = 0; var T_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_NET_AMT = 0;
+    var T_NOS = 0; var T_QNTY = 0; var T_AMT = 0; var T_B_GROSSAMT_ = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_NET_AMT = 0;
 
     var GridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
@@ -826,7 +677,7 @@ function CalculateTotal_Details() {
         if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
 
         var GROSS_AMT = $("#D_TXBLVAL_" + i).val();
-        if (GROSS_AMT != "") { T_GROSS_AMT = T_GROSS_AMT + parseFloat(GROSS_AMT); } else { T_GROSS_AMT = T_GROSS_AMT + parseFloat(0); }
+        if (GROSS_AMT != "") { T_B_GROSSAMT_ = T_B_GROSSAMT_ + parseFloat(GROSS_AMT); } else { T_B_GROSSAMT_ = T_B_GROSSAMT_ + parseFloat(0); }
 
         var IGST_AMT = $("#D_IGSTAMT_" + i).val();
         if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
@@ -847,7 +698,7 @@ function CalculateTotal_Details() {
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
     $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
     $("#T_AMT").val(parseFloat(T_AMT).toFixed(2));
-    $("#T_GROSS_AMT").val(parseFloat(T_GROSS_AMT).toFixed(2));
+    $("#T_B_GROSSAMT").val(parseFloat(T_B_GROSSAMT_).toFixed(2));
     $("#T_IGST_AMT").val(parseFloat(T_IGST_AMT).toFixed(2));
     $("#T_CGST_AMT").val(parseFloat(T_CGST_AMT).toFixed(2));
     $("#T_SGST_AMT").val(parseFloat(T_SGST_AMT).toFixed(2));
@@ -857,7 +708,7 @@ function CalculateTotal_Details() {
     //main tab
     //$("#TOTNOS").val(parseFloat(T_NOS).toFixed(2));
     //$("#TOTQNTY").val(parseFloat(T_QNTY).toFixed(2));
-    //$("#TOTTAXVAL").val(parseFloat(T_GROSS_AMT).toFixed(2));
+    //$("#TOTTAXVAL").val(parseFloat(T_B_GROSSAMT_).toFixed(2));
     //$("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
     BillAmountCalculate();
 

@@ -162,7 +162,7 @@ namespace Improvar
                                                  CESSAMT = dr["CESSAMT"].retDbl(),
                                                  NETAMT = dr["NETAMT"].retDbl(),
                                                  TOTDISCAMT = dr["TOTDISCAMT"].retDbl(),
-                                                 AMT = dr["AMT"].retDbl(),
+                                                 GROSSAMT = dr["AMT"].retDbl(),
                                                  INCLRATE = dr["INCLRATE"].retDbl(),
                                                  PCSACTION = dr["PCSACTION"].retStr(),
                                                  ORDAUTONO = dr["ORDAUTONO"].retStr(),
@@ -236,8 +236,8 @@ namespace Improvar
                     VE.B_T_NOS = VE.TsalePos_TBATCHDTL.Sum(a => a.NOS).retDbl();
                     VE.T_NOS = VE.TsalePos_TBATCHDTL.Sum(a => a.NOS).retDbl();
                     VE.T_QNTY = VE.TsalePos_TBATCHDTL.Sum(a => a.QNTY).retDbl();
-                    VE.T_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.AMT).retDbl();
-                    VE.T_GROSS_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.TXBLVAL).retDbl();
+                    VE.T_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GROSSAMT).retDbl();
+                    VE.T_B_GROSSAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.TXBLVAL).retDbl();
                     VE.T_IGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.IGSTAMT).retDbl();
                     VE.T_CGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.CGSTAMT).retDbl();
                     VE.T_SGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.SGSTAMT).retDbl();
@@ -332,7 +332,7 @@ namespace Improvar
                     // total amt
                     VE.TOTNOS = VE.T_NOS.retDbl();
                     VE.TOTQNTY = VE.T_QNTY.retDbl();
-                    VE.TOTTAXVAL = VE.T_GROSS_AMT.retDbl() + VE.A_T_AMOUNT.retDbl();
+                    VE.TOTTAXVAL = VE.T_B_GROSSAMT.retDbl() + VE.A_T_AMOUNT.retDbl();
                     VE.TOTTAX = VE.T_CGST_AMT.retDbl() + VE.A_T_CGST.retDbl() + VE.T_SGST_AMT.retDbl() + VE.A_T_SGST.retDbl() + VE.T_IGST_AMT.retDbl() + VE.A_T_IGST.retDbl();
 
                     string str = "select a.SLMSLCD,b.SLNM,a.PER,a.ITAMT,a.BLAMT from " + Scm + ".t_txnslsmn a," + scmf + ".m_subleg b ";
@@ -547,7 +547,7 @@ namespace Improvar
                     {
                         if (VE.TsalePos_TBATCHDTL[i].SLNO != 0 && VE.TsalePos_TBATCHDTL[i].ITCD != null)
                         {
-                            titamt = titamt + VE.TsalePos_TBATCHDTL[i].AMT.retDbl();
+                            titamt = titamt + VE.TsalePos_TBATCHDTL[i].GROSSAMT.retDbl();
                             titqty = titqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].QNTY);
                             lastitemno = i;
                         }
@@ -749,7 +749,7 @@ namespace Improvar
                                 if (_amtdist + _amtdistq == 0) { _rpldist = 0; _rpldistq = 0; }
                                 else
                                 {
-                                    _rpldist = ((_amtdist / titamt) * VE.TsalePos_TBATCHDTL[i].AMT).retDbl().toRound();
+                                    _rpldist = ((_amtdist / titamt) * VE.TsalePos_TBATCHDTL[i].GROSSAMT).retDbl().toRound();
                                     _rpldistq = ((_amtdistq / titqty) * Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].QNTY)).toRound();
                                 }
                             }
@@ -782,7 +782,7 @@ namespace Improvar
                             TTXNDTL.QNTY = VE.TsalePos_TBATCHDTL[i].QNTY;
                             TTXNDTL.BLQNTY = VE.TsalePos_TBATCHDTL[i].BLQNTY;
                             TTXNDTL.RATE = VE.TsalePos_TBATCHDTL[i].RATE;
-                            TTXNDTL.AMT = VE.TsalePos_TBATCHDTL[i].AMT;
+                            TTXNDTL.AMT = VE.TsalePos_TBATCHDTL[i].GROSSAMT;
                             TTXNDTL.FLAGMTR = VE.TsalePos_TBATCHDTL[i].FLAGMTR;
                             TTXNDTL.TOTDISCAMT = VE.TsalePos_TBATCHDTL[i].TOTDISCAMT;
                             TTXNDTL.TXBLVAL = VE.TsalePos_TBATCHDTL[i].TXBLVAL;
@@ -1352,7 +1352,7 @@ namespace Improvar
                                 {
                                     if (VE.TsalePos_TBATCHDTL[i].SLNO != 0 && VE.TsalePos_TBATCHDTL[i].ITCD != null && VE.TsalePos_TBATCHDTL[i].IGSTPER == amtigstper && VE.TsalePos_TBATCHDTL[i].CGSTPER == amtcgstper && VE.TsalePos_TBATCHDTL[i].SGSTPER == amtsgstper)
                                     {
-                                        titamt = titamt + VE.TsalePos_TBATCHDTL[i].AMT.retDbl();
+                                        titamt = titamt + VE.TsalePos_TBATCHDTL[i].GROSSAMT.retDbl();
                                         lastitemno = i;
                                     }
                                 }
@@ -1367,11 +1367,11 @@ namespace Improvar
                                         }
                                         else
                                         {
-                                            rplamt = ((amthsnamt / titamt) * VE.TsalePos_TBATCHDTL[i].AMT).retDbl().toRound();
-                                            rpligst = ((amtigst / titamt) * VE.TsalePos_TBATCHDTL[i].AMT).retDbl().toRound();
-                                            rplcgst = ((amtcgst / titamt) * VE.TsalePos_TBATCHDTL[i].AMT).retDbl().toRound();
-                                            rplsgst = ((amtsgst / titamt) * VE.TsalePos_TBATCHDTL[i].AMT).retDbl().toRound();
-                                            rplcess = ((amtcess / titamt) * VE.TsalePos_TBATCHDTL[i].AMT).retDbl().toRound();
+                                            rplamt = ((amthsnamt / titamt) * VE.TsalePos_TBATCHDTL[i].GROSSAMT).retDbl().toRound();
+                                            rpligst = ((amtigst / titamt) * VE.TsalePos_TBATCHDTL[i].GROSSAMT).retDbl().toRound();
+                                            rplcgst = ((amtcgst / titamt) * VE.TsalePos_TBATCHDTL[i].GROSSAMT).retDbl().toRound();
+                                            rplsgst = ((amtsgst / titamt) * VE.TsalePos_TBATCHDTL[i].GROSSAMT).retDbl().toRound();
+                                            rplcess = ((amtcess / titamt) * VE.TsalePos_TBATCHDTL[i].GROSSAMT).retDbl().toRound();
                                         }
                                         balamt = balamt - rplamt;
                                         baligst = baligst - rpligst;
