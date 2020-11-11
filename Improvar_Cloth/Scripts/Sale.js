@@ -405,7 +405,7 @@ function UpdateBarCodeRow() {
             if (MENU_PARA == "PB") {
 
                 var BarImages = $("#BarImages").val();
-                if (MENU_PARA == "PB" && (ENTRYBARGENTYPE == "E" || ITMBARGENTYPE == "E")) {
+                if (MENU_PARA == "PB" && ($("#BARGENTYPE").val() == "E" || $("#B_BARGENTYPE_" + j).val())) {
                     BarImages = "";
                 }
                 var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
