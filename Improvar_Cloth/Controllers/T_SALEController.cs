@@ -2690,7 +2690,7 @@ namespace Improvar.Controllers
                                 //_baldist = _baldist - _rpldist; _baldistq = _baldistq - _rpldistq;
 
                                 var TTXNDTLmp = (from x in VE.TTXNDTL
-                                                 where x.TXNSLNO == VE.TBATCHDTL[i].TXNSLNO
+                                                 where x.SLNO == VE.TBATCHDTL[i].TXNSLNO
                                                  select new TTXNDTL
                                                  {
                                                      TXBLVAL = x.TXBLVAL,
