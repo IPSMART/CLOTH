@@ -224,7 +224,7 @@ function AddBarnoRow(hlpstr) {
     //tr += ' </td>';
     
     tr += '<td class="" title="">'; 
-    tr += '<input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex +'=slno=1\',\'B_ITCD_' + rowindex +'/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\');" onkeydown="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex +'=slno=1\',\'B_ITCD_' + rowindex +'/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\');" placeholder="Ord Code" type="text" >';
+    tr += '<input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="15" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex +'=slno=1\',\'B_ITCD_' + rowindex +'/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\');" onkeydown="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex +'=slno=1\',\'B_ITCD_' + rowindex +'/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\');" placeholder="Ord Code" type="text" >';
     tr += '<img src="/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur(\'/T_SALE_POS/GetOrderDetails\',\'Order Details\',\'B_ORDAUTONO_' + rowindex + '\',\'B_ORDDOCNO_' + rowindex + '=docno=0/B_ORDDOCDT_' + rowindex + '=docdt=2/B_ORDAUTONO_' + rowindex + '=autono=7/B_ORDSLNO_' + rowindex + '=slno=1\',\'B_ITCD_' + rowindex + '/B_ORDSLNO_' + rowindex + '/RETDEBSLCD\');">';
     tr += '<input data-val="true" data-val-length="The field ORDAUTONO must be a string with a maximum length of 30." data-val-length-max="30" id="B_ORDAUTONO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDAUTONO" type="hidden" value="">';
     tr += '</td>';
@@ -536,6 +536,7 @@ function BillAmountCalculate() {
     if (T_QNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(T_QNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseFloat(0); }
 
     var T_GROSS_AMT = $("#T_GROSS_AMT").val();
+    if (T_GROSS_AMT == "") { T_GROSS_AMT = parseFloat(0); } else { T_GROSS_AMT = parseFloat(T_GROSS_AMT) }
     if (T_GROSS_AMT != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(T_GROSS_AMT); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(0); }
 
     var A_T_AMOUNT = $("#A_T_AMOUNT").val();
@@ -854,5 +855,43 @@ function CalculateTotal_Details() {
     //$("#TOTTAXVAL").val(parseFloat(T_GROSS_AMT).toFixed(2));
     //$("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
     BillAmountCalculate();
+
+}
+function AddDOCrow() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlAddDOCRow").val(),//"@Url.Action("AddDOCRow", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+            $("#partialdivDocument").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+
+}
+function DeleteDOCrow() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlDeleteDOCRow").val(),// "@Url.Action("DeleteDOCRow", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+            $("#partialdivDocument").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
 
 }

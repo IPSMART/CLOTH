@@ -62,7 +62,7 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Party", "RTDEBCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Retail", "RTDEBCD")) { return false; }
         //if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
         //    $("li").removeClass("active").addClass("");
         //    $(".nav-tabs li:first-child").addClass('active');
@@ -527,14 +527,14 @@
         debugger;
         var T_PER = 0; var t_blamt = 0; var t_itamt = 0; var PER_ = 0;
         var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
-       // for (var i = 0; i <= GridRow - 1; i++) {
-            PER_ = $("#S_PER_" + i).val();
-            if (PER_ == "") { PER_ = parseFloat(0); } else { PER_ = parseFloat(PER_) }
-            if (PER_ != "") { T_PER = T_PER + parseFloat(PER_); } else { T_PER = T_PER + parseFloat(0); }
-            document.getElementById("S_PER_" + i).value = PER_.toFixed(2);
-      
-       // }
-            if (T_PER > 100) { msgWarning("Total of Percentage(%) Should be 100 !!"); $("#S_PER_" + i).val(""); $("#S_PER_" + i).focus(); }
+        // for (var i = 0; i <= GridRow - 1; i++) {
+        PER_ = $("#S_PER_" + i).val();
+        if (PER_ == "") { PER_ = parseFloat(0); } else { PER_ = parseFloat(PER_) }
+        if (PER_ != "") { T_PER = T_PER + parseFloat(PER_); } else { T_PER = T_PER + parseFloat(0); }
+        document.getElementById("S_PER_" + i).value = PER_.toFixed(2);
+
+        // }
+        if (T_PER > 100) { msgWarning("Total of Percentage(%) Should be 100 !!"); $("#S_PER_" + i).val(""); $("#S_PER_" + i).focus(); }
         else {
             for (var i = 0; i <= GridRow - 1; i++) {
                 var T_GROSS_AMT = $("#T_GROSS_AMT").val();
@@ -553,7 +553,7 @@
                 var itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
                 document.getElementById("S_ITAMT_" + i).value = itamt.toFixed(2);
                 t_blamt = t_blamt + blamt;
-                t_itamt =t_itamt+ itamt;
+                t_itamt = t_itamt + itamt;
 
             }
         }
@@ -574,6 +574,8 @@
             document.getElementById("P_AMT_" + i).value = AMT.toFixed(2);
         }
         document.getElementById("T_PYMT_AMT").value = T_AMT.toFixed(2);
+        document.getElementById("PAYAMT").value = T_AMT.toFixed(2);
+
 
     }
 </script>
@@ -590,6 +592,26 @@
                 $("#WaitingMode").hide();
                 $("#partialdivPayment").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivPayment").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function Addrow(ID) {
+        debugger;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRow", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivSalesman").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivSalesman").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -779,21 +801,22 @@
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDBNM", maxlength = 15, @title = "Only for View", @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDBNM", maxlength = 15, @title = @Model.ADDR, @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @readonly = "readonly" } })
-                                @Html.HiddenFor(model => model.ADDR, new  { @class = "form-control", id = "ADDR", maxlength = 15 })
-                                @Html.HiddenFor(model => model.RETDEBSLCD, new { @class = "form-control", id = "RETDEBSLCD", maxlength = 15})
+                                @Html.HiddenFor(model => model.ADDR, new { @class = "form-control", id = "ADDR", maxlength = 15 })
+                                @Html.HiddenFor(model => model.RETDEBSLCD, new { @class = "form-control", id = "RETDEBSLCD", maxlength = 15 })
                             </div>
                         </div>
+
                         @*<div class="col-md-8">
-                            <div class="editor-field">
-                               
-                            </div>
-                        </div>*@
+                                <div class="editor-field">
+
+                                </div>
+                            </div>*@
                         <div class="col-md-4">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
@@ -895,7 +918,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 15, @placeholder = "Memo Amount", @style = "font-weight:bold;font-size:15px;text-align:right" , @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 15, @placeholder = "Memo Amount", @style = "font-weight:bold;font-size:15px;text-align:right", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-5" style="width: auto;">
@@ -931,7 +954,7 @@
 
                     </div>
                 </div>
-        
+
                 <div class="col-lg-1">
                     <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
                         <table id="exampleLT" border="1" style="width: auto;">
@@ -957,24 +980,24 @@
                     @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
                 </div>
                 @*<div class="row">
-                    <div class="col-md-3">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Round Off")
+                        <div class="col-md-3">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Round Off")
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-1" style="margin-right: -41px;">
-                        <div class="editor-field" style="margin-top:6px;">
-                            @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
-                            @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text"), "No", new {  id = "REVCHRG", @style = "display:none", onchange = "ReverceCharges();" })
+                        <div class="col-md-1" style="margin-right: -41px;">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
+                                @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text"), "No", new {  id = "REVCHRG", @style = "display:none", onchange = "ReverceCharges();" })
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
+                        <div class="col-md-2">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
+                            </div>
                         </div>
-                    </div>
-                 
-                </div>*@
+
+                    </div>*@
 
             </div>
             <div class="row" style="margin-top:5px;">
@@ -1000,15 +1023,15 @@
                                             <b style="color:Red;">*</b>
                                         </div>
                                     </div>
-                                        <div class="col-md-8">
-                                            <div class="editor-field">
-                                                @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
+                                    <div class="col-md-8">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
 
-                                                @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
-                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
-                                            </div>
+                                            @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                                         </div>
+                                    </div>
                                 }
 
                             </div>
@@ -1102,50 +1125,50 @@
             </div>
         </div>
 
-            <div class="container">
-                <!-- Modal -->
-                <div class="modal fade" id="ViewImageModal" role="dialog">
-                    <div class="modal-dialog modal-md">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Image Preview</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div id="myCarousel" class="carousel" data-ride="carousel">
-                                    <div class="carousel-inner" id="div_carousel_inner">
-                                        <div class="item active">
-                                            <img src="" alt="Los Angeles" style="width:100%;">
-                                        </div>
-                                        <div class="item">
-                                            <img src="" alt="Chicago" style="width:100%;">
-                                        </div>
+        <div class="container">
+            <!-- Modal -->
+            <div class="modal fade" id="ViewImageModal" role="dialog">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Image Preview</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="myCarousel" class="carousel" data-ride="carousel">
+                                <div class="carousel-inner" id="div_carousel_inner">
+                                    <div class="item active">
+                                        <img src="" alt="Los Angeles" style="width:100%;">
                                     </div>
-                                    <!-- Left and right controls -->
-                                    <a class="left  carousel-control arrow-left" id="prev">
-                                        <span class="glyphicon glyphicon-chevron-left"></span>
-                                    </a>
-                                    <a class="right  carousel-control arrow-right" id="next">
-                                        <span class="glyphicon glyphicon-chevron-right"></span>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="pull-left">
-                                            <input type="hidden" id="ActiveBarRowIndex" />
-                                            <input type="hidden" id="BarImages" />
-                                            @*<button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>*@
-                                        </div>
+                                    <div class="item">
+                                        <img src="" alt="Chicago" style="width:100%;">
                                     </div>
-                                    <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
                                 </div>
+                                <!-- Left and right controls -->
+                                <a class="left  carousel-control arrow-left" id="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                </a>
+                                <a class="right  carousel-control arrow-right" id="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="pull-left">
+                                        <input type="hidden" id="ActiveBarRowIndex" />
+                                        <input type="hidden" id="BarImages" />
+                                        @*<button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>*@
+                                    </div>
+                                </div>
+                                <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
                                             }
                                             else
