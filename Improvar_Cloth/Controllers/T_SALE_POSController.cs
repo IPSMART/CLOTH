@@ -178,7 +178,7 @@ namespace Improvar.Controllers
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
                                 string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
                                 string sql = "";
-                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd ";
+                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3 ";
                                 sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c";
                                 sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD";
 
@@ -187,6 +187,8 @@ namespace Improvar.Controllers
                                 {
                                     TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
                                     VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                    var addrs= syscnfgdt.Rows[0]["add1"].retStr()+" "+ syscnfgdt.Rows[0]["add2"].retStr()+" "+ syscnfgdt.Rows[0]["add3"].retStr();
+                                    VE.ADDR = addrs +"/"+syscnfgdt.Rows[0]["city"].retStr();
                                     VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
                                     VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
                                     VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
@@ -208,15 +210,16 @@ namespace Improvar.Controllers
                                     VE.TTXNSLSMN = TTXNSLSMN;
                                 }
                                 VE.TTXNSLSMN = TTXNSLSMN;
-                                var pymtcd = DB.M_PAYMENT.Select(b => b.PYMTCD).Max();
-                                if (pymtcd != null)
+                                var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG=="N" select new { PYMTCD=i.PYMTCD, PYMTNM=i.PYMTNM, GLCD= i.GLCD }).ToList();
+                                //var pymtcd = DB.M_PAYMENT.Select(b => b.PYMTCD).Max();
+                                if (MPAYMENT.Count > 0)
                                 {
-                                    var MPAYMENT = (from i in DB.M_PAYMENT where i.PYMTCD == pymtcd select new { i.PYMTCD, i.PYMTNM, i.GLCD }).ToList();
+                                    //var MPAYMENT = (from i in DB.M_PAYMENT where i.PYMTCD == pymtcd select new { i.PYMTCD, i.PYMTNM, i.GLCD }).ToList();
 
-                                    if (MPAYMENT.Count > 0)
-                                    {
+                                    //if (MPAYMENT.Count > 0)
+                                    //{
                                         VE.TTXNPYMT = (from i in MPAYMENT select new TTXNPYMT { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD }).ToList();
-                                    }
+                                    //}
                                     //else if (TTXNPAYMT.Count > 0)
                                     //{ VE.TTXNPYMT = (from i in TTXNPAYMT select new TTXNPYMT { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD, INSTNO = i.INSTNO, PYMTREM = i.PYMTREM, CARDNO = i.CARDNO, AMT = i.AMT, INSTDT = i.INSTDT.retDateStr() }).ToList(); }
                                     for (int p = 0; p <= VE.TTXNPYMT.Count - 1; p++)
@@ -260,32 +263,34 @@ namespace Improvar.Controllers
                         {
                             FreightCharges(VE, VE.T_TXN?.AUTONO);
                         }
-                        if(op.ToString()=="E" && loadOrder=="N")
-                        {
-                            T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
-                            string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-                            string sql = "";
-                            sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,d.NM,d.MOBILE mob,a.retdebslcd ";
-                            sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c," + scm + ".T_TXNMEMO d";
-                            sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD and a.RTDEBCD='"+VE.T_TXNMEMO.RTDEBCD+"' and d.autono='"+VE.T_TXN.AUTONO+"' ";
+                        //if(op.ToString()=="E" && loadOrder=="N")
+                        //{
+                        //    T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
+                        //    string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                        //    string sql = "";
+                        //    sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,d.NM,d.MOBILE mob,a.retdebslcd,b.city,b.add1,b.add2,b.add3 ";
+                        //    sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c," + scm + ".T_TXNMEMO d";
+                        //    sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD and a.RTDEBCD='"+VE.T_TXNMEMO.RTDEBCD+"' and d.autono='"+VE.T_TXN.AUTONO+"' ";
 
-                            DataTable syscnfgdt = masterHelp.SQLquery(sql);
-                            if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
-                            {
-                                TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
-                                VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
-                                TXNMEMO.NM= syscnfgdt.Rows[0]["NM"].retStr();
-                                TXNMEMO.MOBILE = syscnfgdt.Rows[0]["mob"].retStr();
-                                VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
-                                VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
-                                VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
-                                VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
-                                TXNOTH.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
-                                TXNOTH.PRCCD = "RP"; VE.PRCNM = "Retail Price";
-                            }
-                            VE.T_TXNMEMO = TXNMEMO;
-                            VE.T_TXNOTH = TXNOTH;
-                        }
+                        //    DataTable syscnfgdt = masterHelp.SQLquery(sql);
+                        //    if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                        //    {
+                        //        TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
+                        //        VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                        //        var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                        //        VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
+                        //        TXNMEMO.NM= syscnfgdt.Rows[0]["NM"].retStr();
+                        //        TXNMEMO.MOBILE = syscnfgdt.Rows[0]["mob"].retStr();
+                        //        VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                        //        VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
+                        //        VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
+                        //        VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                        //        TXNOTH.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
+                        //        TXNOTH.PRCCD = "RP"; VE.PRCNM = "Retail Price";
+                        //    }
+                        //    VE.T_TXNMEMO = TXNMEMO;
+                        //    VE.T_TXNOTH = TXNOTH;
+                        //}
                     }
                     else
                     {
@@ -324,9 +329,9 @@ namespace Improvar.Controllers
                 string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
                 string sql = "";
 
-                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt ";
-                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ";
-                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
+                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,d.RTDEBCD,e.RTDEBNM ";
+                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c , " + scm + ".T_TXNMEMO d," + scmf + ".M_RETDEB e ";
+                sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and a.autono=d.autono(+) and d.RTDEBCD=e.RTDEBCD(+) and  b.doccd in (" + doccd + ") and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
@@ -336,10 +341,10 @@ namespace Improvar.Controllers
                 DataTable tbl = masterHelp.SQLquery(sql);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
+                var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Retail Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
                 for (int j = 0; j <= tbl.Rows.Count - 1; j++)
                 {
-                    SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                    SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["RTDEBNM"] + "</b> (" + tbl.Rows[j]["RTDEBCD"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                 }
                 return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
             }
@@ -1181,6 +1186,64 @@ namespace Improvar.Controllers
             //VE.TPROGDTL.ForEach(a => a.DRCRTA = masterHelp.DR_CR().OrderByDescending(s => s.text).ToList());
             VE.DefaultView = true;
             return PartialView("_T_SALE_POS_PAYMENT", VE);
+        }
+        public ActionResult AddRow(TransactionSalePosEntry VE, int COUNT, string TAG)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Cn.getQueryString(VE);
+            if (VE.TTXNSLSMN == null)
+            {
+                List<TTXNSLSMN> TPROGDTL1 = new List<TTXNSLSMN>();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = 0;
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TTXNSLSMN MBILLDET = new TTXNSLSMN();
+                        MBILLDET.SLNO = SERIAL.retShort();
+                        TPROGDTL1.Add(MBILLDET);
+                    }
+                }
+                else
+                {
+                    TTXNSLSMN MBILLDET = new TTXNSLSMN();
+                    MBILLDET.SLNO = 1;
+                    TPROGDTL1.Add(MBILLDET);
+                }
+                VE.TTXNSLSMN = TPROGDTL1;
+            }
+            else
+            {
+                List<TTXNSLSMN> TPROGDTL = new List<TTXNSLSMN>();
+                for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
+                {
+                    TTXNSLSMN MBILLDET = new TTXNSLSMN();
+                    MBILLDET = VE.TTXNSLSMN[i];
+                    TPROGDTL.Add(MBILLDET);
+                }
+                TTXNSLSMN MBILLDET1 = new TTXNSLSMN();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = Convert.ToInt32(VE.TTXNSLSMN.Max(a => Convert.ToInt32(a.SLNO)));
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TTXNSLSMN OPENING_BL = new TTXNSLSMN();
+                        OPENING_BL.SLNO = SERIAL.retShort();
+                        TPROGDTL.Add(OPENING_BL);
+                    }
+                }
+                else
+                {
+                    MBILLDET1.SLNO = Convert.ToInt16(Convert.ToByte(VE.TTXNSLSMN.Max(a => Convert.ToInt32(a.SLNO))) + 1);
+                    TPROGDTL.Add(MBILLDET1);
+                }
+                VE.TTXNSLSMN = TPROGDTL;
+            }
+            //VE.TPROGDTL.ForEach(a => a.DRCRTA = masterHelp.DR_CR().OrderByDescending(s => s.text).ToList());
+            VE.DefaultView = true;
+            return PartialView("_T_SALE_POS_SALESMAN", VE);
         }
         public ActionResult DeleteRowPYMT(TransactionSalePosEntry VE)
         {
