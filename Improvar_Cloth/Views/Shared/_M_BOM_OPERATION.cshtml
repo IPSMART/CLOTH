@@ -34,8 +34,8 @@
                     <table id="M_BOM_OPERATION" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1460px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
-                                <th class="" style="width: 27px;"></th>
-                                <th class="" style="width: 27px;text-align:center;">SL. No.</th>
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="sticky-cell" style="width:27px;left:27px;">SL No.</th>
                                 <th class="" style="width:100px;">Part Code</th>
                                 <th class="" style="width:90px;">Part Name</th>
                                 <th class="" style="width:100px;">Sub Job Style</th>
@@ -60,13 +60,13 @@
                                 for (int i = 0; i <= Model.MSITEMBOMSJOB.Count - 1; i++)
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
-                                        <td class="grid_td" style="padding-left:7px;padding-right:7px;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.MSITEMBOMSJOB[i].Checked, new { id = "chkid_" + i })
                                             @Html.HiddenFor(model => model.MSITEMBOMSJOB[i].BOMCD)
                                             @Html.HiddenFor(model => model.MSITEMBOMSJOB[i].EFFDT)
                                         </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SLNO, new { id = "SLNOO_" + i, @class = " atextBoxFor ", maxlength = 2, @style= "text-align:center;",@TabIndex = -1, @readonly = "readonly" })
+                                        <td class="sticky-cell" style="left:27px;">
+                                            @Html.TextBoxFor(model => Model.MSITEMBOMSJOB[i].SLNO, new { id = "SLNOO_" + i, @class = " atextBoxFor ", maxlength = 2, @style = "text-align:center;", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         
                                         <td class="">

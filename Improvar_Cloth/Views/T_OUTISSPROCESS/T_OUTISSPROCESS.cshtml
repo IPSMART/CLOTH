@@ -259,15 +259,26 @@
     }
 </script>
 <script>
-    function CalculateQNTY(i) {
+    function CalculateProgQnty(i) {
         if ("@Model.DefaultAction" != "V") {
-            var NOS_ = document.getElementById('P_NOS_' + i).value;
-            if (NOS_ == "") { NOS_ = parseFloat(0) } else { NOS_ = parseFloat(NOS_) }
-            var CUTLENGTH_ = document.getElementById('P_CUTLENGTH_' + i).value;
-            if (CUTLENGTH_ == "") { CUTLENGTH_ = parseFloat(0) } else { CUTLENGTH_ = parseFloat(CUTLENGTH_) }
-            if (NOS_ > 0 && CUTLENGTH_ > 0) {
-                var qnty = (parseFloat(NOS_) * parseFloat(CUTLENGTH_));
-                document.getElementById('P_QNTY_' + i).value = parseFloat(qnty).toFixed(2);
+            var NOS = retFloat($("#P_NOS_" + i).val());
+            var CUTLENGTH = retFloat($("#P_CUTLENGTH_" + i).val());
+            var DECIMALS = retFloat($("#P_DECIMALS_" + i).val());
+            var QNTY = retFloat($("#P_QNTY_" + i).val());
+
+            if (DECIMALS == 0) {
+                if (NOS == 0) {
+                    $("#P_NOS_" + i).val(retFloat(QNTY).toFixed(2));
+                }
+                else {
+                    $("#P_QNTY_" + i).val(retFloat(NOS).toFixed(2));
+                }
+            }
+            else {
+                if (NOS != 0 && CUTLENGTH != 0) {
+                    QNTY = retFloat(NOS * CUTLENGTH).toFixed(2);
+                    $("#P_QNTY_" + i).val(retFloat(QNTY).toFixed(2));
+                }
             }
 
         } CalculateTotal();
@@ -1400,7 +1411,7 @@
 
             </div>
         </div>
-                                                             }
+                                                                }
                                                                 else
                                                                 {
                                                                     @ViewBag.ErrorMessage

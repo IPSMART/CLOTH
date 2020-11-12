@@ -44,26 +44,6 @@ $(document).on('click', '.arrow-left, .arrow-right', function () {
     $('#div_carousel_inner div').removeClass('active');
     nextTarget.addClass('active');
 });
-
-function FillImageModal() {
-    debugger;
-    var actt = ""; $("#div_carousel_inner").html('');
-    var arr = $("#BarImages").val();
-    arr = arr.split(String.fromCharCode(179));
-    $.each(arr, function (index, value) {
-        var imgname = (value.split('~')[0]);
-        var id = (imgname).split('.')[0];
-        var ImageDesc = (value.split('~')[1]);
-        var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
-        htm += '<div id="' + id + '" class="item ' + actt + '">';
-        htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;height:300px;">';
-        htm += '    <span class="carousel-caption">';
-        htm += '    <p> ' + ImageDesc + ' </p>';
-        htm += '    </span>';
-        htm += '</div>';
-        $("#div_carousel_inner").append(htm);
-    });
-}
 function FillImageModal(FieldId) {
     var actt = ""; $("#div_carousel_inner").html('');
     var arr = $("#" + FieldId).val();

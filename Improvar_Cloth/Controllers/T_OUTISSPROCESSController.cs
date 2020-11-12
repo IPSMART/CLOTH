@@ -287,13 +287,14 @@ namespace Improvar.Controllers
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0; double TOTAL_BOMQNTY = 0; double TOTAL_EXTRAQNTY = 0; double TOTAL_QQNTY = 0;
+                string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
                 str += "select a.autono,a.slno,a.nos,a.qnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k.itgrpcd,k.uomcd,k.styleno,itgrpnm,k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm, ";
-                str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
+                str += "a.itremark,a.shade,a.cutlength,a.sample, k.styleno||' '||k.itnm itstyle,a.barno,q.decimals from " + Scm + ".T_PROGMAST a," + Scm + ".T_PROGDTL b ,";
                 str += Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
-                str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
+                str += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p, " + scmf + ".m_uom q ";
                 str += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k.ITCD(+) ";
-                str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and ";
+                str += " and a.SIZECD = l.SIZECD(+) and a.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) and k.uomcd=q.uomcd(+) and ";
                 str += " a.MTRLJOBCD=o.MTRLJOBCD(+) and a.PARTCD=p.PARTCD(+) and a.autono='" + TXN.AUTONO + "'";
                 str += "order by a.slno ";
 
@@ -321,14 +322,34 @@ namespace Improvar.Controllers
                                    SHADE = dr["shade"].retStr(),
                                    CUTLENGTH = dr["cutlength"].retDbl(),
                                    SAMPLE = dr["sample"].retStr(),
-                                   BARNO = dr["barno"].retStr()
+                                   BARNO = dr["barno"].retStr(),
+                                   DECIMALS = dr["decimals"].retShort()
 
                                }).OrderBy(s => s.SLNO).ToList();
+                string BARNO = VE.TPROGDTL.Select(a => a.BARNO).ToArray().retSqlfromStrarray();
+                string ITCD = VE.TPROGDTL.Select(a => a.ITCD).ToArray().retSqlfromStrarray();
+                string ITGRPCD = VE.TPROGDTL.Select(a => a.ITGRPCD).ToArray().retSqlfromStrarray();
+                var imgdata = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", SLR.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
+
                 foreach (var q in VE.TPROGDTL)
                 {
                     if (q.SAMPLE == "Y") q.CheckedSample = true;
                     TOTAL_NOS = TOTAL_NOS + (q.NOS == null ? 0 : q.NOS.Value);
                     TOTAL_QNTY = TOTAL_QNTY + (q.QNTY == null ? 0 : q.QNTY.Value);
+
+                    BARNO = q.BARNO;
+                    ITCD = q.ITCD;
+                    ITGRPCD = q.ITGRPCD;
+                    var img = imgdata.AsEnumerable().Where(a => a.Field<string>("BARNO") == BARNO && a.Field<string>("ITCD") == ITCD && a.Field<string>("ITGRPCD") == ITGRPCD).Select(b => new
+                    {
+                        BARIMAGE = b.Field<string>("BARIMAGE"),
+                        barimagecount = b.Field<decimal?>("barimagecount"),
+                    }).FirstOrDefault();
+                    if (img != null)
+                    {
+                        q.BarImages = img.BARIMAGE;
+                        q.BarImagesCount = img.barimagecount.retStr();
+                    }
                 }
                 VE.P_T_NOS = TOTAL_NOS.retInt();
                 VE.P_T_QNTY = TOTAL_QNTY.retInt();
@@ -537,10 +558,10 @@ namespace Improvar.Controllers
 
                 //fill prodgrpgstper in t_batchdtl
                 DataTable allprodgrpgstper_data = new DataTable();
-                string BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
-                string ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
+                BARNO = (from a in VE.TBATCHDTL select a.BARNO).ToArray().retSqlfromStrarray();
+                ITCD = (from a in VE.TBATCHDTL select a.ITCD).ToArray().retSqlfromStrarray();
                 string MTRLJOBCD = (from a in VE.TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
-                string ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
+                ITGRPCD = (from a in VE.TBATCHDTL select a.ITGRPCD).ToArray().retSqlfromStrarray();
 
                 //allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), "", "", ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
                 allprodgrpgstper_data = salesfunc.GetStock(TXN.DOCDT.retStr().Remove(10), TXN.GOCD.retSqlformat(), BARNO.retStr(), ITCD.retStr(), "", SLR.AUTONO.retSqlformat(), ITGRPCD, "", TXNOTH.PRCCD.retStr(), TXNOTH.TAXGRPCD.retStr());
@@ -676,7 +697,7 @@ namespace Improvar.Controllers
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr();
                 //if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, "ALL", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -2107,7 +2128,7 @@ namespace Improvar.Controllers
                     }
                     for (int i = 0; i <= VE.TPROGDTL.Count - 1; i++)
                     {
-                        if (VE.TPROGDTL[i].SLNO != 0 && VE.TPROGDTL[i].ITCD != null &&  VE.TPROGDTL[i].QNTY.retDbl() != 0)
+                        if (VE.TPROGDTL[i].SLNO != 0 && VE.TPROGDTL[i].ITCD != null && VE.TPROGDTL[i].QNTY.retDbl() != 0)
                         {
                             COUNTER = COUNTER + 1;
                             T_PROGMAST TPROGMAST = new T_PROGMAST();
@@ -2249,7 +2270,7 @@ namespace Improvar.Controllers
 
                     #region batch and detail data
                     // SAVE T_CNTRL_HDR_UNIQNO
-                   
+
                     if (VE.DefaultAction == "A")
                     {
                         T_CNTRL_HDR_UNIQNO TCHUNIQNO = new T_CNTRL_HDR_UNIQNO();
@@ -2259,7 +2280,7 @@ namespace Improvar.Controllers
                         dbsql = masterHelp.RetModeltoSql(TCHUNIQNO);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     }
-                   
+
                     //END T_CNTRL_HDR_UNIQNO 
 
                     double _amtdist = 0, _baldist = 0, _rpldist = 0, _mult = 1;

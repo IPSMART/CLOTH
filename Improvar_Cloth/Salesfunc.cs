@@ -1133,7 +1133,7 @@ namespace Improvar
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
             sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
-            sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm, e.wppricegen, e.rppricegen ";
+            sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm, e.wppricegen, e.rppricegen, m.decimals ";
             sql += "from ";
             sql += "( ";
             if (menupara != "PB" || barno != "")
@@ -1214,7 +1214,7 @@ namespace Improvar
 
             sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
-            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k , " + scm + ".m_size l ";
+            sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k , " + scm + ".m_size l, " + scmf + ".m_uom m ";
             sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
             if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
@@ -1222,7 +1222,7 @@ namespace Improvar
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
-            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+) ";
+            sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+)  and d.uomcd=m.uomcd(+) ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
@@ -1608,5 +1608,113 @@ namespace Improvar
             var yrcd = CommVar.YearCode(UNQSNO).Substring(2, 2);
             return yrcd + lbatchini + UNIQNO + slno.ToString().PadLeft(4, '0');
         }
+        public DataTable GetSemiItems(DataTable finitems, string jobcd = "", string itcd = "", string asondt = "")
+        {
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            //datatable finitems must have itcd, partcd, sizecd, itsizecd, qnty field;
+            string sql = "";
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), scmi = CommVar.InvSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+
+            string selitcd = CommFunc.retSqlformat(string.Join(",", (from DataRow dr in finitems.Rows select dr["itcd"].ToString()).Distinct()));
+
+            DataTable rsTmp = new DataTable();
+
+            if (asondt == "") asondt = System.DateTime.Now.Date.ToString("dd/MM/yyyy");
+
+            sql = "";
+            sql += "select a.bomcd, a.effdt, a.itcd, a.baseqnty, b.slno, b.partcd, b.sizecd, a.itcd||nvl(b.partcd,'')||nvl(b.sizecd,'') itsizecd, ";
+            sql += "c.modcd, c.itcd ritcd, c.itnm ritnm, c.uomcd ruomcd, nvl(d.decimals,0) decimals, d.uomnm ruomnm, nvl(c.std_qty,0) std_qty, c.qnty rqnty from ";
+            sql += "(select a.bomcd, a.effdt, a.itcd, a.baseqnty from ";
+            sql += "(select a.bomcd, a.effdt, a.itcd, a.baseqnty, ";
+            sql += "row_number() over (partition by a.itcd order by a.effdt desc) as rn ";
+            sql += "from " + scm + ".m_sitembom a, " + scm + ".m_cntrl_hdr b ";
+            sql += "where a.m_autono=b.m_autono and nvl(b.inactive_tag,'N')='N' and ";
+            sql += "a.effdt <= to_date('" + asondt + "','dd/mm/yyyy') and a.itcd in (" + selitcd + ")  ";
+            sql += ") a where a.rn=1 ) a, ";
+            sql += "(select a.bomcd, a.slno, a.partcd, a.sizecd ";
+            sql += "from " + scm + ".m_sitembompart a where a.jobcd='" + jobcd + "') b, ";
+            sql += "(select a.bomcd, a.slno, 'I' modcd, a.rslno, a.itcd, b.itdescn itnm, a.qnty, b.uom uomcd, b.std_qty ";
+            sql += "from " + scm + ".m_sitembominvmtrl a, " + scmi + ".m_item b ";
+            sql += "where a.itcd=b.itcd ";
+            sql += "union ";
+            sql += "select a.bomcd, a.slno, 'S' modcd, a.rslno, a.itcd, b.itnm, a.qnty, b.uomcd, b.minpurqty std_qty ";
+            sql += "from " + scm + ".m_sitembommtrl a, " + scm + ".m_sitem b ";
+            sql += "where a.itcd=b.itcd) c, " + scmf + ".m_uom d ";
+            sql += "where a.bomcd=b.bomcd and b.bomcd=c.bomcd and b.slno=c.slno and c.uomcd=d.uomcd(+) ";
+
+            rsTmp = SQLquery(sql);
+
+            DataTable IR = new DataTable();
+            IR.Columns.Add("itcd", typeof(string));
+            IR.Columns.Add("partcd", typeof(string));
+            IR.Columns.Add("sizecd", typeof(string));
+            IR.Columns.Add("colrcd", typeof(string));
+            IR.Columns.Add("modcd", typeof(string));
+            IR.Columns.Add("ritcd", typeof(string));
+            IR.Columns.Add("ritnm", typeof(string));
+            IR.Columns.Add("ruomcd", typeof(string));
+            IR.Columns.Add("ruomnm", typeof(string));
+            IR.Columns.Add("rqty", typeof(double));
+
+            string sitcd = "", ssizecd = "", spartcd = "", sitsizecd = "";
+
+            Int32 maxF = 0, f = 0;
+            Int32 maxR = 0, i = 0;
+            Int32 rNo = 0;
+            maxF = finitems.Rows.Count - 1;
+            while (f <= maxF)
+            {
+                sitcd = finitems.Rows[f]["itcd"].ToString();
+                ssizecd = finitems.Rows[f]["sizecd"].ToString();
+                spartcd = finitems.Rows[f]["partcd"].ToString();
+                sitsizecd = finitems.Rows[f]["itcd"].ToString() + finitems.Rows[f]["partcd"].ToString() + finitems.Rows[f]["sizecd"].ToString();
+
+                DataTable bomdata = new DataTable();
+                var rows1 = rsTmp.AsEnumerable()
+                              .Where(x => ((string)x["itsizecd"]) == sitsizecd);
+                if (rows1.Any()) bomdata = rows1.CopyToDataTable();
+
+                maxR = bomdata.Rows.Count - 1; i = 0;
+                while (i <= maxR)
+                {
+                    double rqty = 0, bqty = 0, iqty = 0, reqqty = 0;
+                    rqty = Convert.ToDouble(bomdata.Rows[i]["rqnty"]);
+                    bqty = Convert.ToDouble(bomdata.Rows[i]["baseqnty"]);
+                    iqty = Convert.ToDouble(finitems.Rows[i]["qnty"]);
+                    //bqty = Convert.ToDouble(bomdata.Rows[f]["baseqnty"]);
+                    //iqty = Convert.ToDouble(finitems.Rows[f]["qnty"]);
+                    reqqty = Cn.Roundoff((iqty / bqty) * rqty, Convert.ToInt16(bomdata.Rows[i]["decimals"]));
+
+                    bool recadd = true;
+
+                    for (int q = 0; q <= IR.Rows.Count - 1; q++)
+                    {
+                        if (IR.Rows[q]["ritcd"].ToString() == bomdata.Rows[i]["ritcd"].ToString())
+                        {
+                            IR.Rows[q]["rqty"] = Convert.ToDouble(IR.Rows[q]["rqty"]) + reqqty;
+                            recadd = false;
+                            break;
+                        }
+                    }
+                    if (recadd == true)
+                    {
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["itcd"] = sitcd;
+                        IR.Rows[rNo]["sizecd"] = ssizecd;
+                        IR.Rows[rNo]["partcd"] = spartcd;
+                        IR.Rows[rNo]["modcd"] = bomdata.Rows[i]["modcd"];
+                        IR.Rows[rNo]["ritcd"] = bomdata.Rows[i]["ritcd"];
+                        IR.Rows[rNo]["ritnm"] = bomdata.Rows[i]["ritnm"];
+                        IR.Rows[rNo]["ruomcd"] = bomdata.Rows[i]["ruomcd"];
+                        IR.Rows[rNo]["ruomnm"] = bomdata.Rows[i]["ruomnm"];
+                        IR.Rows[rNo]["rqty"] = reqqty;
+                    }
+                    i++;
+                }
+                f++;
+            }
+            return IR;
+        }
+
     }
 }

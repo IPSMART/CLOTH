@@ -103,6 +103,8 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? BALNOS { get; set; }
         public string PROGAUTOSLNO { get; set; }
-
+        public string BarImages { get; set; }
+        public string BarImagesCount { get; set; }
+        public short? DECIMALS { get; set; }
     }
 }

@@ -31,16 +31,16 @@
                     <table id="M_BOM_MAIN" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 2900px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 27px;"></th>
-                                <th class="sticky-cell" style="width: 27px;left:27px;">SL No.</th>
-                                <th class="sticky-cell" style="width:75px;left:53px;">Part Code</th>
+                                <th class="sticky-cell" style="width:27px;"></th>
+                                <th class="sticky-cell" style="width:27px;left:27px;">SL No.</th>
+                                <th class="sticky-cell" style="width:75px;left:54px;">Part Code</th>
                                 <th class="sticky-cell" style="width:150px;left:122px;">Part Name</th>
                                 <th class="sticky-cell" style="width:50px;left:250px;">Job Code</th>
-                                <th class="sticky-cell" style="width:150px;left:288px;">Job Name</th>
-                                <th class="" style="width: 64px;">Color Code</th>
-                                <th class="" style="width:100px;">Color Name</th>
-                                <th class="sticky-cell" style="width:65px;left:433px;">Size Code</th>
-                                <th class="sticky-cell" style="width:100px;left:494px;">Size Name</th>
+                                <th class="sticky-cell" style="width:150px;left:298px;">Job Name</th>
+                                <th class="sticky-cell" style="width: 64px;left:426px;">Color Code</th>
+                                <th class="sticky-cell" style="width:100px;left:486px;">Color Name</th>
+                                <th class="sticky-cell" style="width:65px;left:575px;">Size Code</th>
+                                <th class="sticky-cell" style="width:100px;left:635px;">Size Name</th>
                                 <th class="" style="width:140px;text-align:right;">Rate</th>
                                 <th class="" style="width:130px;text-align:right;">Material Cost</th>
                                 @*<th class="" style="width:55px;">Material Details</th>*@
@@ -72,7 +72,7 @@
                                             <td class="sticky-cell" style="left:122px;">
                                                 @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].PARTNM, new { id = "PARTNM_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly" })
                                             </td>*@
-                                        <td class="sticky-cell" style="left:53px;">
+                                        <td class="sticky-cell" style="left:54px;">
 
                                             @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].PARTCD, new { id = "PARTCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "M_BOM") + "','Part Details','" + "PARTCD_" + i + "','" + "PARTCD_" + i + "=PARTCD=1/" + "PARTNM_" + i + "=PARTNM=0','ITCD');", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", "M_BOM") + "','Part Details','" + "PARTCD_" + i + "','" + "PARTCD_" + i + "=PARTCD=1/" + "PARTNM_" + i + "=PARTNM=0','ITCD');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "M_BOM")','Part Details','PARTCD_@i','PARTCD_@i=PARTCD=1/PARTNM_@i=PARTNM=0','ITCD')" />
@@ -84,15 +84,15 @@
                                             @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].JOBCD, new { id = "JOBCD_" + i, @class = " atextBoxFor textbox_image", maxlength = 2, onkeyup = "GetHelp('" + @Url.Action("GetJobDetails", "M_BOM") + "','" + "JOBCD_" + i + "/" + "JOBNM_" + i + "','1/0','Job Details','" + "JOBCD_" + i + "')", onblur = "GetCodeBlurData(this.value,'" + "JOBCD_" + i + "','" + "JOBNM_" + i + "','JOBCode','');", })
                                             <img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetJobDetails", "M_BOM")','JOBCD_@i/JOBNM_@i','1/0','Job Details','JOBCD_@i')" />
                                         </td>
-                                        <td class="sticky-cell" style="left:288px;">
+                                        <td class="sticky-cell" style="left:298px;">
                                             @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].JOBNM, new { id = "JOBNM_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
-                                        <td class="">
+                                        <td class="sticky-cell" style="left:426px;">
 
                                             @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].COLRCD, new { id = "COLRCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "M_BOM") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "M_BOM") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "M_BOM")','Color Details','COLRCD_@i','COLRCD_@i=COLRCD=1/COLRNM_@i=COLRNM=0')" />
                                         </td>
-                                        <td class="">
+                                        <td class="sticky-cell" style="left:486px;">
                                             @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].COLRNM, new { id = "COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         @*<td class="sticky-cell" style="left:433px;">
@@ -103,11 +103,11 @@
                                                 @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].SIZENM, new { id = "SIZENM_" + i, @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly" })
                                             </td>*@
 
-                                        <td class="sticky-cell" style="left:433px;">
+                                        <td class="sticky-cell" style="left:575px;">
                                             @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].SIZECD, new { id = "SIZECD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "M_BOM") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "M_BOM") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');", @placeholder = "Code", @class = " atextBoxFor textbox_image" })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "M_BOM")','Size Details','SIZECD_@i','SIZECD_@i=SIZECD=1/SIZENM_@i=SIZENM=0')" />
                                         </td>
-                                        <td class="sticky-cell" style="left:494px;">
+                                        <td class="sticky-cell" style="left:635px;">
                                             @Html.TextBoxFor(model => Model.MSITEMBOMPART[i].SIZENM, new { id = "SIZENM_" + i, @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
 
