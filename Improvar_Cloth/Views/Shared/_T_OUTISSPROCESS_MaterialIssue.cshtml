@@ -154,7 +154,8 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotal_Barno();HasChangeBarSale();", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotal_Barno();HasChangeBarSale();IssueQntyChk(B_BALSTOCK_" + i + ", B_BOMQNTY_" + i + ", B_NEGSTOCK_" + i + ", B_QNTY_" + i + ");", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BOMQNTY, new { id = "B_BOMQNTY_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })

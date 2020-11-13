@@ -1633,11 +1633,7 @@ namespace Improvar
             sql += ") a where a.rn=1 ) a, ";
             sql += "(select a.bomcd, a.slno, a.partcd, a.sizecd ";
             sql += "from " + scm + ".m_sitembompart a where a.jobcd='" + jobcd + "') b, ";
-            sql += "(select a.bomcd, a.slno, 'I' modcd, a.rslno, a.itcd, b.itdescn itnm, a.qnty, b.uom uomcd, b.std_qty ";
-            sql += "from " + scm + ".m_sitembominvmtrl a, " + scmi + ".m_item b ";
-            sql += "where a.itcd=b.itcd ";
-            sql += "union ";
-            sql += "select a.bomcd, a.slno, 'S' modcd, a.rslno, a.itcd, b.itnm, a.qnty, b.uomcd, b.minpurqty std_qty ";
+            sql += "(select a.bomcd, a.slno, 'S' modcd, a.rslno, a.itcd, b.itnm, a.qnty, b.uomcd, b.minpurqty std_qty ";
             sql += "from " + scm + ".m_sitembommtrl a, " + scm + ".m_sitem b ";
             sql += "where a.itcd=b.itcd) c, " + scmf + ".m_uom d ";
             sql += "where a.bomcd=b.bomcd and b.bomcd=c.bomcd and b.slno=c.slno and c.uomcd=d.uomcd(+) ";

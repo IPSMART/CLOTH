@@ -177,5 +177,6 @@ namespace Improvar.Models
         public string RPPRICEGEN { get; set; }
         [StringLength(1)]
         public string SAMPLE { get; set; }
+        public double? BOMQNTY { get; set; }
     }
 }

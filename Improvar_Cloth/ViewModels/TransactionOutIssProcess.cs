@@ -179,6 +179,9 @@ namespace Improvar.ViewModels
         public double? P_T_NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000000}", ApplyFormatInEditMode = true)]
         public double? P_T_QNTY { get; set; }
+        public string BOMITCD { get; set; }
+        public string BOMITNM { get; set; }
+        public double? BOMQNTY { get; set; }
 
     }
 }
