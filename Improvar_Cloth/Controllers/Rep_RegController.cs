@@ -264,68 +264,144 @@ namespace Improvar.Controllers
 
                 string query = "";
                 query = "";
-                query += "select a.autono, a.doccd, a.docno, a.cancel, a.docdt, a.itgrpcd, a.pblno, a.pbldt, ";
-                query += "a.slcd, c.slnm, c.gstno, c.district, nvl(a.roamt,0) roamt, nvl(a.tcsamt,0) tcsamt, a.blamt, a.prcdesc, ";
-                query += "b.slno, b.itcd, b.prodcd, b.itnm, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.packsize, b.nos, b.qnty, ";
-                query += "b.rate, b.basamt, b.stddiscamt, b.discamt, g.conslcd, d.slnm cslnm, d.gstno cgstno, h.sapblno, ";
-                query += "d.district cdistrict, e.slnm trslnm,f.lrno,f.lrdt, g.ordrefno, to_char(nvl(g.ordrefdt,''),'dd/mm/yyyy') ordrefdt, ";
-                query += "b.igstper, b.igstamt, b.cgstper, b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt, b.batchno,b.blqnty,b.bluomcd from ";
-                query += "( select a.autono, b.doccd, b.docno, b.cancel, b.docdt, a.itgrpcd, a.pblno, a.pbldt,  ";
-                query += "a.slcd, a.roamt, a.tcsamt, a.blamt, d.prcdesc ";
-                query += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm1 + ".m_itemplist d ";
-                query += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and a.itmprccd=d.itmprccd(+) and  ";
-                query += "b.compcd='" + COM + "' and ";
-                if (selloccd == "") query += "b.loccd='" + LOC + "' and "; else query += "b.loccd in (" + selloccd + ") and ";
-                if (VE.FDOCNO.retStr() != "") query += "b.doconlyno >= '" + VE.FDOCNO + "' and ";
-                if (VE.TDOCNO.retStr() != "") query += "b.doconlyno <= '" + VE.TDOCNO + "' and ";
-                if (GODOWN != "") query += " a.GOCD in('" + GODOWN + "') and ";
+                //query += "select a.autono, a.doccd, a.docno, a.cancel, a.docdt, a.itgrpcd, a.pblno, a.pbldt, ";
+                //query += "a.slcd, c.slnm, c.gstno, c.district, nvl(a.roamt,0) roamt, nvl(a.tcsamt,0) tcsamt, a.blamt, a.prcdesc, ";
+                //query += "b.slno, b.itcd, b.prodcd, b.itnm, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.packsize, b.nos, b.qnty, ";
+                //query += "b.rate, b.basamt, b.stddiscamt, b.discamt, g.conslcd, d.slnm cslnm, d.gstno cgstno, h.sapblno, ";
+                //query += "d.district cdistrict, e.slnm trslnm,f.lrno,f.lrdt, g.ordrefno, to_char(nvl(g.ordrefdt,''),'dd/mm/yyyy') ordrefdt, ";
+                //query += "b.igstper, b.igstamt, b.cgstper, b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt, b.batchno,b.blqnty,b.bluomcd from ";
+                //query += "( select a.autono, b.doccd, b.docno, b.cancel, b.docdt, a.itgrpcd, a.pblno, a.pbldt,  ";
+                //query += "a.slcd, a.roamt, a.tcsamt, a.blamt, d.prcdesc ";
+                //query += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm1 + ".m_itemplist d ";
+                //query += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and a.itmprccd=d.itmprccd(+) and  ";
+                //query += "b.compcd='" + COM + "' and ";
+                //if (selloccd == "") query += "b.loccd='" + LOC + "' and "; else query += "b.loccd in (" + selloccd + ") and ";
+                //if (VE.FDOCNO.retStr() != "") query += "b.doconlyno >= '" + VE.FDOCNO + "' and ";
+                //if (VE.TDOCNO.retStr() != "") query += "b.doconlyno <= '" + VE.TDOCNO + "' and ";
+                //if (GODOWN != "") query += " a.GOCD in('" + GODOWN + "') and ";
+                //if (repsorton == "bldt")
+                //{
+                //    if (fdt != "") query += "a.pbldt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
+                //    if (tdt != "") query += "a.pbldt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
+                //}
+                //else
+                //{
+                //    if (fdt != "") query += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
+                //    if (tdt != "") query += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
+                //}
+                ////query += "a.itgrpcd in (" + itgrpcd + ") and a.doctag in ( " + txntag + ")  ";
+                //query += "a.itgrpcd in (" + itgrpcd + ")  ";
+                //query += ") a, ( ";
+                //query += "select a.autono, a.slno, a.itcd, a.itrem, b.prodcd, b.itnm, b.hsnsaccd hsncode, b.uomcd, c.uomnm, c.decimals, b.packsize, a.nos, a.qnty, a.rate, a.basamt,  ";
+                //query += "listagg(e.batchno,',') within group (order by d.autono, d.slno) batchno,  ";
+                //query += "a.stddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd  ";
+                //query += "from " + scm1 + ".t_txndtl a, " + scm1 + ".m_sitem b, " + scmf + ".m_uom c, ";
+                //query += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scm1 + ".m_itemplist f  ";
+                //query += "where a.itcd=b.itcd(+) and b.uomcd=c.uomcd(+) and a.autono=d.autono(+) and a.slno=d.slno(+) and  ";
+                //query += "d.batchautono=e.batchautono(+) and e.itmprccd=f.itmprccd(+) ";
+                //query += "group by a.autono, a.slno, a.itcd, a.itrem, b.prodcd, b.itnm, b.hsnsaccd, b.uomcd, c.uomnm, c.decimals, b.packsize, a.nos, a.qnty, a.rate, a.basamt,  ";
+                //query += "a.stddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd  ";
+                //query += "union ";
+                //query += "select a.autono, a.slno+1000 slno, a.amtcd itcd, '' itrem, '' prodcd, b.amtnm||a.amtdesc itnm, a.hsncode, 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 packsize, 0 nos, 0 qnty, 0 rate, a.amt basamt,  ";
+                //query += "'' batchno,  ";
+                //query += "0 stddiscamt, 0 discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'OTH' bluomcd  ";
+                //query += "from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b  ";
+                //query += "where a.amtcd=b.amtcd(+) ";
+                //query += ") b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ";
+                //query += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and g.conslcd=d.slcd(+) and a.autono=f.autono(+) and ";
+                //query += "f.translcd=e.slcd(+) and a.autono=f.autono(+) and a.autono=g.autono(+) and a.autono=h.autono(+) ";
+                //if (selslcd != "") query += " and a.slcd in (" + selslcd + ") ";
+                //if (unselslcd != "") query += " and a.slcd not in (" + unselslcd + ") ";
+                ////if (INSBY != "") query += " and h.insby='" + INSBY + "' ";
+                //query += "order by ";
+                //if (repsorton == "partywise") query += "slcd,pbldt,pblno,docdt,docno";
+                //else if (repsorton == "bldt") query += "pbldt,pblno";
+                //else query += "docdt";
+                //if (itmdtl == true || reptype == "Product")
+                //{
+                //    query += " , itgrpcd, docno, slno ";
+                //}
+                //else
+                //{
+                //    query += " , itgrpcd, docno, igstper, cgstper, sgstper ";
+                //}
+
+                string query1 = "";
+                query1 += " select a.autono, a.doccd, a.docno, a.cancel, a.docdt, ";
+                query1 += "--a.itgrpcd, ";
+                query1 += "  a.prefno, a.prefdt, a.slcd, c.slnm, c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
+                query1 += " nvl(a.tcsamt, 0) tcsamt, a.blamt, ";
+                query1 += "--a.prcdesc, ";
+                query1 += "   b.slno, b.itcd,--b.prodgrpcd,  ";
+                query1 += "   b.itnm, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
+                query1 += " b.qnty, b.rate, b.amt, b.tddiscamt, b.discamt, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
+                query1 += " e.slnm trslnm, f.lrno,f.lrdt, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
+                query1 += " b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt, b.batchno,b.blqnty from ( ";
+                query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
+                query1 += "b.docdt, ";
+                query1 += "--a.itgrpcd, ";
+                query1 += "a.prefno, a.prefdt, a.slcd, a.roamt, a.tcsamt, a.blamt ";
+                query1 += "--, d.prcdesc ";
+                query1 += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, ";
+                query1 += " " + scmf + ".m_subleg c--, " + scm1 + ".m_itemplistdtl d ";
+                query1 += "  where a.autono = b.autono and a.slcd = c.slcd(+) ";
+                query1 += " -- and a.prccd = d.prccd(+) ";
+                query1 += "  and  b.compcd = '" + COM + "' ";
+                if (selloccd == "") query1 += " and b.loccd = '" + LOC + "' and "; else query1 += "b.loccd in (" + selloccd + ")  ";
+                query1 += "and  a.GOCD in('" + GODOWN + "') and ";
                 if (repsorton == "bldt")
                 {
-                    if (fdt != "") query += "a.pbldt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
-                    if (tdt != "") query += "a.pbldt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
+                    if (fdt != "") query1 += "a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
+                    if (tdt != "") query1 += "a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
                 }
                 else
                 {
-                    if (fdt != "") query += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
-                    if (tdt != "") query += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
-                }
-                query += "a.itgrpcd in (" + itgrpcd + ") and a.doctag in ( " + txntag + ")  ";
-                query += ") a, ( ";
-                query += "select a.autono, a.slno, a.itcd, a.itrem, b.prodcd, b.itnm, b.hsnsaccd hsncode, b.uomcd, c.uomnm, c.decimals, b.packsize, a.nos, a.qnty, a.rate, a.basamt,  ";
-                query += "listagg(e.batchno,',') within group (order by d.autono, d.slno) batchno,  ";
-                query += "a.stddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd  ";
-                query += "from " + scm1 + ".t_txndtl a, " + scm1 + ".m_sitem b, " + scmf + ".m_uom c, ";
-                query += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scm1 + ".m_itemplist f  ";
-                query += "where a.itcd=b.itcd(+) and b.uomcd=c.uomcd(+) and a.autono=d.autono(+) and a.slno=d.slno(+) and  ";
-                query += "d.batchautono=e.batchautono(+) and e.itmprccd=f.itmprccd(+) ";
-                query += "group by a.autono, a.slno, a.itcd, a.itrem, b.prodcd, b.itnm, b.hsnsaccd, b.uomcd, c.uomnm, c.decimals, b.packsize, a.nos, a.qnty, a.rate, a.basamt,  ";
-                query += "a.stddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd  ";
-                query += "union ";
-                query += "select a.autono, a.slno+1000 slno, a.amtcd itcd, '' itrem, '' prodcd, b.amtnm||a.amtdesc itnm, a.hsncode, 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 packsize, 0 nos, 0 qnty, 0 rate, a.amt basamt,  ";
-                query += "'' batchno,  ";
-                query += "0 stddiscamt, 0 discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'OTH' bluomcd  ";
-                query += "from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b  ";
-                query += "where a.amtcd=b.amtcd(+) ";
-                query += ") b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ";
-                query += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and g.conslcd=d.slcd(+) and a.autono=f.autono(+) and ";
-                query += "f.translcd=e.slcd(+) and a.autono=f.autono(+) and a.autono=g.autono(+) and a.autono=h.autono(+) ";
-                if (selslcd != "") query += " and a.slcd in (" + selslcd + ") ";
-                if (unselslcd != "") query += " and a.slcd not in (" + unselslcd + ") ";
-                if (INSBY != "") query += " and h.insby='" + INSBY + "' ";
-                query += "order by ";
-                if (repsorton == "partywise") query += "slcd,pbldt,pblno,docdt,docno";
-                else if (repsorton == "bldt") query += "pbldt,pblno";
-                else query += "docdt";
-                if (itmdtl == true || reptype == "Product")
-                {
-                    query += " , itgrpcd, docno, slno ";
-                }
-                else
-                {
-                    query += " , itgrpcd, docno, igstper, cgstper, sgstper ";
+                    if (fdt != "") query1 += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
+                    if (tdt != "") query1 += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
                 }
 
-                DataTable tbl = MasterHelp.SQLquery(query);
+                query1 += "--and  a.itgrpcd in (" + itgrpcd + ") ";
+
+                query1 += " ) a, ( ";
+                query1 += " select distinct a.autono, a.slno, a.itcd, a.itrem, --i.prodgrpcd,  ";
+                query1 += " b.itnm, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, ";
+                query1 += "  a.nos, a.qnty, a.rate, a.amt,  listagg(e.batchno, ',') within group (order by d.autono, d.slno) batchno,  a.tddiscamt, a.discamt,  ";
+                query1 += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty from " + scm1 + ".t_txndtl a, ";
+                query1 += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e ";
+                query1 += " --," + scm1 + ".m_group i ";
+                query1 += "   where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = e.autono(+) and e.autono = d.autono(+) ";
+                query1 += " group by ";
+                query1 += " a.autono, a.slno, a.itcd, a.itrem,--i.prodgrpcd, ";
+                query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,  ";
+                query1 += " a.tddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty ";
+                query1 += " --,a.bluomcd ";
+                query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem--'' prodgrpcd ";
+                query1 += " , b.amtnm || a.amtdesc itnm, a.hsncode,  ";
+                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, 0 rate, a.amt basamt,  '' batchno,  0 tddiscamt, 0 discamt, a.igstper, a.igstamt, ";
+                query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty ";
+                query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
+                query1 += " where a.amtcd = b.amtcd ";
+                query1 += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, ";
+                query1 += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ";
+                query1 += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) ";
+                query1 += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) ";
+                if (selslcd != "") query1 += " and a.slcd in (" + selslcd + ") ";
+                if (unselslcd != "") query1 += " and a.slcd not in (" + unselslcd + ") ";
+                query1 += "order by ";
+                if (repsorton == "partywise") query1 += "slcd,prefdt,prefno,docdt,docno";
+                else if (repsorton == "bldt") query1 += "prefdt,prefno";
+                else query1 += "docdt";
+                if (itmdtl == true || reptype == "Product")
+                {
+                    query1 += " , docno, slno ";
+                }
+                else
+                {
+                    query1 += " , docno, igstper, cgstper, sgstper ";
+                }
+
+
+                DataTable tbl = MasterHelp.SQLquery(query1);
                 if (tbl.Rows.Count == 0)
                 {
                     return RedirectToAction("NoRecords", "RPTViewer", new { errmsg = "Records not found !!" });
