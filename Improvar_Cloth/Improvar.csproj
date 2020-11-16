@@ -280,6 +280,7 @@
     <Compile Include="Controllers\Rep_Bar_HistoryController.cs" />
     <Compile Include="Controllers\Rep_Doc_PrintController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
+    <Compile Include="Controllers\Rep_RegController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
@@ -1131,6 +1132,7 @@
     <Content Include="Views\Shared\_REP_BAR_HISTORY.cshtml" />
     <Content Include="Views\Shared\_REP_BAR_HISTORY_PRICE.cshtml" />
     <Content Include="Views\Rep_BarcodeImage\Rep_BarcodeImage.cshtml" />
+    <Content Include="Views\Rep_Reg\Rep_Reg.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
