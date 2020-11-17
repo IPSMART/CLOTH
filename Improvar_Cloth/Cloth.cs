@@ -579,6 +579,7 @@ namespace Improvar
                         TTXN.DTAG = "E";
                     }
                     TTXN.DOCTAG = VE.MENU_PARA.retStr().Length > 2 ? VE.MENU_PARA.retStr().Remove(2) : VE.MENU_PARA.retStr();
+                    TTXN.SLCD = VE.RETDEBSLCD;
                     TTXN.GOCD = VE.T_TXN.GOCD;
                     TTXN.DUEDAYS = VE.T_TXN.DUEDAYS;
                     TTXN.PARGLCD = parglcd;

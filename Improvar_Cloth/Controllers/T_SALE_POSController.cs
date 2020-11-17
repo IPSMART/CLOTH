@@ -1444,7 +1444,7 @@ namespace Improvar.Controllers
             ModelState.Clear();
             return Content(ContentFlg);
         }
-        public ActionResult Print(TransactionSalePosEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
+        public ActionResult Print(TransactionSalePosEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT, string MENUPARA)
         {
             try
             {
@@ -1454,7 +1454,7 @@ namespace Improvar.Controllers
                 ind.TDOCNO = DOCNO;
                 ind.FDT = DOCDT;
                 ind.TDT = DOCDT;
-                ind.MENU_PARA = "SALES";
+                ind.MENU_PARA = MENUPARA;
                 if (TempData["printparameter"] != null)
                 {
                     TempData.Remove("printparameter");
