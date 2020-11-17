@@ -146,8 +146,8 @@ namespace Improvar.Controllers
                 string prnemailid = "";
                 //if (VE.TEXTBOX5 != null) prnemailid = "'" + VE.TEXTBOX5 + "' regemailid"; else prnemailid = "a.regemailid";
                 if (VE.TEXTBOX5 != null) prnemailid = "'" + VE.TEXTBOX5 + "' regemailid"; else prnemailid = "e.regemailid";
-
-                string sql = "", sqlc = "";
+              
+                  string sql = "", sqlc = "";
 
                 #region SMS Send
                 if (printemail == "SMS")
@@ -158,7 +158,7 @@ namespace Improvar.Controllers
                     return Content(SmsRetVal);
                 }
                 #endregion
-
+                
                 sql = "";
 
                 sqlc = "";
@@ -605,7 +605,7 @@ namespace Improvar.Controllers
 
                 while (i <= maxR)
                 {
-                    
+
                     //grpemailid = tbl.Rows[i]["grpemailid"].ToString();
                     gocd = tbl.Rows[i]["gocd"].ToString();
                     goadd = tbl.Rows[i]["goadd1"].ToString() + " " + tbl.Rows[i]["goadd2"].ToString() + " " + tbl.Rows[i]["goadd3"].ToString();
@@ -622,7 +622,7 @@ namespace Improvar.Controllers
                         bool doctotprint = false; bool totalreadyprint = false; bool delvchrg = false;
 
                         string dtldsc = "", dtlamt = "";
-                        double tqnty = 0,tnos=0, tamt = 0, tgst = 0, blamt = 0, totalosamt = 0;
+                        double tqnty = 0, tnos = 0, tamt = 0, tgst = 0, blamt = 0, totalosamt = 0;
                         string hsnqnty = "", hsntaxblval = "", hsngstper1 = "", hsngstper2 = "", hsngstper3 = "", hsngstamt1 = "", hsngstamt2 = "", hsngstamt3 = "", hsncode = "";
                         double gstper1 = 0, gstamt1 = 0, total_qnty = 0, total_taxval = 0, total_gstamt1 = 0, total_gstamt2 = 0, total_gstamt3 = 0;
                         bool flagi = false, flagc = false, flags = false;
@@ -666,7 +666,7 @@ namespace Improvar.Controllers
                                                 SGSTPER = X.Key.SGST,
                                                 TAMT = A_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("amt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("amt"))),
                                                 TQNTY = Q_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("qnty")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("qnty"))),
-                                                TNOS= N_S.Name == "Double" ? X.Sum(Z => Z.Field<double>("nos")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("nos"))),
+                                                TNOS = N_S.Name == "Double" ? X.Sum(Z => Z.Field<double>("nos")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("nos"))),
                                                 IGSTAMT = I_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("igstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("igstamt"))),
                                                 CGSTAMT = C_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("cgstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("cgstamt"))),
                                                 SGSTAMT = S_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("sgstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("sgstamt"))),
@@ -706,7 +706,7 @@ namespace Improvar.Controllers
                                                 TCGSTAMT = x.Sum(s => s.CGSTAMT),
                                                 TSGSTAMT = x.Sum(s => s.SGSTAMT),
                                                 TAMT = x.Sum(s => s.AMT),
-                                                TQNTY = x.Sum(s => s.QNTY)                                                
+                                                TQNTY = x.Sum(s => s.QNTY)
                                                 //DECIMAL = (from z in DBF.M_UOM
                                                 //           where z.UOMCD == (from y in DBF.T_VCH_GST where y.AUTONO == auto1 select y.UOM).FirstOrDefault()
                                                 //           select z.DECIMALS).FirstOrDefault()
@@ -1101,7 +1101,7 @@ namespace Improvar.Controllers
                                 dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
                                 //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
-                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() +" "+ tbl.Rows[i]["styleno"].ToString();
+                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
                                 //if (tbl.Rows[i]["damstock"].ToString() == "D")
                                 //{
                                 //    dr1["itnm"] = dr1["itnm"].ToString() + " [Damage]";
@@ -1342,6 +1342,7 @@ namespace Improvar.Controllers
                 if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
                 string rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
                 if (VE.maxdate == "CHALLAN") blhead = "CHALLAN";
+            
 
                 if (printemail == "Email")
                 {
@@ -1509,6 +1510,8 @@ namespace Improvar.Controllers
                         return new FileStreamResult(stream, "application/pdf");
                     }
                 }
+               
+                
             }
             catch (Exception ex)
             {

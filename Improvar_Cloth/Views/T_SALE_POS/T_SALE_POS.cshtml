@@ -537,7 +537,7 @@
         if (T_PER > 100) { msgWarning("Total of Percentage(%) Should be 100 !!"); $("#S_PER_" + i).val(""); $("#S_PER_" + i).focus(); }
         else {
             for (var i = 0; i <= GridRow - 1; i++) {
-                var T_GROSS_AMT = $("#T_GROSS_AMT").val();
+                var T_GROSS_AMT = $("#T_B_GROSSAMT").val();
                 if (T_GROSS_AMT == "") { T_GROSS_AMT = parseFloat(0); } else { T_GROSS_AMT = parseFloat(T_GROSS_AMT) }
                 var R_T_GROSS_AMT = $("#R_T_GROSS_AMT").val();
                 if (R_T_GROSS_AMT == "") { R_T_GROSS_AMT = parseFloat(0); } else { R_T_GROSS_AMT = parseFloat(R_T_GROSS_AMT) }
