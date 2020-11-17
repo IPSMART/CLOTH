@@ -181,7 +181,7 @@ namespace Improvar.ViewModels
         public double? P_T_QNTY { get; set; }
         public string BOMITCD { get; set; }
         public string BOMITNM { get; set; }
-        public double? BOMQNTY { get; set; }
+        public string BOMQNTY { get; set; }
 
     }
 }

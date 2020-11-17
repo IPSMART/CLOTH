@@ -1130,7 +1130,7 @@ namespace Improvar
             sql = "";
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
-            sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
+            sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, d.styleno||' '||d.itnm itstyle, ";
             sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
             sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm, e.wppricegen, e.rppricegen, m.decimals ";
@@ -1363,7 +1363,7 @@ namespace Improvar
             DataTable dt = MasterHelpFa.SQLquery(sql);
             if (dt.Rows.Count > 0)
             {
-                return "</br>" + "DOCNO : " +dt.Rows[0]["docno"].retStr()+"</br>"+ "DOCDATE : " + dt.Rows[0]["docdt"].retStr().Remove(10) + "</br>"+ 
+                return "</br>" + "DOCNO : " + dt.Rows[0]["docno"].retStr() + "</br>" + "DOCDATE : " + dt.Rows[0]["docdt"].retStr().Remove(10) + "</br>" +
                     "AUTONO : " + dt.Rows[0]["AUTONO"].retStr() + "</br>";
             }
             else
@@ -1449,7 +1449,7 @@ namespace Improvar
             sql += "order by styleno, print_seq, sizenm";
             return sql;
         }
-        public DataTable GetPendOrder(string slcd = "", string ordupto = "", string ordautono = "",string orderslno="", string txnupto = "", string skipautono = "", string menupara = "SB", string brandcd = "", bool OnlyBal = true, string ordfromdt = "", string itcd = "", string agslcd = "", string slmslcd = "", string itgrpcd = "", string curschema = "", string finschema = "")
+        public DataTable GetPendOrder(string slcd = "", string ordupto = "", string ordautono = "", string orderslno = "", string txnupto = "", string skipautono = "", string menupara = "SB", string brandcd = "", bool OnlyBal = true, string ordfromdt = "", string itcd = "", string agslcd = "", string slmslcd = "", string itgrpcd = "", string curschema = "", string finschema = "")
         {
             string sql = GetPendOrderSql(slcd, ordupto, ordautono, orderslno, txnupto, skipautono, menupara, brandcd, OnlyBal, ordfromdt, itcd, agslcd, slmslcd, itgrpcd, curschema, finschema);
             DataTable tbl = new DataTable();
@@ -1463,7 +1463,23 @@ namespace Improvar
             //color clrbarcode  3
             //size szbarcode   2
             //return ITCD.retStr().Substring(1, 7) + MTBARCODE.retStr() + PRTBARCODE.retStr() + CLRBARCODE.retStr() + SZBARCODE.retStr();
-            return ITCD.retStr().Substring(1, 7) + CLRBARCODE.retStr() + SZBARCODE.retStr();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COLRCD = "", SIZECD = "";
+            if (CLRBARCODE.retStr() != "")
+            {
+                COLRCD = DB.M_COLOR.Where(a => a.CLRBARCODE == CLRBARCODE.retStr()).Select(b => b.COLRCD).SingleOrDefault();
+            }
+
+            if (SZBARCODE.retStr() != "")
+            {
+                SIZECD = DB.M_SIZE.Where(a => a.SZBARCODE == SZBARCODE.retStr()).Select(b => b.SIZECD).SingleOrDefault();
+            }
+            string barno = DB.M_SITEM_BARCODE.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD).Select(b => b.BARNO).SingleOrDefault();
+            if (barno == "")
+            {
+                barno = ITCD.retStr().Substring(1, 7) + CLRBARCODE.retStr() + SZBARCODE.retStr();
+            }
+            return barno;
         }
         public DataTable GetSyscnfgData(string EFFDT)
         {
@@ -1674,9 +1690,9 @@ namespace Improvar
                 while (i <= maxR)
                 {
                     double rqty = 0, bqty = 0, iqty = 0, reqqty = 0;
-                    rqty = Convert.ToDouble(bomdata.Rows[i]["rqnty"]);
-                    bqty = Convert.ToDouble(bomdata.Rows[i]["baseqnty"]);
-                    iqty = Convert.ToDouble(finitems.Rows[i]["qnty"]);
+                    rqty = bomdata.Rows[i]["rqnty"].retDbl();
+                    bqty = bomdata.Rows[i]["baseqnty"].retDbl();
+                    iqty = finitems.Rows[i]["qnty"].retDbl();
                     //bqty = Convert.ToDouble(bomdata.Rows[f]["baseqnty"]);
                     //iqty = Convert.ToDouble(finitems.Rows[f]["qnty"]);
                     reqqty = Cn.Roundoff((iqty / bqty) * rqty, Convert.ToInt16(bomdata.Rows[i]["decimals"]));
@@ -1687,7 +1703,7 @@ namespace Improvar
                     {
                         if (IR.Rows[q]["ritcd"].ToString() == bomdata.Rows[i]["ritcd"].ToString())
                         {
-                            IR.Rows[q]["rqty"] = Convert.ToDouble(IR.Rows[q]["rqty"]) + reqqty;
+                            IR.Rows[q]["rqty"] = IR.Rows[q]["rqty"].retDbl() + reqqty;
                             recadd = false;
                             break;
                         }

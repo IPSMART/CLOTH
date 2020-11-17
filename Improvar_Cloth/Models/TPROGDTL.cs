@@ -106,5 +106,7 @@ namespace Improvar.Models
         public string BarImages { get; set; }
         public string BarImagesCount { get; set; }
         public short? DECIMALS { get; set; }
+        public string CLRBARCODE { get; set; }
+        public string SZBARCODE { get; set; }
     }
 }
