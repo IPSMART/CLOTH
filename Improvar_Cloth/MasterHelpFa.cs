@@ -780,7 +780,7 @@ namespace Improvar
         public string InsVch_GST(string autono, string doccd, string docno, string docdt, short emd_no, string dtag, string drcr, int dslno, int slno, string pcode,
             string blno, string bldt, string hsncode, string itnm, double qnty, string uom, double amt, double igstper, double igstamt, double cgstper, double cgstamt, double sgstper, double sgstamt, double cessper, double cessamt,
             string salpur, double roamt, double blamt, double othramt = 0, string invtypecd = "", string pos = "", string agstdocno = "", string agstdocdt = "", string dncncd = "",
-            string gstslnm = "", string gstno = "", string expcd = "", string shipdocno = "", string shipdocdt = "", string portcd = "", string dncnsalpur = "",
+            string gstslnm = "", string gstno = "", string gstsladd1 = "", string gstsldist = "", string gstslpin = "", string expcd = "", string shipdocno = "", string shipdocdt = "", string portcd = "", string dncnsalpur = "",
             string conslcd = "", string exemptedtype = "", double appltaxrate = 0, string expglcd = "", string inptclaim = "")
         {
             string bl = "";
@@ -794,7 +794,7 @@ namespace Improvar
 
                 sql = "insert into " + scmf + ".t_vch_gst (emd_no, clcd, dtag, ttag, autono, doccd, docno, docdt, dslno, slno, drcr, pcode, blno, bldt, hsncode, itnm, qnty, ";
                 sql = sql + "uom, amt, igstper, igstamt, cgstper, cgstamt, sgstper, sgstamt, cessper, cessamt, othramt, roamt, blamt, salpur, invtypecd, dncncd, agstdocno, agstdocdt, ";
-                sql = sql + "pos, gstslnm, gstno, expcd, shipdocno, shipdocdt, portcd, dncnsalpur, conslcd, exemptedtype, appltaxrate, expglcd, inptclaim) values (";
+                sql = sql + "pos, gstslnm, gstno,gstsladd1,gstsldist,gstslpin,expcd, shipdocno, shipdocdt, portcd, dncnsalpur, conslcd, exemptedtype, appltaxrate, expglcd, inptclaim) values (";
                 sql = sql + emd_no;
                 sql = sql + "," + filc(clcd);
                 sql = sql + "," + filc(dtag);
@@ -833,6 +833,9 @@ namespace Improvar
                 sql = sql + "," + filc(pos);
                 sql = sql + "," + filc(gstslnm);
                 sql = sql + "," + filc(gstno);
+                sql = sql + "," + filc(gstsladd1);
+                sql = sql + "," + filc(gstsldist);
+                sql = sql + "," + filc(gstslpin);
                 sql = sql + "," + filc(expcd);
                 sql = sql + "," + filc(shipdocno);
                 sql = sql + "," + fild(shipdocdt);

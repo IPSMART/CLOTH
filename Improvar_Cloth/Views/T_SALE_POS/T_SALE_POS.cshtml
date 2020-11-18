@@ -537,7 +537,7 @@
         if (T_PER > 100) { msgWarning("Total of Percentage(%) Should be 100 !!"); $("#S_PER_" + i).val(""); $("#S_PER_" + i).focus(); }
         else {
             for (var i = 0; i <= GridRow - 1; i++) {
-                var T_GROSS_AMT = $("#T_GROSS_AMT").val();
+                var T_GROSS_AMT = $("#T_B_GROSSAMT").val();
                 if (T_GROSS_AMT == "") { T_GROSS_AMT = parseFloat(0); } else { T_GROSS_AMT = parseFloat(T_GROSS_AMT) }
                 var R_T_GROSS_AMT = $("#R_T_GROSS_AMT").val();
                 if (R_T_GROSS_AMT == "") { R_T_GROSS_AMT = parseFloat(0); } else { R_T_GROSS_AMT = parseFloat(R_T_GROSS_AMT) }
@@ -775,16 +775,16 @@
                             </div>
                         </div>
                         @*<div class="col-md-1">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Bill Type")
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
-                                </div>
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Bill Type")
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
+                        </div>
 
-                            </div>*@
+                    </div>*@
 
                     </div>
                     <div class="row">
@@ -814,13 +814,72 @@
                         </div>
 
                         @*<div class="col-md-8">
-                                <div class="editor-field">
+                        <div class="editor-field">
 
-                                </div>
-                            </div>*@
+                        </div>
+                    </div>*@
                         <div class="col-md-4">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST No.")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Party GST No.", maxlength = 15, @placeholder = "Party GST No." } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST Name")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST No.", maxlength = 50, @placeholder = "Party GST No." } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST Address")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTSLADD1, new { htmlAttributes = new { @class = "form-control", id = "GSTSLADD1", @title = "Party GST Address", maxlength = 60, @placeholder = "Party GST Address" } })
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST District")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTSLDIST, new { htmlAttributes = new { @class = "form-control", id = "GSTSLDIST", @title = "Party GST District", maxlength = 50, @placeholder = "Party GST District" } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST PinCode")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTSLPIN, new { htmlAttributes = new { @class = "form-control", id = "GSTSLPIN", @title = "Party GST PinCode", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7, @placeholder = "Party GST PinCod" } })
                             </div>
                         </div>
                     </div>
@@ -865,7 +924,7 @@
                             </div>
                         </div>
                         @*</div>
-                            <div class="row">*@
+                    <div class="row">*@
 
                         <div class="col-md-1">
                             <div class="editor-field">
@@ -881,7 +940,7 @@
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })
                                 @*@Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />*@
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />*@
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -980,6 +1039,7 @@
                     </div>
                     @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
                 </div>
+            </div>
                 @*<div class="row">
                         <div class="col-md-3">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -1124,7 +1184,7 @@
                         </div>*@
                 </div>
             </div>
-        </div>
+      //  </div>
 
         <div class="container">
             <!-- Modal -->

@@ -146,5 +146,13 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string INPTCLAIM { get; set; }
+        [StringLength(60)]
+        public string GSTSLADD1 { get; set; }
+        [StringLength(60)]
+        public string GSTSLADD2 { get; set; }
+        [StringLength(50)]
+        public string GSTSLDIST { get; set; }
+        [StringLength(7)]
+        public string GSTSLPIN { get; set; }
     }
 }
