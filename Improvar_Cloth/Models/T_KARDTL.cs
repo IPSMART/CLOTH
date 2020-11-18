@@ -72,15 +72,13 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-        public short? NOS { get; set; }
+        public double? NOS { get; set; }
 
-        public decimal? CUTLENGTH { get; set; }
+        public double? CUTLENGTH { get; set; }
 
-        public decimal? QNTY { get; set; }
+        public double? QNTY { get; set; }
 
-        public decimal? STKQNTY { get; set; }
-
-        public decimal? RATE { get; set; }
+        public double? RATE { get; set; }
 
         [StringLength(1)]
         public string SAMPLE { get; set; }

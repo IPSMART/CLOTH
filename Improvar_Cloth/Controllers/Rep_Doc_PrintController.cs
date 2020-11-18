@@ -270,7 +270,7 @@ namespace Improvar.Controllers
             DataTable tblprgrm = masterHelp.SQLquery(str);
 
             string str1 = "";
-            str1 += "select i.autono,i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO, ";
+            str1 += "select i.autono,i.SLNO,i.RECPROGSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO, ";
             str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
             str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,s.itnm fabitnm,i.cutlength ";
             str1 += "from " + scm1 + ".T_BATCHDTL i, " + scm1 + ".T_BATCHMST j, " + scm1 + ".M_SITEM k, " + scm1 + ".M_SIZE l, " + scm1 + ".M_COLOR m, ";
@@ -447,7 +447,7 @@ namespace Improvar.Controllers
                     sln++;
                     IR_ISSUE.Rows.Add(""); rNo = IR_ISSUE.Rows.Count - 1;
                     IR_ISSUE.Rows[rNo]["autono"] = tbl.Rows[i]["autono"].ToString();
-                    IR_ISSUE.Rows[rNo]["progslno"] = tbl.Rows[i]["TXNSLNO"].ToString();
+                    IR_ISSUE.Rows[rNo]["progslno"] = tbl.Rows[i]["RECPROGSLNO"].ToString();
                     IR_ISSUE.Rows[rNo]["iss_slno"] = tbl.Rows[i]["slno"].ToString();
                     IR_ISSUE.Rows[rNo]["iss_itdescn"] = tbl.Rows[i]["itgrpnm"].ToString() + " " + tbl.Rows[i]["fabitnm"].ToString() + " " + tbl.Rows[i]["itnm"].ToString();
                     IR_ISSUE.Rows[rNo]["iss_styleno"] = tbl.Rows[i]["styleno"];

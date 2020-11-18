@@ -1467,12 +1467,14 @@ namespace Improvar
             string COLRCD = "", SIZECD = "";
             if (CLRBARCODE.retStr() != "")
             {
-                COLRCD = DB.M_COLOR.Where(a => a.CLRBARCODE == CLRBARCODE.retStr()).Select(b => b.COLRCD).SingleOrDefault();
+                string clrbarcode = CLRBARCODE.retStr();
+                COLRCD = DB.M_COLOR.Where(a => a.CLRBARCODE == clrbarcode).Select(b => b.COLRCD).SingleOrDefault();
             }
 
             if (SZBARCODE.retStr() != "")
             {
-                SIZECD = DB.M_SIZE.Where(a => a.SZBARCODE == SZBARCODE.retStr()).Select(b => b.SIZECD).SingleOrDefault();
+                string szbarcode = SZBARCODE.retStr();
+                SIZECD = DB.M_SIZE.Where(a => a.SZBARCODE == szbarcode).Select(b => b.SIZECD).SingleOrDefault();
             }
             string barno = DB.M_SITEM_BARCODE.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD).Select(b => b.BARNO).SingleOrDefault();
             if (barno == "")
