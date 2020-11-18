@@ -154,7 +154,7 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotal_Barno();HasChangeBarSale();IssueQntyChk(B_BALSTOCK_" + i + ", B_BOMQNTY_" + i + ", B_NEGSTOCK_" + i + ", B_QNTY_" + i + ");", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateTotal_Barno();HasChangeBarSale();IssueQntyChk(B_BALSTOCK_" + i + ", B_BOMQNTY_" + i + ", B_NEGSTOCK_" + i + ", B_QNTY_" + i + ", B_ITCD_" + i + ", B_SLNO_" + i + ");", @class = " atextBoxFor", maxlength = 12 } })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BOMQNTY, new { id = "B_BOMQNTY_" + i })
                                         </td>
                                         <td class="">
@@ -232,7 +232,7 @@
                                         @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                         {
                                             <td class="sticky-cell-opposite">
-                                                <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea('', '_T_SALE_PRODUCT_GRID', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
+                                                <button type="button" class="atextBoxFor btn-info" onclick="T_OUTISSPROCESS_FillBarcodeArea('', '_T_SALE_PRODUCT_GRID', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </td>
                                         }
                                     </tr>

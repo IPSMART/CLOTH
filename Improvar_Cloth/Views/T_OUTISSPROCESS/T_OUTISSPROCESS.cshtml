@@ -733,7 +733,11 @@
             $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
 
             var stock = retFloat(returncolvalue(str, "BALQNTY"));
-            var bomqnty = retFloat($("#BOMQNTY").val());
+            var bomqnty = 0;
+            if ($("#BOMQNTY").val() != "") {
+                bomqnty = retFloat($("#BOMQNTY").val().split('~~')[0]);
+            }
+
             if (stock < bomqnty) {
                 $("#QNTY").val(stock);
             }
@@ -785,6 +789,8 @@
             $("#STKNAME").val($(FieldidStarting + "STKNAME_" + i).val());
             if (Table != "COPYLROW") {
                 $("#QNTY").val($(FieldidStarting + "QNTY_" + i).val());
+                $("#BOMITCD").val($(FieldidStarting + "ITCD_" + i).val());
+                $("#BOMITNM").val($(FieldidStarting + "ITSTYLE_" + i).val());
                 $("#BOMQNTY").val($(FieldidStarting + "BOMQNTY_" + i).val());
                 $("#NOS").val($(FieldidStarting + "NOS_" + i).val());
             }
@@ -1071,7 +1077,7 @@
         tr += '        <input id="B_NEGSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + QNTY + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateTotal_Barno();HasChangeBarSale();IssueQntyChk(B_BALSTOCK_' + rowindex + ', B_BOMQNTY_' + rowindex + ', B_NEGSTOCK_' + rowindex + ', B_QNTY_' + rowindex + ');" value="' + QNTY + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateTotal_Barno();HasChangeBarSale();IssueQntyChk(B_BALSTOCK_' + rowindex + ', B_BOMQNTY_' + rowindex + ', B_NEGSTOCK_' + rowindex + ', B_QNTY_' + rowindex + ', B_ITCD_' + rowindex + ', B_SLNO_' + rowindex + ');" value="' + QNTY + '">';
         tr += '        <input id="B_BOMQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BOMQNTY" type="hidden" value="' + BOMQNTY + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + UOM + '">';
@@ -1382,28 +1388,47 @@
         }
 
     }
-    function IssueQntyChk(STOCKQNTY_Id, BOMQNTY_Id, NEGSTOCK_Id, QNTY_Id) {
+    function IssueQntyChk(STOCKQNTY_Id, BOMQNTY_Id, NEGSTOCK_Id, QNTY_Id, ITCD_Id, SLNO_Id) {
         debugger;
-        var STOCKQNTY = document.getElementById(STOCKQNTY_Id.id).value;
-        var BOMQNTY = document.getElementById(BOMQNTY_Id.id).value;
-        var QNTY = document.getElementById(QNTY_Id.id).value;
-        var NEGSTOCK = document.getElementById(NEGSTOCK_Id.id).value;
+        var STOCKQNTY = retFloat(document.getElementById(STOCKQNTY_Id.id).value);
+        var BOMQNTY = 0;
+        if (document.getElementById(BOMQNTY_Id.id).value != "") {
+            BOMQNTY = retFloat(document.getElementById(BOMQNTY_Id.id).value.split('~~')[1]);
+        }
 
+        var QNTY = retFloat(document.getElementById(QNTY_Id.id).value);
+        var NEGSTOCK = retFloat(document.getElementById(NEGSTOCK_Id.id).value);
+        var SLNO = retFloat(document.getElementById(SLNO_Id.id).value);
+        var TQNTY = 0;
+        var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        if (GridRow != 0) {
+            var ITCD = document.getElementById(ITCD_Id.id).value;
+
+
+            for (var i = 0; i <= GridRow - 1; i++) {
+                if ($("#B_ITCD_" + i).val() == ITCD) {
+                    if ($("#B_SLNO_" + i).val() != SLNO) {
+                        TQNTY += retFloat($("#B_QNTY_" + i).val());
+                    }
+                }
+            }
+            TQNTY += retFloat(QNTY);
+        }
         if (STOCKQNTY < BOMQNTY) {
             var balancestock = STOCKQNTY - QNTY;
             if (balancestock < 0) {
                 if (NEGSTOCK != "Y") {
-                    msgInfo("QNTY grater than STOCK !!");
+                    msgInfo("QNTY (" + QNTY + ") grater than STOCK (" + STOCKQNTY + ") !!");
                     message_value = QNTY_Id.id;
                     return false;
                 }
             }
         }
         else {
-            var balancestock = BOMQNTY - QNTY;
+            var balancestock = BOMQNTY - TQNTY;
             if (balancestock < 0) {
                 if (NEGSTOCK != "Y") {
-                    msgInfo("QNTY grater than BOMQNTY !!");
+                    msgInfo("QNTY (" + TQNTY + ") grater than BOMQNTY (" + BOMQNTY + ") !!");
                     message_value = QNTY_Id.id;
                     return false;
                 }
@@ -1628,30 +1653,30 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.BOMITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BOMITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=QNTY','','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=QNTY','','Y');", @placeholder = "Code", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBomItemDetails", PageControllerName)','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=QNTY','','Y')" />
+                                        @Html.EditorFor(model => model.BOMITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BOMITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY','','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY','','Y');", @placeholder = "Code", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBomItemDetails", PageControllerName)','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY','','Y')" />
                                     </div>
                                 </div>
-                                    <div class="col-md-8">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.BOMITNM, new { htmlAttributes = new { @class = "form-control", id = "BOMITNM", @title = "Bom Item Name", @placeholder = "Bom Item Name", @readonly = "readonly", @TabIndex = -1 } })
-                                            @Html.HiddenFor(model => model.BOMQNTY, new { id = "BOMQNTY" })
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.BOMITNM, new { htmlAttributes = new { @class = "form-control", id = "BOMITNM", @title = "Bom Item Name", @placeholder = "Bom Item Name", @readonly = "readonly", @TabIndex = -1 } })
+                                        @Html.HiddenFor(model => model.BOMQNTY, new { id = "BOMQNTY" })
 
 
-                                        </div>
                                     </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Bar Code")
-                                            <b style="color:Red;">*</b>
-                                        </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Bar Code")
+                                        <b style="color:Red;">*</b>
                                     </div>
-                                    <div class="col-md-8">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD')", onblur = "T_OUTISSPROCESS_GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD')" />
-                                        </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD')", onblur = "T_OUTISSPROCESS_GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/BOMITCD')" />
                                     </div>
+                                </div>
                                 }
 
                                 @*<div class="col-md-8">
@@ -1786,7 +1811,7 @@
 
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity" , onblur = "IssueQntyChk(BALSTOCK, BOMQNTY, NEGSTOCK, QNTY);" } })
+                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", onblur = "IssueQntyChk(BALSTOCK, BOMQNTY, NEGSTOCK, QNTY,ITCD,SLNO);" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
