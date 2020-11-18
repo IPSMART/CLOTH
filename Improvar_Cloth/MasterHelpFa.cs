@@ -2313,5 +2313,44 @@ namespace Improvar
                 }
             }
         }
+           public string InsTXN_TRANS(string autono,short? emd_no, string dtag="", string ttag="", string translcd="", string ewaybillno="",
+            string lrno="", string lrdt="", string lorryno="", string transmode="",string vechltype="", string crslcd="", double? DISTANCE = null, string EWAYBILLDT = "", string EWAYBILLVALID="")
+        {
+            string bl = "";
+            try
+            {
+                string scmf = CommVar.FinSchema(UNQSNO), clcd = CommVar.ClientCode(UNQSNO);
+                string sql = "";
+                
+
+                sql = "insert into " + scmf + ".t_txntrans (emd_no, clcd, dtag, ttag, autono, translcd, ewaybillno, lrno, lrdt, lorryno, transmode, vechltype, crslcd,DISTANCE,EWAYBILLDT,EWAYBILLVALID ) values (";
+                sql = sql + emd_no;
+                sql = sql + "," + filc(clcd);
+                sql = sql + "," + filc(dtag);
+                sql = sql + "," + filc(ttag);
+                sql = sql + "," + filc(autono);
+                sql = sql + "," + filc(translcd);
+                sql = sql + "," + filc(ewaybillno);
+                sql = sql + "," + filc(lrno);
+                sql = sql + "," + fild(lrdt);
+                sql = sql + "," + filc(lorryno);
+                sql = sql + "," + filc(transmode);
+                sql = sql + "," + filc(vechltype);
+                sql = sql + "," + filc(crslcd);
+                sql = sql + ","+ DISTANCE.retDbl();
+                sql = sql + "," + fild(EWAYBILLDT);
+                sql = sql + "," + filc(EWAYBILLVALID);
+                sql = sql + ")";
+
+                bl = sql;
+                return bl;
+            }
+
+            catch (Exception e)
+            {
+                bl = e.Message;
+                return bl;
+            }
+        }
     }
 }
