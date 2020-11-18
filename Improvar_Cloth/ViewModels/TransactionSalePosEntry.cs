@@ -58,6 +58,9 @@ namespace Improvar.ViewModels
         public string SLAREA { get; set; }
         public string GSTNO { get; set; }
         public string GSTSLNM { get; set; }
+        public string GSTSLADD1 { get; set; }
+        public string GSTSLDIST { get; set; }
+        public string GSTSLPIN { get; set; }
         public string CONSLNM { get; set; }
         public string AGSLNM { get; set; }
         public string SAGSLNM { get; set; }
