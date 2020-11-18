@@ -182,6 +182,6 @@ namespace Improvar.ViewModels
         public string BOMITCD { get; set; }
         public string BOMITNM { get; set; }
         public string BOMQNTY { get; set; }
-
+        public short? RECPROGSLNO { get; set; }
     }
 }

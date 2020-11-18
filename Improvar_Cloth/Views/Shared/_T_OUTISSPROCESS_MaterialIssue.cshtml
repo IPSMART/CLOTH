@@ -99,6 +99,7 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].GLCD, new { id = "B_GLCD_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ChildData, new { id = "B_ChildData_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].RECPROGSLNO, new { id = "B_RECPROGSLNO_" + i })
                                         </td>
                                         <td class="sticky-cell" style="left:17px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })

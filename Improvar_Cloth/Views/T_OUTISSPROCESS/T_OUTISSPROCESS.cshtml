@@ -147,6 +147,7 @@
 
 <script>
     function Fill_BarCodeData() {
+        if ("@Model.DefaultAction" == "V") return true;
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillBarCodeData", PageControllerName)",
@@ -163,6 +164,7 @@
         });
     }
     function Fill_DetailData() {
+        if ("@Model.DefaultAction" == "V") return true;
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillDetailData", PageControllerName)",
@@ -191,6 +193,7 @@
     }
 
     function Fill_QtyRequirementData() {
+        if ("@Model.DefaultAction" == "V") return true;
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillQtyRequirementData", PageControllerName)",
@@ -214,6 +217,7 @@
 </script>
 <script>
     function AddDOCrow() {
+        if ("@Model.DefaultAction" == "V") return true;
         $.ajax({
             type: 'POST',
             url: "@Url.Action("AddDOCRow", PageControllerName)",
@@ -230,6 +234,7 @@
         });
     }
     function DeleteDOCrow() {
+        if ("@Model.DefaultAction" == "V") return true;
         $.ajax({
             type: 'POST',
             url: "@Url.Action("DeleteDOCRow", PageControllerName)",
@@ -285,6 +290,7 @@
     }
 
     function CalculateTotal() {
+        if ("@Model.DefaultAction" == "V") return true;
         debugger;
         var T_NOS = 0; var T_QNTY = 0; var T_QNTYDAM = 0; var T_STD_AMT = 0; var T_DIS_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0;
         var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_OTHER_AMT = 0; var T_NET_AMT = 0;
@@ -306,6 +312,7 @@
     }
 
     function CalculateTotalProgBomQnty() {
+        if ("@Model.DefaultAction" == "V") return true;
         var T_BOMQNTY = 0; var T_EXTRAQNTY = 0;
         var GridRow = $("#__T_OUTISSPROCESS_QtyRequirement_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
@@ -329,6 +336,7 @@
 </script>
 <script>
     function Addrow(ID) {
+        if ("@Model.DefaultAction" == "V") return true;
         var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
         $.ajax({
             type: 'POST',
@@ -349,6 +357,7 @@
     }
 
     function DeleteRow() {
+        if ("@Model.DefaultAction" == "V") return true;
         $.ajax({
             type: 'POST',
             url: "@Url.Action("DeleteRow", PageControllerName)",
@@ -367,6 +376,7 @@
 </script>
 <script>
     function AddrowQTY(ID) {
+        if ("@Model.DefaultAction" == "V") return true;
         var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
         $.ajax({
             type: 'POST',
@@ -387,6 +397,7 @@
     }
 
     function DeleteRowQTY() {
+        if ("@Model.DefaultAction" == "V") return true;
         $.ajax({
             type: 'POST',
             url: "@Url.Action("DeleteRowQTY", PageControllerName)",
@@ -406,6 +417,7 @@
 <script>
     function RepeatAboveRow_TPROGBOM(i) {
         debugger;
+        if ("@Model.DefaultAction" == "V") return true;
         i = parseInt(i);
         if (event.key == "F7") {
             var GridRow = $("#_T_OUTISSPROCESS_Programme_GRID > tbody > tr").length;
@@ -445,8 +457,7 @@
 <script>
 
     function OutCalculateAmt_Details(i) {
-        var DefaultAction = $("#DefaultAction").val();
-        if (DefaultAction == "V") return true;
+        if ("@Model.DefaultAction" == "V") return true;
         var BLQNTY = $("#D_BLQNTY_" + i).val();
         if (BLQNTY != "") { BLQNTY = parseFloat(BLQNTY); } else { BLQNTY = parseFloat(0); }
 
@@ -592,8 +603,7 @@
     }
 
     function OutCalculateTotal_Details() {
-        var DefaultAction = $("#DefaultAction").val();
-        if (DefaultAction == "V") return true;
+        if ("@Model.DefaultAction" == "V") return true;
         var T_NOS = 0; var T_QNTY = 0; var T_AMT = 0; var T_GROSS_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_NET_AMT = 0;
 
         var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
@@ -641,10 +651,9 @@
 </script>
 <script>
     function T_OUTISSPROCESS_GetBarnoDetails(id) {
-        var DefaultAction = $("#DefaultAction").val();
-        if (DefaultAction == "V") return true;
+        if ("@Model.DefaultAction" == "V") return true;
         if (id == "") {
-            T_OUTISSPROCESS_ClearBarcodeArea();
+            T_OUTISSPROCESS_ClearBarcodeArea('B');
         }
         else {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -698,7 +707,7 @@
         }
     }
     function T_OUTISSPROCESS_FillBarcodeArea(str, Table, i) {
-        var DefaultAction = $("#DefaultAction").val();
+        if ("@Model.DefaultAction" == "V") return true;
         var MENU_PARA = $("#MENU_PARA").val();
         if (DefaultAction == "V") return true;
         if (Table == "COPYLROW") {
@@ -782,18 +791,20 @@
         else {
             var FieldidStarting = "";
             FieldidStarting = "#B_";
-            $("#SLNO").val($(FieldidStarting + "SLNO_" + i).val());
+
             if (Table != "COPYLROW") {
+                $("#SLNO").val($(FieldidStarting + "SLNO_" + i).val());
                 $("#TXNSLNO").val($(FieldidStarting + "TXNSLNO_" + i).val());
             }
             $("#STKNAME").val($(FieldidStarting + "STKNAME_" + i).val());
             if (Table != "COPYLROW") {
                 $("#QNTY").val($(FieldidStarting + "QNTY_" + i).val());
-                $("#BOMITCD").val($(FieldidStarting + "ITCD_" + i).val());
-                $("#BOMITNM").val($(FieldidStarting + "ITSTYLE_" + i).val());
-                $("#BOMQNTY").val($(FieldidStarting + "BOMQNTY_" + i).val());
+                $("#RECPROGSLNO").val($(FieldidStarting + "RECPROGSLNO_" + i).val());
                 $("#NOS").val($(FieldidStarting + "NOS_" + i).val());
             }
+            $("#BOMITCD").val($(FieldidStarting + "ITCD_" + i).val());
+            $("#BOMITNM").val($(FieldidStarting + "ITSTYLE_" + i).val());
+            $("#BOMQNTY").val($(FieldidStarting + "BOMQNTY_" + i).val());
             $("#DISCRATE").val($(FieldidStarting + "DISCRATE_" + i).val());
             $("#DISCTYPE").val($(FieldidStarting + "DISCTYPE_" + i).val());
             $("#TDDISCTYPE").val($(FieldidStarting + "TDDISCTYPE_" + i).val());
@@ -1011,6 +1022,7 @@
         var BALSTOCK = $("#BALSTOCK").val();
         var NEGSTOCK = $("#NEGSTOCK").val();
         var BOMQNTY = $("#BOMQNTY").val();
+        var RECPROGSLNO = $("#RECPROGSLNO").val();
         var tr = "";
         tr += ' <tr style="font-size:12px; font-weight:bold;">';
         tr += '    <td class="sticky-cell">';
@@ -1026,6 +1038,7 @@
         tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
         tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
         tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
+        tr += '        <input id="B_RECPROGSLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RECPROGSLNO" type="hidden" value="' + RECPROGSLNO + '">';
         tr += '    </td>';
         tr += '    <td class="sticky-cell" style="left:17px;" title="' + SLNO + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
@@ -1285,6 +1298,7 @@
                 $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
                 $("#B_QNTY_" + j).val($("#QNTY").val());
                 $("#B_BOMQNTY_" + j).val($("#BOMQNTY").val());
+                $("#B_RECPROGSLNO_" + j).val($("#RECPROGSLNO").val());
                 $("#B_BALSTOCK_" + j).val($("#BALSTOCK").val());
                 $("#B_NEGSTOCK_" + j).val($("#NEGSTOCK").val());
                 $("#B_UOM_" + j).val($("#UOM").val());
@@ -1366,7 +1380,7 @@
         var DefaultAction = $("#DefaultAction").val();
         var MENU_PARA = $("#MENU_PARA").val();
         if (DefaultAction == "V") return true;
-        ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BOMITCD,BOMITNM,BOMQNTY");
+        ClearAllTextBoxes("BARCODE,TXNSLNO,SLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
         if (MENU_PARA == "PB") {
             ClearAllTextBoxes("BALENO,OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
         }
@@ -1377,6 +1391,9 @@
         $("#DISCTYPE").val("P");
         $("#TDDISCTYPE").val("P");
         $("#SCMDISCTYPE").val("P");
+        if (TAG != "B") {
+            ClearAllTextBoxes("BOMITCD,BOMITNM,BOMQNTY,RECPROGSLNO");
+        }
         if (TAG == "Y") {
             $("#AddRow_Barcode").show();
             $("#UpdateRow_Barcode").hide();
@@ -1390,6 +1407,7 @@
     }
     function IssueQntyChk(STOCKQNTY_Id, BOMQNTY_Id, NEGSTOCK_Id, QNTY_Id, ITCD_Id, SLNO_Id) {
         debugger;
+        if ("@Model.DefaultAction" == "V") return true;
         var STOCKQNTY = retFloat(document.getElementById(STOCKQNTY_Id.id).value);
         var BOMQNTY = 0;
         if (document.getElementById(BOMQNTY_Id.id).value != "") {
@@ -1399,7 +1417,7 @@
         var QNTY = retFloat(document.getElementById(QNTY_Id.id).value);
         var NEGSTOCK = retFloat(document.getElementById(NEGSTOCK_Id.id).value);
         var SLNO = retFloat(document.getElementById(SLNO_Id.id).value);
-        var TQNTY = 0;
+        var TQNTY = 0, balqnty = 0;
         var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         if (GridRow != 0) {
             var ITCD = document.getElementById(ITCD_Id.id).value;
@@ -1412,9 +1430,13 @@
                     }
                 }
             }
+            balqnty = retFloat(BOMQNTY) - retFloat(TQNTY);
             TQNTY += retFloat(QNTY);
         }
-        if (STOCKQNTY < BOMQNTY) {
+        else {
+            balqnty = BOMQNTY;
+        }
+        if (STOCKQNTY < balqnty) {
             var balancestock = STOCKQNTY - QNTY;
             if (balancestock < 0) {
                 if (NEGSTOCK != "Y") {
@@ -1425,10 +1447,10 @@
             }
         }
         else {
-            var balancestock = BOMQNTY - TQNTY;
+            var balancestock = balqnty - QNTY;
             if (balancestock < 0) {
                 if (NEGSTOCK != "Y") {
-                    msgInfo("QNTY (" + TQNTY + ") grater than BOMQNTY (" + BOMQNTY + ") !!");
+                    msgInfo("QNTY (" + QNTY + ") grater than BOMQNTY (" + balqnty + ") !!");
                     message_value = QNTY_Id.id;
                     return false;
                 }
@@ -1653,16 +1675,15 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.BOMITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BOMITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY','','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY','','Y');", @placeholder = "Code", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBomItemDetails", PageControllerName)','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY','','Y')" />
+                                        @Html.EditorFor(model => model.BOMITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BOMITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4','RECPROGSLNO','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetBomItemDetails", PageControllerName) + "','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4','RECPROGSLNO','Y');", @placeholder = "Code", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBomItemDetails", PageControllerName)','Bom Item Details','BOMITCD','BOMITCD=ITCD=1/BOMITNM=ITNM=0/BOMQNTY=TOTALQNTY/RECPROGSLNO=PROGSLNO=4','RECPROGSLNO','Y')" />
                                     </div>
                                 </div>
                                 <div class="col-md-8">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.BOMITNM, new { htmlAttributes = new { @class = "form-control", id = "BOMITNM", @title = "Bom Item Name", @placeholder = "Bom Item Name", @readonly = "readonly", @TabIndex = -1 } })
                                         @Html.HiddenFor(model => model.BOMQNTY, new { id = "BOMQNTY" })
-
-
+                                        @Html.HiddenFor(model => model.RECPROGSLNO, new { id = "RECPROGSLNO" })
                                     </div>
                                 </div>
                                 <div class="col-md-1">
@@ -1699,8 +1720,8 @@
                                         <div class="row">
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
                                                     @Html.EditorFor(model => model.TXNSLNO, new { htmlAttributes = new { @class = "form-control", id = "TXNSLNO", maxlength = 4, @onkeypress = "return numericOnly(this);", onkeydown = "T_OUTISSPROCESS_FillBarcodeArea('', 'COPYLROW')", @placeholder = "Bill Sl", @title = "Bill Sl" } })
+                                                    @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
