@@ -142,85 +142,6 @@
     });
 </script>
 <script>
-    function SelectBARCODEDetail(id, BARNO, DOCDT) {
-        debugger;
-        var docdt = document.getElementById(DOCDT.id).value;
-        if (id == "") {
-            $("#" + BARNO.id).val("");
-            //$("#" + CLASS1NM.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'POST',
-                beforesend: $("#WaitingMode").show(),
-                url: "@Url.Action("GetBarCodeDetails", PageControllerName)",
-                data: $('form').serialize() + "&val=" + id + "&Code=" + docdt,
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (result != 0) {
-                        $("#WaitingMode").hide();
-                        $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
-                        $("#partialdivBarCodeTab").html(result);
-                    }
-                    else {
-
-                        msgInfo("Invalid Bar Code ! Please Enter a Valid Bar Code !!");
-                        message_value = BARNO.id;
-
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    }
-</script>
-
-<script>
-    function CalculateSalesMan_Amt_Details(i) {
-        debugger;
-        var T_PER = 0; var t_blamt = 0; var t_itamt = 0; var PER_ = 0;
-        var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
-        // for (var i = 0; i <= GridRow - 1; i++) {
-        PER_ = $("#S_PER_" + i).val();
-        if (PER_ == "") { PER_ = parseFloat(0); } else { PER_ = parseFloat(PER_) }
-        if (PER_ != "") { T_PER = T_PER + parseFloat(PER_); } else { T_PER = T_PER + parseFloat(0); }
-        document.getElementById("S_PER_" + i).value = PER_.toFixed(2);
-
-        // }
-        if (T_PER > 100) { msgWarning("Total of Percentage(%) Should be 100 !!"); $("#S_PER_" + i).val(""); $("#S_PER_" + i).focus(); }
-        else {
-            for (var i = 0; i <= GridRow - 1; i++) {
-                var T_GROSS_AMT = $("#T_B_GROSSAMT").val();
-                if (T_GROSS_AMT == "") { T_GROSS_AMT = parseFloat(0); } else { T_GROSS_AMT = parseFloat(T_GROSS_AMT) }
-                var R_T_GROSS_AMT = $("#R_T_GROSS_AMT").val();
-                if (R_T_GROSS_AMT == "") { R_T_GROSS_AMT = parseFloat(0); } else { R_T_GROSS_AMT = parseFloat(R_T_GROSS_AMT) }
-                var PER_ = $("#S_PER_" + i).val();
-                if (PER_ == "") { PER_ = parseFloat(0); } else { PER_ = parseFloat(PER_) }
-                var PAYABLE = $("#PAYABLE").val();
-                if (PAYABLE == "") { PAYABLE = parseFloat(0); } else { PAYABLE = parseFloat(PAYABLE) }
-                document.getElementById("S_PER_" + i).value = PER_.toFixed(2);
-                var blamt = parseFloat(PAYABLE * PER_) / 100;
-                document.getElementById("S_BLAMT_" + i).value = blamt.toFixed(2);
-                var Mtaxamt = T_GROSS_AMT;
-                var Rtaxamt = R_T_GROSS_AMT;
-                var itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
-                document.getElementById("S_ITAMT_" + i).value = itamt.toFixed(2);
-                t_blamt = t_blamt + blamt;
-                t_itamt = t_itamt + itamt;
-
-            }
-        }
-        document.getElementById("S_T_ITAMT").value = t_itamt.toFixed(2);
-        document.getElementById("S_T_BLAMT").value = t_blamt.toFixed(2)
-
-
-    }
-</script>
-<script>
     function AddRowPYMT(ID) {
         debugger;
         var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
@@ -298,7 +219,7 @@
     function pageprinting() {
         debugger;
         var ty = $("#DOCCD").val();
-        var MENUPARA='@Model.MENU_PARA';
+        var MENUPARA = '@Model.MENU_PARA';
         $.ajax({
             type: 'get',
             url: "@Url.Action("Print", PageControllerName)",
@@ -395,16 +316,16 @@
                             </div>
                         </div>
                         @*<div class="col-md-1">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Bill Type")
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="editor-field">
-                            @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
-                        </div>
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Bill Type")
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
+                                </div>
 
-                    </div>*@
+                            </div>*@
 
                     </div>
                     <div class="row">
@@ -434,10 +355,10 @@
                         </div>
 
                         @*<div class="col-md-8">
-                        <div class="editor-field">
+                                <div class="editor-field">
 
-                        </div>
-                    </div>*@
+                                </div>
+                            </div>*@
                         <div class="col-md-4">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXNOTH.TAXGRPCD, new { htmlAttributes = new { @class = "form-control", id = "TAXGRPCD", @title = "Tax Group Code", @placeholder = "Tax Group Code", @readonly = "readonly", tabindex = "-1" } })
@@ -544,7 +465,7 @@
                             </div>
                         </div>
                         @*</div>
-                    <div class="row">*@
+                            <div class="row">*@
 
                         <div class="col-md-1">
                             <div class="editor-field">
@@ -560,7 +481,7 @@
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })
                                 @*@Html.EditorFor(model => model.T_TXNOTH.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />*@
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />*@
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -660,27 +581,27 @@
                     @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
                 </div>
             </div>
-                @*<div class="row">
-                        <div class="col-md-3">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Round Off")
-                            </div>
+            @*<div class="row">
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Round Off")
                         </div>
-                        <div class="col-md-1" style="margin-right: -41px;">
-                            <div class="editor-field" style="margin-top:6px;">
-                                @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
-                                @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text"), "No", new {  id = "REVCHRG", @style = "display:none", onchange = "ReverceCharges();" })
-                            </div>
+                    </div>
+                    <div class="col-md-1" style="margin-right: -41px;">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
+                            @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text"), "No", new {  id = "REVCHRG", @style = "display:none", onchange = "ReverceCharges();" })
                         </div>
-                        <div class="col-md-2">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
-                            </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
                         </div>
+                    </div>
 
-                    </div>*@
+                </div>*@
 
-            </div>
+        </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
@@ -804,52 +725,52 @@
                         </div>*@
                 </div>
             </div>
-      //  </div>
+                                            //  </div>
 
-        <div class="container">
-            <!-- Modal -->
-            <div class="modal fade" id="ViewImageModal" role="dialog">
-                <div class="modal-dialog modal-md">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Image Preview</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div id="myCarousel" class="carousel" data-ride="carousel">
-                                <div class="carousel-inner" id="div_carousel_inner">
-                                    <div class="item active">
-                                        <img src="" alt="Los Angeles" style="width:100%;">
-                                    </div>
-                                    <div class="item">
-                                        <img src="" alt="Chicago" style="width:100%;">
-                                    </div>
-                                </div>
-                                <!-- Left and right controls -->
-                                <a class="left  carousel-control arrow-left" id="prev">
-                                    <span class="glyphicon glyphicon-chevron-left"></span>
-                                </a>
-                                <a class="right  carousel-control arrow-right" id="next">
-                                    <span class="glyphicon glyphicon-chevron-right"></span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="pull-left">
-                                        <input type="hidden" id="ActiveBarRowIndex" />
-                                        <input type="hidden" id="BarImages" />
-                                        @*<button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>*@
-                                    </div>
-                                </div>
-                                <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                            <div class="container">
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="ViewImageModal" role="dialog">
+                                                    <div class="modal-dialog modal-md">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                <h4 class="modal-title">Image Preview</h4>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div id="myCarousel" class="carousel" data-ride="carousel">
+                                                                    <div class="carousel-inner" id="div_carousel_inner">
+                                                                        <div class="item active">
+                                                                            <img src="" alt="Los Angeles" style="width:100%;">
+                                                                        </div>
+                                                                        <div class="item">
+                                                                            <img src="" alt="Chicago" style="width:100%;">
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- Left and right controls -->
+                                                                    <a class="left  carousel-control arrow-left" id="prev">
+                                                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                                                    </a>
+                                                                    <a class="right  carousel-control arrow-right" id="next">
+                                                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <div class="row">
+                                                                    <div class="col-sm-6">
+                                                                        <div class="pull-left">
+                                                                            <input type="hidden" id="ActiveBarRowIndex" />
+                                                                            <input type="hidden" id="BarImages" />
+                                                                            @*<button type="button" class="btn btn-danger" onclick="deleteBarImages()"><span class="glyphicon glyphicon-trash"></span></button>*@
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-6"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                             }
                                             else

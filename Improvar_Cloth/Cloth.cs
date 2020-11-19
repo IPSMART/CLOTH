@@ -243,7 +243,7 @@ namespace Improvar
                     VE.B_T_NOS = VE.TsalePos_TBATCHDTL.Sum(a => a.NOS).retDbl();
                     VE.T_NOS = VE.TsalePos_TBATCHDTL.Sum(a => a.NOS).retDbl();
                     VE.T_QNTY = VE.TsalePos_TBATCHDTL.Sum(a => a.QNTY).retDbl();
-                    VE.T_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GROSSAMT).retDbl();
+                    VE.T_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.TXBLVAL).retDbl();
                     VE.T_B_GROSSAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.TXBLVAL).retDbl();
                     VE.T_IGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.IGSTAMT).retDbl();
                     VE.T_CGST_AMT = VE.TsalePos_TBATCHDTL.Sum(a => a.CGSTAMT).retDbl();
@@ -1070,7 +1070,7 @@ namespace Improvar
                                 TTXNPYMNT.INSTNO = VE.TTXNPYMT[i].INSTNO;
                                 TTXNPYMNT.INSTDT = Convert.ToDateTime(VE.TTXNPYMT[i].INSTDT);
                                 TTXNPYMNT.PYMTREM = VE.TTXNPYMT[i].PYMTREM;
-                                TTXNPYMNT.GLCD = VE.TsalePos_TBATCHDTL[i].GLCD;
+                                TTXNPYMNT.GLCD = VE.TTXNPYMT[i].GLCD;
                                 dbsql = masterHelp.RetModeltoSql(TTXNPYMNT);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                             }
