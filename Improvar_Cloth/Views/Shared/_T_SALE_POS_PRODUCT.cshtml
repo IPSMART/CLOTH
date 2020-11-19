@@ -26,7 +26,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_SALE_POS_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1575px;">
+                    <table id="_T_SALE_POS_PRODUCT_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1944px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 20px;"></th>
@@ -44,12 +44,12 @@
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 @if (Model.INCLRATEASK == "Y")
                                 {
-                                    <th class="" style="width:80px;text-align:right;font-weight: 900;">Incl.Rate</th>
+                                    <th class="" style="width:109px;text-align:right;font-weight: 900;">Incl.Rate</th>
                                 }
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 <th class="" style="width:50px;">Disc Type</th>
-                                <th class="" style="width:50px;text-align:right;">Disc Rate</th>
-                                <th class="" style="width:50px;text-align:right;">Taxable Value</th>
+                                <th class="" style="width:42px;text-align:right;">Disc Rate</th>
+                                <th class="" style="width:86px;text-align:right;">Taxable Value</th>
                                 @*@if (Model.MENU_PARA == "PB")
                                     {
                                         <th class="" style="width:80px;text-align:right;">Wholesale Rate</th>
@@ -64,11 +64,11 @@
                                 <th class="" style="width:136px;">Order No.</th>
                                 <th class="" style="width:30px;">Order Slno.</th>
                                 <th class="" style="width:79px;">Order Date</th>
-                                <th class="" style="width:40px;">PCS Action</th>
+                                <th class="" style="width:89px;">PCS Action</th>
                                 <th class="" style="width: 34px;">Stock Type</th>
                                 <th class="" style="width: 50px;">Part</th>
                                 <th class="" style="width:30px; text-align:center">Img</th>
-                                <th class="" style="width:70px;text-align:right;">Net AMt</th>
+                                <th class="" style="width:109px;text-align:right;">Net AMt</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,22 +139,22 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @onchange = "CalculateBarRowAmt(" + i + ");" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @onblur = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");" } })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].NOS, new { htmlAttributes = new { id = "B_NOS_" + i, @style = "text-align: right;", onchange = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         @if (Model.INCLRATEASK == "Y")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].INCLRATE, "{0:0.00}", new { id = "INCLRATE_" + i, onchange = "CalculateInclusiveRate(" + i + ");CalculateBarRowAmt(" + i + ");", @onkeypress = "return numericOnly(this,4);", maxlength = 12, style = "font-weight:bold;background-color: bisque;", @class = "atextBoxFor text-right" })
+                                                @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].INCLRATE, "{0:0.00}", new { id = "INCLRATE_" + i, onchange = "CalculateInclusiveRate(" + i + ");CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");", @onkeypress = "return numericOnly(this,4);", maxlength = 12, style = "font-weight:bold;background-color: bisque;", @class = "atextBoxFor text-right" })
                                             </td>
                                         }
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "CalculateBarRowAmt(" + i + ");" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");" } })
                                         </td>
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -164,7 +164,7 @@
                                         </td>
 
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "CalculateBarRowAmt(" + i + ");" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");" } })
                                       </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].TXBLVAL, new { htmlAttributes = new { id = "B_TXBLVAL_" + i, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @class = " atextBoxFor" } })

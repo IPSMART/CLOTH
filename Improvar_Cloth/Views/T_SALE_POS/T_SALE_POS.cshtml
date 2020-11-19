@@ -178,350 +178,7 @@
         }
     }
 </script>
-<script>
-    //function AmountCalculation(i) {
-    //    var DefaultAction = $("#DefaultAction").val();
-    //    if (DefaultAction == "V") return true;
-    //    var A_NOS = document.getElementById("B_T_NOS").value;
-    //    var B_QNTY = document.getElementById("B_T_QNTY").value;
-    //    var D_GROSS_AMT = document.getElementById("T_GROSS_AMT").value;
-    //    var E_NET_AMT = document.getElementById("T_NET_AMT").value;
-    //    var RT = document.getElementById("AMTRATE_" + i).value;
-    //    var IGST_PER = document.getElementById("AIGSTPER_" + i).value;
-    //    if (IGST_PER == "") { IGST_PER = parseFloat(0); } else { IGST_PER = parseFloat(IGST_PER) }
-    //    var CGST_PER = document.getElementById("ACGSTPER_" + i).value;
-    //    if (CGST_PER == "") { CGST_PER = parseFloat(0); } else { CGST_PER = parseFloat(CGST_PER) }
-    //    var SGST_PER = document.getElementById("ASGSTPER_" + i).value;
-    //    if (SGST_PER == "") { SGST_PER = parseFloat(0); } else { SGST_PER = parseFloat(SGST_PER) }
-    //    var CESS_PER = document.getElementById("ACESSPER_" + i).value;
-    //    if (CESS_PER == "") { CESS_PER = parseFloat(0); } else { CESS_PER = parseFloat(CESS_PER) }
-    //    var DUTY_PER = document.getElementById("ADUTYPER_" + i).value;
-    //    if (DUTY_PER == "") { DUTY_PER = parseFloat(0); } else { DUTY_PER = parseFloat(DUTY_PER) }
-    //    var CALC_TYPE = document.getElementById("CALCTYPE_" + i).value;
-    //    var CALC_FORMULA = document.getElementById("CALCFORMULA_" + i).value;
-    //    if (A_NOS == "") { A_NOS = parseFloat(0); }
-    //    if (B_QNTY == "") { B_QNTY = parseFloat(0); }
-    //    if (D_GROSS_AMT == "") { D_GROSS_AMT = parseFloat(0); }
-    //    if (E_NET_AMT == "") { E_NET_AMT = parseFloat(0); }
-    //    if (RT == "") { RT = parseFloat(0); }
-    //    var AMOUNT = 0;
-    //    if (CALC_TYPE == "F") { AMOUNT = parseFloat(RT); }
-    //    else if (CALC_TYPE == "P") {
-    //        if (CALC_FORMULA == "A") { AMOUNT = parseFloat(A_NOS) * parseFloat(RT); }
-    //        else if (CALC_FORMULA == "B") { AMOUNT = parseFloat(B_QNTY) * parseFloat(RT); }
-    //        else if (CALC_FORMULA == "D") { AMOUNT = parseFloat(D_GROSS_AMT) * parseFloat(RT); }
-    //        else if (CALC_FORMULA == "E") { AMOUNT = parseFloat(E_NET_AMT) * parseFloat(RT); }
-    //    }
-    //    document.getElementById("A_AMT_" + i).value = AMOUNT;
-    //    var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var DUTY_AMT = 0;
 
-    //    // IGST CALCULATION
-    //    document.getElementById("AIGSTPER_" + i).value = IGST_PER;
-    //    IGST_AMT = (AMOUNT * IGST_PER) / 100;
-
-    //    AmountChange(document.getElementById("AIGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("AIGSTPER_" + i), document.getElementById("ANETAMT_" + i),
-    //    document.getElementById("ACGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    //    document.getElementById("AIGSTAMT_" + i).value = parseFloat(IGST_AMT).toFixed(2);
-    //    //END
-
-    //    // CGST CALCULATION
-    //    document.getElementById("ACGSTPER_" + i).value = CGST_PER;
-    //    CGST_AMT = (AMOUNT * CGST_PER) / 100;
-    //    AmountChange(document.getElementById("ACGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ACGSTPER_" + i), document.getElementById("ANETAMT_" + i),
-    //        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    //    document.getElementById("ACGSTAMT_" + i).value = parseFloat(CGST_AMT).toFixed(2);
-    //    //END
-    //    // SGST CALCULATION
-    //    document.getElementById("ASGSTPER_" + i).value = SGST_PER;
-    //    SGST_AMT = (AMOUNT * SGST_PER) / 100;
-    //    AmountChange(document.getElementById("ASGSTAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ASGSTPER_" + i), document.getElementById("ANETAMT_" + i),
-    //        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    //    document.getElementById("ASGSTAMT_" + i).value = parseFloat(SGST_AMT).toFixed(2);
-    //    //END
-    //    // CESS CALCULATION
-    //    document.getElementById("ACESSPER_" + i).value = CESS_PER;
-    //    CESS_AMT = (AMOUNT * CESS_PER) / 100;
-    //    AmountChange(document.getElementById("ACESSAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ACESSPER_" + i), document.getElementById("ANETAMT_" + i),
-    //        document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    //    document.getElementById("ACESSAMT_" + i).value = parseFloat(CESS_AMT).toFixed(2);
-    //    //END
-    //    // DUTY CALCULATION
-
-    //    document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
-    //    DUTY_AMT = (AMOUNT * DUTY_PER) / 100;
-    //    AmountChange(document.getElementById("ADUTYAMT_" + i), document.getElementById("A_AMT_" + i), document.getElementById("ADUTYPER_" + i), document.getElementById("ANETAMT_" + i),
-    //    document.getElementById("AIGSTAMT_" + i), document.getElementById("ASGSTAMT_" + i), document.getElementById("ACESSAMT_" + i), document.getElementById("ADUTYAMT_" + i));
-    //    document.getElementById("ADUTYAMT_" + i).value = parseFloat(DUTY_AMT).toFixed(2);
-    //    //END
-
-    //    var NET_AMT = AMOUNT + parseFloat(document.getElementById("AIGSTAMT_" + i).value) + parseFloat(document.getElementById("ACGSTAMT_" + i).value) +
-    //                 parseFloat(document.getElementById("ASGSTAMT_" + i).value) + parseFloat(document.getElementById("ACESSAMT_" + i).value) + parseFloat(document.getElementById("ADUTYAMT_" + i).value);
-    //    document.getElementById("ANETAMT_" + i).value = parseFloat(NET_AMT).toFixed(2);
-
-    //    //GRID TOTAL CALCULATION
-    //    AmountCalculateTotal();
-
-    //}
-    //function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
-    //    var DefaultAction = $("#DefaultAction").val();
-    //    if (DefaultAction == "V") return true;
-    //    var NEW_AMT = document.getElementById(id.id).value;
-    //    var PERCENTAGE = document.getElementById(PER.id).value;
-    //    var AMT = document.getElementById(AMOUNT.id).value;
-    //    var AMT_1 = document.getElementById(AMT1.id).value;
-    //    var AMT_2 = document.getElementById(AMT2.id).value;
-    //    var AMT_3 = document.getElementById(AMT3.id).value;
-    //    var AMT_4 = document.getElementById(AMT4.id).value;
-    //    if (PERCENTAGE != "") {
-    //        var CAL_ABET_AMT = parseFloat(AMT) * parseFloat(PERCENTAGE) / 100;
-    //        var BAL_AMT = Math.abs(parseFloat(NEW_AMT) - parseFloat(CAL_ABET_AMT));
-    //        if (BAL_AMT <= 1) {
-    //            document.getElementById(id.id).value = parseFloat(NEW_AMT).toFixed(2);
-    //            document.getElementById(NETAMT.id).value = parseFloat(parseFloat(NEW_AMT) + parseFloat(AMT) + parseFloat(AMT_1) + parseFloat(AMT_2) + parseFloat(AMT_3) + parseFloat(AMT_4)).toFixed(2);
-    //        }
-    //        else {
-    //            document.getElementById(id.id).value = parseFloat(CAL_ABET_AMT).toFixed(2);
-    //            document.getElementById(NETAMT.id).value = parseFloat(parseFloat(CAL_ABET_AMT) + parseFloat(AMT) + parseFloat(AMT_1) + parseFloat(AMT_2) + parseFloat(AMT_3) + parseFloat(AMT_4)).toFixed(2);
-    //        }
-    //    }
-    //    //GRID TOTAL CALCULATION
-    //    AmountCalculateTotal();
-
-    //}
-    //function AmountCalculateTotal() {
-    //    var DefaultAction = $("#DefaultAction").val();
-    //    if (DefaultAction == "V") return true;
-    //    var T_CURR_AMT = 0; var T_AMT = 0; var T_IGST_AMT = 0; var T_CGST_AMT = 0; var T_SGST_AMT = 0; var T_CESS_AMT = 0; var T_DUTY_AMT = 0; var T_NET_AMT = 0;
-    //    var GridRow = $("#_T_SALE_POS_AMOUNT_GRID > tbody > tr").length;
-    //    for (var i = 0; i <= GridRow - 1; i++) {
-    //        var CURR_AMT = document.getElementById("ACURR_AMT_" + i).value;
-    //        if (CURR_AMT != "") { T_CURR_AMT = T_CURR_AMT + parseFloat(CURR_AMT); } else { T_CURR_AMT = T_CURR_AMT + parseFloat(0); }
-
-    //        var AMT = document.getElementById("A_AMT_" + i).value;
-    //        if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
-
-    //        var IGST_AMT = document.getElementById("AIGSTAMT_" + i).value;
-    //        if (IGST_AMT != "") { T_IGST_AMT = T_IGST_AMT + parseFloat(IGST_AMT); } else { T_IGST_AMT = T_IGST_AMT + parseFloat(0); }
-
-    //        var CGST_AMT = document.getElementById("ACGSTAMT_" + i).value;
-    //        if (CGST_AMT != "") { T_CGST_AMT = T_CGST_AMT + parseFloat(CGST_AMT); } else { T_CGST_AMT = T_CGST_AMT + parseFloat(0); }
-
-    //        var SGST_AMT = document.getElementById("ASGSTAMT_" + i).value;
-    //        if (SGST_AMT != "") { T_SGST_AMT = T_SGST_AMT + parseFloat(SGST_AMT); } else { T_SGST_AMT = T_SGST_AMT + parseFloat(0); }
-
-    //        var CESS_AMT = document.getElementById("ACESSAMT_" + i).value;
-    //        if (CESS_AMT != "") { T_CESS_AMT = T_CESS_AMT + parseFloat(CESS_AMT); } else { T_CESS_AMT = T_CESS_AMT + parseFloat(0); }
-
-    //        var DUTY_AMT = document.getElementById("ADUTYAMT_" + i).value;
-    //        if (DUTY_AMT != "") { T_DUTY_AMT = T_DUTY_AMT + parseFloat(DUTY_AMT); } else { T_DUTY_AMT = T_DUTY_AMT + parseFloat(0); }
-
-    //        var NET_AMT = document.getElementById("ANETAMT_" + i).value;
-    //        if (NET_AMT != "") { T_NET_AMT = T_NET_AMT + parseFloat(NET_AMT); } else { T_NET_AMT = T_NET_AMT + parseFloat(0); }
-
-    //    }
-    //    document.getElementById("A_T_CURR").value = parseFloat(T_CURR_AMT).toFixed(2);
-    //    document.getElementById("A_T_AMOUNT").value = parseFloat(T_AMT).toFixed(2);
-    //    document.getElementById("A_T_IGST").value = parseFloat(T_IGST_AMT).toFixed(2);
-    //    document.getElementById("A_T_CGST").value = parseFloat(T_CGST_AMT).toFixed(2);
-    //    document.getElementById("A_T_SGST").value = parseFloat(T_SGST_AMT).toFixed(2);
-    //    document.getElementById("A_T_CESS").value = parseFloat(T_CESS_AMT).toFixed(2);
-    //    document.getElementById("A_T_DUTY").value = parseFloat(T_DUTY_AMT).toFixed(2);
-    //    document.getElementById("A_T_NET").value = parseFloat(T_NET_AMT).toFixed(2);
-
-    //    //BILL AMOUNT CALCULATION
-    //    BillAmountCalculate();
-
-    //}
-    //function BillAmountCalculate() {
-    //    var DefaultAction = $("#DefaultAction").val();
-    //    if (DefaultAction == "V") return true;
-    //    debugger;
-    //    var R_TOTAL_BILL_AMOUNT = 0;
-    //    var TOTAL_ROUND = 0;
-    //    var netamt = 0;
-    //    var ROUND_TAG = document.getElementById("RoundOff").checked;
-    //    var D_TOTALNOS = 0, D_TOTALQNTY = 0, D_TOTALTAXVAL = 0, A_TOTALTAXVAL = 0, D_TOTALIGST = 0, A_TOTALIGST = 0, D_TOTALCGST = 0, A_TOTALCGST = 0, D_TOTALSGST = 0, A_TOTALSGST = 0, D_TOTALNETAMT = 0, A_TOTALNETAMT = 0;
-    //    var T_NOS = $("#T_NOS").val();
-    //    if (T_NOS != "") { D_TOTALNOS = D_TOTALNOS + parseFloat(T_NOS); } else { D_TOTALNOS = D_TOTALNOS + parseFloat(0); }
-
-    //    var T_QNTY = $("#T_QNTY").val();
-    //    if (T_QNTY != "") { D_TOTALQNTY = D_TOTALQNTY + parseFloat(T_QNTY); } else { D_TOTALQNTY = D_TOTALQNTY + parseFloat(0); }
-
-    //    var T_GROSS_AMT = $("#T_GROSS_AMT").val();
-    //    if (T_GROSS_AMT != "") { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(T_GROSS_AMT); } else { D_TOTALTAXVAL = D_TOTALTAXVAL + parseFloat(0); }
-
-    //    var A_T_AMOUNT = $("#A_T_AMOUNT").val();
-    //    if (A_T_AMOUNT != "") { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(A_T_AMOUNT); } else { A_TOTALTAXVAL = A_TOTALTAXVAL + parseFloat(0); }
-    //    //
-    //    var T_IGST_AMT = $("#T_IGST_AMT").val();
-    //    if (T_IGST_AMT != "") { D_TOTALIGST = D_TOTALIGST + parseFloat(T_IGST_AMT); } else { D_TOTALIGST = D_TOTALIGST + parseFloat(0); }
-
-    //    var A_T_IGST = $("#A_T_IGST").val();
-    //    if (A_T_IGST != "") { A_TOTALIGST = A_TOTALIGST + parseFloat(A_T_IGST); } else { A_TOTALIGST = A_TOTALIGST + parseFloat(0); }
-
-    //    var T_CGST_AMT = $("#T_CGST_AMT").val();
-    //    if (T_CGST_AMT != "") { D_TOTALCGST = D_TOTALCGST + parseFloat(T_CGST_AMT); } else { D_TOTALCGST = D_TOTALCGST + parseFloat(0); }
-
-    //    var A_T_CGST = $("#A_T_CGST").val();
-    //    if (A_T_CGST != "") { A_TOTALCGST = A_TOTALCGST + parseFloat(A_T_CGST); } else { A_TOTALCGST = A_TOTALCGST + parseFloat(0); }
-
-    //    var T_SGST_AMT = $("#T_SGST_AMT").val();
-    //    if (T_SGST_AMT != "") { D_TOTALSGST = D_TOTALSGST + parseFloat(T_SGST_AMT); } else { D_TOTALSGST = D_TOTALSGST + parseFloat(0); }
-
-    //    var A_T_SGST = $("#A_T_SGST").val();
-    //    if (A_T_SGST != "") { A_TOTALSGST = A_TOTALSGST + parseFloat(A_T_SGST); } else { A_TOTALSGST = A_TOTALSGST + parseFloat(0); }
-
-    //    var T_NET_AMT = $("#T_NET_AMT").val();
-    //    if (T_NET_AMT != "") { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(T_NET_AMT); } else { D_TOTALNETAMT = D_TOTALNETAMT + parseFloat(0); }
-
-    //    var A_T_NET = $("#A_T_NET").val();
-    //    if (A_T_NET != "") { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(A_T_NET); } else { A_TOTALNETAMT = A_TOTALNETAMT + parseFloat(0); }
-
-    //    var totaltaxval = 0;
-    //    totaltaxval = parseFloat(parseFloat(D_TOTALTAXVAL) + parseFloat(A_TOTALTAXVAL)).toFixed(2);
-
-    //    var totaltax = 0;
-    //    totaltax = parseFloat(parseFloat(D_TOTALIGST) + parseFloat(A_TOTALIGST) + parseFloat(D_TOTALCGST) + parseFloat(A_TOTALCGST) + parseFloat(D_TOTALSGST) + parseFloat(A_TOTALSGST)).toFixed(2);
-
-    //    var totalbillamt = 0;
-    //    totalbillamt = parseFloat(parseFloat(D_TOTALNETAMT) + parseFloat(A_TOTALNETAMT)).toFixed(2);
-
-    //    $("#TOTNOS").val(parseFloat(D_TOTALNOS).toFixed(0));
-    //    $("#TOTQNTY").val(parseFloat(D_TOTALQNTY).toFixed(2));
-    //    $("#TOTTAXVAL").val(parseFloat(totaltaxval).toFixed(2));
-    //    $("#TOTTAX").val(parseFloat(totaltax).toFixed(2));
-
-    //    //tcs
-    //    var TCSPER = 0; TCSAMT = 0; TCSON = 0;
-    //    var MENU_PARA = $("#MENU_PARA").val();
-    //    //if (MENU_PARA != "SR" || MENU_PARA != "PR") {
-    //    //    TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
-    //    //    if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
-    //    //    document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
-    //    //    if (MENU_PARA == "PB") {
-    //    //        TCSON = $("#TCSON").val();
-    //    //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
-    //    //    }
-    //    //    else {
-    //    //        GetTCSON(totalbillamt);
-    //    //        TCSON = $("#TCSON").val();
-    //    //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
-    //    //    }
-    //    //    TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100);
-    //    //    TCSAMT = CalculateTcsAmt(TCSAMT);
-    //    //    if (MENU_PARA == "PB") {
-    //    //        var NEW_TCSAMT = $("#TCSAMT").val();
-    //    //        if (NEW_TCSAMT == "") { NEW_TCSAMT = parseFloat(0); } else { NEW_TCSAMT = parseFloat(NEW_TCSAMT) }
-
-    //    //        var TCSON = $("#TCSON").val();
-    //    //        if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
-
-    //    //        var TCSPER = $("#TCSPER").val();
-    //    //        if (TCSPER == "") { TCSPER = parseFloat(0); } else { TCSPER = parseFloat(TCSPER) }
-
-    //    //        var CAL_TCSAMT = TCSAMT;
-    //    //        var BAL_AMT = Math.abs(parseFloat(NEW_TCSAMT) - parseFloat(CAL_TCSAMT));
-    //    //        if (BAL_AMT <= 1 && NEW_TCSAMT > 0) {
-    //    //            $("#TCSAMT").val(parseFloat(NEW_TCSAMT).toFixed(2));
-    //    //            TCSAMT = NEW_TCSAMT;
-    //    //        }
-    //    //        else {
-    //    //            $("#TCSAMT").val(parseFloat(CAL_TCSAMT).toFixed(2));
-    //    //            TCSAMT = CAL_TCSAMT;
-    //    //        }
-    //    //    }
-    //    //    else {
-    //    //        document.getElementById("TCSAMT").value = parseFloat(TCSAMT).toFixed(2);
-
-    //    //    }
-    //    //}
-    //    //
-    //    totalbillamt = parseFloat(totalbillamt) + parseFloat(TCSAMT);
-    //    var REVCHRG = $("#REVCHRG").val();
-    //    if (REVCHRG == "Y") {
-    //        totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
-    //    }
-    //    if (ROUND_TAG == true) {
-    //        R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
-    //        TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
-    //        document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
-    //        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
-    //    }
-    //    else {
-    //        TOTAL_ROUND = 0;
-    //        document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
-    //        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
-    //    }
-
-    //}
-
-    //function GetTCSON(billamount) {
-    //    debugger;
-    //    var DefaultAction = $("#DefaultAction").val();
-    //    if (DefaultAction == "V") return true;
-    //    var MENU_PARA = $("#MENU_PARA").val();
-    //    var TCSON = 0;
-    //    if ($("#TCSAPPL").val() != "Y") {
-    //        TCSON = parseFloat(0);
-    //    }
-    //    else {
-    //        var tdslimit = $("#TDSLIMIT").val();
-    //        if (tdslimit == "") { tdslimit = parseFloat(0); } else { tdslimit = parseFloat(tdslimit) }
-
-    //        var amt = $("#AMT").val();
-    //        if (amt == "") { amt = parseFloat(0); } else { amt = parseFloat(amt) }
-
-    //        var blamt = billamount;//$("#BILL_AMT").val();
-    //        if (blamt == "") { blamt = parseFloat(0); } else { blamt = parseFloat(blamt) }
-
-    //        var tcsamt = $("#TCSAMT").val();
-    //        if (tcsamt == "") { tcsamt = parseFloat(0); } else { tcsamt = parseFloat(tcsamt) }
-
-    //        var totaltaxableamt = $("#TOTTAXVAL").val();
-    //        if (totaltaxableamt == "") { totaltaxableamt = parseFloat(0); } else { totaltaxableamt = parseFloat(totaltaxableamt) }
-
-    //        var tdscalcon = $("#TDSCALCON").val();
-
-    //        var TL = tdslimit;	//tdslimit from m_tds_cntrl_dtl
-    //        var O = amt;	//amt from slcdtcscalcon func
-    //        var B = blamt;//parseFloat(blamt - tcsamt);//	blamt - tcsamt
-    //        var T = totaltaxableamt;//	total taxable amt
-
-
-    //        if (tdscalcon == "B") {
-    //            TCSON = parseFloat(parseFloat(O) + parseFloat(B) - parseFloat(TL));
-    //        }
-    //        else {// tdscalcon = "T"
-    //            TCSON = parseFloat(parseFloat(O) + parseFloat(T) - parseFloat(TL));
-    //        }
-
-    //        if (TCSON < 0) TCSON = parseFloat(0);
-    //    }
-    //    $("#TCSON").val(parseFloat(TCSON).toFixed(2));
-    //}
-
-    function CalculateTcsAmt(TCSAMT) {
-        debugger;
-        var DefaultAction = $("#DefaultAction").val();
-        if (DefaultAction == "V") return true;
-        var TDSROUNDCAL = $("#TDSROUNDCAL").val();
-        if (TDSROUNDCAL == "Y" || TDSROUNDCAL == "") {
-            TCSAMT = Math.round(TCSAMT); //==yes or null or blank
-        }
-        else
-            if (TDSROUNDCAL == "N") {
-                TCSAMT = Math.ceil(TCSAMT); //==nxt
-            }
-            else
-                if (TDSROUNDCAL == "L") {
-                    TCSAMT = Math.floor(TCSAMT); //==least
-                }
-                else {
-                    TCSAMT = TCSAMT; //==2
-                }
-        return TCSAMT;
-    }
-</script>
 <script>
     function CalculateSalesMan_Amt_Details(i) {
         debugger;
@@ -559,22 +216,6 @@
         }
         document.getElementById("S_T_ITAMT").value = t_itamt.toFixed(2);
         document.getElementById("S_T_BLAMT").value = t_blamt.toFixed(2)
-
-
-    }
-    function CalculatePymtAmt_Total() {
-        debugger;
-        var T_AMT = 0;
-        var GridRow = $("#_T_SALE_POS_PAYMENT > tbody > tr").length;
-        for (var i = 0; i <= GridRow - 1; i++) {
-
-            var AMT = $("#P_AMT_" + i).val();
-            if (AMT == "") { AMT = parseFloat(0); } else { AMT = parseFloat(AMT) }
-            if (AMT != "") { T_AMT = T_AMT + parseFloat(AMT); } else { T_AMT = T_AMT + parseFloat(0); }
-            document.getElementById("P_AMT_" + i).value = AMT.toFixed(2);
-        }
-        document.getElementById("T_PYMT_AMT").value = T_AMT.toFixed(2);
-        document.getElementById("PAYAMT").value = T_AMT.toFixed(2);
 
 
     }
@@ -674,27 +315,6 @@
         });
     }
 </script>
-@section Scripts {
-    <script>
-        function ReloadWithData() {
-            var searchValue = $('#AUTONO').val();
-            var url = window.location.href;
-            var key1 = "searchValue";
-            url = updateQueryStringParameter(url, key1, searchValue);
-            url = updateQueryStringParameter(url, "loadOrder", "Y");
-            window.location = url;
-        }
-        function ReloadWithPSLIP() {
-            var searchValue = $('#LINKAUTONO').val();
-            var searchValue1 = $('#LINKDOCNO').val();
-            var url = window.location.href;
-            var key1 = "searchValue";
-            url = updateQueryStringParameter(url, key1, searchValue);
-            url = updateQueryStringParameter(url, "loadOrder", searchValue1);
-            window.location = url;
-        }
-    </script>
-}
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -950,7 +570,7 @@
                         </div>
                         <div class="col-md-1" style="margin-right: -41px;">
                             <div class="editor-field" style="margin-top:6px;">
-                                @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "BillAmountCalculate();" })
+                                @Html.CheckBoxFor(model => model.RoundOff, new { id = "RoundOff", onclick = "CalculateTotal();" })
                                 @Html.DropDownListFor(model => Model.T_TXN.REVCHRG, new SelectList(Model.Reverse_Charge, "Value", "Text"), "No", new { id = "REVCHRG", @style = "display:none", onchange = "ReverceCharges();" })
                             </div>
                         </div>
@@ -968,7 +588,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.NETDUE, new { htmlAttributes = new { @class = "form-control", id = "NETDUE", maxlength = 15, @placeholder = "Net Due", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.NETDUE, new { htmlAttributes = new { @class = "form-control", id = "NETDUE", maxlength = 15, @placeholder = "Net Due", @style = "text-align:right", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-5" style="width: auto;">
@@ -988,7 +608,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.RETAMT, new { htmlAttributes = new { @class = "form-control", id = "RETAMT", maxlength = 15, @placeholder = "Return Amount", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.RETAMT, new { htmlAttributes = new { @class = "form-control", id = "RETAMT", maxlength = 15, @placeholder = "Return Amount", @style = "text-align:right", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-5" style="width: auto;">
@@ -998,7 +618,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.PAYABLE, new { htmlAttributes = new { @class = "form-control", id = "PAYABLE", maxlength = 15, @placeholder = "Payable Amount", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.PAYABLE, new { htmlAttributes = new { @class = "form-control", id = "PAYABLE", maxlength = 15, @placeholder = "Payable Amount", @style = "text-align:right", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-5" style="width: auto;">
@@ -1008,7 +628,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.PAYAMT, new { htmlAttributes = new { @class = "form-control", id = "PAYAMT", maxlength = 15, @placeholder = "Payment Amount", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.PAYAMT, new { htmlAttributes = new { @class = "form-control", id = "PAYAMT", maxlength = 15, @placeholder = "Payment Amount", @style = "text-align:right", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
 
@@ -1067,7 +687,7 @@
                     @*<li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab" accesskey="B">Bar Code(B)</a></li>*@
                     <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab" accesskey="R">Return(R)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" accesskey="A">Amount(A)</a></li>
-                    <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment" accesskey="T">Payment(P)</a></li>
+                    <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment" accesskey="T">Payment(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
