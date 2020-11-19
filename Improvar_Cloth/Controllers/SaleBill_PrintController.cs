@@ -1482,7 +1482,7 @@ namespace Improvar.Controllers
                 sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno, f.state cstate, f.statecd cstatecd,  ";
                 sql += " c.translcd trslcd, g.slnm trslnm, g.gstno trgst, g.add1 trsladd1, g.add2 trsladd2, g.add3 trsladd3, g.add4 trsladd4, g.phno1 trslphno, c.lrno,  ";
                 sql += " c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, a.slno, a.itcd, a.styleno, a.itnm, a.itrem, a.batchdtl, a.hsncode,  ";
-                sql += " a.nos, a.qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, a.amt,a.payamt, d.docrem, d.docth, d.casenos, d.noofcases,  ";
+                sql += " a.nos, a.qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, nvl(a.amt,0)amt,nvl(a.payamt,0) payamt, d.docrem, d.docth, d.casenos, d.noofcases,  ";
                 sql += " d.agslcd, m.slnm agslnm, a.agdocno, a.agdocdt, j.itgrpnm, j.shortnm,  ";
                 sql += " nvl(a.igstper, 0)igstper, nvl(a.igstamt, 0)igstamt, nvl(a.cgstper, 0)cgstper, nvl(a.cgstamt, 0)cgstamt,  ";
                 sql += " nvl(a.sgstper, 0)sgstper, nvl(a.sgstamt, 0)sgstamt, nvl(a.dutyper, 0)dutyper, nvl(a.dutyamt, 0)dutyamt, nvl(a.cessper, 0)cessper, nvl(a.cessamt, 0)cessamt,  ";
@@ -1490,12 +1490,12 @@ namespace Improvar.Controllers
                 sql += " d.othnm, nvl(d.othadd1, f.othadd1) othadd1, d.porefno, d.porefdt, d.despby, d.dealby, d.packby, d.selby,  ";
                 sql += " decode(d.othadd1, null, f.othadd2, d.othadd2) othadd2, decode(d.othadd1, null, f.othadd3, d.othadd3) othadd3, decode(d.othadd1, null, f.othadd4, d.othadd4) othadd4,  ";
                 sql += " z.disctype, z.discrate, z.discamt, z.scmdisctype, z.scmdiscrate, z.scmdiscamt, z.tddisctype, z.tddiscrate, z.tddiscamt,  ";
-                sql += " b.curr_cd from  ";
+                sql += " b.curr_cd,a.usr_id from  ";
 
                 sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno) styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt,p.amt payamt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
                 sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt  ";
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
                 sql += " from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o," + Scm1 + ".t_txnpymt p  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono and a.itcd = d.itcd and a.autono = n.autono(+) and a.slno = n.txnslno(+) and n.barno = o.barno(+) and a.autono = p.autono  and";
                 sql += " c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
@@ -1505,12 +1505,12 @@ namespace Improvar.Controllers
                 sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)  ";
                 sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno), d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  ";
                 sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate, a.amt,p.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt  ";
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
                 sql += " union all  ";
 
                 sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,  ";
                 sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, 0 rate, a.amt,e.amt payamt, '' agdocno, '' agdocdt, '' batchdtl,  ";
-                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt  ";
+                sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d," + Scm1 + ".t_txnpymt e   ";
                 sql += " where a.autono = b.autono and a.autono = c.autono and a.autono = e.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
                 if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and ";
@@ -1693,8 +1693,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("igstamt", typeof(double), "");
                 IR.Columns.Add("dutyper", typeof(double), "");
                 IR.Columns.Add("dutyamt", typeof(double), "");
-                IR.Columns.Add("fdtldsc", typeof(string), "");
-                IR.Columns.Add("fdtlamt", typeof(string), "");
+                IR.Columns.Add("dtldsc", typeof(string), "");
+                IR.Columns.Add("dtlamt", typeof(string), "");
                 IR.Columns.Add("netpaybledesc", typeof(string), "");
                 IR.Columns.Add("netpayble", typeof(double), "");
                 IR.Columns.Add("despby", typeof(string), "");
@@ -1881,36 +1881,36 @@ namespace Improvar.Controllers
                             Type C_T = tbl.Rows[0]["cgstamt"].GetType(); Type S_T = tbl.Rows[0]["sgstamt"].GetType();
 
                             var GST_DATA = (from DataRow DR in tbl.Rows
-                                            where DR["autono"].ToString() == auto1
-                                            group DR by new { IGST = DR["igstper"].ToString(), CGST = DR["cgstper"].ToString(), SGST = DR["sgstper"].ToString() } into X
+                                            where DR["autono"].retStr() == auto1
+                                            group DR by new { IGST = DR["igstper"].retStr(), CGST = DR["cgstper"].retStr(), SGST = DR["sgstper"].retStr() } into X
                                             select new
                                             {
-                                                IGSTPER = X.Key.IGST,
-                                                CGSTPER = X.Key.CGST,
-                                                SGSTPER = X.Key.SGST,
-                                                TPAMT = P_A.Name == "Double" ? X.Sum(Z => Z.Field<double>("payamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("payamt"))),
-                                                TAMT = A_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("amt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("amt"))),
-                                                TQNTY = Q_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("qnty")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("qnty"))),
-                                                TNOS = N_S.Name == "Double" ? X.Sum(Z => Z.Field<double>("nos")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("nos"))),
-                                                IGSTAMT = I_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("igstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("igstamt"))),
-                                                CGSTAMT = C_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("cgstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("cgstamt"))),
-                                                SGSTAMT = S_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("sgstamt")) : Convert.ToDouble(X.Sum(Z => Z.Field<decimal>("sgstamt"))),
-                                                TOTALPER = Convert.ToDouble(X.Key.IGST) + Convert.ToDouble(X.Key.CGST) + Convert.ToDouble(X.Key.SGST)
+                                                IGSTPER = X.Key.IGST.retDbl(),
+                                                CGSTPER = X.Key.CGST.retDbl(),
+                                                SGSTPER = X.Key.SGST.retDbl(),
+                                                TPAMT = P_A.Name == "Double" ? X.Sum(Z => Z.Field<double>("payamt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("payamt").retDbl())),
+                                                TAMT = A_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("amt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("amt").retDbl())),
+                                                TQNTY = Q_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("qnty").retDbl()) : (X.Sum(Z => Z.Field<decimal>("qnty").retDbl())),
+                                                TNOS = N_S.Name == "Double" ? X.Sum(Z => Z.Field<double>("nos").retDbl()) : (X.Sum(Z => Z.Field<decimal>("nos").retDbl())),
+                                                IGSTAMT = I_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("igstamt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("igstamt").retDbl())),
+                                                CGSTAMT = C_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("cgstamt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("cgstamt").retDbl())),
+                                                SGSTAMT = S_T.Name == "Double" ? X.Sum(Z => Z.Field<double>("sgstamt").retDbl()) : (X.Sum(Z => Z.Field<decimal>("sgstamt").retDbl())),
+                                                TOTALPER = (X.Key.IGST.retDbl()) + (X.Key.CGST.retDbl()) + (X.Key.SGST.retDbl())
                                             }).OrderBy(A => A.TOTALPER).ToList();
 
                             if (GST_DATA != null && GST_DATA.Count > 0)
                             {
                                 foreach (var k in GST_DATA)
                                 {
-                                    if (k.IGSTAMT != 0) { dtldsc += "(+) IGST @ " + Cn.Indian_Number_format(k.IGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.IGSTAMT).ToINRFormat() + "~"; }
-                                    if (k.CGSTAMT != 0) { dtldsc += "(+) CGST @ " + Cn.Indian_Number_format(k.CGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.CGSTAMT).ToINRFormat() + "~"; }
-                                    if (k.SGSTAMT != 0) { dtldsc += "(+) SGST @ " + Cn.Indian_Number_format(k.SGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.SGSTAMT).ToINRFormat() + "~"; }
-                                    if (k.TPAMT != 0) { fdtldsc += "(+) Less Cash Received @ "+ " %~"; fdtlamt += Convert.ToDouble(k.TPAMT).ToINRFormat() + "~"; }
+                                    //if (k.IGSTAMT != 0) { dtldsc += "(+) IGST @ " + Cn.Indian_Number_format(k.IGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.IGSTAMT).ToINRFormat() + "~"; }
+                                    //if (k.CGSTAMT != 0) { dtldsc += "(+) CGST @ " + Cn.Indian_Number_format(k.CGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.CGSTAMT).ToINRFormat() + "~"; }
+                                    //if (k.SGSTAMT != 0) { dtldsc += "(+) SGST @ " + Cn.Indian_Number_format(k.SGSTPER, "0.00") + " %~"; dtlamt += Convert.ToDouble(k.SGSTAMT).ToINRFormat() + "~"; }
+                                    if (k.TPAMT != 0) { dtldsc += "Less Cash Received" +"~"; dtlamt += Convert.ToDouble(k.TPAMT).ToINRFormat(); }
                                     tqnty = tqnty + Convert.ToDouble(k.TQNTY);
                                     tnos = tnos + Convert.ToDouble(k.TNOS);
                                     tamt = tamt + Convert.ToDouble(k.TAMT);
                                     tpamt = k.TPAMT;
-                                    tgst = tgst + Convert.ToDouble(k.IGSTAMT) + Convert.ToDouble(k.CGSTAMT) + Convert.ToDouble(k.SGSTAMT);
+                                    //tgst = tgst + Convert.ToDouble(k.IGSTAMT) + Convert.ToDouble(k.CGSTAMT) + Convert.ToDouble(k.SGSTAMT);
                                 }
                             }
                             //if (tbl.Rows[0]["ADVRECDAMT"].retDbl() != 0)
@@ -2221,8 +2221,9 @@ namespace Improvar.Controllers
                             dr1["roamt"] = tbl.Rows[i]["roamt"] == DBNull.Value ? 0 : tbl.Rows[i]["roamt"].retDbl();
                             dr1["tcsper"] = tbl.Rows[i]["tcsper"].ToString().retDbl().ToINRFormat();
                             dr1["tcsamt"] = tbl.Rows[i]["tcsamt"].ToString().retDbl().ToINRFormat(); // == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["tcsamt"]);
-                            dr1["blamt"] = tbl.Rows[i]["blamt"].ToString().retDbl().ToINRFormat(); // == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["blamt"]);
+                            dr1["blamt"] = tbl.Rows[i]["blamt"].retDbl().ToINRFormat(); // == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["blamt"]);
                             var netpaybleamt = tbl.Rows[i]["blamt"].ToString().retDbl() - tpamt;
+                            rupinwords = Cn.AmountInWords(tbl.Rows[i]["blamt"].retStr());
                             //dr1["blamt"] = (tbl.Rows[i]["blamt"].retDbl() - tbl.Rows[i]["ADVRECDAMT"].retDbl()).ToINRFormat();
 
                             dr1["rupinword"] = rupinwords;
@@ -2255,13 +2256,13 @@ namespace Improvar.Controllers
 
                             //dr1["dtldsc"] = dtldsc;
                             //dr1["dtlamt"] = dtlamt;
-                            dr1["fdtldsc"] = fdtldsc;
-                            dr1["fdtlamt"] = fdtlamt;
+                            dr1["dtldsc"] = dtldsc;
+                            dr1["dtlamt"] = dtlamt;
                             if(netpaybleamt.retDbl()>0)
-                            { dr1["netpaybledesc"] = "Net Due Payble Amount"; }
-                            else { dr1["netpaybledesc"] = "Net Advance Received Amount"; }
-                            
+                            { dr1["netpaybledesc"] = "Net Due Payble Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat(); }
+                            else { dr1["netpaybledesc"] = "Net Advance Received Amount"; dr1["netpayble"] = netpaybleamt.retDbl().ToINRFormat(); }
 
+                            dr1["user_id"] = tbl.Rows[i]["usr_id"].ToString();
                             dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
                             dr1["hsn_cd"] = hsncode;
 
@@ -2574,7 +2575,7 @@ namespace Improvar.Controllers
                 string rptfile = "SaleBillHalf.rpt";
                 if (VE.TEXTBOX6 != null) rptfile = VE.TEXTBOX6;
                 rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
-                if (VE.maxdate == "CHALLAN") blhead = "CHALLAN";
+               /* if (VE.maxdate == "CHALLAN")*/ blhead = "CASH MEMO";
                 ReportDocument reportdocument = new ReportDocument();
                 if (printemail == "Email")
                 {
