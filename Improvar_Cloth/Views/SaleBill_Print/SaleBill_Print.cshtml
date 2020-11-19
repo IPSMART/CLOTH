@@ -157,7 +157,23 @@
                         <tr><td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox6)</td><td style="border:1px groove;">Extra Copy</td></tr>
                     </table>
                 </div>
-
+                @if (Model.MENU_PARA == "SBCM" || Model.MENU_PARA == "SBCMR")
+                {   <div class="row" style="margin-top:10PX">
+                    <div class="col-md-8">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX7, "Full")  @Html.Label("Full")
+                        </label>
+                        <label class="radio-inline">
+                            @Html.RadioButtonFor(g => g.TEXTBOX7, "Half", new { @checked = "checked" })  @Html.Label("Half")
+                        </label>
+                    </div>
+                </div>
+                }
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>
