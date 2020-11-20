@@ -1041,10 +1041,10 @@ namespace Improvar.Controllers
                     VE.TTXNAMT[p].SLNO = Convert.ToInt16(p + 1);
 
                     VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.Value + VE.TTXNAMT[p].IGSTAMT.Value + VE.TTXNAMT[p].CGSTAMT.Value + VE.TTXNAMT[p].SGSTAMT.Value + VE.TTXNAMT[p].CESSAMT.Value + VE.TTXNAMT[p].DUTYAMT.Value;
-                    VE.TTXNAMT[p].IGSTPER = IGST_PER;
-                    VE.TTXNAMT[p].CGSTPER = CGST_PER;
-                    VE.TTXNAMT[p].SGSTPER = SGST_PER;
-                    VE.TTXNAMT[p].CESSPER = CESS_PER;
+                    //VE.TTXNAMT[p].IGSTPER = IGST_PER;
+                    //VE.TTXNAMT[p].CGSTPER = CGST_PER;
+                    //VE.TTXNAMT[p].SGSTPER = SGST_PER;
+                    //VE.TTXNAMT[p].CESSPER = CESS_PER;
                     A_T_CURR_AMT = A_T_CURR_AMT + VE.TTXNAMT[p].CURR_AMT.Value;
                     A_T_AMT = A_T_AMT + VE.TTXNAMT[p].AMT.Value;
                     A_T_IGST_AMT = A_T_IGST_AMT + VE.TTXNAMT[p].IGSTAMT.Value;
