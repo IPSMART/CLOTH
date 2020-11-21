@@ -1056,7 +1056,7 @@ namespace Improvar
                     {
                         for (int i = 0; i <= VE.TTXNPYMT.Count - 1; i++)
                         {
-                            if (VE.TTXNPYMT[i].SLNO != 0 && VE.TTXNPYMT[i].AMT != 0)
+                            if (VE.TTXNPYMT[i].SLNO != 0 && VE.TTXNPYMT[i].AMT.retDbl() != 0)
                             {
                                 T_TXNPYMT TTXNPYMNT = new T_TXNPYMT();
                                 TTXNPYMNT.AUTONO = TTXN.AUTONO;
@@ -1068,7 +1068,10 @@ namespace Improvar
                                 TTXNPYMNT.AMT = VE.TTXNPYMT[i].AMT.retDbl();
                                 TTXNPYMNT.CARDNO = VE.TTXNPYMT[i].CARDNO;
                                 TTXNPYMNT.INSTNO = VE.TTXNPYMT[i].INSTNO;
-                                TTXNPYMNT.INSTDT = Convert.ToDateTime(VE.TTXNPYMT[i].INSTDT);
+                                if(VE.TTXNPYMT[i].INSTDT.retStr() != "")
+                                {
+                                    TTXNPYMNT.INSTDT = Convert.ToDateTime(VE.TTXNPYMT[i].INSTDT);
+                                }
                                 TTXNPYMNT.PYMTREM = VE.TTXNPYMT[i].PYMTREM;
                                 TTXNPYMNT.GLCD = VE.TTXNPYMT[i].GLCD;
                                 dbsql = masterHelp.RetModeltoSql(TTXNPYMNT);
@@ -1080,7 +1083,7 @@ namespace Improvar
                     {
                         for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
                         {
-                            if (VE.TTXNSLSMN[i].SLNO != 0 && VE.TTXNSLSMN[i].SLMSLCD != null && VE.TTXNSLSMN[i].ITAMT != 0)
+                            if (VE.TTXNSLSMN[i].SLNO != 0 && VE.TTXNSLSMN[i].SLMSLCD != null && VE.TTXNSLSMN[i].BLAMT != 0)
                             {
                                 T_TXNSLSMN TTXNSLSMN = new T_TXNSLSMN();
                                 TTXNSLSMN.AUTONO = TTXN.AUTONO;

@@ -490,7 +490,7 @@ function CalculateTotal() {
     //SALESMAN GRID TOTAL
     var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
    
-    var T_GROSS_AMT = retFloat($("#T_B_GROSSAMT").val());
+    var T_TXBLVAL = retFloat($("#B_T_AMT").val());
     var R_T_GROSS_AMT = retFloat($("#R_T_GROSS_AMT").val());
     var PAYABLE = retFloat($("#PAYABLE").val());
 
@@ -499,7 +499,7 @@ function CalculateTotal() {
         var PER_ = retFloat($("#S_PER_" + i).val());
         var blamt = parseFloat(PAYABLE * PER_) / 100;
         $("#S_BLAMT_" + i).val(retFloat(blamt).toFixed(2));
-        var Mtaxamt = T_GROSS_AMT;
+        var Mtaxamt = T_TXBLVAL;
         var Rtaxamt = R_T_GROSS_AMT;
         var itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
         $("#S_ITAMT_" + i).val(retFloat(itamt).toFixed(2));

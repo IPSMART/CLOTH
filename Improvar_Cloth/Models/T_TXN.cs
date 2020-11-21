@@ -50,7 +50,7 @@ namespace Improvar.Models
         public string CURR_CD { get; set; }
 
         public double? CURRRT { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? BLAMT { get; set; }
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
