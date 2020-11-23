@@ -2297,13 +2297,13 @@ namespace Improvar
         public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "")
         {
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
-            if (menupara == "PB" )
+            if (menupara == "PB")
             {
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara);
             }
-            else if(menupara == "ALL")
+            else if (menupara == "ALL")
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(),"","",true,false);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false);
             }
             else
             {
@@ -2322,20 +2322,21 @@ namespace Improvar
             }
             else
             {
-               
+
                 if (tbl.Rows.Count > 0)
-                { if (tbl.Rows[0]["barimage"].retStr() != "")
                 {
-                    var brimgs = tbl.Rows[0]["barimage"].retStr().Split((char)179);
-                    foreach (var barimg in brimgs)
+                    if (tbl.Rows[0]["barimage"].retStr() != "")
                     {
-                        string barfilename = barimg.Split('~')[0];
-                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
-                        FROMpath = Path.Combine(FROMpath, "");
-                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
-                        Cn.CopyImage(FROMpath, TOPATH);
+                        var brimgs = tbl.Rows[0]["barimage"].retStr().Split((char)179);
+                        foreach (var barimg in brimgs)
+                        {
+                            string barfilename = barimg.Split('~')[0];
+                            string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                            FROMpath = Path.Combine(FROMpath, "");
+                            string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                            Cn.CopyImage(FROMpath, TOPATH);
+                        }
                     }
-                }
                     string str = ToReturnFieldValues("", tbl);
                     return str;
                 }
@@ -2600,22 +2601,34 @@ namespace Improvar
                 }
             }
         }
-        public string GetOrderDetails(string val,string menupara,string itcd="",string Orderslno="",string slcd="")
+        public string GetOrderDetails(string val, string orddocno, string menupara, string itcd = "", string Orderslno = "", string slcd = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
             DataTable tbl = new DataTable();
-            tbl = salesfunc.GetPendOrder(slcd, "", val, Orderslno, "", "", menupara,"",false,"", itcd.retSqlformat());
-            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            tbl = salesfunc.GetPendOrder(slcd, "", val, Orderslno, "", "", menupara, "", false, "", itcd.retSqlformat());
+            if (orddocno.retStr() != "")
+            {
+                var data = tbl.Select("docno = '" + orddocno.retStr() + "'");
+                if(data != null && data.Count() > 0)
+                {
+                    tbl = data.CopyToDataTable();
+                }
+                else
+                {
+                    tbl = tbl.Clone();
+                }
+            }
+            if (orddocno.retStr() == "" || tbl.Rows.Count > 1)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
                     var colorcd = tbl.Rows[i]["colrcd"].retStr() != "" ? tbl.Rows[i]["colrnm"] + "[" + tbl.Rows[i]["colrcd"] + "]" : "";
-                    SB.Append("<tr><td>" + tbl.Rows[i]["docno"].retStr() + "</td><td>" + tbl.Rows[i]["slno"].retStr() + " </td><td>" + tbl.Rows[i]["docdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["itnm"].retStr() + " "+ tbl.Rows[i]["styleno"].retStr() + " </td><td>" + colorcd + " </td><td>" + tbl.Rows[i]["sizecd"].retStr() + " </td><td>" + tbl.Rows[i]["balqnty"].retDbl() + " </td><td>" + tbl.Rows[i]["autono"].retStr() + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["docno"].retStr() + "</td><td>" + tbl.Rows[i]["slno"].retStr() + " </td><td>" + tbl.Rows[i]["docdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["itnm"].retStr() + " " + tbl.Rows[i]["styleno"].retStr() + " </td><td>" + colorcd + " </td><td>" + tbl.Rows[i]["sizecd"].retStr() + " </td><td>" + tbl.Rows[i]["balqnty"].retDbl() + " </td><td>" + tbl.Rows[i]["autono"].retStr() + " </td></tr>");
                 }
                 var hdr = "Order No." + Cn.GCS() + "Order Slno." + Cn.GCS() + "Order Date." + Cn.GCS() + "Item Name" + Cn.GCS() + "Color Name" + Cn.GCS() + "Size Name" + Cn.GCS() + "Balance Quantity" + Cn.GCS() + "Order Autono.";
-                return Generate_help(hdr, SB.ToString(),"7");
+                return Generate_help(hdr, SB.ToString(), "7");
             }
             else
             {
