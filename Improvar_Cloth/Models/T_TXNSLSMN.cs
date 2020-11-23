@@ -22,9 +22,12 @@ namespace Improvar.Models
         public string TTAG { get; set; }
 
         [Key]
+        [Column(Order = 0)]
         [StringLength(30)]
         public string AUTONO { get; set; }
 
+        [Key]
+        [Column(Order = 1)]
         [StringLength(8)]
         public string SLMSLCD { get; set; }
 

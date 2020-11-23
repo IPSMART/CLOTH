@@ -30,17 +30,7 @@
             modeView();
         }
         else if ("@Model.DefaultAction" == "E") {
-            var BARGENTYPE = $("#BARGENTYPE").val();
-            if (BARGENTYPE == "E") {
-                $("#BARGENTYPE").attr("style", "pointer-events:none");
-            }
-            if ('@Model.MENU_PARA' == "SB") {
-                $('#PACKSLIP_HELP').hide("");
-                $("#LINKDOCNO").attr("readonly", "readonly");
-            }
-            else {
-                GetAllMtrljobcd();
-            }
+            GetAllMtrljobcd();
             Checked_Disable();
         }
         else if ("@Model.DefaultAction" == "A") {
@@ -49,12 +39,7 @@
                 GetAllMtrljobcd();
             }
         }
-        if ("@Model.LINKDOCNO" != "") {
 
-            $('#_T_SALE_POS_PRODUCT_GRID input').attr('readonly', 'readonly');
-            $('#_T_SALE_POS_DETAIL_GRID input').removeAttr("onblur");
-            $('#_T_SALE_POS_PRODUCT_GRID input').attr('TabIndex', '-1');
-        }
         $("#WaitingMode").hide();
     });
 </script>
@@ -62,13 +47,7 @@
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Retail", "RTDEBCD")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) {
-        //    $("li").removeClass("active").addClass("");
-        //    $(".nav-tabs li:first-child").addClass('active');
-        //    $(".tab-content div").removeClass("active");
-        //    $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-        //    return false;
-        //}
+        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
         var T_PER = 0;
         var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
@@ -84,23 +63,6 @@
             $(".tab-content div").removeClass("active");
             $(".tab-content div:fourth-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
-        }
-
-        if ("@Model.MENU_PARA" == "PB") {
-            if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:first-child").addClass('active');
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                return false;
-            }
-            if (!emptyFieldCheck("Please Enter Purchase bill date", "PREFDT")) {
-                $("li").removeClass("active").addClass("");
-                $(".nav-tabs li:first-child").addClass('active');
-                $(".tab-content div").removeClass("active");
-                $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-                return false;
-            }
         }
         return true;
     }
@@ -134,85 +96,8 @@
     $(function () {
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
-            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
-            $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
-            $("#POREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
-</script>
-<script>
-    function AddRowPYMT(ID) {
-        debugger;
-        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddRowPYMT", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivPayment").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivPayment").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    function Addrow(ID) {
-        debugger;
-        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("AddRow", PageControllerName)",
-            beforesend: $("#WaitingMode").show(),
-            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
-            success: function (result) {
-                $("#WaitingMode").hide();
-                $("#partialdivSalesman").animate({ marginTop: '-10px' }, 50);
-                $("#partialdivSalesman").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    function DeleteRow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivSalesman").animate({ marginTop: '0px' }, 50);
-                $("#partialdivSalesman").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-    function DeleteRowPYMT() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteRowPYMT", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivPayment").animate({ marginTop: '0px' }, 50);
-                $("#partialdivPayment").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
 </script>
 <script>
     function pageprinting() {
@@ -253,6 +138,10 @@
         <input type="hidden" id="UrlSelectTDSCode" value="@Url.Action("GetTDSDetails", PageControllerName)" />
         <input type="hidden" id="UrlUploadImages" value="@Url.Action("UploadImages", PageControllerName )" />
         <input type="hidden" id="UrlSubLedgerDetails" value="@Url.Action("GetSubLedgerDetails", PageControllerName )" />
+        <input type="hidden" id="UrlAddRowPYMT" value="@Url.Action("AddRowPYMT", PageControllerName)" />
+        <input type="hidden" id="UrlAddRow" value="@Url.Action("AddRow", PageControllerName)" />
+        <input type="hidden" id="UrlDeleteRowSlsman" value="@Url.Action("DeleteRow", PageControllerName)" />
+        <input type="hidden" id="UrlDeleteRowPYMT" value="@Url.Action("DeleteRowPYMT", PageControllerName)" />
         <input type="hidden" id="salesmanlinkcd" value="E" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -365,64 +254,7 @@
                         </div>
 
                     </div>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party GST No.")
-                                @*<b style="color:Red;">*</b>*@
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Party GST No.", maxlength = 15, @placeholder = "Party GST No." } })
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party GST Name")
-                                @*<b style="color:Red;">*</b>*@
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST No.", maxlength = 50, @placeholder = "Party GST No." } })
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party GST Address")
-                                @*<b style="color:Red;">*</b>*@
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLADD1, new { htmlAttributes = new { @class = "form-control", id = "GSTSLADD1", @title = "Party GST Address", maxlength = 60, @placeholder = "Party GST Address" } })
-                            </div>
-                        </div>
 
-                        <div class="col-md-5">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party GST District")
-                                @*<b style="color:Red;">*</b>*@
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLDIST, new { htmlAttributes = new { @class = "form-control", id = "GSTSLDIST", @title = "Party GST District", maxlength = 50, @placeholder = "Party GST District" } })
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Party GST PinCode")
-                                @*<b style="color:Red;">*</b>*@
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLPIN, new { htmlAttributes = new { @class = "form-control", id = "GSTSLPIN", @title = "Party GST PinCode", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7, @placeholder = "Party GST PinCod" } })
-                            </div>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -497,6 +329,64 @@
                         <div class="col-md-2">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST No.")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTNO, new { htmlAttributes = new { @class = "form-control", id = "GSTNO", @title = "Party GST No.", maxlength = 15, @placeholder = "Party GST No." } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST Name")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST No.", maxlength = 50, @placeholder = "Party GST No." } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST Address")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTSLADD1, new { htmlAttributes = new { @class = "form-control", id = "GSTSLADD1", @title = "Party GST Address", maxlength = 60, @placeholder = "Party GST Address" } })
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST District")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTSLDIST, new { htmlAttributes = new { @class = "form-control", id = "GSTSLDIST", @title = "Party GST District", maxlength = 50, @placeholder = "Party GST District" } })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Party GST PinCode")
+                                @*<b style="color:Red;">*</b>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.GSTSLPIN, new { htmlAttributes = new { @class = "form-control", id = "GSTSLPIN", @title = "Party GST PinCode", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7, @placeholder = "Party GST PinCod" } })
                             </div>
                         </div>
                     </div>
@@ -601,129 +491,129 @@
                 </div>*@
 
         </div>
-            <div class="row" style="margin-top:5px;">
-                <ul class="nav nav-tabs">
-                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
-                    @*<li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab" accesskey="B">Bar Code(B)</a></li>*@
-                    <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab" accesskey="R">Return(R)</a></li>
-                    <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" accesskey="A">Amount(A)</a></li>
-                    <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment" accesskey="T">Payment(T)</a></li>
-                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
-                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
+        <div class="row" style="margin-top:5px;">
+            <ul class="nav nav-tabs">
+                <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
+                @*<li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab" accesskey="B">Bar Code(B)</a></li>*@
+                <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab" accesskey="R">Return(R)</a></li>
+                <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" accesskey="A">Amount(A)</a></li>
+                <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment" accesskey="T">Payment(T)</a></li>
+                <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
+                <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="Main" class="tab-pane fade in active" style="margin-top: 5px;">
+                    <div class="row">
+
                         <div class="row">
-
-                            <div class="row">
-                                @if (Model.DefaultAction != "V")
-                                {
-                                    <div class="col-md-1">
-                                        <div class="editor-label" style="margin-top: 6px;">
-                                            @Html.Label("", "Bar Code")
-                                            <b style="color:Red;">*</b>
-                                        </div>
+                            @if (Model.DefaultAction != "V")
+                            {
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Bar Code")
+                                        <b style="color:Red;">*</b>
                                     </div>
-                                    <div class="col-md-8">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
 
-                                            @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
-                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
-                                        </div>
+                                        @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                                     </div>
-                                }
-
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-3" style="width:auto;">
                                 </div>
-                            </div>
-                            <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
-                                <div id="partialdivBarCodeTab">
-                                    @Html.Partial("_T_SALE_POS_PRODUCT")
-                                </div>
-                                @*<div>
-                                        <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
-                                        </div>
-                                    </div>*@
-                            </div>
-                            @*@if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
-                                {
-                                    <div>
-                                        <div class="row">
-                                            <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-1" style="width:auto;">
-                                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                }*@
+                            }
 
                         </div>
-                    </div>
-                    <div id="ReturnTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivReturn" style="margin-top:0px;">
-                                    @*@Html.Partial("_T_SALE_POS_DETAIL")*@
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="Amount" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
-                            <div>
-                                <div id="partialdivAmounts" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_POS_AMOUNT")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
-                            <div>
-                                <div id="partialdivSalesman" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_POS_SALESMAN")
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
-                            <div>
-                                <div id="partialdivPayment" style="margin-top:0px;">
-                                    @Html.Partial("_T_SALE_POS_PAYMENT")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div id="Remarks" class="tab-pane fade">
                         <div class="row">
-                            <div>
-                                <div id="partialdivRemarks">
-                                    @Html.Partial("_TRANSACTIONREMARKS")
-                                </div>
+                            <div class="col-md-3" style="width:auto;">
                             </div>
                         </div>
-                    </div>
-                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
-                        <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
-                            <div>
-                                <div id="partialdivDocument" style="margin-top:0px;">
-                                    @Html.Partial("_UPLOADDOCUMENTS")
-                                </div>
+                        <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
+                            <div id="partialdivBarCodeTab">
+                                @Html.Partial("_T_SALE_POS_PRODUCT")
                             </div>
+                            @*<div>
+                                    <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                                    </div>
+                                </div>*@
                         </div>
-                    </div>
-                    @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
+                        @*@if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                            {
+                                <div>
+                                    <div class="row">
+                                        <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code (Bar code area) to copy last row of Bar Code Grid</p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-1" style="width:auto;">
+                                            <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }*@
 
-                        </div>*@
+                    </div>
                 </div>
+                <div id="ReturnTab" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                        <div>
+                            <div id="partialdivReturn" style="margin-top:0px;">
+                                @*@Html.Partial("_T_SALE_POS_DETAIL")*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="Amount" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                        <div>
+                            <div id="partialdivAmounts" style="margin-top:0px;">
+                                @Html.Partial("_T_SALE_POS_AMOUNT")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                        <div>
+                            <div id="partialdivSalesman" style="margin-top:0px;">
+                                @Html.Partial("_T_SALE_POS_SALESMAN")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                        <div>
+                            <div id="partialdivPayment" style="margin-top:0px;">
+                                @Html.Partial("_T_SALE_POS_PAYMENT")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="Remarks" class="tab-pane fade">
+                    <div class="row">
+                        <div>
+                            <div id="partialdivRemarks">
+                                @Html.Partial("_TRANSACTIONREMARKS")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                    <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                        <div>
+                            <div id="partialdivDocument" style="margin-top:0px;">
+                                @Html.Partial("_UPLOADDOCUMENTS")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div id="SalesBillMade" class="tab-pane fade" style="margin-top: 10px;">
+
+                    </div>*@
             </div>
+        </div>
                                             //  </div>
 
                                             <div class="container">

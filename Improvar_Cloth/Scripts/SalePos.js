@@ -1,6 +1,5 @@
-﻿var DefaultAction = $("#DefaultAction").val();
-function GetBarnoDetails(id) {
-
+﻿function GetBarnoDetails(id) {
+    var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     debugger;
     if (id == "") {
@@ -101,6 +100,8 @@ function DeleteBarnoRow() {
 }
 function AddBarnoRow(hlpstr) {
     debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
     var BARNO = returncolvalue(hlpstr, "BARNO");
     var ITGRPNM = returncolvalue(hlpstr, "ITGRPNM");
     var ITGRPCD = returncolvalue(hlpstr, "ITGRPCD");
@@ -269,6 +270,7 @@ function AddBarnoRow(hlpstr) {
 }
 function CalculateRowAmt(GridId, i) {
     debugger;
+    var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
 
     if (GridId == "_T_SALE_POS_PRODUCT_GRID") {
@@ -516,6 +518,7 @@ function CalculateTotal() {
 }
 function CalculateInclusiveRate(i) {
     debugger; var itemrate = 0;
+    var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var INCLRATE_ = retFloat($("#INCLRATE_" + i).val());
     var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
@@ -551,6 +554,8 @@ function CalculateInclusiveRate(i) {
 
 }
 function SalesmanPerChk() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
     var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
     var T_PER = 0;
     for (var j = 0; j <= GridRow - 1; j++) {
@@ -560,6 +565,8 @@ function SalesmanPerChk() {
     CalculateTotal();
 }
 function Checked_Disable() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
     var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         if ($("#B_ChildData_" + i).val() == "Y") {
@@ -604,4 +611,84 @@ function DeleteDOCrow() {
         }
     });
 
+}
+function AddRowPYMT(ID) {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+    $.ajax({
+        type: 'POST',
+        url:  $("#UrlAddRowPYMT").val(),//"@Url.Action("AddRowPYMT", PageControllerName)",
+        beforesend: $("#WaitingMode").show(),
+    data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+    success: function (result) {
+        $("#WaitingMode").hide();
+        $("#partialdivPayment").animate({ marginTop: '-10px' }, 50);
+        $("#partialdivPayment").html(result);
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        $("#WaitingMode").hide();
+        msgError(XMLHttpRequest.responseText);
+        $("body span h1").remove(); $("#msgbody_error style").remove();
+    }
+});
+}
+function DeleteRowPYMT() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlDeleteRowPYMT").val(),//"@Url.Action("DeleteRowPYMT", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#partialdivPayment").animate({ marginTop: '0px' }, 50);
+            $("#partialdivPayment").html(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+function Addrow(ID) {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+    $.ajax({
+        type: 'POST',
+        url:$("#UrlAddRow").val(), //"@Url.Action("AddRow", PageControllerName)",
+        beforesend: $("#WaitingMode").show(),
+    data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+    success: function (result) {
+        $("#WaitingMode").hide();
+        $("#partialdivSalesman").animate({ marginTop: '-10px' }, 50);
+        $("#partialdivSalesman").html(result);
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        $("#WaitingMode").hide();
+        msgError(XMLHttpRequest.responseText);
+        $("body span h1").remove(); $("#msgbody_error style").remove();
+    }
+});
+}
+function DeleteRow() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlDeleteRowSlsman").val(),// "@Url.Action("DeleteRow", PageControllerName)",
+        data: $('form').serialize(),
+    success: function (result) {
+        $("#partialdivSalesman").animate({ marginTop: '0px' }, 50);
+        $("#partialdivSalesman").html(result);
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        $("#WaitingMode").hide();
+        msgError(XMLHttpRequest.responseText);
+        $("body span h1").remove(); $("#msgbody_error style").remove();
+    }
+});
 }
