@@ -147,7 +147,5 @@ namespace Improvar.Models
         public short RSLNO { get; set; }
 
         public string Q_SAMPLE { get; set; }
-
-        public short? PROGSLNO { get; set; }
     }
 }

@@ -362,8 +362,8 @@ namespace Improvar.Controllers
 
                 string str2 = "";
                 str2 += "select a.autono,a.slno,a.rslno,a.qnty,a.bomqnty,a.extraqnty,a.itcd,a.sizecd,a.partcd,a.colrcd,a.mtrljobcd,k1.itgrpcd,n.itgrpnm, ";
-                str2 += " k.itnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd,b.qnty qntyMst, ";
-                str2 += "a.sample,k.styleno ||' '||k.itnm itstyle,k1.styleno||' '||k1.itnm itstyle1,k1.uomcd Quomcd,b.barno from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
+                str2 += " k.itnm Qitnm,l.sizenm,m.colrnm,p.partnm,o.mtrljobnm,k.uomcd Quomcd,b.qnty qntyMst, ";
+                str2 += "a.sample,k.styleno ||' '||k.itnm Qitstyle,k1.styleno||' '||k1.itnm itstyle,k1.uomcd ,b.barno from " + Scm + ".T_PROGBOM a," + Scm + ".T_PROGMAST b ,";
                 str2 += Scm + ".M_SITEM k, " + Scm + ".M_SITEM k1, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str2 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p ";
                 str2 += " where a.autono=b.autono(+) and a.slno=b.slno(+) and a.ITCD = k1.ITCD(+) and b.ITCD = k.ITCD(+)  ";
@@ -379,7 +379,7 @@ namespace Improvar.Controllers
                                    RSLNO = Convert.ToInt16(dr["rslno"]),
                                    QQNTY = dr["qntyMst"].retDbl(),
                                    QNTY = dr["qnty"].retDbl(),
-                                   QITNM = dr["itstyle1"].retStr(),
+                                   QITNM = dr["qitstyle"].retStr(),
                                    QUOM = dr["Quomcd"].retStr(),
                                    BARNO = dr["barno"].retStr(),
                                    ITGRPCD = dr["itgrpcd"].retStr(),
@@ -405,14 +405,14 @@ namespace Improvar.Controllers
                     TOTAL_QQNTY = TOTAL_QQNTY + (q.QQNTY == null ? 0 : q.QQNTY.Value);
                     TOTAL_BOMQNTY = TOTAL_BOMQNTY + (q.BOMQNTY == null ? 0 : q.BOMQNTY.Value);
                     TOTAL_EXTRAQNTY = TOTAL_EXTRAQNTY + (q.EXTRAQNTY == null ? 0 : q.EXTRAQNTY.Value);
-                    if (q.Q_SAMPLE == "Y")
-                    {
-                        q.PROGSLNO = VE.TPROGDTL.Where(a => a.BARNO.retStr() == q.BARNO.retStr() && a.MTRLJOBCD.retStr() == q.MTRLJOBCD.retStr() && a.QNTY.retStr() == q.QQNTY.retStr()).Select(b => b.SLNO).SingleOrDefault();
-                    }
-                    else
-                    {
-                        q.PROGSLNO = VE.TPROGDTL.Where(a => a.BARNO.retStr() == q.BARNO.retStr() && a.QNTY.retStr() == q.QQNTY.retStr()).Select(b => b.SLNO).SingleOrDefault();
-                    }
+                    //if (q.Q_SAMPLE == "Y")
+                    //{
+                    //    q.PROGSLNO = VE.TPROGDTL.Where(a => a.BARNO.retStr() == q.BARNO.retStr() && a.MTRLJOBCD.retStr() == q.MTRLJOBCD.retStr() && a.QNTY.retStr() == q.QQNTY.retStr()).Select(b => b.SLNO).SingleOrDefault();
+                    //}
+                    //else
+                    //{
+                    //    q.PROGSLNO = VE.TPROGDTL.Where(a => a.BARNO.retStr() == q.BARNO.retStr() && a.QNTY.retStr() == q.QQNTY.retStr()).Select(b => b.SLNO).SingleOrDefault();
+                    //}
                 }
                 VE.T_QQNTY = TOTAL_QQNTY.retInt();
                 VE.T_BOMQNTY = TOTAL_BOMQNTY.retInt();
@@ -783,17 +783,17 @@ namespace Improvar.Controllers
                                 x.ITCD,
                                 x.ITNM,
                                 x.UOM,
-                                x.PROGSLNO
+                                x.SLNO
                             } into P
                             select new
                             {
                                 ITCD = P.Key.ITCD.retStr(),
                                 ITNM = P.Key.ITNM.retStr(),
                                 UOM = P.Key.UOM.retStr(),
-                                PROGSLNO = P.Key.PROGSLNO.retStr(),
+                                PROGSLNO = P.Key.SLNO.retStr(),
                                 TOTALREQQTY = (P.Sum(A => A.BOMQNTY.retDbl()) + P.Sum(A => A.EXTRAQNTY.retDbl())).retDbl(),
                                 USEDQTY = (P.Sum(A => A.BOMQNTY.retDbl()) + P.Sum(A => A.EXTRAQNTY.retDbl())).retDbl(),
-                                QNTY = (P.Sum(A => A.BOMQNTY.retDbl()) + P.Sum(A => A.EXTRAQNTY.retDbl())).retDbl()
+                                QNTY = (P.Sum(A => A.BOMQNTY.retDbl()) + P.Sum(A => A.EXTRAQNTY.retDbl())).retDbl(),
                             }).ToList();
                 if (val.retStr() != "" && Code.retStr() != "")
                 {
@@ -814,7 +814,8 @@ namespace Improvar.Controllers
                     if (VE.TBATCHDTL != null)
                     {
                         string itcd = bomdata.Rows[i]["itcd"].retStr();
-                        currentadjqnty = VE.TBATCHDTL.Where(a => a.ITCD == itcd).Sum(b => b.QNTY).retDbl();
+                        short progslno = bomdata.Rows[i]["progslno"].retShort();
+                        currentadjqnty = VE.TBATCHDTL.Where(a => a.ITCD == itcd && a.RECPROGSLNO == progslno).Sum(b => b.QNTY).retDbl();
                     }
                     bomdata.Rows[i]["USEDQTY"] = currentadjqnty.retDbl();
                     bomdata.Rows[i]["TOTALQNTY"] = (bomdata.Rows[i]["TOTALREQQTY"].retDbl() - currentadjqnty.retDbl()) + "~~" + bomdata.Rows[i]["TOTALREQQTY"].retDbl();
@@ -1480,7 +1481,8 @@ namespace Improvar.Controllers
                     VE.TPROGBOM = (from x in VE.TPROGDTL
                                    select new TPROGBOM
                                    {
-                                       SLNO = x.SLNO.retShort(),
+                                       SLNO = x.SLNO.retShort(),//progslno
+                                       RSLNO = x.SLNO.retShort(),//progslno
                                        QITNM = x.ITNM,
                                        QUOM = x.UOM,
                                        QQNTY = x.QNTY,
@@ -1496,7 +1498,6 @@ namespace Improvar.Controllers
                                        MTRLJOBCD = x.CheckedSample == true ? x.MTRLJOBCD : "DY",
                                        //MTRLJOBNM = x.MTRLJOBNM,
                                        Q_CheckedSample = x.CheckedSample == true ? true : false,
-                                       PROGSLNO = x.SLNO,
                                    }).ToList();
                 }
                 else
@@ -1508,14 +1509,19 @@ namespace Improvar.Controllers
                     VE.TPROGBOM = (from DataRow dr in PROG_BOM_DATA.Rows
                                    select new TPROGBOM
                                    {
-                                       QITNM = dr["ritnm"].ToString(),
+                                       QITNM = dr["itnm"].ToString(),
                                        QUOM = dr["ruomnm"].ToString(),
                                        QQNTY = Convert.ToDouble(dr["rqty"] == DBNull.Value ? null : dr["rqty"].ToString()),
-                                       ITCD = dr["itcd"].ToString(),
+                                       ITCD = dr["ritcd"].ToString(),
+                                       ITNM = dr["ritnm"].ToString(),
                                        PARTCD = dr["partcd"].ToString(),
                                        COLRCD = dr["colrcd"].ToString(),
                                        SIZECD = dr["sizecd"].ToString(),
-                                       BOMQNTY = Convert.ToDouble(dr["rqty"] == DBNull.Value ? null : dr["rqty"].ToString())
+                                       BOMQNTY = Convert.ToDouble(dr["rqty"] == DBNull.Value ? null : dr["rqty"].ToString()),
+                                       MTRLJOBCD = dr["mtrljobcd"].ToString(),
+                                       MTRLJOBNM = dr["mtrljobnm"].ToString(),
+                                       SLNO = dr["slno"].retShort(),
+                                       RSLNO = dr["rslno"].retShort(),
                                    }).ToList();
                     //VE.TPROGBOM = (from x in VE.TPROGDTL
                     //               group x by new
@@ -1545,12 +1551,11 @@ namespace Improvar.Controllers
                         var mtrljobnm = DB.M_MTRLJOBMST.Where(a => a.MTRLJOBCD == mtrljobcd).Select(b => b.MTRLJOBNM).FirstOrDefault();
                         VE.TPROGBOM[p].MTRLJOBNM = mtrljobnm;
                     }
-                    else
-                    {
-                        VE.TPROGBOM[p].SLNO = Convert.ToInt16(p + 1);
-                        VE.TPROGBOM[p].PROGSLNO = VE.TPROGDTL.Where(a => a.ITCD.retStr() == VE.TPROGBOM[p].ITCD.retStr() && a.PARTCD.retStr() == VE.TPROGBOM[p].PARTCD.retStr() && a.SIZECD.retStr() == VE.TPROGBOM[p].SIZECD.retStr()).Select(b => b.SLNO).SingleOrDefault();
-                    }
-                    VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);
+                    //else
+                    //{
+                    //    VE.TPROGBOM[p].SLNO = Convert.ToInt16(p + 1);
+                    //}
+                    //VE.TPROGBOM[p].RSLNO = Convert.ToInt16(p + 1);
 
 
                 }
@@ -1892,8 +1897,9 @@ namespace Improvar.Controllers
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             Cn.getQueryString(VE);
-
+            string SLNO = VE.TPROGBOM[RowIndex - 1].SLNO.retStr();
             List<TPROGBOM> TPROGBOM = new List<TPROGBOM>(); bool copied = false;
+            int RSLNO = 1;
             for (int k = 0; k <= VE.TPROGBOM.Count; k++)
             {
                 TPROGBOM MBILLDET = new TPROGBOM();
@@ -1904,15 +1910,36 @@ namespace Improvar.Controllers
                         PropertyInfo propB = VE.TPROGBOM[k - 1].GetType().GetProperty(propA.Name);
                         propB.SetValue(MBILLDET, propA.GetValue(VE.TPROGBOM[k - 1], null), null);
                     }
-                    MBILLDET.RSLNO = (k + 1).retShort();
-                    TPROGBOM.Add(MBILLDET);
+                    if(RowIndex == k)
+                    {
+                        MBILLDET.ITCD = "";
+                        MBILLDET.ITNM = "";
+                        MBILLDET.UOM = "";
+                        MBILLDET.MTRLJOBCD = "";
+                        MBILLDET.MTRLJOBNM = "";
+                        MBILLDET.PARTCD = "";
+                        MBILLDET.PARTNM = "";
+                        MBILLDET.COLRCD = "";
+                        MBILLDET.COLRNM = "";
+                        MBILLDET.SIZECD = "";
+                        MBILLDET.SIZENM = "";
+                        MBILLDET.BOMQNTY = 0;
+                        MBILLDET.EXTRAQNTY = 0;
+                        MBILLDET.Q_CheckedSample = false;
+                    }
+                   
                     copied = true;
                 }
                 else
                 {
-                    MBILLDET = VE.TPROGBOM[k]; MBILLDET.RSLNO = (k + 1).retShort();
-                    TPROGBOM.Add(MBILLDET);
+                    MBILLDET = VE.TPROGBOM[k];
                 }
+                if (MBILLDET.SLNO.retStr() == SLNO)
+                {
+                    MBILLDET.RSLNO = RSLNO.retShort();
+                    RSLNO++;
+                }
+                TPROGBOM.Add(MBILLDET);
             }
             VE.TPROGBOM = TPROGBOM;
             VE.DefaultView = true;

@@ -1641,7 +1641,7 @@ namespace Improvar
 
             sql = "";
             sql += "select a.bomcd, a.effdt, a.itcd, a.baseqnty, b.slno, b.partcd, b.sizecd, a.itcd||nvl(b.partcd,'')||nvl(b.sizecd,'') itsizecd, ";
-            sql += "c.modcd, c.itcd ritcd, c.itnm ritnm, c.uomcd ruomcd, nvl(d.decimals,0) decimals, d.uomnm ruomnm, nvl(c.std_qty,0) std_qty, c.qnty rqnty from ";
+            sql += "c.modcd, c.itcd ritcd, c.itnm ritnm, c.uomcd ruomcd, nvl(d.decimals,0) decimals, d.uomnm ruomnm, nvl(c.std_qty,0) std_qty, c.qnty rqnty,c.mtrljobcd,e.mtrljobnm,c.rslno from ";
             sql += "(select a.bomcd, a.effdt, a.itcd, a.baseqnty from ";
             sql += "(select a.bomcd, a.effdt, a.itcd, a.baseqnty, ";
             sql += "row_number() over (partition by a.itcd order by a.effdt desc) as rn ";
@@ -1651,15 +1651,16 @@ namespace Improvar
             sql += ") a where a.rn=1 ) a, ";
             sql += "(select a.bomcd, a.slno, a.partcd, a.sizecd ";
             sql += "from " + scm + ".m_sitembompart a where a.jobcd='" + jobcd + "') b, ";
-            sql += "(select a.bomcd, a.slno, 'S' modcd, a.rslno, a.itcd, b.itnm, a.qnty, b.uomcd, b.minpurqty std_qty ";
+            sql += "(select a.bomcd, a.slno, 'S' modcd, a.rslno, a.itcd, b.itnm, a.qnty, b.uomcd, b.minpurqty std_qty,a.mtrljobcd ";
             sql += "from " + scm + ".m_sitembommtrl a, " + scm + ".m_sitem b ";
-            sql += "where a.itcd=b.itcd) c, " + scmf + ".m_uom d ";
-            sql += "where a.bomcd=b.bomcd and b.bomcd=c.bomcd and b.slno=c.slno and c.uomcd=d.uomcd(+) ";
+            sql += "where a.itcd=b.itcd) c, " + scmf + ".m_uom d, " + scm + ".m_mtrljobmst e ";
+            sql += "where a.bomcd=b.bomcd and b.bomcd=c.bomcd and b.slno=c.slno and c.uomcd=d.uomcd(+) and c.mtrljobcd=e.mtrljobcd(+) ";
 
             rsTmp = SQLquery(sql);
 
             DataTable IR = new DataTable();
             IR.Columns.Add("itcd", typeof(string));
+            IR.Columns.Add("itnm", typeof(string));
             IR.Columns.Add("partcd", typeof(string));
             IR.Columns.Add("sizecd", typeof(string));
             IR.Columns.Add("colrcd", typeof(string));
@@ -1670,7 +1671,11 @@ namespace Improvar
             IR.Columns.Add("ruomnm", typeof(string));
             IR.Columns.Add("rqty", typeof(double));
 
-            string sitcd = "", ssizecd = "", spartcd = "", sitsizecd = "";
+            IR.Columns.Add("slno", typeof(int));
+            IR.Columns.Add("rslno", typeof(int));
+            IR.Columns.Add("mtrljobcd", typeof(string));
+            IR.Columns.Add("mtrljobnm", typeof(string));
+            string sitcd = "", ssizecd = "", spartcd = "", sitsizecd = "", sitnm="";
 
             Int32 maxF = 0, f = 0;
             Int32 maxR = 0, i = 0;
@@ -1682,28 +1687,29 @@ namespace Improvar
                 ssizecd = finitems.Rows[f]["sizecd"].ToString();
                 spartcd = finitems.Rows[f]["partcd"].ToString();
                 sitsizecd = finitems.Rows[f]["itcd"].ToString() + finitems.Rows[f]["partcd"].ToString() + finitems.Rows[f]["sizecd"].ToString();
-
+                sitnm = finitems.Rows[f]["itnm"].ToString();
                 DataTable bomdata = new DataTable();
                 var rows1 = rsTmp.AsEnumerable()
                               .Where(x => ((string)x["itsizecd"]) == sitsizecd);
                 if (rows1.Any()) bomdata = rows1.CopyToDataTable();
 
                 maxR = bomdata.Rows.Count - 1; i = 0;
+                int rslno = 1;
                 while (i <= maxR)
                 {
                     double rqty = 0, bqty = 0, iqty = 0, reqqty = 0;
                     rqty = bomdata.Rows[i]["rqnty"].retDbl();
                     bqty = bomdata.Rows[i]["baseqnty"].retDbl();
-                    iqty = finitems.Rows[i]["qnty"].retDbl();
+                    iqty = finitems.Rows[f]["qnty"].retDbl();
                     //bqty = Convert.ToDouble(bomdata.Rows[f]["baseqnty"]);
                     //iqty = Convert.ToDouble(finitems.Rows[f]["qnty"]);
                     reqqty = Cn.Roundoff((iqty / bqty) * rqty, Convert.ToInt16(bomdata.Rows[i]["decimals"]));
 
                     bool recadd = true;
-
+                    string slno = finitems.Rows[f]["slno"].retStr();
                     for (int q = 0; q <= IR.Rows.Count - 1; q++)
                     {
-                        if (IR.Rows[q]["ritcd"].ToString() == bomdata.Rows[i]["ritcd"].ToString())
+                        if (IR.Rows[q]["ritcd"].ToString() == bomdata.Rows[i]["ritcd"].ToString() && IR.Rows[q]["slno"].ToString() == slno)
                         {
                             IR.Rows[q]["rqty"] = IR.Rows[q]["rqty"].retDbl() + reqqty;
                             recadd = false;
@@ -1714,6 +1720,7 @@ namespace Improvar
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["itcd"] = sitcd;
+                        IR.Rows[rNo]["itnm"] = sitnm;
                         IR.Rows[rNo]["sizecd"] = ssizecd;
                         IR.Rows[rNo]["partcd"] = spartcd;
                         IR.Rows[rNo]["modcd"] = bomdata.Rows[i]["modcd"];
@@ -1722,6 +1729,12 @@ namespace Improvar
                         IR.Rows[rNo]["ruomcd"] = bomdata.Rows[i]["ruomcd"];
                         IR.Rows[rNo]["ruomnm"] = bomdata.Rows[i]["ruomnm"];
                         IR.Rows[rNo]["rqty"] = reqqty;
+
+                        IR.Rows[rNo]["mtrljobcd"] = bomdata.Rows[i]["mtrljobcd"];
+                        IR.Rows[rNo]["mtrljobnm"] = bomdata.Rows[i]["mtrljobnm"];
+                        IR.Rows[rNo]["slno"] = slno;
+                        IR.Rows[rNo]["rslno"] = rslno;
+                        rslno++;
                     }
                     i++;
                 }
