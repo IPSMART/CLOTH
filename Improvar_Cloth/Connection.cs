@@ -3575,9 +3575,9 @@ namespace Improvar
                     //return barcodeImage;
                     if (Savepath == "")
                         Savepath = "c:/IPSMART/Barcode/" + Barcodestr + ".jpeg";
-                    if (!File.Exists(Savepath))
+                    if (!Directory.Exists(Path.GetDirectoryName(Savepath)))
                     {
-                        File.Create(Savepath).Dispose();
+                        Directory.CreateDirectory(Path.GetDirectoryName(Savepath));
                     }
                     if (System.IO.File.Exists(Barcodestr))
                     {
