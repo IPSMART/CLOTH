@@ -62,7 +62,7 @@ function FillImageModal(FieldId) {
         $("#div_carousel_inner").append(htm);
     });
 }
-function CalculateDiscount(DiscTypeId, DiscRateId, QntyId, NosId, AmtId, STDDiscId) {
+function CalculateDiscount(DiscTypeId, DiscRateId, QntyId, NosId, GrossAmtId, DiscountedAmt) {
     var DISCAMT = 0;
     var DiscType = $("#" + DiscTypeId).val();
     var DiscRate = retFloat($("#" + DiscRateId).val());
@@ -75,11 +75,15 @@ function CalculateDiscount(DiscTypeId, DiscRateId, QntyId, NosId, AmtId, STDDisc
         DISCAMT = DiscRate * Nos;
     }
     else if (DiscType == "P") {
-        var Amt = retFloat($("#" + AmtId).val());
+        var Amt = retFloat($("#" + GrossAmtId).val());
         DISCAMT = (DiscRate * Amt) / 100;
     }
     else if (DiscType == "F") { DISCAMT = DiscRate; }
-    else if (DiscType == "A") { DISCAMT = DiscRate; }
+        //else if (DiscType == "A") { DISCAMT = DiscRate; }
+    else if (DiscType == "A") {
+        DiscountedAmt = retFloat(DiscountedAmt);
+        DISCAMT = (DiscRate * DiscountedAmt) / 100;
+    }
     else { DISCAMT = 0; }
     DISCAMT = parseFloat(DISCAMT).toFixed(2);
     return parseFloat(DISCAMT);

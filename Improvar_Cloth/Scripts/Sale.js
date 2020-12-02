@@ -389,7 +389,7 @@ function UpdateBarCodeRow() {
             $("#B_SCMDISCTYPE_" + j).val($("#SCMDISCTYPE").val());
             $("#B_SCMDISCRATE_" + j).val($("#SCMDISCRATE").val());
             $("#B_LOCABIN_" + j).val($("#LOCABIN").val());
-            var DISCTYPE = $("#DISCTYPE").val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : "Fixed";
+            var DISCTYPE = $("#DISCTYPE").val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : $("#DISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
             var TDDISCTYPE = $("#TDDISCTYPE").val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
             var SCMDISCTYPE = $("#SCMDISCTYPE").val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
             $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE);
@@ -455,8 +455,8 @@ function ClearBarcodeArea(TAG) {
         ClearAllTextBoxes("ORDDOCNO,ORDDOCDT,ORDAUTONO,ORDSLNO");
     }
     $("#STKTYPE").val("F");
-    $("#DISCTYPE").val("P");
-    $("#TDDISCTYPE").val("P");
+    $("#DISCTYPE").val("A");
+    $("#TDDISCTYPE").val("A");
     $("#SCMDISCTYPE").val("P");
     if (TAG == "Y") {
         $("#AddRow_Barcode").show();
@@ -656,38 +656,26 @@ function CalculateAmt_Details(i) {
     amount = parseFloat(amount).toFixed(2);
     $("#D_AMT_" + i).val(amount);
 
-    //DISCOUNT AMOUNT CALCULATION
-    var DISCAMT = 0;
-    if (DISCTYPE == "Q") { DISCAMT = DISCRATE * QNTY; }
-    else if (DISCTYPE == "N") { DISCAMT = DISCRATE * NOS; }
-    else if (DISCTYPE == "P") { DISCAMT = (amount * DISCRATE) / 100; }
-    else if (DISCTYPE == "F") { DISCAMT = DISCRATE; }
-    else { DISCAMT = 0; }
-    DISCAMT = parseFloat(DISCAMT).toFixed(2);
-    $("#D_DISCAMT_" + i).val(DISCAMT);
+    var DiscountedAmt = 0;
+    //SCMDISCOUNT AMOUNT CALCULATION
+    var SCMDISCAMT = 0;
+    SCMDISCAMT = parseFloat(CalculateDiscount("D_SCMDISCTYPE_" + i, "D_SCMDISCRATE_" + i, "D_QNTY_" + i, "D_NOS_" + i, "D_AMT_" + i, DiscountedAmt)).toFixed(2);
+    $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
 
     //TDDISCOUNT AMOUNT CALCULATION
     var TDDISCAMT = 0;
-    if (TDDISCTYPE == "Q") { TDDISCAMT = TDDISCRATE * QNTY; }
-    else if (TDDISCTYPE == "N") { TDDISCAMT = TDDISCRATE * NOS; }
-    else if (TDDISCTYPE == "P") { TDDISCAMT = (amount * TDDISCRATE) / 100; }
-    else if (TDDISCTYPE == "F") { TDDISCAMT = TDDISCRATE; }
-    else { TDDISCAMT = 0; }
-    TDDISCAMT = parseFloat(TDDISCAMT).toFixed(2);
+    DiscountedAmt = amount - SCMDISCAMT;
+    TDDISCAMT = parseFloat(CalculateDiscount("D_TDDISCTYPE_" + i, "D_TDDISCRATE_" + i, "D_QNTY_" + i, "D_NOS_" + i, "D_AMT_" + i, DiscountedAmt)).toFixed(2);
     $("#D_TDDISCAMT_" + i).val(TDDISCAMT);
 
-    //SCMDISCOUNT AMOUNT CALCULATION
-    var SCMDISCAMT = 0;
-    if (SCMDISCTYPE == "Q") { SCMDISCAMT = SCMDISCRATE * QNTY; }
-    else if (SCMDISCTYPE == "N") { SCMDISCAMT = SCMDISCRATE * NOS; }
-    else if (SCMDISCTYPE == "P") { SCMDISCAMT = (amount * SCMDISCRATE) / 100; }
-    else if (SCMDISCTYPE == "F") { SCMDISCAMT = SCMDISCRATE; }
-    else { SCMDISCAMT = 0; }
-    SCMDISCAMT = parseFloat(SCMDISCAMT).toFixed(2);
-    $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
+    //DISCOUNT AMOUNT CALCULATION
+    var DISCAMT = 0;
+    DiscountedAmt = amount - SCMDISCAMT - TDDISCAMT;
+    DISCAMT = parseFloat(CalculateDiscount("D_DISCTYPE_" + i, "D_DISCRATE_" + i, "D_QNTY_" + i, "D_NOS_" + i, "D_AMT_" + i, DiscountedAmt)).toFixed(2);
+    $("#D_DISCAMT_" + i).val(DISCAMT);
 
     //TOTAL DISCOUNT AMOUNT CALCULATION
-    var TOTDISCAMT = parseFloat(DISCAMT + TDDISCAMT + SCMDISCAMT).toFixed(2);
+    var TOTDISCAMT = parseFloat(retFloat(SCMDISCAMT) + retFloat(TDDISCAMT) + retFloat(DISCAMT)).toFixed(2);
     $("#D_TOTDISCAMT_" + i).val(TOTDISCAMT);
 
     //TAXABLE CALCULATION
@@ -1519,7 +1507,7 @@ function AddBarCodeGrid() {
 
     var DISCRATE = $("#DISCRATE").val();
     var DISCTYPE = $("#DISCTYPE").val();
-    var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" : "Fixed";
+    var DISCTYPE_DESC = DISCTYPE == "P" ? "%" : DISCTYPE == "N" ? "Nos" : DISCTYPE == "Q" ? "Qnty" : DISCTYPE == "A" ? "AftDsc%" : "Fixed";
     var HSNCODE = $("#HSNCODE").val();
     var GSTPER = $("#GSTPER").val();
     var PRODGRPGSTPER = $("#PRODGRPGSTPER").val();
@@ -1665,13 +1653,14 @@ function AddBarCodeGrid() {
     tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
     tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
     tr += '    </td>';
-    tr += '    <td class="" title="' + DISCTYPE_DESC + '">';
-    tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="' + DISCTYPE_DESC + '">';
-    tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
+    tr += '    <td class="" title="' + SCMDISCTYPE_DESC + '">';
+    tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="' + SCMDISCTYPE_DESC + '">';
+    tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
     tr += '    </td>';
-    tr += '    <td class="" title="' + DISCRATE + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + DISCRATE + '">';
+    tr += '    <td class="" title="' + SCMDISCRATE + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + SCMDISCRATE + '">';
     tr += '    </td>';
+
     tr += '     <td class="" title="' + TDDISCTYPE_DESC + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_TDDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE_DESC" readonly="readonly" type="text" value="' + TDDISCTYPE_DESC + '">';
     tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
@@ -1679,12 +1668,12 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + TDDISCRATE + '">';
     tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + TDDISCRATE + '">';
     tr += '    </td>';
-    tr += '    <td class="" title="' + SCMDISCTYPE_DESC + '">';
-    tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="' + SCMDISCTYPE_DESC + '">';
-    tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
+    tr += '    <td class="" title="' + DISCTYPE_DESC + '">';
+    tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_DISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE_DESC" readonly="readonly" type="text" value="' + DISCTYPE_DESC + '">';
+    tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
     tr += '    </td>';
-    tr += '    <td class="" title="' + SCMDISCRATE + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + SCMDISCRATE + '">';
+    tr += '    <td class="" title="' + DISCRATE + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" value="' + DISCRATE + '">';
     tr += '    </td>';
     if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB") {
         tr += '    <td class="" title="' + ORDDOCNO + '">';
