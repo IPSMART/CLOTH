@@ -495,19 +495,19 @@ function CalculateTotal() {
     var T_TXBLVAL = retFloat($("#B_T_AMT").val());
     var R_T_GROSS_AMT = retFloat($("#R_T_GROSS_AMT").val());
     var PAYABLE = retFloat($("#PAYABLE").val());
-
+      var Mtaxamt = T_TXBLVAL;
+        var Rtaxamt = R_T_GROSS_AMT;
     var t_blamt = 0; var t_itamt = 0; var t_per = 0;
     for (var i = 0; i <= GridRow - 1; i++) {
         var PER_ = retFloat($("#S_PER_" + i).val());
         var blamt = parseFloat(PAYABLE * PER_) / 100;
         $("#S_BLAMT_" + i).val(retFloat(blamt).toFixed(2));
-        var Mtaxamt = T_TXBLVAL;
-        var Rtaxamt = R_T_GROSS_AMT;
+      
         var itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
-        if ($("#S_PER_" + i).val()!="") $("#S_ITAMT_" + i).val(retFloat(itamt).toFixed(2));
+        if ($("#S_PER_" + i).val() != "") { $("#S_ITAMT_" + i).val(retFloat(itamt).toFixed(2)); } else { $("#S_ITAMT_" + i).val(parseFloat(0).toFixed(2)); }
 
-        t_blamt += blamt;
-        t_itamt += itamt;
+        t_blamt += retFloat($("#S_BLAMT_" + i).val());
+        t_itamt += retFloat($("#S_ITAMT_" + i).val());
         t_per += retFloat($("#S_PER_" + i).val());
     }
     $("#S_T_PER").val(t_per.toFixed(2));
@@ -554,6 +554,7 @@ function CalculateInclusiveRate(i) {
 
 }
 function SalesmanPerChk() {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
