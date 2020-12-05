@@ -504,7 +504,7 @@ function CalculateTotal() {
         var Mtaxamt = T_TXBLVAL;
         var Rtaxamt = R_T_GROSS_AMT;
         var itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
-        $("#S_ITAMT_" + i).val(retFloat(itamt).toFixed(2));
+        if ($("#S_PER_" + i).val()!="") $("#S_ITAMT_" + i).val(retFloat(itamt).toFixed(2));
 
         t_blamt += blamt;
         t_itamt += itamt;
