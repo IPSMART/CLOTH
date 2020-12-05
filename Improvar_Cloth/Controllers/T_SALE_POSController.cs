@@ -1465,6 +1465,37 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult DeleteReturnRow(TransactionSalePosEntry VE)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                List<TsalePos_TBATCHDTL_RETURN> TsalePos_TBATCHDTL = new List<TsalePos_TBATCHDTL_RETURN>();
+                int count = 0;
+                for (int i = 0; i <= VE.TsalePos_TBATCHDTL_RETURN.Count - 1; i++)
+                {
+                    if (VE.TsalePos_TBATCHDTL_RETURN[i].Checked == false)
+                    {
+                        count += 1;
+                        TsalePos_TBATCHDTL_RETURN item = new TsalePos_TBATCHDTL_RETURN();
+                        item = VE.TsalePos_TBATCHDTL_RETURN[i];
+                        item.SLNO = Convert.ToInt16(count);
+                        item.DISC_TYPE = masterHelp.DISC_TYPE();
+                        item.PCSActionList = masterHelp.PCSAction();
+                        TsalePos_TBATCHDTL.Add(item);
+                    }
+                }
+                VE.TsalePos_TBATCHDTL_RETURN = TsalePos_TBATCHDTL;
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_SALE_POS_RETURN", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         public ActionResult DeleteRow(TransactionSalePosEntry VE)
         {
             try
@@ -1887,7 +1918,7 @@ namespace Improvar.Controllers
                     double dbDrAmt = 0, dbCrAmt = 0;
                     blactpost = true; blgstpost = true;
                     /* string parglcd = "saldebglcd"*/
-                    string parglcd = "", parclass1cd = "", class2cd = "", tcsgl = "", prodglcd = "", rogl = "", glcd = "", slmslcd = "";
+                    string parglcd = "", parclass1cd = "", class2cd = "", tcsgl = "", prodglcd = "", rogl = "", glcd = "", rglcd = "", slmslcd = "";
                     string strblno = "", strbldt = "", strduedt = "", strrefno = "", strvtype = "BL";
                     dr = "D"; cr = "C";
                     string sslcd = TTXN.SLCD;
@@ -1895,6 +1926,7 @@ namespace Improvar.Controllers
                     if (VE.TTXNSLSMN != null)
                     { if (VE.TTXNSLSMN[0].SLMSLCD.retStr() != "") slmslcd = VE.TTXNSLSMN[0].SLMSLCD.retStr(); }
                     if (VE.TsalePos_TBATCHDTL[0].GLCD.retStr() != "") glcd = VE.TsalePos_TBATCHDTL[0].GLCD.retStr();
+                    if (VE.TsalePos_TBATCHDTL_RETURN[0].GLCD.retStr() != "") rglcd = VE.TsalePos_TBATCHDTL_RETURN[0].GLCD.retStr();
 
                     switch (VE.MENU_PARA)
                     {
@@ -1957,6 +1989,15 @@ namespace Improvar.Controllers
                         {
                             titamt = titamt + VE.TsalePos_TBATCHDTL[i].GROSSAMT.retDbl();
                             titqty = titqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].QNTY);
+                            lastitemno = i;
+                        }
+                    }
+                    for (int i = 0; i <= VE.TsalePos_TBATCHDTL_RETURN.Count - 1; i++)
+                    {
+                        if (VE.TsalePos_TBATCHDTL_RETURN[i].SLNO != 0 && VE.TsalePos_TBATCHDTL_RETURN[i].ITCD != null)
+                        {
+                            titamt = titamt + VE.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT.retDbl();
+                            titqty = titqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].QNTY);
                             lastitemno = i;
                         }
                     }
