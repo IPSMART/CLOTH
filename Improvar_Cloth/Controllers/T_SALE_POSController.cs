@@ -1918,7 +1918,7 @@ namespace Improvar.Controllers
                     double dbDrAmt = 0, dbCrAmt = 0;
                     blactpost = true; blgstpost = true;
                     /* string parglcd = "saldebglcd"*/
-                    string parglcd = "", parclass1cd = "", class2cd = "", tcsgl = "", prodglcd = "", rogl = "", glcd = "", rglcd = "", slmslcd = "";
+                    string parglcd = "", parclass1cd = "", class2cd = "", tcsgl = "", prodglcd = "", prodrglcd="", rogl = "", glcd = "", rglcd = "", slmslcd = "";
                     string strblno = "", strbldt = "", strduedt = "", strrefno = "", strvtype = "BL";
                     dr = "D"; cr = "C";
                     string sslcd = TTXN.SLCD;
@@ -1947,7 +1947,7 @@ namespace Improvar.Controllers
                     }
 
                     sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
-                    sql += "'" + glcd + "' prodglcd, ";
+                    sql += "'" + glcd + "' prodglcd,'" + rglcd + "' prodglcd prodrglcd, ";
                     //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
                     sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
                     sql += "a.saldebglcd parglcd, ";
@@ -1962,15 +1962,16 @@ namespace Improvar.Controllers
                         class2cd = tbl.Rows[0]["class2cd"].retStr() == "" ? "" : tbl.Rows[0]["class2cd"].retStr();
                         tcsgl = tbl.Rows[0]["tcsgl"].retStr() == "" ? "" : tbl.Rows[0]["tcsgl"].retStr();
                         prodglcd = tbl.Rows[0]["prodglcd"].retStr() == "" ? "" : tbl.Rows[0]["prodglcd"].retStr();
+                        prodrglcd = tbl.Rows[0]["prodrglcd"].retStr() == "" ? "" : tbl.Rows[0]["prodrglcd"].retStr();
                         rogl = tbl.Rows[0]["rogl"].retStr() == "" ? "" : tbl.Rows[0]["rogl"].retStr();
                     }
 
 
                     //   Calculate Others Amount from amount tab to distrubute into txndtl table
-                    double _amtdist = 0, _baldist = 0, _rpldist = 0, _mult = 1;
-                    double _amtdistq = 0, _baldistq = 0, _rpldistq = 0;
-                    double titamt = 0, titqty = 0;
-                    int lastitemno = 0;
+                    double _amtdist = 0, _baldist = 0, _Rbaldist = 0, _rpldist = 0, _Rrpldist = 0, _mult = 1;
+                    double _amtdistq = 0, _baldistq = 0, _Rbaldistq = 0, _rpldistq = 0, _Rrpldistq = 0;
+                    double titamt = 0, titqty = 0, rtitamt = 0, rtitqty = 0;
+                    int lastitemno = 0, rlastitemno=0;
                     if (VE.TTXNAMT != null)
                     {
                         for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
@@ -1996,13 +1997,13 @@ namespace Improvar.Controllers
                     {
                         if (VE.TsalePos_TBATCHDTL_RETURN[i].SLNO != 0 && VE.TsalePos_TBATCHDTL_RETURN[i].ITCD != null)
                         {
-                            titamt = titamt + VE.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT.retDbl();
-                            titqty = titqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].QNTY);
-                            lastitemno = i;
+                            rtitamt = rtitamt + VE.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT.retDbl();
+                            rtitqty = rtitqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].QNTY);
+                            rlastitemno = i;
                         }
                     }
 
-                    _baldist = _amtdist; _baldistq = _amtdistq;
+                    _baldist = _amtdist; _baldistq = _amtdistq; _Rbaldistq = _amtdistq; _Rbaldist = _amtdist;
                     #endregion
                     if (VE.DefaultAction == "A")
                     {
@@ -2049,6 +2050,11 @@ namespace Improvar.Controllers
                         foreach (var v in comp)
                         {
                             if (!VE.TsalePos_TBATCHDTL.Where(s => s.BARNO == v.BARNO && s.SLNO == v.SLNO).Any())
+                            {
+                                dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E", "S", "BARNO = '" + v.BARNO + "' and SLNO = '" + v.SLNO + "' ");
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            }
+                            if (!VE.TsalePos_TBATCHDTL_RETURN.Where(s => s.BARNO == v.BARNO && s.SLNO == v.SLNO).Any())
                             {
                                 dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E", "S", "BARNO = '" + v.BARNO + "' and SLNO = '" + v.SLNO + "' ");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -2217,7 +2223,7 @@ namespace Improvar.Controllers
                             TTXNDTL.PARTCD = VE.TsalePos_TBATCHDTL[i].PARTCD;
                             TTXNDTL.COLRCD = VE.TsalePos_TBATCHDTL[i].COLRCD;
                             TTXNDTL.SIZECD = VE.TsalePos_TBATCHDTL[i].SIZECD;
-                            TTXNDTL.STKDRCR = stkdrcr;
+                            TTXNDTL.STKDRCR = dr; 
                             TTXNDTL.STKTYPE = VE.TsalePos_TBATCHDTL[i].STKTYPE;
                             TTXNDTL.HSNCODE = VE.TsalePos_TBATCHDTL[i].HSNCODE;
                             TTXNDTL.ITREM = VE.TsalePos_TBATCHDTL[i].ITREM;
@@ -2275,6 +2281,94 @@ namespace Improvar.Controllers
                             duty = duty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].DUTYAMT);
                         }
                     }
+                    #region Return Tab
+                    for (int i = 0; i <= VE.TsalePos_TBATCHDTL_RETURN.Count - 1; i++)
+                    {
+                        if (VE.TsalePos_TBATCHDTL_RETURN[i].SLNO != 0 && VE.TsalePos_TBATCHDTL_RETURN[i].ITCD != null && VE.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD != null && VE.TsalePos_TBATCHDTL_RETURN[i].STKTYPE != null)
+                        {
+                            if (i == rlastitemno) { _Rrpldist = _Rbaldist; _Rrpldistq = _Rbaldistq; }
+                            else
+                            {
+                                if (_amtdist + _amtdistq == 0) { _Rrpldist = 0; _Rrpldistq = 0; }
+                                else
+                                {
+                                    _Rrpldist = ((_amtdist / rtitamt) * VE.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT).retDbl().toRound();
+                                    _Rrpldistq = ((_amtdistq / rtitqty) * Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].QNTY)).toRound();
+                                }
+                            }
+                            _Rbaldist = _Rbaldist - _Rrpldist; _Rbaldistq = _Rbaldistq - _Rrpldistq;
+
+                            COUNTER = COUNTER + 1;
+                            T_TXNDTL TTXNDTL = new T_TXNDTL();
+                            TTXNDTL.CLCD = TTXN.CLCD;
+                            TTXNDTL.EMD_NO = TTXN.EMD_NO;
+                            TTXNDTL.DTAG = TTXN.DTAG;
+                            TTXNDTL.AUTONO = TTXN.AUTONO;
+                            TTXNDTL.SLNO = VE.TsalePos_TBATCHDTL_RETURN[i].SLNO;
+                            TTXNDTL.MTRLJOBCD = VE.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD;
+                            TTXNDTL.ITCD = VE.TsalePos_TBATCHDTL_RETURN[i].ITCD;
+                            TTXNDTL.PARTCD = VE.TsalePos_TBATCHDTL_RETURN[i].PARTCD;
+                            TTXNDTL.COLRCD = VE.TsalePos_TBATCHDTL_RETURN[i].COLRCD;
+                            TTXNDTL.SIZECD = VE.TsalePos_TBATCHDTL_RETURN[i].SIZECD;
+                            TTXNDTL.STKDRCR = cr;
+                            TTXNDTL.STKTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].STKTYPE;
+                            TTXNDTL.HSNCODE = VE.TsalePos_TBATCHDTL_RETURN[i].HSNCODE;
+                            TTXNDTL.ITREM = VE.TsalePos_TBATCHDTL_RETURN[i].ITREM;
+                            //TTXNDTL.PCSREM = VE.TsalePos_TBATCHDTL[i].PCSREM;
+                            //TTXNDTL.FREESTK = VE.TsalePos_TBATCHDTL[i].FREESTK;
+                            TTXNDTL.BATCHNO = VE.TsalePos_TBATCHDTL_RETURN[i].BATCHNO;
+                            TTXNDTL.BALEYR = VE.BALEYR;// VE.TTXNDTL[i].BALEYR;
+                            //TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
+                            TTXNDTL.GOCD = VE.T_TXN.GOCD;
+                            //TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
+                            TTXNDTL.NOS = VE.TsalePos_TBATCHDTL_RETURN[i].NOS == null ? 0 : VE.TsalePos_TBATCHDTL[i].NOS;
+                            TTXNDTL.QNTY = VE.TsalePos_TBATCHDTL_RETURN[i].QNTY;
+                            TTXNDTL.BLQNTY = VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY;
+                            TTXNDTL.RATE = VE.TsalePos_TBATCHDTL_RETURN[i].RATE;
+                            TTXNDTL.AMT = VE.TsalePos_TBATCHDTL_RETURN[i].GROSSAMT;
+                            TTXNDTL.FLAGMTR = VE.TsalePos_TBATCHDTL_RETURN[i].FLAGMTR;
+                            TTXNDTL.TOTDISCAMT = VE.TsalePos_TBATCHDTL_RETURN[i].TOTDISCAMT;
+                            TTXNDTL.TXBLVAL = VE.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL;
+                            TTXNDTL.IGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTPER;
+                            TTXNDTL.CGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTPER;
+                            TTXNDTL.SGSTPER = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTPER;
+                            TTXNDTL.CESSPER = VE.TsalePos_TBATCHDTL_RETURN[i].CESSPER;
+                            TTXNDTL.DUTYPER = VE.TsalePos_TBATCHDTL_RETURN[i].DUTYPER;
+                            TTXNDTL.IGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT;
+                            TTXNDTL.CGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT;
+                            TTXNDTL.SGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT;
+                            TTXNDTL.CESSAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT;
+                            TTXNDTL.DUTYAMT = VE.TsalePos_TBATCHDTL_RETURN[i].DUTYAMT;
+                            TTXNDTL.NETAMT = VE.TsalePos_TBATCHDTL_RETURN[i].NETAMT;
+                            TTXNDTL.OTHRAMT = _Rrpldist + _Rrpldistq;
+                            //TTXNDTL.AGDOCNO = VE.TsalePos_TBATCHDTL[i].AGDOCNO;
+                            //TTXNDTL.AGDOCDT = VE.TsalePos_TBATCHDTL[i].AGDOCDT;
+                            //TTXNDTL.SHORTQNTY = VE.TsalePos_TBATCHDTL[i].SHORTQNTY;
+                            TTXNDTL.DISCTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE;
+                            TTXNDTL.DISCRATE = VE.TsalePos_TBATCHDTL_RETURN[i].DISCRATE;
+                            TTXNDTL.DISCAMT = VE.TsalePos_TBATCHDTL_RETURN[i].DISCAMT;
+                            //TTXNDTL.SCMDISCTYPE = VE.TsalePos_TBATCHDTL[i].SCMDISCTYPE;
+                            //TTXNDTL.SCMDISCRATE = VE.TsalePos_TBATCHDTL[i].SCMDISCRATE;
+                            //TTXNDTL.SCMDISCAMT = VE.TsalePos_TBATCHDTL[i].SCMDISCAMT;
+                            //TTXNDTL.TDDISCTYPE = VE.TsalePos_TBATCHDTL[i].TDDISCTYPE;
+                            //TTXNDTL.TDDISCRATE = VE.TsalePos_TBATCHDTL[i].TDDISCRATE;
+                            //TTXNDTL.TDDISCAMT = VE.TsalePos_TBATCHDTL[i].TDDISCAMT;
+                            TTXNDTL.PRCCD = VE.T_TXNOTH.PRCCD;
+                            //TTXNDTL.PRCEFFDT = VE.TsalePos_TBATCHDTL[i].PRCEFFDT;
+                            TTXNDTL.GLCD = VE.TsalePos_TBATCHDTL_RETURN[i].GLCD;
+                            dbsql = masterHelp.RetModeltoSql(TTXNDTL);
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                            //dbqty = dbqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].QNTY);
+                            dbqty = dbqty + Convert.ToDouble(50);
+                            igst = igst + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT);
+                            cgst = cgst + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT);
+                            sgst = sgst + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT);
+                            cess = cess + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT);
+                            duty = duty + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].DUTYAMT);
+                        }
+                    }
+                    #endregion
 
                     COUNTER = 0; int COUNTERBATCH = 0; bool recoexist = false;
                     if (VE.TsalePos_TBATCHDTL != null && VE.TsalePos_TBATCHDTL.Count > 0)
@@ -2430,6 +2524,8 @@ namespace Improvar.Controllers
                             }
                         }
                     }
+                    #region Return tab
+
 
                     if (dbqty == 0)
                     {
