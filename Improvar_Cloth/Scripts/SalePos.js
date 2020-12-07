@@ -167,7 +167,7 @@ function AddMainRow(hlpstr) {
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
     var GLCD = returncolvalue(hlpstr, "GLCD");
-
+    var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
@@ -193,7 +193,7 @@ function AddMainRow(hlpstr) {
     tr += '   <input id="B_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '   <input id="B_CLASS1CD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CLASS1CD" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="B_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].AMT" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="B_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].AMT" type="hidden" value="' + GROSSAMT + '">';
     tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="B_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
@@ -337,7 +337,7 @@ function AddReturnRow(hlpstr) {
     var RATE = returncolvalue(hlpstr, "RATE");
     var STKTYPE = returncolvalue(hlpstr, "STKTYPE");
     var GLCD = returncolvalue(hlpstr, "GLCD");
-
+    var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
@@ -346,9 +346,9 @@ function AddReturnRow(hlpstr) {
     var BarImages = returncolvalue(hlpstr, "BARIMAGE");
     var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
     if (BarImages == '') { NoOfBarImages = ''; }
-    var SLNO = 1;
+    var SLNO = 1000;
     var rowindex = $("#_T_SALE_POS_RETURN_GRID > tbody > tr").length;
-    SLNO = rowindex + 1;
+    if (rowindex == 0) { SLNO = SLNO + 1; } else { SLNO = SLNO+rowindex + 1; }
 
     var tr = "";
     tr += '<tr style="font-size:12px; font-weight:bold;">';
@@ -363,7 +363,7 @@ function AddReturnRow(hlpstr) {
     tr += '   <input id="R_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="R_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '   <input id="R_CLASS1CD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CLASS1CD" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="R_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].AMT" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="R_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].AMT" type="hidden" value="' + GROSSAMT + '">';
     tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="R_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="R_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
@@ -378,7 +378,7 @@ function AddReturnRow(hlpstr) {
     tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="R_SLNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SLNO" readonly="readonly" type="text" value="' + SLNO + '">';
     tr += ' </td>';
     tr += ' <td class="sticky-cell" style="left:50px" title="">';
-    tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="R_BARNO_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARNO + '">';
+    tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="R_BARNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARNO + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " id="R_ITGRPNM_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="' + ITGRPNM + '">';
@@ -406,7 +406,7 @@ function AddReturnRow(hlpstr) {
     tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="R_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -428,7 +428,7 @@ function AddReturnRow(hlpstr) {
     tr += '     </select>';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="R_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onchange="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="R_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCRATE" onchange="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += ' ';
     tr += ' <td class="" title="">';
