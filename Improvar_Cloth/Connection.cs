@@ -3616,7 +3616,7 @@ namespace Improvar
         public dynamic GenerateQRcode(string QRtext, string Rettype, string Savepath = "")
         {
             try
-            {
+            {//Install-Package QRCoder -Version 1.4.1
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(QRtext, QRCodeGenerator.ECCLevel.Q);
                 QRCode qrCode = new QRCode(qrCodeData);
