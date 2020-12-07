@@ -19,6 +19,7 @@ using System.Net.Sockets;
 using Microsoft.VisualBasic;
 using BarcodeLib;
 using System.Drawing.Imaging;
+using QRCoder;
 //using iTextSharp.text;
 //using iTextSharp.text.pdf;
 
@@ -3575,9 +3576,9 @@ namespace Improvar
                     //return barcodeImage;
                     if (Savepath == "")
                         Savepath = "c:/IPSMART/Barcode/" + Barcodestr + ".jpeg";
-                    if (!File.Exists(Savepath))
+                    if (!Directory.Exists(Path.GetDirectoryName(Savepath)))
                     {
-                        File.Create(Savepath).Dispose();
+                        Directory.CreateDirectory(Path.GetDirectoryName(Savepath));
                     }
                     if (System.IO.File.Exists(Barcodestr))
                     {
@@ -3610,6 +3611,47 @@ namespace Improvar
             {
                 SaveException(ex, copyToPath);
                 return "";
+            }
+        }
+        public dynamic GenerateQRcode(string QRtext, string Rettype, string Savepath = "")
+        {
+            try
+            {//Install-Package QRCoder -Version 1.4.1
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(QRtext, QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                Bitmap qrCodeImage = qrCode.GetGraphic(20);
+                qrCodeImage = new Bitmap(qrCodeImage, new Size(qrCodeImage.Width / 5, qrCodeImage.Height / 5));
+                if (Rettype == "byte")
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        using (MemoryStream stream = new MemoryStream())
+                        {
+                            qrCodeImage.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                            return stream.ToArray();
+                        }
+                    }
+                }
+                //return barcodeImage;
+                if (Savepath == "")
+                    Savepath = "C:/IPSMART/Qrcode/" + QRtext + ".jpeg";
+                if (!Directory.Exists(Path.GetDirectoryName(Savepath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(Savepath));
+                }
+                if (System.IO.File.Exists(QRtext))
+                {
+                    System.IO.File.Delete(QRtext);
+                    GC.Collect();
+                }
+                qrCodeImage.Save(Savepath, System.Drawing.Imaging.ImageFormat.Jpeg);
+                return Savepath;
+            }
+            catch (Exception ex)
+            {
+                SaveException(ex, "");
+                return ex.Message;
             }
         }
     }
