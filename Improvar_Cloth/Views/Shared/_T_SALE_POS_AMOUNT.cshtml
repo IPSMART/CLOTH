@@ -80,7 +80,7 @@
                                     @Html.HiddenFor(model => Model.TTXNAMT[i].CALCFORMULA, new { id = "CALCFORMULA_" + i })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTDESC, new { id = "AMTDESC_" + i, @class = " atextBoxFor ", maxlength = 300, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTDESC, new { id = "AMTDESC_" + i, @class = " atextBoxFor ", maxlength = 50, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
                                 </td>
                                 <td class="grid_td">
                                     @Html.TextBoxFor(model => Model.TTXNAMT[i].HSNCODE, new { id = "HSNCODE_" + i, @class = " atextBoxFor ", maxlength = 8 })
