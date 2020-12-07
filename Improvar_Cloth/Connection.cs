@@ -19,6 +19,7 @@ using System.Net.Sockets;
 using Microsoft.VisualBasic;
 using BarcodeLib;
 using System.Drawing.Imaging;
+using QRCoder;
 //using iTextSharp.text;
 //using iTextSharp.text.pdf;
 
