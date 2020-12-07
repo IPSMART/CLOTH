@@ -404,9 +404,9 @@ namespace Improvar.Controllers
                                     RATE = dr["RATE"].retDbl(),
                                     DISCRATE = dr["DISCRATE"].retDbl(),
                                     DISCTYPE = dr["DISCTYPE"].retStr(),
-                                    DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
+                                    DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : dr["DISCTYPE"].retStr() == "A" ? "AftDsc%" : "Fixed",
                                     TDDISCRATE = dr["TDDISCRATE"].retDbl(),
-                                    TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
+                                    TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["TDDISCTYPE"].retStr() == "A" ? "AftDsc%" : "Fixed",
                                     TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
                                     SCMDISCTYPE_DESC = dr["SCMDISCTYPE"].retStr() == "P" ? "%" : dr["SCMDISCTYPE"].retStr() == "N" ? "Nos" : dr["SCMDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
                                     SCMDISCTYPE = dr["SCMDISCTYPE"].retStr(),
@@ -465,10 +465,10 @@ namespace Improvar.Controllers
                                   RATE = dr["RATE"].retDbl(),
                                   AMT = dr["AMT"].retDbl(),
                                   DISCTYPE = dr["DISCTYPE"].retStr(),
-                                  DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
+                                  DISCTYPE_DESC = dr["DISCTYPE"].retStr() == "P" ? "%" : dr["DISCTYPE"].retStr() == "N" ? "Nos" : dr["DISCTYPE"].retStr() == "Q" ? "Qnty" : dr["DISCTYPE"].retStr() == "A" ? "AftDsc%" : "Fixed",
                                   DISCRATE = dr["DISCRATE"].retDbl(),
                                   DISCAMT = dr["DISCAMT"].retDbl(),
-                                  TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : "Fixed",
+                                  TDDISCTYPE_DESC = dr["TDDISCTYPE"].retStr() == "P" ? "%" : dr["TDDISCTYPE"].retStr() == "N" ? "Nos" : dr["TDDISCTYPE"].retStr() == "Q" ? "Qnty" : dr["TDDISCTYPE"].retStr() == "A" ? "AftDsc%" : "Fixed",
                                   TDDISCTYPE = dr["TDDISCTYPE"].retStr(),
                                   TDDISCRATE = dr["TDDISCRATE"].retDbl(),
                                   TDDISCAMT = dr["TDDISCAMT"].retDbl(),
@@ -1570,10 +1570,10 @@ namespace Improvar.Controllers
                     VE.TTXNAMT[p].SLNO = Convert.ToInt16(p + 1);
 
                     VE.TTXNAMT[p].NETAMT = VE.TTXNAMT[p].AMT.Value + VE.TTXNAMT[p].IGSTAMT.Value + VE.TTXNAMT[p].CGSTAMT.Value + VE.TTXNAMT[p].SGSTAMT.Value + VE.TTXNAMT[p].CESSAMT.Value + VE.TTXNAMT[p].DUTYAMT.Value;
-                    VE.TTXNAMT[p].IGSTPER = IGST_PER;
-                    VE.TTXNAMT[p].CGSTPER = CGST_PER;
-                    VE.TTXNAMT[p].SGSTPER = SGST_PER;
-                    VE.TTXNAMT[p].CESSPER = CESS_PER;
+                    //VE.TTXNAMT[p].IGSTPER = IGST_PER;
+                    //VE.TTXNAMT[p].CGSTPER = CGST_PER;
+                    //VE.TTXNAMT[p].SGSTPER = SGST_PER;
+                    //VE.TTXNAMT[p].CESSPER = CESS_PER;
                     A_T_CURR_AMT = A_T_CURR_AMT + VE.TTXNAMT[p].CURR_AMT.Value;
                     A_T_AMT = A_T_AMT + VE.TTXNAMT[p].AMT.Value;
                     A_T_IGST_AMT = A_T_IGST_AMT + VE.TTXNAMT[p].IGSTAMT.Value;

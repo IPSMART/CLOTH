@@ -507,6 +507,7 @@
     <Compile Include="Models\TPROGDTL.cs" />
     <Compile Include="Models\TSALEBARNOPOPUP.cs" />
     <Compile Include="Models\TsalePos_TBATCHDTL.cs" />
+    <Compile Include="Models\TsalePos_TBATCHDTL_RETURN.cs" />
     <Compile Include="Models\TSORDDTL.cs" />
     <Compile Include="Models\TSORDDTL_CANC.cs" />
     <Compile Include="Models\TSORDDTL_CANC_SIZE.cs" />
@@ -1139,6 +1140,7 @@
     <Content Include="Views\Shared\_REP_BAR_HISTORY_PRICE.cshtml" />
     <Content Include="Views\Rep_BarcodeImage\Rep_BarcodeImage.cshtml" />
     <Content Include="Views\Rep_Reg\Rep_Reg.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_POS_RETURN.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

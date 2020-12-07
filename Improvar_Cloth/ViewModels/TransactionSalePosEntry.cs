@@ -25,6 +25,7 @@ namespace Improvar.ViewModels
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TsalePos_TBATCHDTL> TsalePos_TBATCHDTL { get; set; }
+        public List<TsalePos_TBATCHDTL_RETURN> TsalePos_TBATCHDTL_RETURN { get; set; }
         public List<TSALEBARNOPOPUP> TSALEBARNOPOPUP { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
@@ -226,6 +227,29 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double B_T_NET { get; set; }
         public string RETDEBSLCD { get; set; }
-        
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double R_T_QNTY { get; set; }
+        public double R_T_NOS { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double R_T_NET { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? T_R_GROSSAMT { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? R_T_AMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? R_T_CESS_AMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? R_T_NET_AMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? R_T_SGST_AMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? R_T_CGST_AMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? R_T_IGST_AMT { get; set; }
+
+
+
+
     }
 }

@@ -1034,12 +1034,12 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc. Type" })
+                                                    @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc. Type" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc. Rate" } })
+                                                    @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE", @title = "Disc. Rate" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -1136,14 +1136,15 @@
                                     </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc-2" })
+                                            @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc-2" })
                                         </div>
                                     </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.SCMDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "SCMDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "SCMDISCRATE", @title = "Disc2 Rate" } })
+                                            @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc2 Rate" } })
                                         </div>
                                     </div>
+                                    
                                     <div class="col-md-4">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10, @title = "Location Bin" } })
