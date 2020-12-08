@@ -45,9 +45,14 @@
 </script>
 <script>
     function requiredFieldValidator() {
+        debugger;
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Retail", "RTDEBCD")) { return false; }
         if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
+        var mainTotNetAmt = $("#B_T_NET_AMT").val();
+        var returnTotNetAmt = $("#R_T_NET_AMT").val();
+        if (mainTotNetAmt == 0 && returnTotNetAmt== 0)
+        { msgWarning("Please Enter Main Tab or Return Tab details !!"); return false; }
         var T_PER = 0;
         var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
@@ -64,6 +69,7 @@
             $(".tab-content div:fourth-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
+        
         return true;
     }
 </script>

@@ -193,7 +193,7 @@ function AddMainRow(hlpstr) {
     tr += '   <input id="B_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="B_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '   <input id="B_CLASS1CD_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CLASS1CD" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="B_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].AMT" type="hidden" value="' + GROSSAMT + '">';
+    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="B_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].GROSSAMT" type="hidden" value="' + GROSSAMT + '">';
     tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="B_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
@@ -363,7 +363,7 @@ function AddReturnRow(hlpstr) {
     tr += '   <input id="R_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="R_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '   <input id="R_CLASS1CD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CLASS1CD" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="R_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].AMT" type="hidden" value="' + GROSSAMT + '">';
+    tr += '   <input data-val="true" data-val-number="The field AMT must be a number." id="R_GROSSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GROSSAMT" type="hidden" value="' + GROSSAMT + '">';
     tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="R_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="R_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
@@ -767,10 +767,13 @@ function CalculateTotal() {
     var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
    
     var T_TXBLVAL = retFloat($("#B_T_AMT").val());
+    var R_T_TXBLVAL = retFloat($("#R_T_AMT").val());
+    
     var R_T_GROSS_AMT = retFloat($("#R_T_GROSS_AMT").val());
     var PAYABLE = retFloat($("#PAYABLE").val());
       var Mtaxamt = T_TXBLVAL;
-        var Rtaxamt = R_T_GROSS_AMT;
+    //var Rtaxamt = R_T_GROSS_AMT;
+      var Rtaxamt = R_T_TXBLVAL;
     var t_blamt = 0; var t_itamt = 0; var t_per = 0;
     for (var i = 0; i <= GridRow - 1; i++) {
         var PER_ = retFloat($("#S_PER_" + i).val());
@@ -955,6 +958,7 @@ function DeleteRowPYMT() {
         success: function (result) {
             $("#partialdivPayment").animate({ marginTop: '0px' }, 50);
             $("#partialdivPayment").html(result);
+            CalculateTotal();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -995,6 +999,7 @@ function DeleteRow() {
     success: function (result) {
         $("#partialdivSalesman").animate({ marginTop: '0px' }, 50);
         $("#partialdivSalesman").html(result);
+        CalculateTotal();
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
         $("#WaitingMode").hide();
