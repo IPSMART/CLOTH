@@ -11,6 +11,8 @@ namespace Improvar.ViewModels
     {
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_TXN T_TXN { get; set; }
+        
+        public M_SYSCNFG M_SYSCNFG { get; set; }
         public T_TXN_LINKNO T_TXN_LINKNO { get; set; }
         public T_TXNACK T_TXNACK { get; set; }
         public T_TXNAMT T_TXNAMT { get; set; }
