@@ -313,7 +313,7 @@ namespace Improvar.Controllers
                         { FreightCharges(VE, VE.T_TXN?.AUTONO); VE.RETAMT = VE.RETAMT.retStr() == "" ? 0 : VE.RETAMT.retDbl().toRound(2);
                             VE.RETAMT = VE.R_T_NET;
                             VE.OTHAMT = VE.A_T_NET;
-                            VE.PAYABLE = (VE.T_TXN.BLAMT - VE.RETAMT).retDbl().toRound(2);
+                            if (VE.T_TXN != null) VE.PAYABLE = (VE.T_TXN.BLAMT - VE.RETAMT).retDbl().toRound(2); else VE.PAYABLE = 0.retDbl().toRound(2);
                             VE.NETDUE = (VE.PAYABLE - VE.PAYAMT).retDbl().toRound(2);
                         }
                             //if(op.ToString()=="E" && loadOrder=="N")
@@ -400,6 +400,7 @@ namespace Improvar.Controllers
                 //var MGP = DB.M_GROUP.Find(   VE.T_TXN.ITGRPCD);
 
                 VE.T_TXN_LINKNO = (from a in DB.T_TXN_LINKNO where a.AUTONO == VE.T_TXN.AUTONO select a).FirstOrDefault();
+               
                 //VE.LINKDOCNO = (from a in DB.T_CNTRL_HDR where a.AUTONO == TTXNLINKNO.LINKAUTONO select a).FirstOrDefault().DOCNO;
 
 
@@ -833,7 +834,7 @@ namespace Improvar.Controllers
                 foreach (var v in VE.TsalePos_TBATCHDTL_RETURN)
                 {
                     string R_PRODGRPGSTPER = "";
-                    var R_tax_data = (from a in VE.TsalePos_TBATCHDTL
+                    var R_tax_data = (from a in VE.TsalePos_TBATCHDTL_RETURN
                                       where a.TXNSLNO == v.SLNO && a.ITGRPCD == v.ITGRPCD && a.ITCD == a.ITCD && a.STKTYPE == v.STKTYPE
                                       && a.RATE == v.RATE && a.DISCTYPE == v.DISCTYPE && a.DISCRATE == v.DISCRATE && a.TDDISCTYPE == v.TDDISCTYPE
                                        && a.TDDISCRATE == v.TDDISCRATE && a.SCMDISCTYPE == v.SCMDISCTYPE && a.SCMDISCRATE == v.SCMDISCRATE
