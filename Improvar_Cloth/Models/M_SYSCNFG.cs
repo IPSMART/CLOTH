@@ -73,5 +73,11 @@ namespace Improvar.Models
         public string RTDEBCD { get; set; }
         [StringLength(1)]
         public string INC_RATE { get; set; }
+        [StringLength(1)]
+        public string SIZEENABLE { get; set; }
+        [StringLength(1)]
+        public string COLORENABLE { get; set; }
+        [StringLength(1)]
+        public string PARTENABLE { get; set; }
     }
 }
