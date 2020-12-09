@@ -3551,7 +3551,9 @@ namespace Improvar.Controllers
                             }
                             else if (tbl.Rows[i]["othadd1"].ToString() != "")
                             {
-                                dr1["cslcd"] = ""; tbl.Rows[i]["slcd"].ToString();
+                                //dr1["cslcd"] = "";
+                                dr1["cslcd"] = tbl.Rows[i]["slcd"].ToString();
+                                tbl.Rows[i]["slcd"].ToString();
                                 dr1["cpartycd"] = ""; tbl.Rows[i]["slcd"].ToString();
                                 dr1["cslnm"] = tbl.Rows[i]["othnm"] == DBNull.Value ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["othnm"].ToString();
                                 for (int f = 1; f <= 3; f++)
