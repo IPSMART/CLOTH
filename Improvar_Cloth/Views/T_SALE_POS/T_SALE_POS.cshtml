@@ -359,7 +359,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST No.", maxlength = 50, @placeholder = "Party GST No." } })
+                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST No.", maxlength = 50, @placeholder = "Party GST Name" } })
                             </div>
                         </div>
                         <div class="col-md-5">
@@ -420,12 +420,22 @@
                         </div>
                         <div class="col-md-5" style="width: auto;">
                             <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Return ")
+                                @Html.Label("", "Return Amount ")
                             </div>
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.RETAMT, new { htmlAttributes = new { @class = "form-control", id = "RETAMT", maxlength = 15, @placeholder = "Return Amount", @style = "text-align:right", @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col-md-5" style="width: auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Other Amount ")
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.OTHAMT, new { htmlAttributes = new { @class = "form-control", id = "OTHAMT", maxlength = 15, @placeholder = "Other Amount", @style = "text-align:right", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-5" style="width: auto;">

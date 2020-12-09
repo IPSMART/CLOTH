@@ -627,13 +627,13 @@ function CalculateRowAmt(GridId, i) {
             var BALSTOCK = retFloat($("#R_BALSTOCK_" + i).val());
             var NEGSTOCK = $("#R_NEGSTOCK_" + i).val();
             var balancestock = BALSTOCK - QNTY;
-            if (balancestock < 0) {
-                if (NEGSTOCK != "Y") {
-                    msgInfo("Quantity should not be grater than Stock !");
-                    message_value = "R_QNTY_" + i;
-                    return false;
-                }
-            }
+            //if (balancestock < 0) {
+            //    if (NEGSTOCK != "Y") {
+            //        msgInfo("Quantity should not be grater than Stock !");
+            //        message_value = "R_QNTY_" + i;
+            //        return false;
+            //    }
+            //}
         }
 
         var B_QNTY_ = retFloat($("#R_QNTY_" + i).val());
@@ -728,8 +728,8 @@ function CalculateTotal() {
     $("#T_PYMT_AMT").val(T_AMT.toFixed(2));
 
     // BillAmountCalculate
-    totalbillamt = parseFloat(T_NET) + parseFloat(T_NET_AMT);
-    totalRbillamt = parseFloat(R_T_NET) + parseFloat(T_NET_AMT);
+    totalbillamt = parseFloat(T_NET);
+    totalRbillamt = parseFloat(R_T_NET);
     var REVCHRG = $("#REVCHRG").val();
     var ROUND_TAG = document.getElementById("RoundOff").checked;
     if (REVCHRG == "Y") {
@@ -759,6 +759,7 @@ function CalculateTotal() {
 
     document.getElementById("PAYAMT").value = parseFloat(T_PYMT_AMT).toFixed(2);
     document.getElementById("RETAMT").value = parseFloat(RETAMT).toFixed(2);
+    document.getElementById("OTHAMT").value = parseFloat(T_NET_AMT).toFixed(2);
     document.getElementById("PAYABLE").value = retFloat(parseFloat(document.getElementById("BLAMT").value) - parseFloat(RETAMT)).toFixed(2);
     document.getElementById("NETDUE").value = retFloat(parseFloat($("#PAYABLE").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
 

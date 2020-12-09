@@ -53,6 +53,9 @@ namespace Improvar.ViewModels
         public double? PAYABLE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? PAYAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? OTHAMT { get; set; }
+        
         public string ADDR { get; set; }
         public string PSLCD { get; set; }
         public string SLNM { get; set; }

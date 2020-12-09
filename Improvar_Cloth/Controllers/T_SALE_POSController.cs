@@ -311,7 +311,8 @@ namespace Improvar.Controllers
                         }
                         if (parkID == "" && loadOrder == "N")
                         { FreightCharges(VE, VE.T_TXN?.AUTONO); VE.RETAMT = VE.RETAMT.retStr() == "" ? 0 : VE.RETAMT.retDbl().toRound(2);
-                            VE.RETAMT = VE.R_T_NET + VE.A_T_NET;
+                            VE.RETAMT = VE.R_T_NET;
+                            VE.OTHAMT = VE.A_T_NET;
                             VE.PAYABLE = (VE.T_TXN.BLAMT - VE.RETAMT).retDbl().toRound(2);
                             VE.NETDUE = (VE.PAYABLE - VE.PAYAMT).retDbl().toRound(2);
                         }
@@ -1673,6 +1674,8 @@ namespace Improvar.Controllers
                         item.SLNO = Convert.ToInt16(count);
                         item.DISC_TYPE = masterHelp.DISC_TYPE();
                         item.PCSActionList = masterHelp.PCSAction();
+                        var brimgs = VE.TsalePos_TBATCHDTL[i].BarImages.retStr().Split((char)179);
+                        VE.TsalePos_TBATCHDTL[i].BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
                         TsalePos_TBATCHDTL.Add(item);
                     }
                 }
@@ -1704,6 +1707,8 @@ namespace Improvar.Controllers
                         item.SLNO = Convert.ToInt16(count);
                         item.DISC_TYPE = masterHelp.DISC_TYPE();
                         item.PCSActionList = masterHelp.PCSAction();
+                        var brimgs = VE.TsalePos_TBATCHDTL_RETURN[i].BarImages.retStr().Split((char)179);
+                        VE.TsalePos_TBATCHDTL_RETURN[i].BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
                         TsalePos_TBATCHDTL.Add(item);
                     }
                 }
@@ -2358,7 +2363,7 @@ namespace Improvar.Controllers
                     TTXNMEMO.NM = VE.T_TXNMEMO.NM;
                     TTXNMEMO.MOBILE = VE.T_TXNMEMO.MOBILE;
                     TTXNMEMO.CITY = "ABC";
-                    TTXNMEMO.ADDR = "XYZ";
+                    TTXNMEMO.ADDR = VE.ADDR;
                     //----------------------------------------------------------//
                     // -------------------------T_TXNPYMT_HDR--------------------------//   
                     TTXNPYMTHDR.EMD_NO = TTXN.EMD_NO;
@@ -2553,7 +2558,7 @@ namespace Improvar.Controllers
                             //TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
                             R_TTXNDTL.GOCD = VE.T_TXN.GOCD;
                             //TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
-                            R_TTXNDTL.NOS = VE.TsalePos_TBATCHDTL_RETURN[i].NOS == null ? 0 : VE.TsalePos_TBATCHDTL[i].NOS;
+                            R_TTXNDTL.NOS = VE.TsalePos_TBATCHDTL_RETURN[i].NOS == null ? 0 : VE.TsalePos_TBATCHDTL[i].NOS.retDbl();
                             R_TTXNDTL.QNTY = VE.TsalePos_TBATCHDTL_RETURN[i].QNTY;
                             R_TTXNDTL.BLQNTY = VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY;
                             R_TTXNDTL.RATE = VE.TsalePos_TBATCHDTL_RETURN[i].RATE;
