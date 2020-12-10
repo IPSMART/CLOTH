@@ -41,10 +41,17 @@
                                 @*<th class="" style="width: 179px;">Fabric Item</th>*@
                                 @*<th class="" style="width:162px;">Design</th>*@
                                 <th class="" style="width: 34px;">Stock Type</th>
-                                <th class="" style="width: 50px;">Part</th>
-                                <th class="" style="width: 50px;">Color Code</th>
-                                <th class="" style="width: 50px;">Color Name</th>
-                                <th class="" style="width: 50px;">Size</th>
+                                @if (Model.M_SYSCNFG.MNTNPART == "Y")
+                                {
+                                    <th class="" style="width: 50px;">Part</th>
+                                }    @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                {
+                                    <th class="" style="width: 50px;">Color Code</th>
+                                    <th class="" style="width: 50px;">Color Name</th>}
+                                @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
+                                {
+                                    <th class="" style="width: 50px;">Size</th>
+                                }
                                 <th class="" style="width: 50px;">Shade</th>
                                 <th class="" style="width:50px;text-align:right;">Stock</th>
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
@@ -130,23 +137,29 @@
                                             @*@Html.HiddenFor(model => model.TBATCHDTL[i].STKTYPE, new { id = "B_STKTYPE_" + i })*@
                                             @*@Html.DropDownListFor(model => Model.TBATCHDTL[i].STKTYPE, new SelectList(Model.TBATCHDTL[i].DropDown_list1, "value", "text", Model.TBATCHDTL[i].STKTYPE), new { id = "B_STKTYPE_" + i, @class = "atextBoxFor select_3d", @TabIndex = -1 })*@
                                         </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].PARTCD, new { id = "B_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].PARTNM, new { id = "B_PARTNM_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].PRTBARCODE, new { id = "B_PRTBARCODE_" + i })
-                                        </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRCD, new { id = "B_COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].CLRBARCODE, new { id = "B_CLRBARCODE_" + i })
-                                        </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRNM, new { id = "B_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TBATCHDTL[i].SIZECD, new { id = "B_SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].SIZENM, new { id = "B_SIZENM_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].SZBARCODE, new { id = "B_SZBARCODE_" + i })
-                                        </td>
+                                        @if (Model.M_SYSCNFG.MNTNPART == "Y")
+                                        {
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].PARTCD, new { id = "B_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].PARTNM, new { id = "B_PARTNM_" + i })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].PRTBARCODE, new { id = "B_PRTBARCODE_" + i })
+                                            </td>}
+                                        @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                        {
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRCD, new { id = "B_COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].CLRBARCODE, new { id = "B_CLRBARCODE_" + i })
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].COLRNM, new { id = "B_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>}
+                                        @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
+                                        {
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].SIZECD, new { id = "B_SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].SIZENM, new { id = "B_SIZENM_" + i })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].SZBARCODE, new { id = "B_SZBARCODE_" + i })
+                                            </td>}
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
@@ -191,7 +204,7 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
                                         </td>
-                                       
+
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })
@@ -206,7 +219,7 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
                                         </td>
-                                        @if (Model.MENU_PARA == "SBPCK" ||  Model.MENU_PARA == "PB")
+                                        @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB")
                                         {
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].ORDDOCNO, new { htmlAttributes = new { id = "B_ORDDOCNO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
@@ -267,10 +280,20 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                @if (Model.M_SYSCNFG.MNTNPART == "Y")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
+                                @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
+                                @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
+
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td style="text-align:right;">
                                     <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
@@ -306,6 +329,7 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
                                     <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
@@ -321,5 +345,9 @@
             <div class="col-md-1" style="width:auto;">
                     <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="EditBarCodeRow()" />
                 </div>
-        </div>*@
+        </div>*@<div class="row">
+        <div class="col-md-1" style="width:auto;">
+            <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="EditBarCodeRow()" />
+        </div>
+    </div>
 </div>

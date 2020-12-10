@@ -295,9 +295,9 @@
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
-        @Html.HiddenFor(a => a.M_SYSCNFG.SIZEENABLE)
-        @Html.HiddenFor(a => a.M_SYSCNFG.COLORENABLE)
-        @Html.HiddenFor(a => a.M_SYSCNFG.PARTENABLE)
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE)
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR)
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART)
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -964,7 +964,7 @@
                                                     @Html.DropDownListFor(model => model.STKTYPE, new SelectList(Model.DropDown_list_StkType, "Value", "Text", Model.STKTYPE), new { @class = "form-control", id = "STKTYPE", @title = "Stock Type" })
                                                 </div>
                                             </div>
-                                            @if (Model.M_SYSCNFG.PARTENABLE == "Y")
+                                            @if (Model.M_SYSCNFG.MNTNPART == "Y")
                                             {
                                                 <div class="col-md-1">
                                                     <div class="editor-field">
@@ -975,7 +975,7 @@
                                                     </div>
                                                 </div>
                                             }
-                                            @if (Model.M_SYSCNFG.COLORENABLE == "Y")
+                                            @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                             {
                                                 <div class="col-md-1">
                                                     <div class="editor-field">
@@ -990,7 +990,7 @@
                                                     </div>
                                                 </div>
                                             }
-                                            @if (Model.M_SYSCNFG.SIZEENABLE == "Y")
+                                            @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
                                             {
                                                 <div class="col-md-1">
                                                     <div class="editor-field">

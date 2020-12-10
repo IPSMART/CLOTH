@@ -74,10 +74,10 @@ namespace Improvar.Models
         [StringLength(1)]
         public string INC_RATE { get; set; }
         [StringLength(1)]
-        public string SIZEENABLE { get; set; }
+        public string MNTNSIZE { get; set; }
         [StringLength(1)]
-        public string COLORENABLE { get; set; }
+        public string MNTNCOLOR { get; set; }
         [StringLength(1)]
-        public string PARTENABLE { get; set; }
+        public string MNTNPART { get; set; }
     }
 }

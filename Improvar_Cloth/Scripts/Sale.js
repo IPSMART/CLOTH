@@ -1405,6 +1405,9 @@ function AddBarCodeGrid() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
+    var MNTNPART = $("#MNTNPART").val();
+    var MNTNCOLOR = $("#MNTNCOLOR").val();
+    var MENU_PARA = $("#MNTNCOL").val();
     if ($("#ITGRPCD").val() == "") {
         msgInfo("Please enter/select Item Group Code !");
         message_value = "ITGRPCD";
