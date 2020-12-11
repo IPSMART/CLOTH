@@ -448,6 +448,10 @@ function AddReturnRow(hlpstr) {
     tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="R_GSTPER_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="' + GSTPER + '">';
     tr += '     <input id="R_PRODGRPGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
     tr += ' </td>';
+    tr += ' <td class="" title="">';
+    tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTAMT must be a number." id="R_GSTAMT_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GSTAMT" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="">';
+
+    tr += ' </td>';
     //tr += ' <td class="" title="">';
     //tr += '     <input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDAUTONO_' + rowindex + '","B_ORDDOCNO_0=PYMTCD=1/B_ORDDOCDT_0=PYMTNM=0","B_ORDDOCNO_' + rowindex + '","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '"/RETDEBSLCD);" onkeydown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=docno=0/B_ORDDOCDT_0=docdt=2/B_ORDAUTONO_0=autono=7/B_ORDSLNO_0=slno=1","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '","RETDEBSLCD")" placeholder="Code" type="text" value="">';
     //tr += '     <img src="/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=ORDDOCNO=0/B_ORDDOCDT_0=ORDDOCDT=1/B_ORDAUTONO_0=ORDAUTONO/B_ORDSLNO_0=ORDSLNO","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '"/RETDEBSLCD)">';
@@ -589,6 +593,9 @@ function CalculateRowAmt(GridId, i) {
             if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
         }
         $("#B_CESSAMT_" + i).val(CESS_AMT);
+        var gstamt = retFloat(IGST_AMT) + retFloat(CGST_AMT) + retFloat(SGST_AMT) + retFloat(CESS_AMT);
+        $("#B_GSTAMT_" + i).val(gstamt.toFixed(2));
+        
         var rownetamt = retFloat(retFloat((TXBLVAL_ * GSTPER) / 100) + retFloat(TXBLVAL_)).toFixed(2);
         var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
         $("#INCLRATE_" + i).val(rownetamt);
@@ -777,6 +784,8 @@ function CalculateRowAmt(GridId, i) {
             if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
         }
         $("#R_CESSAMT_" + i).val(CESS_AMT);
+        var gstamt = retFloat(IGST_AMT) + retFloat(CGST_AMT) + retFloat(SGST_AMT) + retFloat(CESS_AMT);
+        $("#R_GSTAMT_" + i).val(gstamt.toFixed(2));
         var rownetamt = retFloat(retFloat((TXBLVAL_ * GSTPER) / 100) + retFloat(TXBLVAL_)).toFixed(2);
         var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
         $("#R_INCLRATE_" + i).val(rownetamt);
@@ -791,7 +800,7 @@ function CalculateTotal() {
     var MENU_PARA = $("#MENU_PARA").val();
 
     //POS MAIN GRID TOTAL
-    var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0;
+    var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0,T_GSTAMT = 0;
     var GridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var QNTY = retFloat($("#B_QNTY_" + i).val());
@@ -800,15 +809,17 @@ function CalculateTotal() {
         var BALSTOCK = retFloat($("#B_BALSTOCK_" + i).val());
         var NETAMT = retFloat($("#B_NETAMT_" + i).val());
         var TXBLVAL = retFloat($("#B_TXBLVAL_" + i).val());
-        T_QNTY += QNTY; T_NOS += NOS; T_NET += NETAMT; T_TXBLVAL += TXBLVAL;
+        var GSTAMT = retFloat($("#B_GSTAMT_" + i).val());
+        T_QNTY += QNTY; T_NOS += NOS; T_NET += NETAMT; T_TXBLVAL += TXBLVAL, T_GSTAMT += GSTAMT;
     }
     $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
     $("#B_T_AMT").val(parseFloat(T_TXBLVAL).toFixed(2));
+    $("#B_T_GSTAMT").val(parseFloat(T_GSTAMT).toFixed(2));
     $("#B_T_NET_AMT").val(parseFloat(T_NET).toFixed(2));
 
     //POS RETURN GRID TOTAL
-    var R_T_QNTY = 0, R_T_NOS = 0, R_T_NET = 0, R_T_TXBLVAL = 0;
+    var R_T_QNTY = 0, R_T_NOS = 0, R_T_NET = 0, R_T_TXBLVAL = 0, R_T_GSTAMT = 0;
     var GridRow = $("#_T_SALE_POS_RETURN_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var QNTY = retFloat($("#R_QNTY_" + i).val());
@@ -817,11 +828,13 @@ function CalculateTotal() {
         var BALSTOCK = retFloat($("#R_BALSTOCK_" + i).val());
         var NETAMT = retFloat($("#R_NETAMT_" + i).val());
         var TXBLVAL = retFloat($("#R_TXBLVAL_" + i).val());
-        R_T_QNTY += QNTY; R_T_NOS += NOS; R_T_NET += NETAMT; R_T_TXBLVAL += TXBLVAL;
+        var GSTAMT = retFloat($("#R_GSTAMT_" + i).val());
+        R_T_QNTY += QNTY; R_T_NOS += NOS; R_T_NET += NETAMT; R_T_TXBLVAL += TXBLVAL; R_T_GSTAMT += GSTAMT;
     }
     $("#R_T_QNTY").val(parseFloat(R_T_QNTY).toFixed(2));
     $("#R_T_NOS").val(parseFloat(R_T_NOS).toFixed(0));
     $("#R_T_AMT").val(parseFloat(R_T_TXBLVAL).toFixed(2));
+    $("#R_T_GSTAMT").val(parseFloat(R_T_GSTAMT).toFixed(2));
     $("#R_T_NET_AMT").val(parseFloat(R_T_NET).toFixed(2));
 
     //AMT GRID TOTAL
