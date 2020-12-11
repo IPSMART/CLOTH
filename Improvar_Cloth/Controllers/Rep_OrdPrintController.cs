@@ -102,42 +102,62 @@ namespace Improvar.Controllers
                 string doccd = VE.DOCCD, slcd = VE.TEXTBOX1, fdt = VE.FDT, tdt = VE.TDT, fdocno = VE.FDOCNO, tdocno = VE.TDOCNO;
                 if (slcd != null) slcd = "'" + slcd + "'";
 
+
                 string sql = "";
-                sql += "select a.autono, a.docno, a.docdt, y.slcd, y.agslcd, y.trslcd, y.crslcd, y.slmslcd, y.prccd, y.prceffdt, ";
-                sql += "y.discrtcd, y.discrteffdt, y.docth, z.scmnm, k.prcnm, y.splnote, l.slnm cournm, ";
-                sql += "nvl(e.fullname,e.slnm) slnm, e.district, e.gstno, e.panno, f.slnm agslnm, g.slnm trslnm, h.slnm slmslnm, i.slnm crslnm, ";
-                sql += "e.regemailid, e.add1, e.add2, e.add3, e.add4, e.add5, e.add6, e.add7, d.usr_id, to_char(d.usr_entdt,'dd/mm/yyyy') usr_entdt, ";
-                sql += "y.docth1, y.docth2, y.docth3, y.paytrmcd, j.paytrmnm, y.delvins, y.duedays, y.cod, y.prefno, y.prefdt from ";
-
-                sql += "(select a.autono, d.docno, d.docdt ";
-                sql += "from " + scm + ".t_sord a, " + scm + ".t_sord_scheme b, " + scm + ".t_cntrl_hdr d ";
-                sql += "where a.autono=b.autono(+) and a.autono=d.autono and ";
-                sql += "nvl(d.cancel,'N')='N' and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and ";
+                sql += "select a.SLNO,a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERSET, c.UOMCD, ";
+                sql += "a.sizecd, a.rate, a.scmdiscamt, a.discamt, a.qnty,A.DELVDT,a.ITREM,a.PDESIGN,c.itgrpcd, d.itgrpnm,c.fabitcd, ";
+                sql += "e.itnm fabitnm,a.colrcd,a.partcd,f.colrnm,g.sizenm,h.partnm,a.rate from ";
+                sql += scm + ".T_SORDDTL a, " + scm + ".T_CNTRL_HDR b, ";
+                sql += scm + ".m_sitem c, " + scm + ".m_group d, " + scm + ".m_sitem e, " + scm + ".m_color f, " + scm + ".m_size g, " + scm + ".m_parts h, " + scm + ".T_SORD i  ";
+                sql += "where a.autono = b.autono and a.autono = i.autono and  a.itcd = c.itcd(+) and c.itgrpcd=d.itgrpcd and c.fabitcd=e.itcd(+) ";
+                sql += "and a.colrcd=f.colrcd(+) and a.sizecd=g.sizecd(+) and a.partcd=h.partcd(+)  ";
+                sql += "nvl(b.cancel,'N')='N' and b.compcd='" + COM + "' and b.loccd='" + LOC + "' and ";
                 if (slcd != null) sql += "a.slcd in (" + slcd + ") and ";
-                if (fdt != null) sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
-                if (tdt != null) sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
-                if (fdocno != null) sql += "d.doconlyno >= '" + fdocno + "' and ";
-                if (fdocno != null) sql += "d.doconlyno <= '" + tdocno + "' and ";
+                if (fdt != null) sql += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
+                if (tdt != null) sql += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
+                if (fdocno != null) sql += "b.doconlyno >= '" + fdocno + "' and ";
+                if (fdocno != null) sql += "b.doconlyno <= '" + tdocno + "' and ";
                 sql += "d.doccd = '" + doccd + "' ) a, ";
+                sql += "order by styleno ";
 
-                sql += "( select a.autono, listagg(e.scmnm,',') within group (order by b.autono, b.scmcd) scmnm ";
-                sql += "from " + scm + ".t_sord a, " + scm + ".t_sord_scheme b, " + scm + ".t_cntrl_hdr d, " + scm + ".m_scheme_hdr e ";
-                sql += "where a.autono=b.autono and b.scmcd=e.scmcd(+) and ";
-                sql += "nvl(d.cancel,'N')='N' and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and ";
-                if (slcd != null) sql += "a.slcd in (" + slcd + ") and ";
-                if (fdt != null) sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
-                if (tdt != null) sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
-                if (fdocno != null) sql += "d.doconlyno >= '" + fdocno + "' and ";
-                if (fdocno != null) sql += "d.doconlyno <= '" + tdocno + "' and ";
-                sql += "a.autono=d.autono ";
-                sql += "group by a.autono ) z, ";
 
-                sql += scm + ".t_sord y, " + scm + ".t_cntrl_hdr d, ";
-                sql += scmf + ".m_subleg e, " + scmf + ".m_subleg f, " + scmf + ".m_subleg g, " + scmf + ".m_subleg h, " + scmf + ".m_subleg i, ";
-                sql += "" + scm + ".m_paytrms j, " + scmf + ".m_prclst k, " + scmf + ".m_subleg l ";
-                sql += "where a.autono=z.autono(+) and a.autono=d.autono and a.autono=y.autono(+) and y.paytrmcd=j.paytrmcd(+) and ";
-                sql += "y.slcd=e.slcd(+) and y.agslcd=f.slcd(+) and y.trslcd=g.slcd(+) and y.slmslcd=h.slcd(+) and y.crslcd=i.slcd(+) and ";
-                sql += "y.prccd=k.prccd(+) and y.crslcd=l.slcd(+) ";
+
+
+                //sql += "select a.autono, a.docno, a.docdt, y.slcd, y.agslcd, y.trslcd, y.crslcd, y.slmslcd, y.prccd, y.prceffdt, ";
+                //sql += "y.discrtcd, y.discrteffdt, y.docth, z.scmnm, k.prcnm, y.splnote, l.slnm cournm, ";
+                //sql += "nvl(e.fullname,e.slnm) slnm, e.district, e.gstno, e.panno, f.slnm agslnm, g.slnm trslnm, h.slnm slmslnm, i.slnm crslnm, ";
+                //sql += "e.regemailid, e.add1, e.add2, e.add3, e.add4, e.add5, e.add6, e.add7, d.usr_id, to_char(d.usr_entdt,'dd/mm/yyyy') usr_entdt, ";
+                //sql += "y.docth1, y.docth2, y.docth3, y.paytrmcd, j.paytrmnm, y.delvins, y.duedays, y.cod, y.prefno, y.prefdt from ";
+
+                //sql += "(select a.autono, d.docno, d.docdt ";
+                //sql += "from " + scm + ".t_sord a, " + scm + ".t_sord_scheme b, " + scm + ".t_cntrl_hdr d ";
+                //sql += "where a.autono=b.autono(+) and a.autono=d.autono and ";
+                //sql += "nvl(d.cancel,'N')='N' and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and ";
+                //if (slcd != null) sql += "a.slcd in (" + slcd + ") and ";
+                //if (fdt != null) sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
+                //if (tdt != null) sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
+                //if (fdocno != null) sql += "d.doconlyno >= '" + fdocno + "' and ";
+                //if (fdocno != null) sql += "d.doconlyno <= '" + tdocno + "' and ";
+                //sql += "d.doccd = '" + doccd + "' ) a, ";
+
+                //sql += "( select a.autono, listagg(e.scmnm,',') within group (order by b.autono, b.scmcd) scmnm ";
+                //sql += "from " + scm + ".t_sord a, " + scm + ".t_sord_scheme b, " + scm + ".t_cntrl_hdr d, " + scm + ".m_scheme_hdr e ";
+                //sql += "where a.autono=b.autono and b.scmcd=e.scmcd(+) and ";
+                //sql += "nvl(d.cancel,'N')='N' and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and ";
+                //if (slcd != null) sql += "a.slcd in (" + slcd + ") and ";
+                //if (fdt != null) sql += "d.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
+                //if (tdt != null) sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
+                //if (fdocno != null) sql += "d.doconlyno >= '" + fdocno + "' and ";
+                //if (fdocno != null) sql += "d.doconlyno <= '" + tdocno + "' and ";
+                //sql += "a.autono=d.autono ";
+                //sql += "group by a.autono ) z, ";
+
+                //sql += scm + ".t_sord y, " + scm + ".t_cntrl_hdr d, ";
+                //sql += scmf + ".m_subleg e, " + scmf + ".m_subleg f, " + scmf + ".m_subleg g, " + scmf + ".m_subleg h, " + scmf + ".m_subleg i, ";
+                //sql += "" + scm + ".m_paytrms j, " + scmf + ".m_prclst k, " + scmf + ".m_subleg l ";
+                //sql += "where a.autono=z.autono(+) and a.autono=d.autono and a.autono=y.autono(+) and y.paytrmcd=j.paytrmcd(+) and ";
+                //sql += "y.slcd=e.slcd(+) and y.agslcd=f.slcd(+) and y.trslcd=g.slcd(+) and y.slmslcd=h.slcd(+) and y.crslcd=i.slcd(+) and ";
+                //sql += "y.prccd=k.prccd(+) and y.crslcd=l.slcd(+) ";
 
                 rstbl = Master_Help.SQLquery(sql);
 
