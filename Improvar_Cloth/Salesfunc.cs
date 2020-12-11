@@ -1477,7 +1477,7 @@ namespace Improvar
                 SIZECD = DB.M_SIZE.Where(a => a.SZBARCODE == szbarcode).Select(b => b.SIZECD).SingleOrDefault();
             }
             string barno = DB.M_SITEM_BARCODE.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD).Select(b => b.BARNO).SingleOrDefault();
-            if (barno == "")
+            if (barno == null)
             {
                 barno = ITCD.retStr().Substring(1, 7) + CLRBARCODE.retStr() + SZBARCODE.retStr();
             }

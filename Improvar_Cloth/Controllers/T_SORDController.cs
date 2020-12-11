@@ -151,6 +151,11 @@ namespace Improvar.Controllers
                         string docdt = "";
                         if (VE.T_CNTRL_HDR != null) if (VE.T_CNTRL_HDR.DOCDT != null) docdt = VE.T_CNTRL_HDR.DOCDT.ToString().Remove(10);
                         Cn.getdocmaxmindate(VE.T_SORD.DOCCD, docdt, VE.DefaultAction, VE.T_SORD.DOCNO, VE);
+
+
+                        var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                        VE.M_SYSCNFG = MSYSCNFG;
+
                         ModelState.Clear();
                         return View(VE);
                     }

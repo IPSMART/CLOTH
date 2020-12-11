@@ -295,9 +295,9 @@
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
-        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE)
-        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR)
-        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART)
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
