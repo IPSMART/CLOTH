@@ -218,6 +218,38 @@ namespace Improvar.Controllers
                     {
                         VE.INC_RATE = false;
                     }
+                    if (sl.MNTNSIZE == "Y")
+                    {
+                        VE.MNTNSIZE = true;
+                    }
+                    else
+                    {
+                        VE.MNTNSIZE = false;
+                    }
+                    if (sl.MNTNCOLOR == "Y")
+                    {
+                        VE.MNTNCOLOR = true;
+                    }
+                    else
+                    {
+                        VE.MNTNCOLOR = false;
+                    }
+                    if (sl.MNTNPART == "Y")
+                    {
+                        VE.MNTNPART = true;
+                    }
+                    else
+                    {
+                        VE.MNTNPART = false;
+                    }
+                    if (sl.MNTNFLAGMTR == "Y")
+                    {
+                        VE.MNTNFLAGMTR = true;
+                    }
+                    else
+                    {
+                        VE.MNTNFLAGMTR = false;
+                    }
                     if (sl.WPPRICEGEN.retStr() != "")
                     {
                         VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
@@ -352,12 +384,16 @@ namespace Improvar.Controllers
                     DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".M_CNTRL_HDR in  row share mode");
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
+                        string compcd = CommVar.Compcd(UNQSNO);
                         M_SYSCNFG MSYSCNFG = new M_SYSCNFG();
                         MSYSCNFG.CLCD = CommVar.ClientCode(UNQSNO);
                         MSYSCNFG.COMPCD = CommVar.Compcd(UNQSNO);
                         MSYSCNFG.EFFDT = VE.M_SYSCNFG.EFFDT;
                         if (VE.DefaultAction == "A")
                         {
+                           string query = "select EFFDT from  " + CommVar.CurSchema(UNQSNO) + ".M_SYSCNFG  where EFFDT=to_date('" + VE.M_SYSCNFG.EFFDT.retDateStr() + "', 'dd/mm/yyyy') and COMPCD='" + compcd + "'";
+                            DataTable EffdtChk = Master_Help.SQLquery(query);
+                            if (EffdtChk.Rows.Count > 0) { transaction.Rollback(); return Content(" "+EffdtChk.Rows[0]["EFFDT"].retDateStr()+" Effective Date already exsist.Please select another Effective Date !"); }
                             MSYSCNFG.EMD_NO = 0;
                             MSYSCNFG.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
 
@@ -397,7 +433,12 @@ namespace Improvar.Controllers
                         MSYSCNFG.RPPER = VE.M_SYSCNFG.RPPER;
                         MSYSCNFG.PRICEINCODE = VE.M_SYSCNFG.PRICEINCODE;
                         MSYSCNFG.RTDEBCD = VE.M_SYSCNFG.RTDEBCD;
+                        MSYSCNFG.DESIGNPATH = VE.M_SYSCNFG.DESIGNPATH;
                         if (VE.INC_RATE == true) { MSYSCNFG.INC_RATE = "Y"; } else { MSYSCNFG.INC_RATE = "N"; }
+                        if (VE.MNTNSIZE == true) { MSYSCNFG.MNTNSIZE = "Y"; } else { MSYSCNFG.MNTNSIZE = "N"; }
+                        if (VE.MNTNCOLOR == true) { MSYSCNFG.MNTNCOLOR = "Y"; } else { MSYSCNFG.MNTNCOLOR = "N"; }
+                        if (VE.MNTNPART == true) { MSYSCNFG.MNTNPART = "Y"; } else { MSYSCNFG.MNTNPART = "N"; }
+                        if (VE.MNTNFLAGMTR == true) { MSYSCNFG.MNTNFLAGMTR = "Y"; } else { MSYSCNFG.MNTNFLAGMTR = "N"; }
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {
