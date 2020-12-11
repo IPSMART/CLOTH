@@ -79,5 +79,7 @@ namespace Improvar.Models
         public string MNTNCOLOR { get; set; }
         [StringLength(1)]
         public string MNTNPART { get; set; }
+        [StringLength(1)]
+        public string MNTNFLAGMTR { get; set; }
     }
 }

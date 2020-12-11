@@ -679,7 +679,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MDOCTYPE.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MDOCTYPE.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MDOCTYPE.DOCNM = VE.M_DOCTYPE.DOCNM;

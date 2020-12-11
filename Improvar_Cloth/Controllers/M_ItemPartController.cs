@@ -205,7 +205,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MGOD.EMD_NO = Convert.ToByte(MAXEMDNO+1);
+                                MGOD.EMD_NO = Convert.ToInt16(MAXEMDNO+1);
                             }
                         }
 

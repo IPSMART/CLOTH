@@ -931,7 +931,7 @@ namespace Improvar
                 }
                 else
                 {
-                    TCH.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                    TCH.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                 }
             }
             return TCH;

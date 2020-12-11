@@ -291,7 +291,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MBRAND.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MBRAND.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MBRAND.BRANDCD = VE.M_BRAND.BRANDCD.Trim().ToUpper();

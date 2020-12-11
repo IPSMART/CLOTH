@@ -318,7 +318,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MSUBBRAND.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MSUBBRAND.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
 
                         }

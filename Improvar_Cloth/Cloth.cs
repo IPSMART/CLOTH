@@ -581,7 +581,7 @@ namespace Improvar
                         TTXN.DOCNO = VE.T_TXN.DOCNO;
                         TTXN.AUTONO = VE.T_TXN.AUTONO;
                         Month = VE.T_CNTRL_HDR.MNTHCD;
-                        TTXN.EMD_NO = Convert.ToByte((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
+                        TTXN.EMD_NO = Convert.ToInt16((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
                         DOCPATTERN = VE.T_CNTRL_HDR.DOCNO;
                         TTXN.DTAG = "E";
                     }

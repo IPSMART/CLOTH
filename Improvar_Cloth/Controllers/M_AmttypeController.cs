@@ -321,7 +321,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MTAXGRP.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MTAXGRP.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MTAXGRP.AMTNM = VE.M_AMTTYPE.AMTNM;

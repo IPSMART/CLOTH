@@ -373,7 +373,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MSYSCNFG.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MSYSCNFG.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MSYSCNFG.SALDEBGLCD = VE.M_SYSCNFG.SALDEBGLCD;

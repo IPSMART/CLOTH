@@ -665,7 +665,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MSUBLEGCOM.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MSUBLEGCOM.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MSUBLEGCOM.SLCD = VE.M_SUBLEG_COM.SLCD;

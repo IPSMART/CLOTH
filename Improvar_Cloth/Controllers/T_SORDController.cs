@@ -58,6 +58,10 @@ namespace Improvar.Controllers
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
 
                     VE.DropDown_list_DelvType = Salesfunc.GetforDelvTypeSelection();
+
+                    var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                    VE.M_SYSCNFG = MSYSCNFG;
+
                     String YR1 = CommVar.YearCode(UNQSNO);
                     if (op.Length != 0)
                     {
@@ -151,6 +155,8 @@ namespace Improvar.Controllers
                         string docdt = "";
                         if (VE.T_CNTRL_HDR != null) if (VE.T_CNTRL_HDR.DOCDT != null) docdt = VE.T_CNTRL_HDR.DOCDT.ToString().Remove(10);
                         Cn.getdocmaxmindate(VE.T_SORD.DOCCD, docdt, VE.DefaultAction, VE.T_SORD.DOCNO, VE);
+
+
                         ModelState.Clear();
                         return View(VE);
                     }
@@ -910,7 +916,7 @@ namespace Improvar.Controllers
                                 TSORD.DOCNO = VE.T_SORD.DOCNO;
                                 TSORD.AUTONO = VE.T_SORD.AUTONO;
                                 Month = VE.T_CNTRL_HDR.MNTHCD;
-                                TSORD.EMD_NO = Convert.ToByte((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
+                                TSORD.EMD_NO = Convert.ToInt16((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
                             }
                             TSORD.SLCD = VE.T_SORD.SLCD;
                             TSORD.AGSLCD = VE.T_SORD.AGSLCD;

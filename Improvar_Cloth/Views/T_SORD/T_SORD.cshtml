@@ -33,7 +33,7 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
-            $("#print_nav").hide();
+            //$("#print_nav").hide();
             $("#check_nav").hide();
             
         }
@@ -1394,6 +1394,9 @@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         @Html.HiddenFor(a => a.HIDDEN_SCHEME_DATA, new { id = "HIDDEN_SCHEME_DATA" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -1670,15 +1673,24 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Payment Terms")
+                                    @Html.Label("", "Pay Terms")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control", id = "PAYTRMS", @placeholder = "PAYTRMS", maxlength = 300 } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Due Days")
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control", id = "PAYTRMS", @placeholder = "Code", maxlength = 3 } })
+                                    @Html.EditorFor(model => model.T_SORD.DUEDAYS, new { htmlAttributes = new { @class = "form-control", id = "DUEDAYS", @placeholder = "DUEDAYS", maxlength = 3 } })
                                 </div>
                             </div>
-
                         </div>
                         <div class="row">
                             <div class="col-md-5">

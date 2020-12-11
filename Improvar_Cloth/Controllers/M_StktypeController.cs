@@ -317,7 +317,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MSTKTYPE.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MSTKTYPE.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_STKTYPE.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });

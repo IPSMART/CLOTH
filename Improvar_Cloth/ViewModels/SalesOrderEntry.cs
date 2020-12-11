@@ -26,6 +26,7 @@ namespace Improvar.ViewModels
         public List<TSORDDTL_CANC> TSORDDTL_CANC { get; set; }
         public List<TSORDDTL_CANC_SIZE> TSORDDTL_CANC_SIZE { get; set; }
         public List<TSORDDTL_SIZE> TSORDDTL_SIZE { get; set; }
+        public M_SYSCNFG M_SYSCNFG { get; set; }
         public List<TSORDDTL_SEARCHPANEL> TSORDDTL_SEARCHPANEL { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<DocumentThrough> DocumentThrough { get; set; }

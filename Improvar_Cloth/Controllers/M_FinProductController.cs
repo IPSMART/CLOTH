@@ -1648,7 +1648,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MSITEM.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MSITEM.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
 
                         }
@@ -1924,44 +1924,44 @@ namespace Improvar.Controllers
         {
             try
             {
-                string scm1 = CommVar.CurSchema(UNQSNO).ToString();
-                DataTable dt = new DataTable("Rep_BarcodeImage");
-                dt.Columns.Add("BARNO", typeof(string));
-                dt.Columns.Add("DOC_FLNAME", typeof(string));
-                dt.Columns.Add("LINE1", typeof(string));
-                dt.Columns.Add("LINE2", typeof(string));
-                string sql = "";
-                sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-                sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-                sql += "from " + scm1 + ".m_batch_img_hdr a ";
-                sql += "union ";
-                sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-                sql += "from " + scm1 + ".m_batch_img_hdr_link a, " + scm1 + ".m_batch_img_hdr b ";
-                sql += "where a.mainbarno=b.barno(+) ) a, ";
-                sql += "" + scm1 + ".m_batch_img_hdr b ";
-                sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
-                sql += "union ";
-                sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
-                sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
-                sql += "from " + scm1 + ".t_batch_img_hdr a ";
-                sql += "union ";
-                sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
-                sql += "from " + scm1 + ".t_batch_img_hdr_link a, " + scm1 + ".t_batch_img_hdr b ";
-                sql += "where a.mainbarno=b.barno(+) ) a, ";
-                sql += "" + scm1 + ".t_batch_img_hdr b ";
-                sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+)  ";
-                var dttt = masterHelp.SQLquery(sql);
-                for (int i = 0; i < dttt.Rows.Count; i++)
-                {
-                    DataRow dr1 = dt.NewRow();
-                    dr1["BARNO"] = dttt.Rows[i]["BARNO"].ToString();
-                    dr1["DOC_FLNAME"] = dttt.Rows[i]["DOC_FLNAME"].ToString();
-                    dr1["LINE1"] = dttt.Rows[i]["DOC_DESC"].ToString(); ;
-                    dr1["LINE2"] = "1700001 SD";
-                    dt.Rows.Add(dr1);
-                }
-                Session["DtRepBarcodeImage"] = dt;
-                return RedirectToAction("Rep_BarcodeImage", "Rep_BarcodeImage");
+                //string scm1 = CommVar.CurSchema(UNQSNO).ToString();
+                //DataTable dt = new DataTable("Rep_BarcodeImage");
+                //dt.Columns.Add("BARNO", typeof(string));
+                //dt.Columns.Add("DOC_FLNAME", typeof(string));
+                //dt.Columns.Add("LINE1", typeof(string));
+                //dt.Columns.Add("LINE2", typeof(string));
+                //string sql = "";
+                //sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+                //sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
+                //sql += "from " + scm1 + ".m_batch_img_hdr a ";
+                //sql += "union ";
+                //sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
+                //sql += "from " + scm1 + ".m_batch_img_hdr_link a, " + scm1 + ".m_batch_img_hdr b ";
+                //sql += "where a.mainbarno=b.barno(+) ) a, ";
+                //sql += "" + scm1 + ".m_batch_img_hdr b ";
+                //sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+) ";
+                //sql += "union ";
+                //sql += "select a.barno, a.imgbarno, a.imgslno, b.doc_flname, b.doc_extn, b.doc_desc from ";
+                //sql += "(select a.barno, a.barno imgbarno, a.slno imgslno ";
+                //sql += "from " + scm1 + ".t_batch_img_hdr a ";
+                //sql += "union ";
+                //sql += "select a.barno, b.barno imgbarno, b.slno imgslno ";
+                //sql += "from " + scm1 + ".t_batch_img_hdr_link a, " + scm1 + ".t_batch_img_hdr b ";
+                //sql += "where a.mainbarno=b.barno(+) ) a, ";
+                //sql += "" + scm1 + ".t_batch_img_hdr b ";
+                //sql += "where a.imgbarno=b.barno(+) and a.imgslno=b.slno(+)  ";
+                //var dttt = masterHelp.SQLquery(sql);
+                //for (int i = 0; i < dttt.Rows.Count; i++)
+                //{
+                //    DataRow dr1 = dt.NewRow();
+                //    dr1["BARNO"] = dttt.Rows[i]["BARNO"].ToString();
+                //    dr1["DOC_FLNAME"] = dttt.Rows[i]["DOC_FLNAME"].ToString();
+                //    dr1["LINE1"] = dttt.Rows[i]["DOC_DESC"].ToString(); ;
+                //    dr1["LINE2"] = "1700001 SD";
+                //    dt.Rows.Add(dr1);
+                //}
+                //Session["DtRepBarcodeImage"] = dt;
+                //return RedirectToAction("Rep_BarcodeImage", "Rep_BarcodeImage");
 
                 string dbname = CommVar.CurSchema(UNQSNO).ToString();
 

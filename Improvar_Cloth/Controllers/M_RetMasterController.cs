@@ -449,7 +449,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MRETDEB.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MRETDEB.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                             DB.M_CNTRL_HDR_REM.Where(x => x.M_AUTONO == MRETDEB.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_REM.RemoveRange(DB.M_CNTRL_HDR_REM.Where(x => x.M_AUTONO == MRETDEB.M_AUTONO));

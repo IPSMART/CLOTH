@@ -209,7 +209,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MPAYMENT.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MPAYMENT.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                             
                         }

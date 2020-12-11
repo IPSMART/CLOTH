@@ -264,7 +264,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MFLRLCA.EMD_NO = Convert.ToByte( MAXEMDNO+1);
+                                MFLRLCA.EMD_NO = Convert.ToInt16( MAXEMDNO+1);
                             }
                         }
 

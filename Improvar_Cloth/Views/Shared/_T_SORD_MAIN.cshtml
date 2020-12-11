@@ -40,11 +40,18 @@
                                 <th class="" style="width:96px;">Design</th>
                                 <th class="" style="width:96px;">Party Design</th>
                                 <th class="" style="width:47px;">UOM</th>
-
-                                <th class="" style="width: 81px;">Color Code</th>
-                                <th class="" style="width:100px;">Color Name</th>
-                                <th class="" style="width:107px;">Size</th>
-                                <th class="" style="width:100px;">Part</th>
+                                @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                {
+                                    <th class="" style="width: 81px;">Color Code</th>
+                                    <th class="" style="width:100px;">Color Name</th>
+                                }@if (Model.M_SYSCNFG.MNTNSIZE == "Y")
+                                {
+                                    <th class="" style="width:107px;">Size</th>
+                                }
+                                @if (Model.M_SYSCNFG.MNTNPART == "Y")
+                                {
+                                    <th class="" style="width:100px;">Part</th>
+                                }
                                 <th class="" style="width:111px;text-align:right;">Quantity</th>
                                 <th class="" style="width:110px;text-align:right;">Rate</th>
                                 <th class="" style="width:83px;">Delivery Date</th>
@@ -69,16 +76,7 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemGroupDetails", "T_SORD")','Item Group Details','ITGRPCD_@i','ITGRPNM_@i=itgrpnm=0/ITGRPCD_@i=itgrpcd=1')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].ITGRPNM, new
-                                       {
-                                           id = "ITGRPNM_" + i,
-                                           @class = " atextBoxFor ",
-                                           @style = "text-align:center;",
-                                           maxlength = 2,
-                                           @TabIndex = -1,
-                                           @readonly = "readonly",
-                                           onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); "
-                                       })
+                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].ITGRPNM, new { id = "ITGRPNM_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].ITCD, new { id = "ITCD_" + i, maxlength = 60, onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_SORD") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=itcd=2/" + "ITNM_" + i + "=itnm=1/" + "UOM_" + i + "=uomcd=3/" + "STYLENO_" + i + "=styleno=0/" + "ITGRPCD_" + i + "=itgrpcd=5/" + "ITGRPNM_" + i + "=itgrpnm/" + "FABITCD_" + i + "=fabitcd=7/" + "FABITNM_" + i + "=fabitnm','" + "ITGRPCD_" + i + "/" + "FABITCD_" + i + "');RepeatAboveRow_TPROGBOM('" + i + "'); ", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", "T_SORD") + "','Item Details','" + "ITCD_" + i + "','" + "ITCD_" + i + "=itcd=2/" + "ITNM_" + i + "=itnm=1/" + "UOM_" + i + "=uomcd=3/" + "STYLENO_" + i + "=styleno=0/" + "ITGRPCD_" + i + "=itgrpcd=5/" + "ITGRPNM_" + i + "=itgrpnm/" + "FABITCD_" + i + "=fabitcd=7/" + "FABITNM_" + i + "=fabitnm','" + "ITGRPCD_" + i + "/" + "FABITCD_" + i + "');", @class = " atextBoxFor textbox_image" })
@@ -95,36 +93,44 @@
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].STYLENO, new { id = "STYLENO_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].PDESIGN, new { id = "PDESIGN_" + i, @class = " atextBoxFor", maxlength = 30 , onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " })
+                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].PDESIGN, new { id = "PDESIGN_" + i, @class = " atextBoxFor", maxlength = 30, onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL[i].UOM, new { id = "UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " })
                                         </td>
-
-                                        <td class="">
-                                            @*@Html.TextBoxFor(model => Model.TSORDDTL[i].COLRCD, new { id = "COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })*@
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].COLRCD, new { id = "COLRCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_SORD") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_SORD") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "T_SORD")','Color Details','COLRCD_@i','COLRCD_@i=COLRCD=1/COLRNM_@i=COLRNM=0')" />
-                                        </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].COLRNM, new { id = "COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " })
-                                        </td>
-                                        <td class="">
-                                            @*@Html.TextBoxFor(model => Model.TSORDDTL[i].SIZECD, new { id = "SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })*@
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].SIZECD, new { id = "SIZECD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_SORD") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_SORD") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_SORD")','Size Details','SIZECD_@i','SIZECD_@i=SIZECD=1/SIZENM_@i=SIZENM=0')" />
-                                            @Html.HiddenFor(model => model.TSORDDTL[i].SIZENM, new { id = "SIZENM_" + i })
-                                        </td>
-                                        <td class="">
-                                            @*@Html.TextBoxFor(model => Model.TSORDDTL[i].PARTCD, new { id = "P_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })*@
-                                            @Html.TextBoxFor(model => Model.TSORDDTL[i].PARTCD, new { id = "P_PARTCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_SORD") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1/" + "PARTNM_" + i + "=PARTNM=0');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_SORD") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1/" + "PARTNM_" + i + "=PARTNM=0');", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "T_SORD")','Part Details','P_PARTCD_@i','P_PARTCD_@i=PARTCD=1/PARTNM_@i=PARTNM=0')" />
-                                            @Html.HiddenFor(model => model.TSORDDTL[i].PARTNM, new { id = "PARTNM_" + i })
-                                        </td>
+                                        @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                        {
+                                            <td class="">
+                                                @*@Html.TextBoxFor(model => Model.TSORDDTL[i].COLRCD, new { id = "COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })*@
+                                                @Html.TextBoxFor(model => Model.TSORDDTL[i].COLRCD, new { id = "COLRCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_SORD") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetColorDetails", "T_SORD") + "','Color Details','" + "COLRCD_" + i + "','" + "COLRCD_" + i + "=COLRCD=1/" + "COLRNM_" + i + "=COLRNM=0');", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetColorDetails", "T_SORD")','Color Details','COLRCD_@i','COLRCD_@i=COLRCD=1/COLRNM_@i=COLRNM=0')" />
+                                            </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TSORDDTL[i].COLRNM, new { id = "COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); " })
+                                            </td>
+                                        }
+                                        @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
+                                        {
+                                            <td class="">
+                                                @*@Html.TextBoxFor(model => Model.TSORDDTL[i].SIZECD, new { id = "SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })*@
+                                                @Html.TextBoxFor(model => Model.TSORDDTL[i].SIZECD, new { id = "SIZECD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_SORD") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetSizeDetails", "T_SORD") + "','Size Details','" + "SIZECD_" + i + "','" + "SIZECD_" + i + "=SIZECD=1/" + "SIZENM_" + i + "=SIZENM=0');", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSizeDetails", "T_SORD")','Size Details','SIZECD_@i','SIZECD_@i=SIZECD=1/SIZENM_@i=SIZENM=0')" />
+                                                @Html.HiddenFor(model => model.TSORDDTL[i].SIZENM, new { id = "SIZENM_" + i })
+                                            </td>
+                                        }
+                                        @if (Model.M_SYSCNFG.MNTNPART == "Y")
+                                        {
+                                            <td class="">
+                                                @*@Html.TextBoxFor(model => Model.TSORDDTL[i].PARTCD, new { id = "P_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })*@
+                                                @Html.TextBoxFor(model => Model.TSORDDTL[i].PARTCD, new { id = "P_PARTCD_" + i, maxlength = 4, onkeydown = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_SORD") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1/" + "PARTNM_" + i + "=PARTNM=0');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetPartDetails", "T_SORD") + "','Part Details','" + "P_PARTCD_" + i + "','" + "P_PARTCD_" + i + "=PARTCD=1/" + "PARTNM_" + i + "=PARTNM=0');", @class = " atextBoxFor textbox_image" })
+                                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPartDetails", "T_SORD")','Part Details','P_PARTCD_@i','P_PARTCD_@i=PARTCD=1/PARTNM_@i=PARTNM=0')" />
+                                                @Html.HiddenFor(model => model.TSORDDTL[i].PARTNM, new { id = "PARTNM_" + i })
+                                            </td>
+                                        }
                                         <td class="">
                                             @*@Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", onclick = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "PCSPERSET_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "',NOOFSETS_" + i + ".value,'" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','1');", onkeydown = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "PCSPERSET_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "',NOOFSETS_" + i + ".value,'" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','1');", @TabIndex = -1, @class = " atextBoxFor", maxlength = 12 } })*@
                                             @*@Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, placeholder = "press any key", @style = "text-align: right;", onclick = "OpenSize(" + i + ",'1');", onkeydown = "OpenSize(" + i + ",'1');", @class = " atextBoxFor", @readonly = "readonly" } })*@
-                                            @Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 12, @onkeypress = "return numericOnly(this,3);",onkeydown= "RepeatAboveRow_TPROGBOM('" + i + "'); ", @onchange = "Calculate_Total();" } })
+                                            @Html.EditorFor(model => Model.TSORDDTL[i].QNTY, new { htmlAttributes = new { id = "QNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 12, @onkeypress = "return numericOnly(this,3);", onkeydown = "RepeatAboveRow_TPROGBOM('" + i + "'); ", @onchange = "Calculate_Total();" } })
                                         </td>
                                         <td class="">
                                             @*@Html.EditorFor(model => Model.TSORDDTL[i].RATE_DISPLAY, new { htmlAttributes = new { id = "RATE_DISPLAY_" + i, @class = " atextBoxFor", @style = "text-align: right;", @TabIndex = -1, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })*@
@@ -159,11 +165,20 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
+                                <td><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
+                                @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
+                                @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
+                                @if (Model.M_SYSCNFG.MNTNPART == "Y")
+                                {
+                                    <td style="text-align:right;"></td>
+                                }
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.TOTAL_QNTY, new { htmlattributes = new { id = "TOTAL_QNTY", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;", @readonly = "readonly" } })
                                 </td>
