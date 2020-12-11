@@ -1358,7 +1358,7 @@ namespace Improvar
             sql += "WHERE a.barno=b.barno and b.autono=C.AUTONO(+) ";
             if (ITCD.retStr() != "") sql += "and  a.ITCD in(" + ITCD + ")  ";
             if (BARNO.retStr() != "") sql += "and  a.BARNO in(" + BARNO + ")  ";
-            if (skipautono.retStr() != "") sql += "and b.autono not in(" + skipautono + ")  ";
+            if (skipautono.retStr() != "") sql += "and b.autono not in(" + skipautono + ") and  a.autono in(" + skipautono + ")  ";
             sql += "and ROWNUM = 1 ";
             DataTable dt = MasterHelpFa.SQLquery(sql);
             if (dt.Rows.Count > 0)
