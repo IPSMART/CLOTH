@@ -33,7 +33,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Code & Terms Setup";
+                    ViewBag.formname = "Posting & Terms Setup";
                     string loca1 = CommVar.Loccd(UNQSNO).Trim();
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     SysCnfgMasterEntry VE = new SysCnfgMasterEntry();
