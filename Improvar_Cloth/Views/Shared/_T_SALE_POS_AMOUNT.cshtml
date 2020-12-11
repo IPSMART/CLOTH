@@ -83,7 +83,7 @@
                                     @Html.TextBoxFor(model => Model.TTXNAMT[i].AMTDESC, new { id = "AMTDESC_" + i, @class = " atextBoxFor ", maxlength = 50, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].HSNCODE, new { id = "HSNCODE_" + i, @class = " atextBoxFor ", maxlength = 8 })
+                                    @Html.TextBoxFor(model => Model.TTXNAMT[i].HSNCODE, new { id = "HSNCODE_" + i, @class = " atextBoxFor ", @onkeypress = "return event.charCode > 47 && event.charCode < 58;",maxlength = 8 })
                                 </td>
                                 <td class="grid_td">
                                     @Html.EditorFor(model => Model.TTXNAMT[i].AMTRATE, new { htmlattributes = new { id = "AMTRATE_" + i, onblur = "CalculateRowAmt('_T_SALE_POS_AMOUNT_GRID'," + i + ");", @class = " atextBoxFor text-right", maxlength = 12 } })

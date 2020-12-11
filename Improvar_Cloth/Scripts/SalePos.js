@@ -169,10 +169,11 @@ function AddMainRow(hlpstr) {
     var GLCD = returncolvalue(hlpstr, "GLCD");
     var GROSSAMT = retFloat(QNTY) * retFloat(RATE);
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
+    var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
-    $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
+    $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
     var BarImages = returncolvalue(hlpstr, "BARIMAGE");
     var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
     if (BarImages == '') { NoOfBarImages = ''; }
@@ -197,10 +198,12 @@ function AddMainRow(hlpstr) {
     tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="B_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="B_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field IGSTPER must be a number." id="B_IGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].IGSTPER" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field IGSTPER must be a number." id="B_IGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].IGSTPER" type="hidden" value="' + IGSTPER + '">';
     tr += '   <input data-val="true" data-val-number="The field IGSTAMT must be a number." id="B_IGSTAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].IGSTAMT" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field CGSTPER must be a number." id="B_CGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CGSTPER" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field CGSTPER must be a number." id="B_CGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CGSTPER" type="hidden" value="' + CGSTPER + '">';
     tr += '   <input data-val="true" data-val-number="The field CGSTAMT must be a number." id="B_CGSTAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CGSTAMT" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field SGSTPER must be a number." id="B_SGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SGSTPER" type="hidden" value="' + SGSTPER + '">';
+    tr += '   <input data-val="true" data-val-number="The field SGSTAMT must be a number." id="B_SGSTAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SGSTAMT" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field CESSPER must be a number." id="B_CESSPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CESSPER" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field CESSAMT must be a number." id="B_CESSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].CESSAMT" type="hidden" value="">';
     tr += ' </td>';
@@ -341,8 +344,8 @@ function AddReturnRow(hlpstr) {
     var PRODGRPGSTPER = returncolvalue(hlpstr, "PRODGRPGSTPER");
     var MTRLJOBCD = returncolvalue(hlpstr, "MTRLJOBCD");
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
-    var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
-    $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
+    var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0; var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
+    $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
     var BarImages = returncolvalue(hlpstr, "BARIMAGE");
     var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
     if (BarImages == '') { NoOfBarImages = ''; }
@@ -367,10 +370,12 @@ function AddReturnRow(hlpstr) {
     tr += '   <input data-val="true" data-val-number="The field DISCAMT must be a number." id="R_DISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCAMT" type="hidden" value="">';
     //tr += '   <input data-val="true" data-val-number="The field TXBLVAL must be a number." id="B_TXBLVAL_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TXBLVAL" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field TOTDISCAMT must be a number." id="R_TOTDISCAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].TOTDISCAMT" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field IGSTPER must be a number." id="R_IGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].IGSTPER" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field IGSTPER must be a number." id="R_IGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].IGSTPER" type="hidden" value="' + IGSTPER + '">';
     tr += '   <input data-val="true" data-val-number="The field IGSTAMT must be a number." id="R_IGSTAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].IGSTAMT" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-number="The field CGSTPER must be a number." id="R_CGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CGSTPER" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field CGSTPER must be a number." id="R_CGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CGSTPER" type="hidden" value="' + CGSTPER + '">';
     tr += '   <input data-val="true" data-val-number="The field CGSTAMT must be a number." id="R_CGSTAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CGSTAMT" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-number="The field SGSTPER must be a number." id="R_SGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SGSTPER" type="hidden" value="' + SGSTPER + '">';
+    tr += '   <input data-val="true" data-val-number="The field SGSTAMT must be a number." id="R_SGSTAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SGSTAMT" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field CESSPER must be a number." id="R_CESSPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CESSPER" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field CESSAMT must be a number." id="R_CESSAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].CESSAMT" type="hidden" value="">';
     tr += ' </td>';
@@ -496,6 +501,17 @@ function CalculateRowAmt(GridId, i) {
 
     if (GridId == "_T_SALE_POS_PRODUCT_GRID") {
         var QNTY = retFloat($("#B_QNTY_" + i).val());
+        var IGSTPER = $("#B_IGSTPER_" + i).val();
+        if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
+
+        var CGSTPER = $("#B_CGSTPER_" + i).val();
+        if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
+
+        var SGSTPER = $("#B_SGSTPER_" + i).val();
+        if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
+
+        var CESSPER = $("#B_CESSPER_" + i).val();
+        if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
         if (QNTY != 0) {
             var BALSTOCK = retFloat($("#B_BALSTOCK_" + i).val());
             var NEGSTOCK = $("#B_NEGSTOCK_" + i).val();
@@ -520,9 +536,58 @@ function CalculateRowAmt(GridId, i) {
         $("#B_DISCAMT_" + i).val(discamt);
         $("#B_TXBLVAL_" + i).val(TXBLVAL_);
         $("#B_GSTPER_" + i).val(GSTPER);
+        //IGST,CGST,SGST,CESS AMOUNT CALCULATION
+
+        var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
+        //IGST
+        if (IGSTPER == 0 || IGSTPER == "") {
+            IGSTPER = 0; IGST_AMT = 0;
+        }
+        else {
+            IGST_AMT = parseFloat((TXBLVAL_ * IGSTPER) / 100).toFixed(2);
+            chkAmt = $("#B_IGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
+        }
+        $("#B_IGSTAMT_" + i).val(IGST_AMT);
+        //CGST
+        if (CGSTPER == "" || CGSTPER == 0) {
+            CGSTPER = 0; CGST_AMT = 0;
+        }
+        else {
+            CGST_AMT = parseFloat((TXBLVAL_ * CGSTPER) / 100).toFixed(2);
+            chkAmt = $("#B_CGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
+        }
+        $("#B_CGSTAMT_" + i).val(CGST_AMT);
+        //SGST
+        if (SGSTPER == "" || SGSTPER == 0) {
+            SGSTPER = 0; SGST_AMT = 0;
+        }
+        else {
+            SGST_AMT = parseFloat((TXBLVAL_ * SGSTPER) / 100).toFixed(2);
+            chkAmt = $("#B_SGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
+        }
+        $("#B_SGSTAMT_" + i).val(SGST_AMT);
+
+        //CESS
+        if (CESSPER == "" || CESSPER == 0) {
+            CESSPER = 0; CESS_AMT = 0;
+        }
+        else {
+            CESS_AMT = parseFloat((TXBLVAL_ * CESSPER) / 100).toFixed(2);
+            chkAmt = $("#B_CESSAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
+        }
+        $("#B_CESSAMT_" + i).val(CESS_AMT);
         var rownetamt = retFloat(retFloat((TXBLVAL_ * GSTPER) / 100) + retFloat(TXBLVAL_)).toFixed(2);
+        var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
         $("#INCLRATE_" + i).val(rownetamt);
-        $("#B_NETAMT_" + i).val(rownetamt);
+        $("#B_NETAMT_" + i).val(netamt);
     }
     else if (GridId == "_T_SALE_POS_AMOUNT_GRID") {
         var A_NOS = retFloat($("#B_T_NOS").val());
@@ -624,6 +689,18 @@ function CalculateRowAmt(GridId, i) {
     }
     else if (GridId == "_T_SALE_POS_RETURN_GRID") {
         var QNTY = retFloat($("#R_QNTY_" + i).val());
+        var IGSTPER = $("#R_IGSTPER_" + i).val();
+        if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
+
+        var CGSTPER = $("#R_CGSTPER_" + i).val();
+        if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
+
+        var SGSTPER = $("#R_SGSTPER_" + i).val();
+        if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
+
+        var CESSPER = $("#R_CESSPER_" + i).val();
+        if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
+
         if (QNTY != 0) {
             var BALSTOCK = retFloat($("#R_BALSTOCK_" + i).val());
             var NEGSTOCK = $("#R_NEGSTOCK_" + i).val();
@@ -647,9 +724,58 @@ function CalculateRowAmt(GridId, i) {
         var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
         $("#R_TXBLVAL_" + i).val(TXBLVAL_);
         $("#R_GSTPER_" + i).val(GSTPER);
+        //IGST,CGST,SGST,CESS AMOUNT CALCULATION
+
+        var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
+        //IGST
+        if (IGSTPER == 0 || IGSTPER == "") {
+            IGSTPER = 0; IGST_AMT = 0;
+        }
+        else {
+            IGST_AMT = parseFloat((TXBLVAL_ * IGSTPER) / 100).toFixed(2);
+            chkAmt = $("#R_IGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
+        }
+        $("#R_IGSTAMT_" + i).val(IGST_AMT);
+        //CGST
+        if (CGSTPER == "" || CGSTPER == 0) {
+            CGSTPER = 0; CGST_AMT = 0;
+        }
+        else {
+            CGST_AMT = parseFloat((TXBLVAL_ * CGSTPER) / 100).toFixed(2);
+            chkAmt = $("#R_CGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
+        }
+        $("#R_CGSTAMT_" + i).val(CGST_AMT);
+        //SGST
+        if (SGSTPER == "" || SGSTPER == 0) {
+            SGSTPER = 0; SGST_AMT = 0;
+        }
+        else {
+            SGST_AMT = parseFloat((TXBLVAL_ * SGSTPER) / 100).toFixed(2);
+            chkAmt = $("#R_SGSTAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
+        }
+        $("#R_SGSTAMT_" + i).val(SGST_AMT);
+
+        //CESS
+        if (CESSPER == "" || CESSPER == 0) {
+            CESSPER = 0; CESS_AMT = 0;
+        }
+        else {
+            CESS_AMT = parseFloat((TXBLVAL_ * CESSPER) / 100).toFixed(2);
+            chkAmt = $("#R_CESSAMT_" + i).val();
+            if (chkAmt == "") chkAmt = 0;
+            if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
+        }
+        $("#R_CESSAMT_" + i).val(CESS_AMT);
         var rownetamt = retFloat(retFloat((TXBLVAL_ * GSTPER) / 100) + retFloat(TXBLVAL_)).toFixed(2);
+        var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
         $("#R_INCLRATE_" + i).val(rownetamt);
-        $("#R_NETAMT_" + i).val(rownetamt);
+        $("#R_NETAMT_" + i).val(netamt);
     }
     CalculateTotal();
 }
