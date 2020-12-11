@@ -232,7 +232,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MUOM.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MUOM.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MUOM.UOMCD = VE.M_UOM.UOMCD.ToUpper();

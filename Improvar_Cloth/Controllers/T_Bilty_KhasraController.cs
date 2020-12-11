@@ -620,7 +620,7 @@ namespace Improvar.Controllers
                             TBLTHDR.AUTONO = VE.T_BALE_HDR.AUTONO;
                             Month = VE.T_CNTRL_HDR.MNTHCD;
                             var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_BALE_HDR.AUTONO select p.EMD_NO).Max();
-                            if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToByte(MAXEMDNO + 1); }
+                            if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToInt16(MAXEMDNO + 1); }
                         }
 
                         TBHDR.MUTSLCD = VE.T_BALE_HDR.MUTSLCD;

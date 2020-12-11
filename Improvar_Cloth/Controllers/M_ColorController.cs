@@ -293,7 +293,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MCOLOR.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MCOLOR.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MCOLOR.COLRNM = VE.M_COLOR.COLRNM;

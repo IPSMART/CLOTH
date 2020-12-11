@@ -1411,7 +1411,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                ITEMBOM.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                ITEMBOM.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         ITEMBOM.EFFDT = VE.M_SITEMBOM.EFFDT;

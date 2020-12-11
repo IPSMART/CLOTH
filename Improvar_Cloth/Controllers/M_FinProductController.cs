@@ -1648,7 +1648,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MSITEM.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MSITEM.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
 
                         }

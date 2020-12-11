@@ -198,7 +198,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MCOLLECTION.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MCOLLECTION.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MCOLLECTION.COLLCD = VE.M_COLLECTION.COLLCD.ToUpper();

@@ -1,0 +1,262 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+@{
+    ViewBag.Title = "Order Printing ";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+@{
+    string PageControllerName = "Rep_OrdPrint";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    function SelectDocno(id, CODE, NAME) {
+        var DOCCD = $("#DOCCD").val();
+        if (id == "") {
+            $("#" + CODE.id).val("");
+            $("#" + NAME.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("DOCNO_help", PageControllerName)",
+                data: {
+                    Code: DOCCD,
+                    val: id,
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + CODE.id).val("");
+                        $("#" + NAME.id).val("");
+                        $("#msgbody_info").html("Invalid Code ! Please Enter a Valid Docno !! ");
+                        message_value = CODE.id;
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(CODE.id).value = str[0].toString();
+                        document.getElementById(NAME.id).value = str[1].toString();
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectSubLedgerCode(id, CODE, NAME) {
+        if (id == "") {
+            $("#" + CODE.id).val("");
+            $("#" + NAME.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetBuyerDetails", PageControllerName)",
+                data: { val: id, },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#msg_ok_info").focus();
+                        $("#" + CODE.id).val("");
+                        $("#" + NAME.id).val("");
+                        $("#msgbody_info").html("Invalid Code ! Please Enter a Valid Party Code !! ");
+                        message_value = CODE.id;
+                        return false;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(CODE.id).value = str[0].toString();
+                        document.getElementById(NAME.id).value = str[1].toString();
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+    });
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
+                <div class="row" style="margin-top: 8px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                            <b style="color:Red;">
+                            </b>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", autocomplete = "off", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                            <b style="color:Red;">
+                            </b>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT",autocomplete="off", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Doc Code")
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => Model.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "From Docno")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FDOCNO", onkeyup = "GetHelp_WithId('" + @Url.Action("DOCNO_help", PageControllerName) + "','FDOCNO/FDT','0/1','Select Docno','FDOCNO','DOCCD');", onblur = "SelectDocno(this.value,FDOCNO,FDT);", @placeholder = "Code", maxlength = 8, autocomplete = "off" } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("DOCNO_help", PageControllerName)','FDOCNO/FDT','0/1','Select Docno','FDOCNO','DOCCD')" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "To Docno")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDOCNO", onkeyup = "GetHelp_WithId('" + @Url.Action("DOCNO_help", PageControllerName) + "','TDOCNO/TDT','0/1','Select Docno','TDOCNO','DOCCD');", onblur = "SelectDocno(this.value,TDOCNO,TDT);", @placeholder = "Code", maxlength = 8, autocomplete = "off" } })
+                            <img src="~/Image/search.png" class="Help_image_button" width="20px" height="20px" title="Help" onclick="GetHelp_WithId('@Url.Action("DOCNO_help", PageControllerName)','TDOCNO/TDT','0/1','Select Docno','TDOCNO','DOCCD')" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Party")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TEXTBOX1", onkeyup = "GetHelp('" + @Url.Action("GetBuyerDetails", PageControllerName) + "','TEXTBOX1/SLNM','0/1','Select Party Details','TEXTBOX1');", onblur = "SelectSubLedgerCode(this.value,TEXTBOX1,TEXTBOX2);", @placeholder = "Code", maxlength = 8, autocomplete = "off" } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetBuyerDetails", PageControllerName)','TEXTBOX1/TEXTBOX2','1/0','Select Party Details','TEXTBOX1')" />
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX2, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX2", @TabIndex = -1, @placeholder = "Party Name", maxlength = 45, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                @*<div class="row" style="margin-top: 5px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Print Outstanding")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.CheckBoxFor(model => model.Checkbox1)
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Maximum no of bills")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX4", type = "number" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Print Balance-Order Details")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.CheckBoxFor(model => model.Checkbox2)
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Print Rate")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.CheckBoxFor(model => model.Checkbox3)
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Print Old Format")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.CheckBoxFor(model => model.Checkbox4)
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Continuously Print")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field" style="margin-top:6px;">
+                            @Html.CheckBoxFor(model => model.Checkbox5)
+                        </div>
+                    </div>
+                </div>*@
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-5">
+                        <input type="submit" formtarget="_blank" value="Show" name="submitbutton" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}

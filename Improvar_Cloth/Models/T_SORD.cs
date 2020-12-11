@@ -74,9 +74,10 @@ namespace Improvar.Models
         [StringLength(200)]
         public string DELVINS { get; set; }
 
-        public byte? PAYTRMS { get; set; }
+        [StringLength(300)]
+        public string PAYTRMS { get; set; }
 
-        public byte? DUEDAYS { get; set; }
+        public short? DUEDAYS { get; set; }
 
         [StringLength(1)]
         public string COD { get; set; }

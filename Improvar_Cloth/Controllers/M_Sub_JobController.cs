@@ -346,7 +346,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MJMTSUB.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MJMTSUB.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         MJMTSUB.SJOBNM = VE.M_JOBMSTSUB.SJOBNM;

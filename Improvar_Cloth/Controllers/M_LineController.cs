@@ -238,7 +238,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MLINE.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MLINE.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
 

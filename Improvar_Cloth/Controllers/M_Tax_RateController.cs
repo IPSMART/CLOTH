@@ -310,7 +310,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MPrdTax.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MPrdTax.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         //save M_PRODTAX

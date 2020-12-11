@@ -510,7 +510,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MGROUP.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MGROUP.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
 
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_GROUP.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });

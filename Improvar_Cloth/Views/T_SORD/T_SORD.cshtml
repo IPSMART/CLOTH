@@ -33,7 +33,7 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
-            $("#print_nav").hide();
+            //$("#print_nav").hide();
             $("#check_nav").hide();
             
         }
@@ -1673,15 +1673,24 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Pay Terms")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control", id = "PAYTRMS", @placeholder = "PAYTRMS", maxlength = 300 } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Due Days")
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_SORD.PAYTRMS, new { htmlAttributes = new { @class = "form-control", id = "PAYTRMS", @placeholder = "Code", maxlength = 3 } })
+                                    @Html.EditorFor(model => model.T_SORD.DUEDAYS, new { htmlAttributes = new { @class = "form-control", id = "DUEDAYS", @placeholder = "DUEDAYS", maxlength = 3 } })
                                 </div>
                             </div>
-
                         </div>
                         <div class="row">
                             <div class="col-md-5">

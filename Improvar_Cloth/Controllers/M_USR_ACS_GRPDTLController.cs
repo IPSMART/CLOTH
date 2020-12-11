@@ -271,7 +271,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                USRGRPDTL.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                USRGRPDTL.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                             DB.M_USR_ACS_GRPDTL.Where(x => x.M_AUTONO == VE.M_USR_ACS_GRPDTL.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.SaveChanges();

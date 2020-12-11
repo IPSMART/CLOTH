@@ -264,7 +264,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MPTX.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                MPTX.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
                             }
                         }
                         if (VE.DefaultAction == "E")
