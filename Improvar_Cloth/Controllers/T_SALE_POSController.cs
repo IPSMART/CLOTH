@@ -1676,7 +1676,11 @@ namespace Improvar.Controllers
                         item.DISC_TYPE = masterHelp.DISC_TYPE();
                         item.PCSActionList = masterHelp.PCSAction();
                         var brimgs = VE.TsalePos_TBATCHDTL[i].BarImages.retStr().Split((char)179);
-                        item.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                        string a = brimgs[0].retStr();
+                        if(a!="")
+                        { item.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr(); }
+                        else { item.BarImagesCount = ""; }
+                       
                         TsalePos_TBATCHDTL.Add(item);
                     }
                 }
@@ -1709,7 +1713,10 @@ namespace Improvar.Controllers
                         item.DISC_TYPE = masterHelp.DISC_TYPE();
                         item.PCSActionList = masterHelp.PCSAction();
                         var brimgs = VE.TsalePos_TBATCHDTL_RETURN[i].BarImages.retStr().Split((char)179);
-                        item.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr();
+                        string a = brimgs[0].retStr();
+                        if (a != "")
+                        { item.BarImagesCount = brimgs.Length == 0 ? "" : brimgs.Length.retStr(); }
+                        else { item.BarImagesCount = ""; }
                         TsalePos_TBATCHDTL.Add(item);
                     }
                 }
