@@ -709,6 +709,7 @@ namespace Improvar.Controllers
                 {
                     v.DISC_TYPE = masterHelp.DISC_TYPE();
                     v.PCSActionList = masterHelp.PCSAction();
+                    v.GSTAMT = (v.IGSTAMT + v.CGSTAMT + v.SGSTAMT).retDbl().toRound(2);
                     string PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                     v.GSTPER = VE.TsalePos_TBATCHDTL.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (allprodgrpgstper_data != null && allprodgrpgstper_data.Rows.Count > 0)
@@ -753,6 +754,7 @@ namespace Improvar.Controllers
                         }
                     }
                 }
+                VE.T_GSTAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.GSTAMT).retDbl();
 
                 #region Return tab
                 // fill prodgrpgstper in t_batchdtl
@@ -768,6 +770,7 @@ namespace Improvar.Controllers
                 {
                     v.DISC_TYPE = masterHelp.DISC_TYPE();
                     v.PCSActionList = masterHelp.PCSAction();
+                    v.GSTAMT = (v.IGSTAMT + v.CGSTAMT + v.SGSTAMT).retDbl().toRound(2);
                     string R_PRODGRPGSTPER = "", ALL_GSTPER = "", GSTPER = "";
                     v.GSTPER = VE.TsalePos_TBATCHDTL_RETURN.Where(a => a.SLNO == v.TXNSLNO).Sum(b => b.IGSTPER + b.CGSTPER + b.SGSTPER).retDbl();
                     if (R_allprodgrpgstper_data != null && R_allprodgrpgstper_data.Rows.Count > 0)
@@ -812,6 +815,7 @@ namespace Improvar.Controllers
                         }
                     }
                 }
+                VE.R_T_GSTAMT= VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.GSTAMT).retDbl();
                 #endregion
 
                 // fill prodgrpgstper in t_txndtl
