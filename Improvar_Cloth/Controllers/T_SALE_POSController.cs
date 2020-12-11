@@ -268,7 +268,7 @@ namespace Improvar.Controllers
                                 for (int i = 0; i <= 2; i++)
                                 {
                                     TTXNSLSMN TTXNSLM = new TTXNSLSMN();
-                                    TTXNSLM.SLNO = Convert.ToByte(i + 1);
+                                    TTXNSLM.SLNO = Convert.ToInt16(i + 1);
                                     if (i == 0) TTXNSLM.PER = 100;
                                     TTXNSLSMN.Add(TTXNSLM);
                                     VE.TTXNSLSMN = TTXNSLSMN;
@@ -299,7 +299,7 @@ namespace Improvar.Controllers
                                     int slno = 0;
                                     List<TTXNPYMT> TTXNPYMNT = new List<TTXNPYMT>();
                                     TTXNPYMT TXNPYMT = new TTXNPYMT();
-                                    TXNPYMT.SLNO = Convert.ToByte(slno + 1);
+                                    TXNPYMT.SLNO = Convert.ToInt16(slno + 1);
                                     TTXNPYMNT.Add(TXNPYMT);
                                     VE.TTXNPYMT = TTXNPYMNT;
                                 }
@@ -2265,7 +2265,7 @@ namespace Improvar.Controllers
                         TTXN.DOCNO = VE.T_TXN.DOCNO;
                         TTXN.AUTONO = VE.T_TXN.AUTONO;
                         Month = VE.T_CNTRL_HDR.MNTHCD;
-                        TTXN.EMD_NO = Convert.ToByte((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
+                        TTXN.EMD_NO = Convert.ToInt16((VE.T_CNTRL_HDR.EMD_NO == null ? 0 : VE.T_CNTRL_HDR.EMD_NO) + 1);
                         DOCPATTERN = VE.T_CNTRL_HDR.DOCNO;
                         TTXN.DTAG = "E";
                     }

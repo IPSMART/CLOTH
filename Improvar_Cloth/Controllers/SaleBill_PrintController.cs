@@ -1473,7 +1473,7 @@ namespace Improvar.Controllers
                 //sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and c.autono is null and ";
                 //sql += "b.doccd='" + doccd + "' ) ";
                 //sql += "order by docno,autono,slno";
-                sql += " select distinct a.autono, n.nm prtynm ,n.RTDEBCD,o.RTDEBNM,o.mobile rtdebmob,o.add1 rtdebadd1,o.add2 rtdebadd2,o.add3 rtdebadd3, ";
+                sql += " select distinct a.autono, n.nm prtynm ,n.RTDEBCD,o.RTDEBNM,o.mobile rtdebmob,o.add1 rtdebadd1,o.add2 rtdebadd2,o.add3 rtdebadd3,o.add3 rtdebadd4,o.add3 rtdebadd5,o.add3 rtdebadd6,o.add3 rtdebadd7, ";
                 sql += " o.city rtdebcity,o.statecd rtdebstcd,o.state rtdebstnm,o.email rtdebemail,o.pin rtdebpin,n.MOBILE prtymob,p.gstno prtygstno, ";
                 sql += " p.GSTSLNM prtygstslnm,p.GSTSLADD1 prtyadd1,''prtyadd2,''prtyadd3,''prtyadd4,''prtyadd5,''prtyadd6,''prtyadd7,p.GSTSLDIST prtydist,p.GSTSLPIN prtypin,b.doctag, h.doccd, ";
                 sql += "  h.docno, h.docdt, b.duedays, h.canc_rem, h.cancel,0 invisstime,'N' batchdlprint,  ";
@@ -2114,13 +2114,13 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 rf = rf + 1;
-                                rfld = "prtyadd" + Convert.ToString(rf);
+                                rfld = "sladd" + Convert.ToString(rf);
                                 dr1[rfld] = tbl.Rows[i]["state"].ToString() + " [ Code - " + tbl.Rows[i]["statecd"].ToString() + " ]";
                                 if (tbl.Rows[i]["gstno"].ToString() != "")
                                 {
                                     rf = rf + 1;
                                     rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "GST # " + tbl.Rows[i]["gstno"].ToString();
+                                    dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
                                 }
                                 if (tbl.Rows[i]["panno"].ToString() != "")
                                 {
@@ -2132,7 +2132,7 @@ namespace Improvar.Controllers
                                 {
                                     rf = rf + 1;
                                     rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "Ph. # " + tbl.Rows[i]["MOBILE"].ToString();
+                                    dr1[rfld] = "Ph. # " + tbl.Rows[i]["prtymob"].ToString();
                                 }
                                 if (tbl.Rows[i]["slactnameof"].ToString() != "")
                                 {
@@ -2158,13 +2158,13 @@ namespace Improvar.Controllers
                                     }
                                 }
                                 rf = rf + 1;
-                                rfld = "rtdebadd" + Convert.ToString(rf);
+                                rfld = "sladd" + Convert.ToString(rf);
                                 dr1[rfld] = tbl.Rows[i]["rtdebstnm"].ToString() + " [ Code - " + tbl.Rows[i]["rtdebstcd"].ToString() + " ]";
                                 if (tbl.Rows[i]["gstno"].ToString() != "")
                                 {
                                     rf = rf + 1;
                                     rfld = "sladd" + Convert.ToString(rf);
-                                    dr1[rfld] = "GST # " + tbl.Rows[i]["gstno"].ToString();
+                                    dr1[rfld] = "GST # " + tbl.Rows[i]["prtygstno"].ToString();
                                 }
                                 if (tbl.Rows[i]["panno"].ToString() != "")
                                 {
@@ -2336,7 +2336,7 @@ namespace Improvar.Controllers
                             rupinwords = Cn.AmountInWords(tbl.Rows[i]["blamt"].retStr());
                             //dr1["blamt"] = (tbl.Rows[i]["blamt"].retDbl() - tbl.Rows[i]["ADVRECDAMT"].retDbl()).ToINRFormat();
 
-                            dr1["rupinword"] = rupinwords;
+                            dr1["rupinword"] = "Amount in word: "+ rupinwords;
                             dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
                             dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
                             blrem = "";
@@ -2551,7 +2551,7 @@ namespace Improvar.Controllers
                             {
                                 if (i == maxR) doctotprint = true;
                                 else if (tbl.Rows[i + 1]["autono"].ToString() != auto1) doctotprint = true;
-                                else if (tbl.Rows[i + 1]["itcd"].ToString() == "") doctotprint = true;
+                                else if (tbl.Rows[i]["itcd"].ToString() == "") doctotprint = true;
                             }
                             if (delvchrg == true)
                             {
