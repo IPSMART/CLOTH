@@ -102,6 +102,8 @@
     $(function () {
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
 </script>
@@ -149,6 +151,8 @@
         <input type="hidden" id="UrlAddRow" value="@Url.Action("AddRow", PageControllerName)" />
         <input type="hidden" id="UrlDeleteRowSlsman" value="@Url.Action("DeleteRow", PageControllerName)" />
         <input type="hidden" id="UrlDeleteRowPYMT" value="@Url.Action("DeleteRowPYMT", PageControllerName)" />
+        <input type="hidden" id="UrlTTXNDTLDetails" value="@Url.Action("GetTTXNDTLDetails", PageControllerName )" />
+        <input type="hidden" id="UrlSelectTTXNDTLDetails" value="@Url.Action("SelectTTXNDTLDetails", PageControllerName )" />
         <input type="hidden" id="salesmanlinkcd" value="E" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -595,9 +599,36 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                                     </div>
                                 </div>
-                            }
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 10 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control", id = "R_BARNO",@placeholder = "BARNO", maxlength = 25 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Search" title="Click to Barno" onclick="GetTTXNDTLDetails()" />
+                                   </div>
+                                    <div class="row">
+                                        <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                                        </div>
+                                    </div>
+                                    }
 
-                        </div>
+                                </div>
 
                         <div class="row">
                             <div class="col-md-3" style="width:auto;">

@@ -26,6 +26,7 @@ namespace Improvar.ViewModels
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TsalePos_TBATCHDTL> TsalePos_TBATCHDTL { get; set; }
         public List<TsalePos_TBATCHDTL_RETURN> TsalePos_TBATCHDTL_RETURN { get; set; }
+        public List<TTXNDTLPOPUP> TTXNDTLPOPUP { get; set; }
         public List<TSALEBARNOPOPUP> TSALEBARNOPOPUP { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<Database_Combo1> Database_Combo1 { get; set; }
@@ -256,7 +257,10 @@ namespace Improvar.ViewModels
         public double? R_T_CGST_AMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? R_T_IGST_AMT { get; set; }
-
+        public string FDT { get; set; }
+        public string TDT { get; set; }
+        public string BARNO { get; set; }
+        public string R_DOCNO { get; set; }
 
 
 
