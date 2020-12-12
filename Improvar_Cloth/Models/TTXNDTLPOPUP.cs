@@ -19,6 +19,15 @@ namespace Improvar.Models
         public string ITSTYLE { get; set; }
         public bool P_Checked { get; set; }
         public short SLNO { get; set; }
-    
+        public string ITGRPCD { get; set; }
+        public string ITGRPNM { get; set; }
+        public double? TXBLVAL { get; set; }
+        public double? IGSTPER { get; set; }
+        public double? CGSTPER { get; set; }
+        public double? SGSTPER { get; set; }
+        public double? CESSPER { get; set; }
+        public string STKTYP { get; set; }
+        public string UOM { get; set; }
+
     }
 }

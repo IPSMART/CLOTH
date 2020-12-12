@@ -54,6 +54,17 @@
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.TTXNDTLPOPUP[i].P_Checked, new { id = "P_Checked_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].AUTONO, new { id = "P_AUTONO_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].ITGRPCD, new { id = "P_ITGRPCD_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].ITGRPNM, new { id = "P_ITGRPNM_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].TXBLVAL, new { id = "P_TXBLVAL_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].IGSTPER, new { id = "P_IGSTPER_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].CGSTPER, new { id = "P_CGSTPER_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].SGSTPER, new { id = "P_SGSTPER_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].CESSPER, new { id = "P_CESSPER_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].STKTYP, new { id = "P_STKTYP_" + i })
+                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].UOM, new { id = "P_UOM_" + i })
+                                            
+                                           
                                           
                                         </td>
                                         <td class="sticky-cell">

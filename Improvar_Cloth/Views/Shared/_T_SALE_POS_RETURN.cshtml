@@ -38,7 +38,7 @@
                                 <th class="" style="width: 50px;">Color Name</th>
                                 <th class="" style="width: 50px;">Size</th>
                                 <th class="" style="">Shade</th>
-                                <th class="" style="width:50px;text-align:right;">Stock</th>
+                                @*<th class="" style="width:50px;text-align:right;">Stock</th>*@
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
                                 <th class="" style="width:50px;">UOM</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
@@ -68,7 +68,7 @@
                                 <th class="" style="width:89px;">PCS Action</th>
                                 <th class="" style="width: 34px;">Stock Type</th>
                                 <th class="" style="width: 50px;">Part</th>
-                                <th class="" style="width:30px; text-align:center">Img</th>
+                                @*<th class="" style="width:30px; text-align:center">Img</th>*@
                                 <th class="" style="width:109px;text-align:right;">Net AMt</th>
                             </tr>
                         </thead>
@@ -80,6 +80,7 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell">
                                             @Html.CheckBoxFor(model => model.TsalePos_TBATCHDTL_RETURN[i].Checked, new { id = "R_Checked_" + i, @TabIndex = -1 })
+                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].AUTONO, new { id = "R_AUTONO_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].TXNSLNO, new { id = "R_TXNSLNO_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD, new { id = "R_MTRLJOBCD_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].FLAGMTR, new { id = "R_FLAGMTR_" + i })
@@ -136,12 +137,14 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].SHADE, new { id = "R_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
-                                        <td class="">
+                                        @*<td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].BALSTOCK, new { htmlAttributes = new { id = "R_BALSTOCK_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" } })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].NEGSTOCK, new { id = "R_NEGSTOCK_" + i })
-                                        </td>
+                                        </td>*@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].QNTY, new { htmlAttributes = new { id = "R_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @onblur = "CalculateRowAmt('_T_SALE_POS_RETURN_GRID'," + i + ");" } })
+                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].BALSTOCK, new { id = "B_BALSTOCK_" + i })
+                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].UOM, new { id = "R_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
@@ -218,10 +221,10 @@
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].PARTNM, new { id = "R_PARTNM_" + i })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].PRTBARCODE, new { id = "R_PRTBARCODE_" + i })
                                         </td>
-                                        <td class="">
+                                        @*<td class="">
                                             <button type="button" onclick="FillImageModal('R_BarImages_@i')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_@i" class="btn atextBoxFor text-info" style="padding:0px">@Model.TsalePos_TBATCHDTL_RETURN[i].BarImagesCount</button>
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].BarImages, new { id = "R_BarImages_" + i })
-                                        </td>
+                                        </td>*@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].NETAMT, new { htmlAttributes = new { id = "R_NETAMT_" + i, @style = "text-align: right;", @class = " atextBoxFor", @readonly = "readonly" } })
                                         </td>
@@ -240,7 +243,7 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 <td style="text-align:right;">
                                     <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
                                 </td>
@@ -278,7 +281,7 @@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.R_T_NET, new { htmlAttributes = new { id = "R_T_NET_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                     @*@Html.HiddenFor(model => Model.T_R_GROSSAMT, new { id = "T_R_GROSSAMT" })@*R_GROSSAMT_*@

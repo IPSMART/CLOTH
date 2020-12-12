@@ -411,12 +411,14 @@ function AddReturnRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="R_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SHADE" type="text" value="">';
     tr += ' </td>';
-    tr += ' <td class="" title="">';
-    tr += '     <input tabindex="-1" class=" atextBoxFor  text-box single-line" data-val="true" data-val-number="The field BALSTOCK must be a number." id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
-    tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
-    tr += ' </td>';
+    //tr += ' <td class="" title="">';
+    //tr += '     <input tabindex="-1" class=" atextBoxFor  text-box single-line" data-val="true" data-val-number="The field BALSTOCK must be a number." id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
+    //tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
+    //tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
+    tr += '     <input id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" type="hidden" value="' + BALSTOCK + '">';
+    tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="R_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -490,10 +492,10 @@ function AddReturnRow(hlpstr) {
     tr += '     <input id="R_PARTNM_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].PARTNM" type="hidden" value="">';
     tr += '     <input id="R_PRTBARCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].PRTBARCODE" type="hidden" value="">';
     tr += ' </td>';
-    tr += ' <td class="">';
-    tr += '     <button type="button" onclick="FillImageModal(\'R_BarImages_' + rowindex + '\')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button>';
-    tr += '     <input id="R_BarImages_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BarImages" type="hidden" value="' + BarImages + '">';
-    tr += ' </td>';
+    //tr += ' <td class="">';
+    //tr += '     <button type="button" onclick="FillImageModal(\'R_BarImages_' + rowindex + '\')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button>';
+    //tr += '     <input id="R_BarImages_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BarImages" type="hidden" value="' + BarImages + '">';
+    //tr += ' </td>';
     tr += ' <td class="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETAMT must be a number." id="R_NETAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NETAMT" readonly="readonly" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
@@ -735,7 +737,9 @@ function CalculateRowAmt(GridId, i) {
         var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
         var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
         $("#R_TXBLVAL_" + i).val(TXBLVAL_);
-        $("#R_GSTPER_" + i).val(GSTPER);
+        var gstper = $("#R_GSTPER_" + i).val();
+        if (gstper != "") { $("#R_GSTPER_" + i).val(gstper); } else { $("#R_GSTPER_" + i).val(GSTPER); }
+      //  $("#R_GSTPER_" + i).val(GSTPER);
         //IGST,CGST,SGST,CESS AMOUNT CALCULATION
 
         var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
