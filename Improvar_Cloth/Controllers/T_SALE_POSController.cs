@@ -3600,43 +3600,11 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE); ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 var _TTXNDTLPOPUP = VE.TTXNDTLPOPUP.Where(r => r.P_Checked == true).ToList(); int slno = 0, SERIAL = 0;
-                //if (VE.TsalePos_TBATCHDTL_RETURN == null) { slno = 1000; }
-                //else { SERIAL = Convert.ToInt32(VE.TsalePos_TBATCHDTL_RETURN.Max(a => Convert.ToInt32(a.SLNO))); }
-                //if (_TTXNDTLPOPUP.Count > 0)
-                //{
+             
 
                 foreach (var row in _TTXNDTLPOPUP)
                 {
-
-
-                    //if (VE.TsalePos_TBATCHDTL_RETURN == null)
-                    //{
-                    //    List<TsalePos_TBATCHDTL_RETURN> MLocIFSC1 = new List<TsalePos_TBATCHDTL_RETURN>();
-                    //    TsalePos_TBATCHDTL_RETURN MLI = new TsalePos_TBATCHDTL_RETURN();
-                    //    slno = 1000; MLI.SLNO = (slno + 1).retShort();
-                    //    MLI.DISC_TYPE = masterHelp.DISC_TYPE();
-                    //    MLI.PCSActionList = masterHelp.PCSAction();
-                    //    MLI.AGDOCNO = row.AGDOCNO.retStr();
-                    //    MLI.AGDOCDT = row.AGDOCDT.retDateStr();
-                    //    MLI.BARNO = row.BARNO.retStr();
-                    //    MLI.ITCD = row.ITCD.retStr();
-                    //    MLI.ITSTYLE = row.ITSTYLE.retStr();
-                    //    MLI.QNTY = row.QNTY.retDbl();
-                    //    MLI.ITGRPCD = row.ITGRPCD.retStr();
-                    //    MLI.ITGRPNM = row.ITGRPNM.retStr();
-                    //    MLI.IGSTPER = row.IGSTPER.retDbl();
-                    //    MLI.CGSTPER = row.CGSTPER.retDbl();
-                    //    MLI.SGSTPER = row.SGSTPER.retDbl();
-                    //    MLI.CESSPER = row.CESSPER.retDbl();
-                    //    MLI.GSTPER = (row.IGSTPER.retDbl() + row.CGSTPER.retDbl() + row.SGSTPER.retDbl() + row.CESSPER.retDbl());
-                    //    MLI.TXBLVAL = row.TXBLVAL.retDbl();
-                    //    MLocIFSC1.Add(MLI);
-                    //    VE.TsalePos_TBATCHDTL_RETURN = MLocIFSC1;
-                    //}
-                    //else
-                    //{
                     TsalePos_TBATCHDTL_RETURN tsalePos_TBATCHDTL_RETURN = new TsalePos_TBATCHDTL_RETURN();
-                    //SERIAL = Convert.ToInt32(VE.TsalePos_TBATCHDTL_RETURN.Max(a => Convert.ToInt32(a.SLNO)));
                     tsalePos_TBATCHDTL_RETURN.SLNO = (SERIAL + 1).retShort();
                     tsalePos_TBATCHDTL_RETURN.AUTONO = row.AUTONO.retStr();
                     tsalePos_TBATCHDTL_RETURN.AGDOCNO = row.AGDOCNO.retStr();
@@ -3655,8 +3623,7 @@ namespace Improvar.Controllers
                     tsalePos_TBATCHDTL_RETURN.CESSPER = row.CESSPER.retDbl();
                     tsalePos_TBATCHDTL_RETURN.TXBLVAL = row.TXBLVAL.retDbl();
                     VE.TsalePos_TBATCHDTL_RETURN.Add(tsalePos_TBATCHDTL_RETURN);
-                    //}
-                    //}
+                   
                 }
                 if (VE.TsalePos_TBATCHDTL_RETURN != null)
                 {
