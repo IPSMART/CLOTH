@@ -167,6 +167,10 @@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         @Html.HiddenFor(model => model.T_VCH_GST.SHIPDOCNO, new { htmlAttributes = new { id = "SHIPDOCNO" } })
         @Html.HiddenFor(model => model.T_VCH_GST.SHIPDOCDT, new { htmlAttributes = new { id = "SHIPDOCDT" } })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNFLAGMTR, new { id = "MNTNFLAGMTR" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -717,9 +721,9 @@
                                 @Html.Label("", "Party GST Name")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST No.", maxlength = 50, @placeholder = "Party GST Name" } })
+                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST Name", maxlength = 50, @placeholder = "Party GST Name" } })
                             </div>
                         </div>
                         <div class="col-md-5">
@@ -727,18 +731,19 @@
                                 @Html.Label("", "Party GST Address")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-10">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.GSTSLADD1, new { htmlAttributes = new { @class = "form-control", id = "GSTSLADD1", @title = "Party GST Address", maxlength = 60, @placeholder = "Party GST Address" } })
                             </div>
                         </div>
-
+                        </div>
+                    <div class="row">
                         <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Party GST District")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.GSTSLDIST, new { htmlAttributes = new { @class = "form-control", id = "GSTSLDIST", @title = "Party GST District", maxlength = 50, @placeholder = "Party GST District" } })
                             </div>
@@ -748,7 +753,7 @@
                                 @Html.Label("", "Party GST PinCode")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.GSTSLPIN, new { htmlAttributes = new { @class = "form-control", id = "GSTSLPIN", @title = "Party GST PinCode", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7, @placeholder = "Party GST PinCod" } })
                             </div>
