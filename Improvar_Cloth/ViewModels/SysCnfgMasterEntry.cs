@@ -23,5 +23,11 @@ namespace Improvar.ViewModels
         public string WPPRICEGENAMT { get; set; }
         public string RPPRICEGENCD { get; set; }
         public string RPPRICEGENAMT { get; set; }
+        public bool MNTNSIZE { get; set; }
+        public bool MNTNCOLOR { get; set; }
+        public bool MNTNPART { get; set; }
+        public bool MNTNFLAGMTR { get; set; }
+
+
     }
 }

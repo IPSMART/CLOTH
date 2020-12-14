@@ -174,6 +174,7 @@ function AddMainRow(hlpstr) {
     var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
     var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
     $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
+   
     var BarImages = returncolvalue(hlpstr, "BARIMAGE");
     var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
     if (BarImages == '') { NoOfBarImages = ''; }
@@ -270,6 +271,10 @@ function AddMainRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="' + GSTPER + '">';
     tr += '     <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
+    tr += ' </td>';
+    tr += ' <td class="" title="">';
+    tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTAMT must be a number." id="B_GSTAMT_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL[' + rowindex + '].GSTAMT" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="">';
+   
     tr += ' </td>';
     //tr += ' <td class="" title="">';
     //tr += '     <input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDAUTONO_' + rowindex + '","B_ORDDOCNO_0=PYMTCD=1/B_ORDDOCDT_0=PYMTNM=0","B_ORDDOCNO_' + rowindex + '","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '"/RETDEBSLCD);" onkeydown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=docno=0/B_ORDDOCDT_0=docdt=2/B_ORDAUTONO_0=autono=7/B_ORDSLNO_0=slno=1","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '","RETDEBSLCD")" placeholder="Code" type="text" value="">';
@@ -406,12 +411,14 @@ function AddReturnRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="R_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SHADE" type="text" value="">';
     tr += ' </td>';
-    tr += ' <td class="" title="">';
-    tr += '     <input tabindex="-1" class=" atextBoxFor  text-box single-line" data-val="true" data-val-number="The field BALSTOCK must be a number." id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
-    tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
-    tr += ' </td>';
+    //tr += ' <td class="" title="">';
+    //tr += '     <input tabindex="-1" class=" atextBoxFor  text-box single-line" data-val="true" data-val-number="The field BALSTOCK must be a number." id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
+    //tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
+    //tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
+    tr += '     <input id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" type="hidden" value="' + BALSTOCK + '">';
+    tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="R_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -442,6 +449,10 @@ function AddReturnRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="R_GSTPER_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="' + GSTPER + '">';
     tr += '     <input id="R_PRODGRPGSTPER_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
+    tr += ' </td>';
+    tr += ' <td class="" title="">';
+    tr += '     <input tabindex="-1" class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTAMT must be a number." id="R_GSTAMT_' + rowindex + '" maxlength="5" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GSTAMT" onkeypress="return numericOnly(this,2);" readonly="readonly" style="text-align: right;" type="text" value="">';
+
     tr += ' </td>';
     //tr += ' <td class="" title="">';
     //tr += '     <input class="atextBoxFor textbox_image text-box single-line" id="B_ORDDOCNO_' + rowindex + '" maxlength="6" name="TsalePos_TBATCHDTL[' + rowindex + '].ORDDOCNO" onblur="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDAUTONO_' + rowindex + '","B_ORDDOCNO_0=PYMTCD=1/B_ORDDOCDT_0=PYMTNM=0","B_ORDDOCNO_' + rowindex + '","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '"/RETDEBSLCD);" onkeydown="GetHelpBlur("/T_SALE_POS/GetOrderDetails","Order Details","B_ORDDOCNO_' + rowindex + '","B_ORDDOCNO_0=docno=0/B_ORDDOCDT_0=docdt=2/B_ORDAUTONO_0=autono=7/B_ORDSLNO_0=slno=1","B_ITCD_' + rowindex + '"/"B_ORDSLNO_' + rowindex + '","RETDEBSLCD")" placeholder="Code" type="text" value="">';
@@ -481,10 +492,10 @@ function AddReturnRow(hlpstr) {
     tr += '     <input id="R_PARTNM_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].PARTNM" type="hidden" value="">';
     tr += '     <input id="R_PRTBARCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].PRTBARCODE" type="hidden" value="">';
     tr += ' </td>';
-    tr += ' <td class="">';
-    tr += '     <button type="button" onclick="FillImageModal(\'R_BarImages_' + rowindex + '\')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button>';
-    tr += '     <input id="R_BarImages_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BarImages" type="hidden" value="' + BarImages + '">';
-    tr += ' </td>';
+    //tr += ' <td class="">';
+    //tr += '     <button type="button" onclick="FillImageModal(\'R_BarImages_' + rowindex + '\')" data-toggle="modal" data-target="#ViewImageModal" id="OpenImageModal_' + rowindex + '" class="btn atextBoxFor text-info" style="padding:0px">' + NoOfBarImages + '</button>';
+    //tr += '     <input id="R_BarImages_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BarImages" type="hidden" value="' + BarImages + '">';
+    //tr += ' </td>';
     tr += ' <td class="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NETAMT must be a number." id="R_NETAMT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NETAMT" readonly="readonly" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
@@ -584,6 +595,9 @@ function CalculateRowAmt(GridId, i) {
             if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
         }
         $("#B_CESSAMT_" + i).val(CESS_AMT);
+        var gstamt = retFloat(IGST_AMT) + retFloat(CGST_AMT) + retFloat(SGST_AMT) + retFloat(CESS_AMT);
+        $("#B_GSTAMT_" + i).val(gstamt.toFixed(2));
+        
         var rownetamt = retFloat(retFloat((TXBLVAL_ * GSTPER) / 100) + retFloat(TXBLVAL_)).toFixed(2);
         var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
         $("#INCLRATE_" + i).val(rownetamt);
@@ -723,7 +737,9 @@ function CalculateRowAmt(GridId, i) {
         var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
         var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
         $("#R_TXBLVAL_" + i).val(TXBLVAL_);
-        $("#R_GSTPER_" + i).val(GSTPER);
+        var gstper = $("#R_GSTPER_" + i).val();
+        if (gstper != "") { $("#R_GSTPER_" + i).val(gstper); } else { $("#R_GSTPER_" + i).val(GSTPER); }
+      //  $("#R_GSTPER_" + i).val(GSTPER);
         //IGST,CGST,SGST,CESS AMOUNT CALCULATION
 
         var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
@@ -772,6 +788,8 @@ function CalculateRowAmt(GridId, i) {
             if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
         }
         $("#R_CESSAMT_" + i).val(CESS_AMT);
+        var gstamt = retFloat(IGST_AMT) + retFloat(CGST_AMT) + retFloat(SGST_AMT) + retFloat(CESS_AMT);
+        $("#R_GSTAMT_" + i).val(gstamt.toFixed(2));
         var rownetamt = retFloat(retFloat((TXBLVAL_ * GSTPER) / 100) + retFloat(TXBLVAL_)).toFixed(2);
         var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
         $("#R_INCLRATE_" + i).val(rownetamt);
@@ -786,7 +804,7 @@ function CalculateTotal() {
     var MENU_PARA = $("#MENU_PARA").val();
 
     //POS MAIN GRID TOTAL
-    var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0;
+    var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0,T_GSTAMT = 0;
     var GridRow = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var QNTY = retFloat($("#B_QNTY_" + i).val());
@@ -795,15 +813,17 @@ function CalculateTotal() {
         var BALSTOCK = retFloat($("#B_BALSTOCK_" + i).val());
         var NETAMT = retFloat($("#B_NETAMT_" + i).val());
         var TXBLVAL = retFloat($("#B_TXBLVAL_" + i).val());
-        T_QNTY += QNTY; T_NOS += NOS; T_NET += NETAMT; T_TXBLVAL += TXBLVAL;
+        var GSTAMT = retFloat($("#B_GSTAMT_" + i).val());
+        T_QNTY += QNTY; T_NOS += NOS; T_NET += NETAMT; T_TXBLVAL += TXBLVAL, T_GSTAMT += GSTAMT;
     }
     $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
     $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
     $("#B_T_AMT").val(parseFloat(T_TXBLVAL).toFixed(2));
+    $("#B_T_GSTAMT").val(parseFloat(T_GSTAMT).toFixed(2));
     $("#B_T_NET_AMT").val(parseFloat(T_NET).toFixed(2));
 
     //POS RETURN GRID TOTAL
-    var R_T_QNTY = 0, R_T_NOS = 0, R_T_NET = 0, R_T_TXBLVAL = 0;
+    var R_T_QNTY = 0, R_T_NOS = 0, R_T_NET = 0, R_T_TXBLVAL = 0, R_T_GSTAMT = 0;
     var GridRow = $("#_T_SALE_POS_RETURN_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var QNTY = retFloat($("#R_QNTY_" + i).val());
@@ -812,11 +832,13 @@ function CalculateTotal() {
         var BALSTOCK = retFloat($("#R_BALSTOCK_" + i).val());
         var NETAMT = retFloat($("#R_NETAMT_" + i).val());
         var TXBLVAL = retFloat($("#R_TXBLVAL_" + i).val());
-        R_T_QNTY += QNTY; R_T_NOS += NOS; R_T_NET += NETAMT; R_T_TXBLVAL += TXBLVAL;
+        var GSTAMT = retFloat($("#R_GSTAMT_" + i).val());
+        R_T_QNTY += QNTY; R_T_NOS += NOS; R_T_NET += NETAMT; R_T_TXBLVAL += TXBLVAL; R_T_GSTAMT += GSTAMT;
     }
     $("#R_T_QNTY").val(parseFloat(R_T_QNTY).toFixed(2));
     $("#R_T_NOS").val(parseFloat(R_T_NOS).toFixed(0));
     $("#R_T_AMT").val(parseFloat(R_T_TXBLVAL).toFixed(2));
+    $("#R_T_GSTAMT").val(parseFloat(R_T_GSTAMT).toFixed(2));
     $("#R_T_NET_AMT").val(parseFloat(R_T_NET).toFixed(2));
 
     //AMT GRID TOTAL
@@ -1135,4 +1157,91 @@ function DeleteRow() {
         $("body span h1").remove(); $("#msgbody_error style").remove();
     }
 });
+}
+function GetTTXNDTLDetails() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var FDT = $("#FDT").val();
+    var FDT = $("#TDT").val();
+    var R_DOCNO = $("#R_DOCNO").val();
+    var R_BARNO = $("#R_BARNO").val();
+    var R_DOCCD = $("#DOCCD").val();
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlTTXNDTLDetails").val(),
+        beforesend: $("#WaitingMode").show(),
+        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO + "&R_DOCCD=" + R_DOCCD,
+        success: function (result) {
+            $("#popup").animate({ marginTop: '-10px' }, 50);
+            $("#popup").html(result);
+            $("#WaitingMode").hide();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+function SelectTTXNDTLDetails() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var Count = 0;
+    var GridRow = $("#_T_SALE_POS_RETURN_POPUP_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        var Check = document.getElementById("P_Checked_" + i).checked;
+        if (Check == true) {
+            Count = Count + 1;
+        }
+    }
+    if (Count == 0) {
+        msgInfo("Please select a Bar No. !");
+        return false;
+    }
+    $.ajax({
+        type: 'post',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlSelectTTXNDTLDetails").val(),//"@Url.Action("SelectPendOrder", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            if (result == "0") {
+                //$("#hiddenpendordJSON").val(result);
+                //$("#Pending_Order").hide();
+                //if (Count > 0) {
+                //    $("#show_order").show();
+                //}
+                //msgInfo("Order Data selected ");
+            }
+            else {
+                $("#partialdivReturn").html(result);
+                var GridRow = $("#_T_SALE_POS_RETURN > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    //Sale_GetGstPer(i, '#B_');
+                    //RateUpdate(i);
+                }
+                CalculateTotal();
+               
+            }
+            $("#popup").html("");
+            $("#WaitingMode").hide();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+
+}
+function CloseTTXNDTLDetails() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    //$("#popup").html("");
+    var KeyID = (window.event) ? event.keyCode : e.keyCode;
+    if (KeyID == 27) {
+        $("#popup").html("");
+    }
+    else if (KeyID == undefined) {
+        $("#popup").html("");
+    }
 }

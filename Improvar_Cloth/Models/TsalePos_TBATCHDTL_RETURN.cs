@@ -214,5 +214,8 @@ namespace Improvar.Models
         public string AGDOCNO { get; set; }
         public string AGDOCDT { get; set; }
         public string PRCCD { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? GSTAMT { get; set; }
+        
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model Improvar.ViewModels.SysCnfgMasterEntry
 @{
-    ViewBag.Title = "Code & Terms Setup";
+    ViewBag.Title = "Posting & Terms Setup";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
@@ -394,6 +394,19 @@
             <div class="row">
                 <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Design Path")
+                        @*<b style="color:Red;">*</b>*@
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SYSCNFG.DESIGNPATH, new { htmlAttributes = new { @class = "form-control", id = "DESIGNPATH", maxlength = 100, @title = "Only for View", @placeholder = "Design Path" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "INC RATE")
                     </div>
                 </div>
@@ -402,7 +415,95 @@
                         @Html.CheckBoxFor(model => model.INC_RATE)
                     </div>
                 </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Size")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNSIZE)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Color")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNCOLOR)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Part")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNPART)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain FLAGMTR")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNFLAGMTR)
+                    </div>
+                </div>
             </div>
+            @*<div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Size")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNSIZE)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Color")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNCOLOR)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Part")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNPART)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain FLAGMTR")
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNFLAGMTR)
+                    </div>
+                </div>
+            </div>*@
             <div class="row">
                 <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">

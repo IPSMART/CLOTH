@@ -520,6 +520,7 @@
     <Compile Include="Models\TSORDDTL_SIZE.cs" />
     <Compile Include="Models\TTXNAMT.cs" />
     <Compile Include="Models\TTXNDTL.cs" />
+    <Compile Include="Models\TTXNDTLPOPUP.cs" />
     <Compile Include="Models\TTXNDTL_SEARCHPANEL.cs" />
     <Compile Include="Models\TTXNPYMT.cs" />
     <Compile Include="Models\TTXNSLSMN.cs" />
@@ -1148,6 +1149,7 @@
     <Content Include="Views\Rep_Reg\Rep_Reg.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POS_RETURN.cshtml" />
     <Content Include="Views\Rep_OrdPrint\Rep_OrdPrint.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_POS_RETURN_POPUP.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

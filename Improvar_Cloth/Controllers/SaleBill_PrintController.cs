@@ -2336,7 +2336,7 @@ namespace Improvar.Controllers
                             rupinwords = Cn.AmountInWords(tbl.Rows[i]["blamt"].retStr());
                             //dr1["blamt"] = (tbl.Rows[i]["blamt"].retDbl() - tbl.Rows[i]["ADVRECDAMT"].retDbl()).ToINRFormat();
 
-                            dr1["rupinword"] = "Amount in word: "+ rupinwords;
+                            dr1["rupinword"] = rupinwords;
                             dr1["agdocno"] = tbl.Rows[i]["agdocno"].ToString();
                             dr1["agdocdt"] = tbl.Rows[i]["agdocdt"] == DBNull.Value ? "" : tbl.Rows[i]["agdocdt"].ToString().Substring(0, 10).ToString();
                             blrem = "";
