@@ -761,6 +761,7 @@ function CalculateRowAmt(GridId, i) {
         var TXBLVAL_ = retFloat(B_GROSSAMT_ - discamt).toFixed(2);
         var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
         var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
+        $("#R_DISCAMT_" + i).val(discamt);
         $("#R_TXBLVAL_" + i).val(TXBLVAL_);
         var gstper = $("#R_GSTPER_" + i).val();
         if (gstper != "") { $("#R_GSTPER_" + i).val(gstper); } else { $("#R_GSTPER_" + i).val(GSTPER); }

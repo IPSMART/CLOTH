@@ -932,7 +932,7 @@ namespace Improvar.Controllers
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
                 if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.doconlyno like '%" + SRC_DOCNO.retStr() + "%') and ";
-                if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
+                if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%' or d.RTDEBCD like ' % " + SRC_SLCD.retStr().ToUpper() + " % ' or upper(d.nm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and  ";
                 sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
                 sql += "order by docdt, docno ";
                 DataTable tbl = masterHelp.SQLquery(sql);
