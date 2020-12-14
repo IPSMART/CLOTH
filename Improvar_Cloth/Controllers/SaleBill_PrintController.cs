@@ -1485,7 +1485,7 @@ namespace Improvar.Controllers
                 sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno, f.state cstate, f.statecd cstatecd,  ";
                 sql += " c.translcd trslcd, g.slnm trslnm, g.gstno trgst, g.add1 trsladd1, g.add2 trsladd2, g.add3 trsladd3, g.add4 trsladd4, g.phno1 trslphno, c.lrno,  ";
                 sql += " c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, a.slno, a.itcd, a.styleno, a.itnm, a.itrem, a.batchdtl, a.hsncode,  ";
-                sql += " a.nos, a.qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, nvl(a.amt,0)amt, d.docrem, d.docth, d.casenos, d.noofcases,  ";
+                sql += " a.nos, nvl(a.qnty,0)qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, nvl(a.amt,0)amt, d.docrem, d.docth, d.casenos, d.noofcases,  ";
                 sql += " d.agslcd, m.slnm agslnm, a.agdocno, a.agdocdt, j.itgrpnm, j.shortnm,  ";
                 sql += " nvl(a.igstper, 0)igstper, nvl(a.igstamt, 0)igstamt, nvl(a.cgstper, 0)cgstper, nvl(a.cgstamt, 0)cgstamt,  ";
                 sql += " nvl(a.sgstper, 0)sgstper, nvl(a.sgstamt, 0)sgstamt, nvl(a.dutyper, 0)dutyper, nvl(a.dutyamt, 0)dutyamt, nvl(a.cessper, 0)cessper, nvl(a.cessamt, 0)cessamt,  ";
@@ -1512,7 +1512,7 @@ namespace Improvar.Controllers
                 sql += " union all  ";
 
                 sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,  ";
-                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, 0 rate, a.amt, '' agroup, '' agdocdt, '' batchdtl,  ";
+                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.AMTRATE rate, a.amt, '' agroup, '' agdocdt, '' batchdtl,  ";
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono  and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
@@ -2128,7 +2128,7 @@ namespace Improvar.Controllers
                                     rfld = "sladd" + Convert.ToString(rf);
                                     dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
                                 }
-                                if (tbl.Rows[i]["phno"].ToString() != "")
+                                if (tbl.Rows[i]["prtymob"].ToString() != "")
                                 {
                                     rf = rf + 1;
                                     rfld = "sladd" + Convert.ToString(rf);
@@ -2822,6 +2822,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
+                    reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
 
                     if (printemail == "Excel")
                     {
