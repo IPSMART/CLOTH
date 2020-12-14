@@ -1161,6 +1161,10 @@ function DeleteRow() {
 function GetTTXNDTLDetails() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    if (!emptyFieldCheck("Please Select / Enter From Date", "FDT")) { return false; }
+    if (!emptyFieldCheck("Please Select / Enter To Date", "TDT")) { return false; }
+    if (!emptyFieldCheck("Please Select / Enter Doc No.", "R_DOCNO")) { return false; }
+    if (!emptyFieldCheck("Please Select / Enter Bar No.", "R_BARNO")) { return false; }
     var FDT = $("#FDT").val();
     var FDT = $("#TDT").val();
     var R_DOCNO = $("#R_DOCNO").val();

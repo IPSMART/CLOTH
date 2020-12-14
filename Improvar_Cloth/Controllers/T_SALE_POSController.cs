@@ -2572,7 +2572,7 @@ namespace Improvar.Controllers
                                                              //TTXNDTL.BALENO = VE.TTXNDTL[i].BALENO;
                                 R_TTXNDTL.GOCD = VE.T_TXN.GOCD;
                                 //TTXNDTL.JOBCD = VE.TTXNDTL[i].JOBCD;
-                                R_TTXNDTL.NOS = VE.TsalePos_TBATCHDTL_RETURN[i].NOS == null ? 0 : VE.TsalePos_TBATCHDTL[i].NOS.retDbl();
+                                R_TTXNDTL.NOS = VE.TsalePos_TBATCHDTL_RETURN[i].NOS == null ? 0 : VE.TsalePos_TBATCHDTL_RETURN[i].NOS.retDbl();
                                 R_TTXNDTL.QNTY = VE.TsalePos_TBATCHDTL_RETURN[i].QNTY;
                                 R_TTXNDTL.BLQNTY = VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY;
                                 R_TTXNDTL.RATE = VE.TsalePos_TBATCHDTL_RETURN[i].RATE;
@@ -3600,12 +3600,12 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE); ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 var _TTXNDTLPOPUP = VE.TTXNDTLPOPUP.Where(r => r.P_Checked == true).ToList(); int slno = 0, SERIAL = 0;
-             
+                List<TsalePos_TBATCHDTL_RETURN> tsalePosReturnList = new List<TsalePos_TBATCHDTL_RETURN>();
 
                 foreach (var row in _TTXNDTLPOPUP)
                 {
                     TsalePos_TBATCHDTL_RETURN tsalePos_TBATCHDTL_RETURN = new TsalePos_TBATCHDTL_RETURN();
-                    tsalePos_TBATCHDTL_RETURN.SLNO = (SERIAL + 1).retShort();
+                    //tsalePos_TBATCHDTL_RETURN.SLNO = (SERIAL + 1).retShort();
                     tsalePos_TBATCHDTL_RETURN.AUTONO = row.AUTONO.retStr();
                     tsalePos_TBATCHDTL_RETURN.AGDOCNO = row.AGDOCNO.retStr();
                     tsalePos_TBATCHDTL_RETURN.AGDOCDT = row.AGDOCDT.retDateStr();
@@ -3621,9 +3621,9 @@ namespace Improvar.Controllers
                     tsalePos_TBATCHDTL_RETURN.CGSTPER = row.CGSTPER.retDbl();
                     tsalePos_TBATCHDTL_RETURN.SGSTPER = row.SGSTPER.retDbl();
                     tsalePos_TBATCHDTL_RETURN.CESSPER = row.CESSPER.retDbl();
-                    tsalePos_TBATCHDTL_RETURN.TXBLVAL = row.TXBLVAL.retDbl();
-                    VE.TsalePos_TBATCHDTL_RETURN.Add(tsalePos_TBATCHDTL_RETURN);
-                   
+                    //tsalePos_TBATCHDTL_RETURN.TXBLVAL = row.TXBLVAL.retDbl();
+                    if (VE.TsalePos_TBATCHDTL_RETURN == null) VE.TsalePos_TBATCHDTL_RETURN = new List<TsalePos_TBATCHDTL_RETURN>();
+                    VE.TsalePos_TBATCHDTL_RETURN.Add(tsalePos_TBATCHDTL_RETURN);                   
                 }
                 if (VE.TsalePos_TBATCHDTL_RETURN != null)
                 {

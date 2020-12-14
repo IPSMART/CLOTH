@@ -143,8 +143,8 @@
                                         </td>*@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].QNTY, new { htmlAttributes = new { id = "R_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @onblur = "CalculateRowAmt('_T_SALE_POS_RETURN_GRID'," + i + ");" } })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].BALSTOCK, new { id = "B_BALSTOCK_" + i })
-                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
+                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].BALSTOCK, new { id = "R_BALSTOCK_" + i })
+                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].NEGSTOCK, new { id = "R_NEGSTOCK_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].UOM, new { id = "R_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
