@@ -105,19 +105,21 @@ namespace Improvar.Controllers
 
                 string sql = "";
                 sql += "select a.SLNO,a.AUTONO, a.STKDRCR, a.STKTYPE, a.FREESTK, a.ITCD, c.ITNM, c.STYLENO, c.PCSPERSET, c.UOMCD, ";
+                sql += "b.docno,b.docdt,i.slcd,H.SLNM,h.add1||' '||h.add2||' '||h.add3||' '||h.add4||' '||h.add5||' '||h.add6||' '||h.add7 address,";
                 sql += "a.sizecd, a.rate, a.scmdiscamt, a.discamt, a.qnty,A.DELVDT,a.ITREM,a.PDESIGN,c.itgrpcd, d.itgrpnm,c.fabitcd, ";
                 sql += "e.itnm fabitnm,a.colrcd,a.partcd,f.colrnm,g.sizenm,h.partnm,a.rate from ";
                 sql += scm + ".T_SORDDTL a, " + scm + ".T_CNTRL_HDR b, ";
-                sql += scm + ".m_sitem c, " + scm + ".m_group d, " + scm + ".m_sitem e, " + scm + ".m_color f, " + scm + ".m_size g, " + scm + ".m_parts h, " + scm + ".T_SORD i  ";
+                sql += scm + ".m_sitem c, " + scm + ".m_group d, " + scm + ".m_sitem e, " + scm + ".m_color f, " + scm + ".m_size g, " + scm + ".m_parts h, "
+                    + scm + ".T_SORD i," + scmf + ".m_subleg h  ";
                 sql += "where a.autono = b.autono and a.autono = i.autono and  a.itcd = c.itcd(+) and c.itgrpcd=d.itgrpcd and c.fabitcd=e.itcd(+) ";
-                sql += "and a.colrcd=f.colrcd(+) and a.sizecd=g.sizecd(+) and a.partcd=h.partcd(+)  ";
+                sql += "and a.colrcd=f.colrcd(+) and a.sizecd=g.sizecd(+) and a.partcd=h.partcd(+) and i.slcd= h.slcd and ";
                 sql += "nvl(b.cancel,'N')='N' and b.compcd='" + COM + "' and b.loccd='" + LOC + "' and ";
                 if (slcd != null) sql += "a.slcd in (" + slcd + ") and ";
                 if (fdt != null) sql += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
                 if (tdt != null) sql += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
                 if (fdocno != null) sql += "b.doconlyno >= '" + fdocno + "' and ";
                 if (fdocno != null) sql += "b.doconlyno <= '" + tdocno + "' and ";
-                sql += "d.doccd = '" + doccd + "' ) a, ";
+                sql += "b.doccd = '" + doccd + "'  ";
                 sql += "order by styleno ";
 
 
