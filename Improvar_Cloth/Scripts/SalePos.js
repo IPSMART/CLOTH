@@ -405,6 +405,12 @@ function AddReturnRow(hlpstr) {
     tr += '     <input class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="R_SLNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SLNO" readonly="readonly" type="text" value="' + SLNO + '">';
     tr += ' </td>';
     tr += ' <td class="sticky-cell" style="left:50px" title="">';
+    tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field AGDOCNO must be a string with a maximum length of 25." data-val-length-max="16" data-val-required="The AGDOCNO field is required." id="R_AGDOCNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].AGDOCNO"  type="text" value="">';
+    tr += ' </td>';
+    tr += ' <td class="sticky-cell" style="left:50px" title="">';
+    tr += '     <input class=" atextBoxFor agdocdt text-box single-line hasDatepicker " autocomplete="off" onblur="DocumentDateCHK(this)" data-val="true" data-val-length="The field AGDOCDT must be a string with a maximum length of 10." data-val-length-max="10" data-val-required="The AGDOCDT field is required." id="R_AGDOCDT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].AGDOCDT"  type="text" value="">';
+    tr += ' </td>';
+    tr += ' <td class="sticky-cell" style="left:50px" title="">';
     tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="R_BARNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARNO + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
@@ -761,6 +767,7 @@ function CalculateRowAmt(GridId, i) {
         var TXBLVAL_ = retFloat(B_GROSSAMT_ - discamt).toFixed(2);
         var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
         var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
+        $("#R_DISCAMT_" + i).val(discamt);
         $("#R_TXBLVAL_" + i).val(TXBLVAL_);
         var gstper = $("#R_GSTPER_" + i).val();
         if (gstper != "") { $("#R_GSTPER_" + i).val(gstper); } else { $("#R_GSTPER_" + i).val(GSTPER); }
