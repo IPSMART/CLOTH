@@ -1623,17 +1623,19 @@ namespace Improvar
         //        }
         //    }
         //}
-        public string RTDEBCD_help(string val)
+        public string RTDEBCD_help(string val,string docdt="")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.FinSchema(UNQSNO);
-            string sql = "";
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "", effdt="";
             string valsrch = val.ToUpper().Trim();
-
+            if (docdt.retDateStr() != "")  effdt = docdt.retDateStr().Substring(0, 10);
             sql = "";
-            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR ";
-            sql += "from " + scm + ".M_RETDEB a, " + scm + ".M_CNTRL_HDR b ";
-            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR,d.TAXGRPCD,c.retdebslcd,effdt ";
+            sql += "from " + scmf + ".M_RETDEB a, " + scmf + ".M_CNTRL_HDR b , " + scm + ".M_SYSCNFG c , " + scm + ".M_SUBLEG_SDDTL d ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and a.RTDEBCD=c.RTDEBCD(+) and c.retdebslcd=d.SLCD(+) and b.INACTIVE_TAG = 'N' ";
+           // if (effdt.retStr() != "") sql += "and c.effdt >= to_date('" + effdt + "', 'dd/mm/yyyy') ";
+            if (effdt.retStr() != "") sql += "and c.effdt <= to_date('"+ effdt + "', 'dd/mm/yyyy')  "; /*and c.effdt in(select max(effdt) effdt*/
             if (valsrch.retStr() != "") sql += "and ( upper(a.RTDEBCD) = '" + valsrch + "' ) ";
             sql += "order by a.RTDEBCD,a.RTDEBNM";
             DataTable tbl = SQLquery(sql);
@@ -1642,10 +1644,10 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td><td>" + tbl.Rows[i]["MOBILE"] + " </td><td>" + tbl.Rows[i]["ADDR"] + " </td><td>" + tbl.Rows[i]["TAXGRPCD"] + " </td><td>" + tbl.Rows[i]["retdebslcd"] + " </td><td>" + tbl.Rows[i]["effdt"].retDateStr() + " </td></tr>");
                 }
-                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
-                return Generate_help(hdr, SB.ToString());
+                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code" + Cn.GCS() + "Mobile No." + Cn.GCS() + "Address" + Cn.GCS() + "Tax Group Code" + Cn.GCS() + "retdbslcd" + Cn.GCS() + "EFFDT";
+                return Generate_help(hdr, SB.ToString(),"5");
             }
             else
             {

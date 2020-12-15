@@ -26,6 +26,7 @@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
+        $("#check_nav").hide();
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
         }
@@ -252,8 +253,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXNMEMO.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE/ADDR=ADDR');", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')" />
+                                @Html.EditorFor(model => model.T_TXNMEMO.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE=2/ADDR=ADDR=3/TAXGRPCD=TAXGRPCD=4/RETDEBSLCD=retdebslcd=5/EFFDT=effdt=6')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE/ADDR=ADDR/TAXGRPCD=TAXGRPCD/RETDEBSLCD=retdebslcd/EFFDT=effdt','DOCDT');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE=2/ADDR=ADDR=3/TAXGRPCD=TAXGRPCD=4/RETDEBSLCD=retdebslcd=5/EFFDT=effdt=6')" />
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -263,9 +264,10 @@
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @placeholder = "Mobile No.", @readonly = "readonly" } })
                                 @Html.HiddenFor(model => model.ADDR, new { @class = "form-control", id = "ADDR", maxlength = 15 })
                                 @Html.HiddenFor(model => model.RETDEBSLCD, new { @class = "form-control", id = "RETDEBSLCD", maxlength = 15 })
+                                @Html.HiddenFor(model => model.EFFDT, new { @class = "form-control", id = "EFFDT", maxlength = 10 })
                             </div>
                         </div>
 
@@ -618,7 +620,6 @@
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "From Date")
-                                        <b style="color:Red;">*</b>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -629,7 +630,6 @@
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "To Date")
-                                        <b style="color:Red;">*</b>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -640,7 +640,6 @@
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Doc No.")
-                                        <b style="color:Red;">*</b>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -651,7 +650,6 @@
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Bar No.")
-                                        <b style="color:Red;">*</b>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
