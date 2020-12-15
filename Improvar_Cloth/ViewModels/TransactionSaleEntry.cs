@@ -207,5 +207,8 @@ namespace Improvar.ViewModels
         public double? T_TDDISCAMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_SCMDISCAMT { get; set; }
+        public string AGDOCNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? AGDOCDT { get; set; }
     }
 }

@@ -239,6 +239,11 @@ function FillBarcodeArea(str, Table, i) {
         $("#LOCABIN").val($(FieldidStarting + "LOCABIN_" + i).val());
         $("#UOM").val($(FieldidStarting + "UOM_" + i).val());
         $("#GLCD").val($(FieldidStarting + "GLCD_" + i).val());
+
+        if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+            $("#AGDOCNO").val($(FieldidStarting + "AGDOCNO_" + i).val());
+            $("#AGDOCDT").val($(FieldidStarting + "AGDOCDT_" + i).val());
+        }
     }
     if (Table == "_T_SALE_PRODUCT_GRID") {
         $("#AddRow_Barcode").hide();
@@ -422,6 +427,10 @@ function UpdateBarCodeRow() {
                 RateUpdate(j);
 
             }
+            if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+                $("#B_AGDOCNO_" + j).val($("#AGDOCNO").val());
+                $("#B_AGDOCDT_" + j).val($("#AGDOCDT").val());
+            }
         }
 
     }
@@ -467,7 +476,9 @@ function ClearBarcodeArea(TAG) {
             $("#BARCODE").focus();
         }
     }
-
+    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+        ClearAllTextBoxes("AGDOCNO,AGDOCDT");
+    }
 }
 function Fill_DetailData() {
     var DefaultAction = $("#DefaultAction").val();
@@ -1560,6 +1571,8 @@ function AddBarCodeGrid() {
     var BALSTOCK = $("#BALSTOCK").val();
     var NEGSTOCK = $("#NEGSTOCK").val();
 
+    var AGDOCNO = $("#AGDOCNO").val();
+    var AGDOCDT = $("#AGDOCDT").val();
     var tr = "";
     tr += ' <tr style="font-size:12px; font-weight:bold;">';
     tr += '    <td class="sticky-cell">';
@@ -1582,6 +1595,18 @@ function AddBarCodeGrid() {
     tr += '    <td class="sticky-cell" style="left:40px" title="' + TXNSLNO + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field TXNSLNO must be a number." data-val-required="The TXNSLNO field is required." id="B_TXNSLNO_' + rowindex + '" maxlength="4" name="TBATCHDTL[' + rowindex + '].TXNSLNO"  style="text-align:center;" onkeypress="return numericOnly(this,2);" onchange="HasChangeBarSale();" type="text" value="' + TXNSLNO + '">';
     tr += '    </td>';
+    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+        tr += ' <td class="" title="' + AGDOCNO + '">';
+        tr += '  <input class=" atextBoxFor " id="B_AGDOCNO_' + rowindex + '" maxlength="16" name="TBATCHDTL[' + rowindex + '].AGDOCNO" type="text" value="' + AGDOCNO + '">';
+        tr += '  </td>';
+
+        tr += '<td class="" title="' + AGDOCDT + '">';
+        tr += '<input autocomplete="off" class="atextBoxFor agdocdt text-box single-line hasDatepicker" data-val="true" data-val-date="The field AGDOCDT must be a date." id="B_AGDOCDT_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].AGDOCDT" onblur="DocumentDateCHK(this)" type="datetime" value="' + AGDOCDT + '">';
+        tr += '<script>';
+        tr += '$(function () { $("#" + "B_AGDOCDT_"' + rowindex + ').datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });';
+        tr += '</script>';
+        tr += '</td>';
+    }
     tr += '    <td class="" title="' + ITGRPNM + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="' + ITGRPNM + '">';
     tr += '        <input id="B_ITGRPCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPCD" type="hidden" value="' + ITGRPCD + '">';
@@ -1617,7 +1642,7 @@ function AddBarCodeGrid() {
         tr += '    <td class="" title="' + COLRNM + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_COLRNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].COLRNM" readonly="readonly" type="text" value="' + COLRNM + '">';
         tr += '    </td>';
-    }    
+    }
     if (MNTNSIZE == "Y") {
         tr += '    <td class="" title="' + SIZECD + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SIZECD must be a string with a maximum length of 4." data-val-length-max="4" id="B_SIZECD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SIZECD" readonly="readonly" type="text" value="' + SIZECD + '">';

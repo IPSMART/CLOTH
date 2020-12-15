@@ -6,6 +6,14 @@
 
     });
 </script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+            debugger;
+            $(".agdocdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        }
+    });
+</script>
 <div style="transform: translate(0%, 0%);z-index: 1100;">
     <div class="table-responsive">
         @if (Model.DefaultView == true)
@@ -36,8 +44,8 @@
                                 <th class="sticky-cell" style="width: 40px;text-align:center;left:40px">Bill Sl #</th>
                                 @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                 {
-                                    <th class="" style="width: 100px;text-align:center;">Against Docno.</th>
-                                    <th class="" style="width: 100px;text-align:center;">Against Docdt.</th>
+                                    <th class="" style="width: 140px;">Against Doc No.</th>
+                                    <th class="" style="width: 140px;">Against Doc Date</th>
                                 }
                                 <th class="" style="width: 100px;text-align:center;">ItmGrp</th>
                                 <th class="" style="width:45px;">Material Job</th>
@@ -119,6 +127,15 @@
                                         <td class="sticky-cell" style="left:40px">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();" })
                                         </td>
+                                        @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                        {
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].AGDOCNO, new { id = "B_AGDOCNO_" + i, @class = " atextBoxFor ", maxlength = 16 })
+                                            </td>
+                                            <td class="">
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].AGDOCDT, new { htmlAttributes = new { id = "B_AGDOCDT_" + i, @class = "atextBoxFor agdocdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                                            </td>
+                                        }
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITGRPNM, new { id = "B_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ITGRPCD, new { id = "B_ITGRPCD_" + i })
@@ -269,6 +286,11 @@
                                 <td class="sticky-cell" style="width:20px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
                                 <td class="sticky-cell" style="left:17px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td class="sticky-cell" style="left:40px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>design*@
                                 @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB"))
