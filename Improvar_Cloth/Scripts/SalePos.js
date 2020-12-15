@@ -408,7 +408,7 @@ function AddReturnRow(hlpstr) {
     tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field AGDOCNO must be a string with a maximum length of 25." data-val-length-max="16" data-val-required="The AGDOCNO field is required." id="R_AGDOCNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].AGDOCNO"  type="text" value="">';
     tr += ' </td>';
     tr += ' <td class="sticky-cell" style="left:50px" title="">';
-    tr += '     <input class=" atextBoxFor agdocdt text-box single-line hasDatepicker " autocomplete="off" onblur="DocumentDateCHK(this)" data-val="true" data-val-length="The field AGDOCDT must be a string with a maximum length of 10." data-val-length-max="10" data-val-required="The AGDOCDT field is required." id="R_AGDOCDT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].AGDOCDT"  type="text" value="">';
+    tr += '     <input class=" atextBoxFor agdocdt text-box single-line " autocomplete="off" onblur="DocumentDateCHK(this)" data-val="true" data-val-length="The field AGDOCDT must be a string with a maximum length of 10." data-val-length-max="10" data-val-required="The AGDOCDT field is required." id="R_AGDOCDT_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].AGDOCDT"  type="text" value="">';
     tr += ' </td>';
     tr += ' <td class="sticky-cell" style="left:50px" title="">';
     tr += '     <input class=" atextBoxFor " data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="R_BARNO_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BARNO" readonly="readonly" type="text" value="' + BARNO + '">';
@@ -535,6 +535,7 @@ function AddReturnRow(hlpstr) {
     CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
     $("#R_BARCODE").val('');
     $("#R_BARCODE").focus();
+    $("#R_AGDOCDT_"+ rowindex ).datepicker();
 }
 function CalculateRowAmt(GridId, i) {
     debugger;

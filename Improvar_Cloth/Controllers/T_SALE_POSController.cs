@@ -2597,7 +2597,7 @@ namespace Improvar.Controllers
                                 R_TTXNDTL.NETAMT = VE.TsalePos_TBATCHDTL_RETURN[i].NETAMT;
                                 R_TTXNDTL.OTHRAMT = _Rrpldist + _Rrpldistq;
                                 R_TTXNDTL.AGDOCNO = VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCNO;
-                                R_TTXNDTL.AGDOCDT = Convert.ToDateTime(VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT);
+                              if(VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT!=null)  R_TTXNDTL.AGDOCDT = Convert.ToDateTime(VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT);
                                 //TTXNDTL.SHORTQNTY = VE.TsalePos_TBATCHDTL[i].SHORTQNTY;
                                 R_TTXNDTL.DISCTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE;
                                 R_TTXNDTL.DISCRATE = VE.TsalePos_TBATCHDTL_RETURN[i].DISCRATE;
