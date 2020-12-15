@@ -368,10 +368,13 @@ namespace Improvar.Controllers
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
                 str1 += "n.WPPRICEGEN ";
+                if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") str1 += ",s.AGDOCNO,s.AGDOCDT ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
+                if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") str1 += "," + Scm + ".T_TXNDTL s ";
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                 str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) ";
+                if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") str1 += "and i.autono=s.autono and i.txnslno=s.slno ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
                 str1 += "order by i.SLNO ";
                 DataTable tbl = masterHelp.SQLquery(str1);
@@ -433,6 +436,8 @@ namespace Improvar.Controllers
                                     ORDDOCDT = dr["ORDDOCDT"].retStr() == "" ? "" : dr["ORDDOCDT"].retStr().Remove(10),
                                     WPPRICEGEN = VE.MENU_PARA == "PB" ? dr["WPPRICEGEN"].retStr() : "",
                                     RPPRICEGEN = VE.MENU_PARA == "PB" ? dr["RPPRICEGEN"].retStr() : "",
+                                    AGDOCNO = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? dr["AGDOCNO"].retStr() : "",
+                                    AGDOCDT = (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") ? (dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr())) : (DateTime?)null,
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
@@ -2654,8 +2659,6 @@ namespace Improvar.Controllers
                             TTXNDTL.DUTYAMT = VE.TTXNDTL[i].DUTYAMT;
                             TTXNDTL.NETAMT = VE.TTXNDTL[i].NETAMT;
                             TTXNDTL.OTHRAMT = _rpldist + _rpldistq;
-                            TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGDOCNO;
-                            TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGDOCDT;
                             TTXNDTL.SHORTQNTY = VE.TTXNDTL[i].SHORTQNTY;
                             TTXNDTL.DISCTYPE = VE.TTXNDTL[i].DISCTYPE;
                             TTXNDTL.DISCRATE = VE.TTXNDTL[i].DISCRATE;
@@ -2671,7 +2674,7 @@ namespace Improvar.Controllers
                             TTXNDTL.GLCD = VE.TTXNDTL[i].GLCD;
                             TTXNDTL.CLASS1CD = VE.TTXNDTL[i].CLASS1CD;
 
-                            if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR")
+                            if ((VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") && VE.TTXNDTL[i].AGDOCNO.retStr() != "" && VE.TTXNDTL[i].AGDOCDT.retStr() != "")
                             {
                                 TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGDOCNO;
                                 TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGDOCDT;

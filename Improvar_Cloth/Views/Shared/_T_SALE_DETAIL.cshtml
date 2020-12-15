@@ -38,10 +38,10 @@
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="sticky-cell" style="width: 40px;text-align:center;left:27px">SL No</th>
-                                 @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                 {
-                                    <th class="" style="width: 140px;">Against Doc No.</th>
-                                    <th class="" style="width: 140px;">Against Doc Date</th>
+                                    <th class="" style="width:150px;">Against Doc No.</th>
+                                    <th class="" style="width:91px;">Against Doc Date</th>
                                 }
                                 <th class="" style="width: 100px;text-align:center;">ItmGrp</th>
                                 <th class="" style="width:45px;">Mtrl Type</th>
@@ -98,16 +98,10 @@
                                         @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                         {
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].AGDOCNO, new { id = "D_AGDOCNO_" + i, @class = " atextBoxFor ", maxlength = 16 })
+                                                @Html.TextBoxFor(model => Model.TTXNDTL[i].AGDOCNO, new { id = "D_AGDOCNO_" + i, @class = " atextBoxFor ", maxlength = 16, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TTXNDTL[i].AGDOCDT, new { htmlAttributes = new { id = "D_AGDOCDT_" + i, @class = "atextBoxFor agdocdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
-                                                <script>
-                                                    if("@Model.DefaultAction"=="A" || "@Model.DefaultAction"=="E")
-                                                    {
-                                                        $(function () { $("#" + "D_AGDOCDT_" + @i).datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });
-                                                    }
-                                                </script>
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].AGDOCDT, new { htmlAttributes = new { id = "D_AGDOCDT_" + i, @class = "atextBoxFor agdocdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
                                             </td>
                                         }
                                         <td class="">

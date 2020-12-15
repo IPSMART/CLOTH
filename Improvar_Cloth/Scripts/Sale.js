@@ -577,6 +577,11 @@ function UpdateBarCodeRow_FrmDet(i) {
             }
             $("#B_ITREM_" + j).val(ITREM);
             $("#B_GSTPER_" + j).val(GSTPER);
+
+            if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+                $("#B_AGDOCNO_" + j).val($("#D_AGDOCNO_" + i).val());
+                $("#B_AGDOCDT_" + j).val($("#D_AGDOCDT_" + i).val());
+            }
         }
     }
 }
@@ -1600,12 +1605,9 @@ function AddBarCodeGrid() {
         tr += '  <input class=" atextBoxFor " id="B_AGDOCNO_' + rowindex + '" maxlength="16" name="TBATCHDTL[' + rowindex + '].AGDOCNO" type="text" value="' + AGDOCNO + '">';
         tr += '  </td>';
 
-        tr += '<td class="" title="' + AGDOCDT + '">';
-        tr += '<input autocomplete="off" class="atextBoxFor agdocdt text-box single-line hasDatepicker" data-val="true" data-val-date="The field AGDOCDT must be a date." id="B_AGDOCDT_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].AGDOCDT" onblur="DocumentDateCHK(this)" type="datetime" value="' + AGDOCDT + '">';
-        tr += '<script>';
-        tr += '$(function () { $("#" + "B_AGDOCDT_"' + rowindex + ').datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });';
-        tr += '</script>';
-        tr += '</td>';
+        tr += ' <td class="" title="' + AGDOCDT + '">';
+        tr += '     <input class=" atextBoxFor agdocdt text-box single-line " autocomplete="off" onblur="DocumentDateCHK(this)" data-val="true" data-val-length="The field AGDOCDT must be a string with a maximum length of 10." data-val-length-max="10" data-val-required="The AGDOCDT field is required." id="B_AGDOCDT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].AGDOCDT"  type="text" value="' + AGDOCDT + '">';
+        tr += ' </td>';
     }
     tr += '    <td class="" title="' + ITGRPNM + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="' + ITGRPNM + '">';
@@ -1747,6 +1749,9 @@ function AddBarCodeGrid() {
     tr += ' </tr>';
 
     $("#_T_SALE_PRODUCT_GRID tbody").append(tr);
+    if (MENU_PARA == "SR" || MENU_PARA == "PR") {
+        $("#B_AGDOCDT_" + rowindex).datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+    }
     CalculateTotal_Barno();
     if (MENU_PARA == "PB") {
         RateUpdate(rowindex);

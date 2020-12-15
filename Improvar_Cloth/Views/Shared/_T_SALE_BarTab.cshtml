@@ -44,8 +44,8 @@
                                 <th class="sticky-cell" style="width: 40px;text-align:center;left:40px">Bill Sl #</th>
                                 @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                 {
-                                    <th class="" style="width: 140px;">Against Doc No.</th>
-                                    <th class="" style="width: 140px;">Against Doc Date</th>
+                                    <th class="" style="width: 150px;">Against Doc No.</th>
+                                    <th class="" style="width: 91px;">Against Doc Date</th>
                                 }
                                 <th class="" style="width: 100px;text-align:center;">ItmGrp</th>
                                 <th class="" style="width:45px;">Material Job</th>
@@ -130,10 +130,10 @@
                                         @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].AGDOCNO, new { id = "B_AGDOCNO_" + i, @class = " atextBoxFor ", maxlength = 16 })
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].AGDOCNO, new { id = "B_AGDOCNO_" + i, @class = " atextBoxFor ", maxlength = 16, @onchange = "HasChangeBarSale();" })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].AGDOCDT, new { htmlAttributes = new { id = "B_AGDOCDT_" + i, @class = "atextBoxFor agdocdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].AGDOCDT, new { htmlAttributes = new { id = "B_AGDOCDT_" + i, @class = "atextBoxFor agdocdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this);", @onchange = "HasChangeBarSale();" } })
                                             </td>
                                         }
                                         <td class="">
