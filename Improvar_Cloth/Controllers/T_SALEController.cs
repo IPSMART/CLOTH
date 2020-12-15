@@ -438,7 +438,7 @@ namespace Improvar.Controllers
                 str1 = "";
                 str1 += "select i.SLNO,j.ITGRPCD,k.ITGRPNM,i.MTRLJOBCD,l.MTRLJOBNM,l.MTBARCODE,i.ITCD,j.ITNM,j.STYLENO,j.UOMCD,i.STKTYPE,m.STKNAME,i.NOS,i.QNTY,i.FLAGMTR, ";
                 str1 += "i.BLQNTY,i.RATE,i.AMT,i.DISCTYPE,i.DISCRATE,i.DISCAMT,i.TDDISCTYPE,i.TDDISCRATE,i.TDDISCAMT,i.SCMDISCTYPE,i.SCMDISCRATE,i.SCMDISCAMT, ";
-                str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT,i.ITREM ";
+                str1 += "i.TXBLVAL,i.IGSTPER,i.CGSTPER,i.SGSTPER,i.CESSPER,i.IGSTAMT,i.CGSTAMT,i.SGSTAMT,i.CESSAMT,i.NETAMT,i.HSNCODE,i.BALENO,i.GLCD,i.BALEYR,i.TOTDISCAMT,i.ITREM,i.AGDOCNO,i.AGDOCDT ";
                 str1 += "from " + Scm + ".T_TXNDTL i, " + Scm + ".M_SITEM j, " + Scm + ".M_GROUP k, " + Scm + ".M_MTRLJOBMST l, " + Scm + ".M_STKTYPE m ";
                 str1 += "where i.ITCD = j.ITCD(+) and j.ITGRPCD=k.ITGRPCD(+) and i.MTRLJOBCD=l.MTRLJOBCD(+)  and i.STKTYPE=m.STKTYPE(+)  ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
@@ -493,6 +493,8 @@ namespace Improvar.Controllers
                                   BALEYR = dr["BALEYR"].retStr(),
                                   TOTDISCAMT = dr["TOTDISCAMT"].retDbl(),
                                   ITREM = dr["ITREM"].retStr(),
+                                  AGDOCNO = dr["AGDOCNO"].retStr(),
+                                  AGDOCDT = dr["AGDOCDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(dr["AGDOCDT"].retDateStr()),
                               }).OrderBy(s => s.SLNO).ToList();
 
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
@@ -1404,6 +1406,8 @@ namespace Improvar.Controllers
                                   x.BALENO,
                                   x.GLCD,
                                   x.ITREM,
+                                  x.AGDOCNO,
+                                  x.AGDOCDT
                               } into P
                               select new TTXNDTL
                               {
@@ -1440,6 +1444,8 @@ namespace Improvar.Controllers
                                   BALENO = P.Key.BALENO,
                                   GLCD = P.Key.GLCD,
                                   ITREM = P.Key.ITREM,
+                                  AGDOCNO = P.Key.AGDOCNO,
+                                  AGDOCDT = P.Key.AGDOCDT,
                               }).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
@@ -2664,6 +2670,12 @@ namespace Improvar.Controllers
                             TTXNDTL.PRCEFFDT = VE.TTXNDTL[i].PRCEFFDT;
                             TTXNDTL.GLCD = VE.TTXNDTL[i].GLCD;
                             TTXNDTL.CLASS1CD = VE.TTXNDTL[i].CLASS1CD;
+
+                            if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR")
+                            {
+                                TTXNDTL.AGDOCNO = VE.TTXNDTL[i].AGDOCNO;
+                                TTXNDTL.AGDOCDT = VE.TTXNDTL[i].AGDOCDT;
+                            }
                             dbsql = masterHelp.RetModeltoSql(TTXNDTL);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -3401,7 +3413,7 @@ namespace Improvar.Controllers
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
 
-                            dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D", "", "barno='" + v.BARNO + "' and autono='"+ VE.T_TXN.AUTONO + "'");
+                            dbsql = masterHelp.TblUpdt("t_batchmst", VE.T_TXN.AUTONO, "D", "", "barno='" + v.BARNO + "' and autono='" + VE.T_TXN.AUTONO + "'");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         }
                     }
@@ -3471,7 +3483,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
             }

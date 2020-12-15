@@ -209,6 +209,10 @@
             $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#POREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+
+            if ("@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "PR") {
+                $("#AGDOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            }
         }
     });
 </script>
@@ -1072,6 +1076,19 @@
                                                     @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Shade", @placeholder = "Shade" } })
                                                 </div>
                                             </div>
+                                            @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                            {
+                                                <div class="col-md-7">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.AGDOCNO, new { htmlAttributes = new { @class = "form-control", id = "AGDOCNO", maxlength = 16, @title = "Against Doc No", @placeholder = "Against Doc No" } })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.AGDOCDT, new { htmlAttributes = new { @class = "form-control", id = "AGDOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                                    </div>
+                                                </div>
+                                            }
                                             @if (Model.MENU_PARA == "PB")
                         {
                                                 <div class="col-md-4">

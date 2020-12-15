@@ -126,7 +126,7 @@ namespace Improvar.Models
 
         [StringLength(16)]
         public string AGDOCNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? AGDOCDT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? SHORTQNTY { get; set; }
