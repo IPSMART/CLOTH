@@ -178,7 +178,7 @@ namespace Improvar.Controllers
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
                                 string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
                                 string sql = "";
-                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3 ";
+                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3,effdt ";
                                 sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c";
                                 sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD";
 
@@ -195,6 +195,7 @@ namespace Improvar.Controllers
                                     VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
                                     TXNOTH.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
                                     TXNOTH.PRCCD = "RP"; VE.PRCNM = "Retail Price";
+                                    VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
                                 }
                                 VE.T_TXNMEMO = TXNMEMO;
                                 VE.T_TXNOTH = TXNOTH;
@@ -414,15 +415,17 @@ namespace Improvar.Controllers
                 var add3 = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.ADD3).FirstOrDefault();
                 var city = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.CITY).FirstOrDefault();
                 VE.ADDR = add1 + " " + add2 + " " + add3 + "/" + city;
-
+                VE.EFFDT = VE.T_TXNMEMO.RTDEBCD.retStr() == "" ? "" : DB.M_SYSCNFG.Where(a => a.RTDEBCD == VE.T_TXNMEMO.RTDEBCD).Select(b => b.EFFDT).FirstOrDefault().retDateStr();
 
                 string sql1 = "";
-                sql1 += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3 ";
+                sql1 += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3,effdt ";
                 sql1 += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c";
                 sql1 += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD";
                 DataTable syscnfgdt = masterHelp.SQLquery(sql1);
                 if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
-                { VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr(); }
+                { VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                    //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
+                }
 
                 VE.INC_RATE = VE.T_TXN.INCL_RATE == "Y".retStr() ? true : false;
                 VE.INCLRATEASK = VE.T_TXN.INCL_RATE.retStr();
@@ -1039,11 +1042,11 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetRefRetailDetails(string val)
+        public ActionResult GetRefRetailDetails(string val, string Code)
         {
             try
             {
-                var str = masterHelp.RTDEBCD_help(val);
+                var str = masterHelp.RTDEBCD_help(val, Code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -3557,9 +3560,12 @@ namespace Improvar.Controllers
             sql += "d.barno,b.TXBLVAL,b.IGSTPER,b.CGSTPER,b.SGSTPER,b.CESSPER from  " + scm + ".T_TXN a, ";
             sql += "" + scm + ".T_TXNDTL b," + scm + ".T_CNTRL_HDR c, " + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f ";
             sql += "where a.autono = c.autono(+) and a.autono = b.autono(+) and b.autono = d.autono(+) ";
-            sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and a.docno in('" + R_DOCNO + "') and a.doccd in('" + R_DOCCD + "') ";
-            sql += "and a.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') and a.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  ";
-            sql += "and d.barno = '" + R_BARNO + "' ";
+            sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and a.doccd in('" + R_DOCCD + "')  ";
+            if(R_DOCNO.retStr() != "") sql +=" and a.docno in('" + R_DOCNO + "') ";
+            if (FDT.retDateStr() != "") sql += "and a.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') ";
+            if (TDT.retDateStr() != "") sql +=" and a.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  ";
+            if (R_BARNO.retStr() != "") sql += "and d.barno = '" + R_BARNO + "' ";
+            sql += "order by a.docdt, a.docno ";
             DataTable dt = masterHelp.SQLquery(sql);
             DataTable PRODGRPDATA = new DataTable();
             if (dt != null && dt.Rows.Count > 0)

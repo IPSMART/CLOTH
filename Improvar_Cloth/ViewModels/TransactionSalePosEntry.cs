@@ -262,6 +262,8 @@ namespace Improvar.ViewModels
         public string TDT { get; set; }
         public string BARNO { get; set; }
         public string R_DOCNO { get; set; }
+        public string EFFDT { get; set; }
+        
 
 
 
