@@ -1124,7 +1124,7 @@
                                                 {
                                                     <tr>
                                                         <td align="center">
-                                                            @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcd();" })
+                                                            @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcd();", @TabIndex = -1 })
                                                         </td>
                                                         <td align="center">
                                                             @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}

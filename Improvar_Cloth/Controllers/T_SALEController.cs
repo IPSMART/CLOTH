@@ -60,24 +60,33 @@ namespace Improvar.Controllers
                     //               select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
 
 
-                    VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
-                    foreach (var v in VE.DropDown_list_MTRLJOBCD)
+                    //VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                    VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
+                    if (VE.DropDown_list_MTRLJOBCD.Count() == 1)
                     {
-                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR")
+                        VE.DropDown_list_MTRLJOBCD[0].Checked = true;
+                    }
+                    else
+                    {
+                        foreach (var v in VE.DropDown_list_MTRLJOBCD)
                         {
-                            if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == "PL" || v.MTRLJOBCD == "DY")
+                            if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR")
                             {
-                                v.Checked = true;
+                                if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == "PL" || v.MTRLJOBCD == "DY")
+                                {
+                                    v.Checked = true;
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (v.MTRLJOBCD == "FS")
+                            else
                             {
-                                v.Checked = true;
+                                if (v.MTRLJOBCD == "FS")
+                                {
+                                    v.Checked = true;
+                                }
                             }
                         }
                     }
+
 
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")

@@ -105,7 +105,8 @@ namespace Improvar.Controllers
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), Scm1 = CommVar.CurSchema(UNQSNO), Scmf = CommVar.FinSchema(UNQSNO), scmI = CommVar.InvSchema(UNQSNO);
+                string yr_cd = CommVar.YearCode(UNQSNO);
                 var printemail = submitbutton.ToString();
                 string fdate = "", tdate = "";
                 if (VE.FDT != null)
@@ -122,6 +123,13 @@ namespace Improvar.Controllers
                 string docnm = DB.M_DOCTYPE.Find(doccd).DOCNM;
                 string slcd = VE.TEXTBOX3;
 
+                //if (VE.MENU_PARA != "SBCM" && VE.MENU_PARA != "SBCMR" && VE.Checkbox8 == true)
+                //{
+                //    //string autono = DB.T_CNTRL_HDR.Where(a => a.DOCCD == doccd && a.DOCONLYNO.retInt() >= fdocno.retInt() && a.DOCONLYNO.retInt() <= tdocno.retInt()).Select(b => b.AUTONO).ToArray().retSqlformat();
+                //    string str = "select autono from " + Scm1 + ".T_CNTRL_HDR where  ";
+                //    RedirectToAction("Rep_BarcodePrint", "Rep_BarcodePrint", new { autono = autono });
+                //}
+
                 string[] copyno = new string[6];
                 if (VE.Checkbox1 == true) copyno[0] = "Y"; else copyno[0] = "N";
                 if (VE.Checkbox2 == true) copyno[1] = "Y"; else copyno[1] = "N";
@@ -135,8 +143,7 @@ namespace Improvar.Controllers
                     copyno[0] = "Y";
                 }
 
-                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), Scm1 = CommVar.CurSchema(UNQSNO), Scmf = CommVar.FinSchema(UNQSNO), scmI = CommVar.InvSchema(UNQSNO);
-                string yr_cd = CommVar.YearCode(UNQSNO);
+                
                 //string str1 = "";
                 //DataTable rsTmp;
                 //string doctype = "";
@@ -2055,7 +2062,7 @@ namespace Improvar.Controllers
                             }
 
                             DataRow dr1 = IR.NewRow();
-                            docstart:
+                        docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -2146,7 +2153,7 @@ namespace Improvar.Controllers
                                 dr1["slcd"] = tbl.Rows[i]["RTDEBCD"].ToString();
                                 dr1["slnm"] = tbl.Rows[i]["RTDEBNM"].ToString();
                                 dr1["regemailid"] = tbl.Rows[i]["rtdebemail"].ToString();
-                                
+
                                 for (int f = 1; f <= 6; f++)
                                 {
                                     cfld = "rtdebadd" + Convert.ToString(f).ToString();
@@ -3527,7 +3534,7 @@ namespace Improvar.Controllers
                             }
 
                             DataRow dr1 = IR.NewRow();
-                            docstart:
+                        docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);

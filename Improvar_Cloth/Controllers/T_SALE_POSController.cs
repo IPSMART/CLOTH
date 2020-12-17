@@ -66,10 +66,18 @@ namespace Improvar.Controllers
                     VE.HSN_CODE = (from n in DBF.M_HSNCODE
                                    select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
 
-                    VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
-                    foreach (var v in VE.DropDown_list_MTRLJOBCD)
+                    //VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                    VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
+                    if (VE.DropDown_list_MTRLJOBCD.Count() == 1)
                     {
-                        if (v.MTRLJOBCD == "FS") { v.Checked = true; }
+                        VE.DropDown_list_MTRLJOBCD[0].Checked = true;
+                    }
+                    else
+                    {
+                        foreach (var v in VE.DropDown_list_MTRLJOBCD)
+                        {
+                            if (v.MTRLJOBCD == "FS") { v.Checked = true; }
+                        }
                     }
                     //VE.PRCNM
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
@@ -423,7 +431,8 @@ namespace Improvar.Controllers
                 sql1 += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=C.SLCD";
                 DataTable syscnfgdt = masterHelp.SQLquery(sql1);
                 if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
-                { VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                {
+                    VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
                     //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
                 }
 
@@ -2600,7 +2609,7 @@ namespace Improvar.Controllers
                                 R_TTXNDTL.NETAMT = VE.TsalePos_TBATCHDTL_RETURN[i].NETAMT;
                                 R_TTXNDTL.OTHRAMT = _Rrpldist + _Rrpldistq;
                                 R_TTXNDTL.AGDOCNO = VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCNO;
-                              if(VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT!=null)  R_TTXNDTL.AGDOCDT = Convert.ToDateTime(VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT);
+                                if (VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT != null) R_TTXNDTL.AGDOCDT = Convert.ToDateTime(VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCDT);
                                 //TTXNDTL.SHORTQNTY = VE.TsalePos_TBATCHDTL[i].SHORTQNTY;
                                 R_TTXNDTL.DISCTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].DISCTYPE;
                                 R_TTXNDTL.DISCRATE = VE.TsalePos_TBATCHDTL_RETURN[i].DISCRATE;
@@ -3502,10 +3511,10 @@ namespace Improvar.Controllers
                     return Content("");
                 }
                 goto dbok;
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
-                dbok:;
+            dbok:;
             }
             catch (Exception ex)
             {
@@ -3561,9 +3570,9 @@ namespace Improvar.Controllers
             sql += "" + scm + ".T_TXNDTL b," + scm + ".T_CNTRL_HDR c, " + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f ";
             sql += "where a.autono = c.autono(+) and a.autono = b.autono(+) and b.autono = d.autono(+) ";
             sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and a.doccd in('" + R_DOCCD + "')  ";
-            if(R_DOCNO.retStr() != "") sql +=" and a.docno in('" + R_DOCNO + "') ";
+            if (R_DOCNO.retStr() != "") sql += " and a.docno in('" + R_DOCNO + "') ";
             if (FDT.retDateStr() != "") sql += "and a.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') ";
-            if (TDT.retDateStr() != "") sql +=" and a.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  ";
+            if (TDT.retDateStr() != "") sql += " and a.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  ";
             if (R_BARNO.retStr() != "") sql += "and d.barno = '" + R_BARNO + "' ";
             sql += "order by a.docdt, a.docno ";
             DataTable dt = masterHelp.SQLquery(sql);
@@ -3633,7 +3642,7 @@ namespace Improvar.Controllers
                     tsalePos_TBATCHDTL_RETURN.CESSPER = row.CESSPER.retDbl();
                     //tsalePos_TBATCHDTL_RETURN.TXBLVAL = row.TXBLVAL.retDbl();
                     if (VE.TsalePos_TBATCHDTL_RETURN == null) VE.TsalePos_TBATCHDTL_RETURN = new List<TsalePos_TBATCHDTL_RETURN>();
-                    VE.TsalePos_TBATCHDTL_RETURN.Add(tsalePos_TBATCHDTL_RETURN);                   
+                    VE.TsalePos_TBATCHDTL_RETURN.Add(tsalePos_TBATCHDTL_RETURN);
                 }
                 if (VE.TsalePos_TBATCHDTL_RETURN != null)
                 {
@@ -3642,11 +3651,11 @@ namespace Improvar.Controllers
                         var itcd = VE.TsalePos_TBATCHDTL_RETURN[i].ITCD.retStr();
                         var autono = VE.TsalePos_TBATCHDTL_RETURN[i].AUTONO.retStr();
                         VE.TsalePos_TBATCHDTL_RETURN[i].SLNO = (1001 + i).retShort();
-                    var gstper = (VE.TsalePos_TBATCHDTL_RETURN[i].IGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].CGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].SGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].CESSPER.retDbl());
-                    VE.TsalePos_TBATCHDTL_RETURN[i].GSTPER = gstper.retDbl();
-                    VE.TsalePos_TBATCHDTL_RETURN[i].DISC_TYPE = masterHelp.DISC_TYPE();
-                    VE.TsalePos_TBATCHDTL_RETURN[i].PCSActionList = masterHelp.PCSAction();
-                    VE.TsalePos_TBATCHDTL_RETURN[i].COLRNM = (from j in DB.T_TXNDTL
+                        var gstper = (VE.TsalePos_TBATCHDTL_RETURN[i].IGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].CGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].SGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].CESSPER.retDbl());
+                        VE.TsalePos_TBATCHDTL_RETURN[i].GSTPER = gstper.retDbl();
+                        VE.TsalePos_TBATCHDTL_RETURN[i].DISC_TYPE = masterHelp.DISC_TYPE();
+                        VE.TsalePos_TBATCHDTL_RETURN[i].PCSActionList = masterHelp.PCSAction();
+                        VE.TsalePos_TBATCHDTL_RETURN[i].COLRNM = (from j in DB.T_TXNDTL
                                                                   join k in DB.M_COLOR on j.COLRCD equals k.COLRCD
                                                                   where j.ITCD == itcd && j.AUTONO == autono
                                                                   select k.COLRNM).FirstOrDefault();
@@ -3666,17 +3675,17 @@ namespace Improvar.Controllers
                         }
 
                     }
-            }
+                }
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
-    }
-    VE.DefaultView = true;
+            }
+            VE.DefaultView = true;
             ModelState.Clear();
             return PartialView("_T_SALE_POS_RETURN", VE);
 
-}
+        }
     }
 }

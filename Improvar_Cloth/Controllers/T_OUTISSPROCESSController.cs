@@ -64,7 +64,8 @@ namespace Improvar.Controllers
                                    select new HSN_CODE() { text = n.HSNDESCN, value = n.HSNCODE }).OrderBy(s => s.text).Distinct().ToList();
                     VE.BARGEN_TYPE = masterHelp.BARGEN_TYPE();
 
-                    VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                    //VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                    VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
                     foreach (var v in VE.DropDown_list_MTRLJOBCD)
