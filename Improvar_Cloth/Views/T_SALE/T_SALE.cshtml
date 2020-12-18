@@ -221,9 +221,9 @@
         debugger;
         var ty = $("#DOCCD").val();
         $.ajax({
-            type: 'get',
+            type: 'POST',
             url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            data: $('form').serialize()+"&DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
             success: function (result) {
                 window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             },

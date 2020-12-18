@@ -36,7 +36,7 @@ namespace Improvar.Controllers
                 else
                 {
                     ViewBag.formname = "BarCode Image";
-                    Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
+                    //Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO)))
                     {
                         VE.COLPERPAGE = 4;

@@ -26,12 +26,14 @@ namespace Improvar.Models
         [StringLength(30)]
         public string AUTONO { get; set; }
 
+        [Required]
         [StringLength(5)]
         public string DOCCD { get; set; }
 
+        [Required]
         [StringLength(6)]
         public string DOCNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DOCDT { get; set; }
 
         [Key]
@@ -49,13 +51,13 @@ namespace Improvar.Models
 
         [StringLength(20)]
         public string BLNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? BLDT { get; set; }
 
         [StringLength(10)]
         public string HSNCODE { get; set; }
 
-        [StringLength(50)]
+        [StringLength(100)]
         public string ITNM { get; set; }
 
         public double? AMT { get; set; }
@@ -86,7 +88,7 @@ namespace Improvar.Models
 
         [StringLength(30)]
         public string AGSTDOCNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? AGSTDOCDT { get; set; }
 
         [StringLength(1)]
@@ -112,7 +114,7 @@ namespace Improvar.Models
 
         [StringLength(16)]
         public string SHIPDOCNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? SHIPDOCDT { get; set; }
 
         [StringLength(6)]
@@ -146,13 +148,49 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string INPTCLAIM { get; set; }
+
+        [StringLength(16)]
+        public string LUTNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? LUTDT { get; set; }
+
+        public double? TCSPER { get; set; }
+
+        public double? TCSAMT { get; set; }
+
+        //[StringLength(1)]
+        //public string PROFINV { get; set; }
+
+        [StringLength(8)]
+        public string DELVSLCD { get; set; }
+
+        [StringLength(6)]
+        public string GOCD { get; set; }
+
+        [StringLength(200)]
+        public string ITEMEXTDESC { get; set; }
+
+        public double? FREEQNTY { get; set; }
+
+        [StringLength(50)]
+        public string BATCHNO { get; set; }
+
         [StringLength(60)]
         public string GSTSLADD1 { get; set; }
+
         [StringLength(60)]
         public string GSTSLADD2 { get; set; }
+
         [StringLength(50)]
         public string GSTSLDIST { get; set; }
+
         [StringLength(7)]
         public string GSTSLPIN { get; set; }
+
+        public double? BASAMT { get; set; }
+
+        public double? DISCAMT { get; set; }
+
+        public double? RATE { get; set; }
     }
 }

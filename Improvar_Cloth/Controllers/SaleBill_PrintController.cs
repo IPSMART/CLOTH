@@ -102,11 +102,18 @@ namespace Improvar.Controllers
         {
             try
             {
+                if (VE.MENU_PARA != "SBCM" && VE.MENU_PARA != "SBCMR" && VE.Checkbox8 == true)
+                {
+                    if (VE.TDT.retStr() == "")
+                    {
+                        return Content("Please Enter/Select To Date");
+                    }
+                    return ReportBarcodeImagePrint(VE, FC, VE.TDT.retStr(), VE.BARNO.retStr());
+                }
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), Scm1 = CommVar.CurSchema(UNQSNO), Scmf = CommVar.FinSchema(UNQSNO), scmI = CommVar.InvSchema(UNQSNO);
-                string yr_cd = CommVar.YearCode(UNQSNO);
+
                 var printemail = submitbutton.ToString();
                 string fdate = "", tdate = "";
                 if (VE.FDT != null)
@@ -123,13 +130,6 @@ namespace Improvar.Controllers
                 string docnm = DB.M_DOCTYPE.Find(doccd).DOCNM;
                 string slcd = VE.TEXTBOX3;
 
-                //if (VE.MENU_PARA != "SBCM" && VE.MENU_PARA != "SBCMR" && VE.Checkbox8 == true)
-                //{
-                //    //string autono = DB.T_CNTRL_HDR.Where(a => a.DOCCD == doccd && a.DOCONLYNO.retInt() >= fdocno.retInt() && a.DOCONLYNO.retInt() <= tdocno.retInt()).Select(b => b.AUTONO).ToArray().retSqlformat();
-                //    string str = "select autono from " + Scm1 + ".T_CNTRL_HDR where  ";
-                //    RedirectToAction("Rep_BarcodePrint", "Rep_BarcodePrint", new { autono = autono });
-                //}
-
                 string[] copyno = new string[6];
                 if (VE.Checkbox1 == true) copyno[0] = "Y"; else copyno[0] = "N";
                 if (VE.Checkbox2 == true) copyno[1] = "Y"; else copyno[1] = "N";
@@ -143,7 +143,8 @@ namespace Improvar.Controllers
                     copyno[0] = "Y";
                 }
 
-                
+                string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), Scm1 = CommVar.CurSchema(UNQSNO), Scmf = CommVar.FinSchema(UNQSNO), scmI = CommVar.InvSchema(UNQSNO);
+                string yr_cd = CommVar.YearCode(UNQSNO);
                 //string str1 = "";
                 //DataTable rsTmp;
                 //string doctype = "";
@@ -1372,8 +1373,6 @@ namespace Improvar.Controllers
         //rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
         //if (VE.maxdate == "CHALLAN") blhead = "CHALLAN";
         //  }
-
-
         public ActionResult ReportCashMemoPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm)
         {
             try
@@ -2869,8 +2868,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
-
         public ActionResult ReportSaleBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm)
         {
             try
@@ -4439,7 +4436,6 @@ namespace Improvar.Controllers
         //    Cn.SaveException(ex, "");
         //    return Content(ex.Message);
         //}
-
         public string SaleSMSSend(string autono = "", string doccd = "", string slcd = "", string fdocdt = "", string tdocdt = "", string fdocno = "", string tdocno = "")
         {
             SMS SMS = new SMS();
@@ -4458,6 +4454,38 @@ namespace Improvar.Controllers
                 }
             }
             return SmsRetVal;
+        }
+        public ActionResult ReportBarcodeImagePrint(ReportViewinHtml VE, FormCollection FC, string todt, string barno)
+        {
+            string scm1 = CommVar.CurSchema(UNQSNO).ToString();
+            DataTable dt = new DataTable("Rep_BarcodeImage");
+            dt.Columns.Add("BARNO", typeof(string));
+            dt.Columns.Add("DOC_FLNAME", typeof(string));
+            dt.Columns.Add("LINE1", typeof(string));
+            dt.Columns.Add("LINE2", typeof(string));
+
+            var dttt = Salesfunc.GetStock(todt, "", barno);
+            for (int i = 0; i < dttt.Rows.Count; i++)
+            {
+                if (dttt.Rows[i]["barimage"].retStr() != "")
+                {
+                    var brimgs = dttt.Rows[i]["barimage"].retStr().Split((char)179);
+                    foreach (var barimg in brimgs)
+                    {
+                        string barfilename = barimg.Split('~')[0].Trim();
+                        string barimgdesc = barimg.Split('~')[1];
+                        DataRow dr1 = dt.NewRow();
+                        dr1["BARNO"] = dttt.Rows[i]["BARNO"].ToString();
+                        dr1["DOC_FLNAME"] = barfilename;//dttt.Rows[i]["DOC_FLNAME"].ToString();
+                        dr1["LINE1"] = barimgdesc;// dttt.Rows[i]["DOC_DESC"].ToString(); ;
+                        dr1["LINE2"] = "1700001 SD";
+                        dt.Rows.Add(dr1);
+                    }
+                }
+
+            }
+            Session["DtRepBarcodeImage"] = dt;
+            return RedirectToAction("Rep_BarcodeImage", "Rep_BarcodeImage", new { US = Cn.Encrypt_URL(UNQSNO) });
         }
     }
 }
