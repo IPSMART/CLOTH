@@ -209,6 +209,10 @@
             $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#PREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             $("#POREFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#SHIPDOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            if ("@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "PR") {
+                $("#AGDOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            }
         }
     });
 </script>
@@ -217,9 +221,9 @@
         debugger;
         var ty = $("#DOCCD").val();
         $.ajax({
-            type: 'get',
+            type: 'POST',
             url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            data: $('form').serialize()+"&DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
             success: function (result) {
                 window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             },
@@ -1072,6 +1076,19 @@
                                                     @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Shade", @placeholder = "Shade" } })
                                                 </div>
                                             </div>
+                                            @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                            {
+                                                <div class="col-md-7">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.AGDOCNO, new { htmlAttributes = new { @class = "form-control", id = "AGDOCNO", maxlength = 16, @title = "Against Doc No", @placeholder = "Against Doc No" } })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.AGDOCDT, new { htmlAttributes = new { @class = "form-control", id = "AGDOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                                    </div>
+                                                </div>
+                                            }
                                             @if (Model.MENU_PARA == "PB")
                         {
                                                 <div class="col-md-4">
@@ -1107,7 +1124,7 @@
                                                 {
                                                     <tr>
                                                         <td align="center">
-                                                            @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcd();" })
+                                                            @Html.CheckBoxFor(model => model.DropDown_list_MTRLJOBCD[i].Checked, new { id = "MaterialJobChk_" + i, onclick = "GetAllMtrljobcd();", @TabIndex = -1 })
                                                         </td>
                                                         <td align="center">
                                                             @{ string STRC = Model.DropDown_list_MTRLJOBCD[i].MTRLJOBCD.ToString();}
@@ -1259,6 +1276,16 @@
                                     @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Transport Mode")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.T_TXNTRANS.TRANSMODE, new SelectList(Model.TRANSMODE, "Value", "Text"), "=Select=", new { @class = "form-control", id = "TRANSMODE" })
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
@@ -1319,6 +1346,16 @@
                             <div class="col-md-7">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.T_TXNTRANS.LORRYNO, new { htmlAttributes = new { @class = "form-control", id = "LORRYNO", maxlength = 16, @placeholder = "Vechicle Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Vehicle Type")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.T_TXNTRANS.VECHLTYPE, new SelectList(Model.VECHLTYPE, "Value", "Text"), "=Select=", new { @class = "form-control", id = "VECHLTYPE" })
                                 </div>
                             </div>
                         </div>

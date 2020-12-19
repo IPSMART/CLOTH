@@ -26,7 +26,7 @@
                     <input type="text" id="PO_P_IN_FS" name="PO_P_IN_FS" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_POS_RETURN_POPUP_GRID');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
-                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Order Details</b></center>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bar No. Details</b></center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:381px;">
@@ -56,7 +56,7 @@
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].AUTONO, new { id = "P_AUTONO_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].ITGRPCD, new { id = "P_ITGRPCD_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].ITGRPNM, new { id = "P_ITGRPNM_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].TXBLVAL, new { id = "P_TXBLVAL_" + i })
+                                            @*@Html.HiddenFor(model => model.TTXNDTLPOPUP[i].TXBLVAL, new { id = "P_TXBLVAL_" + i })*@
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].IGSTPER, new { id = "P_IGSTPER_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].CGSTPER, new { id = "P_CGSTPER_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTLPOPUP[i].SGSTPER, new { id = "P_SGSTPER_" + i })

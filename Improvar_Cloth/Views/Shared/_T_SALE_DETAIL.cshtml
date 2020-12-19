@@ -7,6 +7,13 @@
     });
 
 </script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+            $(".agdocdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        }
+    });
+</script>
 <div style="transform: translate(0%, 0%);z-index: 1100;">
     <div class="table-responsive">
         @if (Model.DefaultView == true)
@@ -31,6 +38,11 @@
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
                                 <th class="sticky-cell" style="width: 40px;text-align:center;left:27px">SL No</th>
+                                @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                {
+                                    <th class="" style="width:150px;">Against Doc No.</th>
+                                    <th class="" style="width:91px;">Against Doc Date</th>
+                                }
                                 <th class="" style="width: 100px;text-align:center;">ItmGrp</th>
                                 <th class="" style="width:45px;">Mtrl Type</th>
                                 <th class="" style="width:71px;">Item Code</th>
@@ -83,6 +95,15 @@
                                         <td class="sticky-cell" style="left:27px;">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].SLNO, new { id = "D_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
+                                        @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                        {
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TTXNDTL[i].AGDOCNO, new { id = "D_AGDOCNO_" + i, @class = " atextBoxFor ", maxlength = 16, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" })
+                                            </td>
+                                            <td class="">
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].AGDOCDT, new { htmlAttributes = new { id = "D_AGDOCDT_" + i, @class = "atextBoxFor agdocdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)", @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
+                                            </td>
+                                        }
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].ITGRPNM, new { id = "D_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].ITGRPCD, new { id = "D_ITGRPCD_" + i })
@@ -212,6 +233,11 @@
                             <tr class="sticky-footer">
                                 <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
                                 <td class="sticky-cell" style="left:27px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>

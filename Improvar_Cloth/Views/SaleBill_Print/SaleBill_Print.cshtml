@@ -116,11 +116,25 @@
                             @Html.Label("", "Print Current O/S in Bill")
                         </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-1">
                         <div class="editor-field" style="margin-top: 5px;">
                             @Html.CheckBoxFor(model => model.Checkbox7)
                         </div>
                     </div>
+                    @if (Model.MENU_PARA != "SBCM" && Model.MENU_PARA != "SBCMR")
+                    {
+                    <div class="col-lg-2" style="width:auto;">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Print Barcode")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 5px;">
+                            @Html.HiddenFor(model => model.BARNO)
+                            @Html.CheckBoxFor(model => model.Checkbox8)
+                        </div>
+                    </div>
+                    }
                 </div>
                 <div class="row">
                     <div class="col-lg-2">

@@ -26,6 +26,7 @@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
+        $("#check_nav").hide();
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
         }
@@ -44,6 +45,17 @@
     });
 </script>
 <script>
+    //$(".agdocdt").on('focus', function () {
+    //    var $this = $(this);
+    //    if (!$this.data('datepicker')) {
+    //        $this.removeClass("hasDatepicker");
+    //        $this.datepicker();
+    //        $this.datepicker("show");
+    //    }
+    //});
+    //$(function() {
+    //    $('.agdocdt').datepicker();
+    //});
     function requiredFieldValidator() {
         debugger;
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
@@ -153,6 +165,7 @@
         <input type="hidden" id="UrlDeleteRowPYMT" value="@Url.Action("DeleteRowPYMT", PageControllerName)" />
         <input type="hidden" id="UrlTTXNDTLDetails" value="@Url.Action("GetTTXNDTLDetails", PageControllerName )" />
         <input type="hidden" id="UrlSelectTTXNDTLDetails" value="@Url.Action("SelectTTXNDTLDetails", PageControllerName )" />
+        <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="salesmanlinkcd" value="E" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -167,6 +180,10 @@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         @Html.HiddenFor(model => model.T_VCH_GST.SHIPDOCNO, new { htmlAttributes = new { id = "SHIPDOCNO" } })
         @Html.HiddenFor(model => model.T_VCH_GST.SHIPDOCDT, new { htmlAttributes = new { id = "SHIPDOCDT" } })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNFLAGMTR, new { id = "MNTNFLAGMTR" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -236,8 +253,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXNMEMO.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE/ADDR=ADDR');", @placeholder = "Code", maxlength = 8 } })
-                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')" />
+                                @Html.EditorFor(model => model.T_TXNMEMO.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE=2/ADDR=ADDR=3/TAXGRPCD=TAXGRPCD=4/RETDEBSLCD=retdebslcd=5/EFFDT=effdt=6')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE/ADDR=ADDR/TAXGRPCD=TAXGRPCD/RETDEBSLCD=retdebslcd/EFFDT=effdt','DOCDT');", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/MOBILE=MOBILE=2/ADDR=ADDR=3/TAXGRPCD=TAXGRPCD=4/RETDEBSLCD=retdebslcd=5/EFFDT=effdt=6')" />
                             </div>
                         </div>
                         <div class="col-md-8">
@@ -247,9 +264,10 @@
                         </div>
                         <div class="col-md-8">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @placeholder = "Mobile No.", @readonly = "readonly" } })
                                 @Html.HiddenFor(model => model.ADDR, new { @class = "form-control", id = "ADDR", maxlength = 15 })
                                 @Html.HiddenFor(model => model.RETDEBSLCD, new { @class = "form-control", id = "RETDEBSLCD", maxlength = 15 })
+                                @Html.HiddenFor(model => model.EFFDT, new { @class = "form-control", id = "EFFDT", maxlength = 10 })
                             </div>
                         </div>
 
@@ -599,9 +617,19 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                                     </div>
                                 </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "From Date")
+                                    </div>
+                                </div>
                                 <div class="col-md-3">
                                     <div class="editor-field">
                                         @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "To Date")
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -609,9 +637,19 @@
                                         @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                     </div>
                                 </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Doc No.")
+                                    </div>
+                                </div>
                                 <div class="col-md-3">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 10 } })
+                                        @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 6 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Bar No.")
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -620,7 +658,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-5">
-                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Search" title="Click to Barno" onclick="GetTTXNDTLDetails()" />
+                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Search" title="Click to Get Barno" onclick="GetTTXNDTLDetails()" />
                                    </div>
                                     <div class="row">
                                         <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
@@ -693,9 +731,9 @@
                                 @Html.Label("", "Party GST Name")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST No.", maxlength = 50, @placeholder = "Party GST Name" } })
+                                @Html.EditorFor(model => model.GSTSLNM, new { htmlAttributes = new { @class = "form-control", id = "GSTSLNM", @title = "Party GST Name", maxlength = 50, @placeholder = "Party GST Name" } })
                             </div>
                         </div>
                         <div class="col-md-5">
@@ -703,18 +741,19 @@
                                 @Html.Label("", "Party GST Address")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-10">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.GSTSLADD1, new { htmlAttributes = new { @class = "form-control", id = "GSTSLADD1", @title = "Party GST Address", maxlength = 60, @placeholder = "Party GST Address" } })
                             </div>
                         </div>
-
+                        </div>
+                    <div class="row">
                         <div class="col-md-5">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Party GST District")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.GSTSLDIST, new { htmlAttributes = new { @class = "form-control", id = "GSTSLDIST", @title = "Party GST District", maxlength = 50, @placeholder = "Party GST District" } })
                             </div>
@@ -724,7 +763,7 @@
                                 @Html.Label("", "Party GST PinCode")
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="editor-field">
                                 @Html.EditorFor(model => model.GSTSLPIN, new { htmlAttributes = new { @class = "form-control", id = "GSTSLPIN", @title = "Party GST PinCode", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 7, @placeholder = "Party GST PinCod" } })
                             </div>

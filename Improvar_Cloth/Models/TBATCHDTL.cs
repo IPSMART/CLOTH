@@ -178,5 +178,8 @@ namespace Improvar.Models
         [StringLength(1)]
         public string SAMPLE { get; set; }
         public string BOMQNTY { get; set; }
+        public string AGDOCNO { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
+        public DateTime? AGDOCDT { get; set; }
     }
 }

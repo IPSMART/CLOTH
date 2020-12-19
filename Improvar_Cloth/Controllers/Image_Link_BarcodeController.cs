@@ -56,7 +56,8 @@ namespace Improvar.Controllers
                         }
 
                         VE.DOCNM = (from j in DB.M_DOCTYPE where j.DOCCD == VE.DOCCD select j.DOCNM).SingleOrDefault();
-                        VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                        //VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                        VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
                         foreach (var v in VE.DropDown_list_MTRLJOBCD)
                         {
                             if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == "PL")

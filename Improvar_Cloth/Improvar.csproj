@@ -568,6 +568,8 @@
     <Compile Include="Models\T_TXNACK.cs" />
     <Compile Include="Models\T_TXNAMT.cs" />
     <Compile Include="Models\T_TXNDTL.cs" />
+    <Compile Include="Models\T_TXNEINV.cs" />
+    <Compile Include="Models\T_TXNEWB.cs" />
     <Compile Include="Models\T_TXNMEMO.cs" />
     <Compile Include="Models\T_TXNOTH.cs" />
     <Compile Include="Models\T_TXNPYMT.cs" />

@@ -50,7 +50,8 @@ namespace Improvar.Controllers
                     {
                         DataTable repformat = Salesfunc.getRepFormat(VE.RepType, VE.DOCCD);
 
-                        VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                        //VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                        VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
                         foreach (var v in VE.DropDown_list_MTRLJOBCD)
                         {
                             if (v.MTRLJOBCD == "FS")

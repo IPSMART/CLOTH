@@ -311,4 +311,14 @@ namespace Improvar.Models
         public string Value { get; set; }
         public string Text { get; set; }
     }
+    public class VECHLTYPE
+    {
+        public string Value { get; set; }
+        public string Text { get; set; }
+    }
+    public class TRANSMODE
+    {
+        public string Text { get; set; }
+        public string Value { get; set; }
+    }
 }

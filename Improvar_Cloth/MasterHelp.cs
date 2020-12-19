@@ -1623,17 +1623,19 @@ namespace Improvar
         //        }
         //    }
         //}
-        public string RTDEBCD_help(string val)
+        public string RTDEBCD_help(string val, string docdt = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.FinSchema(UNQSNO);
-            string sql = "";
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string sql = "", effdt = "";
             string valsrch = val.ToUpper().Trim();
-
+            if (docdt.retDateStr() != "") effdt = docdt.retDateStr().Substring(0, 10);
             sql = "";
-            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR ";
-            sql += "from " + scm + ".M_RETDEB a, " + scm + ".M_CNTRL_HDR b ";
-            sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
+            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR,d.TAXGRPCD,c.retdebslcd,effdt ";
+            sql += "from " + scmf + ".M_RETDEB a, " + scmf + ".M_CNTRL_HDR b , " + scm + ".M_SYSCNFG c , " + scm + ".M_SUBLEG_SDDTL d ";
+            sql += "where a.M_AUTONO=b.M_AUTONO(+) and a.RTDEBCD=c.RTDEBCD(+) and c.retdebslcd=d.SLCD(+) and b.INACTIVE_TAG = 'N' ";
+            // if (effdt.retStr() != "") sql += "and c.effdt >= to_date('" + effdt + "', 'dd/mm/yyyy') ";
+            if (effdt.retStr() != "") sql += "and c.effdt <= to_date('" + effdt + "', 'dd/mm/yyyy')  "; /*and c.effdt in(select max(effdt) effdt*/
             if (valsrch.retStr() != "") sql += "and ( upper(a.RTDEBCD) = '" + valsrch + "' ) ";
             sql += "order by a.RTDEBCD,a.RTDEBNM";
             DataTable tbl = SQLquery(sql);
@@ -1642,10 +1644,10 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td><td>" + tbl.Rows[i]["MOBILE"] + " </td><td>" + tbl.Rows[i]["ADDR"] + " </td><td>" + tbl.Rows[i]["TAXGRPCD"] + " </td><td>" + tbl.Rows[i]["retdebslcd"] + " </td><td>" + tbl.Rows[i]["effdt"].retDateStr() + " </td></tr>");
                 }
-                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
-                return Generate_help(hdr, SB.ToString());
+                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code" + Cn.GCS() + "Mobile No." + Cn.GCS() + "Address" + Cn.GCS() + "Tax Group Code" + Cn.GCS() + "retdbslcd" + Cn.GCS() + "EFFDT";
+                return Generate_help(hdr, SB.ToString(), "5");
             }
             else
             {
@@ -2610,7 +2612,7 @@ namespace Improvar
             if (orddocno.retStr() != "")
             {
                 var data = tbl.Select("docno = '" + orddocno.retStr() + "'");
-                if(data != null && data.Count() > 0)
+                if (data != null && data.Count() > 0)
                 {
                     tbl = data.CopyToDataTable();
                 }
@@ -2642,6 +2644,61 @@ namespace Improvar
                     return "Invalid Order No ! Please Select / Enter a Valid Order No !!";
                 }
             }
+        }
+        public List<DropDown_list_MTRLJOBCD> MTRLJOBCD_List()
+        {
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            List<DropDown_list_MTRLJOBCD> DDL = new List<DropDown_list_MTRLJOBCD>();
+            string SCHEMA = CommVar.CurSchema(UNQSNO).ToString();
+            string SQL = "select a.MTRLJOBCD,a.MTRLJOBNM  ";
+            SQL += "from " + SCHEMA + ".M_MTRLJOBMST a, " + SCHEMA + ".m_cntrl_hdr b ";
+            SQL += "where a.m_autono = b.m_autono(+) and nvl(b.inactive_tag, 'N')= 'N' ";
+            SQL += "order by a.MTRLJOBNM ";
+            var data = SQLquery(SQL);
+            if (data != null)
+            {
+                DDL = (from DataRow DR in data.Rows
+                       select new DropDown_list_MTRLJOBCD()
+                       {
+                           MTRLJOBCD = DR["MTRLJOBCD"].ToString(),
+                           MTRLJOBNM = DR["MTRLJOBNM"].ToString()
+                       }).ToList();
+            }
+            return DDL;
+        }
+        public List<VECHLTYPE> VECHLTYPE()
+        {
+            List<VECHLTYPE> DTYP = new List<VECHLTYPE>();
+            VECHLTYPE DTYP3 = new VECHLTYPE();
+            DTYP3.Text = "Regular";
+            DTYP3.Value = "R";
+            DTYP.Add(DTYP3);
+            VECHLTYPE DTYP2 = new VECHLTYPE();
+            DTYP2.Text = "ODC";
+            DTYP2.Value = "O";
+            DTYP.Add(DTYP2);
+            return DTYP;
+        }
+        public List<TRANSMODE> TRANSMODE()
+        {
+            List<TRANSMODE> DTYP = new List<TRANSMODE>();
+            TRANSMODE DTYP3 = new TRANSMODE();
+            DTYP3.Text = "Road";
+            DTYP3.Value = "RO";
+            DTYP.Add(DTYP3);
+            TRANSMODE DTYP2 = new TRANSMODE();
+            DTYP2.Text = "Rail";
+            DTYP2.Value = "RA";
+            DTYP.Add(DTYP2);
+            TRANSMODE DTYP1 = new TRANSMODE();
+            DTYP1.Text = "Air";
+            DTYP1.Value = "AI";
+            DTYP.Add(DTYP1);
+            TRANSMODE DTYP4 = new TRANSMODE();
+            DTYP4.Text = "Ship";
+            DTYP4.Value = "SH";
+            DTYP.Add(DTYP4);
+            return DTYP;
         }
     }
 }

@@ -66,7 +66,8 @@ namespace Improvar.Controllers
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                     VE.BARGEN_TYPE = masterHelp.BARGEN_TYPE();
                     VE.Reverse_Charge = masterHelp.REV_CHRG();
-                    VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                    //VE.DropDown_list_MTRLJOBCD = (from i in DB.M_MTRLJOBMST select new DropDown_list_MTRLJOBCD() { MTRLJOBCD = i.MTRLJOBCD, MTRLJOBNM = i.MTRLJOBNM }).OrderBy(s => s.MTRLJOBNM).ToList();
+                    VE.DropDown_list_MTRLJOBCD = masterHelp.MTRLJOBCD_List();
                     VE.DropDown_list_StkType = masterHelp.STK_TYPE();
                     VE.DISC_TYPE = masterHelp.DISC_TYPE();
                     foreach (var v in VE.DropDown_list_MTRLJOBCD)

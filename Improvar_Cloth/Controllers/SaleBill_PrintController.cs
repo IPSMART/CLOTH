@@ -102,6 +102,14 @@ namespace Improvar.Controllers
         {
             try
             {
+                if (VE.MENU_PARA != "SBCM" && VE.MENU_PARA != "SBCMR" && VE.Checkbox8 == true)
+                {
+                    if (VE.TDT.retStr() == "")
+                    {
+                        return Content("Please Enter/Select To Date");
+                    }
+                    return ReportBarcodeImagePrint(VE, FC, VE.TDT.retStr(), VE.BARNO.retStr());
+                }
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -1365,8 +1373,6 @@ namespace Improvar.Controllers
         //rptname = "~/Report/" + rptfile; // "SaleBill.rpt";
         //if (VE.maxdate == "CHALLAN") blhead = "CHALLAN";
         //  }
-
-
         public ActionResult ReportCashMemoPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm)
         {
             try
@@ -1485,7 +1491,7 @@ namespace Improvar.Controllers
                 sql += " trim(f.regmobile || decode(f.regmobile, null, '', ',') || f.slphno || decode(f.phno1, null, '', ',' || f.phno1)) cphno, f.state cstate, f.statecd cstatecd,  ";
                 sql += " c.translcd trslcd, g.slnm trslnm, g.gstno trgst, g.add1 trsladd1, g.add2 trsladd2, g.add3 trsladd3, g.add4 trsladd4, g.phno1 trslphno, c.lrno,  ";
                 sql += " c.lrdt, c.lorryno, c.ewaybillno, c.grwt, c.ntwt, a.slno, a.itcd, a.styleno, a.itnm, a.itrem, a.batchdtl, a.hsncode,  ";
-                sql += " a.nos, a.qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, nvl(a.amt,0)amt, d.docrem, d.docth, d.casenos, d.noofcases,  ";
+                sql += " a.nos, nvl(a.qnty,0)qnty, nvl(i.decimals, 0) qdecimal, i.uomnm, a.rate, nvl(a.amt,0)amt, d.docrem, d.docth, d.casenos, d.noofcases,  ";
                 sql += " d.agslcd, m.slnm agslnm, a.agdocno, a.agdocdt, j.itgrpnm, j.shortnm,  ";
                 sql += " nvl(a.igstper, 0)igstper, nvl(a.igstamt, 0)igstamt, nvl(a.cgstper, 0)cgstper, nvl(a.cgstamt, 0)cgstamt,  ";
                 sql += " nvl(a.sgstper, 0)sgstper, nvl(a.sgstamt, 0)sgstamt, nvl(a.dutyper, 0)dutyper, nvl(a.dutyamt, 0)dutyamt, nvl(a.cessper, 0)cessper, nvl(a.cessamt, 0)cessamt,  ";
@@ -1512,7 +1518,7 @@ namespace Improvar.Controllers
                 sql += " union all  ";
 
                 sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,  ";
-                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, 0 rate, a.amt, '' agroup, '' agdocdt, '' batchdtl,  ";
+                sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.AMTRATE rate, a.amt, '' agroup, '' agdocdt, '' batchdtl,  ";
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono  and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
@@ -2055,7 +2061,7 @@ namespace Improvar.Controllers
                             }
 
                             DataRow dr1 = IR.NewRow();
-                            docstart:
+                        docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -2128,7 +2134,7 @@ namespace Improvar.Controllers
                                     rfld = "sladd" + Convert.ToString(rf);
                                     dr1[rfld] = "PAN # " + tbl.Rows[i]["panno"].ToString();
                                 }
-                                if (tbl.Rows[i]["phno"].ToString() != "")
+                                if (tbl.Rows[i]["prtymob"].ToString() != "")
                                 {
                                     rf = rf + 1;
                                     rfld = "sladd" + Convert.ToString(rf);
@@ -2146,7 +2152,7 @@ namespace Improvar.Controllers
                                 dr1["slcd"] = tbl.Rows[i]["RTDEBCD"].ToString();
                                 dr1["slnm"] = tbl.Rows[i]["RTDEBNM"].ToString();
                                 dr1["regemailid"] = tbl.Rows[i]["rtdebemail"].ToString();
-                                
+
                                 for (int f = 1; f <= 6; f++)
                                 {
                                     cfld = "rtdebadd" + Convert.ToString(f).ToString();
@@ -2822,6 +2828,7 @@ namespace Improvar.Controllers
                     reportdocument.SetParameterValue("legalname", compaddress.retCompValue("legalname"));
                     reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                     reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
+                    reportdocument.SetParameterValue("reptype", VE.TEXTBOX7.retStr());
 
                     if (printemail == "Excel")
                     {
@@ -2861,8 +2868,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
-
         public ActionResult ReportSaleBillPrint(ReportViewinHtml VE, string fdate, string tdate, string fdocno, string tdocno, string COM, string LOC, string yr_cd, string slcd, string doccd, string prnemailid, int maxR, string blhead, string gocd, string grpemailid, string Scm1, string Scmf, string scmI, string[] copyno, string rptname, string printemail, string docnm)
         {
             try
@@ -3526,7 +3531,7 @@ namespace Improvar.Controllers
                             }
 
                             DataRow dr1 = IR.NewRow();
-                            docstart:
+                        docstart:
                             double duedays = 0;
                             string payterms = "";
                             duedays = tbl.Rows[i]["duedays"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["duedays"]);
@@ -4431,7 +4436,6 @@ namespace Improvar.Controllers
         //    Cn.SaveException(ex, "");
         //    return Content(ex.Message);
         //}
-
         public string SaleSMSSend(string autono = "", string doccd = "", string slcd = "", string fdocdt = "", string tdocdt = "", string fdocno = "", string tdocno = "")
         {
             SMS SMS = new SMS();
@@ -4450,6 +4454,38 @@ namespace Improvar.Controllers
                 }
             }
             return SmsRetVal;
+        }
+        public ActionResult ReportBarcodeImagePrint(ReportViewinHtml VE, FormCollection FC, string todt, string barno)
+        {
+            string scm1 = CommVar.CurSchema(UNQSNO).ToString();
+            DataTable dt = new DataTable("Rep_BarcodeImage");
+            dt.Columns.Add("BARNO", typeof(string));
+            dt.Columns.Add("DOC_FLNAME", typeof(string));
+            dt.Columns.Add("LINE1", typeof(string));
+            dt.Columns.Add("LINE2", typeof(string));
+
+            var dttt = Salesfunc.GetStock(todt, "", barno);
+            for (int i = 0; i < dttt.Rows.Count; i++)
+            {
+                if (dttt.Rows[i]["barimage"].retStr() != "")
+                {
+                    var brimgs = dttt.Rows[i]["barimage"].retStr().Split((char)179);
+                    foreach (var barimg in brimgs)
+                    {
+                        string barfilename = barimg.Split('~')[0].Trim();
+                        string barimgdesc = barimg.Split('~')[1];
+                        DataRow dr1 = dt.NewRow();
+                        dr1["BARNO"] = dttt.Rows[i]["BARNO"].ToString();
+                        dr1["DOC_FLNAME"] = barfilename;//dttt.Rows[i]["DOC_FLNAME"].ToString();
+                        dr1["LINE1"] = barimgdesc;// dttt.Rows[i]["DOC_DESC"].ToString(); ;
+                        dr1["LINE2"] = "1700001 SD";
+                        dt.Rows.Add(dr1);
+                    }
+                }
+
+            }
+            Session["DtRepBarcodeImage"] = dt;
+            return RedirectToAction("Rep_BarcodeImage", "Rep_BarcodeImage", new { US = Cn.Encrypt_URL(UNQSNO) });
         }
     }
 }
