@@ -6,7 +6,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>E:\publish folder\Publish_Sales</_PublishTargetUrl>
+    <_PublishTargetUrl>D:\PUBLISH\Cloth</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="apiapp.json">
@@ -19,13 +19,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/10/2013 16:29:20</publishTime>
     </File>
     <File Include="bin/App_Browsers.dll">
-      <publishTime>07/30/2020 07:32:55</publishTime>
+      <publishTime>12/19/2020 17:54:56</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>07/30/2020 07:32:55</publishTime>
+      <publishTime>12/19/2020 17:54:55</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>07/30/2020 07:32:55</publishTime>
+      <publishTime>12/19/2020 17:54:55</publishTime>
+    </File>
+    <File Include="bin/BarcodeLib.dll">
+      <publishTime>04/15/2018 20:22:24</publishTime>
+    </File>
+    <File Include="bin/BouncyCastle.Crypto.dll">
+      <publishTime>02/21/2020 16:24:54</publishTime>
     </File>
     <File Include="bin/Bytescout.BarCode.dll">
       <publishTime>04/09/2018 10:06:00</publishTime>
@@ -35,6 +41,57 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="bin/ClosedXML.dll">
       <publishTime>12/18/2018 08:56:36</publishTime>
+    </File>
+    <File Include="bin/Common.Logging.Core.dll">
+      <publishTime>08/16/2017 06:51:46</publishTime>
+    </File>
+    <File Include="bin/Common.Logging.dll">
+      <publishTime>08/16/2017 06:51:42</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.CrystalReports.Engine.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.ClientDoc.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.CommLayer.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.CommonControls.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.CommonObjectModel.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.Controllers.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.CubeDefModel.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.DataDefModel.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.DataSetConversion.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.ObjectFactory.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.Prompting.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.ReportDefModel.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportAppServer.XmlSerialize.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.ReportSource.dll">
+      <publishTime>06/15/2016 04:39:48</publishTime>
+    </File>
+    <File Include="bin/CrystalDecisions.Shared.dll">
+      <publishTime>06/15/2016 04:39:50</publishTime>
     </File>
     <File Include="bin/DocumentFormat.OpenXml.dll">
       <publishTime>06/06/2017 22:59:20</publishTime>
@@ -55,10 +112,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/06/2018 05:29:48</publishTime>
     </File>
     <File Include="bin/Improvar.dll">
-      <publishTime>07/30/2020 07:32:14</publishTime>
+      <publishTime>12/19/2020 17:54:23</publishTime>
     </File>
     <File Include="bin/itextsharp.dll">
-      <publishTime>05/24/2014 15:47:00</publishTime>
+      <publishTime>07/29/2014 07:36:56</publishTime>
     </File>
     <File Include="bin/Microsoft.Azure.AppService.ApiApps.Service.dll">
       <publishTime>06/10/2015 11:24:00</publishTime>
@@ -79,7 +136,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/31/2016 12:21:08</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
-      <publishTime>03/24/2018 17:44:14</publishTime>
+      <publishTime>11/26/2019 16:16:41</publishTime>
     </File>
     <File Include="bin/Oracle.ManagedDataAccess.dll">
       <publishTime>05/25/2017 20:39:04</publishTime>
@@ -92,6 +149,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="bin/PagedList.Mvc.dll">
       <publishTime>11/21/2016 11:30:38</publishTime>
+    </File>
+    <File Include="bin/QRCoder.dll">
+      <publishTime>11/17/2020 16:57:42</publishTime>
     </File>
     <File Include="bin/roslyn/csc.exe">
       <publishTime>05/24/2018 13:38:22</publishTime>
@@ -217,7 +277,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/23/2014 13:57:34</publishTime>
     </File>
     <File Include="bin/__browserCapabilitiesCompiler.compiled">
-      <publishTime>07/30/2020 07:32:55</publishTime>
+      <publishTime>12/19/2020 17:54:56</publishTime>
     </File>
     <File Include="Content/A4-Landscep.css">
       <publishTime>03/07/2020 10:32:52</publishTime>
@@ -238,16 +298,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/07/2020 10:32:52</publishTime>
     </File>
     <File Include="Content/bootstrap-select.css">
-      <publishTime>01/08/2018 12:09:36</publishTime>
+      <publishTime>08/10/2020 18:10:15</publishTime>
     </File>
     <File Include="Content/bootstrap-select.min.css">
       <publishTime>01/08/2018 12:09:36</publishTime>
     </File>
     <File Include="Content/bootstrap.css">
-      <publishTime>03/07/2020 10:32:52</publishTime>
+      <publishTime>08/10/2020 18:10:15</publishTime>
     </File>
     <File Include="Content/bootstrap.min.css">
-      <publishTime>03/07/2020 10:32:52</publishTime>
+      <publishTime>08/10/2020 18:10:15</publishTime>
     </File>
     <File Include="Content/company_selection.css">
       <publishTime>03/07/2020 10:32:52</publishTime>
@@ -379,19 +439,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/07/2020 10:32:52</publishTime>
     </File>
     <File Include="Content/layout_misc.css">
-      <publishTime>03/31/2020 18:54:08</publishTime>
+      <publishTime>08/10/2020 18:10:15</publishTime>
     </File>
     <File Include="Content/login_signup.css">
       <publishTime>03/07/2020 10:32:52</publishTime>
     </File>
     <File Include="Content/main_layout.css">
-      <publishTime>03/31/2020 18:54:08</publishTime>
+      <publishTime>08/10/2020 18:10:15</publishTime>
     </File>
     <File Include="Content/MyStyle.css">
-      <publishTime>03/07/2020 10:32:52</publishTime>
+      <publishTime>08/10/2020 18:10:15</publishTime>
     </File>
     <File Include="Content/MyTree.css">
-      <publishTime>03/07/2020 10:32:52</publishTime>
+      <publishTime>08/10/2020 18:10:15</publishTime>
     </File>
     <File Include="Content/PagedList.css">
       <publishTime>01/08/2018 12:09:36</publishTime>
@@ -400,7 +460,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>01/08/2018 12:09:36</publishTime>
     </File>
     <File Include="Content/Site.css">
-      <publishTime>03/07/2020 10:32:52</publishTime>
+      <publishTime>08/10/2020 18:10:15</publishTime>
     </File>
     <File Include="Content/themes/base/accordion.css">
       <publishTime>07/16/2018 15:14:06</publishTime>
@@ -648,6 +708,18 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Content/treeview.css">
       <publishTime>01/08/2018 12:09:36</publishTime>
     </File>
+    <File Include="DataSets/DSPrintBarcode.xsc">
+      <publishTime>10/14/2020 11:39:16</publishTime>
+    </File>
+    <File Include="DataSets/DSPrintBarcode.xss">
+      <publishTime>10/15/2020 16:11:36</publishTime>
+    </File>
+    <File Include="DataSets/DSPrintJobissue.xsc">
+      <publishTime>11/05/2020 15:40:26</publishTime>
+    </File>
+    <File Include="DataSets/DSPrintJobissue.xss">
+      <publishTime>11/30/2020 12:08:54</publishTime>
+    </File>
     <File Include="favicon.ico">
       <publishTime>10/25/2019 15:00:08</publishTime>
     </File>
@@ -829,10 +901,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/02/2016 12:40:52</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>07/19/2020 19:47:01</publishTime>
+      <publishTime>12/07/2020 16:22:25</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>07/30/2020 07:32:51</publishTime>
+      <publishTime>12/19/2020 17:54:48</publishTime>
     </File>
     <File Include="Report/CORRES.rpt">
       <publishTime>06/03/2020 10:33:47</publishTime>
@@ -854,6 +926,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Report/JobIssue.rpt">
       <publishTime>06/04/2019 18:33:22</publishTime>
+    </File>
+    <File Include="Report/JobIssue1.rpt">
+      <publishTime>11/30/2020 12:08:54</publishTime>
     </File>
     <File Include="Report/JobIssueOld.rpt">
       <publishTime>06/06/2020 11:11:27</publishTime>
@@ -936,8 +1011,11 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/capsLock.js">
       <publishTime>01/08/2018 12:10:16</publishTime>
     </File>
+    <File Include="Scripts/Cloth.js">
+      <publishTime>12/07/2020 16:21:35</publishTime>
+    </File>
     <File Include="Scripts/Custom.js">
-      <publishTime>06/14/2020 17:12:57</publishTime>
+      <publishTime>11/06/2020 19:02:42</publishTime>
     </File>
     <File Include="Scripts/CustomCombo.js">
       <publishTime>09/17/2019 19:13:52</publishTime>
@@ -1035,8 +1113,14 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/respond.min.js">
       <publishTime>07/16/2018 15:14:38</publishTime>
     </File>
+    <File Include="Scripts/Sale.js">
+      <publishTime>12/19/2020 17:51:53</publishTime>
+    </File>
+    <File Include="Scripts/SalePos.js">
+      <publishTime>12/19/2020 17:51:53</publishTime>
+    </File>
     <File Include="Scripts/_references.js">
-      <publishTime>07/06/2019 20:50:20</publishTime>
+      <publishTime>11/06/2020 11:12:00</publishTime>
     </File>
     <File Include="Templates/Email/Docauth.htm">
       <publishTime>02/05/2019 10:10:20</publishTime>
@@ -1054,37 +1138,40 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/04/2018 10:17:56</publishTime>
     </File>
     <File Include="Views/Datalock/Datalock.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/DOCPASS_STRGY/DOCPASS_STRGY.cshtml">
       <publishTime>05/18/2020 19:53:33</publishTime>
     </File>
     <File Include="Views/Home/CompanySelection.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
+    </File>
+    <File Include="Views/Image_Link_Barcode/Image_Link_Barcode.cshtml">
+      <publishTime>10/10/2020 19:24:48</publishTime>
     </File>
     <File Include="Views/JobBill_Print/JobBill_Print.cshtml">
       <publishTime>05/18/2020 19:53:33</publishTime>
     </File>
     <File Include="Views/Login/ChangePassword.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Login/Datelock.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Login/ForgotPassword.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Login/Login.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Login/ServerConfigaration.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/MS_DOCTYPE/MS_DOCTYPE.cshtml">
-      <publishTime>06/15/2020 07:53:01</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/MS_UOM/MS_UOM.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:49:14</publishTime>
     </File>
     <File Include="Views/Multiviewer/multiVu.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1093,22 +1180,22 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:33</publishTime>
     </File>
     <File Include="Views/M_Amttype/M_Amttype.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>09/01/2020 12:01:05</publishTime>
     </File>
     <File Include="Views/M_Area/M_Area.cshtml">
       <publishTime>05/18/2020 19:53:33</publishTime>
     </File>
     <File Include="Views/M_BOM/M_BOM.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>09/07/2020 16:52:37</publishTime>
     </File>
     <File Include="Views/M_Brand/M_Brand.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/15/2020 14:14:14</publishTime>
     </File>
     <File Include="Views/M_Collection/M_Collection.cshtml">
-      <publishTime>05/18/2020 19:53:33</publishTime>
+      <publishTime>08/20/2020 00:18:24</publishTime>
     </File>
     <File Include="Views/M_Color/M_Color.cshtml">
-      <publishTime>06/01/2020 13:49:23</publishTime>
+      <publishTime>08/22/2020 21:50:04</publishTime>
     </File>
     <File Include="Views/M_Disc_Code/M_Disc_Code.cshtml">
       <publishTime>05/18/2020 19:53:33</publishTime>
@@ -1120,25 +1207,25 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/M_FinProduct/M_FinProduct.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/06/2020 13:00:13</publishTime>
     </File>
     <File Include="Views/M_Floor/M_Floor.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/27/2020 13:15:47</publishTime>
     </File>
     <File Include="Views/M_Godown/M_Godown.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/27/2020 18:06:34</publishTime>
     </File>
     <File Include="Views/M_GrpMast/M_GrpMast.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/06/2020 19:28:22</publishTime>
     </File>
     <File Include="Views/M_ItemPart/M_ItemPart.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/27/2020 19:16:00</publishTime>
     </File>
     <File Include="Views/M_ItemSize/M_ItemSize.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/19/2020 00:33:48</publishTime>
     </File>
     <File Include="Views/M_JobMaster/M_JobMaster.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>09/05/2020 15:33:06</publishTime>
     </File>
     <File Include="Views/M_Job_Pric/M_Job_Pric.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1147,16 +1234,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/M_Line/M_Line.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/27/2020 13:15:47</publishTime>
     </File>
     <File Include="Views/M_Machine/M_Machine.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/M_MtrlJobMaster/M_MtrlJobMaster.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>09/02/2020 18:08:00</publishTime>
     </File>
     <File Include="Views/M_Plist_Code/M_Plist_Code.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/06/2020 13:03:10</publishTime>
     </File>
     <File Include="Views/M_PList_Rate/M_PList_Rate.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1165,7 +1252,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/M_Prod_Group/M_Prod_Group.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/14/2020 19:16:44</publishTime>
+    </File>
+    <File Include="Views/M_RetMaster/M_RetMaster.cshtml">
+      <publishTime>08/29/2020 18:48:33</publishTime>
     </File>
     <File Include="Views/M_Scheme/M_Scheme.cshtml">
       <publishTime>06/01/2020 13:49:25</publishTime>
@@ -1173,20 +1263,26 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/M_ScmItemGrp/M_ScmItemGrp.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
+    <File Include="Views/M_Stktype/M_Stktype.cshtml">
+      <publishTime>08/27/2020 18:06:34</publishTime>
+    </File>
     <File Include="Views/M_SubBrand/M_SubBrand.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/20/2020 18:56:16</publishTime>
     </File>
     <File Include="Views/M_SubLeg_SDdtl/M_SubLeg_SDdtl.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/29/2020 18:48:33</publishTime>
     </File>
     <File Include="Views/M_Sub_Job/M_Sub_Job.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>09/07/2020 16:21:34</publishTime>
+    </File>
+    <File Include="Views/M_SysCnfg/M_SysCnfg.cshtml">
+      <publishTime>12/14/2020 11:11:18</publishTime>
     </File>
     <File Include="Views/M_Tax_Rate/M_Tax_Rate.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/22/2020 21:50:04</publishTime>
     </File>
     <File Include="Views/M_Tax_Rate_Code/M_Tax_Rate_Code.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/31/2020 17:33:01</publishTime>
     </File>
     <File Include="Views/M_USR_ACS_DOCCD/M_USR_ACS_DOCCD.cshtml">
       <publishTime>05/31/2020 18:40:07</publishTime>
@@ -1212,6 +1308,18 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/Rep_Agent/Rep_Agent.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
+    <File Include="Views/Rep_BarcodeImage/Rep_BarcodeImage.cshtml">
+      <publishTime>11/09/2020 15:08:25</publishTime>
+    </File>
+    <File Include="Views/Rep_BarcodePrint/PreviewBarcodeTxtFmt.cshtml">
+      <publishTime>10/16/2020 13:57:58</publishTime>
+    </File>
+    <File Include="Views/Rep_BarcodePrint/Rep_BarcodePrint.cshtml">
+      <publishTime>10/16/2020 13:22:20</publishTime>
+    </File>
+    <File Include="Views/Rep_Bar_History/Rep_Bar_History.cshtml">
+      <publishTime>11/05/2020 15:40:26</publishTime>
+    </File>
     <File Include="Views/Rep_BlWise/Rep_BlWise.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
@@ -1225,7 +1333,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Rep_Doc_Print/Rep_Doc_Print.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>09/12/2020 13:50:30</publishTime>
     </File>
     <File Include="Views/Rep_Emp_Job_Det/Rep_Emp_Job_Det.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1264,7 +1372,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Rep_OrdPrint/Rep_OrdPrint.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>12/11/2020 11:36:09</publishTime>
     </File>
     <File Include="Views/Rep_OrdReg/Rep_OrdReg.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1294,7 +1402,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Rep_Reg/Rep_Reg.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/30/2020 12:08:54</publishTime>
     </File>
     <File Include="Views/Rep_Reg_In_Out/Rep_Reg_In_Out.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1333,16 +1441,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/RPTViewer/NoRecords.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/RPTViewer/PrintViewer.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/RPTViewer/ResponsivePrintViewer.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/SaleBill_Print/SaleBill_Print.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>12/19/2020 17:51:53</publishTime>
     </File>
     <File Include="Views/Shared/EditorTemplates/Date.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1351,22 +1459,22 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_Dashboard.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_datalockTree.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_datelockDefaultdate.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_datelockRights.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_deshboard.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_DOCPASS_STRGY_LEVEL1.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>09/03/2020 18:13:46</publishTime>
     </File>
     <File Include="Views/Shared/_DOCPASS_STRGY_LEVEL2.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1381,34 +1489,34 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_DownloadButton.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_FilteredSearch.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_FinancialYear.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_Help1.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_Help2.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>07/01/2020 09:27:35</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_Location.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_Manu.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_MessageBox.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_ModifyLog.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>10/29/2020 18:32:42</publishTime>
     </File>
     <File Include="Views/Shared/_MS_DOCTYPE_Compcod.cshtml">
       <publishTime>06/15/2020 07:52:49</publishTime>
@@ -1417,19 +1525,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_M_BOM_MAIN.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/30/2020 12:08:54</publishTime>
     </File>
     <File Include="Views/Shared/_M_BOM_MATERIAL.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>09/07/2020 16:37:06</publishTime>
     </File>
     <File Include="Views/Shared/_M_BOM_OPERATION.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/30/2020 12:08:54</publishTime>
     </File>
     <File Include="Views/Shared/_M_BOM_OPERATION_PRINT.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/24/2020 18:46:11</publishTime>
     </File>
     <File Include="Views/Shared/_M_BOM_RMPM.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>09/07/2020 16:34:50</publishTime>
     </File>
     <File Include="Views/Shared/_M_disc_rate_MAIN.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1440,6 +1548,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/Shared/_M_FinProduct_ASSORTEDSIZE.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
+    <File Include="Views/Shared/_M_FinProduct_BARCD.cshtml">
+      <publishTime>10/15/2020 15:50:38</publishTime>
+    </File>
     <File Include="Views/Shared/_M_FinProduct_COLOR.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
@@ -1447,13 +1558,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_M_FinProduct_Measurement.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/20/2020 18:56:16</publishTime>
     </File>
     <File Include="Views/Shared/_M_FinProduct_PART.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/20/2020 18:56:16</publishTime>
+    </File>
+    <File Include="Views/Shared/_M_FinProduct_Prices.cshtml">
+      <publishTime>10/15/2020 16:06:42</publishTime>
     </File>
     <File Include="Views/Shared/_M_FinProduct_SIZE.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
+    </File>
+    <File Include="Views/Shared/_M_FinProduct_SLCD.cshtml">
+      <publishTime>09/14/2020 00:57:27</publishTime>
     </File>
     <File Include="Views/Shared/_M_Job_Pric_Main.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1489,7 +1606,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_M_Tax_Rate_GRID.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/16/2020 13:07:26</publishTime>
     </File>
     <File Include="Views/Shared/_M_USR_ACS_DOCCD_GRID.cshtml">
       <publishTime>05/31/2020 18:39:52</publishTime>
@@ -1513,7 +1630,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_ReportLayout.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>10/15/2020 19:21:54</publishTime>
+    </File>
+    <File Include="Views/Shared/_Rep_BarcodePrint_Main.cshtml">
+      <publishTime>10/15/2020 19:13:49</publishTime>
+    </File>
+    <File Include="Views/Shared/_REP_BAR_HISTORY.cshtml">
+      <publishTime>11/04/2020 17:27:35</publishTime>
+    </File>
+    <File Include="Views/Shared/_Rep_Bar_History_Details.cshtml">
+      <publishTime>10/30/2020 16:06:36</publishTime>
+    </File>
+    <File Include="Views/Shared/_REP_BAR_HISTORY_PRICE.cshtml">
+      <publishTime>11/04/2020 17:27:35</publishTime>
     </File>
     <File Include="Views/Shared/_Rep_EWB_Gen.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1522,25 +1651,43 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_SearchPannel2.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_SUB_LEDGER.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>10/15/2020 11:59:33</publishTime>
     </File>
     <File Include="Views/Shared/_SUB_LEDGER_BANK.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>10/15/2020 11:59:33</publishTime>
     </File>
     <File Include="Views/Shared/_SUB_LEDGER_COMPANY.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>10/15/2020 11:59:33</publishTime>
     </File>
     <File Include="Views/Shared/_SUB_LEDGER_OTHER.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>10/15/2020 11:59:33</publishTime>
     </File>
     <File Include="Views/Shared/_TRANSACTIONREMARKS.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_TS_DOCAUTH_MAIN.cshtml">
       <publishTime>06/17/2020 10:46:10</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_BiltyG_Mutia_Main.cshtml">
+      <publishTime>09/08/2020 12:24:04</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_BiltyG_Mutia_PopUp.cshtml">
+      <publishTime>09/08/2020 22:22:14</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_BiltyR_Mutia_Main.cshtml">
+      <publishTime>09/10/2020 16:36:13</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_BiltyR_Mutia_PopUp.cshtml">
+      <publishTime>09/08/2020 22:22:14</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_Bilty_Khasra_Main.cshtml">
+      <publishTime>09/10/2020 16:36:13</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_Bilty_Khasra_PopUp.cshtml">
+      <publishTime>09/10/2020 16:36:13</publishTime>
     </File>
     <File Include="Views/Shared/_T_DNCN_CLASS.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1614,6 +1761,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/Shared/_T_OUTISSPROCESS_BOM_ACCESSORIES.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
+    <File Include="Views/Shared/_T_OUTISSPROCESS_DETAIL.cshtml">
+      <publishTime>11/06/2020 11:01:20</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_OUTISSPROCESS_MaterialIssue.cshtml">
+      <publishTime>11/30/2020 12:08:54</publishTime>
+    </File>
     <File Include="Views/Shared/_T_OUTISSPROCESS_MATTERIAL.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
@@ -1624,13 +1777,22 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_T_OUTISSPROCESS_PROGRAMME.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/30/2020 12:08:54</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_OUTISSPROCESS_QtyRequirement.cshtml">
+      <publishTime>11/30/2020 12:08:55</publishTime>
     </File>
     <File Include="Views/Shared/_T_OUTISSPROCESS_RECEIVE.cshtml">
       <publishTime>07/22/2020 07:34:10</publishTime>
     </File>
     <File Include="Views/Shared/_T_OUTISSPROCESS_YARN_ACCESSORIES.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_OUTRECPROCESS_Amount.cshtml">
+      <publishTime>10/30/2020 13:03:05</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_OUTRECPROCESS_Detail.cshtml">
+      <publishTime>11/03/2020 18:27:05</publishTime>
     </File>
     <File Include="Views/Shared/_T_OUTRECPROCESS_FOLDING_WASTAGE.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1642,7 +1804,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_T_OUTRECPROCESS_PROGRAMME.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/04/2020 17:27:35</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_OUTRECPROCESS_Receive.cshtml">
+      <publishTime>11/04/2020 18:06:05</publishTime>
     </File>
     <File Include="Views/Shared/_T_OUTRECPROCESS_YARN_ACCESSORIES.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1660,13 +1825,43 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_T_SALE_AMOUNT.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>10/31/2020 12:04:01</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_BarTab.cshtml">
+      <publishTime>12/19/2020 17:51:53</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_DETAIL.cshtml">
+      <publishTime>12/19/2020 17:51:53</publishTime>
     </File>
     <File Include="Views/Shared/_T_SALE_PACKINGSLIP.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
+    <File Include="Views/Shared/_T_SALE_PENDINGORDER.cshtml">
+      <publishTime>11/10/2020 16:20:18</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_POS_AMOUNT.cshtml">
+      <publishTime>12/11/2020 10:59:15</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_POS_PAYMENT.cshtml">
+      <publishTime>12/19/2020 17:51:53</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_POS_PRODUCT.cshtml">
+      <publishTime>12/19/2020 17:51:53</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_POS_RETURN.cshtml">
+      <publishTime>12/19/2020 17:51:53</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_POS_RETURN_POPUP.cshtml">
+      <publishTime>12/19/2020 17:51:53</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_POS_SALESMAN.cshtml">
+      <publishTime>12/09/2020 09:44:08</publishTime>
+    </File>
     <File Include="Views/Shared/_T_SALE_PRODUCT.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
+    </File>
+    <File Include="Views/Shared/_T_SALE_RateHistory.cshtml">
+      <publishTime>10/29/2020 18:25:48</publishTime>
     </File>
     <File Include="Views/Shared/_T_SALE_SIZE.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1696,13 +1891,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_T_SORD_MAIN.cshtml">
-      <publishTime>07/03/2020 06:44:47</publishTime>
+      <publishTime>12/11/2020 11:06:35</publishTime>
     </File>
     <File Include="Views/Shared/_T_SORD_SCHEME.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/22/2020 22:59:53</publishTime>
     </File>
     <File Include="Views/Shared/_T_SORD_SEARCH_PANEL.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/22/2020 22:59:53</publishTime>
     </File>
     <File Include="Views/Shared/_T_SORD_SIZE.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1741,19 +1936,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/Shared/_userrightcompanygrid.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_userRights.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:01</publishTime>
     </File>
     <File Include="Views/Shared/_userrightTree.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:02</publishTime>
     </File>
     <File Include="Views/Shared/_User_Guide.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>08/10/2020 18:11:02</publishTime>
     </File>
     <File Include="Views/SUB_LEDGER/SUB_LEDGER.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>10/15/2020 11:59:33</publishTime>
     </File>
     <File Include="Views/Sys_PriceList_AutoGen/Sys_PriceList_AutoGen.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1769,6 +1964,15 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Views/T_Ack/T_Ack.cshtml">
       <publishTime>06/01/2020 13:49:26</publishTime>
+    </File>
+    <File Include="Views/T_BiltyG_Mutia/T_BiltyG_Mutia.cshtml">
+      <publishTime>09/11/2020 23:17:14</publishTime>
+    </File>
+    <File Include="Views/T_BiltyR_Mutia/T_BiltyR_Mutia.cshtml">
+      <publishTime>09/11/2020 23:17:14</publishTime>
+    </File>
+    <File Include="Views/T_Bilty_Khasra/T_Bilty_Khasra.cshtml">
+      <publishTime>09/11/2020 23:17:14</publishTime>
     </File>
     <File Include="Views/T_DNCN/T_DNCN.cshtml">
       <publishTime>07/21/2020 08:00:13</publishTime>
@@ -1807,10 +2011,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/01/2020 13:51:11</publishTime>
     </File>
     <File Include="Views/T_OUTISSPROCESS/T_OUTISSPROCESS.cshtml">
-      <publishTime>07/22/2020 07:33:31</publishTime>
+      <publishTime>11/30/2020 12:08:55</publishTime>
     </File>
     <File Include="Views/T_OUTRECPROCESS/T_OUTRECPROCESS.cshtml">
-      <publishTime>05/18/2020 19:53:34</publishTime>
+      <publishTime>11/04/2020 18:06:05</publishTime>
     </File>
     <File Include="Views/T_PrevYr_Sales/T_PrevYr_Sales.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1819,7 +2023,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/01/2020 09:27:33</publishTime>
     </File>
     <File Include="Views/T_SALE/T_SALE.cshtml">
-      <publishTime>06/23/2020 11:29:14</publishTime>
+      <publishTime>12/19/2020 17:51:53</publishTime>
+    </File>
+    <File Include="Views/T_SALE_POS/T_SALE_POS.cshtml">
+      <publishTime>12/19/2020 17:51:53</publishTime>
     </File>
     <File Include="Views/T_SDO/T_SDO.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1828,7 +2035,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/04/2020 12:01:37</publishTime>
     </File>
     <File Include="Views/T_SORD/T_SORD.cshtml">
-      <publishTime>07/03/2020 06:44:12</publishTime>
+      <publishTime>12/11/2020 12:12:38</publishTime>
     </File>
     <File Include="Views/T_SORDCANC/T_SORDCANC.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1840,7 +2047,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Views/UserRights/user_rights.cshtml">
-      <publishTime>05/31/2020 18:40:08</publishTime>
+      <publishTime>08/10/2020 18:11:02</publishTime>
     </File>
     <File Include="Views/User_Guide/User_Guide.cshtml">
       <publishTime>05/18/2020 19:53:34</publishTime>
@@ -1852,7 +2059,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/18/2020 19:53:34</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>07/21/2020 08:06:03</publishTime>
+      <publishTime>12/19/2020 17:54:45</publishTime>
     </File>
   </ItemGroup>
 </Project>
