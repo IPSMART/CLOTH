@@ -1623,19 +1623,18 @@ namespace Improvar
         //        }
         //    }
         //}
-        public string RTDEBCD_help(string val, string docdt = "")
+        public string RTDEBCD_help(string val, string slcd = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
-            string sql = "", effdt = "";
-            string valsrch = val.ToUpper().Trim();
-            if (docdt.retDateStr() != "") effdt = docdt.retDateStr().Substring(0, 10);
+            string sql = "",valsrch=""; 
+           if(val!=null) valsrch = val.ToUpper().Trim();
             sql = "";
-            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR,d.TAXGRPCD,c.retdebslcd,effdt ";
+            sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR,d.TAXGRPCD,c.retdebslcd ";
             sql += "from " + scmf + ".M_RETDEB a, " + scmf + ".M_CNTRL_HDR b , " + scm + ".M_SYSCNFG c , " + scm + ".M_SUBLEG_SDDTL d ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and a.RTDEBCD=c.RTDEBCD(+) and c.retdebslcd=d.SLCD(+) and b.INACTIVE_TAG = 'N' ";
-            // if (effdt.retStr() != "") sql += "and c.effdt >= to_date('" + effdt + "', 'dd/mm/yyyy') ";
-            if (effdt.retStr() != "") sql += "and c.effdt <= to_date('" + effdt + "', 'dd/mm/yyyy')  "; /*and c.effdt in(select max(effdt) effdt*/
+            if (slcd.retStr() != "") sql += "and c.retdebslcd='" + slcd + "' ";
+            //if (effdt.retStr() != "") sql += "and c.effdt <= to_date('" + effdt + "', 'dd/mm/yyyy')  "; /*and c.effdt in(select max(effdt) effdt*/
             if (valsrch.retStr() != "") sql += "and ( upper(a.RTDEBCD) = '" + valsrch + "' ) ";
             sql += "order by a.RTDEBCD,a.RTDEBNM";
             DataTable tbl = SQLquery(sql);
@@ -1644,10 +1643,10 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td><td>" + tbl.Rows[i]["MOBILE"] + " </td><td>" + tbl.Rows[i]["ADDR"] + " </td><td>" + tbl.Rows[i]["TAXGRPCD"] + " </td><td>" + tbl.Rows[i]["retdebslcd"] + " </td><td>" + tbl.Rows[i]["effdt"].retDateStr() + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td></tr>");
                 }
-                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code" + Cn.GCS() + "Mobile No." + Cn.GCS() + "Address" + Cn.GCS() + "Tax Group Code" + Cn.GCS() + "retdbslcd" + Cn.GCS() + "EFFDT";
-                return Generate_help(hdr, SB.ToString(), "5");
+                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
+                return Generate_help(hdr, SB.ToString(), "");
             }
             else
             {
