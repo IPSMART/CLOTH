@@ -21,9 +21,12 @@ namespace Improvar.ViewModels
         public T_TXNOTH T_TXNOTH { get; set; }
         public T_TXNPYMT T_TXNPYMT { get; set; }
         public T_TXNSTATUS T_TXNSTATUS { get; set; }
-        public T_TXNTRANS T_TXNTRANS { get; set; }
+        //public T_TXNTRANS T_TXNTRANS { get; set; }
         public T_VCH_GST T_VCH_GST { get; set; }
         public T_STKTRNF T_STKTRNF { get; set; }
+        public T_TXNEINV T_TXNEINV { get; set; }
+        public T_TXNEWB T_TXNEWB { get; set; }
+        public T_TXNTRANS T_TXNTRANS { get; set; }
         public List<TTXNAMT> TTXNAMT { get; set; }
         public List<TTXNDTL> TTXNDTL { get; set; }
         public List<TBATCHDTL> TBATCHDTL { get; set; }
@@ -74,7 +77,6 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? A_T_NET { get; set; }
         public string TRANSLNM { get; set; }
-        public string CRSLNM { get; set; }
         public string BARCODE { get; set; }
         public short? TXNSLNO { get; set; }
         [StringLength(4)]
@@ -210,5 +212,8 @@ namespace Improvar.ViewModels
         public string AGDOCNO { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? AGDOCDT { get; set; }
+        public List<VECHLTYPE> VECHLTYPE { get; set; }
+        public List<TRANSMODE> TRANSMODE { get; set; }
+        public string CRSLNM { get; set; }
     }
 }

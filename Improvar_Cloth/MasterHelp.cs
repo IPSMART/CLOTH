@@ -2666,5 +2666,39 @@ namespace Improvar
             }
             return DDL;
         }
+        public List<VECHLTYPE> VECHLTYPE()
+        {
+            List<VECHLTYPE> DTYP = new List<VECHLTYPE>();
+            VECHLTYPE DTYP3 = new VECHLTYPE();
+            DTYP3.Text = "Regular";
+            DTYP3.Value = "R";
+            DTYP.Add(DTYP3);
+            VECHLTYPE DTYP2 = new VECHLTYPE();
+            DTYP2.Text = "ODC";
+            DTYP2.Value = "O";
+            DTYP.Add(DTYP2);
+            return DTYP;
+        }
+        public List<TRANSMODE> TRANSMODE()
+        {
+            List<TRANSMODE> DTYP = new List<TRANSMODE>();
+            TRANSMODE DTYP3 = new TRANSMODE();
+            DTYP3.Text = "Road";
+            DTYP3.Value = "RO";
+            DTYP.Add(DTYP3);
+            TRANSMODE DTYP2 = new TRANSMODE();
+            DTYP2.Text = "Rail";
+            DTYP2.Value = "RA";
+            DTYP.Add(DTYP2);
+            TRANSMODE DTYP1 = new TRANSMODE();
+            DTYP1.Text = "Air";
+            DTYP1.Value = "AI";
+            DTYP.Add(DTYP1);
+            TRANSMODE DTYP4 = new TRANSMODE();
+            DTYP4.Text = "Ship";
+            DTYP4.Value = "SH";
+            DTYP.Add(DTYP4);
+            return DTYP;
+        }
     }
 }

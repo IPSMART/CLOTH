@@ -179,6 +179,8 @@ namespace Improvar.Models
         public virtual DbSet<M_BLTYPE> M_BLTYPE { get; set; }
         public virtual DbSet<M_SITEM_SLCD> M_SITEM_SLCD { get; set; }
         public virtual DbSet<M_HSNCODE> M_HSNCODE { get; set; }
+        public virtual DbSet<T_TXNEWB> T_TXNEWB { get; set; }
+        public virtual DbSet<T_TXNEINV> T_TXNEINV { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (SchemaDBO != null)
