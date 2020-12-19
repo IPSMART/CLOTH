@@ -290,18 +290,38 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetRefRetailDetails(string val)
+        //public ActionResult GetRefRetailDetails(string val)
+        //{
+        //    try
+        //    {
+        //        if (val == null)
+        //        {
+        //            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+        //            return PartialView("_Help2", Master_Help.RTDEBCD_help(val));
+        //        }
+        //        else
+        //        {
+        //            string str = Master_Help.RTDEBCD_help(val);
+        //            return Content(str);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message + ex.InnerException);
+        //    }
+        //}
+        public ActionResult GetRefRetailDetails(string val, string Code)
         {
             try
             {
-                if (val == null)
+                var str = Master_Help.RTDEBCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                    return PartialView("_Help2", Master_Help.RTDEBCD_help(val));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = Master_Help.RTDEBCD_help(val);
                     return Content(str);
                 }
             }
@@ -311,7 +331,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-      
+
         public ActionResult GetRefLedgerDetails(string val, string Code)
         {
             try

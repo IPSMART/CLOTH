@@ -1643,10 +1643,10 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["RTDEBNM"] + "</td><td>" + tbl.Rows[i]["RTDEBCD"] + " </td><td>" + tbl.Rows[i]["retdebslcd"] + " </td></tr>");
                 }
-                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code";
-                return Generate_help(hdr, SB.ToString(), "");
+                var hdr = "Ref Retail Name" + Cn.GCS() + "Ref Retail Code" + Cn.GCS() + "retdebslcd";
+                return Generate_help(hdr, SB.ToString(), "2");
             }
             else
             {

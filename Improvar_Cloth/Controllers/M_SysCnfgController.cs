@@ -354,11 +354,11 @@ namespace Improvar.Controllers
                 return Content(str);
             }
         }
-        public ActionResult GetRefRetailDetails(string val)
+        public ActionResult GetRefRetailDetails(string val,string code)
         {
             try
             {
-                var str = Master_Help.RTDEBCD_help(val);
+                var str = Master_Help.RTDEBCD_help(val, code);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
