@@ -1055,13 +1055,20 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = masterHelp.RTDEBCD_help(val, Code);
-                if (str.IndexOf("='helpmnu'") >= 0)
+                var str = masterHelp.RTDEBCD_help(val);
+               
+                    if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
                 }
                 else
-                {
+                {   var MSG = str.IndexOf(Cn.GCS());
+                    if (MSG >= 0)
+                    {
+                        DataTable Taxgrpcd = salesfunc.GetSlcdDetails(Code, "");
+                        str += "^TAXGRPCD=^" + Taxgrpcd.Rows[0]["taxgrpcd"] + Cn.GCS();
+                    }
+                                    
                     return Content(str);
                 }
             }

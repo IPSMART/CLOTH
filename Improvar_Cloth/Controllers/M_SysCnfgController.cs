@@ -358,7 +358,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = Master_Help.RTDEBCD_help(val, code);
+                var str = Master_Help.RTDEBCD_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
