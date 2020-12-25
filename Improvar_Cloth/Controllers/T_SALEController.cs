@@ -407,6 +407,7 @@ namespace Improvar.Controllers
                                     MTBARCODE = dr["MTBARCODE"].retStr(),
                                     ITCD = dr["ITCD"].retStr(),
                                     ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
+                                    ITNM = dr["ITNM"].retStr(),
                                     UOM = dr["UOMCD"].retStr(),
                                     STYLENO = dr["STYLENO"].retStr(),
                                     PARTCD = dr["PARTCD"].retStr(),
@@ -477,6 +478,7 @@ namespace Improvar.Controllers
                                   //MTBARCODE = dr["MTBARCODE"].retStr(),
                                   ITCD = dr["ITCD"].retStr(),
                                   ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
+                                  ITNM = dr["ITNM"].retStr(),
                                   UOM = dr["UOMCD"].retStr(),
                                   STKTYPE = dr["STKTYPE"].retStr(),
                                   STKNAME = dr["STKNAME"].retStr(),
@@ -1428,7 +1430,8 @@ namespace Improvar.Controllers
                                   x.GLCD,
                                   x.ITREM,
                                   x.AGDOCNO,
-                                  x.AGDOCDT
+                                  x.AGDOCDT,
+                                  x.ITNM
                               } into P
                               select new TTXNDTL
                               {
@@ -1467,6 +1470,7 @@ namespace Improvar.Controllers
                                   ITREM = P.Key.ITREM,
                                   AGDOCNO = P.Key.AGDOCNO,
                                   AGDOCDT = P.Key.AGDOCDT,
+                                  ITNM = P.Key.ITNM,
                               }).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
@@ -2609,6 +2613,7 @@ namespace Improvar.Controllers
                         dbsql = masterHelp.InsVch_Hdr(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, null, null, "Y", null, trcd, "", "", TTXN.CURR_CD, currrt, "", revcharge);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
+                        T_TXNEWB TTXNEWB = new T_TXNEWB();
                         string action = "A";
 
                         ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -2617,22 +2622,21 @@ namespace Improvar.Controllers
                         {
                             action = "E";
                         }
-                        T_TXNEWB TTXNEWB = new T_TXNEWB();
+
+                        //-------------------------EWB--------------------------//
+                        TTXNEWB.AUTONO = TTXN.AUTONO;
                         TTXNEWB.EMD_NO = TTXN.EMD_NO;
                         TTXNEWB.CLCD = TTXN.CLCD;
                         TTXNEWB.DTAG = TTXN.DTAG;
-                        TTXNEWB.AUTONO = TTXN.AUTONO;
                         TTXNEWB.TRANSLCD = VE.T_TXNTRANS.TRANSLCD;
+                        TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
                         TTXNEWB.LRNO = VE.T_TXNTRANS.LRNO;
                         TTXNEWB.LRDT = VE.T_TXNTRANS.LRDT;
                         TTXNEWB.LORRYNO = VE.T_TXNTRANS.LORRYNO;
                         TTXNEWB.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
                         TTXNEWB.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
-                        //TTXNEWB.DISTANCE = VE.T_TXNTRANS.TRWT;
-                        TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
-                        //TTXNEWB.EWAYBILLDT = VE.T_TXNTRANS.EWAYBILLDT;
-                        //TTXNEWB.EWAYBILLVALID = VE.T_TXNTRANS.EWAYBILLVALID;
                         TTXNEWB.GOCD = VE.T_TXN.GOCD;
+                        //----------------------------------------------------------//
 
                         dbsql = masterHelp.RetModeltoSql(TTXNEWB, action, CommVar.FinSchema(UNQSNO));
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -3374,6 +3378,7 @@ namespace Improvar.Controllers
                         if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "SRPOS") dncntag = "SC";
                         if (VE.MENU_PARA == "PR") dncntag = "PD";
                         double gblamt = TTXN.BLAMT.retDbl(); double groamt = TTXN.ROAMT.retDbl() + TTXN.TCSAMT.retDbl(); double gtcsamt = TTXN.TCSAMT.retDbl();
+                        string pinv = VE.MENU_PARA == "PI" ? "Y" : "";
                         for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
                         {
                             if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null)
@@ -3390,8 +3395,8 @@ namespace Improvar.Controllers
                                 TVCHGST.DOCCD = TTXN.DOCCD;
                                 TVCHGST.DOCNO = TTXN.DOCNO;
                                 TVCHGST.DOCDT = TTXN.DOCDT;
-                                TVCHGST.DSLNO = isl;
-                                TVCHGST.SLNO = gs;
+                                TVCHGST.DSLNO = isl.retShort();
+                                TVCHGST.SLNO = gs.retShort();
                                 TVCHGST.PCODE = TTXN.SLCD;
                                 TVCHGST.BLNO = strblno;
                                 if (strbldt.retStr() != "")
@@ -3441,7 +3446,7 @@ namespace Improvar.Controllers
                                 TVCHGST.TCSAMT = gtcsamt;
                                 //TVCHGST.PROFINV = "";
                                 TVCHGST.DELVSLCD = "";
-                                TVCHGST.GOCD = TTXN.GOCD;
+                                //TVCHGST.GOCD = TTXN.GOCD;
                                 TVCHGST.ITEMEXTDESC = "";
                                 //TVCHGST.FREEQNTY = ;
                                 TVCHGST.BATCHNO = "";
@@ -3452,6 +3457,7 @@ namespace Improvar.Controllers
                                 TVCHGST.BASAMT = VE.TTXNDTL[i].AMT;
                                 TVCHGST.DISCAMT = VE.TTXNDTL[i].TOTDISCAMT;
                                 TVCHGST.RATE = VE.TTXNDTL[i].RATE;
+                                TVCHGST.PINV = pinv;
                                 dbsql = masterHelp.RetModeltoSql(TVCHGST, "A", CommVar.FinSchema(UNQSNO));
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -3490,8 +3496,8 @@ namespace Improvar.Controllers
                                     TVCHGST1.DOCCD = TTXN.DOCCD;
                                     TVCHGST1.DOCNO = TTXN.DOCNO;
                                     TVCHGST1.DOCDT = TTXN.DOCDT;
-                                    TVCHGST1.DSLNO = isl;
-                                    TVCHGST1.SLNO = gs;
+                                    TVCHGST1.DSLNO = isl.retShort();
+                                    TVCHGST1.SLNO = gs.retShort();
                                     TVCHGST1.PCODE = TTXN.SLCD;
                                     TVCHGST1.BLNO = strblno;
                                     if (strbldt.retStr() != "")
@@ -3542,7 +3548,7 @@ namespace Improvar.Controllers
                                     TVCHGST1.TCSAMT = gtcsamt;
                                     //TVCHGST1.PROFINV = "";
                                     TVCHGST1.DELVSLCD = "";
-                                    TVCHGST1.GOCD = TTXN.GOCD;
+                                    //TVCHGST1.GOCD = TTXN.GOCD;
                                     TVCHGST1.ITEMEXTDESC = "";
                                     //TVCHGST1.FREEQNTY = ;
                                     TVCHGST1.BATCHNO = "";
@@ -3553,6 +3559,7 @@ namespace Improvar.Controllers
                                     TVCHGST1.BASAMT = VE.TTXNAMT[i].AMT;
                                     //TVCHGST1.DISCAMT = VE.TTXNAMT[i].DISCAMT;
                                     TVCHGST1.RATE = VE.TTXNAMT[i].AMTRATE;
+                                    TVCHGST1.PINV = pinv;
                                     dbsql = masterHelp.RetModeltoSql(TVCHGST1, "A", CommVar.FinSchema(UNQSNO));
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

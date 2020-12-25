@@ -32,7 +32,7 @@ namespace Improvar.Models
 
         [StringLength(100)]
         public string IRNNO { get; set; }
-        
+
         [StringLength(4000)]
         public string SIGNQRCODE { get; set; }
 
@@ -43,11 +43,5 @@ namespace Improvar.Models
         public string CANCELREM { get; set; }
 
         public DateTime? CANCELDT { get; set; }
-
-        [StringLength(4000)]
-        public string SIGNINV { get; set; }
-
-        [StringLength(4000)]
-        public string SIGNINV1 { get; set; }
     }
 }
