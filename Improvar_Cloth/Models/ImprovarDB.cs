@@ -15,7 +15,8 @@ namespace Improvar.Models
         {
             Database.SetInitializer<ImprovarDB>(null);
         }
-
+        public virtual DbSet<M_STCHGRP> M_STCHGRP { get; set; }
+        public virtual DbSet<M_STCHGRP_COMP> M_STCHGRP_COMP { get; set; }
         public virtual DbSet<M_REPFORMAT> M_REPFORMAT { get; set; }
         public virtual DbSet<M_SYSCNFG> M_SYSCNFG { get; set; }
         public virtual DbSet<T_STKTRNF> T_STKTRNF { get; set; }
@@ -77,7 +78,7 @@ namespace Improvar.Models
         public virtual DbSet<M_USR_ACS_DOCCD> M_USR_ACS_DOCCD { get; set; }
         public virtual DbSet<T_PSLIP> T_PSLIP { get; set; }
         public virtual DbSet<T_TXN> T_TXN { get; set; }
-        
+
         public virtual DbSet<M_PRCLST> M_PRCLST { get; set; }
         public virtual DbSet<T_TXNSTATUS> T_TXNSTATUS { get; set; }
         public virtual DbSet<M_CNTRL_HDR_REM> M_CNTRL_HDR_REM { get; set; }
