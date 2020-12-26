@@ -631,6 +631,9 @@ namespace Improvar.Controllers
                                     if (VE.MSTCHGRPCOMP[i].FLDCD == null)
                                     {
                                         FLDCD_no++;
+                                        //FLDCD = MFXGRP.STCHCD + (FLDCD_no).ToString("D4");
+                                        //MSTCHGRPCOMP.FLDCD = VE.MSTCHGRPCOMP[i].FLDCD == null ? FLDCD : VE.MSTCHGRPCOMP[i].FLDCD;
+                                        
                                         DB.M_STCHGRP_COMP.Add(MSTCHGRPCOMP);
                                         DB.SaveChanges();
                                     }
