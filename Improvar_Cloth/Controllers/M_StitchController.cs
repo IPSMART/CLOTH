@@ -336,7 +336,7 @@ namespace Improvar.Controllers
                 if (TABLE == "M_Stitch_Grid")
                 {
                     VE.DropDown_list2 = FLDTYPE();
-                    string[] fldcd2 = null;
+                  //  string[] fldcd2 = null;
                     if (VE.DefaultAction == "E")
                     {
                         //var fldcd1 = (from a in VE.MSTCHGRPCOMP where a.Checked_Comp == true select a.FLDCD).ToArray();
@@ -350,13 +350,13 @@ namespace Improvar.Controllers
                     int count = 0;
                     for (int i = 0; i <= VE.MSTCHGRPCOMP.Count - 1; i++)
                     {
-                        if (VE.DefaultAction == "E")
-                        {
-                            if (VE.MSTCHGRPCOMP[i].Checked_Comp == true && fldcd2.Contains(VE.MSTCHGRPCOMP[i].FLDCD))
-                            {
-                                VE.MSTCHGRPCOMP[i].Checked_Comp = false;
-                            }
-                        }
+                        //if (VE.DefaultAction == "E")
+                        //{
+                        //    if (VE.MSTCHGRPCOMP[i].Checked_Comp == true && fldcd2.Contains(VE.MSTCHGRPCOMP[i].FLDCD))
+                        //    {
+                        //        VE.MSTCHGRPCOMP[i].Checked_Comp = false;
+                        //    }
+                        //}
                         if (VE.MSTCHGRPCOMP[i].Checked_Comp == false)
                         { count += 1; MSTCHGRPCOMP item = new MSTCHGRPCOMP(); item = VE.MSTCHGRPCOMP[i]; item.SLNO = Convert.ToByte(count); MFIXGRPDOCCD.Add(item); }
                     }
@@ -600,7 +600,7 @@ namespace Improvar.Controllers
                             {
                                 var FIXGRPCOMP = VE.MSTCHGRPCOMP.Where(a => a.FLDCD != null).ToList();
                                 string maxfldcd = FIXGRPCOMP.Where(a => a.FLDCD.Substring(0, 3).ToUpper() == MFXGRP.STCHCD).Max(a => a.FLDCD);
-                                FLDCD_no = maxfldcd == null ? 1 : (maxfldcd.Substring(3, 2).retInt() + 1);
+                                FLDCD_no = maxfldcd == null ? 1 : (maxfldcd.Substring(3, 4).retInt() + 1);
                             }
 
                             for (int i = 0; i <= VE.MSTCHGRPCOMP.Count - 1; i++)
@@ -613,7 +613,7 @@ namespace Improvar.Controllers
                                     MSTCHGRPCOMP.EMD_NO = MFXGRP.EMD_NO;
                                     MSTCHGRPCOMP.CLCD = MFXGRP.CLCD;
                                     MSTCHGRPCOMP.STCHCD = MFXGRP.STCHCD;
-                                    MSTCHGRPCOMP.FLDCD = VE.MSTCHGRPCOMP[i].FLDCD == null ? FLDCD : VE.MSTCHGRPCOMP[i].FLDCD;
+                                    //MSTCHGRPCOMP.FLDCD = VE.MSTCHGRPCOMP[i].FLDCD == null ? FLDCD : VE.MSTCHGRPCOMP[i].FLDCD;
                                     MSTCHGRPCOMP.SLNO = VE.MSTCHGRPCOMP[i].SLNO; // Convert.ToByte(slno);
                                     MSTCHGRPCOMP.FLDNM = VE.MSTCHGRPCOMP[i].FLDNM;
                                     MSTCHGRPCOMP.FLDDESC = VE.MSTCHGRPCOMP[i].FLDDESC;
@@ -630,15 +630,16 @@ namespace Improvar.Controllers
 
                                     if (VE.MSTCHGRPCOMP[i].FLDCD == null)
                                     {
+
+                                        FLDCD = MFXGRP.STCHCD + (FLDCD_no).ToString("D4");
+                                        MSTCHGRPCOMP.FLDCD = FLDCD;
                                         FLDCD_no++;
-                                        //FLDCD = MFXGRP.STCHCD + (FLDCD_no).ToString("D4");
-                                        //MSTCHGRPCOMP.FLDCD = VE.MSTCHGRPCOMP[i].FLDCD == null ? FLDCD : VE.MSTCHGRPCOMP[i].FLDCD;
-                                        
                                         DB.M_STCHGRP_COMP.Add(MSTCHGRPCOMP);
                                         DB.SaveChanges();
                                     }
                                     else
                                     {
+                                        MSTCHGRPCOMP.FLDCD = VE.MSTCHGRPCOMP[i].FLDCD;
                                         DB.Entry(MSTCHGRPCOMP).State = System.Data.Entity.EntityState.Modified;
                                     }
                                 }

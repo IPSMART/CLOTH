@@ -28,7 +28,8 @@
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Enter Group Name", "STCHNM")) { return false; }
         if (!emptyFieldCheck("Select Type", "STCHALT")) { return false; }
-
+        var CHECK_TAG = document.getElementById("Checked_INCLTAX").checked;
+        if (CHECK_TAG==false) { msgWarning("Please checked Inclusive of Taxes !"); return false; }
         //checking Length>Decimal
         var GridRow = $("#M_Stitch_Grid > tbody > tr").length;
         var error_msg = "";
@@ -393,11 +394,12 @@
                         <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Inclusive of Taxes")
+                                <b style="color:red">*</b>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.CheckBoxFor(model => model.Checked_INCLTAX)
+                                @Html.CheckBoxFor(model => model.Checked_INCLTAX,new { id = "Checked_INCLTAX" })
 
                             </div>
                         </div>
