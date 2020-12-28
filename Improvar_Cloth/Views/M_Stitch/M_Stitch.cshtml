@@ -323,18 +323,6 @@
                                 @Html.EditorFor(model => model.M_STCHGRP.STCHCD, new { htmlAttributes = new { @class = "form-control", id = "STCHCD", @placeholder = "Stich Code", maxlength = "3", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
-
-                        <div class="col-md-1" style="width:auto">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Dress Pattern")
-                            </div>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="editor-field">
-                                @Html.EditorFor(model => model.M_STCHGRP.STCHNM, new { htmlAttributes = new { @class = "form-control", ID = "STCHNM", @placeholder = "Stich Name", maxlength = "30" } })
-                            </div>
-                        </div>
-
                         <div class="col-md-1" style="width:auto">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Type")
@@ -345,6 +333,20 @@
                                 @Html.DropDownListFor(model => model.M_STCHGRP.STCHALT, new SelectList(Model.DropDown_list1, "Value", "Text", Model.DropDown_list1), new { @class = " form-control", ID = "STCHALT" })
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Dress Pattern")
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_STCHGRP.STCHNM, new { htmlAttributes = new { @class = "form-control", ID = "STCHNM", @placeholder = "Stich Name", maxlength = "30" } })
+                            </div>
+                        </div>
+
+                      
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -381,7 +383,10 @@
                                 </datalist>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Std. Rate")
                             </div>
@@ -400,7 +405,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.CheckBoxFor(model => model.Checked_INCLTAX,new { id = "Checked_INCLTAX" })
+                                @Html.CheckBoxFor(model => model.Checked_INCLTAX, new { id = "Checked_INCLTAX" })
 
                             </div>
                         </div>
@@ -431,36 +436,7 @@
                         </div>
                     </div>
                 </div>
-
-
-
-                <div class="row" style="margin-top:7px;">
-                    <ul class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
-                        <li class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
-                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;height:auto;width:fit-content;">
-                                <div>
-                                    <div id="partialdivMain" style="margin-top:0px;">
-                                        @Html.Partial("_M_Stitch_Main")
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
-                            <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
-                                <div id="partialdivDocument">
-                                    @Html.Partial("_UPLOADDOCUMENTS")
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
                 </div>
-            </div>
             <div class="col-lg-3">
                 @if (Model.DefaultAction == "V" || Model.DefaultAction == "E" || Model.DefaultAction == "D")
                 {
@@ -543,6 +519,34 @@
                     </div>
                 }
             </div>
+            <div class="row" style="margin-top:7px;">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                        <li class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;height:auto;width:fit-content;">
+                                <div>
+                                    <div id="partialdivMain" style="margin-top:0px;">
+                                        @Html.Partial("_M_Stitch_Main")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
+                                <div id="partialdivDocument">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+           
+           
 
         </div>
 
