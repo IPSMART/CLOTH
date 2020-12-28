@@ -10,6 +10,7 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
+            $("#print_nav").hide();
         }
         else if ("@Model.DefaultAction" == "E") {
             var GridRow = $("#M_Stitch_Grid > tbody > tr").length;
@@ -394,7 +395,7 @@
                         <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Inclusive of Taxes")
-                                <b style="color:red">*</b>
+                                <b style="color:red"><sup>*</sup></b>
                             </div>
                         </div>
                         <div class="col-md-6">
