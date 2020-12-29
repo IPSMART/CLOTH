@@ -109,6 +109,40 @@
     }
 
 </script>
+<script>
+    function CheckColorCode(id) {
+        if ("@Model.DefaultAction" == "A") {
+            var valu = document.getElementById(id).value;
+            if (valu == "") {
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: $("#checkColorcode").val(),
+                    data: {
+                        val: valu
+                    },
+                    success: function (result) {
+                        if (result == "1") {
+                            $("#Msgdiv1").show();
+                            $("#info").show();
+                            $("#COLRCD").val("");
+                            $("#msgbody_info").html("Color Code Already Exists : Please Enter a Valid Color Code !! ");
+                            $("#btnok").focus();
+                            message_value = "COLRCD";
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
+    }
+</script>
 @{
     string PageControllerName = "M_Color";
 }
@@ -122,6 +156,7 @@
             <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName )" />
             <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName )" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="hidden" id="checkColorcode" value="@Url.Action("CheckColorCode", PageControllerName)" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_COLOR.M_AUTONO)
             @Html.HiddenFor(e => e.M_COLOR.CLCD)
@@ -140,7 +175,7 @@
                         </div>
                         <div class="col-md-1">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.M_COLOR.COLRCD, new { htmlAttributes = new { @class = "form-control", id = "COLRCD",@placeholder = "Code", maxlength = 4} })
+                                @Html.EditorFor(model => model.M_COLOR.COLRCD, new { htmlAttributes = new { @class = "form-control", id = "COLRCD", onblur = "CheckColorCode('COLRCD');", @placeholder = "Code", maxlength = 4} })
                             </div>
                         </div>
                     </div>
