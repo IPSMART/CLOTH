@@ -363,5 +363,19 @@ namespace Improvar.Controllers
                 }
             }
         }
+        public ActionResult CheckColorCode(string val)
+        {
+            string VALUE = val.ToUpper();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var query = (from c in DB.M_COLOR where (c.COLRCD == VALUE) select c);
+            if (query.Any())
+            {
+                return Content("1");
+            }
+            else
+            {
+                return Content("0");
+            }
+        }
     }
 }

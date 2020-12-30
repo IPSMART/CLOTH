@@ -1,0 +1,120 @@
+﻿@model Improvar.ViewModels.StitchMaster
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) {
+            var titlee = $(this).find("input").val();
+            $(this).attr('title', titlee);
+        });
+        $(this).on('keydown', 'input,select,text,button', function (e) {
+            if (e.which == 40) { // down arrow
+                e.preventDefault();
+                $(this).closest('tr').next().find('td:eq(' + $(this).closest('td').index() + ')').find('input').filter(':visible:not([readonly])').select();
+                //    $('#nextElementId').click();
+
+            }
+            else if (e.which == 38) { // up arrow
+                e.preventDefault();
+                $(this).closest('tr').prev().find('td:eq(' + $(this).closest('td').index() + ')').find('input').filter(':visible:not([readonly])').select();
+            }
+        });
+    });
+</script>
+<div style="height:auto;overflow-y:auto;margin-top:0px;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <input type="text" id="AddRowsComp" name="AddRowsComp" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
+                <img src="~/Image/Plus.png" id="btnAdd" class="Help_image_button_grid" title="Add Row" onclick="AddGridRow('AddRowsComp', 'M_Stitch_Grid');" />
+                <img src="~/Image/Minus.png" id="btnDelete" class="Help_image_button_grid" title="Delete Row" onclick="DeleteGridRow('M_Stitch_Grid');" />
+                <div class="col-md-8">
+                    <input type="text" id="search_Comp" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'M_Stitch_Grid');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;text-align:left;"><b style="padding-left:335px;">Stiching Details</b> </center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:255px;">
+                    <table id="M_Stitch_Grid" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1238px;">
+                        <thead>
+                            <tr class="sticky-header">
+                                <th class="sticky-cell" style="width: 27px;"></th>
+                                <th class="" style="padding-left: unset;width: 34px;">SLNo</th>
+                                <th class="">Description</th>
+                                <th class="" style="width:179px;">Short Desc </th>
+                                <th class="" style="width: 94px;">Type <b style="color:Red;">*</b></th>
+                                <th class="" style="width: 64px;text-align: right;">Length</th>
+                                <th class="" style="width: 40px;text-align: right;">Decimal</th>
+                                <th class="" style="width: 55px;text-align: center;">Mandatory</th>
+                                @*<th class="" style="width: 27px;text-align: center;">Reminder</th>*@
+                                <th class="" style="width: 40px;text-align: center;">Data Combo</th>
+                                @*<th class="" style="width: 40px;text-align: center;">Deactivate</th>*@
+                                <th class="" style="width: 96px;">Maximum</th>
+                                <th class="" style="width: 96px;">Minimum</th>
+                                <th class="" style="width: 157px;">Flag</th>
+                                <th class="" style="width:27px;text-align: center;">De - Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.MSTCHGRPCOMP != null)
+                            {
+                                for (int i = 0; i <= Model.MSTCHGRPCOMP.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.MSTCHGRPCOMP[i].Checked_Comp, new { id = "Checked_Comp_" + i })
+                                            @Html.HiddenFor(model => model.MSTCHGRPCOMP[i].Checked_Disable, new { id = "Checked_Disable_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSTCHGRPCOMP[i].SLNO, new { id = "SLNO_Comp_" + i, @class = " atextBoxFor ", maxlength = 4, @onkeypress = "return event.charCode > 47 && event.charCode < 58;" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSTCHGRPCOMP[i].FLDDESC, new { id = "FLDDESC_" + i, @class = " atextBoxFor ", maxlength = 100, autocomplete = "off" })
+                                        </td>
+                                        <td class="">
+                                            @Html.HiddenFor(model => model.MSTCHGRPCOMP[i].FLDCD, new { id = "FLDCD_" + i })
+                                            @Html.TextBoxFor(model => Model.MSTCHGRPCOMP[i].FLDNM, new { id = "FLDNM_" + i, @class = " atextBoxFor ", maxlength = 20, autocomplete = "off" })
+                                        </td>
+                                      
+                                        <td class="">
+                                            @Html.DropDownListFor(model => Model.MSTCHGRPCOMP[i].FLDTYPE, new SelectList(Model.DropDown_list2, "Value", "Text", Model.MSTCHGRPCOMP[i].FLDTYPE), "-Select-", new { id = "FLDTYPE_" + i, @class = " atextBoxFor select_3d ", onchange = "ChangeColProp('" + i + "','');" })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.MSTCHGRPCOMP[i].FLDLEN, new { htmlattributes = new { id = "FLDLEN_" + i, @class = "atextBoxFor text-right", @type = "text", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", onblur = "ChkLength('" + i + "');", maxlength = 4, autocomplete = "off" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.MSTCHGRPCOMP[i].FLDDEC, new { htmlattributes = new { id = "FLDDEC_" + i, @class = "atextBoxFor text-right", @type = "text", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", maxlength = 1, autocomplete = "off" } })
+                                        </td>
+                                        <td class="grid_td">
+                                            @Html.CheckBoxFor(model => model.MSTCHGRPCOMP[i].Checked_FLDMANDT, new { id = "Checked_FLDMANDT_" + i, @class = " atextBoxFor " })
+                                        </td>
+                                        @*<td class="grid_td">
+                                            @Html.CheckBoxFor(model => model.MSTCHGRPCOMP[i].Checked_FLDREMIND, new { id = "Checked_FLDREMIND_" + i, @class = " atextBoxFor " })
+                                        </td>*@
+                                        <td class="grid_td">
+                                            @Html.CheckBoxFor(model => model.MSTCHGRPCOMP[i].Checked_FLDDATACOMBO, new { id = "Checked_FLDDATACOMBO_" + i, @class = " atextBoxFor " })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.MSTCHGRPCOMP[i].FLDMAX, new { htmlattributes = new { id = "FLDMAX_" + i, @class = "atextBoxFor text-right", @type = "text", @onkeypress = "return numericOnly(this,4);", maxlength = 16, autocomplete = "off" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.MSTCHGRPCOMP[i].FLDMIN, new { htmlattributes = new { id = "FLDMIN_" + i, @class = "atextBoxFor text-right", @type = "text", @onkeypress = "return numericOnly(this,4);", maxlength = 16, autocomplete = "off" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.MSTCHGRPCOMP[i].FLDFLAG1, new { id = "FLDFLAG1_" + i, @class = " atextBoxFor ", maxlength = 15, autocomplete = "off" })
+                                        </td>
+                                        <td class="grid_td">
+                                            @Html.CheckBoxFor(model => model.MSTCHGRPCOMP[i].Checked_DEACTIVATE, new { id = "Checked_DEACTIVATE_" + i, @class = " atextBoxFor " })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>

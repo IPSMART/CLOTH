@@ -1,0 +1,569 @@
+﻿@model Improvar.ViewModels.StitchMaster
+@{
+    ViewBag.Title = "Stiching Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string PageControllerName = "M_Stitch";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#print_nav").hide();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            var GridRow = $("#M_Stitch_Grid > tbody > tr").length;
+            for (var i = 0; i <= GridRow - 1; i++) {
+                ChangeColProp(i, "Y");
+            }
+            Checked_Disable();
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Enter Group Name", "STCHNM")) { return false; }
+        if (!emptyFieldCheck("Select Type", "STCHALT")) { return false; }
+        var CHECK_TAG = document.getElementById("Checked_INCLTAX").checked;
+        if (CHECK_TAG==false) { msgWarning("Please checked Inclusive of Taxes !"); return false; }
+        //checking Length>Decimal
+        var GridRow = $("#M_Stitch_Grid > tbody > tr").length;
+        var error_msg = "";
+        for (var i = 0; i <= GridRow - 1; i++) {
+            if ($("#FLDTYPE_" + i).val() == "N") {
+                var FLDLEN = $("#FLDLEN_" + i).val();
+                if (FLDLEN != "") { FLDLEN = parseFloat(FLDLEN); } else { FLDLEN = parseFloat(0); }
+                var FLDDEC = $("#FLDDEC_" + i).val();
+                if (FLDDEC != "") { FLDDEC = parseFloat(FLDDEC) + 1; } else { FLDDEC = parseFloat(0); }
+                if (FLDDEC > FLDLEN) {
+                    error_msg += "Length (" + FLDLEN + ") should be grater than Decimal (" + (FLDDEC - 1) + ") at row no : " + (i + 1) + "</br>";
+                }
+            }
+            if ($("#FLDTYPE_" + i).val() == "C") {
+                debugger;
+                var FLDLEN = $("#FLDLEN_" + i).val();
+                if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of charecter in Stiching details !!."); return false; }
+                if (FLDLEN.substring(0, 1) == 0) { msgWarning("The charecter length should not start with (0) / Please enter the charecter length greater than (0) in Stiching details !!."); return false; }
+            }
+            if ($("#FLDTYPE_" + i).val() == "N") {
+                debugger;
+                var FLDLEN = $("#FLDLEN_" + i).val();
+                if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of Numeric in Stiching details !!."); return false; }
+                if (FLDLEN.substring(0, 1) == 0) { msgWarning("The Number length should not start with (0) / Please enter the Number length greater than (0) in Stiching details !!."); return false; }
+            }
+
+        }
+        if (error_msg != "") {
+            msgWarning(error_msg);
+            return false;
+        }
+
+        //end
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.M_STCHGRP != null)
+        {
+            mldauto = Model.M_STCHGRP.M_AUTONO.ToString();
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl(@mldauto);
+        }
+    }
+</script>
+
+
+<script>
+    function AddGridRow(ID, TABLE) {
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddGridRow", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG + "&TABLE=" + TABLE,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (TABLE == "M_Stitch_Grid") {
+                    $("#partialdivMain").animate({ marginTop: '-10px' }, 50);
+                    $("#partialdivMain").html(result);
+                    var GridRow = $("#M_Stitch_Grid > tbody > tr").length;
+                    for (var i = 0; i <= GridRow - 1; i++) {
+                        ChangeColProp(i, "Y");
+                    }
+                    Checked_Disable();
+                }
+               
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteGridRow(TABLE) {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteGridRow", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&TABLE=" + TABLE,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (TABLE == "M_Stitch_Grid") {
+                    //$("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                    //$("#partialdivMain").html(result);
+                    var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
+                    $("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivMain").html(res[1]);
+                    var GridRow = $("#M_Stitch_Grid > tbody > tr").length;
+                    for (var i = 0; i <= GridRow - 1; i++) {
+                        ChangeColProp(i, "Y");
+                    }
+                    Checked_Disable();
+                    if (res[0] != "0") {
+
+                        msgWarning("Delete not possible!.for this Field Code(" + res[0] + ") because this Field Code used to [New Purchase/Addition Entry] page !!."); return false;
+                    }
+                }
+             
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName )",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName )",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function ChangeColProp(i, tag) {
+        debugger;
+        var FLDTYPE = $("#FLDTYPE_" + i).val();
+        if (FLDTYPE == "D") {
+            if (tag != "Y") {
+                $("#FLDLEN_" + i).val("10");
+                $("#FLDDEC_" + i).val("");
+                document.getElementById("Checked_FLDDATACOMBO_" + i).checked = false;
+            }
+
+            document.getElementById("Checked_FLDDATACOMBO_" + i).disabled = true;
+            $("#FLDLEN_" + i).attr("readonly", true);
+            $("#FLDDEC_" + i).attr("readonly", true);
+        }
+        else if (FLDTYPE == "N") {
+            if (tag != "Y") {
+                $("#FLDLEN_" + i).val("");
+                $("#FLDDEC_" + i).val("");
+                document.getElementById("Checked_FLDDATACOMBO_" + i).checked = false;
+            }
+            document.getElementById("Checked_FLDDATACOMBO_" + i).disabled = true;
+            $("#FLDLEN_" + i).attr("readonly", false);
+            $("#FLDDEC_" + i).attr("readonly", false);
+        }
+        else if (FLDTYPE == "C") {
+            if (tag != "Y") {
+                $("#FLDLEN_" + i).val("");
+                $("#FLDDEC_" + i).val("");
+                document.getElementById("Checked_FLDDATACOMBO_" + i).checked = false;
+            }
+            document.getElementById("Checked_FLDDATACOMBO_" + i).disabled = false;
+            $("#FLDLEN_" + i).attr("readonly", false);
+            $("#FLDDEC_" + i).attr("readonly", true);
+        }
+        else {
+            if (tag != "Y") {
+                $("#FLDLEN_" + i).val("");
+                $("#FLDDEC_" + i).val("");
+                document.getElementById("Checked_FLDDATACOMBO_" + i).checked = false;
+            }
+            document.getElementById("Checked_FLDDATACOMBO_" + i).disabled = false;
+            $("#FLDLEN_" + i).attr("readonly", false);
+            $("#FLDDEC_" + i).attr("readonly", false);
+        }
+    }
+</script>
+<script>
+    function ChkLength(i) {
+        debugger;
+        if ($("#FLDTYPE_" + i).val() == "C") {
+            debugger;
+            var FLDLEN = $("#FLDLEN_" + i).val();
+            if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of charecter in Stiching details !!."); return false; }
+            if (FLDLEN.substring(0, 1) == 0) { msgWarning("The charecter length should not start with (0) / Please enter the charecter length greater than (0) in Stiching details !!."); return false; }
+        }
+        if ($("#FLDTYPE_" + i).val() == "N") {
+            debugger;
+            var FLDLEN = $("#FLDLEN_" + i).val();
+            if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of Numeric in Stiching details !!."); return false; }
+            if (FLDLEN.substring(0, 1) == 0) { msgWarning("The Number length should not start with (0) / Please enter the Number length greater than (0) in Stiching details !!."); return false; }
+        }
+    }
+</script>
+<script>
+    function Checked_Disable() {
+        var GridRow = $("#M_Stitch_Grid > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            if ($("#Checked_Disable_" + i).val() == "Y") {
+                document.getElementById("Checked_Comp_" + i).disabled = true;
+            }
+        }
+    }
+</script>
+<script>
+    function inputjobcd(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectJobMaster(id, JOBCD, JOBNM) {
+        if (id == "") {
+            $("#JOBNM").val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#jobMast").val(),
+                data: {
+                    val: id
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#JOBCD").val("");
+                        $("#JOBNM").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html("Invalid Job Code !! ");
+                        message_value = "JOBCD";
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputjobcd(JOBCD, JOBNM);
+                    }
+                }
+            });
+        }
+    }
+</script>
+<style>
+    .TextAreaRemarks {
+        height: 150px;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="jobMast" value="@Url.Action("JobMaster", PageControllerName)" />
+        @Html.HiddenFor(s => s.DefaultAction)
+        @Html.HiddenFor(a => a.M_STCHGRP.M_AUTONO)
+        <div class="form-horizontal">
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Stich Code")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_STCHGRP.STCHCD, new { htmlAttributes = new { @class = "form-control", id = "STCHCD", @placeholder = "Stich Code", maxlength = "3", @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                        <div class="col-md-1" style="width:auto">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Type")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.M_STCHGRP.STCHALT, new SelectList(Model.DropDown_list1, "Value", "Text", Model.DropDown_list1), new { @class = " form-control", ID = "STCHALT" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Dress Pattern")
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_STCHGRP.STCHNM, new { htmlAttributes = new { @class = "form-control", ID = "STCHNM", @placeholder = "Stich Name", maxlength = "30" } })
+                            </div>
+                        </div>
+
+                      
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Job Code")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_STCHGRP.JOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "JOBCD", onkeyup = "GetHelp('" + @Url.Action("GetJobMaster", PageControllerName) + "','JOBCD/JOBNM','1/0','Job Details','JOBCD');toUpper(this);", onblur = "SelectJobMaster(this.value,JOBCD,JOBNM);", @placeholder = "Code", maxlength = 2 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetJobMaster", PageControllerName)','JOBCD/JOBNM','1/0','Job Deatils','JOBCD')" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.JOBNM, new { htmlAttributes = new { @class = "form-control", id = "JOBNM", @TabIndex = -1, @placeholder = "Job Name", maxlength = 15, @readonly = "readonly" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Measurement in")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_STCHGRP.STCHUOM, new { htmlAttributes = new { @class = "form-control", id = "STCHUOM", @placeholder = "STCHUOM", maxlength = 8, @list = "stchuom" } })
+                                <datalist id="stchuom">
+                                    @foreach (var jg in Model.Database_Combo1)
+                                    {
+                                        <option value="@jg.FIELD_VALUE" />
+                                    }
+                                </datalist>
+                            </div>
+                        </div>
+                    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Std. Rate")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_STCHGRP.STCHRATE, new { htmlAttributes = new { @class = "form-control", id = "STCHRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Std. Rate", @title = "Std. Rate" } })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Inclusive of Taxes")
+                                <b style="color:red"><sup>*</sup></b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.CheckBoxFor(model => model.Checked_INCLTAX, new { id = "Checked_INCLTAX" })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Remarks")
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_STCHGRP.STCHREM, new { htmlAttributes = new { @class = "form-control", id = "STCHREM", maxlength = 500, @placeholder = "Remarks", @title = "Remarks" } })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "De - Active")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.CheckBoxFor(model => model.Checked)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            <div class="col-lg-3">
+                @if (Model.DefaultAction == "V" || Model.DefaultAction == "E" || Model.DefaultAction == "D")
+                {
+                    <div class="row">
+                        <div class="editor-label" style="margin-top: 6px;text-align:center;color:#428bca;">
+                            @Html.Label("", "Product Image")
+                        </div>
+                    </div>
+                    <div class="row" style="text-align:-webkit-center">
+                        @if (Model.UploadDOC != null)
+                        {
+                            if (Model.UploadDOC.Count != 0)
+                            {
+                                if (Model.UploadDOC[0].DOC_FILE != null)
+                                {
+                                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                                        <!-- Indicators -->
+                                        <ol class="carousel-indicators" style="bottom:0px;">
+                                            @if (Model.UploadDOC.Count != 0)
+                                            {
+                                                for (int k = 0; k < Model.UploadDOC.Count; k++)
+                                                {
+                                                    if (k == 0)
+                                                    {
+                                                        <li data-target="#myCarousel" data-slide-to="@k" class="active"></li>
+                                                    }
+                                                    else
+                                                    {
+                                                        <li data-target="#myCarousel" data-slide-to="@k"></li>
+                                                    }
+                                                }
+                                            }
+                                        </ol>
+
+                                        <!-- Wrapper for slides -->
+                                        <div class="carousel-inner">
+                                            @if (Model.UploadDOC.Count != 0)
+                                            {
+                                                for (int k = 0; k < Model.UploadDOC.Count; k++)
+                                                {
+                                                    if (k == 0)
+                                                    {
+                                                        <div class="item active " style="height:225px">
+                                                            <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
+                                                            <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
+                                                                <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="item" style="height:225px">
+                                                            <img src="@Model.UploadDOC[k].DOC_FILE" id="emppic_@k" alt="Image is not Support this Browser" style="height:150px; width:100%; vertical-align:middle;cursor:pointer" onclick="imgpreview(this.id);">
+                                                            <div class="carousel-caption" style="background: rgba(0,0,0,0.5);bottom: 1px;right:2%; left:2%;min-height:67px;padding-top:10px;padding-bottom:20px;">
+                                                                <p>@Model.UploadDOC[k].DOC_DESC</p>
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                }
+                                            }
+                                        </div>
+                                        <!-- Left and right controls -->
+                                        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                            <span class="glyphicon glyphicon-chevron-left"></span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                            <span class="glyphicon glyphicon-chevron-right"></span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <img src="~/Image/NoImage.jpg" id="emppic" width="190px" height="111px" style="margin-bottom: 2px;text-align:-webkit-center;" alt="No Image Found" />
+                                }
+                            }
+                        }
+                    </div>
+                }
+            </div>
+            <div class="col-lg-9">
+                <div class="row" style="margin-top:7px;">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                        <li class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+                            <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;height:auto;width:fit-content;">
+                                <div>
+                                    <div id="partialdivMain" style="margin-top:0px;">
+                                        @Html.Partial("_M_Stitch_Main")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                            <div class="row" style="margin-top: 11px;width:fit-content;height:auto;background-color:#c4b9b9">
+                                <div id="partialdivDocument">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+           
+           
+
+        </div>
+
+
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+
+
+}
+
