@@ -407,7 +407,6 @@ namespace Improvar.Controllers
                                     MTBARCODE = dr["MTBARCODE"].retStr(),
                                     ITCD = dr["ITCD"].retStr(),
                                     ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
-                                    ITNM = dr["ITNM"].retStr(),
                                     UOM = dr["UOMCD"].retStr(),
                                     STYLENO = dr["STYLENO"].retStr(),
                                     PARTCD = dr["PARTCD"].retStr(),
@@ -478,7 +477,6 @@ namespace Improvar.Controllers
                                   //MTBARCODE = dr["MTBARCODE"].retStr(),
                                   ITCD = dr["ITCD"].retStr(),
                                   ITSTYLE = dr["STYLENO"].retStr() + "" + dr["ITNM"].retStr(),
-                                  ITNM = dr["ITNM"].retStr(),
                                   UOM = dr["UOMCD"].retStr(),
                                   STKTYPE = dr["STKTYPE"].retStr(),
                                   STKNAME = dr["STKNAME"].retStr(),
@@ -1431,7 +1429,6 @@ namespace Improvar.Controllers
                                   x.ITREM,
                                   x.AGDOCNO,
                                   x.AGDOCDT,
-                                  x.ITNM
                               } into P
                               select new TTXNDTL
                               {
@@ -1470,7 +1467,6 @@ namespace Improvar.Controllers
                                   ITREM = P.Key.ITREM,
                                   AGDOCNO = P.Key.AGDOCNO,
                                   AGDOCDT = P.Key.AGDOCDT,
-                                  ITNM = P.Key.ITNM,
                               }).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
@@ -3404,7 +3400,7 @@ namespace Improvar.Controllers
                                     TVCHGST.BLDT = Convert.ToDateTime(strbldt);
                                 }
                                 TVCHGST.HSNCODE = VE.TTXNDTL[i].HSNCODE;
-                                TVCHGST.ITNM = VE.TTXNDTL[i].ITNM;
+                                TVCHGST.ITNM = VE.TTXNDTL[i].ITSTYLE;
                                 TVCHGST.AMT = VE.TTXNDTL[i].NETAMT;
                                 TVCHGST.CGSTPER = VE.TTXNDTL[i].CGSTPER;
                                 TVCHGST.SGSTPER = VE.TTXNDTL[i].SGSTPER;

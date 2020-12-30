@@ -127,7 +127,6 @@ function FillBarcodeArea(str, Table, i) {
         $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
         $("#ITCD").val(returncolvalue(str, "ITCD"));
         $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
-        $("#ITNM").val(returncolvalue(str, "ITNM"));
         $("#STYLENO").val(returncolvalue(str, "STYLENO"));
         //$("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
         $("#PARTCD").val(returncolvalue(str, "PARTCD"));
@@ -210,7 +209,6 @@ function FillBarcodeArea(str, Table, i) {
         $("#MTBARCODE").val($(FieldidStarting + "MTBARCODE_" + i).val());
         $("#ITCD").val($(FieldidStarting + "ITCD_" + i).val());
         $("#ITSTYLE").val($(FieldidStarting + "ITSTYLE_" + i).val());
-        $("#ITNM").val($(FieldidStarting + "ITNM_" + i).val());
         $("#STYLENO").val($(FieldidStarting + "STYLENO_" + i).val());
         $("#STKTYPE").val($(FieldidStarting + "STKTYPE_" + i).val());
         $("#PARTCD").val($(FieldidStarting + "PARTCD_" + i).val());
@@ -359,7 +357,6 @@ function UpdateBarCodeRow() {
             $("#B_MTBARCODE_" + j).val($("#MTBARCODE").val());
             $("#B_ITCD_" + j).val($("#ITCD").val());
             $("#B_ITSTYLE_" + j).val($("#ITSTYLE").val());
-            $("#B_ITNM_" + j).val($("#ITNM").val());
             $("#B_STYLENO_" + j).val($("#STYLENO").val());
             $("#B_STKTYPE_" + j).val($("#STKTYPE").val());
             $("#B_PARTCD_" + j).val($("#PARTCD").val());
@@ -459,7 +456,7 @@ function ClearBarcodeArea(TAG) {
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,ITNM,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
     if (MENU_PARA == "PB") {
         ClearAllTextBoxes("BALENO,OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
     }
@@ -867,7 +864,7 @@ function Sale_GetGstPer(i, FieldidStarting) {
 function ItcdClr() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    ClearAllTextBoxes("ITCD,ITSTYLE,ITNM,UOM,STYLENO,HSNCODE");
+    ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,HSNCODE");
 }
 
 function AmountCalculation(i) {
@@ -1510,7 +1507,6 @@ function AddBarCodeGrid() {
     var MTBARCODE = $("#MTBARCODE").val();
     var ITCD = $("#ITCD").val();
     var ITSTYLE = $("#ITSTYLE").val();
-    var ITNM = $("#ITNM").val();
     var STYLENO = $("#STYLENO").val();
     var STKTYPE = $("#STKTYPE").val();
     var PARTCD = $("#PARTCD").val();
@@ -1628,7 +1624,6 @@ function AddBarCodeGrid() {
     tr += '    <td class="" title="' + ITSTYLE + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
     tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
-    tr += '        <input id="B_ITNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITNM" type="hidden" value="' + ITNM + '">';
     tr += '    </td>         ';
     tr += '    <td class="" title="' + STKTYPE + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';
@@ -2491,7 +2486,7 @@ function GetItcd(id) {
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
     if (id == "") {
-        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITNM,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
     }
     else {
         var code = $("#ITGRPCD").val() + String.fromCharCode(181) + $("#DOCDT").val() + String.fromCharCode(181) + $("#TAXGRPCD").val() + String.fromCharCode(181) + $("#GOCD").val() + String.fromCharCode(181) + $("#PRCCD").val() + String.fromCharCode(181) + $("#MTRLJOBCD").val() + String.fromCharCode(181) + $("#BARCODE").val() + String.fromCharCode(181) + $("#RATE").val();
@@ -2503,11 +2498,11 @@ function GetItcd(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITNM,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+                    ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
                     $('#SearchFldValue').val("ITCD");
                     $('#helpDIV').html(result);
-                    $('#ReferanceFieldID').val("ITCD/ITSTYLE/UOM/STYLENO/ITGRPCD/ITGRPNM/HSNCODE/PRODGRPGSTPER/GSTPER/BarImages/GLCD/ITNM");
-                    $('#ReferanceColumn').val("2/1/3/0/5/4/1");
+                    $('#ReferanceFieldID').val("ITCD/ITSTYLE/UOM/STYLENO/ITGRPCD/ITGRPNM");
+                    $('#ReferanceColumn').val("2/1/3/0/5/4");
                     $('#helpDIV_Header').html("Item Details");
                 }
                 else {
@@ -2517,7 +2512,6 @@ function GetItcd(id) {
                         $("#ITSTYLE").val(returncolvalue(result, "ITSTYLE"));
                         $("#UOM").val(returncolvalue(result, "uomcd"));
                         $("#STYLENO").val(returncolvalue(result, "STYLENO"));
-                        $("#ITNM").val(returncolvalue(result, "ITNM"));
                         $("#ITGRPCD").val(returncolvalue(result, "ITGRPCD"));
                         $("#ITGRPNM").val(returncolvalue(result, "ITGRPNM"));
                         $("#HSNCODE").val(returncolvalue(result, "HSNCODE"));
@@ -2534,7 +2528,7 @@ function GetItcd(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITNM,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
+                        ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
                         message_value = "ITCD";
                     }
                 }

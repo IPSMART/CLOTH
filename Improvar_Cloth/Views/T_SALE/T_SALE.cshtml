@@ -223,7 +223,7 @@
         $.ajax({
             type: 'POST',
             url: "@Url.Action("Print", PageControllerName)",
-            data: $('form').serialize()+"&DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            data: $('form').serialize() + "&DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
             success: function (result) {
                 window.open("@Url.Action("SaleBill_Print", "SaleBill_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
             },
@@ -952,7 +952,6 @@
                                                     @*@Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode','ITGRPCD');", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })
                                                         <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetItemDetails", PageControllerName)','Item Details','ITCD','ITCD=itcd =2/ITSTYLE =ITSTYLE =1/UOM =uomcd =3/STYLENO =styleno =0/ITGRPCD =itgrpcd =5/ITGRPNM =itgrpnm =4/HSNCODE =hsncode','ITGRPCD')" />*@
                                                     @Html.HiddenFor(model => model.STYLENO, new { id = "STYLENO" })
-                                                    @Html.HiddenFor(model => model.ITNM, new { id = "ITNM" })
                                                 </div>
                                             </div>
                                             @*<div class="col-md-8">
