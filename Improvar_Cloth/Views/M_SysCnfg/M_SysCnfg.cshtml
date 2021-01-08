@@ -407,10 +407,10 @@
             <div class="row">
                 <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "INC RATE")
+                        @Html.Label("", "INC Rate")
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" style="width: auto;">
                     <div class="editor-field" style="margin-top:6px;">
                         @Html.CheckBoxFor(model => model.INC_RATE)
                     </div>
@@ -420,7 +420,7 @@
                         @Html.Label("", "Maintain Size")
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" style="width: auto;">
                     <div class="editor-field" style="margin-top:6px;">
                         @Html.CheckBoxFor(model => model.MNTNSIZE)
                     </div>
@@ -430,7 +430,7 @@
                         @Html.Label("", "Maintain Color")
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" style="width: auto;">
                     <div class="editor-field" style="margin-top:6px;">
                         @Html.CheckBoxFor(model => model.MNTNCOLOR)
                     </div>
@@ -440,7 +440,7 @@
                         @Html.Label("", "Maintain Part")
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" style="width: auto;">
                     <div class="editor-field" style="margin-top:6px;">
                         @Html.CheckBoxFor(model => model.MNTNPART)
                     </div>
@@ -450,9 +450,19 @@
                         @Html.Label("", "Maintain FLAGMTR")
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" style="width: auto;">
                     <div class="editor-field" style="margin-top:6px;">
                         @Html.CheckBoxFor(model => model.MNTNFLAGMTR)
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Maintain Price List")
+                    </div>
+                </div>
+                <div class="col-md-3" style="width: auto;">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.MNTNLISTPRCE)
                     </div>
                 </div>
             </div>

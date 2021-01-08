@@ -12,6 +12,7 @@ namespace Improvar.ViewModels
         public List<DropDown_list2> DropDown_list2 { get; set; }
         public List<DropDown_list3> DropDown_list3 { get; set; }
         public List<DropDown_list4> DropDown_list4 { get; set; }
+        public List<DropDown_list_text> DropDown_list_text { get; set; }
         public bool Checkbox1 { get; set; }
         public bool Checkbox2 { get; set; }
         public bool Checkbox3 { get; set; }
@@ -74,7 +75,7 @@ namespace Improvar.ViewModels
         public string Slmslnm { get; set; }
         public string Linenm { get; set; }
         public string Empnm { get; set; }
-        
+        public string Locnm { get; set; }
 
 
 

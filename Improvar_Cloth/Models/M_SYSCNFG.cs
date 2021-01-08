@@ -83,6 +83,8 @@ namespace Improvar.Models
         public string MNTNPART { get; set; }
         [StringLength(1)]
         public string MNTNFLAGMTR { get; set; }
-     
+        [StringLength(1)]
+        public string MNTNLISTPRICE { get; set; }
+
     }
 }

@@ -224,8 +224,7 @@ namespace Improvar.Models
     {
         public string text { get; set; }
         public string value { get; set; }
-        public double pcsperbox { get; set; }
-        public string itnm { get; set; }
+        
     }
     public class DropDown_list_ITGRP
     {

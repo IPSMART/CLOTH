@@ -288,10 +288,12 @@
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
+    <Compile Include="Controllers\Rep_Stk_LegController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
     <Compile Include="Controllers\SaleBill_PrintController.cs" />
+    <Compile Include="Controllers\T_AltOrderController.cs" />
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
@@ -347,6 +349,7 @@
     <Compile Include="Models\MDOCAUTHLAVEL5.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\MenuRightByUser.cs" />
+    <Compile Include="Models\Model1S.cs" />
     <Compile Include="Models\MSITEMBARCODE.cs" />
     <Compile Include="Models\MITEMPLISTADD.cs" />
     <Compile Include="Models\MITEMPLISTDTL.cs" />
@@ -425,6 +428,7 @@
     <Compile Include="Models\M_GROUP.cs" />
     <Compile Include="Models\M_HSNCODE.cs" />
     <Compile Include="Models\M_ITEM.cs" />
+    <Compile Include="Models\M_ITEMPLIST.cs" />
     <Compile Include="Models\M_ITEMPLISTDTL.cs" />
     <Compile Include="Models\M_ITEMPLIST_ADD.cs" />
     <Compile Include="Models\M_ITEM_UN_CNV.cs" />
@@ -567,6 +571,9 @@
     <Compile Include="Models\T_SORDDTL.cs" />
     <Compile Include="Models\T_SORD_CANC.cs" />
     <Compile Include="Models\T_SORD_SCHEME.cs" />
+    <Compile Include="Models\T_STCHALT.cs" />
+    <Compile Include="Models\T_STCHALT_DTL.cs" />
+    <Compile Include="Models\T_STCHALT_DTL_COMP.cs" />
     <Compile Include="Models\T_STKTRNF.cs" />
     <Compile Include="Models\T_TXN.cs" />
     <Compile Include="Models\T_TXNACK.cs" />
@@ -688,6 +695,8 @@
     <Compile Include="ViewModels\SubLedgerSDdtlMasterEntry.cs" />
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
+    <Compile Include="ViewModels\TransactionAlterOrder.cs" />
+    <Compile Include="ViewModels\TransactionAltOrder.cs" />
     <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionBiltyRMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
@@ -1160,6 +1169,8 @@
     <Content Include="Views\M_Stitch\M_Stitch.cshtml" />
     <Content Include="Views\Shared\_M_Stitch_Main.cshtml" />
     <Content Include="Views\Shared\_MASTERREMARKS.cshtml" />
+    <Content Include="Views\Rep_Stk_Leg\Rep_Stk_Leg.cshtml" />
+    <Content Include="Views\T_AltOrder\T_AltOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
