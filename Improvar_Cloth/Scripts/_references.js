@@ -20,6 +20,7 @@
 /// <reference path="globalization.culture.js" />
 /// <reference path="gridview.js" />
 /// <reference path="jquery.min.js" />
+/// <reference path="jquery.mobile-events.js" />
 /// <reference path="jquery.validate.min.js" />
 /// <reference path="jquery.validate.unobtrusive.min.js" />
 /// <reference path="jquery-1.10.2.js" />

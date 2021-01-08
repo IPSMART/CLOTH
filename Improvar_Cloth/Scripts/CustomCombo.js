@@ -25,9 +25,11 @@
     $("#" + valid).val(ff);
     if (ff.length <= 0) {
         $("#" + valid).removeAttr("name");
+        $("#" + textid).removeAttr("name");
     }
     else {
         $("#" + valid).attr('name', valid);
+        $("#" + textid).attr('name', textid);
     }
     csupdtunsel(id, textindex, valindex, lastindex, nameid);
 }
@@ -58,9 +60,11 @@ function cstableDeselect(id, textindex, valindex, lastindex, nameid) {
     $("#" + valid).val(ff1);
     if (ff1.length <= 0) {
         $("#" + valid).removeAttr("name");
+        $("#" + textid).removeAttr("name");
     }
     else {
         $("#" + valid).attr('name', valid);
+        $("#" + textid).attr('name', textid);
     }
     csupdtunsel(id, textindex, valindex, lastindex, nameid);
 }
@@ -96,9 +100,11 @@ function rowtoggle(text, val, last, id, nameid) {
         $("#" + valid).val(ff);
         if (ff.length <= 0) {
             $("#" + valid).removeAttr("name");
+            $("#" + textid).removeAttr("name");
         }
         else {
             $("#" + valid).attr('name', valid);
+            $("#" + textid).attr('name', textid);
         }
         gg[last].childNodes[0].className = "glyphicon glyphicon-ok";
 
@@ -127,9 +133,11 @@ function rowtoggle(text, val, last, id, nameid) {
         $("#" + valid).val(ff11);
         if (ff11.length <= 0) {
             $("#" + valid).removeAttr("name");
+            $("#" + textid).removeAttr("name");
         }
         else {
             $("#" + valid).attr('name', valid);
+            $("#" + textid).attr('name', textid);
         }
         gg[last].childNodes[0].className = "";
 
