@@ -2782,6 +2782,12 @@ namespace Improvar.Controllers
                                 else
                                 {
                                     barno = salesfunc.GenerateBARNO(VE.TBATCHDTL[i].ITCD, VE.TBATCHDTL[i].CLRBARCODE, VE.TBATCHDTL[i].SZBARCODE);
+                                    sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_BARCODE where barno='" + barno + "'";
+                                    dt = masterHelp.SQLquery(sql);
+                                    if (dt.Rows.Count == 0)
+                                    {
+                                        dberrmsg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TBATCHDTL[i].SLNO + " and itcd=" + VE.TBATCHDTL[i].ITCD; goto dbnotsave;
+                                    }
                                     sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                     OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
                                     if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
@@ -3616,7 +3622,7 @@ namespace Improvar.Controllers
                 {
                     return Content("");
                 }
-            dbnotsave:;
+                dbnotsave:;
                 OraTrans.Rollback();
                 return Content(dberrmsg);
             }
