@@ -349,6 +349,7 @@
     <Compile Include="Models\MDOCAUTHLAVEL5.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\MenuRightByUser.cs" />
+    <Compile Include="Models\Model1S.cs" />
     <Compile Include="Models\MSITEMBARCODE.cs" />
     <Compile Include="Models\MITEMPLISTADD.cs" />
     <Compile Include="Models\MITEMPLISTDTL.cs" />
@@ -570,6 +571,9 @@
     <Compile Include="Models\T_SORDDTL.cs" />
     <Compile Include="Models\T_SORD_CANC.cs" />
     <Compile Include="Models\T_SORD_SCHEME.cs" />
+    <Compile Include="Models\T_STCHALT.cs" />
+    <Compile Include="Models\T_STCHALT_DTL.cs" />
+    <Compile Include="Models\T_STCHALT_DTL_COMP.cs" />
     <Compile Include="Models\T_STKTRNF.cs" />
     <Compile Include="Models\T_TXN.cs" />
     <Compile Include="Models\T_TXNACK.cs" />
@@ -692,6 +696,7 @@
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
     <Compile Include="ViewModels\TransactionAlterOrder.cs" />
+    <Compile Include="ViewModels\TransactionAltOrder.cs" />
     <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionBiltyRMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
