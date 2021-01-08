@@ -250,6 +250,14 @@ namespace Improvar.Controllers
                     {
                         VE.MNTNFLAGMTR = false;
                     }
+                    if (sl.MNTNLISTPRICE == "Y")
+                    {
+                        VE.MNTNLISTPRCE = true;
+                    }
+                    else
+                    {
+                        VE.MNTNLISTPRCE = false;
+                    }
                     if (sl.WPPRICEGEN.retStr() != "")
                     {
                         VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
@@ -439,6 +447,7 @@ namespace Improvar.Controllers
                         if (VE.MNTNCOLOR == true) { MSYSCNFG.MNTNCOLOR = "Y"; } else { MSYSCNFG.MNTNCOLOR = "N"; }
                         if (VE.MNTNPART == true) { MSYSCNFG.MNTNPART = "Y"; } else { MSYSCNFG.MNTNPART = "N"; }
                         if (VE.MNTNFLAGMTR == true) { MSYSCNFG.MNTNFLAGMTR = "Y"; } else { MSYSCNFG.MNTNFLAGMTR = "N"; }
+                        if (VE.MNTNLISTPRCE == true) { MSYSCNFG.MNTNLISTPRICE = "Y"; } else { MSYSCNFG.MNTNLISTPRICE = "N"; }
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {
