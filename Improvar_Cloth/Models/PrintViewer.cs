@@ -37,5 +37,6 @@ namespace Improvar.Models
         public List<ReportContaint> SetReportContaint { get; set; }
         public DataTable IR { get; set; }
         public string[,] HeaderArray { get; set; }
+        public long TotReportWidth { get; set; }
     }
 }

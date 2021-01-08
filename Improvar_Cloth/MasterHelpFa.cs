@@ -2313,15 +2313,15 @@ namespace Improvar
                 }
             }
         }
-           public string InsTXN_TRANS(string autono,short? emd_no, string dtag="", string ttag="", string translcd="", string ewaybillno="",
-            string lrno="", string lrdt="", string lorryno="", string transmode="",string vechltype="", string crslcd="", double? DISTANCE = null, string EWAYBILLDT = "", string EWAYBILLVALID="")
+        public string InsTXN_TRANS(string autono, short? emd_no, string dtag = "", string ttag = "", string translcd = "", string ewaybillno = "",
+         string lrno = "", string lrdt = "", string lorryno = "", string transmode = "", string vechltype = "", string crslcd = "", double? DISTANCE = null, string EWAYBILLDT = "", string EWAYBILLVALID = "")
         {
             string bl = "";
             try
             {
                 string scmf = CommVar.FinSchema(UNQSNO), clcd = CommVar.ClientCode(UNQSNO);
                 string sql = "";
-                
+
 
                 sql = "insert into " + scmf + ".t_txntrans (emd_no, clcd, dtag, ttag, autono, translcd, ewaybillno, lrno, lrdt, lorryno, transmode, vechltype, crslcd,DISTANCE,EWAYBILLDT,EWAYBILLVALID ) values (";
                 sql = sql + emd_no;
@@ -2337,7 +2337,7 @@ namespace Improvar
                 sql = sql + "," + filc(transmode);
                 sql = sql + "," + filc(vechltype);
                 sql = sql + "," + filc(crslcd);
-                sql = sql + ","+ DISTANCE.retDbl();
+                sql = sql + "," + DISTANCE.retDbl();
                 sql = sql + "," + fild(EWAYBILLDT);
                 sql = sql + "," + filc(EWAYBILLVALID);
                 sql = sql + ")";
@@ -2350,6 +2350,38 @@ namespace Improvar
             {
                 bl = e.Message;
                 return bl;
+            }
+        }
+        public string USER_ID_HELP(string val)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+            var query = (from c in DB.USER_APPL select new { USER_ID = c.USER_ID, USER_NAME = c.USER_NAME }).ToList();
+            if (val == null)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + query[i].USER_NAME + "</td><td>" + query[i].USER_ID + "</td></tr>");
+                }
+                var hdr = "User Name" + Cn.GCS() + "User Id";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                query = query.Where(a => a.USER_ID == val).ToList();
+                if (query.Any())
+                {
+                    string str = "";
+                    foreach (var i in query)
+                    {
+                        str = i.USER_ID + Cn.GCS() + i.USER_NAME;
+                    }
+                    return str;
+                }
+                else
+                {
+                    return "Invalid User Id ! Please Select / Enter a Valid User Id !!";
+                }
             }
         }
     }

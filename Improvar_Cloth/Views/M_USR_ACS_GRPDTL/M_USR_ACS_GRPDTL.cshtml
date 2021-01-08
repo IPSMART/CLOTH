@@ -3,9 +3,7 @@
     ViewBag.Title = "User With Group Link";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@{
-    string PageControllerName = "M_USR_ACS_GRPDTL";
-}
+
 <script src="~/Scripts/jquery.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -45,40 +43,40 @@
     }
 </script>
 <script>
-    function SelectLINKUSERCode(id, LINKUSER_ID, USER_NAME)
-    {
+    function inputhelp(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectLINKUSER_IDCode(valu, fld1, fld2) {
         debugger;
-        if (id == "")
-        {
-            $("#" + LINKUSER_ID.id).val("");
-            $("#" + USER_NAME.id).val("");
+        if (valu == "") {
+            $("#" + fld1.id).val("");
+            $("#" + fld2.id).val("");
         }
-        else
-        {
+        else {
             $.ajax({
                 type: 'GET',
-                url: "@Url.Action("GetLINKUSER_IDhelp", PageControllerName)",
-                data: { val: id },
-                success: function (result)
-                {
+                url: $("#urlLINKUSER_IDCode").val(),
+                data: {
+                    val: valu
+                },
+                success: function (result) {
                     var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0)
-                    {
+                    if (MSG >= 0) {
                         $("#tempHDD").val(result);
                         var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                        $("#" + LINKUSER_ID.id).val(str[0].toString());
-                        $("#" + USER_NAME.id).val(str[1].toString());
+                        $("#" + fld1.id).val(str[0].toString());
+                        $("#" + fld2.id).val(str[1].toString());
                     }
-                    else
-                    {
-                        $("#" + LINKUSER_ID.id).val("");
-                        $("#" + USER_NAME.id).val("");
+                    else {
+                        $("#" + fld1.id).val("");
+                        $("#" + fld2.id).val("");
                         msgInfo(result);
-                        message_value = LINKUSER_ID.id;
+                        message_value = fld1.id;
                     }
                 },
-                error: function (XMLHttpRequest, textStatus, errorThrown)
-                {
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
                     msgError("Error: " + textStatus + "," + errorThrown);
                 }
@@ -86,7 +84,34 @@
         }
     }
 </script>
+<script>
+    //function AddrowMainGrid(urlstring, id) {
+    //    $.ajax({
+    //        type: 'POST',
+    //        url: $("#btnAddrowstd").val(),
+    //        data: $('form').serialize(),
+    //        success: function (result) {
+    //            $("#partialdivstd").animate({ marginTop: '-10px' }, 50);
+    //            $("#partialdivstd").html(result);
+    //        }
+    //    });
+    //}
+    //function DeleterowStd(urlstring, id) {
+    //    $.ajax({
+    //        type: 'POST',
+    //        url: $("#btnDeleterowstd").val(),
+    //        data: $('form').serialize(),
+    //        success: function (result) {
+    //            $("#partialdivstd").animate({ marginTop: '0px' }, 50);
+    //            $("#partialdivstd").html(result);
+    //        }
+    //    });
+    //}
 
+</script>
+@{
+    string PageControllerName = "M_USR_ACS_GRPDTL";
+}
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -96,7 +121,10 @@
         <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="urlLINKUSER_IDCode" value="@Url.Action("GetLINKUSER_IDhelp", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            @*<input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />*@
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.M_USR_ACS_GRPDTL.M_AUTONO)
 
@@ -110,8 +138,8 @@
 
                 <div class="col-lg-2">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.M_USR_ACS_GRPDTL.LINKUSER_ID, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LINKUSER_ID", onkeyup = "toUpper(this);GetHelp('" + @Url.Action("GetLINKUSER_IDhelp", PageControllerName) + "','LINKUSER_ID/USER_NAME','0/1','User Details','LINKUSER_ID');", onblur = "SelectLINKUSERCode(this.value,LINKUSER_ID,USER_NAME);", @placeholder = "Code", maxlength = 40, required = "required" } })
-                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetLINKUSER_IDhelp", PageControllerName)','LINKUSER_ID/USER_NAME','0/1','User Details','LINKUSER_ID')" />
+                        @Html.EditorFor(model => model.M_USR_ACS_GRPDTL.LINKUSER_ID, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LINKUSER_ID", onkeyup = "toUpper(this);GetHelp('" + @Url.Action("GetLINKUSER_IDhelp", PageControllerName) + "','LINKUSER_ID/USER_NAME','1/0','Select User Details','LINKUSER_ID');", onblur = "SelectLINKUSER_IDCode(this.value,LINKUSER_ID,USER_NAME);", @placeholder = "Code", maxlength = 40, required = "required" } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetLINKUSER_IDhelp", PageControllerName)','LINKUSER_ID/USER_NAME','1/0','Select User Details','LINKUSER_ID')" />
                     </div>
                 </div>
                 <div class="col-md-10">

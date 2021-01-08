@@ -125,7 +125,6 @@ namespace Improvar.Controllers
                         {
                             while (ulStack.Count > 0)
                             {
-                                var tu = (ulStack.Contains(parentId));
                                 if (parentId == IDENTIFIER && ulStack.Count > 0)
                                 {
                                     ulStack.Pop(); Menu += "</li></ul>";
@@ -153,7 +152,7 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            if (MENU_NAME == "Product (Misc Bill)")
+                            if (MENU_NAME == "IRN Cancel")
                             {
 
                             }
@@ -167,7 +166,7 @@ namespace Improvar.Controllers
                                 {
                                     ulStack.Pop(); Menu += "</ul>";
                                 }
-                                else if (parentId == ulStack.Peek().retStr())
+                                else if (ulStack.Contains(parentId))
                                 {
                                     ulStack.Pop(); Menu += "</li></ul>";
                                 }
@@ -413,14 +412,55 @@ namespace Improvar.Controllers
                     if (det.BoardCode == "TS_DOCAUTH")
                     {
                         det.RefreshedTime = System.DateTime.Now.ToLongTimeString();
-                        string SQL = "select c.dname,b.doccd,d.doctype,count(b.doccd)total_docno,listagg(b.docno, ',' ) within group (order by b.docno)docno from ";
-                        SQL = SQL + "" + DB + ".t_cntrl_doc_pass a," + DB + ".t_cntrl_hdr b," + DB + ".m_dtype c," + DB + ".m_doctype d," + DBF + ".m_sign_auth e, ";
-                        SQL = SQL + "" + DBF + ".m_subleg f where a.autono = b.autono and a.authcd = e.authcd and b.doccd = d.doccd and d.doctype = c.dcd and b.slcd = f.slcd(+) ";
-                        SQL = SQL + "and e.usrid = '" + Session["UR_ID"].ToString() + "' group by c.dname,b.doccd,d.doctype ";
+                        //string SQL = "select c.dname,b.doccd,d.doctype,count(b.doccd)total_docno,listagg(b.docno, ',' ) within group (order by b.docno)docno from ";
+                        //SQL = SQL + "" + DB + ".t_cntrl_doc_pass a," + DB + ".t_cntrl_hdr b," + DB + ".m_dtype c," + DB + ".m_doctype d," + DBF + ".m_sign_auth e, ";
+                        //SQL = SQL + "" + DBF + ".m_subleg f where a.autono = b.autono and a.authcd = e.authcd and b.doccd = d.doccd and d.doctype = c.dcd and b.slcd = f.slcd(+) ";
+                        //SQL = SQL + "and e.usrid = '" + Session["UR_ID"].ToString() + "' group by c.dname,b.doccd,d.doctype ";
+
+                        string SQL = "select d.docnm dname, b.doccd, 0 total_docno, d.doctype, b.docno from ";
+                        SQL += DB + ".t_cntrl_doc_pass a," + DB + ".t_cntrl_hdr b," + DB + ".m_dtype c,";
+                        SQL += DB + ".m_doctype d," + DBF + ".m_sign_auth e, " + DBF + ".m_subleg f ";
+                        SQL += "where a.autono = b.autono and a.authcd = e.authcd and b.doccd = d.doccd and ";
+                        SQL += "d.doctype = c.dcd and b.slcd = f.slcd(+) and nvl(b.cancel,'N')='N' and b.compcd='" + CommVar.Compcd(UNQSNO) + "' and ";
+                        SQL += "e.usrid = '" + Session["UR_ID"].ToString() + "' ";
+                        SQL += " and a.autono not in (select autono from " + DB + ".T_TXNSTATUS where STSTYPE = 'N') ";
+                        SQL += "order by dname, doccd, doctype, docno ";
+                        DataTable tbltmp = masterHelp.SQLquery(SQL);
+
                         DataTable tbl = new DataTable();
-                        tbl = masterHelp.SQLquery(SQL);
-                        string DashURL =Cn.CreateMenuUrl("TS_DOCAUTH","","");
+                        tbl.Columns.Add("dname", typeof(string));
+                        tbl.Columns.Add("doccd", typeof(string));
+                        tbl.Columns.Add("total_docno", typeof(int));
+                        tbl.Columns.Add("doctype", typeof(string));
+                        tbl.Columns.Add("docno", typeof(string));
                         tbl.Columns.Add("URL", typeof(string));
+
+                        string DashURL = Cn.CreateMenuUrl("TS_DOCAUTH", "", "");
+
+                        int rno = 0, totreco = 0;
+                        int i = 0, maxR = tbltmp.Rows.Count - 1;
+                        while (i <= maxR)
+                        {
+                            string doccd = tbltmp.Rows[i]["doccd"].retStr();
+                            int treco = 0; string docno = "";
+                            while (tbltmp.Rows[i]["doccd"].retStr() == doccd)
+                            {
+                                if (docno != "") docno += ",";
+                                docno += tbltmp.Rows[i]["docno"];
+                                i++;
+                                treco++;
+                                if (i > maxR) break;
+                            }
+                            tbl.Rows.Add("");
+                            rno = tbl.Rows.Count - 1;
+                            tbl.Rows[rno]["dname"] = tbltmp.Rows[i - 1]["dname"];
+                            tbl.Rows[rno]["doccd"] = tbltmp.Rows[i - 1]["doccd"];
+                            tbl.Rows[rno]["total_docno"] = treco;
+                            tbl.Rows[rno]["doctype"] = tbltmp.Rows[i - 1]["doctype"];
+                            tbl.Rows[rno]["docno"] = docno;
+                            tbl.Rows[rno]["URL"] = DashURL;
+                            totreco = totreco + treco;
+                        }
                         for (int rowIndex = 0; rowIndex < tbl.Rows.Count; rowIndex++)
                         {
                             tbl.Rows[rowIndex]["URL"] = DashURL;
@@ -429,9 +469,9 @@ namespace Improvar.Controllers
                         {
                             DataRow drow = tbl.NewRow();
                             drow["dname"] = "View All";
-                            drow["doccd"] = string.Join(",", tbl.AsEnumerable().Select(a => a.Field<string>("doccd")));
-                            drow["doctype"] = "";
-                            drow["total_docno"] = tbl.AsEnumerable().Sum(a => a.Field<decimal?>("total_docno") ?? 0);
+                            drow["doccd"] = string.Join(", ", tbl.AsEnumerable().Select(a => a.Field<string>("doccd")));
+                            drow["doctype"] = string.Join(",", tbl.AsEnumerable().Select(a => a.Field<string>("doctype")));
+                            drow["total_docno"] = totreco;// tbl.AsEnumerable().Sum(a => a.Field<decimal?>("total_docno") ?? 0);
                             drow["docno"] = string.Join(",", tbl.AsEnumerable().Select(a => a.Field<string>("docno")));
                             drow["URL"] = DashURL;
                             tbl.Rows.InsertAt(drow, 0);
@@ -538,6 +578,5 @@ namespace Improvar.Controllers
             }
         }
 
-       
     }
 }

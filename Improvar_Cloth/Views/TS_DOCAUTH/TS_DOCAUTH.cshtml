@@ -177,29 +177,31 @@
         });
     }
     function openlinkentry(autono) {
-        var urlp = $("#urlpopup1").val();
         $.ajax({
             type: 'post',
-            url: urlp,
+            url: "@Url.Action("POPUPSCREEN1", PageControllerName)",
             beforesend: $("#WaitingMode").show(),
-            data: {
-                autono: autono
-            },
-            success: function (result) {
-                $("#WaitingMode").hide();
-                if (result == "null") {
-                    msgWarning("Parameter not found in M_DTYPE! Contact to Admin ");
-                }
-                else {
-                    window.open("../../" + result);
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+        data: {
+            autono: autono
+        },
+        success: function (result) {
+            $("#WaitingMode").hide();
+            if (result == "null") {
+                msgWarning("Menu Parameter or Menu Progcall not found in M_DTYPE! Contact to Admin ");
             }
-        });
+            else if (result == "0") {
+                msgWarning("This Document can't open in this location !!");
+            }
+            else {
+                window.open("../../" + result);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
     }
 </script>
 <script>

@@ -226,7 +226,6 @@ namespace Improvar.Controllers
                                           COMPNM = dr["COMPNM"].ToString(),
                                           LOCCD = dr["LOCCD"].ToString(),
                                           LOCNM = dr["LOCNM"].ToString(),
-
                                       }).OrderBy(s => s.COMPNM).ThenBy(s => s.LOCNM).ToList();
             if (VE.M_DOCTYPE.DOCCD != null)
             {
@@ -308,6 +307,7 @@ namespace Improvar.Controllers
                     aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                 }
                 sl = DB.M_DOCTYPE.Find(aa[0].Trim());
+                VE.MAINDOCNM = DB.M_DOCTYPE.Find(sl.MAINDOCCD)?.DOCNM;
                 sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                 if (sll.INACTIVE_TAG == "Y")
                 {
@@ -644,7 +644,7 @@ namespace Improvar.Controllers
                         {
                             MDOCTYPE.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO));
                             MDOCTYPE.EMD_NO = 0;
-                            string DCD = VE.M_DOCTYPE.DOCCD.Replace(" ","");
+                            string DCD = VE.M_DOCTYPE.DOCCD.Replace(" ", "");
                             string DCODE = "";
                             if (Module.MODULE == "FINANCE")
                             {
@@ -679,7 +679,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MDOCTYPE.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
+                                MDOCTYPE.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
                         }
                         MDOCTYPE.DOCNM = VE.M_DOCTYPE.DOCNM;
@@ -697,7 +697,7 @@ namespace Improvar.Controllers
                         if (VE.M_DOCTYPE.MAINDOCCD == MDOCTYPE.DOCCD)
                         {
                             transaction.Rollback();
-                            return Content("Remove main doccd");
+                            return Content("MAINDOCCD AND DOCCD SAME. Please change main doccd.");
                         }
                         MDOCTYPE.MAINDOCCD = VE.M_DOCTYPE.MAINDOCCD;
                         MDOCTYPE.FLAG1 = VE.M_DOCTYPE.FLAG1;
@@ -737,49 +737,27 @@ namespace Improvar.Controllers
                             DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         }
                         DB.SaveChanges();
+                        transaction.Commit();
                         if (fintag == "Y" && Module.MODULE != "FINANCE")
                         {
-                            using (var transactionfin = DBF.Database.BeginTransaction())
+                            string doctype = VE.M_DOCTYPE.DOCTYPE;
+                            DataTable dt = masterHelp.SQLquery("select dcd from " + CommVar.FinSchema(UNQSNO) + ".m_dtype where dcd='" + doctype + "'");
+                            if (dt.Rows.Count == 0)
                             {
-                                try
-                                {
-                                    if (VE.DefaultAction == "A")
-                                    {
-                                        MDOCTYPE.M_AUTONO = 0;
-                                        DBF.M_DOCTYPE.Add(MDOCTYPE);
-                                    }
-                                    else if (VE.DefaultAction == "E")
-                                    {
-                                        var FMDOCTYPE = (from DOC in DBF.M_DOCTYPE
-                                                         where (DOC.DOCCD == MDOCTYPE.DOCCD)
-                                                         select new
-                                                         {
-                                                             DOCCD = DOC.DOCCD
-                                                         }).FirstOrDefault();
-                                        if (FMDOCTYPE == null)
-                                        {
-                                            MDOCTYPE.M_AUTONO = 0;
-                                            DBF.M_DOCTYPE.Add(MDOCTYPE);
-                                        }
-                                        else
-                                        {
-                                            MDOCTYPE.M_AUTONO = 0;
-                                            DBF.Entry(MDOCTYPE).State = System.Data.Entity.EntityState.Modified;
-                                        }
-                                    }
-                                    DBF.SaveChanges();
-                                    transactionfin.Commit();
-                                }
-                                catch (Exception ex)
-                                {
-                                    transaction.Rollback();
-                                    transactionfin.Rollback();
-                                    Cn.SaveException(ex, "");
-                                    return Content(ex.Message + ex.InnerException);
-                                }
+                                masterHelp.SQLNonQuery("insert into " + CommVar.FinSchema(UNQSNO) + ".m_dtype "
+                              + " select dcd, dname, fin, menu_progcall, menu_para, flag1 from " + CommVar.CurSchema(UNQSNO) + ".m_dtype where dcd = '" + doctype + "'");
                             }
+                            dt = masterHelp.SQLquery("select doctype from " + CommVar.FinSchema(UNQSNO) + ".m_doctype where doccd='" + MDOCTYPE.DOCCD + "'");
+                            if (dt.Rows.Count > 0)
+                            {
+                                var sql = "delete from   " + CommVar.FinSchema(UNQSNO) + ".m_doctype A where doccd = '" + MDOCTYPE.DOCCD + "'";
+                                masterHelp.SQLNonQuery(sql);
+                            }
+                            masterHelp.SQLNonQuery("insert into " + CommVar.FinSchema(UNQSNO) + ".m_doctype"
+                            + " select a.emd_no,a.clcd,a.dtag,a.ttag,a.doccd,a.docnm,a.frdt,a.todt,a.docprfx,a.doctype,a.docjnrl,a.docfoot,a.docprn,a.docnopattern,a.docnomaxlength,a.docnowozero,1"//M_AUTONO
+                            + " ,a.pro,a.fdate,a.backdate,a.maindoccd,a.flag1"
+                            + " from " + CommVar.CurSchema(UNQSNO) + ".m_doctype A  where doccd = '" + MDOCTYPE.DOCCD + "'");
                         }
-                        transaction.Commit();
                         string ContentFlg = "";
                         if (VE.DefaultAction == "A")
                         {
@@ -839,7 +817,7 @@ namespace Improvar.Controllers
                 {
                     transaction.Rollback();
                     Cn.SaveException(ex, "");
-                    return Content(ex.Message+"     "+ex.InnerException);
+                    return Content(ex.Message + "     " + ex.InnerException);
                 }
             }
         }
@@ -856,7 +834,7 @@ namespace Improvar.Controllers
             exdt[0] = dt;
             string[] sheetname = new string[1];
             sheetname[0] = "Sheet1";
-            mas.ExcelfromDataTables(exdt, sheetname, "Document Type Master", true);
+            mas.ExcelfromDataTables(exdt, sheetname, "Document Type Master", true,"Document Type");
             return Content("Downloded");
         }
     }

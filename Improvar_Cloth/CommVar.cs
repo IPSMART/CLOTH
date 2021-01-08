@@ -457,5 +457,16 @@ namespace Improvar
         {
             return @"\\ipsmart-ibm\C\IPSMART";
         }
+        public static string GSTNO(string unqsno)
+        {
+            try
+            {
+                return System.Web.HttpContext.Current.Session["GSTNO" + unqsno].retStr();
+            }
+            catch
+            {
+                return "";
+            }
+        }
     }
 }

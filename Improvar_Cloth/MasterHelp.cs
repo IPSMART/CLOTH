@@ -2697,5 +2697,83 @@ namespace Improvar
             DTYP.Add(DTYP4);
             return DTYP;
         }
+        public void ExcelfromDataTables(DataTable[] dt, string[] sheetname, string filename, bool isRowHighlight, string Caption)
+        {
+            try
+            {
+                using (ExcelPackage pck = new ExcelPackage())
+                {
+                    for (int i = 0; i < dt.Length; i++)
+                    {
+                        ExcelWorksheet ws = pck.Workbook.Worksheets.Add(sheetname[i]);
+                        int row = 0;
+                        if (Caption != "")
+                        {
+                            ws.Cells[++row, 1].Value = CommVar.CompName(UNQSNO);
+                            ws.Cells[++row, 1].Value = CommVar.LocName(UNQSNO);
+                            ws.Cells[++row, 1].Value = Caption;
+                        }
+                        if (isRowHighlight)
+                        {
+                            ws.Cells[++row, 1].LoadFromDataTable(dt[i], true, TableStyles.Medium15); //You can Use TableStyles property of your desire.    ,
+                        }
+                        else
+                        {
+                            using (ExcelRange Rng = ws.Cells[1, 1, 1, dt[i].Columns.Count])
+                            {
+                                Rng.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                                Rng.Style.Font.Bold = true;
+                                Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.SkyBlue);
+                            }
+                            ws.Cells[++row, 1].LoadFromDataTable(dt[i], true);
+                        }
+                    }
+                    //Read the Excel file in a byte array    
+                    Byte[] fileBytes = pck.GetAsByteArray();
+                    HttpContext.Current.Response.ClearContent();
+                    HttpContext.Current.Response.AddHeader("content-disposition", "attachment;filename=" + filename.retRepname() + ".xlsx");
+                    HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    HttpContext.Current.Response.BinaryWrite(fileBytes);
+                    HttpContext.Current.Response.End();
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+            }
+        }
+        public string GENERALLEDGER(string val)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            var query = (from i in DB.M_GENLEG join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { GLCD = i.GLCD, GLNM = i.GLNM }).OrderBy(s => s.GLNM).ToList();
+
+            if (val == null)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= query.Count - 1; i++)
+                {
+                    SB.Append("<tr><td>" + query[i].GLNM + "</td><td>" + query[i].GLCD + "</td></tr>");
+                }
+                var hdr = "General Ledger Name" + Cn.GCS() + "General Ledger Code";
+                return Generate_help(hdr, SB.ToString());
+            }
+            else
+            {
+                query = query.Where(a => a.GLCD == val).ToList();
+                if (query.Any())
+                {
+                    string str = "";
+                    foreach (var i in query)
+                    {
+                        str = i.GLCD + Cn.GCS() + i.GLNM;
+                    }
+                    return str;
+                }
+                else
+                {
+                    return "Invalid General Ledger Code ! Please Select / Enter a Valid General Ledger Code !!";
+                }
+            }
+        }
     }
 }

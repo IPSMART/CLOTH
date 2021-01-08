@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Web.Mvc;                                                    
+using System.Web.Mvc;
 using Improvar.Models;
+using Improvar.ViewModels;
 using System.Data;
 using System.Collections.Generic;
-using Improvar.ViewModels;
 
 namespace Improvar.Controllers
 {
@@ -12,12 +12,13 @@ namespace Improvar.Controllers
     {
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
+        string UNQSNO = CommVar.getQueryStringUNQSNO();
         ImprovarDB DB, DBI, DBINV, DBFIN;
         M_DOC_AUTH sl;
         M_CNTRL_HDR sll;
-        string UNQSNO = CommVar.getQueryStringUNQSNO();
+
         // GET: DOCPASS_STRGY
-        
+
         public ActionResult DOCPASS_STRGY(string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
             try
@@ -29,12 +30,11 @@ namespace Improvar.Controllers
                 else
                 {
                     ViewBag.formname = "Document Authorization Rule";
+                    DocumentAuthorizationEntry VE = new DocumentAuthorizationEntry(); Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     string SCHEMA = Cn.Getschema;
-                    DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                    DBFIN = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                    DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(VE.UNQSNO));
+                    DBFIN = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(VE.UNQSNO));
                     DBI = new ImprovarDB(Cn.GetConnectionString(), SCHEMA);
-                    DocumentAuthorizationEntry VE = new DocumentAuthorizationEntry();
-                    Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     VE.CompanyLocationName = (from i in DBFIN.M_LOCA
                                               join l in DBFIN.M_COMP on i.COMPCD equals (l.COMPCD)
                                               select new CompanyLocationName() { COMPCD = l.COMPCD, COMPNM = l.COMPNM, LOCCD = i.LOCCD, LOCNM = i.LOCNM }).OrderBy(s => s.LOCNM).ToList();
@@ -43,17 +43,24 @@ namespace Improvar.Controllers
                     if (op.Length != 0)
                     {
                         string GCS = Cn.GCS();
-                        VE.IndexKey = (from p in DB.M_DOC_AUTH
+                        var data = (from p in DB.M_DOC_AUTH
+                                    orderby p.DOCCD
+                                    select new
+                                    {
+                                        DOCCD = p.DOCCD,
+                                        EFF_DT = p.EFF_DT
+                                    }).Distinct().ToList();
+                        VE.IndexKey = (from p in data
                                        orderby p.DOCCD
                                        select new IndexKey()
                                        {
-                                           Navikey = p.DOCCD + GCS + p.LVL + GCS + p.EFF_DT + GCS + p.SLNO
-                                       }).ToList();
+                                           Navikey = p.DOCCD + GCS + p.EFF_DT
+                                       }).Distinct().ToList();
 
 
                         if (op == "E" || op == "D" || op == "V")
                         {
-                            
+
 
 
                             if (searchValue.Length != 0)
@@ -167,7 +174,7 @@ namespace Improvar.Controllers
         }
         public DocumentAuthorizationEntry Navigation(DocumentAuthorizationEntry VE, ImprovarDB DB, int index, string searchValue)
         {
-            DBFIN = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            DBFIN = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(VE.UNQSNO));
 
             sl = new M_DOC_AUTH(); sll = new M_CNTRL_HDR();
             if (VE.IndexKey.Count != 0)
@@ -181,10 +188,12 @@ namespace Improvar.Controllers
                 {
                     aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                 }
-                var lvl = Convert.ToByte(aa[1].Trim());
-                var date = Convert.ToDateTime(aa[2].Trim());
-                var slno = Convert.ToInt16(aa[3].Trim());
-                sl = DB.M_DOC_AUTH.Find(aa[0].Trim(), lvl, date, slno);
+                //var lvl = Convert.ToByte(aa[1].Trim());
+                var date = Convert.ToDateTime(aa[1].Trim());
+                //var slno = Convert.ToInt16(aa[3].Trim());
+                string doccd = aa[0].Trim();
+                sl = (from A in DB.M_DOC_AUTH where A.DOCCD == doccd && A.EFF_DT == date select A).FirstOrDefault();
+                //sl = DB.M_DOC_AUTH.Find(aa[0].Trim(), lvl, date, slno);
                 sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
                 if (sll.INACTIVE_TAG == "Y")
                 {
@@ -320,29 +329,31 @@ namespace Improvar.Controllers
         }
         public ActionResult SearchPannelData()
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             var MDT = (from j in DB.M_DOC_AUTH
                        join o in DB.M_CNTRL_HDR on j.M_AUTONO equals (o.M_AUTONO)
+                       join p in DB.M_DOCTYPE on j.DOCCD equals (p.DOCCD)
                        where (o.M_AUTONO == j.M_AUTONO)
-                       select new 
+                       select new
                        {
                            DOCCD = j.DOCCD,
-                           LVL = j.LVL,
                            EFF_DT = j.EFF_DT,
-                           SLNO = j.SLNO
-                       }).OrderBy(s => s.DOCCD).ToList();
+                           DOCNM = p.DOCNM
+                       }).OrderBy(s => s.DOCCD).Distinct().ToList();
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Document Code" + Cn.GCS() + "Level" + Cn.GCS() + "Effective Date" + Cn.GCS() + "SL No.";
+            var hdr = "Document Code" + Cn.GCS() + "Document Name" + Cn.GCS() + "Effective Date";
             for (int j = 0; j <= MDT.Count - 1; j++)
             {
-                SB.Append("<tr><td>" + MDT[j].DOCCD + "</td><td>" + MDT[j].LVL + "</td><td>" + MDT[j].EFF_DT.ToString().Remove(10) + "</td><td>" + MDT[j].SLNO + "</td></tr>");
+                SB.Append("<tr><td>" + MDT[j].DOCCD + "</td><td>" + MDT[j].DOCNM + "</td><td>" + MDT[j].EFF_DT.ToString().Remove(10) + "</td></tr>");
             }
-            return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "1" + Cn.GCS() + "2" + Cn.GCS() + "3","0"));
+            return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "0" + Cn.GCS() + "2"));
         }
         public ActionResult GetAUTHCDhelp(string val)
         {
             try
             {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
                 DBFIN = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 if (val == null)
                 {
@@ -365,15 +376,16 @@ namespace Improvar.Controllers
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Cn.SaveException(e, "");
-                return Content(e.Message);
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
             }
         }
         public ActionResult AddRowLEVEL1(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             List<MDOCAUTHLAVEL1> DOCAUTH = new List<MDOCAUTHLAVEL1>();
             for (int i = 0; i <= VE.MDOCAUTHLEVEL1.Count - 1; i++)
             {
@@ -394,7 +406,8 @@ namespace Improvar.Controllers
         }
         public ActionResult DeleteRowLEVEL1(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             List<MDOCAUTHLAVEL1> DOCAUTH = new List<MDOCAUTHLAVEL1>();
             int count = 0;
             for (int i = 0; i <= VE.MDOCAUTHLEVEL1.Count - 1; i++)
@@ -416,7 +429,8 @@ namespace Improvar.Controllers
         }
         public ActionResult AddRowLEVEL2(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
 
             List<MDOCAUTHLAVEL2> DOCAUTH = new List<MDOCAUTHLAVEL2>();
             for (int i = 0; i <= VE.MDOCAUTHLEVEL2.Count - 1; i++)
@@ -438,7 +452,8 @@ namespace Improvar.Controllers
         }
         public ActionResult DeleteRowLEVEL2(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             List<MDOCAUTHLAVEL2> DOCAUTH = new List<MDOCAUTHLAVEL2>();
             int count = 0;
             for (int i = 0; i <= VE.MDOCAUTHLEVEL2.Count - 1; i++)
@@ -460,7 +475,8 @@ namespace Improvar.Controllers
         }
         public ActionResult AddRowLEVEL3(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
 
             List<MDOCAUTHLAVEL3> DOCAUTH = new List<MDOCAUTHLAVEL3>();
             for (int i = 0; i <= VE.MDOCAUTHLEVEL3.Count - 1; i++)
@@ -482,7 +498,8 @@ namespace Improvar.Controllers
         }
         public ActionResult DeleteRowLEVEL3(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             List<MDOCAUTHLAVEL3> DOCAUTH = new List<MDOCAUTHLAVEL3>();
             int count = 0;
             for (int i = 0; i <= VE.MDOCAUTHLEVEL3.Count - 1; i++)
@@ -504,7 +521,8 @@ namespace Improvar.Controllers
         }
         public ActionResult AddRowLEVEL4(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
 
             List<MDOCAUTHLAVEL4> DOCAUTH = new List<MDOCAUTHLAVEL4>();
             for (int i = 0; i <= VE.MDOCAUTHLEVEL4.Count - 1; i++)
@@ -526,7 +544,8 @@ namespace Improvar.Controllers
         }
         public ActionResult DeleteRowLEVEL4(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             List<MDOCAUTHLAVEL4> DOCAUTH = new List<MDOCAUTHLAVEL4>();
             int count = 0;
             for (int i = 0; i <= VE.MDOCAUTHLEVEL4.Count - 1; i++)
@@ -548,7 +567,8 @@ namespace Improvar.Controllers
         }
         public ActionResult AddRowLEVEL5(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
 
             List<MDOCAUTHLAVEL5> DOCAUTH = new List<MDOCAUTHLAVEL5>();
             for (int i = 0; i <= VE.MDOCAUTHLEVEL5.Count - 1; i++)
@@ -570,7 +590,8 @@ namespace Improvar.Controllers
         }
         public ActionResult DeleteRowLEVEL5(DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             List<MDOCAUTHLAVEL5> DOCAUTH = new List<MDOCAUTHLAVEL5>();
             int count = 0;
             for (int i = 0; i <= VE.MDOCAUTHLEVEL5.Count - 1; i++)
@@ -592,7 +613,8 @@ namespace Improvar.Controllers
         }
         public ActionResult SAVE(FormCollection FC, DocumentAuthorizationEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             using (var transaction = DB.Database.BeginTransaction())
             {
                 try
@@ -602,7 +624,7 @@ namespace Improvar.Controllers
                         M_DOC_AUTH MDOCAUTH = new M_DOC_AUTH();
                         M_CNTRL_HDR MCH = new M_CNTRL_HDR();
 
-                        MDOCAUTH.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
+                        MDOCAUTH.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO));
                         MDOCAUTH.EMD_NO = 0;
                         MDOCAUTH.CLCD = CommVar.ClientCode(UNQSNO);
 
@@ -617,7 +639,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MDOCAUTH.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
+                                MDOCAUTH.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
 
 
@@ -754,7 +776,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOC_AUTH", MDOCAUTH.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                        MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_DOC_AUTH", MDOCAUTH.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_CNTRL_HDR.Add(MCH);

@@ -241,6 +241,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdaequareGSP.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -250,6 +251,8 @@
     <Compile Include="CommVar.cs" />
     <Compile Include="Controllers\DatalockController.cs" />
     <Compile Include="Controllers\DOCPASS_STRGYController.cs" />
+    <Compile Include="Controllers\Gen_EinvIRNCancelController.cs" />
+    <Compile Include="Controllers\Gen_EinvIRNController.cs" />
     <Compile Include="Controllers\ImageData.cs" />
     <Compile Include="Controllers\Image_Link_BarcodeController.cs" />
     <Compile Include="Controllers\M_AmttypeController.cs" />
@@ -285,6 +288,7 @@
     <Compile Include="Controllers\Rep_BarcodePrintController.cs" />
     <Compile Include="Controllers\Rep_Bar_HistoryController.cs" />
     <Compile Include="Controllers\Rep_Doc_PrintController.cs" />
+    <Compile Include="Controllers\Rep_EnvelopeController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
@@ -318,6 +322,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ListToDatatable.cs" />
+    <Compile Include="Models\AdaequareIRN.cs" />
     <Compile Include="Models\APPL_MENU.cs" />
     <Compile Include="Models\BARCODEHISTORY.cs" />
     <Compile Include="Models\BARCODEPRICE.cs" />
@@ -331,6 +336,7 @@
     <Compile Include="Models\DocumentType.cs" />
     <Compile Include="Models\DropDown_list.cs" />
     <Compile Include="Models\FinancialYear.cs" />
+    <Compile Include="Models\GenEinvIRNGrid.cs" />
     <Compile Include="Models\ImageData.cs" />
     <Compile Include="Models\ImprovarDB.cs" />
     <Compile Include="Models\IndexKey.cs" />
@@ -349,7 +355,6 @@
     <Compile Include="Models\MDOCAUTHLAVEL5.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\MenuRightByUser.cs" />
-    <Compile Include="Models\Model1S.cs" />
     <Compile Include="Models\MSITEMBARCODE.cs" />
     <Compile Include="Models\MITEMPLISTADD.cs" />
     <Compile Include="Models\MITEMPLISTDTL.cs" />
@@ -652,6 +657,8 @@
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
+    <Compile Include="ViewModels\GenEinvIRN.cs" />
+    <Compile Include="ViewModels\GenEinvIRNCancel.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
     <Compile Include="ViewModels\RateHistory.cs" />
     <Compile Include="ViewModels\RepBarcodeImage.cs" />
@@ -696,7 +703,6 @@
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
     <Compile Include="ViewModels\TransactionAlterOrder.cs" />
-    <Compile Include="ViewModels\TransactionAltOrder.cs" />
     <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionBiltyRMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
@@ -1171,6 +1177,17 @@
     <Content Include="Views\Shared\_MASTERREMARKS.cshtml" />
     <Content Include="Views\Rep_Stk_Leg\Rep_Stk_Leg.cshtml" />
     <Content Include="Views\T_AltOrder\T_AltOrder.cshtml" />
+    <Content Include="Views\Gen_EinvIRN\Gen_EinvIRN.cshtml" />
+    <Content Include="Views\Gen_EinvIRNCancel\Gen_EinvIRNCancel.cshtml" />
+    <Content Include="Views\Rep_Envelope\Rep_Envelope.cshtml" />
+    <Content Include="Views\Shared\_BulkDocumentAttached.cshtml" />
+    <Content Include="Views\Shared\_Gen_EinvIRN.cshtml" />
+    <Content Include="Views\Shared\_Gen_EinvIRNCancel.cshtml" />
+    <Content Include="Views\Shared\ShowErrorMsg.cshtml" />
+    <Content Include="Views\Shared\_M_SubLeg_SDdtl_ItGrp_Main.cshtml" />
+    <Content Include="Views\Shared\_M_SubLeg_SDdtl_Main.cshtml" />
+    <Content Include="Views\Shared\_SearchPannel.cshtml" />
+    <Content Include="Views\Shared\_tree_ExistingTag.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

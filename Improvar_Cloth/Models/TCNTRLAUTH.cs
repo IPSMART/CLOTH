@@ -71,7 +71,7 @@ namespace Improvar.Models
         public string MENU_PROGCALL { get; set; }
         public string MENU_PARA { get; set; }
         public string AUTHREM { get; set; }
-        public byte AUTH_SLNO { get; set; }
+        public int AUTH_SLNO { get; set; }
         [StringLength(8)]
         public string GLCD { get; set; }
         [StringLength(45)]

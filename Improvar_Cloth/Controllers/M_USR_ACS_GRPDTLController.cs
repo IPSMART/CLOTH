@@ -232,13 +232,14 @@ namespace Improvar.Controllers
         }
         public ActionResult GetLINKUSER_IDhelp(string val)
         {
+            DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             if (val == null)
             {
-                return PartialView("_Help2", masterHelpFa.USER_ID_help(val));
+                return PartialView("_Help2", masterHelpFa.USER_ID_HELP(val));
             }
             else
             {
-                string str = masterHelpFa.USER_ID_help(val);
+                string str = masterHelpFa.USER_ID_HELP(val);
                 return Content(str);
             }
 
@@ -271,7 +272,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                USRGRPDTL.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
+                                USRGRPDTL.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
                             DB.M_USR_ACS_GRPDTL.Where(x => x.M_AUTONO == VE.M_USR_ACS_GRPDTL.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.SaveChanges();

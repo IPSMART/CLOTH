@@ -1,0 +1,533 @@
+﻿@using System.Data
+@model Improvar.ViewModels.Trans_document_Attach
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('DOC_MAIN_GRID'));
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) {
+            var titlee = $(this).find("input").val();
+            $(this).attr('title', titlee);
+        });
+    });
+
+</script>
+
+<script>
+    function fileCheck(id, index, index1) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            var fname = document.getElementById("DOC_FILE" + index1.toString() + index.toString());
+            fname.value = fileToLoad.name;
+            var fileReader = new FileReader();
+            fileReader.onload = function (fileLoadedEvent) {
+                var textAreaFileContents = document.getElementById("DOC_FILE_NAME" + index1.toString() + index.toString());
+
+                textAreaFileContents.value = fileLoadedEvent.target.result;
+                //$("#img_" + index.toString()).attr('src', fileLoadedEvent.target.result);
+            };
+            fileReader.readAsDataURL(fileToLoad);
+        }
+    }
+</script>
+
+<div style="border:5px groove;">
+    <div class="table-responsive">
+        <div class="grid_title">
+            <div class="col-md-5">
+                <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTableforM_doc_attached(event, 'DOC_MAIN_GRID');" />
+                <img src="~/Image/search.png" title="Help" />
+            </div>
+            <center style="font-size: 11px;color: darkmagenta; border: 1px inset;text-align:center;background-color:darkgray"><b>Multiple Document Attached</b></center>
+        </div>
+        @{
+            int width = 1135;
+            string GetWidth = "";
+            foreach (var i in Model.GridData)
+            {
+                if (i.Cate0 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate1 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate2 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate3 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate4 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate5 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate6 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate7 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate8 != null)
+                {
+                    width = width + 300;
+                }
+                if (i.Cate9 != null)
+                {
+                    width = width + 300;
+                }
+                GetWidth = "width:" + width.ToString() + "px";
+                break;
+            }
+        }
+        <div class="sticky-table sticky-ltr-cells">
+            <div style="height:auto;overflow-y:auto;max-height:300px;">
+                <table id="DOC_MAIN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="@GetWidth">
+                    <thead>
+                        <tr class="sticky-header" style="height:30px;">
+                            <th class="" style="width:10px;"></th>
+                            <th class="" style="width:104px;">Document No</th>
+                            <th class="" style="width:87px;">Date</th>
+                            <th class="" style="width:94px;">Party Code</th>
+                            <th class="" style="width:336px;">Party Name</th>
+                            <th class="" style="width:97px;">Voucher No</th>
+                            <th class="" style="width:107px;">Amount</th>
+                            <th class="" style="width:300px;">Category</th>
+                            @{
+                                foreach (var i in Model.GridData)
+                                {
+                                    if (i.Cate0 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate0.doccat0</th>
+                                    }
+                                    if (i.Cate1 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate1.doccat1</th>
+                                    }
+                                    if (i.Cate2 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate2.doccat2</th>
+                                    }
+                                    if (i.Cate3 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate3.doccat3</th>
+                                    }
+                                    if (i.Cate4 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate4.doccat4</th>
+                                    }
+                                    if (i.Cate5 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate5.doccat5</th>
+                                    }
+                                    if (i.Cate6 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate6.doccat6</th>
+                                    }
+                                    if (i.Cate7 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate7.doccat7</th>
+                                    }
+                                    if (i.Cate8 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate8.doccat8</th>
+                                    }
+                                    if (i.Cate9 != null)
+                                    {
+                                        <th class="" style="width:300px;">@i.Cate9.doccat9</th>
+                                    }
+                                    break;
+                                }
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i <= Model.GridData.Count - 1; i++)
+                        {
+                            <tr style="cursor:pointer">
+                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                    @Html.HiddenFor(model => model.GridData[i].autono, new { id = "AUTO_" + i, Value = Model.GridData[i].autono })
+                                </td>
+                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                    @Html.TextBoxFor(model => model.GridData[i].Docno, new { id = "DOCNO_" + i, @class = " atextBoxFor ", maxlength = 9, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                    @Html.TextBoxFor(model => model.GridData[i].DDate, new { id = "DOCDT_" + i, @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                    @Html.TextBoxFor(model => model.GridData[i].slcd, new { id = "SLCD_" + i, @class = " atextBoxFor ", maxlength = 8, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                    @Html.TextBoxFor(model => model.GridData[i].slnm, new { id = "SLNM_" + i, @class = " atextBoxFor ", maxlength = 45, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                    @Html.TextBoxFor(model => model.GridData[i].refno, new { id = "VOUNO_" + i, @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                    @Html.TextBoxFor(model => model.GridData[i].amount, new { id = "AMT_" + i, @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly", style = "text-align: right" })
+                                </td>
+                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                    @Html.TextBoxFor(model => model.GridData[i].category, new { id = "CATEGO_" + i, @class = " atextBoxFor ", maxlength = 70, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                @if (Model.GridData[i].Cate0 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','0');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate0.DOC_FILE0, new { id = "DOC_FILE0" + i, Value = Model.GridData[i].Cate0.DOC_FILE0 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate0.DOC_FILE_NAME0, new { id = "DOC_FILE_NAME0" + i, Value = Model.GridData[i].Cate0.DOC_FILE_NAME0 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate0.doccat0, new { id = "doccat0" + i, Value = Model.GridData[i].Cate0.doccat0 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate0.doccat0));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','0');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate0.DOC_FILE0, new { id = "DOC_FILE0" + i, Value = Model.GridData[i].Cate0.DOC_FILE0 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate0.DOC_FILE_NAME0, new { id = "DOC_FILE_NAME0" + i, Value = Model.GridData[i].Cate0.DOC_FILE_NAME0 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate0.doccat0, new { id = "doccat0" + i, Value = Model.GridData[i].Cate0.doccat0 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate1 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','1');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate1.DOC_FILE1, new { id = "DOC_FILE1" + i, Value = Model.GridData[i].Cate1.DOC_FILE1 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate1.DOC_FILE_NAME1, new { id = "DOC_FILE_NAME1" + i, Value = Model.GridData[i].Cate1.DOC_FILE_NAME1 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate1.doccat1, new { id = "doccat1" + i, Value = Model.GridData[i].Cate1.doccat1 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate1.doccat1));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','1');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate1.DOC_FILE1, new { id = "DOC_FILE1" + i, Value = Model.GridData[i].Cate1.DOC_FILE1 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate1.DOC_FILE_NAME1, new { id = "DOC_FILE_NAME1" + i, Value = Model.GridData[i].Cate1.DOC_FILE_NAME1 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate1.doccat1, new { id = "doccat1" + i, Value = Model.GridData[i].Cate1.doccat1 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate2 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','2');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate2.DOC_FILE2, new { id = "DOC_FILE2" + i, Value = Model.GridData[i].Cate2.DOC_FILE2 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate2.DOC_FILE_NAME2, new { id = "DOC_FILE_NAME2" + i, Value = Model.GridData[i].Cate2.DOC_FILE_NAME2 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate2.doccat2, new { id = "doccat2" + i, Value = Model.GridData[i].Cate2.doccat2 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate2.doccat2));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','2');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate2.DOC_FILE2, new { id = "DOC_FILE2" + i, Value = Model.GridData[i].Cate2.DOC_FILE2 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate2.DOC_FILE_NAME2, new { id = "DOC_FILE_NAME2" + i, Value = Model.GridData[i].Cate2.DOC_FILE_NAME2 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate2.doccat2, new { id = "doccat2" + i, Value = Model.GridData[i].Cate2.doccat2 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate3 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','3');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate3.DOC_FILE3, new { id = "DOC_FILE3" + i, Value = Model.GridData[i].Cate3.DOC_FILE3 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate3.DOC_FILE_NAME3, new { id = "DOC_FILE_NAME3" + i, Value = Model.GridData[i].Cate3.DOC_FILE_NAME3 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate3.doccat3, new { id = "doccat3" + i, Value = Model.GridData[i].Cate3.doccat3 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate3.doccat3));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','3');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate3.DOC_FILE3, new { id = "DOC_FILE3" + i, Value = Model.GridData[i].Cate3.DOC_FILE3 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate3.DOC_FILE_NAME3, new { id = "DOC_FILE_NAME3" + i, Value = Model.GridData[i].Cate3.DOC_FILE_NAME3 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate3.doccat3, new { id = "doccat3" + i, Value = Model.GridData[i].Cate3.doccat3 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate4 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','4');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate4.DOC_FILE4, new { id = "DOC_FILE4" + i, Value = Model.GridData[i].Cate4.DOC_FILE4 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate4.DOC_FILE_NAME4, new { id = "DOC_FILE_NAME4" + i, Value = Model.GridData[i].Cate4.DOC_FILE_NAME4 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate4.doccat4, new { id = "doccat4" + i, Value = Model.GridData[i].Cate4.doccat4 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate4.doccat4));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','4');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate4.DOC_FILE4, new { id = "DOC_FILE4" + i, Value = Model.GridData[i].Cate4.DOC_FILE4 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate4.DOC_FILE_NAME4, new { id = "DOC_FILE_NAME4" + i, Value = Model.GridData[i].Cate4.DOC_FILE_NAME4 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate4.doccat4, new { id = "doccat4" + i, Value = Model.GridData[i].Cate4.doccat4 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate5 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','5');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate5.DOC_FILE5, new { id = "DOC_FILE5" + i, Value = Model.GridData[i].Cate5.DOC_FILE5 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate5.DOC_FILE_NAME5, new { id = "DOC_FILE_NAME5" + i, Value = Model.GridData[i].Cate5.DOC_FILE_NAME5 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate5.doccat5, new { id = "doccat5" + i, Value = Model.GridData[i].Cate5.doccat5 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate5.doccat5));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','5');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate5.DOC_FILE5, new { id = "DOC_FILE5" + i, Value = Model.GridData[i].Cate5.DOC_FILE5 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate5.DOC_FILE_NAME5, new { id = "DOC_FILE_NAME5" + i, Value = Model.GridData[i].Cate5.DOC_FILE_NAME5 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate5.doccat5, new { id = "doccat5" + i, Value = Model.GridData[i].Cate5.doccat5 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate6 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','6');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate6.DOC_FILE6, new { id = "DOC_FILE6" + i, Value = Model.GridData[i].Cate6.DOC_FILE6 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate6.DOC_FILE_NAME6, new { id = "DOC_FILE_NAME6" + i, Value = Model.GridData[i].Cate6.DOC_FILE_NAME6 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate6.doccat6, new { id = "doccat6" + i, Value = Model.GridData[i].Cate6.doccat6 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate6.doccat6));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','6');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate6.DOC_FILE6, new { id = "DOC_FILE6" + i, Value = Model.GridData[i].Cate6.DOC_FILE6 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate6.DOC_FILE_NAME6, new { id = "DOC_FILE_NAME6" + i, Value = Model.GridData[i].Cate6.DOC_FILE_NAME6 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate6.doccat6, new { id = "doccat6" + i, Value = Model.GridData[i].Cate6.doccat6 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate7 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','7');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate7.DOC_FILE7, new { id = "DOC_FILE7" + i, Value = Model.GridData[i].Cate7.DOC_FILE7 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate7.DOC_FILE_NAME7, new { id = "DOC_FILE_NAME7" + i, Value = Model.GridData[i].Cate7.DOC_FILE_NAME7 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate7.doccat7, new { id = "doccat7" + i, Value = Model.GridData[i].Cate7.doccat7 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate7.doccat7));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','7');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate7.DOC_FILE7, new { id = "DOC_FILE7" + i, Value = Model.GridData[i].Cate7.DOC_FILE7 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate7.DOC_FILE_NAME7, new { id = "DOC_FILE_NAME7" + i, Value = Model.GridData[i].Cate7.DOC_FILE_NAME7 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate7.doccat7, new { id = "doccat7" + i, Value = Model.GridData[i].Cate7.doccat7 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate8 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','8');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate8.DOC_FILE8, new { id = "DOC_FILE8" + i, Value = Model.GridData[i].Cate8.DOC_FILE8 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate8.DOC_FILE_NAME8, new { id = "DOC_FILE_NAME8" + i, Value = Model.GridData[i].Cate8.DOC_FILE_NAME8 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate8.doccat8, new { id = "doccat8" + i, Value = Model.GridData[i].Cate8.doccat8 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate8.doccat8));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','8');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate8.DOC_FILE8, new { id = "DOC_FILE8" + i, Value = Model.GridData[i].Cate8.DOC_FILE8 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate8.DOC_FILE_NAME8, new { id = "DOC_FILE_NAME8" + i, Value = Model.GridData[i].Cate8.DOC_FILE_NAME8 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate8.doccat8, new { id = "doccat8" + i, Value = Model.GridData[i].Cate8.doccat8 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                                @if (Model.GridData[i].Cate9 != null)
+                                {
+                                    if (Model.GridData[i].category.Length == 0)
+                                    {
+                                        <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                            <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','9');" />
+                                            @Html.HiddenFor(model => model.GridData[i].Cate9.DOC_FILE9, new { id = "DOC_FILE9" + i, Value = Model.GridData[i].Cate9.DOC_FILE9 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate9.DOC_FILE_NAME9, new { id = "DOC_FILE_NAME9" + i, Value = Model.GridData[i].Cate9.DOC_FILE_NAME9 })
+                                            @Html.HiddenFor(model => model.GridData[i].Cate9.doccat9, new { id = "doccat9" + i, Value = Model.GridData[i].Cate9.doccat9 })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        string[] category = (Model.GridData[i].category.Split(','));
+                                        var results = Array.FindAll(category, s => s.Equals(Model.GridData[i].Cate9.doccat9));
+                                        if (results.Length == 0)
+                                        {
+                                            <td class="" style="text-align:center;border-right:1px outset #fcdfdf">
+                                                <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this, '@i','9');" />
+                                                @Html.HiddenFor(model => model.GridData[i].Cate9.DOC_FILE9, new { id = "DOC_FILE9" + i, Value = Model.GridData[i].Cate9.DOC_FILE9 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate9.DOC_FILE_NAME9, new { id = "DOC_FILE_NAME9" + i, Value = Model.GridData[i].Cate9.DOC_FILE_NAME9 })
+                                                @Html.HiddenFor(model => model.GridData[i].Cate9.doccat9, new { id = "doccat9" + i, Value = Model.GridData[i].Cate9.doccat9 })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="" style="text-align:center;font-style:italic;color:red;font-weight:bold;background-color:#dcf8ea">
+                                                Already Uploaded
+                                            </td>
+                                        }
+                                    }
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @Html.HiddenFor(model => model.UserSelectedCategory, new { Value = Model.UserSelectedCategory })
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.GridData.Any() == false)
+{
+    <div style="height:100px;width:100%;font-style:italic;font-weight:bold;font-size:x-large;color:orangered;text-align:center;padding-top:2%">
+        No Data Found !
+    </div>
+}
+else
+{
+    <script>
+        $("#GETTRAN").hide();
+        $("#STVATTCH").show();
+        $("#STVATTCHCAN").show();
+    </script>
+}
+
+
+
+

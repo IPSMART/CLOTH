@@ -1,0 +1,92 @@
+﻿@model Improvar.ViewModels.GenEinvIRNCancel
+<script type="text/javascript">
+    $(document).ready(function () {
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_Gen_EinvIRN_GRID'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+
+    });
+
+</script>
+<div style="transform: translate(0%, 0%);z-index: 1100;">
+    <div class="table-responsive">
+        <div class="grid_title">
+            @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
+            @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="Help_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />
+                <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />*@
+            <div class="col-md-8">
+                <input type="text" id="Gen_EinvIRN_GRIDsrc" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_Gen_EinvIRN_GRID');" />
+                <img src="~/Image/search.png" title="Help" />
+            </div>
+            <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
+                <b> E Invoice Details</b>
+            </center>
+        </div>
+        <div class="sticky-table sticky-ltr-cells">
+            <div style="height:auto;max-height:255px;width:1071px">
+                <table id="_Gen_EinvIRN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
+                    <thead>
+                        <tr class="sticky-header" style="height:30px;">
+                            <th class="" style="width: 30px;">
+                                <input type="checkbox" name="AllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, '_Gen_EinvIRN_GRID', 'Checked_', 'Gen_EinvIRN_GRIDsrc')" />
+                            </th>
+                            <th class="" style="width: 39px;">SL No</th>
+                            @*<th class="" style="width: 89px;">Document Type</th>*@
+                            <th class="" style="width: 89px;">Document No.</th>
+                            <th class="" style="width: 89px;">Document Date</th>
+                            <th class="" style="width: 245px;">SLNM</th>
+                            <th class="" style="width: 89px;text-align:right;">Bill Amount</th>
+                            <th class="" style="width: 89px;text-align:right;">IRN No</th>
+                            <th class="" style="width: 89px;">Cancel Remarks*</th>
+                            <th class="" style="">Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.GenEinvIRNGrid != null)
+                        {
+                            for (int i = 0; i <= Model.GenEinvIRNGrid.Count - 1; i++)
+                            {
+
+                        <tr style="font-size:12px; font-weight:bold;">
+                            <td class="">
+                                @Html.CheckBoxFor(model => Model.GenEinvIRNGrid[i].Checked, new { id = "Checked_" + i, @class = " atextBoxFor " })
+                            </td>
+                            <td class="">
+                                @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                @Html.HiddenFor(model => Model.GenEinvIRNGrid[i].AUTONO, new { id = "AUTONO_" + i })
+                            </td>
+                            <td class="">
+                                @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].BLNO, new { id = "BLNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                            </td>
+                            <td class="">
+                                @Html.EditorFor(model => Model.GenEinvIRNGrid[i].BLDT, new { htmlAttributes = new { id = "BLDT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", maxlength = 14 } })
+                            </td>
+                            <td class="">
+                                @Html.EditorFor(model => Model.GenEinvIRNGrid[i].SLNM, new { htmlAttributes = new { id = "SLNM_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", maxlength = 14 } })
+                            </td>
+                            <td class="">
+                                @Html.EditorFor(model => Model.GenEinvIRNGrid[i].BLAMT, new { htmlAttributes = new { id = "BLAMT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", maxlength = 14 } })
+                            </td>
+                            <td class="">
+                                @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].IRNNO, new { id = "IRNNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                            </td>
+                            <td class="">
+                                @Html.EditorFor(model => Model.GenEinvIRNGrid[i].Remarks, new { htmlAttributes = new { id = "Remarks_" + i, @style = "text-align: left;", maxlength = 50 } })
+                            </td>
+                            <td class="">
+                                @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].MESSAGE, new { id = "MESSAGE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                            </td>
+                        </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <p>
+        @if (Model.Message != null)
+        {
+            @Html.DisplayFor(model => model.Message)
+        }
+    </p>
+</div>

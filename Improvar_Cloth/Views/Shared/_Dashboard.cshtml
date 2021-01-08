@@ -38,7 +38,9 @@
                                                         <div class="container_imageDIV" title="Document No - @Model.DashboardList[index].DataTable.Rows[i]["docno"]" style="cursor:pointer">
                                                             @if (Convert.ToInt32(Model.DashboardList[index].DataTable.Rows[i]["total_docno"]) > 0)
                                                             {
-                                                                <a style="color:white" onclick="ThirdPartyCall('@Model.DashboardList[index].DataTable.Rows[i]["URL"]');">
+                                                                var Sql = Model.DashboardList[index].DataTable.Rows[i]["doctype"] + "_" + Model.DashboardList[index].DataTable.Rows[i]["doccd"];
+                                                                var SqlStr = Model.DashboardList[index].DataTable.Rows[i]["URL"] + "&param_SQL=" + Sql;
+                                                                <a style="color:white" onclick="ThirdPartyCall('@SqlStr');">
                                                                     <img src="~/Image/greenlight.png" height="50px" width="50px" />
                                                                     <div class="centered_imageDIV">@Model.DashboardList[index].DataTable.Rows[i]["total_docno"]</div>
                                                                 </a>

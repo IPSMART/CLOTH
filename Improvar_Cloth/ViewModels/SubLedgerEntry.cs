@@ -35,7 +35,8 @@ namespace Improvar.ViewModels
         public string isPresentinLastYrSchema { get; set; }
         public bool TCSAPPL { get; set; }
         public string PARTYNM { get; set; }
-        
+        public bool IsAPIEnabled { get; set; }
+
 
     }
 }
