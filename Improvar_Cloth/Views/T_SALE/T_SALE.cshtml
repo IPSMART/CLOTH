@@ -303,6 +303,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNFLAGMTR, new { id = "MNTNFLAGMTR" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNLISTPRICE, new { id = "MNTNLISTPRICE" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -1054,11 +1055,32 @@
                                                     @Html.EditorFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR", @title = "FLAGMTR" } })
                                                 </div>
                                             </div>
-                                            <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Rate", @placeholder = "Rate", @onchange = "Sale_GetGstPer('','');" } })
+                                            @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                            {
+                                                <div class="col-md-1">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.LISTPRICE, new { htmlAttributes = new { @class = "form-control", id = "LISTPRICE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "List Price", @placeholder = "List Price", @onchange = "RateUpdate('','');" } })
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                <div class="col-md-1">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.LISTDISCPER, new { htmlAttributes = new { @class = "form-control", id = "LISTDISCPER", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "List Disc Per", @placeholder = "List Disc Per", @onchange = "RateUpdate('','');" } })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Rate", @placeholder = "Rate", @readonly = "readonly", @TabIndex = -1 } })
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-1">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 14, @title = "Rate", @placeholder = "Rate", @onchange = "Sale_GetGstPer('','');" } })
+                                                    </div>
+                                                </div>
+                                            }
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.DropDownListFor(model => model.SCMDISCTYPE, new SelectList(Model.DISC_TYPE, "Value", "Text"), new { @class = "form-control", id = "SCMDISCTYPE", @title = "Disc. Type" })
@@ -1109,7 +1131,7 @@
                                             }
                                             @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
                                             {
-                                                <div class="col-md-7">
+                                                <div class="col-md-6">
                                                     <div class="editor-field">
                                                         @Html.EditorFor(model => model.ORDDOCNO, new { htmlAttributes = new { @class = "form-control", id = "ORDDOCNO", @title = "Order No", @placeholder = "Order No", @readonly = "readonly", @TabIndex = -1 } })
                                                         @*@Html.EditorFor(model => model.ORDDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ORDDOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO','ITCD','Y')", onblur = "GetHelpBlur('" + @Url.Action("GetOrderDetails", PageControllerName) + "','Order Details','ORDDOCNO','ORDDOCNO=ORDDOCNO=0/ORDDOCDT=ORDDOCDT=1/ORDAUTONO=ORDAUTONO/ORDSLNO=ORDSLNO','ITCD','Y');", @placeholder = "Order No.", maxlength = 30, @title = "Order No." } })

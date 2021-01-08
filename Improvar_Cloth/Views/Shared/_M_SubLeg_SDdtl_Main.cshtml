@@ -1,0 +1,83 @@
+﻿@model Improvar.ViewModels.SubLedgerSDdtlMasterEntry
+<script>
+    $("input").click(function () {
+        $(this).select();
+    });
+</script>
+<div class="table-responsive">
+    @using (Html.BeginForm())
+    {
+        if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                @*<img src="~/Image/Plus.png" class="Help_image_buttonAddRemove" width="20px" height="20px" id="btnAddUnit" title="Add Row" onclick="Addrow()" />
+                <img src="~/Image/Minus.png" class="Help_image_buttonAddRemove" width="20px" height="20px" id="btnDeleteUnit" title="Delete Row" onclick="Deleterow()" />*@
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event,'examplesubledgeDtl');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Item Group Wise Details</b></center>
+            </div>
+            <table id="examplesubledgeDtl" class="grid_table scroll" cellpadding='1px' cellspacing='3px' width='100%'>
+                <thead>
+                    <tr style="height:30px">
+                        <th class="grid_th" style="width:50px">SL NO.</th>
+                        <th class="grid_th" style="width:80px">Item Group Code</th>
+                        <th class="grid_th" style="width:200px">Item Group Name</th>
+                        <th class="grid_th" style="width:80px">Plist Code</th>
+                        <th class="grid_th" style="width:200px">Plist Name</th>
+                        <th class="grid_th" style="width:80px">Discount Rate Code</th>
+                        <th class="grid_th" style="width:200px">Discount Rate Name</th>
+                        <th class="grid_th" style="width:200px">SAP Code</th>
+                        <th class="grid_th" style="width:137px;text-align:right">Credit Limit</th>
+                        <th class="grid_th" style="width:80px;text-align:right">Credit Days</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MSUBLEGSDDTLITGRP != null)
+                    {
+                        for (int i = 0; i <= Model.MSUBLEGSDDTLITGRP.Count - 1; i++)
+                        {
+                            <tr>
+                                <td style="width:50px">
+                                    @Html.HiddenFor(model => model.MSUBLEGSDDTLITGRP[i].M_AUTONO, new { id = "M_AUTONO_" + i + ")" })
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @title = "Only Numeric",@TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td style="width:70px">
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].ITGRPCD, new { id = "ITGRPCD_" + i, @class = " atextBoxFor ", maxlength = 4,@TabIndex = -1,@readonly = "readonly" })
+                                    </td>
+                                <td style="width:90px">
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].ITGRPNM, new { id = "ITGRPNM_" + i, @class = " atextBoxFor ", maxlength = 30, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td style="width:90px">
+                                    @Html.EditorFor(model => model.MSUBLEGSDDTLITGRP[i].PRCCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PRCCD_" + i, onblur = "SelectPriceCode(this.value,PRCCD_" + i + ",PRCNM_" + i + ")", maxlength = 4, required = "required", onkeyup = "GetHelp('" + Url.Action("GetPriceCode", "M_SubLeg_SDdtl") + "','PRCCD_" + i + "/PRCNM_" + i + "','1/0','Select Plist Detsils','PRCCD_" + i + "')" } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" title="Help" class="Help_image_button_grid" onclick="GetHelp('@Url.Action("GetPriceCode", "M_SubLeg_SDdtl")','PRCCD_@i/PRCNM_@i','1/0','Select Plist Detsils','PRCCD_@i')" />
+                                </td>
+                                <td style="width:200px">
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].PRCNM, new { id = "PRCNM_" + i, @class = " atextBoxFor ", maxlength = 30, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td style="width:90px">
+                                    @Html.EditorFor(model => model.MSUBLEGSDDTLITGRP[i].DISCRTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "DISCRTCD_" + i, onblur = "SelectDISCRTCD(this.value,DISCRTCD_" + i + ",DISCRTNM_" + i + ")", maxlength = 4, required = "required", onkeyup = "GetHelp('" + Url.Action("GetDiscountCode", "M_SubLeg_SDdtl") + "','DISCRTCD_" + i + "/DISCRTNM_" + i + "','1/0','Select Discount Rate Detsils','DISCRTCD_" + i + "')" } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" title="Help" class="Help_image_button_grid" onclick="GetHelp('@Url.Action("GetDiscountCode", "M_SubLeg_SDdtl")','DISCRTCD_@i/DISCRTNM_@i','1/0','Select Discount Rate Detsils','DISCRTCD_@i')" />
+                                </td>
+                                <td style="width:200px">
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].DISCRTNM, new { id = "DISCRTNM_" + i, @class = " atextBoxFor ", maxlength = 30,@TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td style="width:70px">
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].SAPCD, new { id = "SAPCD_" + i, @class = " atextBoxFor ", maxlength = 20 })                                </td>
+                                <td style="width:85px">
+                                    @Html.EditorFor(model => Model.MSUBLEGSDDTLITGRP[i].CRLIMIT, new { htmlattributes = new { id = "CRLIMIT_" + i, @class = " atextBoxFor text-right", maxlength = 13, @onkeypress = "return numericOnly(this,2);", @title = "Only Numeric" } })
+                                </td>
+                                <td style="width:70px">
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].CRDAYS, new { id = "CRDAYS_" + i, @class = " atextBoxFor ", style = "text-align:right;", maxlength = 4, @onkeypress = "return numericOnly(this);", @title = "Only Numeric" })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        }
+    }
+</div>

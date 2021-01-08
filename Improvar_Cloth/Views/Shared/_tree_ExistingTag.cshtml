@@ -1,0 +1,74 @@
+﻿@model Improvar.ViewModels.BalanceSheetGroup
+@if (Model.ExistingGroup != null)
+{
+    <script>
+        $(document).ready(function () {
+            resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('exist_GRP'));
+            $("td").on("mouseover", function (e) {
+                var titlee = $(this).find("input").val();
+                $(this).attr('title', titlee);
+            });
+        });
+    </script>
+    <div style="margin-top: 7px;margin-left:13px;font-size: 14px;font-weight: bold;">
+        @if (Model.ExistingGroup != null)
+        {
+            <span>Number of Tag Accounts : @Model.ExistingGroup.Count</span>
+        }
+        else
+        {
+            <span>Number of Tag Accounts : 0</span>
+        }
+    </div>
+    <div class="sticky-table sticky-ltr-cells" style="margin-left:4px;margin-right:4px;margin-top:7px;border-radius:10px;transform: translate(0%, 0%);z-index:1100;">
+        <div style="height:auto;overflow-y:auto;max-height:58vh">
+            <table id="exist_GRP" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="FONT-SIZE:9px;width:520px;" onkeydown="checkKey(event, 'exist_GRP', 'EChecked_');">
+                <thead>
+                    <tr class="sticky-header" style="height:30px;">
+                        <th class="sticky-cell" style="text-align:center;width: 27px;">
+                            @*All*@
+                            <input type="checkbox"  name="Test" onclick="SetAllCheckBoxesFilterCUSTOM(this, 'exist_GRP', 'EChecked_', 'searchEX')" />
+                        </th>
+                        <th class="" style="width:60px;">Code</th>
+                        <th class="" style="width:250px;">Lager Name</th>
+                        <th class="" style="width:60px;">Class Code</th>
+                        <th class="" style="width:150px;">Class Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ExistingGroup.Count > 0)
+                    {
+                        for (int i = 0; i <= Model.ExistingGroup.Count - 1; i++)
+                        {
+                            <tr id="exist_GRP@(i+1)">
+                                <td class="sticky-cell" style="background-color:#808080">
+                                    @Html.CheckBoxFor(model => Model.ExistingGroup[i].Checked, new { id = "EChecked_" + i, @class = " atextBoxFor", @style = "text-align:center;", onclick = "IndivedulaCheckBoxCheck(this," + i + ",'exist_GRP');" })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.ExistingGroup[i].GLCD, new { htmlAttributes = new { @class = "atextBoxFor", id = "EGLCD_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.ExistingGroup[i].GLNM, new { htmlAttributes = new { @class = "atextBoxFor", id = "EGLNM_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.ExistingGroup[i].CLASS1CD, new { htmlAttributes = new { @class = "atextBoxFor", id = "ECLASS1CD_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.ExistingGroup[i].CLASS1NM, new { htmlAttributes = new { @class = "atextBoxFor", id = "ECLASS1NM_" + i, maxlength = 10, @readonly = "readonly", onclick = "CheckBoxCheck(this," + i + ",'exist_GRP');" } })
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>                            
+                            <td colspan="3" style="height:50px;color:red;font-size:12px;text-align:center">No Data Found!</td>
+                            <td colspan="4"></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+

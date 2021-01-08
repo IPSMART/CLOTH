@@ -1,0 +1,138 @@
+﻿
+@model Improvar.ViewModels.SubLedgerSDdtlitgrpMasterEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("td").on("mouseover", function (e) {
+           var titlee=$(this).find("input").val();
+           $(this).attr('title', titlee);
+        });
+   });
+</script>
+<div id="WaitingMode1" style="margin: 0px; padding: 0px; position: fixed; right: 0px; top: 0px; width: 100%; height: 100%; background-color: rgb(16, 134, 16); z-index: 30001; opacity: 0.4;">
+    <p style="position: absolute; color: White; top: 46%; left: 47%;">
+        Loading, please wait...<br />
+        <span> <img src="~/Image/ajax_loader.gif" width="60px" height="60px"></span>
+    </p>
+</div>
+<div class="table-responsive">
+    @using (Html.BeginForm())
+    {
+        if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_button_grid" onclick="DeleteRowSubLeg()" />
+                @*   <img src="~/Image/Minus.png" class="Help_image_buttonAddRemove" width="20px" height="20px" id="btnDeleteSubLedge" title="Delete Row" onclick="DeleterowSubLedge()" />*@
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event,'examplesubledgeDtl');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Sub Ledger Details Item Group wise</b></center>
+            </div>
+            <table id="examplesubledgeDtl" class="resizable grid_table" cellpadding="0px" cellspacing="0px" width="100%">
+                <thead>
+                    <tr style="height:30px">
+                        <th class="grid_th"> </th>
+                        <th class="grid_th" style="width:50px">Sl</th>
+                        <th class="grid_th" style="width:80px">Leg.Cd</th>
+                        <th class="grid_th" style="width:250px">Sub Ledger Name</th>
+                        <th class="grid_th" style="width:100px">Party Grp</th>
+                        <th class="grid_th" style="width:50px">State Code</th>
+                        <th class="grid_th" style="width:150px">GST No</th>
+                        <th class="grid_th" style="width:130px">Plist Code</th>
+                        <th class="grid_th" style="width:70px">Tax Code</th>
+                        <th class="grid_th" style="width:90px">Tax Name</th>
+                        <th class="grid_th" style="width:70px">Credit Days</th>
+                        <th class="grid_th" style="width:85px">Credit Limit</th>
+                        <th class="grid_th" style="width:90px">Tran Cd</th>
+                        <th class="grid_th" style="width:110px">Transporter name</th>
+                        <th class="grid_th" style="width:160px">Address1</th>
+                        <th class="grid_th" style="width:60px">SAP code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.MSUBLEGSDDTLITGRP != null)
+                    {
+                        for (int i = 0; i <= Model.MSUBLEGSDDTLITGRP.Count - 1; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.CheckBoxFor(model => model.MSUBLEGSDDTLITGRP[i].Checked, new { id = "chkid_" + i + ")" })
+                                    @Html.HiddenFor(model => model.MSUBLEGSDDTLITGRP[i].M_AUTONO)
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @title = "Only Numeric", @TabIndex = -1, @readonly = "readonly", style = "background-color: #b9acac;" })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.MSUBLEGSDDTLITGRP[i].SLCD, new { htmlAttributes = new { @class = "atextBoxFor", id = "SLCD_" + i, maxlength = 10, @title = "Only for View", @TabIndex = -1, @readonly = "readonly", style = "background-color: #b9acac;" } })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].SLNM, new { id = "SLNM_" + i, @class = " atextBoxFor ", maxlength = 40, @TabIndex = -1, @readonly = "readonly", style = "background-color: #b9acac;" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].PARTYGRP, new { id = "PARTYGRP_" + i, @class = " atextBoxFor ", maxlength = 4, @TabIndex = -1, @readonly = "readonly", style = "background-color: #b9acac;" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].STATECD, new { id = "STATECD_" + i, @class = " atextBoxFor ", maxlength = 2, @TabIndex = -1, @readonly = "readonly", style = "background-color: #b9acac;" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].GSTNO, new { id = "GSTNO_" + i, @class = " atextBoxFor ", maxlength = 15, @TabIndex = -1, @readonly = "readonly", style = "background-color: #b9acac;" })
+                                </td>
+                                <td>
+                                    @Html.DropDownListFor(model => Model.MSUBLEGSDDTLITGRP[i].PRCCD, new SelectList(Model.DropDown_list1, "Value", "Text", Model.MSUBLEGSDDTLITGRP[i].PRCCD),"", new { @class = "atextBoxFor select_3d " })
+                                    @Html.HiddenFor(a => a.MSUBLEGSDDTLITGRP[i].PRCCD)
+                                  </td>
+
+                                <td>
+                                    @if (Model.MSUBLEGSDDTLITGRP[i].TAXGRPCD != "" || Model.MSUBLEGSDDTLITGRP[i].TRSLCD != "")
+                                    {
+                                        @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].TAXGRPCD, new { id = "TAXGRPCD_" + i, @class = " atextBoxFor ", maxlength = 4, @TabIndex = -1, @readonly = "readonly" })
+                                    }
+                                    else {
+                                        @Html.EditorFor(model => model.MSUBLEGSDDTLITGRP[i].TAXGRPCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "TAXGRPCD_" + i, onblur = "SelectTaxGroupCode(this.value,TAXGRPCD_" + i + ",TAXGRPNM_" + i + ")", maxlength = 4, required = "required", onkeyup = "GetHelp('" + Url.Action("GetTaxGroupDetails", "M_SubLeg_SDdtl") + "','TAXGRPCD_" + i + "/TAXGRPNM_" + i + "','1/0','Select Tax Group Details','TAXGRPCD_" + i + "')" } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" title="Help" class="Help_image_button_grid" onclick="GetHelp('@Url.Action("GetTaxGroupDetails", "M_SubLeg_SDdtl_ItGrp")','TAXGRPCD_@i/TAXGRPNM_@i','1/0','Select Tax Group Details','TAXGRPCD_@i')" />
+                                    }
+                                    @Html.HiddenFor(a => a.MSUBLEGSDDTLITGRP[i].TAXGRPCD)
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].TAXGRPNM, new { id = "TAXGRPNM_" + i, @class = " atextBoxFor ", maxlength = 30, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].CRDAYS, new { id = "CRDAYS_" + i, @class = " atextBoxFor ", style = "text-align:right;", maxlength = 3, @onkeypress = "return numericOnly(this,5);", @title = "Only Numeric" })
+                                    @Html.HiddenFor(a => a.MSUBLEGSDDTLITGRP[i].CRDAYS)
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].CRLIMIT, new { id = "CRLIMIT_" + i, @class = " atextBoxFor ", style = "text-align:right;", maxlength = 12, @onkeypress = "return numericOnly(this,5);", @title = "Only Numeric" })
+                                    @Html.HiddenFor(a => a.MSUBLEGSDDTLITGRP[i].CRLIMIT)
+                                </td>
+                                <td>
+                                    @if (Model.MSUBLEGSDDTLITGRP[i].TAXGRPCD != "" || Model.MSUBLEGSDDTLITGRP[i].TRSLCD != "")
+                                    {
+                                        @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].TRSLCD, new { id = "TRSLCD_" + i, @class = " atextBoxFor ", maxlength = 8, @TabIndex = -1, @readonly = "readonly" })
+                                    }
+                                    else
+                                    {
+                                        @Html.EditorFor(model => model.MSUBLEGSDDTLITGRP[i].TRSLCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "TRSLCD_" + i, onblur = "SelectSLCDCode(this.value,TRSLCD_" + i + ",TRSLNM_" + i + ")", maxlength = 8, required = "required", onkeyup = "GetHelp('" + Url.Action("GetSLCDhelp", "M_SubLeg_SDdtl") + "','TRSLCD_" + i + "/TRSLNM_" + i + "','1/0','Transporter Details','TRSLCD_" + i + "')" } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" title="Help" class="Help_image_button_grid" onclick="GetHelp('@Url.Action("GetSLCDhelp", "M_SubLeg_SDdtl_ItGrp")','TRSLCD_@i/TRSLNM_@i','1/0','Transporter Details','TRSLCD_@i')" />
+                                    }
+                                    @Html.HiddenFor(a => a.MSUBLEGSDDTLITGRP[i].TRSLCD)
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].TRSLNM, new { id = "TRSLNM_" + i, @class = " atextBoxFor ", maxlength = 40, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].ADD1, new { id = "ADD1_" + i, @class = " atextBoxFor ", maxlength = 50, @TabIndex = -1, @readonly = "readonly" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.MSUBLEGSDDTLITGRP[i].SAPCD, new { id = "SAPCD_" + i, @class = " atextBoxFor ", maxlength = 20 })
+                                    @Html.HiddenFor(a => a.MSUBLEGSDDTLITGRP[i].SAPCD)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        }
+    }
+</div>

@@ -39,13 +39,13 @@
                                     <tr style="font-size:12px; font-weight:bold;">
 
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.MUSRACSDOCCD[i].DNAME, new { id = "DNAME_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.MUSRACSDOCCD[i].DNAME, new { id = "DNAME_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.MUSRACSDOCCD[i].DOCCD, new { id = "DOCCD_" + i, @class = " atextBoxFor", @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.MUSRACSDOCCD[i].DOCCD, new { id = "DOCCD_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.MUSRACSDOCCD[i].DOCNM, new { id = "DOCNM_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.MUSRACSDOCCD[i].DOCNM, new { id = "DOCNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.MUSRACSDOCCD[i].Checked, new { id = "Checked" + i })

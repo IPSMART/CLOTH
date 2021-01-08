@@ -55,30 +55,30 @@ namespace Improvar.Models
         [StringLength(1)]
         public string STKDRCR { get; set; }
 
-         public double? NOS { get; set; }
+        public double? NOS { get; set; }
 
-         public double? QNTY { get; set; }
+        public double? QNTY { get; set; }
 
-         public double? BLQNTY { get; set; }
+        public double? BLQNTY { get; set; }
 
-         public double? FLAGMTR { get; set; }
+        public double? FLAGMTR { get; set; }
 
         [StringLength(100)]
         public string ITREM { get; set; }
 
-         public double? RATE { get; set; }
+        public double? RATE { get; set; }
 
-         public double? DISCRATE { get; set; }
+        public double? DISCRATE { get; set; }
 
         [StringLength(1)]
         public string DISCTYPE { get; set; }
 
-         public double? SCMDISCRATE { get; set; }
+        public double? SCMDISCRATE { get; set; }
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
 
-         public double? TDDISCRATE { get; set; }
+        public double? TDDISCRATE { get; set; }
 
         [StringLength(1)]
         public string TDDISCTYPE { get; set; }
@@ -88,9 +88,9 @@ namespace Improvar.Models
 
         public short? ORDSLNO { get; set; }
 
-         public double? DIA { get; set; }
+        public double? DIA { get; set; }
 
-         public double? CUTLENGTH { get; set; }
+        public double? CUTLENGTH { get; set; }
 
         [StringLength(10)]
         public string LOCABIN { get; set; }
@@ -117,10 +117,16 @@ namespace Improvar.Models
         public string RECPROGLOTNO { get; set; }
 
         public short? RECPROGSLNO { get; set; }
+
         public double? INCLRATE { get; set; }
+
         [StringLength(2)]
         public string PCSACTION { get; set; }
-        
+
+        public double? LISTPRICE { get; set; }
+
+        public double? LISTDISCPER { get; set; }
+
 
     }
 }

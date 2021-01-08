@@ -68,6 +68,11 @@
                 data: $('form').serialize(),
                 success: function (result) {
                     $("#partialdivUG").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
                 }
             });
         }
@@ -78,6 +83,11 @@
                 data: $('form').serialize(),
                 success: function (result) {
                     $("#partialdivUG").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
                 }
             });
         }
@@ -86,9 +96,9 @@
 <body style="background-color:#f7ffff">
     <nav class="navbar navbar-expand-lg static-top sb-navbar" style="background-color: rgb(38, 110, 154);">
         <div class="container">
-            <a class="navbar-brand" href="/" style="color:white">Start With IMPROVAR</a>
+            <a class="navbar-brand" href="/" style="color:white">Start With IPSMART</a>
             <div class="navbar-right">
-                <img src="~/Image/IPSMART-LOGO.png" style="width:120px;" />
+                <img src="~/Image/IPSMART-LOGO.png" style="width:30px;" />
             </div>
         </div>
     </nav>
@@ -100,28 +110,28 @@
                     <div class="col-lg-1"></div>
                     <div class="col-lg-9">
                         <header>
-                            <div class="row">
-                                <img src="~/Image/IPSMART-LOGO.png" class="img-responsive" style="width:200px; margin: 0 auto;" />
-                            </div>
+                            <p>Ip Smart Infotech LLP</p>
                         </header>
                         @*<h1>Company Name: @Model.COMPNM</h1>
-                        <h2>Module Name: Sales</h2>*@
+                            <h2>Module Name: Sales</h2>*@
                         <div class="row">
                             <div class="col-md-12">
                                 <table class="table table-striped table-bordered" style="font-size:15px;">
-                                    <thead><tr><th>Option</th><th>intcut Key</th></tr></thead>
+                                    <thead><tr><th>Option</th><th>ShortCut Key</th></tr></thead>
                                     <tbody>
-                                        <tr><td>Close Message Box     </td><td><kbd>Space</kbd></td></tr>
+                                        <tr><td>Close Message Box </td><td><kbd>Space</kbd></td></tr>
                                         <tr><td>Go to Next Field</td><td><kbd>Enter</kbd> or <kbd>Tab</kbd></td></tr>
                                         <tr><td>Go to Previous Field</td><td><kbd>Shift</kbd>+<kbd>Tab</kbd></td></tr>
                                         <tr><td>Cursor movent in Grid</td><td>Use Arrow key</td></tr>
                                         <tr><td>Open Help window</td><td><kbd>F2</kbd></td></tr>
-                                        <tr><td>Go to Add mode  <span class="glyphicon glyphicon-plus" style="font-size:larger;color:blue"></span>         </td><td><kbd>Alt</kbd>+<kbd>N</kbd></td></tr>
-                                        <tr><td>Go to Edit mode &nbsp;<span class="glyphicon glyphicon-pencil" style="font-size:larger;color:blue"></span>          </td><td><kbd>Alt</kbd>+<kbd>E</kbd></td></tr>
-                                        <tr><td>Go to Revert/View mode <span class="glyphicon glyphicon-remove" style="font-size:larger;color:blue"></span>        </td><td><kbd>Alt</kbd>+<kbd>C</kbd></td></tr>
-                                        <tr><td>For Delete        <span class="glyphicon glyphicon-trash" style="font-size:larger;color:blue"></span>          </td><td><kbd>Alt</kbd>+<kbd>D</kbd></td></tr>
-                                        <tr><td>For Print      <span class="glyphicon glyphicon-print" style="font-size:larger;color:blue"></span>          </td><td><kbd>Alt</kbd>+<kbd>P</kbd></td></tr>
-                                        <tr><td>To Save        <span class="glyphicon glyphicon-ok" style="font-size:larger;color:blue"></span>          </td><td><kbd>Alt</kbd>+<kbd>S</kbd></td></tr>
+                                        <tr><td>Go to Add mode  <span class="glyphicon glyphicon-plus" style="font-size:larger;color:blue"></span>      </td><td><kbd>Alt</kbd>+<kbd>N</kbd></td></tr>
+                                        <tr><td>Go to Edit mode &nbsp;<span class="glyphicon glyphicon-pencil" style="font-size:larger;color:blue"></span>     </td><td><kbd>Alt</kbd>+<kbd>E</kbd></td></tr>
+                                        <tr><td>Go to Revert/View mode <span class="glyphicon glyphicon-remove" style="font-size:larger;color:blue"></span>    </td><td><kbd>Alt</kbd>+<kbd>C</kbd></td></tr>
+                                        <tr><td>For Delete   <span class="glyphicon glyphicon-trash" style="font-size:larger;color:blue"></span>       </td><td><kbd>Alt</kbd>+<kbd>D</kbd></td></tr>
+                                        <tr><td>For Print    <span class="glyphicon glyphicon-print" style="font-size:larger;color:blue"></span>       </td><td><kbd>Alt</kbd>+<kbd>→</kbd></td></tr>
+                                        <tr><td>For Next Record   <span class="glyphicon glyphicon-arrow-right" style="font-size:larger;color:blue"></span>       </td><td><kbd>Alt</kbd>+<kbd>→</kbd></td></tr>
+                                        <tr><td>For Previous Record <span class="glyphicon glyphicon-arrow-left" style="font-size:larger;color:blue"></span>      </td><td><kbd>Alt</kbd>+<kbd>←</kbd></td></tr>
+                                        <tr><td>To Save        <span class="glyphicon glyphicon-ok" style="font-size:larger;color:blue"></span>       </td><td><kbd>Alt</kbd>+<kbd>S</kbd></td></tr>
                                         <tr><td>To Find</td><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td></tr>
                                         <tr><td>Reload Page</td><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td></tr>
                                     </tbody>
@@ -129,9 +139,9 @@
                             </div>
                         </div>
 
-                        @if (Module.Module_Code == "SALESCHEM")
+                        @if (CommVar.ModuleCode() == "SALESCHEM" || CommVar.ModuleCode() == "SALESSMPL" || CommVar.ModuleCode() == "SALESREC")
                         {
-                            @*<div>
+                            <div>
 
                                 <div class="row">
                                     <div class="col-md-12 text-center" style="background-color:darkkhaki;border-radius: 6px;">
@@ -141,7 +151,7 @@
                                 <section>
                                     <div class="row m_gradient">
                                         <div class="col-xs-6 text-left left">
-                                            <p> Q) How to sale a New Product?   </p>
+                                            <p> Q) How to Sale a New Product?   </p>
                                         </div>
                                         <div class="col-xs-6 text-right">
                                             <small>Process</small>
@@ -150,9 +160,30 @@
                                     <div class="row">
                                         <div class="col-md-12 ">
                                             <ol>
-                                                <li>Create a <a href="#FinishedProduct">Finish Product</a> item</li>
-                                                <li>Set Sale and Purchase Rate in the <a href="#PriceList"> Price List </a></li>
-                                                <li>Then the price List Link Up With Party <a href="#M_SubLeg_SDdtl_ItGrp"> Price List Link up With Party</a> .</li>
+                                                <li>Create a <a href="#FinishedProduct">Finished Product</a> item</li>
+                                                <li> Select the Broad Group for that Item  </li>
+                                                <li> If that Item is not within that Broad group ,then create the Broad Group against that item and entry the HSN Code of that item(If not know then from the (Internet/google.co.in) Search the HSN Code of that Item.) </li>
+                                                <li> Select the Item Group Name(Such as Laptop accessories Item Belongs to Item Group Miscellaneous or MISC). </li>
+                                                <li> If that Item is not in the already created Item Group Name,then Create the Item Group Name From the Group Master </li>
+                                                <li> Select the Item rate Calculate as Qnty/Bag and Select the Stock Calculate as Qnty/Bag </li>
+                                                <li> Select the Group Name and then Select the Stock Maintain in Pcs or Bag.Insert the Packsize and CLD(Pcs in Case). </li>
+                                                <li> Select The Product Group against that Item.If that Item has no Product Group then Create its Product Group from Product Group(Tax/Disc) under Product Menu </li>
+                                                <li> If that Item has no Product Group then Create its Product Group from Product Group(Tax/Disc) under Product Menu </li>
+                                                <li> Create the Group against that Item from the Group Master. Select the Group Short name.</li>
+                                                <li> Select the Rate Quantity on as Qnty/Bag and Insert the Item Godown Store Address and Godown short name.</li>
+                                                <li> If the Godown Address is not within the List,then Create the Godown Under Godown Master Menu from Other Menu. </li>
+                                                <li> Select Whether User Can Maintain Batch Wise Stock as Mandatory,Optional or No. </li>
+                                                <li> Select the Tick Mark as Open Price Concept(No Price List Required), Rate can change at the time of billing,Quantity can change during in Billing Process and Inclusive Rate.</li>
+                                                <li> Set Sale and Purchase Rate in the <a href="#PriceList"> Price List </a></li>
+                                                <li> Insert an entry in the Price List Code Master and select the Price List Group as EXFTY/MRP/PARTY/RAKA/WP and insert an name in the Price list Code.</li>
+                                                <li> Then Insert an entry in the Price List Menu and Select the name in the  the Price Code, Insert the Price Description,Choose an Effective Date, Select the Product Group Code and then Click the Get Items Button and List the Product Group Name, Item Name from the Grid View and insert the Product Rate and Select the Discount as Qnty/Nos and Select the Commission as Qnty/Nos and Tick the appropiate Selection </li>
+                                                <li> Tax(GST(CGST/SGST/IGST)) Rate Setup with Product/Item Group </li>
+                                                <li> Select the Product Group aginst that Product and choose the effective Date and Click over the get data Button, then Tax group Name along with Tax Group Code and Tax percentage is displayed in the GridView </li>
+                                                <li> Set the Tax(CGST/SGST/IGST) Percentage against that Item and Save the concerned Form/Page </li>
+                                                <li> Insert an entry in the Document Type Menu in the Document master under Configuration Setup Menu </li>
+                                                <li> Insert an Name as Document Description Name(If it is Sales Bill then Sale Bill-Tools,if it is Purchase Bill then Purchase Bill-Tools),Insert an Entry as Document Code OF Maximum 4 characters( 'S' will automatically add with Doc Code) </li>
+                                                <li> Insert an Entry as Documnet Number Maximum Length, Doc Number Pattern and Description,Tick whether User will Allow Back Date or not and Insert an Entry as C as Document Footer and Save the Concerned Page </li>
+                                                <li> Then the price List Link Up With Party <a href="#M_SubLeg_SDdtl_ItGrp"> Price List Link up With Party</a> .</li>
                                                 <li>Now Open<a href="#SaleBill"> Sale Bill</a>.</li>
                                             </ol>
                                         </div>
@@ -194,20 +225,30 @@
                                         <div class="col-md-12 ">
                                             <ol>
                                                 <li>Open Sale Billes from [ Inputs (Sales) => Sales Transaction => Sales Bills]</li>
-                                                <li>Click on Add or Edit </li>
-                                                <li> Choose Document Code & Document Date  </li>
-                                                <li> Choose a Buyer Name . After choosed buyer name, autometicly initial your price list code & name. That is linked in the<a href="#PriceList">  price list </a>. Here you can change the Price  List.</li>
-                                                <li> after that Go to <u>Products</u> tab & choose a Item Code</li>
-                                                <li>Next Put the Unit in the <i>Units</i> cell</li>
-                                                <li>click on Batch Details</li>
-                                                <li>either you maintain Batch wise Stock then change batch or close it.</li>
-                                                <li>You can add maximum 5 item in a bill</li>
-                                                <li>If you change the round off value then you click on the round off check box.</li>
-                                                <li>If you want to add any charges then click on Amount tab. </li>
-                                                <li>If you want to add any transport details then click on Transport tab and put the value. </li>
-                                                <li>you can also add the remarks for the bill &amp; atach a document tab.</li>
-                                                <li>Atlast Click on the save Button. </li>
-                                                <li>Note the Inoice No</li>
+                                                <li> Select the Appropiate Document Code,then Tag with Document Code with Group Name in the Master--> Product-->Group Master-->Document Types Tag </li>
+                                                <li> Select the Buyer which have been already created by the User as Sundry Debtors in the Financial Package </li>
+                                                <li> Then Tag/Link The Item with Customer master---> Tax Code/Credit Limit Party & Location wise </li>
+                                                <li> Insert an Entry in the Tax Code/Credit Limit Party & Location wise Under Master --> Customer Master Menu </li>
+                                                @*<li>Click on Add or Edit </li>
+                                                    <li> Choose Document Code & Document Date  </li>*@
+                                                <li> Select the Sub Ledger Code or Party Name,then Select the Concerned Tax Code as CGST/SGST </li>
+                                                <li> Then Select the Item Name in the Grid View and also Select the Item Product List Code and Product List Name </li>
+                                                <li> Open the Sales Bill and in the Sales Bill Menu Products tab Select the appropiate item and give the quantity(Inserted Quantity should be less than the Stock Quantity of that Item) </li>
+                                                <li> Insert the Rate and total Bill be will be Generated and in the Main Tab the Calculated amount Should be Rounded Off </li>
+                                                <li> Total Calculated amount has been calculated and Save the Record in the Concerned Sales Bill Page and From the Print Record Menu, Print the appropiate Sales Bill </li>
+                                                <li> Choose a Buyer Name.After choice of Buyer name, automaticaly initial your price list code & name </li>
+                                                <li> That is linked in the<a href="#PriceList">  price list </a>. Here you can change the Price  List.</li>
+                                                <li> After that Go to <u>Products</u> tab & choose a Item Code</li>
+                                                <li> Next Put the Unit in the <i>Units</i> cell</li>
+                                                <li> Click on Batch Details </li>
+                                                <li> Either you maintain Batch wise Stock then change batch or close it </li>
+                                                <li> You can add maximum 5 item in a bill </li>
+                                                <li> If you change the round off value then you click on the round off check box </li>
+                                                <li> If you want to add any charges then click on Amount tab </li>
+                                                <li> If you want to add any transport details then click on Transport tab and put the value </li>
+                                                <li> You can also add the remarks for the bill &amp; atach a document tab </li>
+                                                <li> Atlast Click on the save Button </li>
+                                                <li> Note the Invoice No </li>
                                             </ol>
                                         </div>
                                     </div>
@@ -226,6 +267,7 @@
                                         <div class="col-md-12 ">
                                             <ol>
                                                 <li>Open Sale Billes from [ Inputs (Purchase) => Purchase Transaction => Purchase Bills]</li>
+                                                <li> Select the Buyer which have been already created by the User as Sundry Creditors in the Financial Package </li>
                                                 <li>Click on Add or Edit </li>
                                                 <li> Choose Document Code & Document Date  </li>
                                                 <li> Choose a Buyer Name . After choosed buyer name, autometicly initial your price list code & name. That is linked in the<a href="#PriceList">  price list </a>. Here you can change the Price  List.</li>
@@ -372,21 +414,20 @@
                                     </div>
                                 </section>
                                 <hr />
-
-                            </div>*@
+                            </div>
                         }
 
                         <hr />
                         @*<div class="row">
-                            <div class="col-md-12">Click + Button For Put the requirement => then click on save button</div>
-                        </div>
-
-                        <div class="row">
-                            <div id="partialdivUG">
-                                @Html.Partial("_User_Guide")
+                                <div class="col-md-12">Click + Button For Put the requirement => then click on save button</div>
                             </div>
-                        </div>
-                        <hr />*@
+
+                            <div class="row">
+                                <div id="partialdivUG">
+                                    @Html.Partial("_User_Guide")
+                                </div>
+                            </div>
+                            <hr />*@
                         <div class="row">
                             <div class="col-md-12 text-center" style="background-color:darkkhaki;border-radius: 6px;">
                                 <h1 class="personalcolor" style="color: dimgrey;">Common Options</h1>
@@ -431,8 +472,10 @@
                                     Sorting in Asending Order ScreenShot displayed.
                                     <img src="~/Image/help_sortingasc.png" style="width:349px;height:352px;" />
                                 </div>
-                                <div class="col-md-11"> Column Search
-                                <img src="~/Image/help_columnsearch.png" style="width:349px;height:352px;" /></div>
+                                <div class="col-md-11">
+                                    Column Search
+                                    <img src="~/Image/help_columnsearch.png" style="width:349px;height:352px;" />
+                                </div>
                             </div>
 
                         </section>
@@ -542,30 +585,15 @@
                                 </div>
                             </div>
                             <div class="row">
-
                                 <div class="col-md-11 ">
-
-
-
-
-
                                     <img src="~/Image/help_show_passwd.png" style="width:349px;height:352px;" />
                                 </div>
                                 <div class="col-md-11">
-
-
-
                                     <img src="~/Image/help_set_default.png" style="width:349px;height:352px;" />
                                 </div>
                             </div>
-
-
                         </section>
-
                         <hr />
-
-
-
                         <section>
                             <div class="row t_gradient">
                                 <div class="col-xs-6 text-left left">
@@ -577,11 +605,8 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-11 ">
-
                                     Click on Add button
-
                                     <img src="~/Image/help_addrow.png" style="width: 403px;height: 139px;" />
-
                                 </div>
                                 <div class="col-md-11">  Select check box.Click on (-) button. <img src="~/Image/help_deleterow.png" style="width: 403px;height: 139px;" /></div>
                             </div>

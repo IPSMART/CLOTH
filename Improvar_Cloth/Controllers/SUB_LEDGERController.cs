@@ -121,7 +121,12 @@ namespace Improvar.Controllers
 
                     VE.LinkType = (from i in DB1.MS_LINK select new LinkType() { LINKCD = i.LINKCD, LINKNM = i.LINKNM }).OrderBy(s => s.LINKNM).ToList();
                     VE.GeneralLedgerDetails = (from i in DB.M_GENLEG where (i.SLCDMUST == "Y") select new GeneralLedgerDetails() { GLCD = i.GLCD, GLNM = i.GLNM }).OrderBy(s => s.GLNM).ToList();
-
+                    string sql = "select NVL(GSPCLIENTAPP,GSPAPPID) GSPCLIENTAPP from ms_ipsmart";
+                    DataTable dt = masterHelp.SQLquery(sql);
+                    if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["GSPCLIENTAPP"].ToString() != "")
+                    {
+                        VE.IsAPIEnabled = true;
+                    }
                     if (op.Length != 0)
                     {
                         VE.IndexKey = (from p in DB.M_SUBLEG orderby p.SLCD select new IndexKey() { Navikey = p.SLCD }).ToList();
@@ -480,23 +485,23 @@ namespace Improvar.Controllers
                 //}
                 string sql = "", scmf = CommVar.FinSchema(UNQSNO);
                 sql = " select ROW_NUMBER() OVER(ORDER BY compcd) AS slno, compcd, compnm, loccd, locnm, distance from( ";
-                sql += "  select a.compcd, a.loccd, b.compnm, c.locnm, a.distance from "+ scmf + ".M_SUBLEG_LOCOTH A, " + scmf + ".M_comp b, " + scmf + ".M_loca c ";
-                sql += "  where a.compcd = b.compcd and a.loccd = c.loccd and a.compcd = c.compcd  and  slcd = '"+ sl.SLCD +"' ";
+                sql += "  select a.compcd, a.loccd, b.compnm, c.locnm, a.distance from " + scmf + ".M_SUBLEG_LOCOTH A, " + scmf + ".M_comp b, " + scmf + ".M_loca c ";
+                sql += "  where a.compcd = b.compcd and a.loccd = c.loccd and a.compcd = c.compcd  and  slcd = '" + sl.SLCD + "' ";
                 sql += "  union all ";
                 sql += "  select distinct b.compcd, c.loccd, b.compnm, c.locnm, 0 distance from " + scmf + ".M_comp b, " + scmf + ".M_loca c ";
                 sql += "   where b.compcd = c.compcd  and c.compcd || c.loccd not in (select a.compcd || a.loccd from " + scmf + ".M_SUBLEG_LOCOTH A where slcd = '" + sl.SLCD + "') ";
                 sql += "  ) a ";
                 var FILTER_DATA = masterHelp.SQLquery(sql);
                 VE.MSUBLEGLOCOTH = (from DataRow dr in FILTER_DATA.Rows
-                               select new MSUBLEGLOCOTH()
-                               {
-                                   SLNO = Convert.ToSByte(dr["slno"]),
-                                   COMPCD = dr["compcd"].retStr(),
-                                   COMPNM = dr["compnm"].retStr(),
-                                   LOCCD = dr["loccd"].retStr(),
-                                   LOCNM = dr["locnm"].retStr(),
-                                   DISTANCE = dr["distance"].retInt()
-                               }).ToList();
+                                    select new MSUBLEGLOCOTH()
+                                    {
+                                        SLNO = Convert.ToSByte(dr["slno"]),
+                                        COMPCD = dr["compcd"].retStr(),
+                                        COMPNM = dr["compnm"].retStr(),
+                                        LOCCD = dr["loccd"].retStr(),
+                                        LOCNM = dr["locnm"].retStr(),
+                                        DISTANCE = dr["distance"].retInt()
+                                    }).ToList();
 
                 for (int q = 0; q <= VE.MSUBLEGLOCOTH.Count - 1; q++)
                 {
@@ -1442,8 +1447,7 @@ namespace Improvar.Controllers
                             {
                                 MSUBLEG.EMD_NO = 0;
                                 MSUBLEG.M_AUTONO = Cn.M_AUTONO(CommVar.FinSchema(UNQSNO));
-                                string txtSLNM = VE.M_SUBLEG.SLNM;
-                                string txtst = (SLedType + txtSLNM.Substring(0, 1)).ToUpper();
+                                string txtst = (SLedType + VE.M_SUBLEG.SLNM.Trim().Substring(0, 1)).ToUpper();
                                 var MAXSLCD = DB.M_SUBLEG.Where(a => a.SLCD.Substring(0, 2).ToUpper() == txtst).Max(a => a.SLCD);
                                 if (MAXSLCD == null)
                                 {
@@ -1452,13 +1456,12 @@ namespace Improvar.Controllers
                                 else
                                 {
                                     string digits = new string(MAXSLCD.Where(char.IsDigit).ToArray());
-                                    string letters = new string(MAXSLCD.Where(char.IsLetter).ToArray());
                                     int number;
                                     if (!int.TryParse(digits, out number))                   //int.Parse would do the job since only digits are selected
                                     {
                                         Console.WriteLine("Something weired happened");
                                     }
-                                    string newStr = letters + (++number).ToString("D5");
+                                    string newStr = txtst + (++number).ToString("D5");
                                     MSUBLEG.SLCD = newStr.ToString();
                                 }
                             }
@@ -1778,7 +1781,7 @@ namespace Improvar.Controllers
                             string ContentFlg = "";
                             if (VE.DefaultAction == "A")
                             {
-                                ContentFlg = "1" + "<br/><br/>Code:  " + MSUBLEG.SLCD + "    " +"  Name:  "+ MSUBLEG.SLNM + "    " +"  District:  " + MSUBLEG.DISTRICT + "    " + "  Area:  " + MSUBLEG.SLAREA ;
+                                ContentFlg = "1" + "<br/><br/>Code:  " + MSUBLEG.SLCD + "    " + "  Name:  " + MSUBLEG.SLNM + "    " + "  District:  " + MSUBLEG.DISTRICT + "    " + "  Area:  " + MSUBLEG.SLAREA;
                             }
                             else if (VE.DefaultAction == "E")
                             {
@@ -1920,5 +1923,86 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        private string Getcomptype(string comtype)
+        {
+            string VARR = "";
+            switch (comtype)//01
+            {
+                case "C":
+                    VARR = "02"; break;
+                case "P":
+                    VARR = "05"; break;
+                case "F":
+                    VARR = "03"; break;
+                case "H":
+                    VARR = "08"; break;
+                case "T":
+                    VARR = "10"; break;
+                default: VARR = ""; break;
+            }
+            //C  Company
+            //P  Person
+            //H  HUF(Hindu Undivided Family)
+            //F  Firm
+            //A  Association of Persons(AOP)
+            //T AOP (Trust)
+            //B Body of Individuals(BOI)
+            //L Local Authority
+            //J  Artificial Juridical Person
+            //G  Govt
+            return VARR;
+        }
+        public JsonResult GetGstInfo(string GSTNO)
+        {
+            try
+            {
+                AdaequareGSP adaequareGSP = new AdaequareGSP();
+                ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+                Dictionary<string, string> dic = new Dictionary<string, string>();
+                var AdqrRespGstInfo = adaequareGSP.AdqrGstInfoTestMode(GSTNO);
+
+                if (AdqrRespGstInfo.success == true && AdqrRespGstInfo.result != null)
+                {
+                    dic.Add("message", "ok");
+                    dic.Add("Gstin", AdqrRespGstInfo.result.Gstin);
+                    string StateCd = AdqrRespGstInfo.result.Gstin.Substring(0, 2);
+                    string StateNm = DB1.MS_STATE.Find(StateCd)?.STATENM;
+                    string panno = AdqrRespGstInfo.result.Gstin.Substring(2, 10);
+                    string comtype = panno.Substring(3, 1);
+                    dic.Add("StateCd", StateCd);
+                    dic.Add("StateNm", StateNm);
+                    dic.Add("Panno", panno);
+                    dic.Add("Comptype", Getcomptype(comtype));
+                    dic.Add("TradeName", AdqrRespGstInfo.result.TradeName);
+                    if (AdqrRespGstInfo.result.TradeName == AdqrRespGstInfo.result.LegalName)
+                    {
+                        dic.Add("LegalName", "");
+                    }
+                    else
+                    {
+                        dic.Add("LegalName", AdqrRespGstInfo.result.LegalName);
+                    }
+                    dic.Add("AddrBnm", AdqrRespGstInfo.result.AddrBnm);
+                    dic.Add("AddrBno", AdqrRespGstInfo.result.AddrBno);
+                    dic.Add("AddrFlno", AdqrRespGstInfo.result.AddrFlno);
+                    dic.Add("AddrSt", AdqrRespGstInfo.result.AddrSt.retStr());
+                    dic.Add("AddrLoc", AdqrRespGstInfo.result.AddrLoc);
+                    dic.Add("AddrPncd", AdqrRespGstInfo.result.AddrPncd.retStr());
+                    dic.Add("TxpType", AdqrRespGstInfo.result.TxpType);
+                }
+                else
+                {
+                    dic.Add("message", AdqrRespGstInfo.message);
+                }
+                ModelState.Clear();
+                return Json(dic, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Json(ex.Message + ex.InnerException, JsonRequestBehavior.AllowGet);
+            }
+        }
+
     }
 }

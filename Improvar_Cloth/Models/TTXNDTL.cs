@@ -188,6 +188,10 @@ namespace Improvar.Models
         [StringLength(4)]
         public string BALEYR { get; set; }
         public double? GSTPER { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? LISTPRICE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? LISTDISCPER { get; set; }
         public List<DISC_TYPE> DISC_TYPE { get; set; }
     }
 }

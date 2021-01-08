@@ -248,36 +248,24 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0"));
         }
-        //public ActionResult GetGeneralLedgerDetails(string val)
-        //{
-        //    try
-        //    {
-        //        if (val == null)
-        //        {
-        //            return PartialView("_Help2", Master_Help.GENERALLEDGER(val));
-        //        }
-        //        else
-        //        {
-        //            string str = Master_Help.GENERALLEDGER(val);
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        public ActionResult GetGenLedgerDetails(string val)
+        public ActionResult GetGeneralLedgerDetails(string val)
         {
-            var str = Master_Help.GLCD_help(val);
-            if (str.IndexOf("='helpmnu'") >= 0)
+            try
             {
-                return PartialView("_Help2", str);
+                if (val == null)
+                {
+                    return PartialView("_Help2", Master_Help.GENERALLEDGER(val));
+                }
+                else
+                {
+                    string str = Master_Help.GENERALLEDGER(val);
+                    return Content(str);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Content(str);
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult SAVE(FormCollection FC, AmountTypeMasterEntry VE)
@@ -321,7 +309,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MTAXGRP.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
+                                MTAXGRP.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
                         }
                         MTAXGRP.AMTNM = VE.M_AMTTYPE.AMTNM;

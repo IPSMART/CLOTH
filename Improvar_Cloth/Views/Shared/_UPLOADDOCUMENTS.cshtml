@@ -92,7 +92,7 @@
                                         @Html.DropDownListFor(model => Model.UploadDOC[i].docID, new SelectList(Model.UploadDOC[i].DocumentType, "Value", "Text", Model.UploadDOC[i].docID), "=======Select=======", new { @class = " atextBoxFor select_3d ", @style = "height:35px;" })
                                     </td>
                                     <td class="grid_td">
-                                        @Html.TextBoxFor(model => model.UploadDOC[i].DOC_DESC, new { @class = " atextBoxFor ", maxlength = 300, autocomplete = "off", @style = "height:35px;" })
+                                        @Html.TextBoxFor(model => model.UploadDOC[i].DOC_DESC, new { @class = " atextBoxFor ", maxlength = 300, @style = "height:35px;" })
                                     </td>
                                     <td class="grid_td">
                                         <input type="file" class="atextBoxFor" name="ImageData_@i" id="ImageData_@i" onchange="fileCheck(this,@i);" />

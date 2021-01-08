@@ -949,13 +949,16 @@ function returncolvalue(val, colname) {
     return retval;
 }
 
-function Disc_Cal(TYPE, RATE, QNTY, BOX, AMOUNT) {
+function Disc_Cal(TYPE, RATE, QNTY, BOX, AMOUNT, AMT) {
+    //if (AMT == "") { AMT = parseInt(0) } else { AMT = parseInt(AMT) }
     AMOUNT = AMOUNT || parseFloat(0).toFixed(2);
     var DISC_AMT = 0;
     if (TYPE == "Q") { DISC_AMT = RATE * QNTY; }
-    else if (TYPE == "B") { DISC_AMT = RATE * BOX * QNTY; }
+        //else if (TYPE == "B") { DISC_AMT = RATE * BOX * QNTY; }
+    else if (TYPE == "B") { DISC_AMT = RATE * BOX; }
     else if (TYPE == "P") { DISC_AMT = (AMOUNT * RATE) / 100; }
     else if (TYPE == "F") { DISC_AMT = RATE; }
+    else if (TYPE == "A") { DISC_AMT = (AMT * RATE) / 100; }
     else { DISC_AMT = 0; }
     return parseFloat(DISC_AMT).toFixed(2);
 }
