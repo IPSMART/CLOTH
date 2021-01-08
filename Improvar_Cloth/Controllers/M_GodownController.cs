@@ -9,12 +9,8 @@ namespace Improvar.Controllers
 {
     public class M_GodownController : Controller
     {
-        Connection Cn = new Connection();
-        MasterHelp Master_Help = new MasterHelp();
-        MasterHelpFa Master_HelpFa = new MasterHelpFa();
+        Connection Cn = new Connection(); MasterHelp Master_Help = new MasterHelp(); M_GODOWN sl; M_CNTRL_HDR sll;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        M_GODOWN sl;
-        M_CNTRL_HDR sll;
         // GET: M_Godown
         public ActionResult M_Godown(string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
@@ -28,23 +24,15 @@ namespace Improvar.Controllers
                 {
                     ViewBag.formname = "Godown Master";
                     GodownMasterEntry VE = new GodownMasterEntry();
-                    string loca1 = CommVar.Loccd(UNQSNO).Trim();
-                    ImprovarDB DBIMP = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                    var doctP = (from i in DBIMP.MS_DOCCTG select new DocumentType() { value = i.DOC_CTG, text = i.DOC_CTG }).OrderBy(s => s.text).ToList();
-                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
-                    //=========For Company / Location Name===========//
-                    VE.CompanyLocationName = (from i in DBF.M_LOCA
-                                              join l in DBF.M_COMP on i.COMPCD equals (l.COMPCD)
-                                              select new CompanyLocationName()
-                                              {
-                                                COMPCD = l.COMPCD,
-                                                COMPNM = l.COMPNM,
-                                                LOCCD = i.LOCCD,
-                                                LOCNM = i.LOCNM,
-                                              }).OrderBy(s => s.LOCNM).ToList();
 
+                    //=========For Company / Location Name===========//
+                    //VE.CompanyLocationName = (from i in DBF.M_LOCA
+                    //                          join l in DBF.M_COMP on i.COMPCD equals (l.COMPCD)
+                    //                          select new CompanyLocationName() { COMPCD = l.COMPCD, COMPNM = l.COMPNM, LOCCD = i.LOCCD, LOCNM = i.LOCNM }).OrderBy(s => s.LOCNM).ToList();
+                    VE.CompanyLocationName = (from i in DBF.M_LOCA join l in DBF.M_COMP on i.COMPCD equals (l.COMPCD) select new CompanyLocationName() { COMPCD = l.COMPCD, COMPNM = l.COMPNM, LOCCD = i.LOCCD, LOCNM = i.LOCNM }).OrderBy(s => s.COMPNM).ThenBy(k => k.LOCNM).ToList();
                     if (op.Length != 0)
                     {
                         VE.IndexKey = (from p in DB.M_GODOWN orderby p.M_AUTONO select new IndexKey() { Navikey = p.GOCD }).ToList();
@@ -88,19 +76,9 @@ namespace Improvar.Controllers
                                     VE = Navigation(VE, DB, Nindex, searchValue);
                                 }
                             }
-
-                            if (sll.INACTIVE_TAG == "Y")
-                            {
-                                VE.Deactive = true;
-                            }
-                            else
-                            {
-                                VE.Deactive = false;
-                            }
                             VE.M_GODOWN = sl;
                             VE.M_CNTRL_HDR = sll;
                         }
-
                         return View(VE);
                     }
                     else
@@ -124,9 +102,7 @@ namespace Improvar.Controllers
         }
         public GodownMasterEntry Navigation(GodownMasterEntry VE, ImprovarDB DB, int index, string searchValue)
         {
-            sl = new M_GODOWN();
-            sll = new M_CNTRL_HDR();
-
+            sl = new M_GODOWN(); sll = new M_CNTRL_HDR();
             if (VE.IndexKey.Count != 0)
             {
                 string[] aa = null;
@@ -142,26 +118,53 @@ namespace Improvar.Controllers
                 sll = DB.M_CNTRL_HDR.Find(sl.M_AUTONO);
 
                 //company view
-                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                //  ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
-                var ss = (from p in DB.M_CNTRL_LOCA where (p.M_AUTONO == sl.M_AUTONO) select new CompanyLocationName() { COMPCD = p.COMPCD, LOCCD = p.LOCCD, Checked = true }).ToList();
-                foreach (var a in ss)
-                {
-                    var comp = DBF.M_COMP.Find(a.COMPCD);
-                    var loc = (from p in DBF.M_LOCA where p.LOCCD == a.LOCCD && p.COMPCD == a.COMPCD select p).SingleOrDefault();
-                    a.COMPNM = comp.COMPNM;
-                    a.LOCNM = loc.LOCNM;
-                }
-                foreach (var i in VE.CompanyLocationName)
-                {
-                    foreach (var x in ss)
+                //var ss = (from p in DB.M_CNTRL_LOCA where (p.M_AUTONO == sl.M_AUTONO) select new CompanyLocationName() { COMPCD = p.COMPCD, LOCCD = p.LOCCD, Checked = true }).ToList();
+                //foreach (var a in ss)
+                //{
+                //    var comp = DBF.M_COMP.Find(a.COMPCD);
+                //    var loc = (from p in DBF.M_LOCA where p.LOCCD == a.LOCCD && p.COMPCD == a.COMPCD select p).SingleOrDefault();
+                //    a.COMPNM = comp.COMPNM;
+                //    a.LOCNM = loc.LOCNM;
+                //}
+                //foreach (var i in VE.CompanyLocationName)
+                //{
+                //    foreach (var x in ss)
+                //    {
+                //        if (i.COMPCD == x.COMPCD && i.LOCCD == x.LOCCD)
+                //        {
+                //            i.Checked = true;
+                //        }
+                //    }
+                //}
+                string str = "select p.COMPCD,s.COMPNM,p.LOCCD,x.LOCNM from " + CommVar.CurSchema(UNQSNO) + ".M_CNTRL_LOCA p,"
+                    + CommVar.FinSchema(UNQSNO) + ".M_COMP s," + CommVar.FinSchema(UNQSNO) + ".M_LOCA x where ";
+                str += "p.COMPCD=s.COMPCD and p.LOCCD=x.LOCCD and p.M_AUTONO ='" + sl.M_AUTONO + "'";
+                var DATA_CLN = Master_Help.SQLquery(str);
+
+                var CLN = (from DataRow DR in DATA_CLN.Rows
+                           select new CompanyLocationChk()
+                           {
+                               COMPCD = DR["COMPCD"].ToString(),
+                               COMPNM = DR["COMPNM"].ToString(),
+                               LOCCD = DR["LOCCD"].ToString(),
+                               LOCNM = DR["LOCNM"].ToString(),
+                               Checked = true
+                           }).ToList();
+
+
+                if (VE.CompanyLocationName != null)
+                    foreach (var i in VE.CompanyLocationName)
                     {
-                        if (i.COMPCD == x.COMPCD && i.LOCCD == x.LOCCD)
+                        foreach (var x in CLN)
                         {
-                            i.Checked = true;
+                            if (i.COMPCD == x.COMPCD && i.LOCCD == x.LOCCD)
+                            {
+                                i.Checked = true;
+                            }
                         }
                     }
-                }
                 //END COMP
                 if (sll.INACTIVE_TAG == "Y")
                 {
@@ -180,27 +183,27 @@ namespace Improvar.Controllers
         }
         public ActionResult SearchPannelData()
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             var MDT = (from j in DB.M_GODOWN
                        join p in DB.M_CNTRL_HDR on j.M_AUTONO equals (p.M_AUTONO)
                        where (p.M_AUTONO == j.M_AUTONO)
-                       select new{
+                       select new
+                       {
                            GOCD = j.GOCD,
-                           GONM = j.GONM }).Distinct().OrderBy(s => s.GOCD).ToList();
+                           GONM = j.GONM
+                       }).Distinct().OrderBy(s => s.GOCD).ToList();
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
             var hdr = "Godown Code" + Cn.GCS() + "Godown Name";
             for (int j = 0; j <= MDT.Count - 1; j++)
             {
-                SB.Append("<tr>");
-                SB.Append("<td>" + MDT[j].GOCD + "</td><td>" + MDT[j].GONM + "</td>");
-                SB.Append("</tr>");
+                SB.Append("<tr><td>" + MDT[j].GOCD + "</td><td>" + MDT[j].GONM + "</td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_HelpFa.Generate_SearchPannel(hdr, SB.ToString(),"0"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "0"));
         }
         public ActionResult CheckGodownCode(string val)
         {
             string VALUE = val.ToUpper();
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             var query = (from c in DB.M_GODOWN where (c.GOCD == VALUE) select c);
             if (query.Any())
             {
@@ -211,127 +214,223 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
-
         public ActionResult SAVE(FormCollection FC, GodownMasterEntry VE)
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string Autono = "";
             using (var transaction = DB.Database.BeginTransaction())
             {
-                try
+                using (var transactionF = DBF.Database.BeginTransaction())
                 {
-                    DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".M_CNTRL_HDR in  row share mode");
-                    if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
+                    try
                     {
-                        M_GODOWN MGOD = new M_GODOWN();
-                        MGOD.CLCD = CommVar.ClientCode(UNQSNO);
-                        if (VE.DefaultAction == "A")
+                        DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO) + ".M_CNTRL_HDR in  row share mode");
+                        string scmf = CommVar.FinSchema(UNQSNO);
+                        string qry = "select * from " + scmf + ".M_GODOWN a ," + scmf + ".M_CNTRL_LOCA c ";
+                        qry += "where  a.M_AUTONO=c.M_AUTONO(+) and a.GOCD='" + VE.M_GODOWN.GOCD + "' ";
+                        DataTable dt = Master_Help.SQLquery(qry);
+                        if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                         {
-                            MGOD.EMD_NO = 0;
-                            MGOD.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
-                        }
-                        else
-                        {
-                            MGOD.M_AUTONO = VE.M_GODOWN.M_AUTONO;
-                            var MAXEMDNO = (from p in DB.M_CNTRL_HDR where p.M_AUTONO == MGOD.M_AUTONO select p.EMD_NO).Max();
-                            if (MAXEMDNO == null)
+                            M_GODOWN MGOD = new M_GODOWN();
+                            MGOD.CLCD = CommVar.ClientCode(UNQSNO);
+                            if (VE.DefaultAction == "A")
                             {
                                 MGOD.EMD_NO = 0;
+                                MGOD.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO));
                             }
                             else
                             {
-                                MGOD.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
-                            }
-                        }
-
-                        MGOD.GOCD = VE.M_GODOWN.GOCD.ToUpper().Trim();
-                        MGOD.GONM = VE.M_GODOWN.GONM;
-                        MGOD.GOADD1 = VE.M_GODOWN.GOADD1;
-                        MGOD.GOADD2 = VE.M_GODOWN.GOADD2;
-                        MGOD.GOADD3 = VE.M_GODOWN.GOADD3;
-                        MGOD.DISTRICT = VE.M_GODOWN.DISTRICT;
-                        MGOD.PIN = VE.M_GODOWN.PIN;
-                        MGOD.GOPHNO = VE.M_GODOWN.GOPHNO;
-                        MGOD.GOEMAIL = VE.M_GODOWN.GOEMAIL;
-                        MGOD.FSSAILICNO = VE.M_GODOWN.FSSAILICNO;
-                        //company saving    
-                        if (VE.DefaultAction == "E")
-                        {
-                            DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MGOD.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_CNTRL_LOCA.RemoveRange(DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MGOD.M_AUTONO));
-                        }
-                        if (VE.CompanyLocationName != null)
-                        {
-                            for (int i = 0; i <= VE.CompanyLocationName.Count - 1; i++)
-                            {
-                                if (VE.CompanyLocationName[i].Checked)
+                                MGOD.M_AUTONO = VE.M_GODOWN.M_AUTONO;
+                                var MAXEMDNO = (from p in DB.M_CNTRL_HDR where p.M_AUTONO == MGOD.M_AUTONO select p.EMD_NO).Max();
+                                if (MAXEMDNO == null)
                                 {
-                                    M_CNTRL_LOCA MCL = new M_CNTRL_LOCA();
-                                    MCL.M_AUTONO = MGOD.M_AUTONO;
-                                    MCL.COMPCD = VE.CompanyLocationName[i].COMPCD;
-                                    MCL.LOCCD = VE.CompanyLocationName[i].LOCCD;
-                                    MCL.CLCD = CommVar.ClientCode(UNQSNO);
-                                    DB.M_CNTRL_LOCA.Add(MCL);
+                                    MGOD.EMD_NO = 0;
+                                }
+                                else
+                                {
+                                    MGOD.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                                 }
                             }
-                        }
 
-                        //Control header 
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", MGOD.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-                        if (VE.DefaultAction == "A")
-                        {
-                            DB.M_GODOWN.Add(MGOD);
-                            DB.M_CNTRL_HDR.Add(MCH);
+                            MGOD.GOCD = VE.M_GODOWN.GOCD.ToUpper();
+                            MGOD.GONM = VE.M_GODOWN.GONM;
+                            MGOD.GOADD1 = VE.M_GODOWN.GOADD1;
+                            MGOD.GOADD2 = VE.M_GODOWN.GOADD2;
+                            MGOD.GOADD3 = VE.M_GODOWN.GOADD3;
+                            MGOD.DISTRICT = VE.M_GODOWN.DISTRICT;
+                            MGOD.PIN = VE.M_GODOWN.PIN;
+                            MGOD.GOPHNO = VE.M_GODOWN.GOPHNO;
+                            MGOD.GOEMAIL = VE.M_GODOWN.GOEMAIL;
+                            MGOD.FSSAILICNO = VE.M_GODOWN.FSSAILICNO;
+                            //company saving    
+                            if (VE.DefaultAction == "E")
+                            {
+                                DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MGOD.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                                DB.M_CNTRL_LOCA.RemoveRange(DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MGOD.M_AUTONO));
+                            }
+                            if (VE.CompanyLocationName != null)
+                            {
+                                for (int i = 0; i <= VE.CompanyLocationName.Count - 1; i++)
+                                {
+                                    if (VE.CompanyLocationName[i].Checked)
+                                    {
+                                        M_CNTRL_LOCA MCL = new M_CNTRL_LOCA();
+                                        MCL.M_AUTONO = MGOD.M_AUTONO;
+                                        MCL.EMD_NO = MGOD.EMD_NO;
+                                        MCL.CLCD = CommVar.ClientCode(UNQSNO);
+                                        MCL.COMPCD = VE.CompanyLocationName[i].COMPCD;
+                                        MCL.LOCCD = VE.CompanyLocationName[i].LOCCD;
+                                        DB.M_CNTRL_LOCA.Add(MCL);
+                                    }
+                                }
+                            }
+
+                            //Control header 
+                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", MGOD.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
+                            if (VE.DefaultAction == "A")
+                            {
+                                DB.M_GODOWN.Add(MGOD);
+                                DB.M_CNTRL_HDR.Add(MCH);
+
+                            }
+                            else if (VE.DefaultAction == "E")
+                            {
+                                DB.Entry(MGOD).State = System.Data.Entity.EntityState.Modified;
+                                DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
+                            }
+
+                            #region //Finance Posting
+                            M_GODOWN MGODF = new M_GODOWN();
+                            MGODF.CLCD = CommVar.ClientCode(UNQSNO);
+                            MGODF.GOCD = VE.M_GODOWN.GOCD.ToUpper();
+                            MGODF.GONM = VE.M_GODOWN.GONM;
+                            MGODF.GOADD1 = VE.M_GODOWN.GOADD1;
+                            MGODF.GOADD2 = VE.M_GODOWN.GOADD2;
+                            MGODF.GOADD3 = VE.M_GODOWN.GOADD3;
+                            MGODF.DISTRICT = VE.M_GODOWN.DISTRICT;
+                            MGODF.PIN = VE.M_GODOWN.PIN;
+                            MGODF.GOPHNO = VE.M_GODOWN.GOPHNO;
+                            MGODF.GOEMAIL = VE.M_GODOWN.GOEMAIL;
+                            MGODF.FSSAILICNO = VE.M_GODOWN.FSSAILICNO;
+                            if (dt.Rows.Count > 0)
+                            {
+                                MGODF.M_AUTONO = dt.Rows[0]["M_AUTONO"].retInt();
+                                Autono = MGODF.M_AUTONO.retStr();
+                                var MAXEMDNO = (from p in DBF.M_CNTRL_HDR where p.M_AUTONO == MGOD.M_AUTONO select p.EMD_NO).Max();
+                                if (MAXEMDNO == null)
+                                {
+                                    MGODF.EMD_NO = 0;
+                                }
+                                else
+                                {
+                                    MGODF.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
+                                }
+                                M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", MGODF.M_AUTONO, "E", CommVar.FinSchema(UNQSNO));
+                                DBF.Entry(MGODF).State = System.Data.Entity.EntityState.Modified;
+                                DBF.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MGODF.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                                DBF.M_CNTRL_LOCA.RemoveRange(DBF.M_CNTRL_LOCA.Where(x => x.M_AUTONO == MGODF.M_AUTONO));
+                              
+                            }
+                            else
+                            {
+                                MGODF.M_AUTONO = Cn.M_AUTONO(CommVar.FinSchema(UNQSNO));
+                                Autono = MGODF.M_AUTONO.retStr();
+                                MGODF.EMD_NO = 0;
+                                // Finance Control header 
+                                M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", MGODF.M_AUTONO, "A", CommVar.FinSchema(UNQSNO));
+                                DBF.M_GODOWN.Add(MGODF);
+                                DBF.M_CNTRL_HDR.Add(MCHF);
+                            }
+                            //Finance company saving    
+                            if (VE.CompanyLocationName != null)
+                            {
+                                for (int i = 0; i <= VE.CompanyLocationName.Count - 1; i++)
+                                {
+                                    if (VE.CompanyLocationName[i].Checked)
+                                    {
+                                        M_CNTRL_LOCA MCLF = new M_CNTRL_LOCA();
+                                        MCLF.M_AUTONO = MGODF.M_AUTONO;
+                                        MCLF.EMD_NO = MGODF.EMD_NO;
+                                        MCLF.CLCD = CommVar.ClientCode(UNQSNO);
+                                        MCLF.COMPCD = VE.CompanyLocationName[i].COMPCD;
+                                        MCLF.LOCCD = VE.CompanyLocationName[i].LOCCD;
+                                        DBF.M_CNTRL_LOCA.Add(MCLF);
+                                    }
+                                }
+                            }
+                            #endregion  //end
+                            DB.SaveChanges();
+                            DBF.SaveChanges();
+                            ModelState.Clear();
+                            transactionF.Commit();
+                            transaction.Commit();
+                            string ContentFlg = "";
+                            if (VE.DefaultAction == "A")
+                            {
+                                ContentFlg = "1";
+                            }
+                            else if (VE.DefaultAction == "E")
+                            {
+                                ContentFlg = "2";
+                            }
+                            return Content(ContentFlg);
                         }
-                        else if (VE.DefaultAction == "E")
+                        else if (VE.DefaultAction == "V")
                         {
-                            DB.Entry(MGOD).State = System.Data.Entity.EntityState.Modified;
+                            #region //Finance
+                            if (dt.Rows.Count > 0)
+                            {
+                                int Autono1 = dt.Rows[0]["M_AUTONO"].retInt();
+                                M_CNTRL_HDR MCHF = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", Autono1, VE.DefaultAction, CommVar.FinSchema(UNQSNO));
+                                DBF.Entry(MCHF).State = System.Data.Entity.EntityState.Modified;
+                                DBF.SaveChanges();
+                                DBF.M_GODOWN.Where(x => x.M_AUTONO == Autono1).ToList().ForEach(x => { x.DTAG = "D"; });
+                                DBF.M_CNTRL_LOCA.Where(x => x.M_AUTONO == Autono1).ToList().ForEach(x => { x.DTAG = "D"; });
+                                DBF.SaveChanges();
+                                DBF.M_CNTRL_LOCA.RemoveRange(DBF.M_CNTRL_LOCA.Where(x => x.M_AUTONO == Autono1));
+                                DBF.SaveChanges();
+                                DBF.M_GODOWN.RemoveRange(DBF.M_GODOWN.Where(x => x.M_AUTONO == Autono1));
+                                DBF.SaveChanges();
+                                DBF.M_CNTRL_HDR.RemoveRange(DBF.M_CNTRL_HDR.Where(x => x.M_AUTONO == Autono1));
+                                DBF.SaveChanges();
+
+                            }
+                            #endregion
+
+                            M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", VE.M_GODOWN.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO));
                             DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
-                        }
-                        DB.SaveChanges();
-                        ModelState.Clear();
-                        transaction.Commit();
+                            DB.SaveChanges();
+                           
+                            DB.M_GODOWN.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
+                            DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
+                            DB.SaveChanges();
+                            DB.M_CNTRL_LOCA.RemoveRange(DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO));
+                            DB.SaveChanges();
+                            DB.M_GODOWN.RemoveRange(DB.M_GODOWN.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO));
+                            DB.SaveChanges();
+                          
+                          
+                            DB.M_CNTRL_HDR.RemoveRange(DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO));
+                            DB.SaveChanges();
 
-                        string ContentFlg = "";
-                        if (VE.DefaultAction == "A")
+                            ModelState.Clear();
+                            transactionF.Commit();
+                            transaction.Commit();
+                            return Content("3");
+                        }
+                        else
                         {
-                            ContentFlg = "1";
+                            return Content("");
                         }
-                        else if (VE.DefaultAction == "E")
-                        {
-                            ContentFlg = "2";
-                        }
-                        return Content(ContentFlg);
                     }
-                    else if (VE.DefaultAction == "V")
+                    catch (Exception ex)
                     {
-                        M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Deactive, "M_GODOWN", VE.M_GODOWN.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-                        DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
-                        DB.SaveChanges();
-
-                        DB.M_GODOWN.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
-                        DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
-                        DB.SaveChanges();
-
-                        DB.M_CNTRL_LOCA.RemoveRange(DB.M_CNTRL_LOCA.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO));
-                        DB.SaveChanges();
-                        DB.M_GODOWN.RemoveRange(DB.M_GODOWN.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO));
-                        DB.SaveChanges();
-                        DB.M_CNTRL_HDR.RemoveRange(DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_GODOWN.M_AUTONO));
-                        DB.SaveChanges();
-
-                        ModelState.Clear();
-                        transaction.Commit();
-                        return Content("3");
+                        transactionF.Rollback();
+                        transaction.Rollback();
+                        Cn.SaveException(ex, "");
+                        return Content(ex.Message + ex.InnerException);
                     }
-                    else
-                    {
-                        return Content("");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Cn.SaveException(ex, "");
-                    return Content(ex.Message + ex.InnerException);
                 }
             }
         }

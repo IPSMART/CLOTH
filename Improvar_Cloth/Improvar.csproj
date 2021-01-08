@@ -288,6 +288,7 @@
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
+    <Compile Include="Controllers\Rep_Stk_LegController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
@@ -425,6 +426,7 @@
     <Compile Include="Models\M_GROUP.cs" />
     <Compile Include="Models\M_HSNCODE.cs" />
     <Compile Include="Models\M_ITEM.cs" />
+    <Compile Include="Models\M_ITEMPLIST.cs" />
     <Compile Include="Models\M_ITEMPLISTDTL.cs" />
     <Compile Include="Models\M_ITEMPLIST_ADD.cs" />
     <Compile Include="Models\M_ITEM_UN_CNV.cs" />
@@ -1160,6 +1162,7 @@
     <Content Include="Views\M_Stitch\M_Stitch.cshtml" />
     <Content Include="Views\Shared\_M_Stitch_Main.cshtml" />
     <Content Include="Views\Shared\_MASTERREMARKS.cshtml" />
+    <Content Include="Views\Rep_Stk_Leg\Rep_Stk_Leg.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

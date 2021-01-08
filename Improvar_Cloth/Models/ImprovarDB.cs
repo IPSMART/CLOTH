@@ -15,6 +15,8 @@ namespace Improvar.Models
         {
             Database.SetInitializer<ImprovarDB>(null);
         }
+        
+        public virtual DbSet<M_ITEMPLIST> M_ITEMPLIST { get; set; }
         public virtual DbSet<M_STCHGRP> M_STCHGRP { get; set; }
         public virtual DbSet<M_STCHGRP_COMP> M_STCHGRP_COMP { get; set; }
         public virtual DbSet<M_REPFORMAT> M_REPFORMAT { get; set; }

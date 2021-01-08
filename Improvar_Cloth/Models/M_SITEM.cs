@@ -86,5 +86,7 @@ namespace Improvar.Models
         public string LINKITCD { get; set; }
         [StringLength(1)]
         public string NEGSTOCK { get; set; }
+
+    
     }
 }

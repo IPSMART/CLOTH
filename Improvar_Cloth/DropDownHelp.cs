@@ -263,5 +263,30 @@ namespace Improvar
                       }).ToList();
             return sllist;
         }
+        public List<DropDown_list_ITEM> GetItcdforSelection(string itgrpcd = "")
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+
+            //string[] selgrpcd = itgrpcd.Split(',');
+            List<DropDown_list_ITEM> sllist = new List<DropDown_list_ITEM>();
+            //sllist = (from a in DB.M_SITEM
+            //          where (selgrpcd.Contains(a.ITGRPCD))
+            //          select new DropDown_list_ITEM()
+            //          {
+            //              text = a.ITNM,
+            //              packsize = a.PACKSIZE.Value,
+            //              shortnm = a.SHORTNM,
+            //              value = a.ITCD
+            //          }).OrderBy(A => A.text).ToList();
+            sllist = (from a in DB.M_SITEM
+                      select new DropDown_list_ITEM()
+                      {
+                          text = a.ITNM,
+                          value = a.ITCD
+                      }).OrderBy(A => A.text).ToList();
+            return sllist;
+        }
+      
     }
 }

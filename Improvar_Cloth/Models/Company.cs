@@ -48,4 +48,14 @@ namespace Improvar.Models
         public string Docpattern { get; set; }
 
     }
+    public class CompanyLocationChk
+    {
+        public string COMPCD { get; set; }
+        public string COMPNM { get; set; }
+        public string LOCCD { get; set; }
+        public string LOCNM { get; set; }
+        public bool Checked { get; set; }
+        public string Docpattern { get; set; }
+
+    }
 }
