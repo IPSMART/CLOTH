@@ -8,8 +8,8 @@
         {
             @Html.ValidationSummary(true)
             <div class="grid_title">
-                @*<img src="~/Image/Plus.png" class="Help_image_buttonAddRemove" width="20px" height="20px" id="btnAddUnit" title="Add Row" onclick="AddrowUnit()" />
-                <img src="~/Image/Minus.png" class="Help_image_buttonAddRemove" width="20px" height="20px" id="btnDeleteUnit" title="Delete Row" onclick="DeleterowUnit()" />*@
+                @*<img src="~/Image/Plus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnAddUnit" title="Add Row" onclick="AddrowUnit()" />
+                <img src="~/Image/Minus.png" class="image_button_grid_AddRemove" width="20px" height="20px" id="btnDeleteUnit" title="Delete Row" onclick="DeleterowUnit()" />*@
                 <div class="col-md-8">
                     <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'exampleUser');" />
                     <img src="~/Image/search.png" title="Help" />
@@ -36,15 +36,15 @@
                                     @Html.CheckBoxFor(model => model.MUSRACSGRPDTL[i].Checked, new { htmlAttributes = new { id = "chkid_"+i+"" } })
                                 </td>
                                 <td>
-                                    @Html.TextBoxFor(model => Model.MUSRACSGRPDTL[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @title = "Only Numeric", @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.MUSRACSGRPDTL[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @title = "Only Numeric", @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MUSRACSGRPDTL[i].USER_ID, new { id = "USER_ID_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.MUSRACSGRPDTL[i].USER_ID, new { id = "USER_ID_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                     @*@Html.TextBoxFor(model => Model.MUSRACSGRPDTL[i].USER_ID, new { id = "USER_ID_" + i, onkeyup = "GetHelpItem('" + Url.Action("GetItemDetails", "T_Prod") + "','USER_ID_" + i + "/USER_NAME_" + i + "/FP_PACKSIZE_" + i + "/FP_UOMCD_" + i + "','1/0/4/6','Item Details','ITCD_" + i + "')", onblur = "SelectItemCode(this.value," + "USER_ID_" + i + "," + "USER_NAME_" + i + "," + "FP_NOSINBAG_" + i + "," + "FP_PACKSIZE_" + i + "," + "FP_UOMCD_" + i + "," + "FP_BOMCD_" + i + "," + "FP_BOMREFNO_" + i + "," + "FP_BOMEFFDT_" + i + ");", @class = " atextBoxFor textbox_image", maxlength = 10 })*@
                                     @*<img src="~/Image/search.png" class="Help_image_button_grid" width="20px" height="20px" title="Help" onclick="GetHelpItem('@Url.Action("GetItemDetails", "T_Prod")','USER_ID_@i/USER_NAME_@i/FP_PACKSIZE_@i/FP_UOMCD_@i','1/0/4/6','Item Details','ITCD_@i')" />*@
                                 </td>
                                 <td class="grid_td">
-                                    @Html.TextBoxFor(model => Model.MUSRACSGRPDTL[i].USER_NAME, new { id = "USER_NAME_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                    @Html.TextBoxFor(model => Model.MUSRACSGRPDTL[i].USER_NAME, new { id = "USER_NAME_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                             </tr>
                         }

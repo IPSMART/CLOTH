@@ -54,32 +54,32 @@ namespace Improvar.Controllers
                 INI Handel_Ini = new INI();
                 string Userid = Session["UR_ID"].ToString();
                 VE.Ischecked = false;
-                
+
                 string sql = "select distinct compcd,loccd,locnm  from " + SCHEMA + "." + comp_table + "  where  ";
                 sql = sql + " loccd in (select loccd from ms_musracs where user_id='" + Userid + "' and module_code like '" + Module.Module_Code + "%') ";
                 sql = sql + " order by locnm";
                 var dt = masterHelp.SQLquery(sql);
-               var CompanyLocation = (from DataRow dr in dt.Rows
-                                      select new CompanyLocation()
-                                      {
-                                          COMPCD = dr["compcd"].retStr(),
-                                          LOCCD = dr["loccd"].retStr(),
-                                          LOCNM = dr["locnm"].retStr(),
-                                      }).ToList();
+                var CompanyLocation = (from DataRow dr in dt.Rows
+                                       select new CompanyLocation()
+                                       {
+                                           COMPCD = dr["compcd"].retStr(),
+                                           LOCCD = dr["loccd"].retStr(),
+                                           LOCNM = dr["locnm"].retStr(),
+                                       }).ToList();
                 VE.CompanyLocation = new List<Models.CompanyLocation>();
                 VE.LocationJSON = JsonConvert.SerializeObject(CompanyLocation);
-                sql= "select DISTINCT compcd,loccd, TO_CHAR(from_date,'DD/MM/YYYY') ||' - '|| TO_CHAR(upto_date,'DD/MM/YYYY') as FINYR, from_date ";
+                sql = "select DISTINCT compcd,loccd, TO_CHAR(from_date,'DD/MM/YYYY') ||' - '|| TO_CHAR(upto_date,'DD/MM/YYYY') as FINYR, from_date ";
                 sql += " from " + SCHEMA + "." + comp_table + " where ";
                 sql += " schema_name in (select schema_name from ms_musracs where user_id='" + Userid + "' and module_code like '" + Module.Module_Code + "%') ";
                 sql += " order by from_date desc ";
                 var finyear = masterHelp.SQLquery(sql);
                 var CompanyFinyr = (from DataRow dr in finyear.Rows
-                                   select new CompanyFinyr()
-                                   {
-                                       COMPCD = dr["compcd"].retStr(),
-                                       LOCCD = dr["LOCCD"].retStr(),
-                                       FINYR = dr["FINYR"].retStr(),
-                                   }).ToList();
+                                    select new CompanyFinyr()
+                                    {
+                                        COMPCD = dr["compcd"].retStr(),
+                                        LOCCD = dr["LOCCD"].retStr(),
+                                        FINYR = dr["FINYR"].retStr(),
+                                    }).ToList();
 
                 VE.CompanyFinyr = new List<Models.CompanyFinyr>();
                 VE.FinYearJSON = JsonConvert.SerializeObject(CompanyFinyr);
@@ -92,17 +92,17 @@ namespace Improvar.Controllers
                     if (iniVal_Loc.Length != 0)
                     {
                         VE.LOCCD = iniVal_Loc;
-                        sql = "select distinct compcd,loccd,locnm  from " + SCHEMA + "." + comp_table + "  where COMPCD='"+ iniVal_Com + "' AND ";
-                        sql +=  " loccd in (select loccd from ms_musracs where user_id='" + Userid + "' and module_code like '" + Module.Module_Code + "%') ";
+                        sql = "select distinct compcd,loccd,locnm  from " + SCHEMA + "." + comp_table + "  where COMPCD='" + iniVal_Com + "' AND ";
+                        sql += " loccd in (select loccd from ms_musracs where user_id='" + Userid + "' and module_code like '" + Module.Module_Code + "%') ";
                         sql += " order by locnm";
                         dt = masterHelp.SQLquery(sql);
                         VE.CompanyLocation = (from DataRow dr in dt.Rows
-                                               select new CompanyLocation()
-                                               {
-                                                   COMPCD = dr["compcd"].retStr(),
-                                                   LOCCD = dr["loccd"].retStr(),
-                                                   LOCNM = dr["locnm"].retStr(),
-                                               }).ToList();
+                                              select new CompanyLocation()
+                                              {
+                                                  COMPCD = dr["compcd"].retStr(),
+                                                  LOCCD = dr["loccd"].retStr(),
+                                                  LOCNM = dr["locnm"].retStr(),
+                                              }).ToList();
                         string iniVal_Fin = Handel_Ini.IniReadValue(Userid, "Fin_year", Server.MapPath("~/Ipsmart.ini"));
                         if (iniVal_Fin.Length != 0)
                         {
@@ -113,12 +113,12 @@ namespace Improvar.Controllers
                             sql += " order by from_date desc ";
                             dt = masterHelp.SQLquery(sql);
                             VE.CompanyFinyr = (from DataRow dr in dt.Rows
-                                                select new CompanyFinyr()
-                                                {
-                                                    COMPCD = dr["compcd"].retStr(),
-                                                    LOCCD = dr["LOCCD"].retStr(),
-                                                    FINYR = dr["FINYR"].retStr(),
-                                                }).ToList();
+                                               select new CompanyFinyr()
+                                               {
+                                                   COMPCD = dr["compcd"].retStr(),
+                                                   LOCCD = dr["LOCCD"].retStr(),
+                                                   FINYR = dr["FINYR"].retStr(),
+                                               }).ToList();
                             VE.Ischecked = true;
                         }
                     }
@@ -133,7 +133,7 @@ namespace Improvar.Controllers
             switch (submitbutton)
             {
                 case "Logout": return (Logout());
-                case "OK": return (OK(VE,FC));
+                case "OK": return (OK(VE, FC));
                 default: return (View());
             }
         }
@@ -280,7 +280,9 @@ namespace Improvar.Controllers
                     Handel_ini.DeleteSection(Userid, Server.MapPath("~/Ipsmart.ini"));
                 }
                 string sstr = "select SCHEMA_NAME,sales_schema,fin_schema,invENTORY_schema,pay_schema,compnm,locnm,DATA_VERSION,CLIENT_CODE,YEAR_CODE,import_tag,mirror_tag, prev_schema, next_schema ";
-                sstr += "from " + comp_table + " where COMPCD='" + VE.COMPCD + "' and LOCCD='" + VE.LOCCD + "' and  FROM_DATE=to_date('" + FIN[0].ToString() + "','dd/mm/yyyy') and UPTO_DATE=to_date('" + FIN[1].ToString() + "','dd/mm/yyyy')";
+                sstr += "from " + comp_table + " where COMPCD='" + VE.COMPCD + "' and LOCCD='"
+                    + VE.LOCCD + "' and  FROM_DATE=to_date('" + FIN[0].ToString() + "','dd/mm/yyyy') and UPTO_DATE=to_date('" + FIN[1].ToString() + "','dd/mm/yyyy')";
+
                 tbl = masterHelp.SQLquery(sstr);
                 int version = Convert.ToInt32(WebConfigurationManager.AppSettings["Version"]);
                 string SESSIONNO = Session["Session_No"].retStr();
@@ -288,7 +290,7 @@ namespace Improvar.Controllers
                 string UNIQUESESSION = VE.COMPCD + VE.LOCCD + YRCD + SESSIONNO;
                 Session.Add("DatabaseSchemaName" + UNIQUESESSION, tbl.Rows[0]["SCHEMA_NAME"].ToString());
                 Session.Add("DatabaseSchemaName", tbl.Rows[0]["SCHEMA_NAME"].ToString());
-                string DatabaseSchemaName =  tbl.Rows[0]["SCHEMA_NAME"].ToString();
+                string DatabaseSchemaName = tbl.Rows[0]["SCHEMA_NAME"].ToString();
                 Session.Add("CompanyName", tbl.Rows[0]["COMPNM"].ToString());
                 Session.Add("CompanyName" + UNIQUESESSION, tbl.Rows[0]["COMPNM"].ToString());
                 Session.Add("CompanyLocation", tbl.Rows[0]["LOCNM"].ToString());
@@ -318,17 +320,25 @@ namespace Improvar.Controllers
                 Session.Add("YEAR_CODE", tbl.Rows[0]["YEAR_CODE"].ToString());
                 Session.Add("IMPORT_TAG", tbl.Rows[0]["IMPORT_TAG"].ToString());
                 Session.Add("MIRROR_TAG", tbl.Rows[0]["MIRROR_TAG"].ToString());
+                sql = "";
+                sql = "select GSTNO from " + tbl.Rows[0]["fin_schema"].ToString() + ".M_loca a where loccd='" + VE.LOCCD + "' and compcd='" + VE.COMPCD + "'";
+                var dt = masterHelp.SQLquery(sql);
+                if (dt.Rows.Count > 0)
+                {
+                    Session.Add("GSTNO" + UNIQUESESSION, dt.Rows[0]["GSTNO"].ToString());
+                    Session.Add("GSTNO", dt.Rows[0]["GSTNO"].ToString());
+                }
                 if (version < dataversion)
                 {
                     Session.Add("package", "Package is too old to run, Copy latest version no " + dataversion.ToString());
                     Response.BufferOutput = true;
-                    return RedirectToAction("CompanySelection", "Home");
+                    return RedirectToAction("CompanySelection", "Home", new { MSG = dataversion.ToString() });
                 }
                 else if (version > dataversion)
                 {
                     Session.Add("package", "Old Database version is running,Please install version no " + version.ToString());
                     Response.BufferOutput = true;
-                    return RedirectToAction("CompanySelection", "Home");
+                    return RedirectToAction("CompanySelection", "Home", new { MSG = version.ToString() });
                 }
                 else
                 {
@@ -351,7 +361,7 @@ namespace Improvar.Controllers
                     sql = "select * from all_objects a ";
                     sql += "where a.owner = '" + DatabaseSchemaName + "' and a.object_type = 'TABLE' and a.object_name = 'M_SYSCNFG'";
                     DataTable rstmp = masterHelp.SQLquery(sql);
-                    if (rstmp.Rows.Count > 0 && CommVar.ModuleCode() == "SALESCHEM")
+                    if (rstmp.Rows.Count > 0)
                     {
                         sql = "";
                         string pkgtype = "CHEM", prop1dsc = "prop1", prop2dsc = "prop2", prop3dsc = "prop3", prop4dsc = "prop4", prop5dsc = "prop5", prop6dsc = "prop6";
@@ -382,7 +392,7 @@ namespace Improvar.Controllers
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                return RedirectToAction("CompanySelection", "Home");
+                return RedirectToAction("CompanySelection", "Home", new { MSG = ex.Message });
             }
         }
         public ActionResult ModuleSelector(string code, string controlschema, string menuschema, string sortby, string mname)
@@ -517,7 +527,7 @@ namespace Improvar.Controllers
                 sql += " where a.autono in ('" + autono + "') ";
                 sql += " ) a,  ";
                 sql += " user_appl b where a.usr_id = b.user_id(+) ";
-                sql += " order by usr_entdt desc ";                
+                sql += " order by usr_entdt desc ";
                 tbl = masterHelp.SQLquery(sql);
                 ModifyLog VE = new ModifyLog();
                 VE.ModifyLogGrid = (from DataRow dr in tbl.Rows

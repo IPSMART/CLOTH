@@ -2697,42 +2697,5 @@ namespace Improvar
             DTYP.Add(DTYP4);
             return DTYP;
         }
-        public string CashMemoNumber_help(string val)
-        {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
-            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.CurSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO); ;
-            string sql = "";
-            string valsrch = val.ToUpper().Trim();
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt,d.nm,d.mobile ";
-            sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b," + scm + ".T_TXNMEMO d," + scmf + ".M_RETDEB e ";
-            sql += "where a.autono=b.autono and a.autono=d.autono(+) and d.RTDEBCD=e.RTDEBCD(+) ";
-            sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
-            if (valsrch.retStr() != "") sql += "and ( upper(b.docno) = '" + valsrch + "' ) ";
-            sql += "order by docdt, docno ";
-            DataTable tbl = SQLquery(sql);
-          
-            if (val.retStr() == "" || tbl.Rows.Count > 1)
-            {
-                System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
-                {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td></tr>");
-                }
-                var hdr = "Cash Memo Number";
-                return Generate_help(hdr, SB.ToString());
-            }
-            else
-            {
-                if (tbl.Rows.Count > 0)
-                {
-                    string str = ToReturnFieldValues("", tbl);
-                    return str;
-                }
-                else
-                {
-                    return "Invalid Cash Memo Number ! Please Select / Enter a Valid Cash Memo Number !!";
-                }
-            }
-        }
     }
 }

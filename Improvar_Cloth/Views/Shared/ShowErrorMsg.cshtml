@@ -1,0 +1,64 @@
+﻿@model Improvar.Models.Permission
+
+
+<script>
+    function ConfirmInDiv(message, okcallback, cancelcallback)
+    {
+        $('#Msgdiv1').show();
+        $('#confirm').show();
+        $("#msgbody_confirm").text(message);
+        $('#Confirmation_Ok').unbind('click');
+        $('#Confirmation_Ok').click(okcallback);
+        $('#Confirmation_Ok').unbind('keypress');
+        $('#Confirmation_Ok').keypress(okcallback);
+        $('#Confirmation_Cancel').unbind('click');
+        $('#Confirmation_Cancel').click(cancelcallback);
+        $('input').blur();
+        $('#Confirmation_Ok').focus();
+    }
+    function HideConfirmOk() {
+        $('#Msgdiv1').hide();
+        $('#confirm').hide();
+        CompanyChange();
+        return false;
+    }
+    function HideConfirmCancel() {
+        $('#Msgdiv1').hide();
+        $('#confirm').hide();
+        return false;
+    }
+
+    function ChangCompConfirm() {
+        function ok() {
+            console.log('deleted');
+            HideConfirmOk();
+        }
+        function cancel() {
+            console.log('delete cancelled');
+            HideConfirmCancel();
+        }
+        ConfirmInDiv(' Are you sure to Change Company? ', ok, cancel);
+    }
+
+    function ReturnData() {
+        $.ajax({
+            type: 'post',
+            url: $("#urlnameReturnData").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+            }
+        });
+    }
+
+</script>
+
+<input type="hidden" id="urlnameReturnData" value="@Url.Action("TxnValidation", "T_SalPur")" />
+
+<div>
+    <div align="center" style="width:100%">
+        <input id="Confirmation_Ok_Return" type="button" value="Ok" style="width:50px;height:25px;background-color:#053a42;color:#b8f5ff;cursor:pointer;" onclick="ReturnData();" autofocus />
+        <input id="Confirmation_Cancel_Return" type="button" value="Cancel" style="width:50px;height:25px;background-color:#053a42;color:#b8f5ff;cursor:pointer" />
+
+    </div>
+</div>
+

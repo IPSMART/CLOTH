@@ -71,6 +71,11 @@
                                 <th class="" style="width:50px;">UOM</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:43px;text-align:right;">Rate Hist</th>
+                                @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                {
+                                    <th class="" style="width:80px;text-align:right;">List Price</th>
+                                    <th class="" style="width:80px;text-align:right;">List Disc Per</th>
+                                }
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 @if (Model.MENU_PARA == "PB")
                                 {
@@ -202,9 +207,26 @@
                                         <td class="">
                                             <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('@i')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
                                         </td>
-                                        <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })
-                                        </td>
+                                        @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                        {
+                                            <td class="">
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].LISTPRICE, new { htmlAttributes = new { id = "B_LISTPRICE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#B_');" } })
+                                            </td>
+                                            <td class="">
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].LISTDISCPER, new { htmlAttributes = new { id = "B_LISTDISCPER_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 6, @onchange = "RateUpdate(" + i + ",'#B_');" } })
+                                            </td>
+                                            <td class="">
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="">
+                                                @*@Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "Sale_GetGstPer(" + i + ",'#B_');RateUpdate(" + i + ");HasChangeBarSale();" } })*@
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @onchange = "RateUpdate(" + i + ",'#B_');" } })
+                                            </td>
+                                        }
+
                                         @if (Model.MENU_PARA == "PB")
                                         {
                                             <td class="">
@@ -334,6 +356,11 @@
                                     @Html.EditorFor(model => Model.B_T_NOS, new { htmlAttributes = new { id = "B_T_NOS", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*rate hist*@
+                                @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
+                                }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
                                 @if (Model.MENU_PARA == "PB")
                                 {

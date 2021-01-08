@@ -249,5 +249,29 @@ namespace Improvar
                 return 0;
             }
         }
+        public static bool IsValidEmail(object email)
+        {
+            try
+            {
+                var mail = new System.Net.Mail.MailAddress(email.retStr());
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public static bool IsValidPhone(object PhoneNo)
+        {
+            return Regex.IsMatch(PhoneNo.retStr(), "^([0-9]{6,12})$", RegexOptions.IgnoreCase);
+        }
+        public static string TruncateWord(this object value, int length)
+        {
+            string input = value.retStr();
+            if (input == null || input.Length < length)
+                return input;
+            int iNextSpace = input.LastIndexOf(" ", length, StringComparison.Ordinal);
+            return string.Format("{0}", input.Substring(0, (iNextSpace > 0) ? iNextSpace : length).Trim());
+        }
     }
 }

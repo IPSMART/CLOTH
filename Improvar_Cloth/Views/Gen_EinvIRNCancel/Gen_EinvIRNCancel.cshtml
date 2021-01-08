@@ -1,0 +1,105 @@
+﻿@model Improvar.ViewModels.GenEinvIRNCancel
+@{
+    ViewBag.Title = "Cancel E-Invoice";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+@*<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+    @Scripts.Render("~/Scripts/Multiple-Select-min.js")
+    @Scripts.Render("~/Scripts/bootstrap-select.js")*@
+<script src="~/Scripts/jquery.min.js"></script>
+
+<script>
+    $(function () {
+        $("#FROMDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        $("#TODT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.navbar-nav').find('li.active').removeClass('active');
+        $("ul li:nth-child(2)").addClass('active');
+    });
+</script>
+<script>
+    function ShowGrid() {
+        if (!emptyFieldCheck("Please Select / Enter From Date", "FROMDT")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter To Date", "TODT")) { return false; }
+        $.ajax({
+            type: 'post',
+            url: 'ShowList',
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $('#partialdivEinvIRN').html(result);
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function GenerateIRN() {
+        $.ajax({
+            type: 'post',
+            url: 'GenerateEinvIRN',
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $('#partialdivEinvIRN').html(result);
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
+            }
+        });
+    }
+</script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-1">
+            <div class="editor-label" style="margin-top: 6px;">
+                @Html.Label("", "From Date")
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.FROMDT, new { htmlAttributes = new { @class = "form-control", id = "FROMDT", maxlength = 10, autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="editor-label" style="margin-top: 6px;">
+                @Html.Label("", "To Date")
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="editor-field">
+                @Html.EditorFor(model => model.TODT, new { htmlAttributes = new { @class = "form-control", id = "TODT", maxlength = 10, autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+            </div>
+        </div>
+        <div class="col-md-2">
+            <input class="btn btn-primary" style="padding: 5px;" type="button" name="show" formmethod="post" value="Refresh" onclick="ShowGrid()" />
+        </div>
+    </div>
+    <div class="row">
+        <div id="partialdivEinvIRN" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove; width: fit-content;">
+            @*@Html.Partial("_Gen_EinvIRN")*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <input class="btn btn-primary" style="padding: 5px;" type="button" name="submitbutton" formmethod="post" value="Generate" onclick="GenerateIRN()" />
+        </div>
+    </div>
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

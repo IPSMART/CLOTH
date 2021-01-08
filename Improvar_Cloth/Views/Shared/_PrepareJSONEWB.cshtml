@@ -74,8 +74,8 @@
                                 <th class="grid_th" style="width:150px;">IGST Amt</th>
                                 <th class="grid_th" style="width:150px;">Cess Amt</th>
                                 <th class="grid_th" style="width:150px;">Cess Non Advol<br>Amount</th>
-                                <th class="grid_th" style="width:150px;">Total invoice value</th>
                                 <th class="grid_th" style="width:150px;">Others</th>
+                                <th class="grid_th" style="width:150px;">Total invoice value</th>
                                 <th class="grid_th" style="width:100px;">Trans Mode</th>
                                 <th class="grid_th" style="width:20px;">Distance (km)</th>
                                 <th class="grid_th" style="width:320px;">Trsns Name</th>
@@ -94,6 +94,7 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.Prepare_JSON[i].Checked, new { id = "Checked_" + i })
+                                            @Html.HiddenFor(model => model.Prepare_JSON[i].AUTONO, new { id = "AUTONO_" + i })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.Prepare_JSON[i].SLNO, new { id = "SLNO_" + i, @style = "text-align: left;", @class = "atextBoxFor", @tabindex = -1 })
@@ -210,10 +211,10 @@
                                             @Html.EditorFor(model => Model.Prepare_JSON[i].cess_non_advol, new { htmlAttributes = new { id = "cess_non_advol_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.Prepare_JSON[i].invamt, new { htmlAttributes = new { id = "invamt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].othramt, new { htmlAttributes = new { id = "othramt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.Prepare_JSON[i].othramt, new { htmlAttributes = new { id = "othramt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
+                                            @Html.EditorFor(model => Model.Prepare_JSON[i].invamt, new { htmlAttributes = new { id = "invamt_" + i, @style = "text-align: right;", @class = "atextBoxFor", @tabindex = -1 } })
                                         </td>
                                         <td class="">
                                             @Html.DropDownListFor(model => model.Prepare_JSON[i].transMode, new SelectList(Model.EWB_Transmode_Ddown, "Value", "Text", Model.Prepare_JSON[i].transMode), new { @class = "atextBoxFor" })

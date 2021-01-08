@@ -9,13 +9,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.html.simpleparser;
 using System.Web;
-using System.Web.UI;
-using System.Text;
-using System.Globalization;
-using ClosedXML.Excel;
 using OfficeOpenXml;
-using OfficeOpenXml.Style;
-using System.Drawing;
 
 namespace Improvar.Controllers
 {
@@ -590,6 +584,7 @@ namespace Improvar.Controllers
                 }
             }
             PV.HeaderArray = hdArray;
+            PV.TotReportWidth += (colno * 6);
         }
 
         public void RepStart(DataTable IR, int noheadrow = 2)

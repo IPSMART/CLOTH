@@ -22,7 +22,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:334px;">
-                    <table id="_TS_DOCAUTH_DATALIST_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1826px">
+                    <table id="_TS_DOCAUTH_DATALIST_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:2019px">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width:27px;">SL No.</th>
@@ -38,6 +38,10 @@
                                 <th class="" style="width:50px;">Update No.</th>
                                 <th class="" style="width:94px;">GL Code</th>
                                 <th class="">GL Name</th>
+                                @if (Model.SHOW_RECORD != "P")
+                                {
+                                    <th class="" style="width:120px;">Authorised By</th>
+                                }
                                 <th class="" style="width:200px">Authorization Remarks</th>
                                 <th class="" style="width:200px">Remark</th>
                                 <th class="sticky-cell-opposite" style="width:48px;font-size: smaller;right:105px" title="Approved">
@@ -57,80 +61,86 @@
                         <tbody>
                             @for (int i = 0; i <= Model.TCNTRLAUTH.Count - 1; i++)
                             {
-                            <tr style="font-size:12px; font-weight:bold;">
-                                <td class="sticky-cell">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTH_SLNO, new { id = "AUTH_SLNO_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
-                                    @Html.HiddenFor(model => Model.TCNTRLAUTH[i].SLNO)
-                                    @Html.HiddenFor(model => Model.TCNTRLAUTH[i].AUTONO)
-                                    @Html.HiddenFor(model => Model.TCNTRLAUTH[i].PASS_LEVEL, new { id = "PASS_LEVEL_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DNAME, new { id = "DNAME_" + i, @class = "atextBoxFor", maxlength = 40, @readonly = "readonly" })
-                                </td>
-                                <td class="">
+                                <tr style="font-size:12px; font-weight:bold;">
+                                    <td class="sticky-cell">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTH_SLNO, new { id = "AUTH_SLNO_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                        @Html.HiddenFor(model => Model.TCNTRLAUTH[i].SLNO)
+                                        @Html.HiddenFor(model => Model.TCNTRLAUTH[i].AUTONO)
+                                        @Html.HiddenFor(model => Model.TCNTRLAUTH[i].PASS_LEVEL, new { id = "PASS_LEVEL_" + i, @class = " atextBoxFor ", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DNAME, new { id = "DNAME_" + i, @class = "atextBoxFor", maxlength = 40, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
 
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DOCCD, new { id = "DOCCD_" + i, maxlength = 5, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DOCCD, new { id = "DOCCD_" + i, maxlength = 5, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
 
-                                <td class="">
-                                    @if (Model.TCNTRLAUTH[i].LOCCD == CommVar.Loccd(Model.UNQSNO))
+                                    <td class="">
+                                        @if (Model.TCNTRLAUTH[i].LOCCD == CommVar.Loccd(Model.UNQSNO))
                                         {
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DOCNO, new { id = "DOCNO_" + i, @class = "atextBoxFor", @readonly = "readonly", style = "cursor:pointer;color:blue;", onclick = "openlinkentry('" + Model.TCNTRLAUTH[i].AUTONO + "');", title = "Click To Open Document" })
+                                            @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DOCNO, new { id = "DOCNO_" + i, @class = "atextBoxFor", @readonly = "readonly", style = "cursor:pointer;color:blue;", onclick = "openlinkentry('" + Model.TCNTRLAUTH[i].AUTONO + "');", title = "Click To Open Document" })
                                         }
                                         else
                                         {
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DOCNO, new { id = "DOCNO_" + i, @class = "atextBoxFor", @readonly = "readonly", style = "cursor:pointer;", onclick = "openlinkentry('" + Model.TCNTRLAUTH[i].AUTONO + "');", title = "Click To Open Document" })
+                                            @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DOCNO, new { id = "DOCNO_" + i, @class = "atextBoxFor", @readonly = "readonly", style = "cursor:pointer;", onclick = "openlinkentry('" + Model.TCNTRLAUTH[i].AUTONO + "');", title = "Click To Open Document" })
 
                                         }
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DOCDT, new { id = "DOCDT_" + i, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].USR_ID, new { id = "USR_ID_" + i, maxlength = 40, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].USR_ENTDT, new { id = "USR_ENTDT_" + i, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].SLCD, new { id = "SLCD_" + i, maxlength = 8, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].SLNM, new { id = "SLNM_" + i, maxlength = 45, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.EditorFor(model => Model.TCNTRLAUTH[i].DOCAMT, new { htmlAttributes = new { id = "DOCAMT_" + i, maxlength = 14, @class = "atextBoxFor text-right", @readonly = "readonly" } })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].EMD_NO, new { id = "EMD_NO_" + i, maxlength = 4, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].GLCD, new { id = "GLCD_" + i, maxlength = 8, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].GLNM, new { id = "GLNM_" + i, maxlength = 45, @class = "atextBoxFor", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTHREM, new { id = "AUTHREM_" + i, maxlength = 100, @class = " atextBoxFor ", @readonly = "readonly" })
-                                </td>
-                                <td class="">
-                                    @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTH_REM, new { id = "AUTH_REM_" + i, maxlength = 100, @class = " atextBoxFor " })
-                                </td>
-                                <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:105px">
-                                    @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].Approved, new { id = "SelectCheck_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheck_" + i + "','SelectCheck1_" + i + "','SelectCheckCancel_" + i + "');" })
-                                </td>
-                                <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:43px">
-                                    @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].UnApproved, new { id = "SelectCheck1_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheck1_" + i + "','SelectCheck_" + i + "','SelectCheckCancel_" + i + "');" })
-                                </td>
-                                <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:0px">
-                                    @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].Cancel, new { id = "SelectCheckCancel_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheckCancel_" + i + "','SelectCheck_" + i + "','SelectCheck1_" + i + "');" })
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].DOCDT, new { id = "DOCDT_" + i, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].USR_ID, new { id = "USR_ID_" + i, maxlength = 40, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].USR_ENTDT, new { id = "USR_ENTDT_" + i, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].SLCD, new { id = "SLCD_" + i, maxlength = 8, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].SLNM, new { id = "SLNM_" + i, maxlength = 45, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.EditorFor(model => Model.TCNTRLAUTH[i].DOCAMT, new { htmlAttributes = new { id = "DOCAMT_" + i, maxlength = 14, @class = "atextBoxFor text-right", @readonly = "readonly" } })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].EMD_NO, new { id = "EMD_NO_" + i, maxlength = 4, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].GLCD, new { id = "GLCD_" + i, maxlength = 8, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].GLNM, new { id = "GLNM_" + i, maxlength = 45, @class = "atextBoxFor", @readonly = "readonly" })
+                                    </td>
+                                    @if (Model.SHOW_RECORD != "P")
+                                    {
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTH_MNM, new { id = "AUTH_MNM_" + i, maxlength = 50, @class = " atextBoxFor ", @readonly = "readonly" })
+                                        </td>
+                                    }
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTHREM, new { id = "AUTHREM_" + i, maxlength = 100, @class = " atextBoxFor ", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TCNTRLAUTH[i].AUTH_REM, new { id = "AUTH_REM_" + i, maxlength = 100, @class = " atextBoxFor " })
+                                    </td>
+                                    <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:105px">
+                                        @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].Approved, new { id = "SelectCheck_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheck_" + i + "','SelectCheck1_" + i + "','SelectCheckCancel_" + i + "');" })
+                                    </td>
+                                    <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:43px">
+                                        @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].UnApproved, new { id = "SelectCheck1_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheck1_" + i + "','SelectCheck_" + i + "','SelectCheckCancel_" + i + "');" })
+                                    </td>
+                                    <td class="sticky-cell-opposite" style="padding-left:7px;padding-right:7px;background-color:#808080;right:0px">
+                                        @Html.CheckBoxFor(model => model.TCNTRLAUTH[i].Cancel, new { id = "SelectCheckCancel_" + i, @class = "atextBoxFor", @readonly = "readonly", onclick = "Check_CheckBox('SelectCheckCancel_" + i + "','SelectCheck_" + i + "','SelectCheck1_" + i + "');" })
+                                    </td>
+                                </tr>
                             }
                         </tbody>
                         <tfoot>
                             <tr class="sticky-footer">
-                                <th class="sticky-cell" ></th>
+                                <th class="sticky-cell"></th>
                                 <th title="Document Description"></th>
                                 <th title="Document Type"></th>
                                 <th title="Document No."></th>
@@ -143,11 +153,15 @@
                                 <th title="Update No."></th>
                                 <th title="GL Code"></th>
                                 <th title="GL Name"></th>
+                                @if (Model.SHOW_RECORD != "P")
+                                {
+                                    <th title="Authorised By"></th>
+                                }
                                 <th title="Authorization Remarks"></th>
                                 <th title="Remark"></th>
                                 <th class="sticky-cell-opposite" style="right:105px;"></th>
-                                <th class="sticky-cell-opposite" style="right:43px;" ></th>
-                                <th class="sticky-cell-opposite" ></th>
+                                <th class="sticky-cell-opposite" style="right:43px;"></th>
+                                <th class="sticky-cell-opposite"></th>
                             </tr>
                         </tfoot>
 

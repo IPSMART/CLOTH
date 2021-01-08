@@ -22,6 +22,7 @@ namespace Improvar.Controllers
         // GET: M_USR_ACS_DOCCD
         public ActionResult M_USR_ACS_DOCCD(string op = "", string key = "", int Nindex = 0, string searchValue = "")
         {
+            try { 
             if (Session["UR_ID"] == null)
             {
                 return RedirectToAction("Login", "Login");
@@ -66,7 +67,7 @@ namespace Improvar.Controllers
                             else if (key == "")
                             {
                                 VE.Index = VE.IndexKey.Count - 1;
-                                VE = Navigation(VE, DB, VE.IndexKey.Count - 1, searchValue);
+                                VE = Navigation(VE, DB, VE.IndexKey.Count -1, searchValue);
                             }
                             else if (key == "P")
                             {
@@ -104,6 +105,15 @@ namespace Improvar.Controllers
                     VE.DefaultDay = 0;
                     return View(VE);
                 }
+            } }
+             catch (Exception ex)
+            {
+                UserWiseDocumentTypeRightsEntry VE = new UserWiseDocumentTypeRightsEntry();
+                VE.DefaultView = false;
+                VE.DefaultDay = 0;
+                ViewBag.ErrorMessage = ex.Message;
+                Cn.SaveException(ex, "");
+                return View(VE);
             }
         }
         public UserWiseDocumentTypeRightsEntry Navigation(UserWiseDocumentTypeRightsEntry VE, ImprovarDB DB, int index, string searchValue)
@@ -154,6 +164,10 @@ namespace Improvar.Controllers
                                        where (i.USER_ID == VE.userID)
                                        select new MUSRACSDOCCD { DNAME = k.DNAME, DOCCD = i.DOCCD, DOCNM = j.DOCNM, Checked = true }).OrderBy(s => s.DNAME).ThenBy(e => e.DOCNM).ToList();
                 }
+            }
+            else {
+
+
             }
             return VE;
         }
@@ -264,7 +278,7 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MPTX.EMD_NO = Convert.ToInt16(MAXEMDNO + 1);
+                                MPTX.EMD_NO = Convert.ToByte(MAXEMDNO + 1);
                             }
                         }
                         if (VE.DefaultAction == "E")

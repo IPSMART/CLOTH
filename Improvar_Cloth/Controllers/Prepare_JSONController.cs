@@ -6,6 +6,7 @@ using Improvar.ViewModels;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text;
+using System.Data;
 
 namespace Improvar.Controllers
 {
@@ -14,48 +15,39 @@ namespace Improvar.Controllers
         string CS = null;
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
+        AdaequareGSP adaequareGSP = new AdaequareGSP();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: Prepare_JSON
         public ActionResult Prepare_JSON()
         {
-            try {
-                if (Session["UR_ID"] == null)
-                {
-                    return RedirectToAction("Login", "Login");
-                }
-                else
-                {
-                    ViewBag.formname = " PREPARE JSON";
-                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                    ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-                    Prepare_JSONvalidation VE = new Prepare_JSONvalidation();
-                    VE = (Prepare_JSONvalidation)TempData["PrepareJSON"];
-                    TempData.Keep();
-                    VE.EWB_SUPPLY_TYPE_Ddown = EWB_SUPPLY_TYPE_Ddown();
-                    VE.EWB_SUB_TYPE_Ddown = EWB_SUB_TYPE_Ddown();
-                    VE.EWB_DOC_TYPE_Ddown = EWB_DOC_TYPE_Ddown();
-                    VE.EWB_Transmode_Ddown = EWB_Transmode_Ddown();
-                    VE.EWB_Unit_Ddown = EWB_Unit_Ddown();
-                    VE.EWB_BlFrmSt_TYPE_Ddown = EWB_BlFrmSt_TYPE_Ddown();
-                    VE.EWB_TRANSACTION_TYPE_Ddown = EWB_TRANSACTION_TYPE_Ddown();
-                    VE.EWB_BlFrmSt_TYPE_Ddown = EWB_BlFrmSt_TYPE_Ddown();
-                    VE.EWB_DisFrmSt_TYPE_Ddown = EWB_DisFrmSt_TYPE_Ddown();
-                    VE.EWB_BlTo_TYPE_Ddown = EWB_BlTo_TYPE_Ddown();
-                    VE.EWB_ShipTo_TYPE_Ddown = EWB_ShipTo_TYPE_Ddown();
-                    VE.EWB_Vehicle_TYPE_Ddown = EWB_Vehicle_TYPE_Ddown();
-
-
-                    VE.DefaultView = true;
-                    return View(VE);
-                } }
-            catch (Exception ex)
+            if (Session["UR_ID"] == null)
             {
+                return RedirectToAction("Login", "Login");
+            }
+            else
+            {
+                ViewBag.formname = " PREPARE JSON";
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 Prepare_JSONvalidation VE = new Prepare_JSONvalidation();
-                VE.DefaultView = false;
-                VE.DefaultDay = 0;
-                ViewBag.ErrorMessage = ex.Message + " " + ex.InnerException;
-                Cn.SaveException(ex, "");
+                VE = (Prepare_JSONvalidation)TempData["PrepareJSON"];
+                TempData.Keep();
+                VE.EWB_SUPPLY_TYPE_Ddown = EWB_SUPPLY_TYPE_Ddown();
+                VE.EWB_SUB_TYPE_Ddown = EWB_SUB_TYPE_Ddown();
+                VE.EWB_DOC_TYPE_Ddown = EWB_DOC_TYPE_Ddown();
+                VE.EWB_Transmode_Ddown = EWB_Transmode_Ddown();
+                VE.EWB_Unit_Ddown = EWB_Unit_Ddown();
+                VE.EWB_BlFrmSt_TYPE_Ddown = EWB_BlFrmSt_TYPE_Ddown();
+                VE.EWB_TRANSACTION_TYPE_Ddown = EWB_TRANSACTION_TYPE_Ddown();
+                VE.EWB_BlFrmSt_TYPE_Ddown = EWB_BlFrmSt_TYPE_Ddown();
+                VE.EWB_DisFrmSt_TYPE_Ddown = EWB_DisFrmSt_TYPE_Ddown();
+                VE.EWB_BlTo_TYPE_Ddown = EWB_BlTo_TYPE_Ddown();
+                VE.EWB_ShipTo_TYPE_Ddown = EWB_ShipTo_TYPE_Ddown();
+                VE.EWB_Vehicle_TYPE_Ddown = EWB_Vehicle_TYPE_Ddown();
+
+
+                VE.DefaultView = true;
                 return View(VE);
             }
         }
@@ -194,7 +186,7 @@ namespace Improvar.Controllers
         public List<EWB_BlFrmSt_TYPE_Ddown> EWB_BlFrmSt_TYPE_Ddown()
         {
             ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
 
             var State = (from j in DBI.MS_STATE
                          select new EWB_BlFrmSt_TYPE_Ddown
@@ -257,7 +249,6 @@ namespace Improvar.Controllers
             EWBveh2.text = "ODC";
             EWB_Vehicle_TYPE.Add(EWBveh2);
             return EWB_Vehicle_TYPE;
-
         }
 
         public List<EWB_TRANSACTION_TYPE_Ddown> EWB_TRANSACTION_TYPE_Ddown()
@@ -283,121 +274,142 @@ namespace Improvar.Controllers
         }
 
         [HttpPost]
-        public ActionResult Prepare_JSON(FormCollection FC, Prepare_JSONvalidation VE)
+        public ActionResult Prepare_JSON(FormCollection FC, Prepare_JSONvalidation VE, string Command)
         {
-            EWayBill_JSON EWB = new EWayBill_JSON();
-            EWB.version = "1.0.1118";
-            var no_bill = (from I in VE.Prepare_JSON
-                           select new
-                           {
-                               blno = I.blno,
-                               hsncode = I.hsncode
-                           }).ToArray();
-            List<billLists> billLists = new List<billLists>();
-            List<itemList> itemList = null;
-            itemList = new List<itemList>();        
-           int ITMCOUNT = 0;
-            double totalTaxableAmt = 0;
-            double totaligstAmt = 0;
-            double totalcgstAmt = 0;
-            double totalsgstAmt = 0;
-            double totalcessAmt = 0;
-            if (VE.Prepare_JSON != null)
+            if (Command == "Download JSON")
             {
-                for (int i = 0; i < VE.Prepare_JSON.Count; i++)
-                {
-                    billLists billList = new billLists();
-                    billList.userGstin = VE.Prepare_JSON[i].frmgstno;
-                    billList.supplyType = VE.Prepare_JSON[i].Supply_Type;
-                    billList.subSupplyType = Convert.ToInt32(VE.Prepare_JSON[i].SubSupply_Type);
-                    billList.docType = VE.Prepare_JSON[i].Doctype;
-                    billList.docNo = VE.Prepare_JSON[i].blno;
-                    billList.docDate = VE.Prepare_JSON[i].bldt.ToShortDateString();
-                    billList.transType = VE.Prepare_JSON[i].Transaction_Type;
-                    billList.fromGstin = VE.Prepare_JSON[i].frmgstno;
-                    billList.fromTrdName = VE.Prepare_JSON[i].compnm;
-                    billList.fromAddr1 = VE.Prepare_JSON[i].frmadd1;
-                    billList.fromAddr2 = VE.Prepare_JSON[i].frmadd2;
-                    billList.fromPlace = VE.Prepare_JSON[i].frmdistrict;
-                    billList.fromPincode = Convert.ToInt32(VE.Prepare_JSON[i].frmpin);
-                    billList.fromStateCode = Convert.ToInt32(VE.Prepare_JSON[i].frmstatecd);
-                    billList.actualFromStateCode = Convert.ToInt32(VE.Prepare_JSON[i].frmstatecd);
-                    billList.toGstin = VE.Prepare_JSON[i].togstno;
-                    billList.toTrdName = VE.Prepare_JSON[i].slnm;
-                    billList.toAddr1 = VE.Prepare_JSON[i].toadd1;
-                    billList.toAddr2 = VE.Prepare_JSON[i].toadd2;
-                    billList.toPlace = VE.Prepare_JSON[i].todistrict;
-                    billList.toPincode = Convert.ToInt32(VE.Prepare_JSON[i].shiptopin);//
-                    billList.toStateCode = Convert.ToInt32(VE.Prepare_JSON[i].billtostcd);
-                    billList.actualToStateCode = Convert.ToInt32(VE.Prepare_JSON[i].shiptostcd);
-                    totalTaxableAmt += VE.Prepare_JSON[i].amt;
-                    billList.totalValue = Math.Round(totalTaxableAmt,2);
-                    totalcgstAmt += VE.Prepare_JSON[i].cgstamt;
-                    billList.cgstValue = Math.Round(totalcgstAmt,2);
-                    totalsgstAmt += VE.Prepare_JSON[i].sgstamt;
-                    billList.sgstValue = Math.Round(totalsgstAmt,2);
-                    totaligstAmt += VE.Prepare_JSON[i].igstamt;
-                    billList.igstValue = Math.Round(totaligstAmt,2);
-                    totalcessAmt += VE.Prepare_JSON[i].cessamt;
-                    billList.cessValue = Math.Round(totalcessAmt,2);
-                    billList.TotNonAdvolVal = VE.Prepare_JSON[i].cess_non_advol;
-                    billList.OthValue = VE.Prepare_JSON[i].othramt;
-                    billList.totInvValue = VE.Prepare_JSON[i].invamt;
-                    billList.transMode = Convert.ToInt32(VE.Prepare_JSON[i].transMode);
-                    billList.transDistance = VE.Prepare_JSON[i].distance;
-                    billList.transporterName = VE.Prepare_JSON[i].trslnm == null ? "" : VE.Prepare_JSON[i].trslnm;
-                    billList.transporterId = VE.Prepare_JSON[i].trgst == null?"": VE.Prepare_JSON[i].trgst;
-                    billList.transDocNo = VE.Prepare_JSON[i].lrno == null ? "" : VE.Prepare_JSON[i].lrno;
-                    billList.transDocDate = VE.Prepare_JSON[i].lrdt;
-                    billList.vehicleNo = VE.Prepare_JSON[i].Vehicle_No;
-                    billList.vehicleType = VE.Prepare_JSON[i].Vehile_Type;
-                    billList.mainHsnCode = Convert.ToInt32(VE.Prepare_JSON[i].hsncode);
-                    itemList itemlst = new ViewModels.itemList();
-                    itemlst.itemNo = ++ITMCOUNT; //ITMCOUNT++;
-                    itemlst.productName = VE.Prepare_JSON[i].itnm;
-                    itemlst.productDesc = VE.Prepare_JSON[i].itdscp;
-                    itemlst.hsnCode = Convert.ToInt32(VE.Prepare_JSON[i].hsncode);
-                    itemlst.quantity = VE.Prepare_JSON[i].qnty;
-                    itemlst.qtyUnit = VE.Prepare_JSON[i].guomcd;
-                    itemlst.taxableAmount = VE.Prepare_JSON[i].amt;
-                    itemlst.sgstRate = VE.Prepare_JSON[i].sgstper;
-                    itemlst.cgstRate = VE.Prepare_JSON[i].cgstper;
-                    itemlst.igstRate = VE.Prepare_JSON[i].igstper;
-                    itemlst.cessRate = VE.Prepare_JSON[i].cessper;
-                    itemlst.cessNonAdvol = 0;
-                    if (i + 1 < VE.Prepare_JSON.Count && VE.Prepare_JSON[i].blno == no_bill[i + 1].blno)
-                    {
-                        itemList.Add(itemlst);
-                    }
-                    else
-                    {
-                        itemList.Add(itemlst);
-                        billList.itemList = itemList;
-                        billLists.Add(billList);
-                        ITMCOUNT = 0; totalTaxableAmt = 0; totalcgstAmt = 0; totalsgstAmt = 0; totaligstAmt = 0; totalcessAmt = 0;
-                        itemList = new List<itemList>();
-                    }
-                }
+                string json = CreateJsonString(VE.Prepare_JSON);
+                byte[] newBytes = Encoding.ASCII.GetBytes(json);
+                Response.Clear();
+                Response.ClearContent();
+                Response.Buffer = true;
+                //Response.Headers.Add("Content-type", "text/json");//This operation requires IIS integrated pipeline mode.
+                Response.Headers.Add("Content-type", "application/json");
+                Response.AddHeader("Content-Disposition", "attachment; filename=E-WayBill_JSON.json");
+                Response.BinaryWrite(newBytes);
+                // msg += " DONE All ";
+                Response.Flush();
+                Response.Close();
+                Response.End();
+                // return Content("Excel exported sucessfully");
+                return null;
             }
-            EWB.billLists = billLists;
-            string json = JsonConvert.SerializeObject(EWB);
-            byte[] newBytes = Encoding.ASCII.GetBytes(json);
-            Response.Clear();
-            Response.ClearContent();
-            Response.Buffer = true;
-            //Response.Headers.Add("Content-type", "text/json");//This operation requires IIS integrated pipeline mode.
-            Response.Headers.Add("Content-type", "application/json");
-            Response.AddHeader("Content-Disposition", "attachment; filename=E-WayBill_JSON.json");
-            Response.BinaryWrite(newBytes);
-            // msg += " DONE All ";
-            Response.Flush();
-            Response.Close();
-            Response.End();
-            // return Content("Excel exported sucessfully");
+            //else if (Command == "Online EWB")
+            //{
+            //    var ty = OnlineEWB(VE);
+            //    return Content(ty);
+            //}
             return null;
         }
-
-
+        private string CreateJsonString(List<Prepare_JSON> prepare_JSON)
+        {
+            try
+            {
+                EWayBill_JSON EWB = new EWayBill_JSON();
+                EWB.version = "1.0.1118";
+                var no_bill = (from I in prepare_JSON
+                               select new
+                               {
+                                   blno = I.blno,
+                                   hsncode = I.hsncode
+                               }).ToArray();
+                List<billLists> billLists = new List<billLists>();
+                List<itemList> itemList = null;
+                itemList = new List<itemList>();
+                int ITMCOUNT = 0;
+                double totalTaxableAmt = 0;
+                double totaligstAmt = 0;
+                double totalcgstAmt = 0;
+                double totalsgstAmt = 0;
+                double totalcessAmt = 0;
+                if (prepare_JSON != null)
+                {
+                    for (int i = 0; i < prepare_JSON.Count; i++)
+                    {
+                        billLists billList = new billLists();
+                        billList.userGstin = prepare_JSON[i].frmgstno;
+                        billList.supplyType = prepare_JSON[i].Supply_Type;
+                        billList.subSupplyType = Convert.ToInt32(prepare_JSON[i].SubSupply_Type);
+                        billList.docType = prepare_JSON[i].Doctype;
+                        billList.docNo = prepare_JSON[i].blno;
+                        billList.docDate = prepare_JSON[i].bldt.ToShortDateString();
+                        billList.transType = prepare_JSON[i].Transaction_Type;
+                        billList.fromGstin = prepare_JSON[i].frmgstno;
+                        billList.fromTrdName = prepare_JSON[i].compnm;
+                        billList.fromAddr1 = prepare_JSON[i].frmadd1;
+                        billList.fromAddr2 = prepare_JSON[i].frmadd2;
+                        billList.fromPlace = prepare_JSON[i].frmdistrict;
+                        billList.fromPincode = Convert.ToInt32(prepare_JSON[i].frmpin);
+                        billList.fromStateCode = Convert.ToInt32(prepare_JSON[i].frmstatecd);
+                        billList.actualFromStateCode = Convert.ToInt32(prepare_JSON[i].frmstatecd);
+                        billList.toGstin = prepare_JSON[i].togstno;
+                        billList.toTrdName = prepare_JSON[i].slnm;
+                        billList.toAddr1 = prepare_JSON[i].toadd1;
+                        billList.toAddr2 = prepare_JSON[i].toadd2;
+                        billList.toPlace = prepare_JSON[i].todistrict;
+                        billList.toPincode = Convert.ToInt32(prepare_JSON[i].shiptopin == null ? "0" : prepare_JSON[i].shiptopin);//
+                        billList.toStateCode = Convert.ToInt32(prepare_JSON[i].billtostcd);
+                        billList.actualToStateCode = Convert.ToInt32(prepare_JSON[i].shiptostcd);
+                        totalTaxableAmt += prepare_JSON[i].amt;
+                        billList.totalValue = Math.Round(totalTaxableAmt, 2);
+                        totalcgstAmt += prepare_JSON[i].cgstamt;
+                        billList.cgstValue = Math.Round(totalcgstAmt, 2);
+                        totalsgstAmt += prepare_JSON[i].sgstamt;
+                        billList.sgstValue = Math.Round(totalsgstAmt, 2);
+                        totaligstAmt += prepare_JSON[i].igstamt;
+                        billList.igstValue = Math.Round(totaligstAmt, 2);
+                        totalcessAmt += prepare_JSON[i].cessamt;
+                        billList.cessValue = Math.Round(totalcessAmt, 2);
+                        billList.TotNonAdvolVal = prepare_JSON[i].cess_non_advol;
+                        billList.OthValue = prepare_JSON[i].othramt;
+                        billList.totInvValue = prepare_JSON[i].invamt;
+                        billList.transMode = Convert.ToInt32(prepare_JSON[i].transMode);
+                        billList.transDistance = prepare_JSON[i].distance;
+                        billList.transporterName = prepare_JSON[i].trslnm == null ? "" : prepare_JSON[i].trslnm;
+                        billList.transporterId = prepare_JSON[i].trgst == null ? "" : prepare_JSON[i].trgst;
+                        billList.transDocNo = prepare_JSON[i].lrno == null ? "" : prepare_JSON[i].lrno;
+                        billList.transDocDate = prepare_JSON[i].lrdt;
+                        billList.vehicleNo = prepare_JSON[i].Vehicle_No;
+                        billList.vehicleType = prepare_JSON[i].Vehile_Type;
+                        billList.mainHsnCode = Convert.ToInt32(prepare_JSON[i].hsncode);
+                        itemList itemlst = new ViewModels.itemList();
+                        itemlst.itemNo = ++ITMCOUNT; //ITMCOUNT++;
+                        itemlst.productName = prepare_JSON[i].itnm;
+                        itemlst.productDesc = prepare_JSON[i].itdscp;
+                        itemlst.hsnCode = Convert.ToInt32(prepare_JSON[i].hsncode);
+                        itemlst.quantity = prepare_JSON[i].qnty;
+                        itemlst.qtyUnit = prepare_JSON[i].guomcd;
+                        itemlst.taxableAmount = prepare_JSON[i].amt;
+                        itemlst.sgstRate = prepare_JSON[i].sgstper;
+                        itemlst.cgstRate = prepare_JSON[i].cgstper;
+                        itemlst.igstRate = prepare_JSON[i].igstper;
+                        itemlst.cessRate = prepare_JSON[i].cessper;
+                        itemlst.cessNonAdvol = 0;
+                        if (i + 1 < prepare_JSON.Count && prepare_JSON[i].blno == no_bill[i + 1].blno)
+                        {
+                            itemList.Add(itemlst);
+                        }
+                        else
+                        {
+                            itemList.Add(itemlst);
+                            billList.itemList = itemList;
+                            billLists.Add(billList);
+                            ITMCOUNT = 0; totalTaxableAmt = 0; totalcgstAmt = 0; totalsgstAmt = 0; totaligstAmt = 0; totalcessAmt = 0;
+                            itemList = new List<itemList>();
+                        }
+                    }
+                }
+                EWB.billLists = billLists;
+                string json = JsonConvert.SerializeObject(EWB);
+                return json;
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return "";
+            }
+        }
+   
 
     }
 }

@@ -9,7 +9,7 @@ namespace Improvar.Models
     [Table("T_TXNDTL")]
     public partial class T_TXNDTL
     {
-       
+
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -85,73 +85,73 @@ namespace Improvar.Models
         [StringLength(2)]
         public string JOBCD { get; set; }
 
-         public double? NOS { get; set; }
+        public double? NOS { get; set; }
 
-         public double? QNTY { get; set; }
+        public double? QNTY { get; set; }
 
-         public double? BLQNTY { get; set; }
+        public double? BLQNTY { get; set; }
 
-         public double? RATE { get; set; }
+        public double? RATE { get; set; }
 
-         public double? AMT { get; set; }
+        public double? AMT { get; set; }
 
-         public double? FLAGMTR { get; set; }
+        public double? FLAGMTR { get; set; }
 
-         public double? TOTDISCAMT { get; set; }
+        public double? TOTDISCAMT { get; set; }
 
-         public double? TXBLVAL { get; set; }
+        public double? TXBLVAL { get; set; }
 
-         public double? IGSTAMT { get; set; }
+        public double? IGSTAMT { get; set; }
 
-         public double? IGSTPER { get; set; }
+        public double? IGSTPER { get; set; }
 
-         public double? CGSTAMT { get; set; }
+        public double? CGSTAMT { get; set; }
 
-         public double? CGSTPER { get; set; }
+        public double? CGSTPER { get; set; }
 
-         public double? SGSTAMT { get; set; }
+        public double? SGSTAMT { get; set; }
 
-         public double? SGSTPER { get; set; }
+        public double? SGSTPER { get; set; }
 
-         public double? CESSAMT { get; set; }
+        public double? CESSAMT { get; set; }
 
-         public double? CESSPER { get; set; }
+        public double? CESSPER { get; set; }
 
-         public double? DUTYAMT { get; set; }
+        public double? DUTYAMT { get; set; }
 
-         public double? DUTYPER { get; set; }
+        public double? DUTYPER { get; set; }
 
-         public double? NETAMT { get; set; }
+        public double? NETAMT { get; set; }
 
-         public double? OTHRAMT { get; set; }
+        public double? OTHRAMT { get; set; }
 
         [StringLength(16)]
         public string AGDOCNO { get; set; }
 
         public DateTime? AGDOCDT { get; set; }
 
-         public double? SHORTQNTY { get; set; }
+        public double? SHORTQNTY { get; set; }
 
-         public double? DISCRATE { get; set; }
+        public double? DISCRATE { get; set; }
 
         [StringLength(1)]
         public string DISCTYPE { get; set; }
 
-         public double? DISCAMT { get; set; }
+        public double? DISCAMT { get; set; }
 
-         public double? SCMDISCRATE { get; set; }
+        public double? SCMDISCRATE { get; set; }
 
         [StringLength(1)]
         public string SCMDISCTYPE { get; set; }
 
-         public double? SCMDISCAMT { get; set; }
+        public double? SCMDISCAMT { get; set; }
 
-         public double? TDDISCRATE { get; set; }
+        public double? TDDISCRATE { get; set; }
 
         [StringLength(1)]
         public string TDDISCTYPE { get; set; }
 
-         public double? TDDISCAMT { get; set; }
+        public double? TDDISCAMT { get; set; }
 
         [StringLength(4)]
         public string PRCCD { get; set; }
@@ -167,6 +167,14 @@ namespace Improvar.Models
         [StringLength(8)]
         public string CLASS1CD { get; set; }
 
-      
+        public int? PAGENO { get; set; }
+
+        public int? PAGESLNO { get; set; }
+
+        public double? LISTPRICE { get; set; }
+
+        public double? LISTDISCPER { get; set; }
+
+
     }
 }

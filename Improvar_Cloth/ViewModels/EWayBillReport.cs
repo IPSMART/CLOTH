@@ -12,8 +12,11 @@ namespace Improvar.ViewModels
         public string  OLD_NEW_FMT { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public bool Checkbox1 { get; set; }
+        public bool Checkbox2 { get; set; }
         public string TEXTBOX1 { get; set; }
+        public bool Checkbox3 { get; set; }
     }
+
     public class EWAYBILL {
 
         public short SLNO { get; set; }
@@ -33,6 +36,10 @@ namespace Improvar.ViewModels
         public string AUTONO { get; set; }
         public bool Checked { get; set; }
         public string DOCCD { get; set; }
+        public bool LORRYNOEXIST { get; set; }
+        public string message { get; set; }
+        public string EWBNO { get; set; }
+        public string IRNNO { get; set; }
 
     }
 }
