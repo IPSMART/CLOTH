@@ -433,7 +433,7 @@ function UpdateBarCodeRow() {
                 else {
                     $("#UploadBarnoImage_" + j).hide();
                 }
-                RateUpdate(j,'#B_');
+                RateUpdate(j, '#B_');
 
             }
             if (MENU_PARA == "SR" || MENU_PARA == "PR") {
@@ -558,7 +558,7 @@ function UpdateBarCodeRow_FrmDet(i) {
     var MENU_PARA = $("#MENU_PARA").val();
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
+    var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     var TXNSLNO = $("#D_SLNO_" + i).val();
     var ITGRPCD = $("#D_ITGRPCD_" + i).val();
     var MTRLJOBCD = $("#D_MTRLJOBCD_" + i).val();
@@ -578,11 +578,17 @@ function UpdateBarCodeRow_FrmDet(i) {
     }
     var ITREM = $("#D_ITREM_" + i).val();
     var GSTPER = (parseFloat($("#D_IGSTPER_" + i).val()) || 0) + (parseFloat($("#D_CGSTPER_" + i).val()) || 0) + (parseFloat($("#D_SGSTPER_" + i).val()) || 0);
+    var LISTPRICE = $("#D_LISTPRICE_" + i).val();
+    var LISTDISCPER = $("#D_LISTDISCPER_" + i).val();
     var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     for (j = 0; j <= GridRowMain - 1; j++) {
         if ($("#B_TXNSLNO_" + j).val() == TXNSLNO && $("#B_ITGRPCD_" + j).val() == ITGRPCD && $("#B_MTRLJOBCD_" + j).val() == MTRLJOBCD && $("#B_ITCD_" + j).val() == ITCD && $("#B_STKTYPE_" + j).val() == STKTYPE) {
+            if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
+                $("#B_LISTPRICE_" + j).val(LISTPRICE);
+                $("#B_LISTDISCPER_" + j).val(LISTDISCPER);
+            }
             $("#B_RATE_" + j).val(RATE);
-            RateUpdate(j,'#B_');
+            RateUpdate(j, '#B_');
             $("#B_DISCTYPE_" + j).val(DISCTYPE);
             $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE_DESC);
             $("#B_DISCRATE_" + j).val(DISCRATE);
@@ -599,10 +605,6 @@ function UpdateBarCodeRow_FrmDet(i) {
             if (MENU_PARA == "SR" || MENU_PARA == "PR") {
                 $("#B_AGDOCNO_" + j).val($("#D_AGDOCNO_" + i).val());
                 $("#B_AGDOCDT_" + j).val($("#D_AGDOCDT_" + i).val());
-            }
-            if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
-                $("#B_LISTPRICE_" + j).val(LISTPRICE);
-                $("#B_LISTDISCPER_" + j).val(LISTDISCPER);
             }
         }
     }
@@ -1505,6 +1507,39 @@ function AddBarCodeGrid() {
     }
     var TXNSLNO = "";
     if ($("#TXNSLNO").val() == "" || $("#TXNSLNO").val() == "0") {
+        var ITGRPCD = $("#ITGRPCD").val();
+        var ITGRPNM = $("#ITGRPNM").val();
+        var MTRLJOBCD = $("#MTRLJOBCD").val();
+        var MTRLJOBNM = $("#MTRLJOBNM").val();
+        var MTBARCODE = $("#MTBARCODE").val();
+        var ITCD = $("#ITCD").val();
+        var ITSTYLE = $("#ITSTYLE").val();
+        var STYLENO = $("#STYLENO").val();
+        var DISCTYPE = $("#DISCTYPE").val();
+        var DISCTYPE_DESC = $("#DISCTYPE_DESC").val();
+        var TDDISCTYPE = $("#TDDISCTYPE").val();
+        var TDDISCTYPE_DESC = $("#TDDISCTYPE_DESC").val();
+        var SCMDISCTYPE = $("#SCMDISCTYPE").val();
+        var SCMDISCTYPE_DESC = $("#SCMDISCTYPE_DESC").val();
+        var UOM = $("#UOM").val();
+        var STKTYPE = $("#STKTYPE").val();
+        var RATE = $("#RATE").val();
+        var DISCRATE = $("#DISCRATE").val();
+        var SCMDISCRATE = $("#SCMDISCRATE").val();
+        var TDDISCRATE = $("#TDDISCRATE").val();
+        var GSTPER = $("#GSTPER").val();
+        var ALL_GSTPER = $("#ALL_GSTPER").val();
+        var FLAGMTR = $("#FLAGMTR").val();
+        var HSNCODE = $("#HSNCODE").val();
+        var PRODGRPGSTPER = $("#PRODGRPGSTPER").val();
+        var BALENO = $("#BALENO").val();
+        var GLCD = $("#GLCD").val();
+        var ITREM = $("#ITREM").val();
+        var AGDOCNO = $("#AGDOCNO").val();
+        var AGDOCDT = $("#AGDOCDT").val();
+        var LISTPRICE = $("#LISTPRICE").val();
+        var LISTDISCPER = $("#LISTDISCPER").val();
+
         var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         if (GridRowMain == 0) {
             TXNSLNO = 1;
@@ -1512,7 +1547,18 @@ function AddBarCodeGrid() {
         else {
             var allslno = [parseInt(GridRowMain)];
             for (j = 0; j <= GridRowMain - 1; j++) {
-                allslno[j] = parseInt($("#B_TXNSLNO_" + j).val());
+
+                if (ITGRPCD == $("#B_ITGRPCD_"+j).val() &&
+                ITGRPNM == $("#B_ITGRPNM_" + j).val() && MTRLJOBCD == $("#B_MTRLJOBCD_" + j).val() && MTRLJOBNM == $("#B_MTRLJOBNM_"+j).val() &&
+                    MTBARCODE == $("#B_MTBARCODE_" + j).val() && ITCD == $("#B_ITCD_" + j).val() && ITSTYLE == $("#B_ITSTYLE_" + j).val() && STYLENO == $("#B_STYLENO_"+j).val() &&
+                    DISCTYPE == $("#B_DISCTYPE_" + j).val() && DISCTYPE_DESC == $("#B_DISCTYPE_DESC_" + j).val() && TDDISCTYPE == $("#B_TDDISCTYPE_"+j).val() &&
+                    TDDISCTYPE_DESC == $("#B_TDDISCTYPE_DESC_" + j).val() && SCMDISCTYPE == $("#B_SCMDISCTYPE_" + j).val() && SCMDISCTYPE_DESC == $("#B_SCMDISCTYPE_DESC_"+j).val() &&
+                    UOM == $("#B_UOM_" + j).val() && STKTYPE == $("#B_STKTYPE_" + j).val() && RATE == $("#B_RATE_" + j).val() && DISCRATE == $("#B_DISCRATE_"+j).val() &&
+                    SCMDISCRATE == $("#SCMDISCRATE").val() && TDDISCRATE == $("#TDDISCRATE").val() && GSTPER == $("#GSTPER").val() && ALL_GSTPER == $("#ALL_GSTPER").val() &&
+                    FLAGMTR == $("#B_FLAGMTR_" + j).val() && HSNCODE == $("#B_HSNCODE_" + j).val() && PRODGRPGSTPER == $("#B_PRODGRPGSTPER_" + j).val() && BALENO == $("#B_BALENO_"+j).val() &&
+                    GLCD == $("#B_GLCD_" + j).val() && ITREM == $("#B_ITREM_" + j).val() && AGDOCNO == $("#B_AGDOCNO_" + j).val() && AGDOCDT == $("#B_AGDOCDT_" + j).val() && LISTPRICE == $("#B_LISTPRICE_" + j).val() && LISTDISCPER == $("#B_LISTDISCPER_"+j).val()) {
+                    allslno[j] = parseInt($("#B_TXNSLNO_" + j).val());
+                }
             }
             TXNSLNO = Math.max.apply(Math, allslno);
             TXNSLNO++;
@@ -1794,7 +1840,7 @@ function AddBarCodeGrid() {
     }
     CalculateTotal_Barno();
     if (MENU_PARA == "PB") {
-        RateUpdate(rowindex,'#B_');
+        RateUpdate(rowindex, '#B_');
 
     }
 
@@ -1824,7 +1870,7 @@ function RateUpdate(index, strid) {
             var rate = retFloat(retFloat(LISTPRICE) - retFloat(per));
             $(strid + "RATE_" + index).val(parseFloat(rate));
         }
-        
+
     }
     else if ((MENU_PARA == "PB") && (($("#BARGENTYPE").val() == "E") || ($("#BARGENTYPE").val() == "C" && $("#B_BARGENTYPE_" + index).val() == "E")) && strid == "#B_") {
         var WPPER = retFloat($("#WPPER").val());
@@ -1853,7 +1899,7 @@ function RateUpdate(index, strid) {
 function BarGridRateUpdate() {
     var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     for (j = 0; j <= GridRowMain - 1; j++) {
-        RateUpdate(j,'#B_');
+        RateUpdate(j, '#B_');
     }
 }
 function fileTypeCheck(id) {
