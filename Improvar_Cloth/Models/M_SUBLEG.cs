@@ -220,6 +220,8 @@ namespace Improvar.Models
 
         [StringLength(50)]
         public string OTHADD3 { get; set; }
+        [StringLength(50)]
+        public string OTHADD4 { get; set; }
 
         [StringLength(7)]
         public string OTHADDPIN { get; set; }
