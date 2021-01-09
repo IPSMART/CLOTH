@@ -65,7 +65,7 @@
     $(function () {
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
-            $("#AGCMDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
 </script>
@@ -234,6 +234,7 @@
         $('.PopUp_Backround').fadeOut();
     }
 </script>
+<script></script>
 
 @using (Html.BeginForm())
 {
@@ -247,7 +248,7 @@
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
-        @Html.HiddenFor(a => a.T_STCHALT.AUTONO, new { id = "AUTONO" })
+        @Html.HiddenFor(a => a.T_BALE_HDR.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
         <div class="form-horizontal">
@@ -307,215 +308,46 @@
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div class="tab-content">
-                    <div id="Cust" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
+                    <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Cash Memo No.")
+                                    @Html.Label("", "Cash Memo")
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.CMNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CMNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile')", onblur = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=CMNO=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile');", @placeholder = "Code", maxlength = 6 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetCashMemoNo", PageControllerName)','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile')" />
-                                    @Html.HiddenFor(model => model.AUTONO, new { id = "CSMAUTONO" })
+                                    @Html.EditorFor(model => model.T_TXN.CONSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CONSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" id="SLCD_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Consignee Details','CONSLCD','CONSLCD=slcd=1/CONSLNM=slnm=0')" />
+                                    @*@Html.HiddenFor(model => model.CONSLNM, new { id = "CONSLNM" })*@
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.CONSLNM, new { htmlAttributes = new { @class = "form-control", id = "CONSLNM", maxlength = 45, @title = "Consignee Name", @placeholder = "Consignee Name", @TabIndex = -1, @readonly = "readonly" } })
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div id="Remarks" class="tab-pane fade">
                         <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Agst Memo No")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.AGCMNO, new { htmlAttributes = new { @class = "form-control", id = "AGCMNO", @placeholder = "Agst Memo No" } })
-                                </div>
-                            </div>
-                            </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Agst Memo Date")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.AGCMDT, new { htmlAttributes = new { @class = "form-control", id = "AGCMDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            <div>
+                                <div id="partialdivRemarks">
+                                    @Html.Partial("_TRANSACTIONREMARKS")
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Retail")
-                                    <b style="color:Red;">*</b>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNMEMO.RTDEBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "RTDEBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetRefRetailDetails", PageControllerName) + "','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0/RTMOBILE=MOBILE/ADDR=ADDR);", @placeholder = "Code", maxlength = 8 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetRefRetailDetails", PageControllerName)','Retail Details','RTDEBCD','RTDEBCD=RTDEBCD=1/RTDEBNM=RTDEBNM=0')" />
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDEBNM", maxlength = 15, @title = @Model.ADDR, @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.RTMOBILE, new { htmlAttributes = new { @class = "form-control", id = "RTMOBILE", maxlength = 10, @title = "Only for View", @placeholder = "Mobile No.", @readonly = "readonly" } })
-                                    @Html.HiddenFor(model => model.ADDR, new { @class = "form-control", id = "ADDR", maxlength = 15 })
-                                   
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
+                        <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                            <div>
+                                <div id="partialdivDocument" style="margin-top:0px;">
+                                    @Html.Partial("_UPLOADDOCUMENTS")
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Name")
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNMEMO.NM, new { htmlAttributes = new { @class = "form-control", id = "NM", maxlength = 15, @placeholder = "Name" } })
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXNMEMO.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Mobile No.", maxlength = 10 } })
-                                </div>
-                            </div>
-                            </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Trail Date")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.TRLDT, new { htmlAttributes = new { @class = "form-control", id = "TRLDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Trail Time")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.TRLTIME, new { htmlAttributes = new { @class = "form-control", id = "TRLTIME", @onkeypress = "return numericOnly(this,2);",maxlength = 5 } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Delivery Date")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.DELVDT, new { htmlAttributes = new { @class = "form-control", id = "DELVDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Delivery Time")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.DELVTIME, new { htmlAttributes = new { @class = "form-control", id = "DELVTIME", @onkeypress = "return numericOnly(this,2);", maxlength = 5 } })
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Other Ref")
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.OTHERREFNO, new { htmlAttributes = new { @class = "form-control", id = "OTHERREFNO", maxlength = 30, @placeholder = "Other Ref" } })
-                                </div>
-                            </div>
-                            </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Remarks")
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.REM, new { htmlAttributes = new { @class = "form-control", id = "REM", maxlength = 250, @placeholder = "Remarks" } })
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                    <div id="Mes" class="tab-pane fade">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Dress Style")
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.STCHNM, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control", id = "STCHNM" })
-                                    </div>
-                                </div>
-                                </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Quantiy")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.TRLTIME, new { htmlAttributes = new { @class = "form-control", id = "TRLTIME", @onkeypress = "return numericOnly(this,2);", maxlength = 3 } })
-                                </div>
-                            </div>
-                            </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Rate")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.TRLTIME, new { htmlAttributes = new { @class = "form-control", id = "TRLTIME", @onkeypress = "return numericOnly(this,2);", maxlength = 12 } })
-                                </div>
-                            </div>
-                        </div>
-
-                        </div>
-                            <div id="Remarks" class="tab-pane fade">
-                                <div class="row">
-                                    <div>
-                                        <div id="partialdivRemarks">
-                                            @Html.Partial("_TRANSACTIONREMARKS")
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="Documents" class="tab-pane fade" style="margin-top: 10px;">
-                                <div class="row" style="background-color:#c4b9b9;border:5px groove;width:fit-content;">
-                                    <div>
-                                        <div id="partialdivDocument" style="margin-top:0px;">
-                                            @Html.Partial("_UPLOADDOCUMENTS")
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>

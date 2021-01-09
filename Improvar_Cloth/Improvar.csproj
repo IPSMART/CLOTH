@@ -1189,10 +1189,19 @@
     <Content Include="Views\Shared\_M_SubLeg_SDdtl_Main.cshtml" />
     <Content Include="Views\Shared\_SearchPannel.cshtml" />
     <Content Include="Views\Shared\_tree_ExistingTag.cshtml" />
+    <Content Include="Views\M_Payment\M_Payment.cshtml" />
+    <Content Include="Views\Shared\_M_BarcodePrintFormat.cshtml" />
+    <Content Include="Views\Shared\_M_SubLeg_GrpHdr_Class1.cshtml" />
+    <Content Include="Views\Shared\_M_SubLeg_Grp_tree.cshtml" />
+    <Content Include="Views\Shared\_M_SubLeg_Grp_tree_ExistingTag.cshtml" />
+    <Content Include="Views\Shared\_Popup.cshtml" />
+    <Content Include="Views\Shared\_Popup1.cshtml" />
+    <Content Include="Views\Shared\_Popup2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="UploadDocuments\" />
+    <Folder Include="Views\Rep_OUTISSPROCESS\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
