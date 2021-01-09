@@ -1738,7 +1738,18 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "City")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.M_SUBLEG.OTHADD4, new { htmlAttributes = new { @class = "form-control", @id = "OTHADD4", @placeholder = "City", maxlength = 50 } })
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-md-3">

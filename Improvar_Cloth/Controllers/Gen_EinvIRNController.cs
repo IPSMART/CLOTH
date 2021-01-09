@@ -333,8 +333,10 @@ namespace Improvar.Controllers
                         sql += "select a.autono, a.slno, b.doccd, a.blno, a.bldt, a.pos,a.gstslnm posslnm,a.gstno posgstno,a.gstslpin pospin,a.gstsldist posdist ,a.gstsladd1 posadd1,a.gstsladd2 posadd2,";
                         sql += "a.SHIPDOCNO,a.SHIPDOCDT,a.PORTCD, a.basamt , a.discamt,a.GOOD_SERV,dncnsalpur, ";
                         sql += " translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,p.PROPNAME LegalNm, d.add1||' '||d.add2 add1, d.add3||' '||d.add4 add2, d.district, d.pin,d.statecd, upper(k.statenm) statenm, ";
+
                         sql += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno,p.PROPNAME bLegalNm, p.add1||' '||p.add2 badd1, ";
                         sql += "p.add3||' '||p.add4 badd2, p.district bdistrict, p.pin bpin, p.statecd bstatecd, upper(q.statenm) bstatenm, p.regemailid bregemailid,nvl(p.phno1std||p.phno1,p.regmobile) bregph, ";
+                        sql += " p.OTHADD1 bOTHADD1, p.othadd2 bothadd2, p.othadd4 bothadd4, p.OTHADDPIN bOTHADDPIN, p.OTHADDEMAIL bOTHADDEMAIL, ";
                         sql += "e.slnm trslnm, e.gstno trgst, replace(translate(c.lorryno,'/-',' '),' ','') lorryno, c.lrno, c.lrdt,a.rate, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
                         sql += "translate(a.itnm,'+[#/()]^',' ') itnm, ";
                         sql += "a.hsncode, l.guomcd, l.guomnm, ";
@@ -425,16 +427,29 @@ namespace Improvar.Controllers
                                 dispDtls.Stcd = rsComp.Rows[0]["statecd"].retStr();
                             }
 
-                            //consign   ==paRTY              
-                            shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
-                            shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();
-                            shipDtls.TrdNm = dt.Rows[i]["slnm"].retStr();
-                            shipDtls.Addr1 = dt.Rows[i]["add1"].retStr();
-                            shipDtls.Addr2 = dt.Rows[i]["add2"].retStr();
-                            shipDtls.Loc = dt.Rows[i]["district"].retStr();
-                            shipDtls.Pin = dt.Rows[i]["pin"].ToString().retDcml().retInt();
-                            shipDtls.Stcd = dt.Rows[i]["statecd"].retStr();
-
+                            //consign   ==paRTY   
+                            if (dt.Rows[i]["bgstno"].retStr() != dt.Rows[i]["gstno"].retStr())
+                            {
+                                shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
+                                shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();
+                                shipDtls.TrdNm = dt.Rows[i]["slnm"].retStr();
+                                shipDtls.Addr1 = dt.Rows[i]["add1"].retStr();
+                                shipDtls.Addr2 = dt.Rows[i]["add2"].retStr();
+                                shipDtls.Loc = dt.Rows[i]["district"].retStr();
+                                shipDtls.Pin = dt.Rows[i]["pin"].ToString().retDcml().retInt();
+                                shipDtls.Stcd = dt.Rows[i]["statecd"].retStr();
+                            }
+                            else if (dt.Rows[i]["BOTHADD1"].retStr() != "" && dt.Rows[i]["BOTHADDPIN"].retStr() != "")
+                            {//OTHER ADDRESS/ PARTY GODOWN ADDRESS
+                                shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
+                                shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();
+                                shipDtls.TrdNm = dt.Rows[i]["slnm"].retStr();
+                                shipDtls.Addr1 = dt.Rows[i]["bOTHADD1"].retStr();
+                                shipDtls.Addr2 = dt.Rows[i]["bOTHADD2"].retStr();
+                                shipDtls.Loc = dt.Rows[i]["bOTHADD4"].retStr();
+                                shipDtls.Pin = dt.Rows[i]["bOTHADDPIN"].ToString().retDcml().retInt();
+                                shipDtls.Stcd = dt.Rows[i]["bstatecd"].retStr();
+                            }
                             ItemList itemlst = new ItemList();
                             itemlst.SlNo = dt.Rows[i]["slno"].retStr();
                             itemlst.PrdDesc = dt.Rows[i]["itnm"].retStr();
@@ -553,6 +568,10 @@ namespace Improvar.Controllers
                             {
                                 VE.GenEinvIRNGrid[gridindex].MESSAGE = "Transid or Transdocno or Vehno  add into your bill for generate EWB"; continue;
                             }
+                            else if (buyerDtls.Gstin == shipDtls.Gstin)
+                            {
+                                VE.GenEinvIRNGrid[gridindex].MESSAGE = " EWB will not generate in Regular type because of buyerDtls.Gstin == shipDtls.Gstin "; continue;
+                            }
                             else
                             {
                                 adaequareIRN.EwbDtls = ewbDtls;
@@ -565,44 +584,47 @@ namespace Improvar.Controllers
                         {
                             AdqrRespGenIRN adqrRespGenIRN = adaequareGSP.AdqrGenIRN(jsonstr);
                             string msg = adqrRespGenIRN.message;
-                            if (adqrRespGenIRN != null && adqrRespGenIRN.result != null)
+                            if (adaequareGSP.AppType == "LIVE")
                             {
-                                sql = "insert into " + CommVar.FinSchema(UNQSNO) + ".T_TXNEINV(CLCD,AUTONO,ACKNO,ACKDT,IRNNO,SIGNQRCODE)"
-                                    + " values('" + CommVar.ClientCode(UNQSNO) + "','" + autono + "','" + adqrRespGenIRN.result.AckNo + "',to_date('" + adqrRespGenIRN.result.AckDt + "','yyyy-mm-dd hh24:mi:ss'),'"
-                                    + adqrRespGenIRN.result.Irn + "','" + adqrRespGenIRN.result.SignedQRCode.retStr() + "' )  ";
-                                masterHelp.SQLNonQuery(sql);
-                                SaveSignedInvoice(adqrRespGenIRN.result.SignedInvoice, autono);
-                                if (adqrRespGenIRN.result.SignedQRCode.retStr() != "")
+                                if (adqrRespGenIRN != null && adqrRespGenIRN.result != null)
                                 {
-                                    string Savepath = "C:/IPSMART/IRNQrcode/" + adqrRespGenIRN.result.Irn + ".png";
-                                    Cn.GenerateQRcode(adqrRespGenIRN.result.SignedQRCode, "", Savepath);
-                                }
-                                if (adqrRespGenIRN.result.EwbNo.retStr() != "")
-                                {
-                                    if (Module.MODCD == "S" || Module.MODCD == "I")
-                                    {
-                                        sql = "update " + CommVar.SaleSchema(UNQSNO) + ".t_txntrans set ewaybillno='" + adqrRespGenIRN.result.EwbNo.retStr() + "' where autono='" + autono + "' ";
-                                        masterHelp.SQLNonQuery(sql);
-                                    }
-                                    sql = "update " + CommVar.FinSchema(UNQSNO) + ".T_TXNEWB set EWAYBILLNO='" + adqrRespGenIRN.result.EwbNo.retStr()
-                                        + "',  EWAYBILLDT=to_date('" + adqrRespGenIRN.result.EwbDt.retStr() + "','yyyy-mm-dd hh24:mi:ss'),  EWAYBILLVALID=to_date('"
-                                        + adqrRespGenIRN.result.EwbValidTill.retStr() + "','yyyy-mm-dd hh24:mi:ss') where autono='" + autono + "' ";
+                                    sql = "insert into " + CommVar.FinSchema(UNQSNO) + ".T_TXNEINV(CLCD,AUTONO,ACKNO,ACKDT,IRNNO,SIGNQRCODE)"
+                                        + " values('" + CommVar.ClientCode(UNQSNO) + "','" + autono + "','" + adqrRespGenIRN.result.AckNo + "',to_date('" + adqrRespGenIRN.result.AckDt + "','yyyy-mm-dd hh24:mi:ss'),'"
+                                        + adqrRespGenIRN.result.Irn + "','" + adqrRespGenIRN.result.SignedQRCode.retStr() + "' )  ";
                                     masterHelp.SQLNonQuery(sql);
-                                    VE.GenEinvIRNGrid[gridindex].EWB = adqrRespGenIRN.result.EwbNo.ToString();
-                                }
-                                if (adqrRespGenIRN.info != null && adqrRespGenIRN.info.Count > 0 && adqrRespGenIRN.info[0].Desc != null)
-                                {
-                                    foreach (var inf in adqrRespGenIRN.info)
+                                    SaveSignedInvoice(adqrRespGenIRN.result.SignedInvoice, autono);
+                                    if (adqrRespGenIRN.result.SignedQRCode.retStr() != "")
                                     {
-                                        msg += " ; " + inf.InfCd + "=>";
-                                        foreach (var desc in inf.Desc)
+                                        string Savepath = "C:/IPSMART/IRNQrcode/" + adqrRespGenIRN.result.Irn + ".png";
+                                        Cn.GenerateQRcode(adqrRespGenIRN.result.SignedQRCode, "", Savepath);
+                                    }
+                                    if (adqrRespGenIRN.result.EwbNo.retStr() != "")
+                                    {
+                                        if (Module.MODCD == "S" || Module.MODCD == "I")
                                         {
-                                            msg += " " + desc.ErrorCode + ":" + desc.ErrorMessage;
+                                            sql = "update " + CommVar.SaleSchema(UNQSNO) + ".t_txntrans set ewaybillno='" + adqrRespGenIRN.result.EwbNo.retStr() + "' where autono='" + autono + "' ";
+                                            masterHelp.SQLNonQuery(sql);
+                                        }
+                                        sql = "update " + CommVar.FinSchema(UNQSNO) + ".T_TXNEWB set EWAYBILLNO='" + adqrRespGenIRN.result.EwbNo.retStr()
+                                            + "',  EWAYBILLDT=to_date('" + adqrRespGenIRN.result.EwbDt.retStr() + "','yyyy-mm-dd hh24:mi:ss'),  EWAYBILLVALID=to_date('"
+                                            + adqrRespGenIRN.result.EwbValidTill.retStr() + "','yyyy-mm-dd hh24:mi:ss') where autono='" + autono + "' ";
+                                        masterHelp.SQLNonQuery(sql);
+                                        VE.GenEinvIRNGrid[gridindex].EWB = adqrRespGenIRN.result.EwbNo.ToString();
+                                    }
+                                    if (adqrRespGenIRN.info != null && adqrRespGenIRN.info.Count > 0 && adqrRespGenIRN.info[0].Desc != null)
+                                    {
+                                        foreach (var inf in adqrRespGenIRN.info)
+                                        {
+                                            msg += " ; " + inf.InfCd + "=>";
+                                            foreach (var desc in inf.Desc)
+                                            {
+                                                msg += " " + desc.ErrorCode + ":" + desc.ErrorMessage;
+                                            }
                                         }
                                     }
+                                    VE.GenEinvIRNGrid[gridindex].IRNNO = adqrRespGenIRN.result.Irn.ToString();
+                                    VE.GenEinvIRNGrid[gridindex].Checked = false;
                                 }
-                                VE.GenEinvIRNGrid[gridindex].IRNNO = adqrRespGenIRN.result.Irn.ToString();
-                                VE.GenEinvIRNGrid[gridindex].Checked = false;
                             }
                             VE.GenEinvIRNGrid[gridindex].MESSAGE = msg;
                         }
