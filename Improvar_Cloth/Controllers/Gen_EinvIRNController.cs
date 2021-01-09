@@ -549,7 +549,7 @@ namespace Improvar.Controllers
                             {
                                 VE.GenEinvIRNGrid[gridindex].MESSAGE = "Distance need to Add in Sub Ledger"; continue;
                             }
-                            else if (ewbDtls.Transid != null || ewbDtls.Transdocno != null || ewbDtls.Vehno != null)
+                            else if (ewbDtls.Transid == null && ewbDtls.Transdocno == null && ewbDtls.Vehno == null)
                             {
                                 VE.GenEinvIRNGrid[gridindex].MESSAGE = "Transid or Transdocno or Vehno  add into your bill for generate EWB"; continue;
                             }
