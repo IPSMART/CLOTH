@@ -703,6 +703,7 @@
     <Compile Include="ViewModels\TaxGroupEntry.cs" />
     <Compile Include="ViewModels\TaxRateProductGroupSetupEntry.cs" />
     <Compile Include="ViewModels\TransactionAlterOrder.cs" />
+    <Compile Include="ViewModels\TransactionAltOrder.cs" />
     <Compile Include="ViewModels\TransactionBiltyGMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionBiltyRMutiaEntry.cs" />
     <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
