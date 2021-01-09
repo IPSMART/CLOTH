@@ -16,18 +16,28 @@ namespace Improvar.ViewModels
         public T_TXNMEMO T_TXNMEMO { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
+        public List<DropDown_list2> DropDown_list2 { get; set; }
+        
         public string CMNO { get; set; }
         public string AUTONO { get; set; }
         public string MOBILE { get; set; }
         public string RTDEBNM { get; set; }
         public string ADDR { get; set; }
         public string RTMOBILE { get; set; }
-        public string STCHNM { get; set; }
+        public string STCHCD { get; set; }
         public string FLDDESC { get; set; }
         public short? FLDLEN { get; set; }
         public string FLDDATACOMBO { get; set; }
         public bool INC_RATE { get; set; }
+        public string FLDTYPE { get; set; }
+        
 
 
     }
+    //public class TransactionAltOrdertttttt
+    //{
+
+
+    //}
+
 }

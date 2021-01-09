@@ -276,7 +276,7 @@ namespace Improvar.Controllers
                     prejson.itdscp = tbl.Rows[i]["itnm"].ToString();//x
                     prejson.hsncode = tbl.Rows[i]["hsncode"].ToString();//y
                     prejson.guomcd = tbl.Rows[i]["guomcd"].ToString();//z
-                    prejson.qnty = double.Parse(tbl.Rows[i]["qnty"].ToString());//aa
+                    prejson.qnty =tbl.Rows[i]["qnty"].retDbl();//aa
                     prejson.amt = double.Parse(tbl.Rows[i]["amt"].ToString());//ab
                     prejson.TtlTax = TtlTax;//ac
                     prejson.sgstper = double.Parse(tbl.Rows[i]["sgstper"].ToString());//json
