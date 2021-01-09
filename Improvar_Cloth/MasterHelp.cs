@@ -2296,7 +2296,7 @@ namespace Improvar
         public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "")
         {
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
-            if (menupara == "PB")
+            if (menupara == "PB" || menupara == "OP")
             {
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara);
             }
@@ -2778,12 +2778,12 @@ namespace Improvar
         public string CashMemoNumber_help(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.CurSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO); ;
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO); ;
             string sql = "";
             string valsrch = val.ToUpper().Trim();
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt,d.nm,d.mobile ";
-            sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b," + scm + ".T_TXNMEMO d," + scmf + ".M_RETDEB e ";
-            sql += "where a.autono=b.autono and a.autono=d.autono(+) and d.RTDEBCD=e.RTDEBCD(+) ";
+            sql = "select b.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt,d.nm,d.mobile ";
+            sql += "from "+ scm + ".t_cntrl_hdr b," + scm + ".T_TXNMEMO d ";
+            sql += "where b.autono=d.autono(+) and ";
             sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
             if (valsrch.retStr() != "") sql += "and ( upper(b.docno) = '" + valsrch + "' ) ";
             sql += "order by docdt, docno ";

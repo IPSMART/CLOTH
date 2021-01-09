@@ -27,6 +27,8 @@
             ViewBag.Title = "Purchase Bill"; break;
         case "PR":
             ViewBag.Title = "Purchase Return (PRM)"; break;
+        case "OP":
+            ViewBag.Title = "Opening Stock"; break;
         default: ViewBag.Title = ""; break;
     }
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -59,7 +61,7 @@
             }
             Checked_Disable();
             changeBARGENTYPE();
-            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB") {
+            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "OP") {
                 $('#barfirstrow input').attr('readonly', 'readonly');
                 $('#barfirstrow input').removeAttr("onblur");
                 $('#barfirstrow').find(".Help_image_button").hide();
@@ -70,7 +72,7 @@
             if ('@Model.MENU_PARA' != "SB") {
                 GetAllMtrljobcd();
             }
-            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB") {
+            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "OP") {
                 $('#barfirstrow input').attr('readonly', 'readonly');
                 $('#barfirstrow input').removeAttr("onblur");
                 $('#barfirstrow').find(".Help_image_button").hide();
@@ -98,7 +100,7 @@
             $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             return false;
         }
-        if ("@Model.MENU_PARA" == "PB") {
+        if ("@Model.MENU_PARA" == "PB" || "@Model.MENU_PARA" == "OP") {
             if (!emptyFieldCheck("Please Enter Purchase bill no", "PREFNO")) {
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:first-child").addClass('active');
@@ -361,7 +363,7 @@
                         </div>
 
                     </div>
-                    @if (Model.MENU_PARA == "PB" && Model.DefaultAction == "V")
+                    @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.DefaultAction == "V")
                     {
                         <div class="col-md-1">
                             <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Print_Barcode" value="Print Barcode" title="Click to Print Barcode" onclick="Barcodeprinting()" />
@@ -416,7 +418,7 @@
                             @Html.EditorFor(model => model.T_TXN.DUEDAYS, new { htmlAttributes = new { @class = "form-control", id = "DUEDAYS", maxlength = 3, @placeholder = "Due Days" } })
                         </div>
                     </div>
-                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB") && (Model.DefaultAction == "A" || Model.DefaultAction == "E"))
+                    @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && (Model.DefaultAction == "A" || Model.DefaultAction == "E"))
                     {
                         <div class="col-md-1">
                             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Pending_Order" value="Get Pending Order" title="Click to Get Pending Order" onclick="GetPendOrder()" />
@@ -622,8 +624,8 @@
                                     </datalist>
                                 </div>
                             </div>
-                            @if (Model.MENU_PARA == "PB")
-                    {
+                            @if (Model.MENU_PARA == "PB"|| Model.MENU_PARA == "OP")
+                            {
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Wholesale %")
@@ -733,7 +735,7 @@
                                     @Html.HiddenFor(model => model.TDSCALCON, new { id = "TDSCALCON" })
                                     @Html.HiddenFor(model => model.AMT, new { id = "AMT" })
                                     @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
-                                    @if (Model.MENU_PARA == "PB")
+                                    @if (Model.MENU_PARA == "PB"|| Model.MENU_PARA == "OP")
                                     {
                                         @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                     }
@@ -745,7 +747,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="editor-field">
-                                    @if (Model.MENU_PARA == "PB")
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                     {
                                         @Html.EditorFor(model => model.T_TXN.TCSAMT, new { htmlAttributes = new { @class = "form-control", id = "TCSAMT", maxlength = 15, @placeholder = "TCS Amount", onchange = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                     }
@@ -814,7 +816,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            @if (Model.MENU_PARA == "PB")
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                             {
                                 <div class="col-md-5">
                                     <div class="editor-field" style="margin-top: 6px;">
@@ -895,7 +897,7 @@
                                     <div class="col-md-6" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;">
 
                                     </div>*@
-                                @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB"))
+                                @if (Model.DefaultAction != "V" && (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP"))
                                 { <div class="col-md-1" style="width:auto;">
                                     <div class="editor-field" style="margin-top: 6px;">
                                         @Html.Label("", "Order Item Filter")
@@ -1018,7 +1020,7 @@
                                                 </div>
                                             }
                                             <div class="col-md-4">
-                                                @if (Model.MENU_PARA == "PB")
+                                                @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                                 {
                                                     <div class="editor-field">
                                                         @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
@@ -1121,15 +1123,15 @@
                                                     </div>
                                                 </div>
                                             }
-                                            @if (Model.MENU_PARA == "PB")
-                        {
+                                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                                            {
                                                 <div class="col-md-4">
                                                     <div class="editor-field">
                                                         @Html.EditorFor(model => model.OURDESIGN, new { htmlAttributes = new { @class = "form-control", id = "OURDESIGN", @placeholder = "OurDesign", maxlength = 30, @title = "OurDesign" } })
                                                     </div>
                                                 </div>
                                             }
-                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB")
+                                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                             {
                                                 <div class="col-md-6">
                                                     <div class="editor-field">
@@ -1177,7 +1179,7 @@
 
 
                                 <div class="row">
-                                    @if (Model.MENU_PARA == "PB")
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                     {
                                         <div class="col-md-8">
                                             <div class="editor-field">
@@ -1225,7 +1227,7 @@
                                     @*iamge*@
                                     <input type="hidden" id="ImageName" value="" />
                                     <input type="hidden" id="ImageStr" value="" />
-                                    @if (Model.MENU_PARA == "PB")
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                     {
                                         <div id="divImageUpload" style="display:none;">
                                             <div class="col-md-1">

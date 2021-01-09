@@ -12,6 +12,7 @@ namespace Improvar.ViewModels
         public T_STCHALT T_STCHALT { get; set; }
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_STCHALT_DTL T_STCHALT_DTL { get; set; }
+       public T_STCHALT_DTL_COMP T_STCHALT_DTL_COMP { get; set; }
         public T_TXNMEMO T_TXNMEMO { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
@@ -22,7 +23,10 @@ namespace Improvar.ViewModels
         public string ADDR { get; set; }
         public string RTMOBILE { get; set; }
         public string STCHNM { get; set; }
-        
+        public string FLDDESC { get; set; }
+        public short? FLDLEN { get; set; }
+        public string FLDDATACOMBO { get; set; }
+        public bool INC_RATE { get; set; }
 
 
     }
