@@ -1572,7 +1572,7 @@ namespace Improvar
             string sql = "", COM = CommVar.Compcd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string trcd = "'SB','SD'";
             string salpur = "S";
-            if (menupara == "PB" || menupara == "PD") { trcd = "'PB','PD'"; salpur = "P"; }
+            if (menupara == "PB" || menupara == "PD" || menupara == "OP") { trcd = "'PB','PD'"; salpur = "P"; }
 
             sql = "select sum(nvl(amt,0)) amt from (";
 
