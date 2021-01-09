@@ -80,7 +80,7 @@
                                 <th class="" style="width:50px;text-align:right;">CESS Amt</th>
                                 <th class="" style="width:50px;text-align:right;">Net Amount</th>
                                 <th class="" style="width:60px;">Hsn Code</th>
-                                @if (Model.MENU_PARA == "PB")
+                                @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                 {
                                     <th class="" style="width:103px;">Bale No.</th>
                                 }
@@ -235,7 +235,7 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
-                                        @if (Model.MENU_PARA == "PB")
+                                        @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                         {
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 12, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
@@ -324,7 +324,7 @@
                                     @Html.EditorFor(model => Model.T_NET_AMT, new { htmlattributes = new { id = "T_NET_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @if (Model.MENU_PARA == "PB")
+                                @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }

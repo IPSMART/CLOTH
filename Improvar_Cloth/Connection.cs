@@ -3145,7 +3145,11 @@ namespace Improvar
                         InnerException = ex.InnerException.Message;
                     }
                 }
-                string filepath = @"C:/IPSMART/" + "ERROR LOG " + DateTime.Today.ToString("yyyy-MM-dd") + ".txt";   //Text File Name
+                string filepath = @"C:/IPSMART/ErrorLog/" + "ERROR LOG " + DateTime.Today.ToString("yyyy-MM-dd") + ".txt";   //Text File Name
+                if (!Directory.Exists(Path.GetDirectoryName(filepath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+                }
                 if (!File.Exists(filepath))
                 {
                     File.Create(filepath).Dispose();

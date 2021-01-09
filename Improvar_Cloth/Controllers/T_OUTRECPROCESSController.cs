@@ -3173,6 +3173,7 @@ namespace Improvar.Controllers
                 goto dbok;
             dbnotsave:;
                 OraTrans.Rollback();
+                OraCon.Dispose();
                 return Content(dberrmsg);
             dbok:;
             }
