@@ -21,6 +21,7 @@ namespace Improvar.ViewModels
         public T_TXNSTATUS T_TXNSTATUS { get; set; }
         public T_TXNTRANS T_TXNTRANS { get; set; }
         public T_VCH_GST T_VCH_GST { get; set; }
+        public T_TXNEINV T_TXNEINV { get; set; }
         public T_STKTRNF T_STKTRNF { get; set; }
         public M_SYSCNFG M_SYSCNFG { get; set; }
         public List<TTXNAMT> TTXNAMT { get; set; }

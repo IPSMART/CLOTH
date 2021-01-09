@@ -751,6 +751,8 @@ namespace Improvar.Controllers
                     }
                     else
                     {
+                        OraTrans.Rollback();
+                        OraCon.Dispose();
                         return Content("");
                     }
                     goto dbok;
