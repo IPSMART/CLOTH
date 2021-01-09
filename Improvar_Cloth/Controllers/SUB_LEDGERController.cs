@@ -1523,6 +1523,7 @@ namespace Improvar.Controllers
                             MSUBLEG.OTHADD1 = VE.M_SUBLEG.OTHADD1;
                             MSUBLEG.OTHADD2 = VE.M_SUBLEG.OTHADD2;
                             MSUBLEG.OTHADD3 = VE.M_SUBLEG.OTHADD3;
+                            MSUBLEG.OTHADD4 = VE.M_SUBLEG.OTHADD4;
                             MSUBLEG.OTHADDEMAIL = VE.M_SUBLEG.OTHADDEMAIL;
                             MSUBLEG.OTHADDPIN = VE.M_SUBLEG.OTHADDPIN;
                             MSUBLEG.OTHADDREM = VE.M_SUBLEG.OTHADDREM;

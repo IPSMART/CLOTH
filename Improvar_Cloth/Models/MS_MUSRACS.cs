@@ -36,7 +36,7 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 5)]
-        [StringLength(9)]
+        [StringLength(15)]
         public string MODULE_CODE { get; set; }
     }
 }

@@ -18,8 +18,8 @@ namespace Improvar.Controllers
         // GET: T_AltOrder
         Connection Cn = new Connection(); MasterHelp Master_Help = new MasterHelp(); MasterHelpFa MasterHelpFa = new MasterHelpFa(); SchemeCal Scheme_Cal = new SchemeCal(); Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
-        T_STCHALT TBH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR;
-        SMS SMS = new SMS();
+        T_STCHALT TBH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_STCHALT_DTL TSCHDTL; T_STCHALT_DTL_COMP TSCHDTLCMP;
+          SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         public ActionResult T_AltOrder(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "", string ThirdParty = "no")
         {
@@ -34,7 +34,14 @@ namespace Improvar.Controllers
                     ViewBag.formname = "Stiching/Alteration";
                     TransactionAltOrder VE = (parkID == "") ? new TransactionAltOrder() : (Improvar.ViewModels.TransactionAltOrder)Session[parkID];
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
-
+                    switch (VE.MENU_PARA)
+                    {
+                        case "ST":
+                            ViewBag.formname = "Stiching"; break;
+                        case "AT":
+                            ViewBag.formname = "Alteration"; break;
+                        default: ViewBag.formname = ""; break;
+                    }
                     string LOC = CommVar.Loccd(UNQSNO);
                     string COM = CommVar.Compcd(UNQSNO);
                     string YR1 = CommVar.YearCode(UNQSNO);
@@ -126,6 +133,8 @@ namespace Improvar.Controllers
                             }
                             VE.T_STCHALT = TBH;
                             VE.T_CNTRL_HDR = TCH;
+                            VE.T_STCHALT_DTL = TSCHDTL;
+                            VE.T_STCHALT_DTL_COMP = TSCHDTLCMP;
                             VE.T_CNTRL_HDR_REM = SLR;
                             if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
                         }
@@ -136,6 +145,26 @@ namespace Improvar.Controllers
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                                 TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 VE.T_CNTRL_HDR = TCH;
+                               T_TXNMEMO TXNMEMO = new T_TXNMEMO();
+                                string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                                string sql = "";
+                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,b.city,b.add1,b.add2,b.add3,effdt ";
+                                sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b ";
+                                sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG)";
+
+                                DataTable syscnfgdt = Master_Help.SQLquery(sql);
+                                if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                                {
+                                    TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
+                                    VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                    var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                                    VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
+                                    VE.RTMOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                    VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
+                                   
+                                }
+                                VE.T_TXNMEMO = TXNMEMO;
+
                                 List<UploadDOC> UploadDOC1 = new List<UploadDOC>();
                                 UploadDOC UPL = new UploadDOC();
                                 UPL.DocumentType = Cn.DOC_TYPE();
@@ -277,7 +306,7 @@ namespace Improvar.Controllers
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string str = "";
-                var query = (from c in DB.M_STCHGRP join d in DB.M_STCHGRP_COMP on c.STCHCD equals d.STCHCD where (c.STCHCD == val) select new { d.FLDCD,d.FLDDATACOMBO,d.FLDDESC,d.FLDNM }).ToList();
+                var query = (from c in DB.M_STCHGRP join d in DB.M_STCHGRP_COMP on c.STCHCD equals d.STCHCD where (c.STCHCD == val) select new { d.FLDCD,d.FLDDATACOMBO,d.FLDDESC,d.FLDNM ,d.FLDLEN,d.FLDTYPE}).ToList();
                
                 if (query != null)
                 {
@@ -325,12 +354,12 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    var MSG = str.IndexOf(Cn.GCS());
-                    if (MSG >= 0)
-                    {
-                        DataTable Taxgrpcd = salesfunc.GetSlcdDetails(Code, "");
-                        str += "^TAXGRPCD=^" + Taxgrpcd.Rows[0]["taxgrpcd"] + Cn.GCS();
-                    }
+                    //var MSG = str.IndexOf(Cn.GCS());
+                    //if (MSG >= 0)
+                    //{
+                    //    DataTable Taxgrpcd = salesfunc.GetSlcdDetails(Code, "");
+                    //    str += "^TAXGRPCD=^" + Taxgrpcd.Rows[0]["taxgrpcd"] + Cn.GCS();
+                    //}
 
                     return Content(str);
                 }
