@@ -15,7 +15,7 @@ namespace Improvar.Controllers
     public class T_SALE_POSController : Controller
     {
         // GET: T_SALE_POS_POS
-        Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp(); Cloth cloth = new Cloth();
+        Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
         Salesfunc salesfunc = new Salesfunc(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
         SMS SMS = new SMS();
