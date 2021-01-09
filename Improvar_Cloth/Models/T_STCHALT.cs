@@ -24,7 +24,7 @@ namespace Improvar.Models
         [Key]
         [StringLength(30)]
         public string AUTONO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? TRLDT { get; set; }
 
         [StringLength(5)]
@@ -40,7 +40,7 @@ namespace Improvar.Models
 
         [StringLength(16)]
         public string AGCMNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? AGCMDT { get; set; }
 
         [StringLength(1)]
