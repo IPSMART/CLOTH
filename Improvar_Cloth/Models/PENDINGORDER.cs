@@ -50,5 +50,8 @@ namespace Improvar.Models
         public string RPPRICEGEN { get; set; }
         public string BarImages { get; set; }
         public string BarImagesCount { get; set; }
+        public string MTRLJOBCD { get; set; }
+        public string MTRLJOBNM { get; set; }
+        public string MTBARCODE { get; set; }
     }
 }

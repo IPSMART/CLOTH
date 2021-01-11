@@ -248,10 +248,10 @@ namespace Improvar.Controllers
                         }
                         if (parkID == "" && loadOrder == "N")
                         {
-                            var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
-                            VE.M_SYSCNFG = MSYSCNFG;
                             FreightCharges(VE, VE.T_TXN.AUTONO);
                         }
+                        var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                        VE.M_SYSCNFG = MSYSCNFG;
                     }
                     else
                     {
@@ -1640,6 +1640,7 @@ namespace Improvar.Controllers
         }
         public ActionResult GetPendOrder(TransactionSaleEntry VE, string SLCD, string SUBMITBTN, string ITCD, string MTRLJOBCD)
         {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             Cn.getQueryString(VE);
             DataTable dt = new DataTable();
             if (SUBMITBTN == "SHOWBTN")
@@ -1714,16 +1715,19 @@ namespace Improvar.Controllers
                     }
                     else if (VE.MENU_PARA == "ALL")
                     {
-                        PRODGRPDATA = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false);
+                        PRODGRPDATA = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr().retSqlformat(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(), "", "", true, false);
                     }
                     else
                     {
-                        PRODGRPDATA = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr());
+                        PRODGRPDATA = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retStr().retSqlformat(), "", ITCDLIST, MTRLJOBCD.retStr(), "", "", "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr());
                     }
 
                 }
                 if (VE.PENDINGORDER != null)
                 {
+                    string mtrljobcd = "FS";
+                    string mtrljobnm = DB.M_MTRLJOBMST.Find("FS").MTRLJOBNM;
+                    string mtbarcode = DB.M_MTRLJOBMST.Find("FS").MTBARCODE;
                     int slno = 1;
                     DataTable syscnfgdata = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retStr().Remove(10));
                     for (int p = 0; p <= VE.PENDINGORDER.Count - 1; p++)
@@ -1774,7 +1778,9 @@ namespace Improvar.Controllers
                             VE.PENDINGORDER[p].GLCD = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>(glcd)).FirstOrDefault();
 
                         }
-
+                        VE.PENDINGORDER[p].MTRLJOBCD = mtrljobcd;
+                        VE.PENDINGORDER[p].MTRLJOBNM = mtrljobnm;
+                        VE.PENDINGORDER[p].MTBARCODE = mtbarcode;
                         slno++;
                     }
                 }
@@ -1787,6 +1793,7 @@ namespace Improvar.Controllers
         }
         public ActionResult SelectPendOrder(TransactionSaleEntry VE, string SUBMITBTN)
         {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             Cn.getQueryString(VE);
             if (SUBMITBTN == "SHOWBTN")
             {
@@ -1847,7 +1854,9 @@ namespace Improvar.Controllers
                     slno = Convert.ToInt32(VE.TBATCHDTL.Max(a => Convert.ToInt32(a.SLNO)));
                     txnslno = Convert.ToInt32(VE.TBATCHDTL.Max(a => Convert.ToInt32(a.TXNSLNO)));
                 }
-
+                string MTRLJOBCD = "FS";
+                string MTRLJOBNM = DB.M_MTRLJOBMST.Find("FS").MTRLJOBNM;
+                string MTBARCODE = DB.M_MTRLJOBMST.Find("FS").MTBARCODE;
                 for (int i = 0; i <= VE.TBATCHDTL.Count() - 1; i++)
                 {
                     if (VE.TBATCHDTL[i].SLNO.retDbl() == 0)
@@ -1881,7 +1890,7 @@ namespace Improvar.Controllers
                         {
                             txnslno++;
                             VE.TBATCHDTL[i].TXNSLNO = txnslno.retShort();
-                          
+
                         }
                     }
                     if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") && (VE.TBATCHDTL[i].BARGENTYPE == "E" || VE.T_TXN.BARGENTYPE == "E"))
@@ -1889,6 +1898,9 @@ namespace Improvar.Controllers
                         VE.TBATCHDTL[i].BarImages = "";
                         VE.TBATCHDTL[i].BarImagesCount = "";
                     }
+                    VE.TBATCHDTL[i].MTRLJOBCD = MTRLJOBCD;
+                    VE.TBATCHDTL[i].MTRLJOBNM = MTRLJOBNM;
+                    VE.TBATCHDTL[i].MTBARCODE = MTBARCODE;
                 }
                 VE.DefaultView = true;
                 return PartialView("_T_SALE_BarTab", VE);
@@ -1930,6 +1942,9 @@ namespace Improvar.Controllers
                               RPPRICEGEN = a.RPPRICEGEN.retStr(),
                               BarImages = a.BarImages.retStr(),
                               BarImagesCount = a.BarImagesCount.retStr(),
+                              MTRLJOBCD = a.MTRLJOBCD.retStr(),
+                              MTRLJOBNM = a.MTRLJOBNM.retStr(),
+                              MTBARCODE = a.MTBARCODE.retStr(),
                           }).ToList();
                 TempData["PENDORDER" + VE.MENU_PARA] = dt;
                 return Content("0");
