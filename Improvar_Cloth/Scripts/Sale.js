@@ -276,6 +276,7 @@ function changeBARGENTYPE() {
 }
 
 function UpdateBarCodeRow() {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
@@ -350,7 +351,7 @@ function UpdateBarCodeRow() {
                                      $("#SCMDISCTYPE").val() == $("#B_SCMDISCTYPE_" + j).val() && $("#UOM").val() == $("#B_UOM_" + j).val() && $("#STKTYPE").val() == $("#B_STKTYPE_" + j).val() && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
                                     retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#SCMDISCRATE").val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#TDDISCRATE").val()) && retFloat($("#GSTPER").val()) == retFloat($("#GSTPER").val()) &&
                                     retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && $("#HSNCODE").val() == $("#B_HSNCODE_" + j).val() && $("#PRODGRPGSTPER").val() == $("#B_PRODGRPGSTPER_" + j).val() &&
-                                    $("#GLCD").val() == $("#B_GLCD_" + j).val()) {
+                                    $("#GLCD").val() == $("#B_GLCD_" + j).val() && $("#SLNO").val() != $("#B_SLNO_" + j).val()) {
 
                         matchslno[countmatchslno] = parseInt($("#B_TXNSLNO_" + j).val());
                         countmatchslno++;
@@ -540,11 +541,15 @@ function Fill_DetailData() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-    var mtrlcdblank = false;
+    var mtrlcdblank = false; var slnoblank = false;
     if (GridRow != 0) {
         for (var i = 0; i <= GridRow - 1; i++) {
             if ($("#B_MTRLJOBCD_" + i).val() == "") {
                 mtrlcdblank = true;
+                break;
+            }
+            if ($("#B_TXNSLNO_" + i).val() == "") {
+                slnoblank = true;
                 break;
             }
         }
@@ -557,6 +562,16 @@ function Fill_DetailData() {
         $(".tab-content div").removeClass("active");
         $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
         message_value = "B_MTRLJOBCD_" + i;
+        return false;
+    }
+    if (slnoblank == true) {
+        msgInfo("Please Fill Bill Sl # in Barcode Grid !!");
+        $("li").removeClass("active").addClass("");
+        $(".nav-tabs li:nth-child(2)").addClass('active');
+        //below set the  child sequence
+        $(".tab-content div").removeClass("active");
+        $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        message_value = "B_TXNSLNO_" + i;
         return false;
     }
     $.ajax({
@@ -2603,6 +2618,9 @@ function FillOrderToBarcode() {
             $("#WPPRICEGEN").val($("#Ord_WPPRICEGEN_" + i).val());
             $("#RPPRICEGEN").val($("#Ord_RPPRICEGEN_" + i).val());
             $("#BarImages").val($("#Ord_BarImages_" + i).val());
+            $("#MTRLJOBCD").val($("#Ord_MTRLJOBCD_" + i).val());
+            $("#MTRLJOBNM").val($("#Ord_MTRLJOBNM_" + i).val());
+            $("#MTBARCODE").val($("#Ord_MTBARCODE_" + i).val());
 
             var BALQTY = retFloat($("#Ord_BALQTY_" + i).val());
             var CURRENTADJQTY = retFloat($("#Ord_CURRENTADJQTY_" + i).val());
@@ -2623,8 +2641,12 @@ function CopyMtrljobcd() {
     var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     if (GridRow != 0) {
         var prev_mtrljobcd = $("#B_MTRLJOBCD_0").val();
+        var prev_mtrljobnm = $("#B_MTRLJOBNM_0").val();
+        var prev_mtrljobbarcd = $("#B_MTBARCODE_0").val();
         for (var i = 0; i <= GridRow - 1; i++) {
             $("#B_MTRLJOBCD_" + i).val(prev_mtrljobcd);
+            $("#B_MTRLJOBNM_" + i).val(prev_mtrljobnm);
+            $("#B_MTBARCODE_" + i).val(prev_mtrljobbarcd);
         }
     }
 }

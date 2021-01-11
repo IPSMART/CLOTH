@@ -290,8 +290,10 @@
     <Compile Include="Controllers\Rep_EnvelopeController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
+    <Compile Include="Controllers\Rep_PartyStmtController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
     <Compile Include="Controllers\Rep_Stk_LegController.cs" />
+    <Compile Include="Controllers\Rep_Stk_StmtController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
@@ -1198,11 +1200,12 @@
     <Content Include="Views\Shared\_Popup.cshtml" />
     <Content Include="Views\Shared\_Popup1.cshtml" />
     <Content Include="Views\Shared\_Popup2.cshtml" />
+    <Content Include="Views\Rep_PartyStmt\Rep_PartyStmt.cshtml" />
+    <Content Include="Views\Rep_Stk_Stmt\Rep_Stk_Stmt.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="UploadDocuments\" />
-    <Folder Include="Views\Rep_OUTISSPROCESS\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
