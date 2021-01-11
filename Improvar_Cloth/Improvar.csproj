@@ -530,6 +530,7 @@
     <Compile Include="Models\TSORDDTL_CANC.cs" />
     <Compile Include="Models\TSORDDTL_CANC_SIZE.cs" />
     <Compile Include="Models\TSORDDTL_SIZE.cs" />
+    <Compile Include="Models\TSTCHALT_DTLCOMP.cs" />
     <Compile Include="Models\TTXNAMT.cs" />
     <Compile Include="Models\TTXNDTL.cs" />
     <Compile Include="Models\TTXNDTLPOPUP.cs" />
