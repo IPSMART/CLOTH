@@ -255,38 +255,8 @@
                 val: value
             },
             success: function (result) {
-                debugger;
+                $("#tbl_STCHALTDTLCOMP").html(result);
                 $("#WaitingMode").hide();
-                //var obj = JSON.parse(result);
-                if (result.message == "ok") {
-                    document.getElementById("BuyerGstin").value = result.BuyerGstin;
-                    document.getElementById("DocDt").value = result.DocDt;
-                    document.getElementById("DocNo").value = result.DocNo;
-                    document.getElementById("DocTyp").value = result.DocTyp;
-                    document.getElementById("Irn").value = result.Irn;
-                    document.getElementById("IrnDt").value = result.IrnDt;
-                    document.getElementById("ItemCnt").value = result.ItemCnt;
-                    document.getElementById("MainHsnCode").value = result.MainHsnCode;
-                    document.getElementById("SellerGstin").value = result.SellerGstin;
-                    document.getElementById("TotInvVal").value = result.TotInvVal;
-                } else {
-                    msgInfo(result.message);
-                }
-
-
-                debugger
-                if (result == "0") {
-                } else {//
-
-                    document.getElementById("FLDCD").value = returncolvalue(result, "FLDCD");
-                    var chkfldnm = returncolvalue(result, "FLDNM");
-                    if (chkfldnm == "")
-                    { document.getElementById("FLDDESC").value = returncolvalue(result, "FLDDESC"); }
-                    else { document.getElementById("FLDDESC").value = returncolvalue(result, "FLDNM"); }
-                    document.getElementById("FLDDATACOMBO").value = returncolvalue(result, "FLDDATACOMBO");
-                    document.getElementById("FLDLEN").value = returncolvalue(result, "FLDLEN");
-                    document.getElementById("FLDTYPE").value = returncolvalue(result, "FLDTYPE");
-                }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -373,12 +343,12 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Cash Memo No.")
+                                    @Html.Label("", "Agst Memo No.")
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.CMNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CMNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile')", onblur = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile');", @placeholder = "Code", maxlength = 6 } })
+                                    @Html.EditorFor(model => model.T_STCHALT.AGCMNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CMNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile')", onblur = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile');", @placeholder = "Number", maxlength = 6 } })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetCashMemoNo", PageControllerName)','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile')" />
                                     @Html.HiddenFor(model => model.AUTONO, new { id = "CSMAUTONO" })
                                 </div>
@@ -394,7 +364,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
+                        @*<div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Agst Memo No")
@@ -405,7 +375,7 @@
                                     @Html.EditorFor(model => model.T_STCHALT.AGCMNO, new { htmlAttributes = new { @class = "form-control", id = "AGCMNO", @placeholder = "Agst Memo No" } })
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -540,10 +510,7 @@
                             <div class="col-md-7">
                                 <div class="editor-field">
                                     @Html.DropDownListFor(model => model.STCHCD, new SelectList(Model.DropDown_list1, "Value", "Text"), "Select Dress Style", new { @class = "form-control", id = "STCHCD", onchange = "changeSTCHNM(this.id)" })
-                                    @Html.HiddenFor(model => model.T_STCHALT_DTL_COMP.FLDCD, new { id = "FLDCD" })
-                                    @Html.HiddenFor(model => model.T_STCHALT_DTL_COMP.FLDTYPE, new { id = "FLDTYPE" })
-                                    @Html.HiddenFor(model => model.FLDLEN, new { id = "FLDLEN" })
-                                    @Html.HiddenFor(model => model.FLDDATACOMBO, new { id = "FLDDATACOMBO" })
+                                  
 
                                 </div>
                             </div>
@@ -556,7 +523,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT_DTL.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this);", maxlength = 3 } })
+                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this);", maxlength = 3 } })
                                 </div>
                             </div>
                         </div>
@@ -568,29 +535,41 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT_DTL.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 12 } })
+                                    @Html.EditorFor(model => model.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 12 } })
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Component")
+                                    @Html.Label("", "Description")
                                 </div>
                             </div>
                             <div class="col-md-9">
-                                <table class="table table-responsive table-condensed">
-                                    <thead><tr><th>Comp</th><th>Value</th><th>Remarks</th></tr></thead>
+                                <table class="table table-responsive table-condensed table-striped" id="tbl_STCHALTDTLCOMP">
+                                    <thead><tr><th style="width: 106px;">Comp</th><th>Value</th><th>Remarks</th></tr></thead>
                                     <tbody>
-                                        <tr>
-                                            <td>asd</td>
-                                            <td>
-                                                @Html.EditorFor(model => model.T_STCHALT_DTL.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 12 } })
-                                            </td>
-                                            <td>
-                                                @Html.EditorFor(model => model.T_STCHALT_DTL.RATE, new { htmlAttributes = new { @class = "form-control", id = "RATE", @onkeypress = "return numericOnly(this,2);", maxlength = 12 } })
-                                            </td>
-                                        </tr>
+                                      @if (Model.TSTCHALT_DTLCOMP != null)
+                                      {
+                                          for (int i = 0; i < Model.TSTCHALT_DTLCOMP.Count; i++)
+                                          {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.TSTCHALT_DTLCOMP[i].FLDDESC)
+                                                </td>
+                                                <td>
+                                                    @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDCD, new { id = "FLDCD" })
+                                                    @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDTYPE, new { id = "FLDTYPE" })
+                                                    @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].SLNO, new { id = "SLNO" })
+                                                    @*@Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDDATACOMBO, new { id = "FLDDATACOMBO" })*@
+                                                    @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDVAL, new { htmlAttributes = new { @class = "form-control", id = "FLDVAL", maxlength = Model.FLDLEN } })
+                                                </td>
+                                                <td>
+                                                    @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDREM, new { htmlAttributes = new { @class = "form-control", id = "FLDREM", maxlength = 12 } })
+                                                </td>
+                                            </tr>
+                                          }
+                                      }
                                     </tbody>
                                 </table>
                             </div>

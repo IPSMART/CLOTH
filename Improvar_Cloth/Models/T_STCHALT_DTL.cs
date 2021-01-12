@@ -28,15 +28,15 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 1)]
-        public byte SLNO { get; set; }
+        public int SLNO { get; set; }
 
         [Required]
         [StringLength(3)]
         public string STCHCD { get; set; }
 
-        public byte QNTY { get; set; }
+        public short QNTY { get; set; }
 
-        public decimal? RATE { get; set; }
+        public double? RATE { get; set; }
         
     }
 }
