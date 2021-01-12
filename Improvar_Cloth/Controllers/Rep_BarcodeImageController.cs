@@ -61,7 +61,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                int COLPERPAGE = VE.COLPERPAGE.retInt() == 0 ? 1 : VE.COLPERPAGE.retInt();
+                int COLPERPAGE = (VE.COLPERPAGE.retInt() == 0 || VE.COLPERPAGE.retInt() > 8) ? 1 : VE.COLPERPAGE.retInt();
                 DataTable DtBarImage = (DataTable)Session["DtRepBarcodeImage"];//BARNO,DOC_FLNAME,INE1,LINE2   
 
                 using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
@@ -87,7 +87,7 @@ namespace Improvar.Controllers
                     cell.Colspan = COLPERPAGE;
                     maintable.AddCell(cell);
 
-                    cell = new PdfPCell(new Phrase("Sales data"));
+                    cell = new PdfPCell(new Phrase("Sales Barcode "));
                     cell.Border = Rectangle.NO_BORDER;
                     cell.Colspan = COLPERPAGE;
                     maintable.AddCell(cell);
@@ -121,6 +121,14 @@ namespace Improvar.Controllers
                         cell.Border = Rectangle.NO_BORDER;
                         table.AddCell(cell);
                         maintable.AddCell(table);
+                    }
+                    int actualcolumn = (DtBarImage.Rows.Count / COLPERPAGE).retInt();
+                    actualcolumn = COLPERPAGE - ((actualcolumn * COLPERPAGE) + DtBarImage.Rows.Count);
+                    for (int i = 0; i < actualcolumn; i++)
+                    {
+                        cell = new PdfPCell(new Phrase(""));
+                        cell.Border = Rectangle.NO_BORDER;
+                        maintable.AddCell(cell);
                     }
                     doc.Add(maintable);
                     doc.Close();
