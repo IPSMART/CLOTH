@@ -855,5 +855,22 @@ namespace Improvar.Controllers
                 }
             }
         }
+        public ActionResult SaveDressStyle(string STHCD, string QNTY, string FLDDESC, string FLDVAL, string FLDREM, string FLDCD, string FLDTYPE)
+        {
+            try
+            {
+                //TSTCHALT_DTLCOMP RH = new TSTCHALT_DTLCOMP();
+                //TransactionAltOrder VE = new TransactionAltOrder();
+                //Cn.getQueryString(VE);
+              
+                //ModelState.Clear();
+                return Content("");
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
     }
 }
