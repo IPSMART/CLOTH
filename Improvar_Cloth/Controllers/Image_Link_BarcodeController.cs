@@ -151,14 +151,17 @@ namespace Improvar.Controllers
                 else
                 {
                     string BARIMAGE = str.retCompValue("BARIMAGE");
-                    var brimgs = BARIMAGE.retStr().Split((char)179);
-                    foreach (var barimg in brimgs)
+                    if (BARIMAGE != "")
                     {
-                        string barfilename = barimg.Split('~')[0];
-                        string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
-                        FROMpath = Path.Combine(FROMpath, "");
-                        string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
-                        Cn.CopyImage(FROMpath, TOPATH);
+                        var brimgs = BARIMAGE.retStr().Split((char)179);
+                        foreach (var barimg in brimgs)
+                        {
+                            string barfilename = barimg.Split('~')[0];
+                            string FROMpath = CommVar.SaveFolderPath() + "/ItemImages/" + barfilename;
+                            FROMpath = Path.Combine(FROMpath, "");
+                            string TOPATH = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + barfilename);
+                            Cn.CopyImage(FROMpath, TOPATH);
+                        }
                     }
                     return Content(str);
                 }
@@ -259,6 +262,8 @@ namespace Improvar.Controllers
 
                     DB.T_BATCH_IMG_HDR.Where(x => x.BARNO == VE.BARNO).ToList().ForEach(x => { x.DTAG = "E"; });
                     DB.T_BATCH_IMG_HDR.RemoveRange(DB.T_BATCH_IMG_HDR.Where(x => x.BARNO == VE.BARNO));
+                    DB.T_BATCH_IMG_HDR_LINK.Where(x => x.BARNO == VE.BARNO).ToList().ForEach(x => { x.DTAG = "E"; });
+                    DB.T_BATCH_IMG_HDR_LINK.RemoveRange(DB.T_BATCH_IMG_HDR_LINK.Where(x => x.BARNO == VE.BARNO));
                     DB.SaveChanges();
                     if (VE.BarImages.retStr() != "")
                     {

@@ -136,7 +136,8 @@
                         var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
                             $("#BARNO").val(returncolvalue(result, "barno"));
-                            $("#BarImages").val(returncolvalue(result, "BARIMAGE")); ShowBarImage();
+                            $("#BarImages").val(returncolvalue(result, "BARIMAGE"));
+                            ShowBarImage();
                             $("#STYLENO").val(returncolvalue(result, "styleno"));
                             //$("#FABSTYLENO").val(returncolvalue(result, "styleno"));
                             $("#ITGRPNM").val(returncolvalue(result, "itgrpnm"));
@@ -162,26 +163,29 @@
         }
     }
     function ShowBarImage() {
-        var arr = $("#BarImages").val().split(String.fromCharCode(179));
-        $.each(arr, function (index, value) {
-            var imgname = (value.split('~')[0]);
-            var id = (imgname).split('.')[0];
-            var ImageDesc = (value.split('~')[1]);
-            var htm = "";
-            htm += '<div class="col-lg-4" id="' + id + '">';
-            htm += '       <div class="thumbnail">';
-            htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
-            htm += '           <a href="/UploadDocuments/' + imgname + '"  target="_blank">';
-            htm += '                <img src="/UploadDocuments/' + imgname + '"  alt="" style="width:100%;height:300px;">';
-            htm += '                <div class="caption">';
-            htm += '                   ' + ImageDesc;
-            htm += '          </div>';
-            htm += '      </a>';
-            htm += '  </div>';
-            htm += '</div>';
-            $("#divUploadImage").append(htm);
-        });
-     
+        debugger;   
+        var barimg = $("#BarImages").val();
+        if (barimg != "") {
+            var arr = $("#BarImages").val().split(String.fromCharCode(179));
+            $.each(arr, function (index, value) {
+                var imgname = (value.split('~')[0]);
+                var id = (imgname).split('.')[0];
+                var ImageDesc = (value.split('~')[1]);
+                var htm = "";
+                htm += '<div class="col-lg-4" id="' + id + '">';
+                htm += '       <div class="thumbnail">';
+                htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
+                htm += '           <a href="/UploadDocuments/' + imgname + '"  target="_blank">';
+                htm += '                <img src="/UploadDocuments/' + imgname + '"  alt="" style="width:100%;height:300px;">';
+                htm += '                <div class="caption">';
+                htm += '                   ' + ImageDesc;
+                htm += '          </div>';
+                htm += '      </a>';
+                htm += '  </div>';
+                htm += '</div>';
+                $("#divUploadImage").append(htm);
+            });
+        }
     }
 </script>
 
