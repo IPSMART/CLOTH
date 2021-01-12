@@ -1208,6 +1208,7 @@
     <Content Include="Views\Shared\_Popup2.cshtml" />
     <Content Include="Views\Rep_PartyStmt\Rep_PartyStmt.cshtml" />
     <Content Include="Views\Rep_Stk_Stmt\Rep_Stk_Stmt.cshtml" />
+    <Content Include="Views\Shared\_T_AltOrder_PAYMENT.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
