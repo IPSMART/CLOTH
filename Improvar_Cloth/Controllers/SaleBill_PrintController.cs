@@ -47,7 +47,7 @@ namespace Improvar.Controllers
                     //string reptype = "SALEBILL";
                     string reptype = "SALEBILL";
                     if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
-                    DataTable repformat = Salesfunc.getRepFormat(reptype, VE.DOCCD);
+                    DataTable repformat = Salesfunc.getRepFormat(reptype);
 
                     if (repformat != null)
                     {
@@ -3201,8 +3201,8 @@ namespace Improvar.Controllers
                 IR.Columns.Add("pcsdesc", typeof(string), "");
                 IR.Columns.Add("QRIMGPATH", typeof(string), "");
                 IR.Columns.Add("IRNNO", typeof(string), "");
-                IR.Columns.Add("listprice", typeof(string), "");
-                IR.Columns.Add("listdiscper", typeof(string), "");
+                IR.Columns.Add("listprice", typeof(double), "");
+                IR.Columns.Add("listdiscper", typeof(double), "");
                 #endregion
 
                 string bankname = "", bankactno = "", bankbranch = "", bankifsc = "", bankadd = "", bankrtgs = "";
@@ -3512,56 +3512,13 @@ namespace Improvar.Controllers
                             //dr1["weekno"] = tbl.Rows[i]["weekno"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["weekno"]);
                             dr1["irnno"] = tbl.Rows[i]["irnno"].retStr() == "" ? "" : "IRN : " + tbl.Rows[i]["irnno"].ToString();
                             dr1["QRIMGPATH"] = tbl.Rows[i]["IRNNO"].ToString() == "" ? "" : "C:\\IPSMART\\IRNQrcode\\" + tbl.Rows[i]["IRNNO"].ToString() + ".png";
-                            dr1["listprice"] = tbl.Rows[i]["listprice"].ToString();
-                            dr1["listdiscper"] = tbl.Rows[i]["listdiscper"].ToString();
+                          
                             dr1["slcd"] = tbl.Rows[i]["slcd"].ToString();
                             //if (tbl.Rows[i]["partycd"].ToString() != "") dr1["partycd"] = "SAP - " + tbl.Rows[i]["partycd"].ToString();
                             dr1["slnm"] = tbl.Rows[i]["slnm"].ToString();
                             dr1["regemailid"] = tbl.Rows[i]["regemailid"].ToString();
 
-                            #region pcsdescn
-                            var batch_data = rsStkPrcDesc.Select("autono='" + auto1 + "' and txnslno = " + tbl.Rows[i]["slno"].ToString());
-                            string pcsdesc = "";
-                            for (int a = 0; a <= batch_data.Count() - 1; a++)
-                            {
-                                pcsdesc += pcsdesc == "" ? "" : ",";
-                                pcsdesc += batch_data[a]["SHADE"].retStr() == "" ? "" : batch_data[a]["SHADE"].retStr() + "/";
-
-                                if (batch_data[a]["nos"].retDbl() == 1)
-                                {
-                                    pcsdesc += batch_data[a]["cutlength"].retDbl();
-                                }
-                                else {
-                                    pcsdesc += batch_data[a]["cutlength"].retDbl() + batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "";
-                                }
-                                if (batch_data[a]["flagmtr"].retDbl() > 0)
-                                {
-                                    string flagmtr = batch_data[a]["flagmtr"].retDbl().ToINRFormat();
-                                    pcsdesc += "(F" + flagmtr.Substring(flagmtr.Length - 2).Remove(1) + ")";
-                                }
-                                if (batch_data[a]["scmdiscrate"].retDbl() > 0)
-                                {
-                                    pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";
-                                }
-                                if (batch_data[a]["tddiscrate"].retDbl() > 0)
-                                {
-                                    pcsdesc += batch_data[a]["tddiscrate"].retStr() + "% ";
-                                }
-                                if (batch_data[a]["discrate"].retDbl() > 0)
-                                {
-                                    pcsdesc += batch_data[a]["discrate"].retStr() + "% ";
-                                }
-                                if (batch_data[a]["itrem"].retStr() != "")
-                                {
-                                    pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
-                                }
-                                if (batch_data[a]["baleno"].retStr() != "")
-                                {
-                                    pcsdesc += "Bale No. " + batch_data[a]["baleno"].retStr();
-                                }
-                            }
-                            dr1["pcsdesc"] = pcsdesc;
-                            #endregion
+                            
                             string cfld = "", rfld = ""; int rf = 0;
                             for (int f = 1; f <= 6; f++)
                             {
@@ -3841,6 +3798,51 @@ namespace Improvar.Controllers
                                 dr1["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
                                 dr1["rate"] = tbl.Rows[i]["rate"].retDbl().ToString("0.00");
                                 dr1["amt"] = tbl.Rows[i]["amt"] == DBNull.Value ? 0 : (tbl.Rows[i]["amt"]).retDbl();
+                                dr1["listprice"] = tbl.Rows[i]["listprice"].retDbl().ToString("0.00");
+                                dr1["listdiscper"] = tbl.Rows[i]["listdiscper"].retDbl().ToString("0.00");
+                                #region pcsdescn
+                                var batch_data = rsStkPrcDesc.Select("autono='" + auto1 + "' and txnslno = " + tbl.Rows[i]["slno"].ToString());
+                                string pcsdesc = "";
+                                for (int a = 0; a <= batch_data.Count() - 1; a++)
+                                {
+                                    pcsdesc += pcsdesc == "" ? "" : ",";
+                                    pcsdesc += batch_data[a]["SHADE"].retStr() == "" ? "" : batch_data[a]["SHADE"].retStr() + "/";
+
+                                    if (batch_data[a]["nos"].retDbl() == 1)
+                                    {
+                                        pcsdesc += batch_data[a]["cutlength"].retDbl();
+                                    }
+                                    else {
+                                        pcsdesc += batch_data[a]["cutlength"].retDbl() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
+                                    }
+                                    if (batch_data[a]["flagmtr"].retDbl() > 0)
+                                    {
+                                        string flagmtr = batch_data[a]["flagmtr"].retDbl().ToINRFormat();
+                                        pcsdesc += "(F" + flagmtr.Substring(flagmtr.Length - 2).Remove(1) + ")";
+                                    }
+                                    if (batch_data[a]["scmdiscrate"].retDbl() > 0)
+                                    {
+                                        pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";
+                                    }
+                                    if (batch_data[a]["tddiscrate"].retDbl() > 0)
+                                    {
+                                        pcsdesc += batch_data[a]["tddiscrate"].retStr() + "% ";
+                                    }
+                                    if (batch_data[a]["discrate"].retDbl() > 0)
+                                    {
+                                        pcsdesc += batch_data[a]["discrate"].retStr() + "% ";
+                                    }
+                                    if (batch_data[a]["itrem"].retStr() != "")
+                                    {
+                                        pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
+                                    }
+                                    if (batch_data[a]["baleno"].retStr() != "")
+                                    {
+                                        pcsdesc += "Bale No. " + batch_data[a]["baleno"].retStr();
+                                    }
+                                }
+                                dr1["pcsdesc"] = pcsdesc;
+                                #endregion
                                 //dr1["poslno"] = tbl.Rows[i]["poslno"];
                                 //dr1["mtrlcd"] = tbl.Rows[i]["mtrlcd"];
                                 dr1["curr_cd"] = tbl.Rows[i]["curr_cd"].ToString();
