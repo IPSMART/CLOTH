@@ -26,6 +26,8 @@
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $(".sl_bom_grid").prop("disabled", false);
+            $("#save").hide();
+            
         }
         else if ("@Model.DefaultAction" == "E") {
 
@@ -151,99 +153,7 @@
         });
     }
 </script>
-<script>
-    function GetPendingData() {
-        debugger;
-        if ("@Model.DefaultAction" != "V") {
-            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-            var mutslcd = "";
-            var docdt = $("#DOCDT").val();
-            if ($("#MUTSLCD").val() != "") mutslcd = $("#MUTSLCD").val();
 
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("GetPendingData", PageControllerName)",
-                data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
-                success: function (result) {
-                    if (result == 0)
-                    { return msgWarning("Record not Found! Please enter valid Document date."); }
-                    $("#popup").animate({ marginTop: '-10px' }, 50);
-                    $("#popup").html(result);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    }
-
-</script>
-<script>
-    function SelectMatchingCheckBoxes() {
-        debugger;;
-        var arr = new Array();
-        var GridRowMain = $("#T_Bilty_Khasra_PopUp > tbody > tr").length;
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            var chkbox = document.getElementById("chkid_K_POPUP_" + i);
-            if (chkbox.checked) { arr.push(document.getElementById("BLAUTONO_K_POPUP_" + i)); }
-
-        }
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            if (arr.indexOf(document.getElementById("BLAUTONO_K_POPUP_" + i)) != -1) {
-                document.getElementById("chkid_K_POPUP_" + i).checked = true;
-            }
-        }
-
-    }
-    function SelectPendingLRNO() {
-        debugger;
-        var mutslcd = "";
-        var docdt = $("#DOCDT").val();
-        if ($("#MUTSLCD").val() != "") mutslcd = $("#MUTSLCD").val();
-        var Count = 0;
-        var GridPendingPO = $("#T_Bilty_Khasra_PopUp > tbody > tr").length;
-        for (var i = 0; i <= GridPendingPO - 1; i++) {
-            var Check = document.getElementById("chkid_K_POPUP_" + i).checked;
-            if (Check == true) {
-                Count = Count + 1;
-            }
-        }
-        if (Count > 0) {
-            $.ajax({
-                type: 'post',
-                url: "@Url.Action("SelectPendingLRNO", PageControllerName )",
-                beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
-                success: function (result) {
-                    //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
-
-                    $("#partialdivMain").animate({ marginTop: '0px' }, 50);
-                    $("#partialdivMain").html(result);
-                    $("#WaitingMode").hide();
-                    @*$('#partialdivMain').html(res[0]);
-                    if ("@Session["CLIENT_CODE"]" == "ADHU") {
-                        $("#OTHREFNO").val(res[1]);
-                    }*@
-                    $('#popup').html("");
-                    $('.PopUp_Backround').fadeOut();
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-
-    }
-
-    function CancelLRNO() {
-        $('#popup').html("");
-        $('.PopUp_Backround').fadeOut();
-    }
-</script>
 <script>
     function changeSTCHNM(id) {
         debugger;
