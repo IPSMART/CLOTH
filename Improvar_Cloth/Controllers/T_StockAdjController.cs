@@ -126,7 +126,7 @@ namespace Improvar.Controllers
 
                                 List<STOCK_ADJUSTMENT> STOCK_ADJUSTMENT = new List<STOCK_ADJUSTMENT>();
                                 var stktype = Master_Help.STOCK_TYPE();
-                                for (int i = 0; i < stktype.Count() - 1; i++)
+                                for (int i = 0; i <= stktype.Count() - 1; i++)
                                 {
                                     STOCK_ADJUSTMENT STOCK_ADJ1 = new STOCK_ADJUSTMENT();
                                     STOCK_ADJ1.SLNO = Convert.ToInt16(i + 1);
@@ -188,6 +188,8 @@ namespace Improvar.Controllers
                             }
                             VE.STOCK_ADJUSTMENT = STOCK_ADJUSTMENT;
                         }
+                        var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                        VE.M_SYSCNFG = MSYSCNFG;
                     }
                     else
                     {
@@ -466,6 +468,67 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "5", "5"));
         }
+        public ActionResult GetGodownDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.GOCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetBarCodeDetailsOutGrid(string val, string Code)
+        {
+            return BarCodeDetails(val, Code, "SB");
+        }
+        public ActionResult GetBarCodeDetailsInGrid(string val, string Code)
+        {
+            return BarCodeDetails(val, Code, "PB");
+        }
+        public ActionResult BarCodeDetails(string val, string Code, string menupara)
+        {
+            try
+            {
+                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
+                TransactionOutIssProcess VE = new TransactionOutIssProcess();
+                Cn.getQueryString(VE);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string barnoOrStyle = val.retStr();
+                string DOCDT = data[2].retStr();
+                string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
+               
+                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "", GOCD);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
+
+                    string glcd = "";
+                    glcd = str.retCompValue("SALGLCD");
+                    str += "^GLCD=^" + glcd + Cn.GCS();
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
         public ActionResult AddGridRow(StockAdjustmentsConversionEntry VE, string TABLE)
         {
             try
@@ -554,27 +617,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
-        public ActionResult GetMtrlJobDetails(string val)
-        {
-            try
-            {
-                if (val == null)
-                {
-                    return PartialView("_Help2", Master_Help.MTRLJOBCD_help(val));
-                }
-                else
-                {
-                    string str = Master_Help.MTRLJOBCD_help(val);
-                    return Content(str);
-                }
-            }
-            catch (Exception Ex)
-            {
-                Cn.SaveException(Ex, "");
-                return Content(Ex.Message + Ex.InnerException);
-            }
-        }
         public ActionResult AddDOCRow(StockAdjustmentsConversionEntry VE)
         {
             List<UploadDOC> UploadDOC = new List<UploadDOC>();
@@ -620,576 +662,6 @@ namespace Improvar.Controllers
             VE.DefaultView = true;
             return PartialView("_UPLOADDOCUMENTS", VE);
         }
-        public ActionResult GetGodownDetails(string val)
-        {
-            try
-            {
-                if (val == null)
-                {
-                    return PartialView("_Help2", Master_Help.GOCD_help(val));
-                }
-                else
-                {
-                    string str = Master_Help.GOCD_help(val);
-                    return Content(str);
-                }
-            }
-            catch (Exception Ex)
-            {
-                Cn.SaveException(Ex, "");
-                return Content(Ex.Message + Ex.InnerException);
-            }
-        }
-        public ActionResult GetArticleItemDetails(StockAdjustmentsConversionEntry VE, string val, string TAG)
-        {
-            try
-            {
-                Cn.getQueryString(VE);
-                if (val == null)
-                {
-                    return PartialView("_Help2", Master_Help.ITCD_help(val, "", "", "", TAG));
-                }
-                else
-                {
-                    string str = Master_Help.ITCD_help(val, "", "", "", TAG);
-                    return Content(str);
-                    //var SIZE_DATA = Salesfunc.getSizeData(val, "", VE.T_TXN.DOCDT.ToString().Remove(10));
-                }
-
-            }
-            catch (Exception e)
-            {
-                Cn.SaveException(e, "");
-                return Content(e.ToString());
-            }
-        }
-        public ActionResult GetPartDetails(string val)
-        {
-            try
-            {
-                if (val == null)
-                {
-                    return PartialView("_Help2", Master_Help.PARTS(val));
-                }
-                else
-                {
-                    string str = Master_Help.PARTS(val);
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
-        //public ActionResult OPENSIZE(StockAdjustmentsConversionEntry VE, short SerialNo, string ITEM, string ITEM_NM, string STYLE_NO, string UOM, string PART_CD, string PART_NM, double? PCSPERBOX, string STK_TYPE, double PCS_PERSET)
-        //{
-        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-        //    string COM = CommVar.Compcd(UNQSNO); string LOC = CommVar.Loccd(UNQSNO); string scm1 = DB.CacheKey.ToString();
-        //    try
-        //    {
-        //        STYLE_NO = STYLE_NO.Replace('μ', '+'); STYLE_NO = STYLE_NO.Replace('‡', '&'); PART_CD = PART_CD == "" ? null : PART_CD;
-        //        ViewBag.Article = STYLE_NO; ViewBag.Pcs = PCSPERBOX;
-        //        short POSRL = Convert.ToInt16(SerialNo);
-        //        var query = (from c in VE.TTXNDTL where (c.ITCD == ITEM && c.STKTYPE == STK_TYPE && c.PARTCD == PART_CD) select c).ToList();
-        //        if (query != null)
-        //        {
-        //            var SIZE_DATA = Salesfunc.getSizeData(ITEM, "", VE.T_TXN.DOCDT.ToString().Remove(10));
-
-        //            VE.TTXNDTL_IN_SIZE = (from DataRow dr in SIZE_DATA.Rows
-        //                                  select new TTXNDTL_IN_SIZE()
-        //                                  {
-        //                                      MIXSIZE = dr["mixsize"].ToString(),
-        //                                      PRINT_SEQ = dr["print_seq"].ToString(),
-        //                                      SIZECD = dr["sizecd"].ToString(),
-        //                                      SIZENM = dr["sizenm"].ToString(),
-        //                                      COLRCD = dr["colrcd"].ToString(),
-        //                                      COLRNM = dr["colrnm"].ToString(),
-        //                                      ParentSerialNo = SerialNo,
-        //                                      ITCD_HIDDEN = ITEM,
-        //                                      ITNM_HIDDEN = ITEM_NM,
-        //                                      STYLENO_HIDDEN = STYLE_NO,
-        //                                      UOM_HIDDEN = UOM,
-        //                                      PARTCD_HIDDEN = PART_CD,
-        //                                      PARTNM_HIDDEN = PART_NM,
-        //                                      PCSPERBOX_HIDDEN = PCSPERBOX.Value,
-        //                                      PCSPERSET_HIDDEN = PCS_PERSET,
-        //                                      STKTYPE_HIDDEN = STK_TYPE,
-        //                                      ITCOLSIZE = ITEM + dr["colrcd"].ToString() + dr["sizecd"].ToString(),
-        //                                      QNTY = 0
-        //                                  }).OrderBy(a => a.PRINT_SEQ).ToList();
-
-        //            if (query[0].ChildData == null)
-        //            {
-        //                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                string JR = javaScriptSerializer.Serialize(VE.TTXNDTL_IN_SIZE);
-        //                query.ForEach(a => a.ChildData = JR);
-        //            }
-        //            else
-        //            {
-        //                if (VE.TTXNDTL != null)
-        //                {
-        //                    string SIZECD = "";
-        //                    var query1 = (from c in VE.TTXNDTL where (c.ITCD == ITEM && c.STKTYPE == STK_TYPE && c.PARTCD == PART_CD) select c).ToList();
-        //                    if (query1 != null)
-        //                    {
-        //                        var helpMT = new List<Improvar.Models.TTXNDTL_IN_SIZE>();
-        //                        var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                        helpMT = javaScriptSerializer.Deserialize<List<Improvar.Models.TTXNDTL_IN_SIZE>>(query1[0].ChildData);
-        //                        if (helpMT != null && helpMT.Count > 0)
-        //                        {
-        //                            for (int z = 0; z <= helpMT.Count - 1; z++)
-        //                            {
-        //                                if (helpMT[z].QNTY != null)
-        //                                {
-        //                                    SIZECD = SIZECD + Cn.GCS() + helpMT[z].SIZECD;
-        //                                }
-        //                            }
-        //                        }
-        //                        var SIZE_CODE = SIZECD.Split(Convert.ToChar(Cn.GCS())).ToList();
-        //                        if (SIZECD != "") { SIZE_CODE = SIZECD.Substring(1).Split(Convert.ToChar(Cn.GCS())).ToList(); }
-        //                        VE.TTXNDTL_IN_SIZE = VE.TTXNDTL_IN_SIZE.Where(a => !SIZE_CODE.Contains(a.SIZECD)).ToList();
-        //                        helpMT.ForEach(a =>
-        //                        {
-        //                            a.ParentSerialNo = SerialNo; a.ITCD_HIDDEN = ITEM; a.ITNM_HIDDEN = ITEM_NM; a.STYLENO_HIDDEN = STYLE_NO; a.UOM_HIDDEN = UOM;
-        //                            a.PARTCD_HIDDEN = PART_CD; a.PARTNM_HIDDEN = PART_NM; a.PCSPERBOX_HIDDEN = PCSPERBOX.Value; a.STKTYPE_HIDDEN = STK_TYPE; a.PCSPERSET_HIDDEN = PCS_PERSET;
-        //                        });
-        //                        helpMT.ToList().Where(a => a.QNTY_HIDDEN == 0).ForEach(a => { a.QNTY_HIDDEN = null; a.QNTY = null; });
-        //                        VE.TTXNDTL_IN_SIZE.AddRange(helpMT);
-        //                        var javaScriptSerializer_New = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                        string JR_New = javaScriptSerializer_New.Serialize(VE.TTXNDTL_IN_SIZE);
-        //                        query.ForEach(a => a.ChildData = JR_New);
-        //                    }
-        //                }
-        //            }
-        //            string SIZE = "";
-        //            VE.TTXNDTL = (from x in VE.TTXNDTL where x.ITCD == ITEM && x.STKTYPE == STK_TYPE && x.PARTCD == PART_CD select x).ToList();
-        //            if (VE.TTXNDTL != null && VE.TTXNDTL.Count > 0)
-        //            {
-        //                for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
-        //                {
-        //                    var helpMT = new List<Improvar.Models.TTXNDTL_IN_SIZE>();
-        //                    var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                    helpMT = javaScriptSerializer.Deserialize<List<Improvar.Models.TTXNDTL_IN_SIZE>>(VE.TTXNDTL[i].ChildData);
-        //                    if (helpMT != null && helpMT.Count > 0)
-        //                    {
-        //                        for (int z = 0; z <= helpMT.Count - 1; z++)
-        //                        {
-        //                            if (helpMT[z].QNTY != null)
-        //                            {
-        //                                SIZE = SIZE + Cn.GCS() + helpMT[z].SIZECD;
-        //                            }
-        //                        }
-        //                    }
-        //                    helpMT.ForEach(a =>
-        //                    {
-        //                        a.ParentSerialNo = SerialNo; a.ITCD_HIDDEN = ITEM; a.ITNM_HIDDEN = ITEM_NM; a.STYLENO_HIDDEN = STYLE_NO; a.UOM_HIDDEN = UOM;
-        //                        a.PARTCD_HIDDEN = PART_CD; a.PARTNM_HIDDEN = PART_NM; a.PCSPERBOX = PCSPERBOX.Value; a.STKTYPE_HIDDEN = STK_TYPE; a.PCSPERSET_HIDDEN = PCS_PERSET;
-        //                    });
-        //                    helpMT.ToList().Where(a => a.QNTY_HIDDEN == 0).ForEach(a => { a.QNTY_HIDDEN = null; a.QNTY = null; });
-        //                    var SIZE_CODE = SIZE.Split(Convert.ToChar(Cn.GCS())).ToList();
-        //                    if (SIZE != "")
-        //                    {
-        //                        SIZE_CODE = SIZE.Substring(1).Split(Convert.ToChar(Cn.GCS())).ToList();
-        //                    }
-        //                    VE.TTXNDTL_IN_SIZE = VE.TTXNDTL_IN_SIZE.Where(a => !SIZE_CODE.Contains(a.SIZECD)).ToList();
-        //                    VE.TTXNDTL_IN_SIZE.AddRange(helpMT);
-        //                }
-        //            }
-        //            VE.TTXNDTL_IN_SIZE = VE.TTXNDTL_IN_SIZE.OrderBy(a => a.PRINT_SEQ).ToList();
-        //            for (int Z = 0; Z <= VE.TTXNDTL_IN_SIZE.Count - 1; Z++)
-        //            {
-        //                VE.TTXNDTL_IN_SIZE[Z].SLNO = Convert.ToInt16(Z + 1);
-        //            }
-        //            var javaScriptSerializer_FINAL = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //            VE.TTXNDTL_IN_SIZE.ForEach(a => a.ITCOLSIZE = a.ITCD_HIDDEN + a.COLRCD + a.SIZECD);
-        //            string JR_FINAL = javaScriptSerializer_FINAL.Serialize(VE.TTXNDTL_IN_SIZE);
-        //            query.ForEach(a => a.ChildData = JR_FINAL);
-        //            VE.SERIAL = SerialNo;
-        //            VE.DefaultView = true;
-        //            ModelState.Clear();
-        //            return PartialView("_T_StockAdj_IN_SIZE", VE);
-        //        }
-        //        else
-        //        {
-        //            VE.SERIAL = SerialNo;
-        //            VE.DefaultView = true;
-        //            ModelState.Clear();
-        //            return PartialView("_T_StockAdj_IN_SIZE", VE);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        VE.DefaultView = false;
-        //        VE.DefaultDay = 0;
-        //        ViewBag.ErrorMessage = ex.Message + ex.InnerException;
-        //        Cn.SaveException(ex, "");
-        //        return View(VE);
-        //    }
-        //}
-        //public ActionResult CLOSESIZE(StockAdjustmentsConversionEntry VE, FormCollection FC)
-        //{
-        //    Cn.getQueryString(VE);
-        //    List<TTXNDTL_IN_SIZE> DTL_IN_SIZE = new List<TTXNDTL_IN_SIZE>();
-        //    if (VE.TTXNDTL_IN_SIZE != null)
-        //    {
-        //        DTL_IN_SIZE = VE.TTXNDTL_IN_SIZE.Where(a => a.QNTY != null).Where(a => a.QNTY > 0).ToList();
-        //        if (DTL_IN_SIZE != null)
-        //        {
-        //            var FILTER_DATA = (from p in DTL_IN_SIZE
-        //                               group p by new
-        //                               { p.ITCD_HIDDEN, p.ITNM_HIDDEN, p.STYLENO_HIDDEN, p.UOM_HIDDEN, p.PARTCD_HIDDEN, p.PARTNM_HIDDEN, p.PCSPERSET_HIDDEN, p.PCSPERBOX_HIDDEN, p.STKTYPE_HIDDEN } into g
-        //                               select new
-        //                               {
-        //                                   ITCD_HIDDEN = g.Key.ITCD_HIDDEN,
-        //                                   ITNM_HIDDEN = g.Key.ITNM_HIDDEN,
-        //                                   STYLENO_HIDDEN = g.Key.STYLENO_HIDDEN,
-        //                                   UOM_HIDDEN = g.Key.UOM_HIDDEN,
-        //                                   PARTCD_HIDDEN = g.Key.PARTCD_HIDDEN,
-        //                                   PARTNM_HIDDEN = g.Key.PARTNM_HIDDEN,
-        //                                   PCSPERSET_HIDDEN = g.Key.PCSPERSET_HIDDEN,
-        //                                   PCSPERBOX_HIDDEN = g.Key.PCSPERBOX_HIDDEN,
-        //                                   STKTYPE_HIDDEN = g.Key.STKTYPE_HIDDEN,
-        //                                   QNTY = g.Sum(x => x.QNTY),
-        //                                   ALL_SIZE = string.Join(",", g.Select(i => i.SIZECD))
-        //                               }).ToList();
-
-        //            var TTXNDTL_FINALDATA = (from a in FILTER_DATA
-        //                                     select new TTXNDTL
-        //                                     {
-        //                                         ITCD = a.ITCD_HIDDEN,
-        //                                         ITNM = a.ITNM_HIDDEN,
-        //                                         STYLENO = a.STYLENO_HIDDEN,
-        //                                         UOMNM = a.UOM_HIDDEN,
-        //                                         PARTCD = a.PARTCD_HIDDEN,
-        //                                         PARTNM = a.PARTNM_HIDDEN,
-        //                                         PCSBOX = a.PCSPERBOX_HIDDEN,
-        //                                         PCSPERSET = a.PCSPERSET_HIDDEN,
-        //                                         STKTYPE = a.STKTYPE_HIDDEN,
-        //                                         QNTY = a.QNTY,
-        //                                         ALL_SIZE = a.ALL_SIZE
-        //                                     }).ToList();
-
-        //            if (TTXNDTL_FINALDATA != null && TTXNDTL_FINALDATA.Count > 0)
-        //            {
-        //                VE.TTXNDTL.RemoveAll(x => x.ITCD == TTXNDTL_FINALDATA[0].ITCD && x.STKTYPE == TTXNDTL_FINALDATA[0].STKTYPE);
-        //                var INDEX = VE.TTXNDTL.FindIndex(Z => Z.ITCD == null);
-        //                if (INDEX == -1)
-        //                {
-        //                    VE.TTXNDTL.AddRange(TTXNDTL_FINALDATA);
-        //                }
-        //                else
-        //                {
-        //                    VE.TTXNDTL.InsertRange(INDEX, TTXNDTL_FINALDATA);
-        //                }
-        //            }
-        //            string ITEM = "";
-        //            if (DTL_IN_SIZE != null && DTL_IN_SIZE.Count > 0)
-        //            {
-        //                ITEM = DTL_IN_SIZE[0].ITCD_HIDDEN;
-        //            }
-        //            var query = (from c in VE.TTXNDTL where (c.ITCD == ITEM) select c).ToList();
-        //            if (query != null && query.Count > 0)
-        //            {
-        //                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                string JR = javaScriptSerializer.Serialize(DTL_IN_SIZE);
-        //                query.ForEach(a => a.ChildData = JR);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            string ITEM = FC["hiddenITEM"].ToString();
-        //            TTXNDTL query = (from c in VE.TTXNDTL where (c.ITCD == ITEM) select c).SingleOrDefault();
-        //            if (query != null)
-        //            {
-        //                query.ChildData = null;
-        //            }
-        //        }
-        //        short SL_NO = 0;
-        //        var SIZE_NULL_COUNT = VE.TTXNDTL_IN_SIZE.Where(a => a.QNTY != null).Where(a => a.QNTY == 0 || a.QNTY == null).ToList();
-        //        VE.TTXNDTL.ToList().ForEach(a =>
-        //        {
-        //            a.DropDown_list2 = Master_Help.STOCK_TYPE(); a.SLNO = ++SL_NO;
-        //            if (a.STKTYPE == "F")
-        //            {
-        //                a.BOXES = Salesfunc.ConvPcstoBox(a.QNTY == null ? 0 : a.QNTY.Value, a.PCSBOX == null ? 0 : a.PCSBOX.Value);
-        //                a.SETS = Salesfunc.ConvPcstoSet(a.QNTY == null ? 0 : a.QNTY.Value, a.PCSPERSET.retDbl());
-        //            }
-        //            else
-        //            {
-        //                a.BOXES = 0; a.SETS = 0;
-        //            }
-        //        });
-        //    }
-        //    else
-        //    {
-
-        //        string ITEM = FC["hiddenITEM"].ToString();
-        //        TTXNDTL query = (from c in VE.TTXNDTL where (c.ITCD == ITEM) select c).SingleOrDefault();
-        //        if (query != null)
-        //        {
-        //            query.ChildData = null;
-        //        }
-        //        VE.TTXNDTL.ForEach(a => { a.DropDown_list2 = Master_Help.STOCK_TYPE(); });
-        //    }
-        //    VE.DefaultView = true;
-        //    ModelState.Clear();
-        //    return PartialView("_T_StockAdj_IN_TAB", VE);
-        //}
-        //public ActionResult OPENSIZE_OUT(StockAdjustmentsConversionEntry VE, short SerialNo, string ITEM, string ITEM_NM, string STYLE_NO, string UOM, string PART_CD, string PART_NM, double? PCSPERBOX, string STK_TYPE, double PCS_PERSET)
-        //{
-        //    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-        //    string COM = CommVar.Compcd(UNQSNO); string LOC = CommVar.Loccd(UNQSNO); string scm1 = DB.CacheKey.ToString();
-        //    try
-        //    {
-        //        STYLE_NO = STYLE_NO.Replace('μ', '+'); STYLE_NO = STYLE_NO.Replace('‡', '&'); PART_CD = PART_CD == "" ? null : PART_CD;
-        //        ViewBag.Article = STYLE_NO; ViewBag.Pcs = PCSPERBOX;
-        //        short POSRL = Convert.ToInt16(SerialNo);
-        //        var query = (from c in VE.TTXNDTL_OUT where (c.ITCD == ITEM && c.STKTYPE == STK_TYPE && c.PARTCD == PART_CD) select c).ToList();
-        //        if (query != null)
-        //        {
-        //            var SIZE_DATA = Salesfunc.getSizeData(ITEM, "", VE.T_TXN.DOCDT.ToString().Remove(10));
-
-        //            VE.TTXNDTL_OUT_SIZE = (from DataRow dr in SIZE_DATA.Rows
-        //                                   select new TTXNDTL_OUT_SIZE()
-        //                                   {
-        //                                       MIXSIZE = dr["mixsize"].ToString(),
-        //                                       PRINT_SEQ = dr["print_seq"].ToString(),
-        //                                       SIZECD = dr["sizecd"].ToString(),
-        //                                       SIZENM = dr["sizenm"].ToString(),
-        //                                       COLRCD = dr["colrcd"].ToString(),
-        //                                       COLRNM = dr["colrnm"].ToString(),
-        //                                       ParentSerialNo = SerialNo,
-        //                                       ITCD_HIDDEN = ITEM,
-        //                                       ITNM_HIDDEN = ITEM_NM,
-        //                                       STYLENO_HIDDEN = STYLE_NO,
-        //                                       UOM_HIDDEN = UOM,
-        //                                       PARTCD_HIDDEN = PART_CD,
-        //                                       PARTNM_HIDDEN = PART_NM,
-        //                                       PCSPERBOX_HIDDEN = PCSPERBOX.Value,
-        //                                       PCSPERSET_HIDDEN = PCS_PERSET,
-        //                                       STKTYPE_HIDDEN = STK_TYPE,
-        //                                       ITCOLSIZE = ITEM + dr["colrcd"].ToString() + dr["sizecd"].ToString(),
-        //                                       QNTY = 0
-        //                                   }).OrderBy(a => a.PRINT_SEQ).ToList();
-
-        //            if (query[0].ChildData == null)
-        //            {
-        //                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                string JR = javaScriptSerializer.Serialize(VE.TTXNDTL_OUT_SIZE);
-        //                query.ForEach(a => a.ChildData = JR);
-        //            }
-        //            else
-        //            {
-        //                if (VE.TTXNDTL_OUT != null)
-        //                {
-        //                    string SIZECD = "";
-        //                    var query1 = (from c in VE.TTXNDTL_OUT where (c.ITCD == ITEM && c.STKTYPE == STK_TYPE && c.PARTCD == PART_CD) select c).ToList();
-        //                    if (query1 != null)
-        //                    {
-        //                        var helpMT = new List<Improvar.Models.TTXNDTL_OUT_SIZE>();
-        //                        var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                        helpMT = javaScriptSerializer.Deserialize<List<Improvar.Models.TTXNDTL_OUT_SIZE>>(query1[0].ChildData);
-        //                        if (helpMT != null && helpMT.Count > 0)
-        //                        {
-        //                            for (int z = 0; z <= helpMT.Count - 1; z++)
-        //                            {
-        //                                if (helpMT[z].QNTY != null)
-        //                                {
-        //                                    SIZECD = SIZECD + Cn.GCS() + helpMT[z].SIZECD;
-        //                                }
-        //                            }
-        //                        }
-        //                        var SIZE_CODE = SIZECD.Split(Convert.ToChar(Cn.GCS())).ToList();
-        //                        if (SIZECD != "") { SIZE_CODE = SIZECD.Substring(1).Split(Convert.ToChar(Cn.GCS())).ToList(); }
-        //                        VE.TTXNDTL_OUT_SIZE = VE.TTXNDTL_OUT_SIZE.Where(a => !SIZE_CODE.Contains(a.SIZECD)).ToList();
-        //                        helpMT.ForEach(a =>
-        //                        {
-        //                            a.ParentSerialNo = SerialNo; a.ITCD_HIDDEN = ITEM; a.ITNM_HIDDEN = ITEM_NM; a.STYLENO_HIDDEN = STYLE_NO; a.UOM_HIDDEN = UOM;
-        //                            a.PARTCD_HIDDEN = PART_CD; a.PARTNM_HIDDEN = PART_NM; a.PCSPERBOX_HIDDEN = PCSPERBOX.Value; a.STKTYPE_HIDDEN = STK_TYPE; a.PCSPERSET_HIDDEN = PCS_PERSET;
-        //                        });
-        //                        helpMT.ToList().Where(a => a.QNTY_HIDDEN == 0).ForEach(a => { a.QNTY_HIDDEN = null; a.QNTY = null; });
-        //                        VE.TTXNDTL_OUT_SIZE.AddRange(helpMT);
-        //                        var javaScriptSerializer_New = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                        string JR_New = javaScriptSerializer_New.Serialize(VE.TTXNDTL_OUT_SIZE);
-        //                        query.ForEach(a => a.ChildData = JR_New);
-        //                    }
-        //                }
-        //            }
-        //            string SIZE = "";
-        //            VE.TTXNDTL_OUT = (from x in VE.TTXNDTL_OUT where x.ITCD == ITEM && x.STKTYPE == STK_TYPE && x.PARTCD == PART_CD select x).ToList();
-        //            if (VE.TTXNDTL != null && VE.TTXNDTL_OUT.Count > 0)
-        //            {
-        //                for (int i = 0; i <= VE.TTXNDTL_OUT.Count - 1; i++)
-        //                {
-        //                    var helpMT = new List<Improvar.Models.TTXNDTL_OUT_SIZE>();
-        //                    var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                    helpMT = javaScriptSerializer.Deserialize<List<Improvar.Models.TTXNDTL_OUT_SIZE>>(VE.TTXNDTL_OUT[i].ChildData);
-        //                    if (helpMT != null && helpMT.Count > 0)
-        //                    {
-        //                        for (int z = 0; z <= helpMT.Count - 1; z++)
-        //                        {
-        //                            if (helpMT[z].QNTY != null)
-        //                            {
-        //                                SIZE = SIZE + Cn.GCS() + helpMT[z].SIZECD;
-        //                            }
-        //                        }
-        //                    }
-        //                    helpMT.ForEach(a =>
-        //                    {
-        //                        a.ParentSerialNo = SerialNo; a.ITCD_HIDDEN = ITEM; a.ITNM_HIDDEN = ITEM_NM; a.STYLENO_HIDDEN = STYLE_NO; a.UOM_HIDDEN = UOM;
-        //                        a.PARTCD_HIDDEN = PART_CD; a.PARTNM_HIDDEN = PART_NM; a.PCSPERBOX = PCSPERBOX.Value; a.STKTYPE_HIDDEN = STK_TYPE; a.PCSPERSET_HIDDEN = PCS_PERSET;
-        //                    });
-        //                    helpMT.ToList().Where(a => a.QNTY_HIDDEN == 0).ForEach(a => { a.QNTY_HIDDEN = null; a.QNTY = null; });
-        //                    var SIZE_CODE = SIZE.Split(Convert.ToChar(Cn.GCS())).ToList();
-        //                    if (SIZE != "")
-        //                    {
-        //                        SIZE_CODE = SIZE.Substring(1).Split(Convert.ToChar(Cn.GCS())).ToList();
-        //                    }
-        //                    VE.TTXNDTL_OUT_SIZE = VE.TTXNDTL_OUT_SIZE.Where(a => !SIZE_CODE.Contains(a.SIZECD)).ToList();
-        //                    VE.TTXNDTL_OUT_SIZE.AddRange(helpMT);
-        //                }
-        //            }
-        //            VE.TTXNDTL_OUT_SIZE = VE.TTXNDTL_OUT_SIZE.OrderBy(a => a.PRINT_SEQ).ToList();
-        //            for (int Z = 0; Z <= VE.TTXNDTL_OUT_SIZE.Count - 1; Z++)
-        //            {
-        //                VE.TTXNDTL_OUT_SIZE[Z].SLNO = Convert.ToInt16(Z + 1);
-        //            }
-        //            var javaScriptSerializer_FINAL = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //            VE.TTXNDTL_OUT_SIZE.ForEach(a => a.ITCOLSIZE = a.ITCD_HIDDEN + a.COLRCD + a.SIZECD);
-        //            string JR_FINAL = javaScriptSerializer_FINAL.Serialize(VE.TTXNDTL_OUT_SIZE);
-        //            query.ForEach(a => a.ChildData = JR_FINAL);
-        //            VE.SERIAL = SerialNo;
-        //            VE.DefaultView = true;
-        //            ModelState.Clear();
-        //            return PartialView("_T_StockAdj_OUT_SIZE", VE);
-        //        }
-        //        else
-        //        {
-        //            VE.SERIAL = SerialNo;
-        //            VE.DefaultView = true;
-        //            ModelState.Clear();
-        //            return PartialView("_T_StockAdj_OUT_SIZE", VE);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        VE.DefaultView = false;
-        //        VE.DefaultDay = 0;
-        //        ViewBag.ErrorMessage = ex.Message + ex.InnerException;
-        //        Cn.SaveException(ex, "");
-        //        return View(VE);
-        //    }
-        //}
-        //public ActionResult CLOSESIZE_OUT(StockAdjustmentsConversionEntry VE, FormCollection FC)
-        //{
-        //    Cn.getQueryString(VE);
-        //    List<TTXNDTL_OUT_SIZE> DTL_OUT_SIZE = new List<TTXNDTL_OUT_SIZE>();
-        //    if (VE.TTXNDTL_OUT_SIZE != null)
-        //    {
-        //        DTL_OUT_SIZE = VE.TTXNDTL_OUT_SIZE.Where(a => a.QNTY != null).Where(a => a.QNTY > 0).ToList();
-        //        if (DTL_OUT_SIZE != null)
-        //        {
-        //            var FILTER_DATA = (from p in DTL_OUT_SIZE
-        //                               group p by new
-        //                               { p.ITCD_HIDDEN, p.ITNM_HIDDEN, p.STYLENO_HIDDEN, p.UOM_HIDDEN, p.PARTCD_HIDDEN, p.PARTNM_HIDDEN, p.PCSPERSET_HIDDEN, p.PCSPERBOX_HIDDEN, p.STKTYPE_HIDDEN } into g
-        //                               select new
-        //                               {
-        //                                   ITCD_HIDDEN = g.Key.ITCD_HIDDEN,
-        //                                   ITNM_HIDDEN = g.Key.ITNM_HIDDEN,
-        //                                   STYLENO_HIDDEN = g.Key.STYLENO_HIDDEN,
-        //                                   UOM_HIDDEN = g.Key.UOM_HIDDEN,
-        //                                   PARTCD_HIDDEN = g.Key.PARTCD_HIDDEN,
-        //                                   PARTNM_HIDDEN = g.Key.PARTNM_HIDDEN,
-        //                                   PCSPERSET_HIDDEN = g.Key.PCSPERSET_HIDDEN,
-        //                                   PCSPERBOX_HIDDEN = g.Key.PCSPERBOX_HIDDEN,
-        //                                   STKTYPE_HIDDEN = g.Key.STKTYPE_HIDDEN,
-        //                                   QNTY = g.Sum(x => x.QNTY),
-        //                                   ALL_SIZE = string.Join(",", g.Select(i => i.SIZECD))
-        //                               }).ToList();
-
-        //            var TTXNDTL_OUT_FINALDATA = (from a in FILTER_DATA
-        //                                         select new TTXNDTL_OUT
-        //                                         {
-        //                                             ITCD = a.ITCD_HIDDEN,
-        //                                             ITNM = a.ITNM_HIDDEN,
-        //                                             STYLENO = a.STYLENO_HIDDEN,
-        //                                             UOMNM = a.UOM_HIDDEN,
-        //                                             PARTCD = a.PARTCD_HIDDEN,
-        //                                             PARTNM = a.PARTNM_HIDDEN,
-        //                                             PCSBOX = a.PCSPERBOX_HIDDEN,
-        //                                             PCSPERSET = a.PCSPERSET_HIDDEN,
-        //                                             STKTYPE = a.STKTYPE_HIDDEN,
-        //                                             QNTY = a.QNTY,
-        //                                             ALL_SIZE = a.ALL_SIZE
-        //                                         }).ToList();
-
-        //            if (TTXNDTL_OUT_FINALDATA != null && TTXNDTL_OUT_FINALDATA.Count > 0)
-        //            {
-        //                VE.TTXNDTL_OUT.RemoveAll(x => x.ITCD == TTXNDTL_OUT_FINALDATA[0].ITCD && x.STKTYPE == TTXNDTL_OUT_FINALDATA[0].STKTYPE && x.PARTCD == TTXNDTL_OUT_FINALDATA[0].PARTCD);
-        //                var INDEX = VE.TTXNDTL_OUT.FindIndex(Z => Z.ITCD == null);
-        //                if (INDEX == -1)
-        //                {
-        //                    VE.TTXNDTL_OUT.AddRange(TTXNDTL_OUT_FINALDATA);
-        //                }
-        //                else
-        //                {
-        //                    VE.TTXNDTL_OUT.InsertRange(INDEX, TTXNDTL_OUT_FINALDATA);
-        //                }
-        //            }
-        //            string ITEM = "";
-        //            if (DTL_OUT_SIZE != null && DTL_OUT_SIZE.Count > 0)
-        //            {
-        //                ITEM = DTL_OUT_SIZE[0].ITCD_HIDDEN;
-        //            }
-        //            var query = (from c in VE.TTXNDTL_OUT where (c.ITCD == ITEM) select c).ToList();
-        //            if (query != null && query.Count > 0)
-        //            {
-        //                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-        //                string JR = javaScriptSerializer.Serialize(DTL_OUT_SIZE);
-        //                query.ForEach(a => a.ChildData = JR);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            string ITEM = FC["hiddenITEM"].ToString();
-        //            TTXNDTL_OUT query = (from c in VE.TTXNDTL_OUT where (c.ITCD == ITEM) select c).SingleOrDefault();
-        //            if (query != null)
-        //            {
-        //                query.ChildData = null;
-        //            }
-        //        }
-        //        short SL_NO = 0;
-        //        var SIZE_NULL_COUNT = VE.TTXNDTL_OUT_SIZE.Where(a => a.QNTY != null).Where(a => a.QNTY == 0 || a.QNTY == null).ToList();
-        //        VE.TTXNDTL_OUT.ToList().ForEach(a =>
-        //        {
-        //            a.DropDown_list2 = Master_Help.STOCK_TYPE(); a.SLNO = ++SL_NO;
-        //            if (a.STKTYPE == "F")
-        //            {
-        //                a.BOXES = Salesfunc.ConvPcstoBox(a.QNTY == null ? 0 : a.QNTY.Value, a.PCSBOX == null ? 0 : a.PCSBOX.Value);
-        //                a.SETS = Salesfunc.ConvPcstoSet(a.QNTY == null ? 0 : a.QNTY.Value, a.PCSPERSET.retDbl());
-        //            }
-        //            else
-        //            {
-        //                a.BOXES = 0; a.SETS = 0;
-        //            }
-        //        });
-        //    }
-        //    else
-        //    {
-        //        string ITEM = FC["hiddenITEM"].ToString();
-        //        TTXNDTL_OUT query = (from c in VE.TTXNDTL_OUT where (c.ITCD == ITEM) select c).SingleOrDefault();
-        //        if (query != null)
-        //        {
-        //            query.ChildData = null;
-        //        }
-        //        VE.TTXNDTL_OUT.ForEach(a => { a.DropDown_list2 = Master_Help.STOCK_TYPE(); });
-        //    }
-        //    VE.DefaultView = true;
-        //    ModelState.Clear();
-        //    return PartialView("_T_StockAdj_OUT_TAB", VE);
-        //}
         public ActionResult SAVE(FormCollection FC, StockAdjustmentsConversionEntry VE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());

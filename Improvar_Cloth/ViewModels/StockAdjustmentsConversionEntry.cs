@@ -42,5 +42,6 @@ namespace Improvar.ViewModels
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? CUTRECDOCDT { get; set; }
         public double SIZE_T_QNTY { get; set; }
+        public M_SYSCNFG M_SYSCNFG { get; set; }
     }
 }
