@@ -1,0 +1,124 @@
+﻿@model Improvar.ViewModels.OrderCancelEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SORDCANC_SIZE_GRID'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<script>
+    $("#popup").ready(function () { $("#dragclass").draggable({ cursor: "move" }); if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") { modeView(); } });
+</script>
+@{ int SIZE_COUNT = 0; int COLOR_COUNT = 0; string WDTH = "665px"; }
+@if (Model.TSORDDTL_CANC_SIZE != null)
+{
+    for (int i = 0; i <= Model.TSORDDTL_CANC_SIZE.Count - 1; i++)
+    {
+        if (Model.TSORDDTL_CANC_SIZE[i].SIZECD != "" && Model.TSORDDTL_CANC_SIZE[i].SIZECD != null)
+        {
+            SIZE_COUNT = SIZE_COUNT + 1;
+        }
+        if (Model.TSORDDTL_CANC_SIZE[i].COLRCD != "" && Model.TSORDDTL_CANC_SIZE[i].COLRCD != null)
+        {
+            COLOR_COUNT = COLOR_COUNT + 1;
+
+        }
+        if (SIZE_COUNT > 0 && COLOR_COUNT > 0)
+        {
+            WDTH = "665px";
+        }
+    }
+}
+<div id="dragclass" style="overflow-y:auto;height:50%;background-color:#c4b9b9;padding:7px;border:5px groove;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+            {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SORDCANC_SIZE_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>@ViewBag.Header Item Size Details for :- <a style="text-align: right;padding-right: 10px;color: red;font-variant: petite-caps;font-weight: bolder;"> ( Article Number :- @ViewBag.Article , Pcs / Box :-  @ViewBag.Pcs ) </a></b><a><input type="checkbox" id="SAME_QTY" name="SAME_QTY" checked="checked" /></a></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;overflow-x:hidden;max-height:150px;">
+                    <table id="_T_SORDCANC_SIZE_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:@WDTH;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="" style="width:27px;text-align:center;">SL. No.</th>
+                                @if (SIZE_COUNT > 0 && COLOR_COUNT == 0)
+                                {
+                                    <th class="" style="width:360px;">SIZE NAME</th>
+                                }
+                                else if (SIZE_COUNT > 0)
+                                {
+                                    <th class="" style="width:180px;">SIZE NAME</th>
+                                }
+                                @if (COLOR_COUNT > 0 && SIZE_COUNT == 0)
+                                {
+                                    <th class="" style="width:360px;">COLOR NAME</th>
+                                }
+                                else if (COLOR_COUNT > 0)
+                                {
+                                    <th class="" style="width:180px;">COLOR NAME</th>
+                                }
+                                <th class="" style="width:120px;text-align:right;">Bal.Qnty</th>
+                                <th class="" style="width:120px;text-align:right;">Cancel Qnty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i <= Model.TSORDDTL_CANC_SIZE.Count - 1; i++)
+                            {
+                                <tr style="font-size:12px; font-weight:bold;">
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSORDDTL_CANC_SIZE[i].SLNO, new { id = "SRLNO_" + i, @title = "Only Numeric", @placeholder = "SL. No.", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @style = "text-align: center;" })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].ParentSerialNo, new { id = "SIZE_P_SLNO_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].ITCD_HIDDEN, new { id = "SIZE_ITCD_HIDDEN_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].ITNM_HIDDEN, new { id = "SIZE_ITNM_HIDDEN_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].ARTNO_HIDDEN, new { id = "SIZE_ARTNO_HIDDEN_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].PCS_HIDDEN, new { id = "SIZE_PCS_HIDDEN_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].UOM_HIDDEN, new { id = "SIZE_UOM_HIDDEN_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].QNTY_HIDDEN, new { id = "SIZE_QNTY_HIDDEN_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].STKTYPE_HIDDEN, new { id = "SIZE_STKTYPE_HIDDEN_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].FREESTK_HIDDEN, new { id = "SIZE_FREESTK_HIDDEN_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].ITCOLSIZE, new { id = "ITCOLSIZE_" + i })
+                                        @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].AUTONO, new { id = "SIZE_AUTONO_" + i })
+                                    </td>
+                                    @if (SIZE_COUNT > 0)
+                                    {
+                                        <td class="">
+                                            @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].SIZECD, new { id = "SIZECD_" + i })
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC_SIZE[i].SIZENM, new { id = "SIZENM_" + i, maxlength = 10, @title = "Only For Display", @placeholder = "Size Name", @class = " atextBoxFor ", @readonly = "readonly" })
+                                        </td>
+                                    }
+                                    @if (COLOR_COUNT > 0)
+                                    {
+                                        <td class="">
+                                            @Html.HiddenFor(model => model.TSORDDTL_CANC_SIZE[i].COLRCD, new { id = "COLRCD_" + i })
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC_SIZE[i].COLRNM, new { id = "COLRNM_" + i, maxlength = 10, @title = "Only For Display", @placeholder = "Color Name", @class = " atextBoxFor ", @readonly = "readonly" })
+                                        </td>
+                                    }
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSORDDTL_CANC_SIZE[i].QNTY, new { id = "SIZE_QNTY_" + i, maxlength = 10, @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor ", @style = "text-align: right;" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.TSORDDTL_CANC_SIZE[i].CANCQNTY, new { id = "SIZE_CANCQNTY_" + i, maxlength = 10, @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor ", @style = "text-align: right;", onblur = "CalculateCancelQnty(this,'" + "SIZE_QNTY_" + i + "');" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row" style="padding:5px;">
+        <input type="button" class="btn btn-success" id="btnCloseSize" value="Close" onclick="CloseSize();" />
+    </div>
+</div>
