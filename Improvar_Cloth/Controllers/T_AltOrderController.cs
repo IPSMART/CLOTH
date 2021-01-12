@@ -319,7 +319,15 @@ namespace Improvar.Controllers
                                        GLCD = dr["GLCD"].retStr(),
                                    }).ToList();
                 }
-              
+                double T_PYMT_AMT = 0;
+
+                for (int p = 0; p <= VE.TTXNPYMT.Count - 1; p++)
+                {
+                    T_PYMT_AMT = T_PYMT_AMT + VE.TTXNPYMT[p].AMT.Value;
+
+                }
+                VE.T_PYMT_AMT = T_PYMT_AMT;
+
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
