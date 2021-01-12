@@ -78,7 +78,7 @@ namespace Improvar.Models
         public short? ORDSLNO { get; set; }
 
         public double? DIA { get; set; }
-
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? CUTLENGTH { get; set; }
 
         [StringLength(10)]
