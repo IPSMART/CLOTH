@@ -52,16 +52,16 @@ namespace Improvar.Controllers
                     GTYPE3.value = "B";
                     GTYPE.Add(GTYPE3);
                     DropDown_list1 GTYPE4 = new DropDown_list1();
-                    GTYPE3.text = "UPI";
-                    GTYPE3.value = "U";
+                    GTYPE4.text = "UPI";
+                    GTYPE4.value = "U";
                     GTYPE.Add(GTYPE4);
                     DropDown_list1 GTYPE5 = new DropDown_list1();
-                    GTYPE3.text = "Voucher";
-                    GTYPE3.value = "V";
+                    GTYPE5.text = "Voucher";
+                    GTYPE5.value = "V";
                     GTYPE.Add(GTYPE5);
                     DropDown_list1 GTYPE6 = new DropDown_list1();
-                    GTYPE3.text = "Others";
-                    GTYPE3.value = "O";
+                    GTYPE6.text = "Others";
+                    GTYPE6.value = "O";
                     GTYPE.Add(GTYPE6);
                     VE.DropDown_list1 = GTYPE;
                     if (op.Length != 0)
