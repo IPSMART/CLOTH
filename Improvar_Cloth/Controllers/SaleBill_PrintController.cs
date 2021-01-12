@@ -2968,10 +2968,12 @@ namespace Improvar.Controllers
 
                 DataTable rsStkPrcDesc;
                 sql = "";
-                sql += "select distinct a.autono,a.txnslno,a.itcd,a.barno,a.shade,a.nos,a.qnty,a.flagmtr,a.disctype,a.discrate,a.scmdisctype,a.scmdiscrate,a.tddisctype,a.tddiscrate ";
+                sql += "select distinct a.autono,a.txnslno,a.itcd,a.barno,a.shade,a.nos,a.qnty,a.flagmtr,a.disctype,a.discrate,a.scmdisctype,a.scmdiscrate, ";
+                sql += "a.tddisctype,a.tddiscrate,a.itrem ";
                 sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_cntrl_hdr c ";
-                sql += "where a.autono=c.autono and ";
+                sql += "where  ";
                 sql += sqlc;
+                sql += "a.autono=c.autono ";
                 rsStkPrcDesc = masterHelp.SQLquery(sql);
 
                 string blterms = "", inspoldesc = "", dealsin = "";
@@ -3196,7 +3198,7 @@ namespace Improvar.Controllers
                 IR.Columns.Add("portdesc", typeof(string), "");
                 IR.Columns.Add("finaldest", typeof(string), "");
                 IR.Columns.Add("bankinter", typeof(string), "");
-                IR.Columns.Add("itemdescr", typeof(string), "");
+                IR.Columns.Add("pcsdesc", typeof(string), "");
                 IR.Columns.Add("QRIMGPATH", typeof(string), "");
                 IR.Columns.Add("IRNNO", typeof(string), "");
                 IR.Columns.Add("listprice", typeof(string), "");
@@ -3508,7 +3510,7 @@ namespace Improvar.Controllers
                             dr1["gonm"] = tbl.Rows[i]["gonm"].ToString();
                             dr1["goadd1"] = tbl.Rows[i]["goadd1"].ToString();
                             //dr1["weekno"] = tbl.Rows[i]["weekno"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["weekno"]);
-                            dr1["irnno"] = tbl.Rows[i]["irnno"].ToString();
+                            dr1["irnno"] = tbl.Rows[i]["irnno"].retStr() == "" ? "" : "IRN : " + tbl.Rows[i]["irnno"].ToString();
                             dr1["QRIMGPATH"] = tbl.Rows[i]["IRNNO"].ToString() == "" ? "" : "C:\\IPSMART\\IRNQrcode\\" + tbl.Rows[i]["IRNNO"].ToString() + ".png";
                             dr1["listprice"] = tbl.Rows[i]["listprice"].ToString();
                             dr1["listdiscper"] = tbl.Rows[i]["listdiscper"].ToString();
@@ -3516,6 +3518,50 @@ namespace Improvar.Controllers
                             //if (tbl.Rows[i]["partycd"].ToString() != "") dr1["partycd"] = "SAP - " + tbl.Rows[i]["partycd"].ToString();
                             dr1["slnm"] = tbl.Rows[i]["slnm"].ToString();
                             dr1["regemailid"] = tbl.Rows[i]["regemailid"].ToString();
+
+                            #region pcsdescn
+                            var batch_data = rsStkPrcDesc.Select("autono='" + auto1 + "' and txnslno = " + tbl.Rows[i]["slno"].ToString());
+                            string pcsdesc = "";
+                            for (int a = 0; a <= batch_data.Count() - 1; a++)
+                            {
+                                //            pcsdesc += pcsdesc == "" ? "" : ",";
+                                //            pcsdesc += batch_data[a]["SHADE"].retStr() == "" ? "" : batch_data[a]["SHADE"].retStr() + "/";
+
+                                //            if (batch_data[a]["nos"].retDbl() == 1)
+                                //            {
+                                //                pcsdesc += batch_data[a]["cutlength"].retDbl();
+                                //            }
+                                //            else {
+                                //                pcsdesc += batch_data[a]["cutlength"].retDbl() + batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "";
+                                //            }
+                                //            if (batch_data[a]["flagmtr"].retDbl() > 0)
+                                //            {
+                                //                string flagmtr = batch_data[a]["flagmtr"].retDbl().ToINRFormat();
+                                //                pcsdesc += "(F" + flagmtr.Substring(flagmtr.Length - 2).Remove(1) + ")";
+                                //            }
+                                //            if (batch_data[a]["scmdiscrate"].retDbl() > 0)
+                                //            {
+                                //                pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";
+                                //            }
+                                //            if (FILLnumb(!SHDISCPER) <> 0 Or FILLnumb(!DISCPER) <> 0 ){
+                                //    StrDisc = IIf(StrDisc = "", "", StrDisc + ",") + " -SL ";
+                                //    if (Right(cStrConv(FILLnumb(!SHDISCPER), 6, 2), 2) = "00")
+                                //    {
+                                //        StrDisc = StrDisc + CStr(Int(FILLnumb(!SHDISCPER + !DISCPER)));
+                                //    }
+                                //    else {
+                                //        StrDisc = StrDisc + cStrConv(FILLnumb(!SHDISCPER + !DISCPER), 5, 2);
+                                //    }
+                                //    StrDisc = StrDisc + "% ";
+                                //}
+                                //pcsdesc = pcsdesc & StrDisc;
+                                //if (Trim(rs_Bill!ITREM) <> "")
+                                //{
+                                //    pcsdesc = pcsdesc & "[" + rs_Bill!ITREM + "]";
+                                //}
+                            }
+                            dr1["regemailid"] = pcsdesc;
+                            #endregion
                             string cfld = "", rfld = ""; int rf = 0;
                             for (int f = 1; f <= 6; f++)
                             {
