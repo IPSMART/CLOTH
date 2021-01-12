@@ -267,11 +267,71 @@
     }
 </script>
 <script>
+    function AddRowPYMT(ID) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddRowPYMT", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivPayment").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivPayment").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowPYMT() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteRowPYMT", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivPayment").animate({ marginTop: '0px' }, 50);
+                $("#partialdivPayment").html(result);
+                CalculateTotal();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function CalculateTotal() {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        //POS PAYMENT GRID TOTAL
+        var T_QNTY = 0, T_NOS = 0, T_NET = 0, T_TXBLVAL = 0, T_AMT = 0;
+        var GridRow = $("#_T_AltOrder_PAYMENT > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var P_AMT_ = retFloat($("#P_AMT_" + i).val());
+            T_AMT += P_AMT_;
+        }
+        $("#T_PYMT_AMT").val(parseFloat(T_AMT).toFixed(2));
+    }
+</script>
+
+
+<script>
     function SaveDressStyle(i) {
         debugger;
         var STHCD = ($("#STCHCD").find(":selected").val());
         var QNTY = $("#QNTY").val(); var RATE = $("#RATE").val();
-        var FLDDESC = "", FLDVAL = "", FLDREM = "", FLDCD = "", FLDTYPE="";     
+        var FLDDESC = "", FLDVAL = "", FLDREM = "", FLDCD = "", FLDTYPE = "";
         var GridSTCHALTDTLCOMP = $("#tbl_STCHALTDTLCOMP > tbody > tr").length;
         for (var i = 0; i <= GridSTCHALTDTLCOMP - 1; i++) {
             FLDDESC = document.getElementById("FLDDESC" + i);
@@ -398,17 +458,17 @@
                             </div>
                         </div>
                         @*<div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Agst Memo No")
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Agst Memo No")
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.AGCMNO, new { htmlAttributes = new { @class = "form-control", id = "AGCMNO", @placeholder = "Agst Memo No" } })
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_STCHALT.AGCMNO, new { htmlAttributes = new { @class = "form-control", id = "AGCMNO", @placeholder = "Agst Memo No" } })
+                                    </div>
                                 </div>
-                            </div>
-                        </div>*@
+                            </div>*@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -543,7 +603,7 @@
                             <div class="col-md-7">
                                 <div class="editor-field">
                                     @Html.DropDownListFor(model => model.STCHCD, new SelectList(Model.DropDown_list1, "Value", "Text"), "Select Dress Style", new { @class = "form-control", id = "STCHCD", onchange = "changeSTCHNM(this.id)" })
-                                  
+
 
                                 </div>
                             </div>
@@ -582,100 +642,112 @@
                                 <table class="table table-responsive table-condensed table-striped" id="tbl_STCHALTDTLCOMP">
                                     <thead><tr><th style="width: 106px;">Comp</th><th>Value</th><th>Remarks</th></tr></thead>
                                     <tbody>
-                                      @if (Model.TSTCHALT_DTLCOMP != null)
-                                      {
-                                          for (int i = 0; i < Model.TSTCHALT_DTLCOMP.Count; i++)
-                                          {
-                                            <tr>
-                                                <td>
-                                                    @Html.DisplayFor(model => model.TSTCHALT_DTLCOMP[i].FLDDESC)
-                                                </td>
-                                                <td>
-                                                    @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDCD, new { id = "FLDCD" })
-                                                    @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDTYPE, new { id = "FLDTYPE" })
-                                                    @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].SLNO, new { id = "SLNO" })
-                                                    @*@Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDDATACOMBO, new { id = "FLDDATACOMBO" })*@
-                                                    @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDVAL, new { htmlAttributes = new { @class = "form-control", id = "FLDVAL", maxlength = Model.FLDLEN } })
-                                                </td>
-                                                <td>
-                                                    @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDREM, new { htmlAttributes = new { @class = "form-control", id = "FLDREM", maxlength = 12 } })
-                                                </td>
-                                            </tr>
-                                          }
-                                      }
+                                        @if (Model.TSTCHALT_DTLCOMP != null)
+                                        {
+                                            for (int i = 0; i < Model.TSTCHALT_DTLCOMP.Count; i++)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(model => model.TSTCHALT_DTLCOMP[i].FLDDESC)
+                                                    </td>
+                                                    <td>
+                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDCD, new { id = "FLDCD" })
+                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDTYPE, new { id = "FLDTYPE" })
+                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].SLNO, new { id = "SLNO" })
+                                                        @*@Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDDATACOMBO, new { id = "FLDDATACOMBO" })*@
+                                                        @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDVAL, new { htmlAttributes = new { @class = "form-control", id = "FLDVAL", maxlength = Model.FLDLEN } })
+                                                    </td>
+                                                    <td>
+                                                        @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDREM, new { htmlAttributes = new { @class = "form-control", id = "FLDREM", maxlength = 12 } })
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-1">
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="save" value="Save" title="Click to Save Deress style details" onclick="SaveDressStyle()" />
-                            </div>
-                            </div>
-
-                            @*<div class="row">
-                <div class="col-md-5">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Description")
-                    </div>
-                </div>
-                <div class="col-md-7">
-                    <div class="editor-field">
-                        @Html.TextAreaFor(model => model.FLDDESC, new { htmlAttributes = new { @class = "form-control", id = "FLDDESC", maxlength = 100, @placeholder = "Description", cols = 20, @rows = 3, @TabIndex = -1, @readonly = "readonly" } })
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Value")
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="editor-field">
-                        @if (Model.FLDDATACOMBO == "Y")
+                        @if (Model.DefaultAction != "V")
                         {
-                            @Html.EditorFor(model => Model.T_STCHALT_DTL_COMP.FLDVAL, new { htmlAttributes = new { @class = "atextBoxFor", id = "FLDVAL", @list = "FLDVALlist", maxlength = Model.FLDLEN, autocomplete = "off" } })
-                            <datalist id="FLDVALlist">
-                                @foreach (var jg in Model.DropDown_list2.Where(e => e.value == Model.FLDDESC))
-                                {
-                                    <option value="@jg.text" />
-                                }
-                            </datalist>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="save" value="Save" title="Click to Save Deress style details" onclick="SaveDressStyle()" />
+                                </div>
+                            </div>
                         }
-                        else
-                        {
-                            if (Model.FLDTYPE == "D")
-                            {
-                                @Html.TextBoxFor(model => Model.T_STCHALT_DTL_COMP.FLDVAL, "{0:dd/MM/yyyy}", new { id = "FLDVAL", @class = " atextBoxFor ", @placeholder = "dd/mm/yyyy", maxlength = Model.FLDLEN, onblur = "DocumentDateCHK(this)", autocomplete = "off" })
-                                <script>
-                                    if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
-                                        $(function () { $("#" + "FLDVAL").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });
-                                    }
-                                </script>
-                            }
-                            else if (Model.FLDTYPE == "N")
-                            {
-                                @Html.TextBoxFor(model => Model.T_STCHALT_DTL_COMP.FLDVAL, "{0:0.0000}", new { id = "FLDVAL", @class = " atextBoxFor", @placeholder = "0.00", @style = "text-align: right;", @onkeypress = "return numericOnly(this,4);", maxlength = Model.FLDLEN, autocomplete = "off" })
-                            }
-                            else {
-                                @Html.TextBoxFor(model => Model.T_STCHALT_DTL_COMP.FLDVAL, new { id = "FLDVAL", @class = " atextBoxFor ", maxlength = Model.FLDLEN, autocomplete = "off" })
-                            }
 
-                        }
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Remarks")
-                    </div>
-                </div>
-                <div class="col-md-10">
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.T_STCHALT_DTL_COMP.FLDREM, new { htmlAttributes = new { @class = "form-control", id = "FLDREM", maxlength = 100, @placeholder = "Remarks" } })
-                    </div>
-                </div>
-            </div>*@
+                        @*<div class="row">
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Description")
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="editor-field">
+                                        @Html.TextAreaFor(model => model.FLDDESC, new { htmlAttributes = new { @class = "form-control", id = "FLDDESC", maxlength = 100, @placeholder = "Description", cols = 20, @rows = 3, @TabIndex = -1, @readonly = "readonly" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Value")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @if (Model.FLDDATACOMBO == "Y")
+                                        {
+                                            @Html.EditorFor(model => Model.T_STCHALT_DTL_COMP.FLDVAL, new { htmlAttributes = new { @class = "atextBoxFor", id = "FLDVAL", @list = "FLDVALlist", maxlength = Model.FLDLEN, autocomplete = "off" } })
+                                            <datalist id="FLDVALlist">
+                                                @foreach (var jg in Model.DropDown_list2.Where(e => e.value == Model.FLDDESC))
+                                                {
+                                                    <option value="@jg.text" />
+                                                }
+                                            </datalist>
+                                        }
+                                        else
+                                        {
+                                            if (Model.FLDTYPE == "D")
+                                            {
+                                                @Html.TextBoxFor(model => Model.T_STCHALT_DTL_COMP.FLDVAL, "{0:dd/MM/yyyy}", new { id = "FLDVAL", @class = " atextBoxFor ", @placeholder = "dd/mm/yyyy", maxlength = Model.FLDLEN, onblur = "DocumentDateCHK(this)", autocomplete = "off" })
+                                                <script>
+                                                    if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+                                                        $(function () { $("#" + "FLDVAL").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true }); });
+                                                    }
+                                                </script>
+                                            }
+                                            else if (Model.FLDTYPE == "N")
+                                            {
+                                                @Html.TextBoxFor(model => Model.T_STCHALT_DTL_COMP.FLDVAL, "{0:0.0000}", new { id = "FLDVAL", @class = " atextBoxFor", @placeholder = "0.00", @style = "text-align: right;", @onkeypress = "return numericOnly(this,4);", maxlength = Model.FLDLEN, autocomplete = "off" })
+                                            }
+                                            else {
+                                                @Html.TextBoxFor(model => Model.T_STCHALT_DTL_COMP.FLDVAL, new { id = "FLDVAL", @class = " atextBoxFor ", maxlength = Model.FLDLEN, autocomplete = "off" })
+                                            }
 
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Remarks")
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_STCHALT_DTL_COMP.FLDREM, new { htmlAttributes = new { @class = "form-control", id = "FLDREM", maxlength = 100, @placeholder = "Remarks" } })
+                                    </div>
+                                </div>
+                            </div>*@
+
+                    </div>
+                    <div id="Adv" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                            <div>
+                                <div id="partialdivPayment" style="margin-top:0px;">
+                                    @Html.Partial("_T_AltOrder_PAYMENT")
+                                </div>
+                            </div>
                         </div>
+                    </div>
                     <div id="Remarks" class="tab-pane fade">
                         <div class="row">
                             <div>

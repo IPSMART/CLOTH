@@ -27,8 +27,10 @@
 </script>
 <script>
     function requiredFieldValidator() {
-        if (!emptyFieldCheck("Enter Group Name", "STCHNM")) { return false; }
+        if (!emptyFieldCheck("Enter Dress Pattern", "STCHNM")) { return false; }
         if (!emptyFieldCheck("Select Type", "STCHALT")) { return false; }
+        if (!emptyFieldCheck("Enter Job Code", "JOBCD")) { return false; }
+        
         //var CHECK_TAG = document.getElementById("Checked_INCLTAX").checked;
         //if (CHECK_TAG==false) { msgWarning("Please checked Inclusive of Taxes !"); return false; }
         //checking Length>Decimal
@@ -339,6 +341,7 @@
                         <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Dress Pattern")
+                                <b style="color:red"><sup>*</sup></b>
                             </div>
                         </div>
                         <div class="col-md-10">

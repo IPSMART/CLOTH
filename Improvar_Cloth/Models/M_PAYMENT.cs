@@ -34,5 +34,8 @@ namespace Improvar.Models
         public string GLCD { get; set; }
 
         public long M_AUTONO { get; set; }
+        [StringLength(1)]
+        public string PYMTTYPE { get; set; }
+        
     }
 }

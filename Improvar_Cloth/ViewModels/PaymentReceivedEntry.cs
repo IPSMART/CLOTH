@@ -10,5 +10,7 @@ namespace Improvar.ViewModels
         public M_CNTRL_HDR M_CNTRL_HDR { get; set; }
         public bool Checked { get; set; }
         public string GLNM { get; set; }
+        public List<DropDown_list1> DropDown_list1 { get; set; }
+        
     }
 }
