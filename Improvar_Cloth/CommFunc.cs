@@ -21,13 +21,13 @@ namespace Improvar
         }
         public static string retDateStr(this object val, string yearas = "yyyy", string dateform = "dd/MM/yyyy")
         {
-            if (val == null) return "";
-            string rtval = "";
-            if (val.ToString().retStr() != "") val = Convert.ToDateTime(val).ToString(dateform);
-            if (val == null) rtval = "";
-            else if (val.ToString() == "") rtval = "";
-            else if (yearas == "yy") rtval = val.ToString().Substring(0, 6) + val.ToString().Substring(8, 2);
-            else rtval = val.ToString().Substring(0, 10);
+            DateTime dateValue;
+            if (val.retStr() == "") return ""; string rtval = "";
+            if (DateTime.TryParse(val.ToString(), out dateValue))
+            {
+                rtval = dateValue.ToString(dateform);
+                if (yearas == "yy") rtval = val.ToString().Substring(0, 6) + val.ToString().Substring(8, 2);
+            }
             return rtval;
         }
         public static string retStr(this object val)
