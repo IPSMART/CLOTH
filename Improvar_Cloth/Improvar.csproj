@@ -307,6 +307,7 @@
     <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SALE_POSController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
+    <Compile Include="Controllers\T_StockAdjController.cs" />
     <Compile Include="Controllers\User_GuideController.cs" />
     <Compile Include="DataSets\DSPrintBarcode.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -536,6 +537,7 @@
     <Compile Include="Models\TTXNAMT.cs" />
     <Compile Include="Models\TTXNDTL.cs" />
     <Compile Include="Models\TTXNDTLPOPUP.cs" />
+    <Compile Include="Models\TTXNDTL_OUT.cs" />
     <Compile Include="Models\TTXNDTL_SEARCHPANEL.cs" />
     <Compile Include="Models\TTXNPYMT.cs" />
     <Compile Include="Models\TTXNSLSMN.cs" />
@@ -673,6 +675,7 @@
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\RepBarHistory.cs" />
     <Compile Include="ViewModels\StitchMaster.cs" />
+    <Compile Include="ViewModels\StockAdjustmentsConversionEntry.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
     <Compile Include="ViewModels\CollectionEntry.cs" />
     <Compile Include="ViewModels\ColorEntry.cs" />
@@ -1208,6 +1211,11 @@
     <Content Include="Views\Shared\_Popup2.cshtml" />
     <Content Include="Views\Rep_PartyStmt\Rep_PartyStmt.cshtml" />
     <Content Include="Views\Rep_Stk_Stmt\Rep_Stk_Stmt.cshtml" />
+    <Content Include="Views\Shared\_T_AltOrder_PAYMENT.cshtml" />
+    <Content Include="Views\T_StockAdj\T_StockAdj.cshtml" />
+    <Content Include="Views\Shared\_T_StockAdj_IN_TAB.cshtml" />
+    <Content Include="Views\Shared\_T_StockAdj_OUT_TAB.cshtml" />
+    <Content Include="Views\Shared\_T_StockAdj_STK_TYPE_QNTY.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

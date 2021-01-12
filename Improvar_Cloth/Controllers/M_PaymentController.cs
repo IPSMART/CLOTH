@@ -38,7 +38,32 @@ namespace Improvar.Controllers
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                     VE.DefaultAction = op;
-
+                    List<DropDown_list1> GTYPE = new List<DropDown_list1>();
+                    DropDown_list1 GTYPE1 = new DropDown_list1();
+                    GTYPE1.text = "Cash";
+                    GTYPE1.value = "C";
+                    GTYPE.Add(GTYPE1);
+                    DropDown_list1 GTYPE2 = new DropDown_list1();
+                    GTYPE2.text = "Card";
+                    GTYPE2.value = "R";
+                    GTYPE.Add(GTYPE2);
+                    DropDown_list1 GTYPE3 = new DropDown_list1();
+                    GTYPE3.text = "Bank";
+                    GTYPE3.value = "B";
+                    GTYPE.Add(GTYPE3);
+                    DropDown_list1 GTYPE4 = new DropDown_list1();
+                    GTYPE4.text = "UPI";
+                    GTYPE4.value = "U";
+                    GTYPE.Add(GTYPE4);
+                    DropDown_list1 GTYPE5 = new DropDown_list1();
+                    GTYPE5.text = "Voucher";
+                    GTYPE5.value = "V";
+                    GTYPE.Add(GTYPE5);
+                    DropDown_list1 GTYPE6 = new DropDown_list1();
+                    GTYPE6.text = "Others";
+                    GTYPE6.value = "O";
+                    GTYPE.Add(GTYPE6);
+                    VE.DropDown_list1 = GTYPE;
                     if (op.Length != 0)
                     {
                         VE.IndexKey = (from p in DB.M_PAYMENT orderby p.PYMTCD select new IndexKey() { Navikey = p.PYMTCD }).ToList();
@@ -215,6 +240,7 @@ namespace Improvar.Controllers
                         }
                         MPAYMENT.PYMTNM = VE.M_PAYMENT.PYMTNM;
                         MPAYMENT.GLCD = VE.M_PAYMENT.GLCD;
+                        MPAYMENT.PYMTTYPE = VE.M_PAYMENT.PYMTTYPE;
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_PAYMENT", MPAYMENT.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {

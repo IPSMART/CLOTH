@@ -1,0 +1,85 @@
+﻿@model Improvar.ViewModels.StockAdjustmentsConversionEntry
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D")
+        {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E")
+        {
+
+        }
+        else if ("@Model.DefaultAction" == "A")
+        {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_StockAdj_STK_TYPE_QNTY_GRID'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<div style="transform: translate(0%, 0%);z-index: 1100;border:5px groove;">
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <div class="col-lg-5">
+                    <input type="text" id="FilterSearch" name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_StockAdj_STK_TYPE_QNTY_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;background-color:#c4b9b9;"><b>Stock Type Wise Total Quantity Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:hidden;overflow-x:hidden;max-height:165px;">
+                    <table id="_T_StockAdj_STK_TYPE_QNTY_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:400px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:20px;">
+                                <th style="width: 27px;text-align:center;">SL NO.</th>
+                                <th style="width: 60px;">Stock Type</th>
+                                <th style="width: 100px;">In Quantity</th>
+                                <th style="width: 100px;">Out Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.STOCK_ADJUSTMENT != null)
+                            {
+                                for (int i = 0; i <= Model.STOCK_ADJUSTMENT.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.STOCK_ADJUSTMENT[i].SLNO, new { id = "S_T_SLNO_" + i, @class = "atextBoxFor text-center", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.STOCK_ADJUSTMENT[i].STKTYPE, new { id = "S_T_STKTYPE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.STOCK_ADJUSTMENT[i].IN_QNTY, "{0:0.000}", new { id = "S_T_IN_QNTY_" + i, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.STOCK_ADJUSTMENT[i].OUT_QNTY, "{0:0.000}", new { id = "S_T_OUT_QNTY_" + i, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="sticky-footer">
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.TOTAL_IN_QNTY, "{0:0.000}", new { htmlAttributes = new { id = "TOTAL_IN_QNTY", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;", @readonly = "readonly" } })
+                                </td>
+                                <td style="text-align:right;">
+                                    @Html.EditorFor(model => Model.TOTAL_OUT_QNTY, "{0:0.000}", new { htmlAttributes = new { id = "TOTAL_OUT_QNTY", @class = "atextBoxFor", @style = "text-align: right;font-weight:bold;", @readonly = "readonly" } })
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+

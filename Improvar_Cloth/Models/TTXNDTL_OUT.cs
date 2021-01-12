@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Improvar.Models
 {
-    public class TTXNDTL
+    public class TTXNDTL_OUT
     {
         public short? EMD_NO { get; set; }
 

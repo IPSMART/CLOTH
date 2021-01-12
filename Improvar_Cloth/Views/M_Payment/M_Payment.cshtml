@@ -112,19 +112,31 @@
             </div>
             <div class="row">
                 <div class="col-md-5">
-                    <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
-                        @Html.Label("", "De - Activate")
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Payment Type")
                     </div>
                 </div>
-                <div class="col-md-8">
-                    <div class="editor-field" style="display: inline-block;">
-                        @Html.CheckBoxFor(model => model.Checked)
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.DropDownListFor(model => model.M_PAYMENT.PYMTTYPE, new SelectList(Model.DropDown_list1, "Value", "Text", Model.DropDown_list1), new { @class = " form-control", ID = "PYMTTYPE" })
                     </div>
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
+                            @Html.Label("", "De - Activate")
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="editor-field" style="display: inline-block;">
+                            @Html.CheckBoxFor(model => model.Checked)
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
-
-        </div>
     }
     else
     {
