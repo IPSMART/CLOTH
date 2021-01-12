@@ -29,7 +29,7 @@ namespace Improvar.Models
 
         [StringLength(5)]
         public string TRLTIME { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DELVDT { get; set; }
 
         [StringLength(5)]

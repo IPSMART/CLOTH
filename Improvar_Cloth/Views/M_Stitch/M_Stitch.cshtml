@@ -29,8 +29,8 @@
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Enter Group Name", "STCHNM")) { return false; }
         if (!emptyFieldCheck("Select Type", "STCHALT")) { return false; }
-        var CHECK_TAG = document.getElementById("Checked_INCLTAX").checked;
-        if (CHECK_TAG==false) { msgWarning("Please checked Inclusive of Taxes !"); return false; }
+        //var CHECK_TAG = document.getElementById("Checked_INCLTAX").checked;
+        //if (CHECK_TAG==false) { msgWarning("Please checked Inclusive of Taxes !"); return false; }
         //checking Length>Decimal
         var GridRow = $("#M_Stitch_Grid > tbody > tr").length;
         var error_msg = "";
@@ -42,19 +42,20 @@
                 if (FLDDEC != "") { FLDDEC = parseFloat(FLDDEC) + 1; } else { FLDDEC = parseFloat(0); }
                 if (FLDDEC > FLDLEN) {
                     error_msg += "Length (" + FLDLEN + ") should be grater than Decimal (" + (FLDDEC - 1) + ") at row no : " + (i + 1) + "</br>";
+                    $("#FLDLEN_" + i).focus();
                 }
             }
             if ($("#FLDTYPE_" + i).val() == "C") {
                 debugger;
                 var FLDLEN = $("#FLDLEN_" + i).val();
-                if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of charecter in Stiching details !!."); return false; }
-                if (FLDLEN.substring(0, 1) == 0) { msgWarning("The charecter length should not start with (0) / Please enter the charecter length greater than (0) in Stiching details !!."); return false; }
+                if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of charecter in Stiching details !!."); $("#FLDLEN_" + i).focus(); return false; }
+                if (FLDLEN.substring(0, 1) == 0) { msgWarning("The charecter length should not start with (0) / Please enter the charecter length greater than (0) in Stiching details !!.");$("#FLDLEN_" + i).focus(); return false; }
             }
             if ($("#FLDTYPE_" + i).val() == "N") {
                 debugger;
                 var FLDLEN = $("#FLDLEN_" + i).val();
-                if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of Numeric in Stiching details !!."); return false; }
-                if (FLDLEN.substring(0, 1) == 0) { msgWarning("The Number length should not start with (0) / Please enter the Number length greater than (0) in Stiching details !!."); return false; }
+                if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of Numeric in Stiching details !!."); $("#FLDLEN_" + i).focus(); return false; }
+                if (FLDLEN.substring(0, 1) == 0) { msgWarning("The Number length should not start with (0) / Please enter the Number length greater than (0) in Stiching details !!."); $("#FLDLEN_" + i).focus(); return false; }
             }
 
         }
@@ -237,14 +238,14 @@
         if ($("#FLDTYPE_" + i).val() == "C") {
             debugger;
             var FLDLEN = $("#FLDLEN_" + i).val();
-            if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of charecter in Stiching details !!."); return false; }
-            if (FLDLEN.substring(0, 1) == 0) { msgWarning("The charecter length should not start with (0) / Please enter the charecter length greater than (0) in Stiching details !!."); return false; }
+            if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of charecter in Stiching details !!."); $("#FLDLEN_" + i).focus(); return false; }
+            if (FLDLEN.substring(0, 1) == 0) { msgWarning("The charecter length should not start with (0) / Please enter the charecter length greater than (0) in Stiching details !!."); $("#FLDLEN_" + i).focus(); return false; }
         }
         if ($("#FLDTYPE_" + i).val() == "N") {
             debugger;
             var FLDLEN = $("#FLDLEN_" + i).val();
-            if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of Numeric in Stiching details !!."); return false; }
-            if (FLDLEN.substring(0, 1) == 0) { msgWarning("The Number length should not start with (0) / Please enter the Number length greater than (0) in Stiching details !!."); return false; }
+            if (FLDLEN == "") { msgInfo("Please enter the length if you select the type of Numeric in Stiching details !!."); $("#FLDLEN_" + i).focus(); return false; }
+            if (FLDLEN.substring(0, 1) == 0) { msgWarning("The Number length should not start with (0) / Please enter the Number length greater than (0) in Stiching details !!."); $("#FLDLEN_" + i).focus(); return false; }
         }
     }
 </script>
@@ -400,7 +401,7 @@
                         <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Inclusive of Taxes")
-                                <b style="color:red"><sup>*</sup></b>
+                                @*<b style="color:red"><sup>*</sup></b>*@
                             </div>
                         </div>
                         <div class="col-md-6">

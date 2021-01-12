@@ -23,6 +23,8 @@ namespace Improvar.ViewModels
         public string MOBILE { get; set; }
         public string RTDEBNM { get; set; }
         public string ADDR { get; set; }
+        public string CITY { get; set; }
+        
         public string RTMOBILE { get; set; }
         public string STCHCD { get; set; }
       

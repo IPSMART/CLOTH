@@ -550,7 +550,7 @@ namespace Improvar.Controllers
                         MFXGRP.STCHUOM = VE.M_STCHGRP.STCHUOM;
                         MFXGRP.STCHRATE = VE.M_STCHGRP.STCHRATE;
                         MFXGRP.STCHREM = VE.M_STCHGRP.STCHREM;
-                       if(VE.Checked_INCLTAX==true)  MFXGRP.INCLTAX = "Y";
+                       if(VE.Checked_INCLTAX==true)  MFXGRP.INCLTAX = "Y";else MFXGRP.INCLTAX = "N";
                         if (VE.DefaultAction == "E")
                         {
                             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -605,7 +605,7 @@ namespace Improvar.Controllers
 
                             for (int i = 0; i <= VE.MSTCHGRPCOMP.Count - 1; i++)
                             {
-                                if (VE.MSTCHGRPCOMP[i].SLNO != 0 && VE.MSTCHGRPCOMP[i].FLDTYPE != null && VE.MSTCHGRPCOMP[i].FLDNM != null)
+                                if (VE.MSTCHGRPCOMP[i].SLNO != 0 && VE.MSTCHGRPCOMP[i].FLDTYPE != null)
                                 {
                                     slno++;
                                     string FLDCD = MFXGRP.STCHCD + (FLDCD_no).ToString("D4");
