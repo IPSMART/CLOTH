@@ -197,5 +197,9 @@ namespace Improvar.Models
         public string PARTNM { get; set; }
         public string SIZENM { get; set; }
         public string COLRNM { get; set; }
+        public string MTBARCODE { get; set; }
+        public string PRTBARCODE { get; set; }
+        public string CLRBARCODE { get; set; }
+        public string SZBARCODE { get; set; }
     }
 }
