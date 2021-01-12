@@ -1,0 +1,619 @@
+﻿@model Improvar.ViewModels.OrderCancelEntry
+@{
+    string PageControllerName = "T_SORDCANC";
+}
+@{
+    switch (Model.DOC_CODE)
+    {
+        case "SOCAN":
+            ViewBag.Title = "Sales Order Cancel Part / Full"; break;
+        case "DOCAN":
+            ViewBag.Title = "Delivery Order Cancel Part / Full"; break;
+        default: ViewBag.Title = ""; break;
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D")
+        {
+            $("#print_nav").hide();
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E")
+        {
+            $("#PARTY_HELP").hide();
+            $("#SLCD").attr("readonly", "readonly");
+        }
+        else if ("@Model.DefaultAction" == "A")
+        {
+            ChangeDoctype();
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    //abhijit
+    function ChangeDoctype()
+    {
+        var docdt = $("#DOCDT").val();
+        var DOC_CD = document.getElementById("DOC_ID").value;
+        var DOCNO = document.getElementById("DOCNO").value;
+        $.ajax({
+            type: 'GET',
+            beforesend: $("#WaitingMode").show(),
+            url: '@Url.Action("changeDocumentType", PageControllerName)',
+            data:
+            {
+                DOC_CD: DOC_CD,
+                DOCDT: docdt,
+                AllowBDATE: '@Model.AllowBackDate',
+                @*DOCNO: '@Model.T_SORD_CANC.DOCNO'*@
+                DOCNO: DOCNO,
+            },
+            success: function (result)
+            {
+                if (result != "")
+                {
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    var maxdocdt = result.split(String.fromCharCode(181) + '^' + String.fromCharCode(181));
+                    var dt = maxdocdt[1].split('~');
+                    $("#DOCDT").datepicker("option", "dateFormat", "dd/mm/yy");
+                    $("#DOCDT").datepicker("option", "minDate", dt[0]);
+                    $("#DOCDT").datepicker("option", "maxDate", dt[1]);
+                }
+                $("#WaitingMode").hide();
+                return false;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown)
+            {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+</script>
+<script>
+    function requiredFieldValidator()
+    {
+        //var doctype = $("#doctype").val();
+        //if (doctype == 0) {
+        //    $("#Msgdiv1").show();
+        //    $("#info").show();
+        //    $("#btnok").focus();
+        //    $("#msgbody_info").html("Select Document Type !! ");
+        //    message_value = "doctype";
+        //    return false;
+        //}
+        //if (!emptyFieldCheck("Enter Document Date", "DOCDT")) { return false; }
+        //if (!emptyFieldCheck("Enter Department Code", "DEPTCD")) { return false; }
+        //if (!emptyFieldCheck("Enter Department Head ", "DEPTSUBCD")) { return false; }
+        //if (!emptyFieldCheck("Enter Indent Category", "INDCATECD")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    function DateSeparator(DATE) {
+        var TextDate = document.getElementById(DATE.id).value;
+        const keyName = event.key;
+        if (keyName != "Backspace") {
+            var DATE_LENGTH = TextDate.length;
+            if (DATE_LENGTH == 2) {
+                TextDate = TextDate + "/";
+            }
+            else if (DATE_LENGTH == 5) {
+                TextDate = TextDate + "/";
+            }
+            document.getElementById(DATE.id).value = TextDate;
+        }
+    }
+</script>
+<script>
+    $(function () {
+        $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#ORDASONDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+    });
+</script>
+<script>
+    function CancelQNTYCheck(id, BAL_QNTY_, CANCQTY_, ITDESCN_) {
+        var BALANCE_QTY = document.getElementById(BAL_QNTY_.id).value;
+        if (BALANCE_QTY == "") { BALANCE_QTY = parseFloat(0); } else { BALANCE_QTY = parseFloat(BALANCE_QTY); }
+        var CANCEL_QTY = document.getElementById(CANCQTY_.id).value;
+        if (CANCEL_QTY == "") { CANCEL_QTY = parseFloat(0); } else { CANCEL_QTY = parseFloat(CANCEL_QTY); }
+        if (CANCEL_QTY > BALANCE_QTY) {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msg_ok_info").focus();
+            $("#msgbody_info").html("Cancel Quantity is not More than the Balance Quantity ! Please Maintain the Ratio !! Total Balance Quantity is : " + BALANCE_QTY + " , for Particular Item : " + ITDESCN_ + "");
+            message_value = CANCQTY_.id;
+        }
+
+
+    }
+</script>
+<script>
+    function OpenSize(id, SLNO, ITCD, ITNM, ARTNO, UOM, TOTAL_PCS, STKTYPE, FREESTK, AUTO)
+    {
+        const keyName = event.key;
+        if (keyName == undefined || keyName == " ")
+        {
+            if (id == "") { id = parseFloat(0) } else { id = parseFloat(id) }
+            var SerialNo = document.getElementById(SLNO).value;
+            if (SerialNo == "") { SerialNo = parseInt(0) } else { SerialNo = parseInt(SerialNo) }
+            var ITEM = document.getElementById(ITCD).value;
+            var ITEM_NM = document.getElementById(ITNM).value;
+            var ART_NO = document.getElementById(ARTNO).value; ART_NO = ART_NO.replace('+', 'μ'); ART_NO = ART_NO.replace('&', '‡');
+            var UOM = document.getElementById(UOM).value;
+            var PCS = document.getElementById(TOTAL_PCS).value;
+            if (PCS == "") { PCS = parseFloat(0) } else { PCS = parseFloat(PCS) }
+            var STK_TYPE = document.getElementById(STKTYPE).value;
+            var FREE_STK = document.getElementById(FREESTK).value;
+            var AUTO_NO = document.getElementById(AUTO).value;
+            $("#hiddenITEM").val(ITEM);
+            if (ITEM.toString() != "")
+            {
+                $.ajax({
+                    type: 'POST',
+                    url: $("#urlnameOPENSIZE").val(),
+                    beforesend: $("#WaitingMode").show(),
+                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&ART_NO=" + ART_NO + "&UOM=" + UOM + "&PCS=" + PCS + "&QNTY=" + parseFloat(id) + "&STK_TYPE=" + STK_TYPE + "&FREE_STK=" + FREE_STK + "&AUTO_NO=" + AUTO_NO,
+                    success: function (result)
+                    {
+                        $("#WaitingMode").hide();
+                        $('#popup').html(result);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown)
+                    {
+                        $("#WaitingMode").hide();
+                        msgError("Error: " + textStatus + "," + errorThrown);
+                    }
+                });
+            }
+            else
+            {
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#btnok").focus();
+                $("#msgbody_info").html("Article No is not Available ! Please Select / Enter a Article No !! ");
+                message_value = ITCD.id;
+            }
+        }
+    }
+
+    document.onkeydown = CloseSize;
+    function CloseSize()
+    {
+        var KeyID = (window.event) ? event.keyCode : e.keyCode;
+        if (KeyID == undefined || KeyID == 27)
+        {
+            if ("@Model.DefaultAction" != "V")
+            {
+                $.ajax({
+                    type: 'POST',
+                    url: $("#urlnameCLOSESIZE").val(),
+                    beforesend: $("#WaitingMode").show(),
+                    data: $('form').serialize(),
+                    success: function (result) {
+                        $("#WaitingMode").hide();
+                        $('#partialdivMain').html(result);
+                        var GridRowMain = $("#_T_SORDCANC_MAIN_GRID > tbody > tr").length;
+                        for (i = 0; i <= GridRowMain - 1; i++)
+                        {
+                            var CAN_QTY = document.getElementById("CANCQNTY_" + i).value;
+                            if (CAN_QTY == "")
+                            {
+                                $("#CANCQNTY_" + i).focus();
+                                break;
+                            }
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown)
+                    {
+                        $("#WaitingMode").hide();
+                        msgError("Error: " + textStatus + "," + errorThrown);
+                    }
+                });
+            }
+            $("#popup").html("");
+        }
+    }
+    function CalculateCancelQnty(CAN_QNTY, BAL_QNTY) {
+        var CAN_QUANTITY = document.getElementById(CAN_QNTY.id).value;
+        if (CAN_QUANTITY == "") { CAN_QUANTITY = parseFloat(0) } else { CAN_QUANTITY = parseFloat(CAN_QUANTITY) }
+        var BAL_QUANTITY = document.getElementById(BAL_QNTY).value;
+        if (BAL_QUANTITY == "") { BAL_QUANTITY = parseFloat(0) } else { BAL_QUANTITY = parseFloat(BAL_QUANTITY) }
+        if (CAN_QUANTITY <= BAL_QUANTITY) {
+            var CHECK_TAG = document.getElementById("SAME_QTY").checked;
+            if (CHECK_TAG == true) {
+                var GridRow = $("#_T_SORDCANC_SIZE_GRID > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    var QUANTITY = document.getElementById("SIZE_CANCQNTY_" + i).value;
+                    if (QUANTITY == "") { QUANTITY = parseFloat(0) } else { QUANTITY = parseFloat(QUANTITY) }
+                    if (QUANTITY == 0) {
+                        document.getElementById("SIZE_CANCQNTY_" + i).value = CAN_QUANTITY;
+                    }
+                }
+            }
+        }
+        else {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#btnok").focus();
+            $("#msgbody_info").html("Cancel Quantity is not More than Balance Quantity ! Please Maintain the Ratio !!");
+            message_value = CAN_QNTY.id;
+        }
+    }
+</script>
+<script>
+    function GetPendingData()
+    {
+        var PARTY = document.getElementById("SLCD").value;
+        if (PARTY != "")
+        {
+            var DOC_DT = document.getElementById("DOCDT").value;
+            var ORDERNO = document.getElementById("ORDNO").value;
+            var ORDERASONDATE = document.getElementById("ORDASONDT").value;
+            $.ajax({
+                type: 'post',
+                url: "@Url.Action("GetGridData", PageControllerName)",
+                data: $('form').serialize() + "&PARTY=" + PARTY + "&DOC_DT=" + DOC_DT + "&ORDERNO=" + ORDERNO + "&ORDERASONDATE=" + ORDERASONDATE,
+                success: function (result) {
+                    $("#WaitingMode").hide();
+                    $('#partialdivMain').html(result);
+                    $("#PARTY_HELP").hide();
+                    $("#SLCD").attr("readonly", "readonly");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    $("#PARTY_HELP").show();
+                    $("#SLCD").attr("readonly", false);
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+        else {
+            $("#Msgdiv1").show();
+            $("#info").show();
+            $("#msg_ok_info").focus();
+            $("#msgbody_info").html("Party not Available ! Please Select / Enter a Valid Party to get Balance Order Details !! ");
+            message_value = "SLCD";
+            return false;
+        }
+    }
+</script>
+<script>
+    function SelectSubLedgerCode(id, CODE, NAME) {
+        debugger;
+        if (id == "") {
+            $("#" + CODE.id).val("");
+            $("#" + NAME.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlnamePARTY").val(),
+                data: { val: id },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val().split(String.fromCharCode(181));
+                        document.getElementById(CODE.id).value = findstr[0].toString();
+                        document.getElementById(NAME.id).value = findstr[1].toString();
+                    }
+                    else {
+                        msgInfo(result);
+                        $("#" + CODE).val("");
+                        $("#" + NAME).val("");
+                        message_value = CODE;
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function AddRow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#urlnameADDROW").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivMain").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivMain").html(result);
+
+            }
+        });
+    }
+    function DeleteRow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#urlnameDELETEROW").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                $("#partialdivMain").html(result);
+            }
+        });
+    }
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#add_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: $("#del_doc_url").val(),
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+</script>
+<script>
+    function CalculateTotalPCSBOX(id, PCS_PER) {
+        var QUANTITY = document.getElementById(id);
+        var PCS_PER_BOX = document.getElementById(PCS_PER.id).value;
+        var TOTAL_QUANTITY = 0;
+        var GridRow = $("#_T_SORDCANC_SIZE_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var QUANTITY = document.getElementById("SIZE_QNTY_" + i).value;
+            if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
+            TOTAL_QUANTITY = parseFloat(TOTAL_QUANTITY) + QUANTITY;
+        }
+        var BOX = parseFloat(TOTAL_QUANTITY) / parseFloat(PCS_PER_BOX);
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var QNTY = document.getElementById("SIZE_QNTY_" + i).value;
+            if (QNTY != "") {
+                document.getElementById("TTL_PCS_" + i).value = TOTAL_QUANTITY;
+                document.getElementById("TOTAL_BOX_" + i).value = BOX;
+            }
+        }
+    }
+    function CALCULATION(id, PCS_PER) {
+        var QUANTITY = document.getElementById(id);
+        if (QUANTITY == "") { QUANTITY = parseFloat(0); } else { QUANTITY = parseFloat(QUANTITY); }
+        var PCS_PER_BOX = document.getElementById(PCS_PER.id).value;
+        if (PCS_PER_BOX == "") { PCS_PER_BOX = parseFloat(0); } else { PCS_PER_BOX = parseFloat(PCS_PER_BOX); }
+        var BOXES = 0; var PIECES = 0;
+        var VALUE = parseFloat(parseFloat(QUANTITY) / parseFloat(PCS_PER_BOX)).toFixed(2);
+        var VALUE1 = VALUE.toString().split('.');
+        if (VALUE1[1] > 0) {
+            BOXES = VALUE1[0];
+            PIECES = QUANTITY - (BOXES * PCS_PER_BOX);
+        }
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="urlnameOPENSIZE" value="@Url.Action("OPENSIZE", PageControllerName)" />
+        <input type="hidden" id="urlnameCLOSESIZE" value="@Url.Action("CLOSESIZE", PageControllerName)" />
+        <input type="hidden" id="urlnameADDROW" value="@Url.Action("AddRow", PageControllerName)" />
+        <input type="hidden" id="urlnameDELETEROW" value="@Url.Action("DeleteRow", PageControllerName)" />
+        <input type="hidden" id="add_doc_url" value="@Url.Action("AddDOCRow", PageControllerName)" />
+        <input type="hidden" id="del_doc_url" value="@Url.Action("DeleteDOCRow", PageControllerName)" />
+        <input type="hidden" id="urlnamePARTY" value="@Url.Action("GetPartyDetails", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        @Html.HiddenFor(s => s.DefaultAction)
+        if (Model.DOC_CODE == "SOCAN")
+        {
+            @Html.HiddenFor(a => a.T_SORD_CANC.AUTONO)
+            @Html.HiddenFor(a => a.T_SORD_CANC.DOCNO)
+        }
+        else
+        {
+            @Html.HiddenFor(a => a.T_DO_CANC.AUTONO)
+            @Html.HiddenFor(a => a.T_DO_CANC.DOCNO)
+        }
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            <div class="row">
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-md-5" style="margin-top: 6px;">
+                        <div class="editor-label">
+                            @Html.Label("", "Document Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-7" style="width:auto;">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => Model.DOC_ID, new SelectList(Model.DocumentType, "Value", "Text", Model.DOC_ID), "====Select Document====", new { @class = "form-control", @onchange = "ChangeDoctype();" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document Date")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="editor-field">
+                            @if (Model.DOC_CODE == "SOCAN")
+                            {
+                                @Html.EditorFor(model => model.T_SORD_CANC.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            }
+                            else
+                            {
+                                @Html.EditorFor(model => model.T_DO_CANC.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Document No.")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @if (Model.DOC_CODE == "SOCAN")
+                            {
+                                @Html.EditorFor(model => model.T_SORD_CANC.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                            }
+                            else
+                            {
+                               @Html.EditorFor(model => model.T_DO_CANC.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Party Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @if (Model.DOC_CODE == "SOCAN")
+                            {
+                                @Html.EditorFor(model => model.T_SORD_CANC.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName);", @placeholder = "Code", maxlength = 8 } })
+                            }
+                            else
+                            {
+                                @Html.EditorFor(model => model.T_DO_CANC.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeyup = "GetHelp('" + @Url.Action("GetPartyDetails", PageControllerName) + "','SLCD/PartyName','1/0','Party Details','SLCD')", onblur = "SelectSubLedgerCode(this.value,SLCD,PartyName);", @placeholder = "Code", maxlength = 8 } })
+                            }
+                            <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp('@Url.Action("GetPartyDetails", PageControllerName )','SLCD/PartyName','1/0','Party Details','SLCD')" />
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PartyName, new { htmlAttributes = new { @class = "form-control", id = "PartyName", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Remarks")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        <div class="editor-field">
+                            @if (Model.DOC_CODE == "SOCAN")
+                            {
+                                @Html.EditorFor(model => model.T_SORD_CANC.REM, new { htmlAttributes = new { @class = "form-control", id = "CANC_REM", maxlength = 100, @placeholder = "Remarks" } })
+                            }
+                            else
+                            {
+                                @Html.EditorFor(model => model.T_DO_CANC.REM, new { htmlAttributes = new { @class = "form-control", id = "CANC_REM", maxlength = 100, @placeholder = "Remarks" } })
+                            }
+                        </div>
+                    </div>
+                </div>
+                @*@if (Model.DefaultAction == "A")
+                {*@
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Order No")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.ORDNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ORDNO", onkeyup = "GetHelp_WithId('" + @Url.Action("GetOrderDetails", PageControllerName) + "','ORDNO/ORDDT','0/1','Pending Order Details','ORDNO','SLCD/DOCDT')", @placeholder = "Order Number", maxlength = 30 } })
+                                <img src="~/Image/search.png" id="PARTY_HELP" class="Help_image_button" width="20px" height="20px" style="margin-top:5px;" title="Help" onclick="GetHelp_WithId('@Url.Action("GetOrderDetails", PageControllerName )','ORDNO/ORDDT','0/1','Pending Order Details','ORDNO','SLCD/DOCDT')" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Order Date")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.ORDDT, new { htmlAttributes = new { @class = "form-control", id = "ORDDT", maxlength = 10, @placeholder = "Order Date" } })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "As on Date")
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.ORDASONDT, new { htmlAttributes = new { @class = "form-control", id = "ORDASONDT", maxlength = 10, @placeholder = "dd/MM/yyyy" } })
+                            </div>
+                        </div>
+
+                        <div class="col-md-4" style="margin-top: 2px;">
+                            <input type="button" class="btn btn-info" onclick="GetPendingData();" name="PendingData" style="padding:2px;" value="Get Balance Order Details" title="Click to Get Balance Order Details" />
+                        </div>
+                    </div>
+                @*}*@
+            </div>
+            <div class="row">
+                <ul class="nav nav-tabs">
+                    <li id="MainTab_LI4" class="active"><a data-toggle="tab" href="#MainTab">Main</a></li>
+                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks">Remarks</a></li>
+                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="MainTab" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivMain" style="margin-top:0px;">
+                                    @Html.Partial("_T_SORDCANC_MAIN")
+                                </div>
+                            </div>
+                            <div>
+                                <div id="popup" class="row" style="margin-top: 11px;top:40%;left:50%;position:absolute;transform: translate(-50%, -50%);z-index: 1100;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  
+                    <div id="Remarks" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row">
+                            <div>
+                                <div id="partialdivRemarks">
+                                    @Html.Partial("_TRANSACTIONREMARKS")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;width:1025px;height:auto;background-color:#c4b9b9">
+                            <div id="partialdivDocument">
+                                @Html.Partial("_UPLOADDOCUMENTS")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

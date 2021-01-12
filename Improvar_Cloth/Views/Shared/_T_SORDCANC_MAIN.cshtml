@@ -1,0 +1,99 @@
+﻿@model Improvar.ViewModels.OrderCancelEntry
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SORDCANC_MAIN_GRID'));
+        $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
+    });
+</script>
+<div>
+    <div class="table-responsive">
+        @if (Model.DefaultView == true)
+        {
+            @Html.ValidationSummary(true)
+            <div class="grid_title">
+                <img src="~/Image/Plus.png" id="btnAddMain" class="Help_image_buttonAddRemove" title="Add Row" onclick="AddRow()" />
+                <img src="~/Image/Minus.png" id="btnDeleteMain" class="Help_image_buttonAddRemove" title="Delete Row" onclick="DeleteRow()" />
+                <div class="col-md-8">
+                    <input type="text" id="search" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SORDCANC_MAIN_GRID');" />
+                    <img src="~/Image/search.png" title="Help" />
+                </div>
+                <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>@ViewBag.GridHeader Part / Full Item Details</b></center>
+            </div>
+            <div class="sticky-table sticky-ltr-cells">
+                <div style="height:auto;overflow-y:scroll;max-height:265px;">
+                    <table id="_T_SORDCANC_MAIN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1550px;">
+                        <thead>
+                            <tr class="sticky-header" style="height:30px;">
+                                <th class="" style="width: 27px;"></th>
+                                <th class="" style="width: 40px;text-align:center;">SL No.</th>
+                                <th class="" style="width: 130px;">Article</th>
+                                <th class="" style="width: 470px;">Item Name</th>
+                                <th class="" style="width: 75px;text-align:right;">PCS/Box</th>
+                                <th class="" style="width: 70px;">UOM</th>
+                                <th class="" style="width: 80px;">Stock Type</th>
+                                <th class="" style="width:70px;">Free</th>
+                                <th class="" style="width: 100px;text-align:right;">Bal. Qnty</th>
+                                <th class="" style="width: 100px;text-align:right;">Cancel Qnty</th>
+                                <th class="" style="width:300px;">Sizes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.TSORDDTL_CANC != null)
+                            {
+                                for (int i = 0; i <= Model.TSORDDTL_CANC.Count - 1; i++)
+                                {
+                                    <tr style="font-size:12px; font-weight:bold;">
+                                        <td class="" style="padding-left:7px;padding-right:7px;">
+                                            @Html.CheckBoxFor(model => model.TSORDDTL_CANC[i].Checked, new { id = "chkid" })
+                                            @Html.HiddenFor(model => model.TSORDDTL_CANC[i].ChildData, new { id = "ChildData_" + i, Value = @Model.TSORDDTL_CANC[i].ChildData })
+                                            @Html.HiddenFor(model => model.TSORDDTL_CANC[i].ORDAUTONO, new { id = "ORDAUTONO_" + i, Value = @Model.TSORDDTL_CANC[i].ORDAUTONO })
+                                            @Html.HiddenFor(model => Model.TSORDDTL_CANC[i].STKTYP_HIDDEN, new { id = "STKTYP_HIDDEN_" + i })
+                                            @Html.HiddenFor(model => Model.TSORDDTL_CANC[i].FREESTK_HIDDEN, new { id = "FREESTK_HIDDEN_" + i })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].SLNO, new { id = "SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].ARTNO, new { id = "ARTNO_" + i, @class = " atextBoxFor ", maxlength = 12, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TSORDDTL_CANC[i].ITCD, new { id = "ITCD_" + i, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => model.TSORDDTL_CANC[i].ITNM, new { id = "ITNM_" + i, @class = " atextBoxFor ", maxlength = 60, @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].TOTAL_PCS, new { id = "TOTAL_PCS_" + i, @style = "text-align:right;", @class = " atextBoxFor", @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].UOM, new { id = "UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => Model.TSORDDTL_CANC[i].STKTYPE, new SelectList(Model.TSORDDTL_CANC[i].DropDown_list2, "value", "text", Model.TSORDDTL_CANC[i].STKTYPE), new { id = "STKTYPE_" + i, @class = "atextBoxFor select_3d", @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.DropDownListFor(model => Model.TSORDDTL_CANC[i].FREESTK, new SelectList(Model.TSORDDTL_CANC[i].DropDown_list3, "value", "text", Model.TSORDDTL_CANC[i].FREESTK), new { id = "FREESTK_" + i, @class = "atextBoxFor select_3d" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].QNTY, new { id = "QNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 12, @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].CANCQNTY, new { id = "CANCQNTY_" + i, @class = " atextBoxFor", @style = "text-align: right;", onclick = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','" + "ORDAUTONO_" + i + "');", onkeydown = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','" + "ORDAUTONO_" + i + "');", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].ALL_SIZE, new { id = "ALL_SIZE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

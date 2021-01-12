@@ -306,6 +306,7 @@
     <Compile Include="Controllers\T_OUTRECPROCESSController.cs" />
     <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SALE_POSController.cs" />
+    <Compile Include="Controllers\T_SORDCANCController.cs" />
     <Compile Include="Controllers\T_SORDController.cs" />
     <Compile Include="Controllers\T_StockAdjController.cs" />
     <Compile Include="Controllers\User_GuideController.cs" />
@@ -526,6 +527,8 @@
     <Compile Include="Models\TextBoxDropDown.cs" />
     <Compile Include="Models\TPROGBOM.cs" />
     <Compile Include="Models\TPROGDTL.cs" />
+    <Compile Include="Models\TPSLIPDTL.cs" />
+    <Compile Include="Models\TPSLIPDTL_SIZE.cs" />
     <Compile Include="Models\TSALEBARNOPOPUP.cs" />
     <Compile Include="Models\TsalePos_TBATCHDTL.cs" />
     <Compile Include="Models\TsalePos_TBATCHDTL_RETURN.cs" />
@@ -670,6 +673,8 @@
     <Compile Include="ViewModels\GenEinvIRN.cs" />
     <Compile Include="ViewModels\GenEinvIRNCancel.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
+    <Compile Include="ViewModels\OrderCancelEntry.cs" />
+    <Compile Include="ViewModels\PackingSlipEntry.cs" />
     <Compile Include="ViewModels\RateHistory.cs" />
     <Compile Include="ViewModels\RepBarcodeImage.cs" />
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
@@ -1216,6 +1221,9 @@
     <Content Include="Views\Shared\_T_StockAdj_IN_TAB.cshtml" />
     <Content Include="Views\Shared\_T_StockAdj_OUT_TAB.cshtml" />
     <Content Include="Views\Shared\_T_StockAdj_STK_TYPE_QNTY.cshtml" />
+    <Content Include="Views\T_SORDCANC\T_SORDCANC.cshtml" />
+    <Content Include="Views\Shared\_T_SORDCANC_MAIN.cshtml" />
+    <Content Include="Views\Shared\_T_SORDCANC_SIZE.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
