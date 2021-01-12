@@ -89,24 +89,24 @@ namespace Improvar.Controllers
                     VE.VECHLTYPE = masterHelp.VECHLTYPE();
                     VE.TRANSMODE = masterHelp.TRANSMODE();
 
-                    string[] autoEntryWork = ThirdParty.Split('~');// for zooming
-                    if (autoEntryWork[0] == "yes")
-                    {
-                        autoEntryWork[2] = autoEntryWork[2].Replace("$$$$$$$$", "&");
-                    }
-                    if (autoEntryWork[0] == "yes")
-                    {
-                        if (autoEntryWork[4] == "Y")
-                        {
-                            DocumentType dp = new DocumentType();
-                            dp.text = autoEntryWork[2];
-                            dp.value = autoEntryWork[1];
-                            VE.DocumentType.Clear();
-                            VE.DocumentType.Add(dp);
-                            VE.Edit = "E";
-                            VE.Delete = "D";
-                        }
-                    }
+                    //string[] autoEntryWork = ThirdParty.Split('~');// for zooming
+                    //if (autoEntryWork[0] == "yes")
+                    //{
+                    //    autoEntryWork[2] = autoEntryWork[2].Replace("$$$$$$$$", "&");
+                    //}
+                    //if (autoEntryWork[0] == "yes")
+                    //{
+                    //    if (autoEntryWork[4] == "Y")
+                    //    {
+                    //        DocumentType dp = new DocumentType();
+                    //        dp.text = autoEntryWork[2];
+                    //        dp.value = autoEntryWork[1];
+                    //        VE.DocumentType.Clear();
+                    //        VE.DocumentType.Add(dp);
+                    //        VE.Edit = "E";
+                    //        VE.Delete = "D";
+                    //    }
+                    //}
                     if (op.Length != 0)
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
