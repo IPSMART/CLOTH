@@ -507,7 +507,7 @@ namespace Improvar.Controllers
                     ORD_AUTO = (from X in DB.T_CNTRL_HDR where X.DOCNO == ORDERNO select X.AUTONO).ToList();
                 }
 
-                DataTable PENDING_ORDER = SALES_FUNC.GetPendOrder(PARTY, ORDERASONDATE, ORD_AUTO == null || ORD_AUTO.Count == 0 ? "" : "'" + ORD_AUTO[0] + "'" != null && ORD_AUTO.Count > 0 ? "'" + ORD_AUTO[0] + "'" : "", DOC_DT, "", VE.MENU_PARA, "");
+                DataTable PENDING_ORDER = SALES_FUNC.GetPendOrder(PARTY, ORDERASONDATE, ORD_AUTO == null || ORD_AUTO.Count == 0 ? "" : "'" + ORD_AUTO[0] + "'" != null && ORD_AUTO.Count > 0 ? "'" + ORD_AUTO[0] + "'" : "", DOC_DT, "","", VE.MENU_PARA, "");
                 VE.TSORDDTL_CANC = (from DataRow dr in PENDING_ORDER.Rows
                                     select new TSORDDTL_CANC
                                     {
