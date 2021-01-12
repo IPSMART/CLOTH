@@ -2911,7 +2911,7 @@ namespace Improvar.Controllers
                 sql += "when nvl(s.einvappl,'N')='Y' and p.irnno is null and e.gstno is not null and s.expcd is null and s.salpur='S' then 'I' end) cancel,p.irnno, ";
                 sql += " b.curr_cd,a.listprice,a.listdiscper from  ";
 
-                sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno) styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
+                sql += " (select a.autono, a.autono || a.slno autoslno, a.slno, a.itcd, d.itnm, o.pdesign, d.styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)) hsncode,  ";
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
                 sql += " a.itrem, a.baleno, a.nos, decode( nvl(a.blqnty, 0),0,a.qnty,nvl(a.blqnty, 0)) qnty, a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy') agdocdt,  ";
                 sql += " listagg(o.barno || ' (' || n.qnty || ')', ', ') within group(order by n.autono, n.slno) batchdtl,  ";
@@ -2923,13 +2923,13 @@ namespace Improvar.Controllers
                 if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
                 if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
                 sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)  ";
-                sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm, nvl(o.pdesign, d.styleno), d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  ";
+                sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm,o.pdesign, d.styleno, d.uomcd, nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  ";
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
                 sql += " a.itrem, a.baleno, a.nos, decode( nvl(a.blqnty, 0),0,a.qnty,nvl(a.blqnty, 0)), a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,a.listprice,a.listdiscper  ";
                 sql += " union all  ";
 
-                sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm, '' styleno, '' uomcd, a.hsncode hsncode,  ";
+                sql += " select a.autono, a.autono autoslno, nvl(ascii(d.calccode), 0) + 1000 slno, '' itcd, d.amtnm || ' ' || a.amtdesc itnm,'' pdesign, '' styleno, '' uomcd, a.hsncode hsncode,  ";
                 sql += " '' itrem, '' baleno, 0 nos, 0 qnty, 0 flagmtr, a.amtrate rate, a.amt, '' agdocno, '' agdocdt, '' batchdtl,  ";
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,0 listprice,0 listdiscper  ";
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
@@ -2968,8 +2968,8 @@ namespace Improvar.Controllers
 
                 DataTable rsStkPrcDesc;
                 sql = "";
-                sql += "select distinct a.autono,a.txnslno,a.itcd,a.barno,a.shade,a.nos,a.qnty,a.flagmtr,a.disctype,a.discrate,a.scmdisctype,a.scmdiscrate, ";
-                sql += "a.tddisctype,a.tddiscrate,a.itrem ";
+                sql += "select distinct a.autono,a.txnslno,a.barno,a.shade,a.nos,a.qnty,a.flagmtr,a.disctype,a.discrate,a.scmdisctype,a.scmdiscrate, ";
+                sql += "a.tddisctype,a.tddiscrate,a.itrem,a.baleno,a.cutlength ";
                 sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_cntrl_hdr c ";
                 sql += "where  ";
                 sql += sqlc;
@@ -3524,43 +3524,43 @@ namespace Improvar.Controllers
                             string pcsdesc = "";
                             for (int a = 0; a <= batch_data.Count() - 1; a++)
                             {
-                                //            pcsdesc += pcsdesc == "" ? "" : ",";
-                                //            pcsdesc += batch_data[a]["SHADE"].retStr() == "" ? "" : batch_data[a]["SHADE"].retStr() + "/";
+                                pcsdesc += pcsdesc == "" ? "" : ",";
+                                pcsdesc += batch_data[a]["SHADE"].retStr() == "" ? "" : batch_data[a]["SHADE"].retStr() + "/";
 
-                                //            if (batch_data[a]["nos"].retDbl() == 1)
-                                //            {
-                                //                pcsdesc += batch_data[a]["cutlength"].retDbl();
-                                //            }
-                                //            else {
-                                //                pcsdesc += batch_data[a]["cutlength"].retDbl() + batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "";
-                                //            }
-                                //            if (batch_data[a]["flagmtr"].retDbl() > 0)
-                                //            {
-                                //                string flagmtr = batch_data[a]["flagmtr"].retDbl().ToINRFormat();
-                                //                pcsdesc += "(F" + flagmtr.Substring(flagmtr.Length - 2).Remove(1) + ")";
-                                //            }
-                                //            if (batch_data[a]["scmdiscrate"].retDbl() > 0)
-                                //            {
-                                //                pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";
-                                //            }
-                                //            if (FILLnumb(!SHDISCPER) <> 0 Or FILLnumb(!DISCPER) <> 0 ){
-                                //    StrDisc = IIf(StrDisc = "", "", StrDisc + ",") + " -SL ";
-                                //    if (Right(cStrConv(FILLnumb(!SHDISCPER), 6, 2), 2) = "00")
-                                //    {
-                                //        StrDisc = StrDisc + CStr(Int(FILLnumb(!SHDISCPER + !DISCPER)));
-                                //    }
-                                //    else {
-                                //        StrDisc = StrDisc + cStrConv(FILLnumb(!SHDISCPER + !DISCPER), 5, 2);
-                                //    }
-                                //    StrDisc = StrDisc + "% ";
-                                //}
-                                //pcsdesc = pcsdesc & StrDisc;
-                                //if (Trim(rs_Bill!ITREM) <> "")
-                                //{
-                                //    pcsdesc = pcsdesc & "[" + rs_Bill!ITREM + "]";
-                                //}
+                                if (batch_data[a]["nos"].retDbl() == 1)
+                                {
+                                    pcsdesc += batch_data[a]["cutlength"].retDbl();
+                                }
+                                else {
+                                    pcsdesc += batch_data[a]["cutlength"].retDbl() + batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "";
+                                }
+                                if (batch_data[a]["flagmtr"].retDbl() > 0)
+                                {
+                                    string flagmtr = batch_data[a]["flagmtr"].retDbl().ToINRFormat();
+                                    pcsdesc += "(F" + flagmtr.Substring(flagmtr.Length - 2).Remove(1) + ")";
+                                }
+                                if (batch_data[a]["scmdiscrate"].retDbl() > 0)
+                                {
+                                    pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";
+                                }
+                                if (batch_data[a]["tddiscrate"].retDbl() > 0)
+                                {
+                                    pcsdesc += batch_data[a]["tddiscrate"].retStr() + "% ";
+                                }
+                                if (batch_data[a]["discrate"].retDbl() > 0)
+                                {
+                                    pcsdesc += batch_data[a]["discrate"].retStr() + "% ";
+                                }
+                                if (batch_data[a]["itrem"].retStr() != "")
+                                {
+                                    pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
+                                }
+                                if (batch_data[a]["baleno"].retStr() != "")
+                                {
+                                    pcsdesc += "Bale No. " + batch_data[a]["baleno"].retStr();
+                                }
                             }
-                            dr1["regemailid"] = pcsdesc;
+                            dr1["pcsdesc"] = pcsdesc;
                             #endregion
                             string cfld = "", rfld = ""; int rf = 0;
                             for (int f = 1; f <= 6; f++)
@@ -3810,7 +3810,10 @@ namespace Improvar.Controllers
                                 dr1["slno"] = lslno;
                                 dr1["itcd"] = tbl.Rows[i]["itcd"].ToString();
                                 //dr1["prodcd"] = tbl.Rows[i]["prodcd"].ToString();
-                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
+                                //dr1["itnm"] = tbl.Rows[i]["itnm"].ToString() + " " + tbl.Rows[i]["styleno"].ToString();
+                                dr1["itnm"] = tbl.Rows[i]["itnm"].ToString();
+                                dr1["styleno"] = tbl.Rows[i]["styleno"].ToString();
+
                                 //if (tbl.Rows[i]["damstock"].ToString() == "D")
                                 //{
                                 //    dr1["itnm"] = dr1["itnm"].ToString() + " [Damage]";
