@@ -1224,6 +1224,7 @@
     <Content Include="Views\T_SORDCANC\T_SORDCANC.cshtml" />
     <Content Include="Views\Shared\_T_SORDCANC_MAIN.cshtml" />
     <Content Include="Views\Shared\_T_SORDCANC_SIZE.cshtml" />
+    <Content Include="Views\Shared\_T_AltOrder_Measure.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
