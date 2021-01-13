@@ -212,10 +212,10 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["docdt"] = tbl.Rows[i]["docdt"].ToString().retDateStr();
                                 IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                                IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].ToString();
+                                IR.Rows[rNo]["qnty"] = tbl.Rows[i]["balqnty"].ToString();
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].ToString();
                                 IR.Rows[rNo]["amt"] = tbl.Rows[i]["amt"].ToString();
-                                iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["qnty"].ToString());
+                                iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString());
                                 iamt = iamt + Convert.ToDouble(tbl.Rows[i]["amt"].ToString());
                                 i++;
                                 if (i > maxR) break;
@@ -301,7 +301,7 @@ namespace Improvar.Controllers
                                     days = TSdys.Days;
                                 }
 
-                                double _qty = Convert.ToDouble(tbl.Rows[i]["qnty"].ToString()), _amt = Convert.ToDouble(tbl.Rows[i]["amt"].ToString());
+                                double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = Convert.ToDouble(tbl.Rows[i]["amt"].ToString());
                                 if (ageingperiod > 0)
                                 {
                                     if (days <= due1tDys && due1tDys != 0) { due1Qty = due1Qty + _qty; due1Amt = due1Amt + _amt; }
@@ -462,9 +462,9 @@ namespace Improvar.Controllers
                                 {
                                     if (gocd == amtdr["gocd"].retStr())
                                     {
-                                        amtdr["goqty"] = amtdr["goqty"].retDbl() + tbl.Rows[i]["qnty"].retDbl();
-                                        IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["qnty"].retDbl();
-                                        tqty_ += tbl.Rows[i]["qnty"].retDbl();
+                                        amtdr["goqty"] = amtdr["goqty"].retDbl() + tbl.Rows[i]["balqnty"].retDbl();
+                                        IR.Rows[rNo][amtdr["gocd"].ToString()] = tbl.Rows[i]["balqnty"].retDbl();
+                                        tqty_ += tbl.Rows[i]["balqnty"].retDbl();
                                     }
                                 }
                                 i++;
