@@ -351,11 +351,11 @@
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Cust_LI4" class="active"><a data-toggle="tab" href="#Cust" accesskey="C">Customer(C)</a></li>
-                    <li id="Mes_LI4" class=""><a data-toggle="tab" href="#Mes" accesskey="M">Mesaurement(M)</a></li>
-                    <li id="Adv_LI4" class=""><a data-toggle="tab" href="#Adv" accesskey="A">Advance(A)</a></li>
-                    <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
-                    <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
+                    <li id="Cust_LI" class="active"><a data-toggle="tab" href="#Cust" accesskey="C">Customer(C)</a></li>
+                    <li id="Mes_LI" class=""><a data-toggle="tab" href="#Mes" accesskey="M">Measurement(M)</a></li>
+                    <li id="Adv_LI" class=""><a data-toggle="tab" href="#Adv" accesskey="A">Advance(A)</a></li>
+                    <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
+                    <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="Cust" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
@@ -383,18 +383,6 @@
                                 </div>
                             </div>
                         </div>
-                        @*<div class="row">
-                                <div class="col-md-5">
-                                    <div class="editor-label" style="margin-top: 6px;">
-                                        @Html.Label("", "Agst Memo No")
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_STCHALT.AGCMNO, new { htmlAttributes = new { @class = "form-control", id = "AGCMNO", @placeholder = "Agst Memo No" } })
-                                    </div>
-                                </div>
-                            </div>*@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
@@ -574,7 +562,6 @@
                                                         @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDCD, new { id = "FLDCD" })
                                                         @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDTYPE, new { id = "FLDTYPE" })
                                                         @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].SLNO, new { id = "SLNO" })
-                                                        @*@Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDDATACOMBO, new { id = "FLDDATACOMBO" })*@
                                                         @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDVAL, new { htmlAttributes = new { @class = "form-control", id = "FLDVAL", maxlength = Model.FLDLEN } })
                                                     </td>
                                                     <td>
@@ -586,7 +573,12 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-md-1">
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                            </div>
+                            <div class="col-md-9">
                                 @if (Model.DefaultAction != "V")
                                 {
                                     <input type="button" class="btn btn-info btn-block" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="save" value="Add" title="Click to Save Deress style details" onclick="SaveDressStyle()" />
