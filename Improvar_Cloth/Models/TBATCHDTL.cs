@@ -185,5 +185,6 @@ namespace Improvar.Models
         public double? LISTPRICE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? LISTDISCPER { get; set; }
+        
     }
 }

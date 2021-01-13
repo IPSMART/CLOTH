@@ -19,34 +19,28 @@
 </style>
 <script type="text/javascript">
     $("#WaitingMode").show();
-    $(document).ready(function ()
-    {
-        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D")
-        {
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
         }
-        else if ("@Model.DefaultAction" == "E")
-        {
+        else if ("@Model.DefaultAction" == "E") {
 
         }
-        else if ("@Model.DefaultAction" == "A")
-        {
+        else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         $("#WaitingMode").hide();
     });
 </script>
 <script>
-    function requiredFieldValidator()
-    {
+    function requiredFieldValidator() {
         //if (!emptyFieldCheck("Please Select / Enter a Valid Party", "SLCD")) { return false; }
-       // if (!emptyFieldCheck("Please Select / Enter a Valid Delivery At", "CONSLCD")) { return false; }
+        // if (!emptyFieldCheck("Please Select / Enter a Valid Delivery At", "CONSLCD")) { return false; }
         return true;
     }
 </script>
 <script>
-    if ("@Model.DefaultAction" == "A")
-    {
+    if ("@Model.DefaultAction" == "A") {
         $(function () { $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' }); });
     }
 </script>
@@ -93,14 +87,12 @@
     }
 </script>
 <script>
-    function AddDOCrow()
-    {
+    function AddDOCrow() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("AddDOCRow", PageControllerName)",
             data: $('form').serialize(),
-            success: function (result)
-            {
+            success: function (result) {
                 $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
                 $("#partialdivDocument").html(result);
             },
@@ -111,14 +103,12 @@
             }
         });
     }
-    function DeleteDOCrow()
-    {
+    function DeleteDOCrow() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("DeleteDOCRow", PageControllerName)",
             data: $('form').serialize(),
-            success: function (result)
-            {
+            success: function (result) {
                 $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
                 $("#partialdivDocument").html(result);
             },
@@ -131,21 +121,17 @@
     }
 </script>
 <script>
-    function AddGridRow(ID, TABLE)
-    {
+    function AddGridRow(ID, TABLE) {
         $.ajax({
             type: 'POST',
             url: '@Url.Action("AddGridRow", PageControllerName)',
             data: $('form').serialize() + "&TABLE=" + TABLE,
-            success: function (result)
-            {
-                if (TABLE == "_T_StockAdj_IN_TAB_GRID")
-                {
+            success: function (result) {
+                if (TABLE == "_T_StockAdj_IN_TAB_GRID") {
                     $("#partialdivIN").html(result);
                     CalculateTotal(ID, TABLE);
                 }
-                else
-                {
+                else {
                     $("#partialdivOUT").html(result);
                     CalculateTotal(ID, TABLE);
                 }
@@ -157,21 +143,17 @@
             }
         });
     }
-    function DeleteGridRow(ID, TABLE)
-    {
+    function DeleteGridRow(ID, TABLE) {
         $.ajax({
             type: 'POST',
             url: '@Url.Action("DeleteGridRow", PageControllerName)',
             data: $('form').serialize() + "&TABLE=" + TABLE,
-            success: function (result)
-            {
-                if (TABLE == "_T_StockAdj_IN_TAB_GRID")
-                {
+            success: function (result) {
+                if (TABLE == "_T_StockAdj_IN_TAB_GRID") {
                     $("#partialdivIN").html(result);
                     CalculateTotal(ID, TABLE);
                 }
-                else
-                {
+                else {
                     $("#partialdivOUT").html(result);
                     CalculateTotal(ID, TABLE);
                 }
@@ -185,43 +167,33 @@
     }
 </script>
 <script>
-    function CalculateTotal(ID, TABLE)
-    {
+    function CalculateTotal(ID, TABLE) {
         var T_QNTY = 0; var T_BOX = 0; var T_SET = 0; var T_FQNTY = 0; var T_RQNTY = 0; var T_LQNTY = 0; var T_DQNTY = 0;
         var GridRow = $("#" + TABLE + " > tbody > tr").length;
-        for (var i = 0; i <= GridRow - 1; i++)
-        {
+        for (var i = 0; i <= GridRow - 1; i++) {
             var QNTY = document.getElementById(ID + "QNTY_" + i).value; if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
-            var BOX = document.getElementById(ID + "BOXES_" + i).value; if (BOX != "") { T_BOX = T_BOX + parseFloat(BOX); } else { T_BOX = T_BOX + parseFloat(0); }
-            var SET = document.getElementById(ID + "SETS_" + i).value; if (SET != "") { T_SET = T_SET + parseFloat(SET); } else { T_SET = T_SET + parseFloat(0); }
 
             var STK_TYPE = document.getElementById(ID + "STKTYPE_" + i).value;
-            if (STK_TYPE == "F")
-            {
-                if (QNTY != "") { T_FQNTY = T_FQNTY + parseFloat(QNTY); } else { T_FQNTY = T_FQNTY + parseFloat(0); }                
+            if (STK_TYPE == "F") {
+                if (QNTY != "") { T_FQNTY = T_FQNTY + parseFloat(QNTY); } else { T_FQNTY = T_FQNTY + parseFloat(0); }
             }
-            else if (STK_TYPE == "R")
-            {
+            else if (STK_TYPE == "R") {
                 if (QNTY != "") { T_RQNTY = T_RQNTY + parseFloat(QNTY); } else { T_RQNTY = T_RQNTY + parseFloat(0); }
             }
-            else if (STK_TYPE == "L")
-            {
+            else if (STK_TYPE == "L") {
                 if (QNTY != "") { T_LQNTY = T_LQNTY + parseFloat(QNTY); } else { T_LQNTY = T_LQNTY + parseFloat(0); }
             }
-            else if (STK_TYPE == "D")
-            {
+            else if (STK_TYPE == "D") {
                 if (QNTY != "") { T_DQNTY = T_DQNTY + parseFloat(QNTY); } else { T_DQNTY = T_DQNTY + parseFloat(0); }
             }
         }
-        if (ID == "IN_")
-        {
+        if (ID == "IN_") {
             document.getElementById("S_T_IN_QNTY_0").value = parseFloat(T_FQNTY).toFixed(3);
             document.getElementById("S_T_IN_QNTY_1").value = parseFloat(T_RQNTY).toFixed(3);
             document.getElementById("S_T_IN_QNTY_2").value = parseFloat(T_LQNTY).toFixed(3);
             document.getElementById("S_T_IN_QNTY_3").value = parseFloat(T_DQNTY).toFixed(3);
         }
-        else
-        {
+        else {
             document.getElementById("S_T_OUT_QNTY_0").value = parseFloat(T_FQNTY).toFixed(3);
             document.getElementById("S_T_OUT_QNTY_1").value = parseFloat(T_RQNTY).toFixed(3);
             document.getElementById("S_T_OUT_QNTY_2").value = parseFloat(T_LQNTY).toFixed(3);
@@ -230,351 +202,13 @@
 
         var GridRowSTOCK = $("#_T_StockAdj_STK_TYPE_QNTY_GRID > tbody > tr").length;
         var TOTAL_IN = 0; var TOTAL_OUT = 0;
-        for (var i = 0; i <= GridRowSTOCK - 1; i++)
-        {
+        for (var i = 0; i <= GridRowSTOCK - 1; i++) {
             var IN_QNTY = document.getElementById("S_T_IN_QNTY_" + i).value; if (IN_QNTY != "") { TOTAL_IN = TOTAL_IN + parseFloat(IN_QNTY); } else { TOTAL_IN = TOTAL_IN + parseFloat(0); }
             var OUT_QNTY = document.getElementById("S_T_OUT_QNTY_" + i).value; if (OUT_QNTY != "") { TOTAL_OUT = TOTAL_OUT + parseFloat(OUT_QNTY); } else { TOTAL_OUT = TOTAL_OUT + parseFloat(0); }
         }
         document.getElementById(ID + "T_QNTY").value = parseFloat(T_QNTY).toFixed(3);
-        document.getElementById(ID + "TOTAL_BOXES").value = T_BOX;
-        document.getElementById(ID + "TOTAL_SETS").value = T_SET;
         document.getElementById("TOTAL_IN_QNTY").value = parseFloat(TOTAL_IN).toFixed(3);
         document.getElementById("TOTAL_OUT_QNTY").value = parseFloat(TOTAL_OUT).toFixed(3);
-    }
-</script>
-
-<script>
-    function SelectMtrlJobCode(id, MTRLJOBCD, MTRLJOBNM) {
-        if (id == "") {
-            $("#" + MTRLJOBCD.id).val("");
-            $("#" + MTRLJOBNM.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetMtrlJobDetails", PageControllerName)',
-                data: { val: id },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        $("#tempHDD").val(result);
-                        var findstr = $("#tempHDD").val();
-                        document.getElementById(MTRLJOBCD.id).value = returncolvalue(findstr, "MTRLJOBCD");
-                        document.getElementById(MTRLJOBNM.id).value = returncolvalue(findstr, "MTRLJOBNM");
-                    }
-                    else {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + MTRLJOBCD.id).val("");
-                        $("#" + MTRLJOBNM.id).val("");
-                        $("#btnok").focus();
-                        $("#msgbody_info").html(result);
-                        message_value = MTRLJOBCD.id;
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
-    }
-</script>
-
-<script>
-    function SelectGodownCode(id, GOCD, GONM)
-    {
-        if ("@Model.DefaultAction" != "V")
-        {
-            if (id == "")
-            {
-                $("#" + GOCD.id).val("");
-                $("#" + GONM.id).val("");
-            }
-            else
-            {
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("GetGodownDetails", PageControllerName)',
-                    data: { val: id },
-                    success: function (result)
-                    {
-                        var MSG = result.indexOf(String.fromCharCode(181));
-                        if (MSG >= 0)
-                        {
-                            $("#tempHDD").val(result);
-                            var findstr = $("#tempHDD").val();
-                            document.getElementById(GOCD.id).value = returncolvalue(findstr, "GOCD");
-                            document.getElementById(GONM.id).value = returncolvalue(findstr, "GONM");
-                        }
-                        else
-                        {
-                            $("#Msgdiv1").show();
-                            $("#info").show();
-                            $("#" + GOCD.id).val("");
-                            $("#" + GONM.id).val("");
-                            $("#btnok").focus();
-                            $("#msgbody_info").html(result);
-                            message_value = GOCD.id;
-                        }
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        $("#WaitingMode").hide();
-                        msgError(XMLHttpRequest.responseText);
-                        $("body span h1").remove(); $("#msgbody_error style").remove();
-                    }
-                });
-            }
-        }
-    }
-</script>
-<script>
-    function SelectArticleItemCode(id, STYLENO, ITCD, ITNM, UOMNM, PCSPERBOX, TAG)
-    {
-        if ("@Model.DefaultAction" != "V")
-        {
-            var ID_VAL = document.getElementById(ITCD).value;
-            if (id == "") { id = ID_VAL; TAG = "C"; }
-            if (id == "")
-            {
-                ClearAllTextBoxes((STYLENO + "," + ITCD + "," + ITNM + "," + UOMNM + "," + PCSPERBOX));
-            }
-            else
-            {
-                $.ajax({
-                    type: 'GET',
-                    url: "@Url.Action("GetArticleItemDetails", PageControllerName)",
-                    data: { val: id, TAG: TAG },
-                    success: function (result)
-                    {
-                        var MSG = result.indexOf(String.fromCharCode(181));
-                        if (MSG >= 0)
-                        {
-                            $("#tempHDD").val(result);
-                            var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                            document.getElementById(STYLENO).value = str[0].toString();
-                            document.getElementById(ITCD).value = str[1].toString();
-                            document.getElementById(ITNM).value = str[2].toString();
-                            document.getElementById(UOMNM).value = str[3].toString();
-                            document.getElementById(PCSPERBOX).value = str[4].toString();
-                        }
-                        else
-                        {
-                            $("#Msgdiv1").show();
-                            $("#info").show();
-                            ClearAllTextBoxes((STYLENO + "," + ITCD + "," + ITNM + "," + UOMNM + "," + PCSPERBOX));
-                            $("#btnok").focus();
-                            $("#msgbody_info").html(result);
-                            message_value = STYLENO;
-                        }
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        $("#WaitingMode").hide();
-                        msgError(XMLHttpRequest.responseText);
-                        $("body span h1").remove(); $("#msgbody_error style").remove();
-                    }
-                });
-            }
-        }
-    }
-</script>
-<script>
-    function GetCodeBlurData(id, CODE, NAME, URLNAME)
-    {
-        if ("@Model.DefaultAction" != "V")
-        {
-            if (id == "")
-            {
-                ClearAllTextBoxes((CODE + "," + NAME));
-            }
-            else
-            {
-                $.ajax({
-                    type: 'POST',
-                    url: "../@PageControllerName/" + URLNAME,
-                    data: { val: id },
-                    success: function (result)
-                    {
-                        var MSG = result.indexOf(String.fromCharCode(181));
-                        if (MSG >= 0)
-                        {
-                            $("#tempHDD").val(result);
-                            var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                            $("#" + CODE).val(str[0].toString());
-                            $("#" + NAME).val(str[1].toString());
-                        }
-                        else
-                        {
-                            $("#Msgdiv1").show();
-                            $("#info").show();
-                            ClearAllTextBoxes((CODE + "," + NAME));
-                            $("#btnok").focus();
-                            $("#msgbody_info").html(result);
-                            message_value = CODE;
-                        }
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        $("#WaitingMode").hide();
-                        msgError(XMLHttpRequest.responseText);
-                        $("body span h1").remove(); $("#msgbody_error style").remove();
-                    }
-                });
-            }
-        }
-    }
-</script>
-<script>
-    function OpenSize(ID, i, URLNAME)
-    {
-        const keyName = event.key;
-        if (keyName == undefined || keyName == " ")
-        {
-            var SerialNo = document.getElementById(ID + "SLNO_" + i).value;
-            if (SerialNo == "") { SerialNo = parseInt(0) } else { SerialNo = parseInt(SerialNo) }
-            var ITEM = document.getElementById(ID + "ITCD_" + i).value;
-            var ITEM_NM = document.getElementById(ID + "ITNM_" + i).value;
-            var STYLE_NO = document.getElementById(ID + "STYLENO_" + i).value; STYLE_NO = STYLE_NO.replace('+', 'μ'); STYLE_NO = STYLE_NO.replace('&', '‡');
-            var UOM = document.getElementById(ID + "UOMNM_" + i).value;
-            var PART_CD = document.getElementById(ID + "PARTCDM_" + i).value;
-            var PART_NM = document.getElementById(ID + "PARTNMM_" + i).value;
-            var STK_TYPE = document.getElementById(ID + "STKTYPE_" + i).value;
-            var PCS_PERSET = document.getElementById(ID + "PCSPERSET_" + i).value;
-            if (PCS_PERSET == "") { PCS_PERSET = parseFloat(0) } else { PCS_PERSET = parseFloat(PCS_PERSET) }
-            var PCSPERBOX = document.getElementById(ID + "PCSBOX_" + i).value;
-            if (PCSPERBOX == "") { PCSPERBOX = parseFloat(0) } else { PCSPERBOX = parseFloat(PCSPERBOX) }
-            var STK_TYPE = document.getElementById(ID + "STKTYPE_" + i).value;
-            $("#hiddenITEM").val(ITEM);
-            if (ITEM.toString() != "")
-            {
-                $.ajax({
-                    type: 'POST',
-                    url: "../@PageControllerName/" + URLNAME,
-                    beforesend: $("#WaitingMode").show(),
-                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&STYLE_NO=" + STYLE_NO + "&UOM=" + UOM + "&PART_CD=" + PART_CD + "&PART_NM=" + PART_NM + "&PCSPERBOX=" + PCSPERBOX + "&STK_TYPE=" + STK_TYPE + "&PCS_PERSET=" + PCS_PERSET + "&TAG=" + ID,
-                    success: function (result)
-                    {
-                        $("#WaitingMode").hide();                      
-                        $('#popup').html(result);
-                        $('#popup').show();
-                        $('.PopUp_Backround').show();
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown)
-                    {
-                        $("#WaitingMode").hide();
-                        msgError("Error: " + textStatus + "," + errorThrown);
-                    }
-                });
-            }
-            else
-            {
-                $("#Msgdiv1").show();
-                $("#info").show();
-                $("#btnok").focus();
-                $("#msgbody_info").html("Article Number is not Available ! Please Select / Enter a Article Number !! ");
-                message_value = "OUT_ITCD_" + i;
-            }
-        }
-        else
-        {
-            preventEvent(event);
-        }
-    }
-
-    document.onkeydown = CloseSize;
-    function CloseSize(TAG, TABLE, URLNAME)
-    {
-        var KeyID = (window.event) ? event.keyCode : e.keyCode;
-        if (KeyID == undefined || KeyID == 27)
-        {
-            if ("@Model.DefaultAction" != "V")
-            {
-                $.ajax({
-                    type: 'POST',
-                    url: "../@PageControllerName/" + URLNAME,
-                    beforesend: $("#WaitingMode").show(),
-                    data: $('form').serialize(),
-                    success: function (result)
-                    {
-                        $("#WaitingMode").hide();
-                        if (TAG == "IN_")
-                        {
-                            $('#partialdivIN').html(result);
-                        }
-                        else
-                        {
-                            $('#partialdivOUT').html(result);
-                        }
-                        $("#popup").html("");
-                        $('.PopUp_Backround').fadeOut();
-                        var GridRowMain = $("#" + TABLE + " > tbody > tr").length;
-                        for (i = 0; i <= GridRowMain - 1; i++)
-                        {
-                            var ARTICLE = document.getElementById(TAG + "STYLENO_" + i).value;
-                            if (ARTICLE == "")
-                            {
-                                $(TAG + "#STYLENO_" + i).focus();
-                                break;
-                            }
-                        }
-                        CalculateTotal(TAG, TABLE);
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown)
-                    {
-                        $("#WaitingMode").hide();
-                        msgError("Error: " + textStatus + "," + errorThrown);
-                    }
-                });
-            }
-        }
-    }
-    function CancelSize()
-    {        
-        $("#popup").html("");
-        $('.PopUp_Backround').fadeOut();
-    }
-    function CalculateSizeData(id, QNTY, SLNO, ITCD, ITNM, PCSPERSET, ARTNO, UOM, TOTAL_PCS, STKTYPE, FREESTK, RT)
-    {
-        if ("@Model.DefaultAction" != "V")
-        {
-            var ARTICLE = document.getElementById(ARTNO).value;
-            if (ARTICLE != "")
-            {
-                var NO_OF_SETS = id;
-                if (NO_OF_SETS == "") { NO_OF_SETS = parseFloat(0); } else { NO_OF_SETS = parseFloat(NO_OF_SETS); }
-                if (NO_OF_SETS > 0)
-                {
-                    OpenSize(QNTY, SLNO, ITCD, ITNM, PCSPERSET, ARTNO, UOM, TOTAL_PCS, NO_OF_SETS, STKTYPE, FREESTK, RT, 0);
-                }
-            }
-            else
-            {
-                $("#Msgdiv1").show();
-                $("#info").show();
-                $("#msg_ok_info").focus();
-                $("#msgbody_info").html("Aricle Number not Available ! Please Select / Enter a Valid Article Number !! ");
-                message_value = ARTNO.id;
-                return false;
-            }
-        }
-    }
-
-    function CalculateSizeQnty(QNTY, TABLE, ID)
-    {
-        var CHECK_TAG = document.getElementById(ID + "SIZE_SAME_QTY").checked;
-        if (CHECK_TAG == true)
-        {
-            var GridRow = $("#" + TABLE + " > tbody > tr").length;
-            for (var i = 0; i <= GridRow - 1; i++)
-            {
-                var QUANTITY = document.getElementById(ID + "SIZE_QNTY_" + i).value;
-                if (QUANTITY == "") { QUANTITY = parseFloat(0) } else { QUANTITY = parseFloat(QUANTITY) }
-                if (QUANTITY == 0)
-                {
-                    document.getElementById(ID + "SIZE_QNTY_" + i).value = QNTY;
-                }
-            }
-        }
     }
 </script>
 @using (Html.BeginForm())
@@ -586,22 +220,32 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-            <input type="hidden" id="hiddenITEM" name="hiddenITEM"value="" />
+            <input type="hidden" id="hiddenITEM" name="hiddenITEM" value="" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.T_TXN.AUTONO)
             @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
             @Html.HiddenFor(m => m.MENU_PARA)
+            @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
+            @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
+            @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="row"style="margin-top: 10px;">
+                    <div class="row" style="margin-top: 10px;">
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Document Code")
                             </div>
                         </div>
-                        <div class="col-md-7" style="width:auto;">
+                        <div class="col-md-9" >
                             <div class="editor-field">
-                                @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text", Model.T_TXN.DOCCD), "==Select Document Type==", new { @class = "form-control" })
+                                @if (Model.DefaultAction == "A")
+                    {
+                                    @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(model => model.T_TXN.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                                }
                             </div>
                         </div>
                         <div class="col-md-7">
@@ -629,14 +273,14 @@
                     </div>
                     <div class="row">
                         <div class="col-md-7">
-                            <div class="editor-label" style="margin-top: 6px;">                               
-                                    @Html.Label("", "Godown")
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Godown")
                             </div>
                         </div>
                         <div class="col-md-7">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','GOCD/GodownName','1/0','Godown Details','GOCD')", onblur = "SelectGodownCode(this.value,GOCD,GodownName);", @placeholder = "Code" } })
-                                <img src="~/Image/search.png" id="GodownHelp" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','GOCD/GodownName','1/0','Godown Details','GOCD')" />
+                                @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GodownName=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GodownName=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GodownName=GONM=0')" />
                             </div>
                         </div>
                         <div class="col-md-10">
@@ -654,18 +298,27 @@
                         <div class="col-md-11">
                             <div class="editor-field">
                                 @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM", @class = "form-control", @style = "width:430px;height:60px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
-                                @*@Html.EditorFor(model => model.T_TXNOTH.DOCREM, new { htmlAttributes = new { @class = "form-control", id = "DOCREM", maxlength = 100, @TabIndex = -1, @placeholder = "Remarks" } })*@
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="margin-top: 6px;">
+                            <div class="editor-label">
+                                @Html.Label("", "Bar Generation")
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE" })
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4" style="margin-left:-10px;margin-top:10px;" >
+                <div class="col-lg-4" style="margin-left:-10px;margin-top:10px;">
                     <div class="col-md-6" style="width:auto;overflow:no-display;">
                         <div>
                             <div id="partialdivTOTALQNTY">
                                 @if (Model.STOCK_ADJUSTMENT != null && Model.STOCK_ADJUSTMENT.Count > 0)
                                 {
-                                   @Html.Partial("_T_StockAdj_STK_TYPE_QNTY")
+                                    @Html.Partial("_T_StockAdj_STK_TYPE_QNTY")
                                 }
                             </div>
                         </div>
@@ -680,15 +333,15 @@
                     <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
                 </ul>
                 <div class="tab-content">
-                        <div id="OutTab" class="tab-pane fade in active" style="margin-top: 10px;">
-                            <div class="row" style="margin-top: 4px;background-color:#c4b9b9;border:5px groove;">
-                                <div>
-                                    <div id="partialdivOUT">
-                                        @Html.Partial("_T_StockAdj_OUT_TAB")
-                                    </div>
+                    <div id="OutTab" class="tab-pane fade in active" style="margin-top: 10px;">
+                        <div class="row" style="margin-top: 4px;background-color:#c4b9b9;border:5px groove;">
+                            <div>
+                                <div id="partialdivOUT">
+                                    @Html.Partial("_T_StockAdj_OUT_TAB")
                                 </div>
                             </div>
                         </div>
+                    </div>
                     <div id="InTab" class="tab-pane fade" style="margin-top: 10px;">
                         <div class="row" style="margin-top: 4px;background-color:#c4b9b9;border:5px groove;">
                             <div>

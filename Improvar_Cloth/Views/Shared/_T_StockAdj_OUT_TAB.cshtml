@@ -25,7 +25,7 @@
                         <thead>
                             <tr class="sticky-header" style="height:20px;">
                                 <th class="sticky-cell" style="width:27px;"></th>
-                                <th class="" style="width:27px;text-align:center;">SL NO.</th>
+                                <th class="" style="width:27px;">SL NO.</th>
                                 <th class="" style="width:161px;">Barno</th>
                                 <th class="" style="width:81px;">Group Code</th>
                                 <th class="" style="width:177px;">Group Name</th>
@@ -53,75 +53,76 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if (Model.TTXNDTL_OUT != null)
+                            @if (Model.TBATCHDTL_OUT != null)
                             {
-                                for (int i = 0; i <= Model.TTXNDTL_OUT.Count - 1; i++)
+                                for (int i = 0; i <= Model.TBATCHDTL_OUT.Count - 1; i++)
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TTXNDTL_OUT[i].Checked, new { id = "OUT_CHECK_" + i })
+                                            @Html.CheckBoxFor(model => model.TBATCHDTL_OUT[i].Checked, new { id = "OUT_CHECK_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].SLNO, new { id = "OUT_SLNO_" + i, @class = "atextBoxFor text-center", maxlength = 4, @readonly = "readonly", @tabindex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].SLNO, new { id = "OUT_SLNO_" + i, @class = "atextBoxFor text-center",  @readonly = "readonly", @tabindex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].BARNO, new { id = "OUT_BARNO_" + i, maxlength = 20, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetailsGrid", "T_OUTISSPROCESS") + "','Barno Details','OUT_BARNO_" + i + "','OUT_BARNO_" + i + "=BARNO=0/OUT_MTRLJOBCD_" + i + "=MTRLJOBCD=2/OUT_PARTCD_" + i + "=PARTCD=8/OUT_ITCD_" + i + "=ITCD/OUT_ITNM_" + i + "=ITSTYLE/OUT_UOM_" + i + "=UOMCD/OUT_ITGRPCD_" + i + "=ITGRPCD/OUT_ITGRPNM_" + i + "=ITGRPNM/OUT_COLRCD_" + i + " =COLRCD/OUT_SIZECD_" + i + " =SIZECD/OUT_COLRNM_" + i + "=COLRNM/OUT_MTRLJOBNM_" + i + "=MTRLJOBNM/OUT_CLRBARCODE_" + i + "=clrbarcode/OUT_SZBARCODE_" + i + "=szbarcode','OUT_MTRLJOBCD_" + i + "/OUT_PARTCD_" + i + "/DOCDT/TAXGRPCD/GOCD/PRCCD/OUT_MTRLJOBCD_" + i + "');RepeatAboveRow_TPROGBOM('" + i + "');", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetailsGrid", "T_OUTISSPROCESS") + "','Barno Details','OUT_BARNO_" + i + "','OUT_BARNO_" + i + "=BARNO=0/OUT_MTRLJOBCD_" + i + "=MTRLJOBCD=2/OUT_PARTCD_" + i + "=PARTCD=8/OUT_ITCD_" + i + "=ITCD/OUT_ITNM_" + i + "=ITSTYLE/OUT_UOM_" + i + "=UOMCD/OUT_ITGRPCD_" + i + "=ITGRPCD/OUT_ITGRPNM_" + i + "=ITGRPNM/OUT_COLRCD_" + i + " =COLRCD/OUT_SIZECD_" + i + " =SIZECD/OUT_COLRNM_" + i + "=COLRNM/OUT_MTRLJOBNM_" + i + "=MTRLJOBNM/OUT_CLRBARCODE_" + i + "=clrbarcode/OUT_SZBARCODE_" + i + "=szbarcode','OUT_MTRLJOBCD_" + i + "/OUT_PARTCD_" + i + "/DOCDT/TAXGRPCD/GOCD/PRCCD/OUT_MTRLJOBCD_" + i + "');", @placeholder = "barno", @class = " atextBoxFor textbox_image" })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetailsGrid", "T_OUTISSPROCESS")','Barno Details','OUT_BARNO_@i','OUT_BARNO_@i=BARNO=0/OUT_MTRLJOBCD_@i=MTRLJOBCD=2/OUT_PARTCD_@i=PARTCD=8/OUT_ITCD_@i=ITCD/OUT_ITNM_@i=ITSTYLE/OUT_UOM_@i=UOMCD/OUT_ITGRPCD_@i=ITGRPCD/OUT_ITGRPNM_@i=ITGRPNM/OUT_COLRCD_@i =COLRCD/OUT_SIZECD_@i =SIZECD/OUT_COLRNM_@i=COLRNM/OUT_MTRLJOBNM_@i=MTRLJOBNM/OUT_CLRBARCODE_@i=clrbarcode/OUT_SZBARCODE_@i=szbarcode','OUT_MTRLJOBCD_@i/OUT_PARTCD_@i/DOCDT/TAXGRPCD/GOCD/PRCCD/OUT_MTRLJOBCD_@i');" />
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].BARNO, new { id = "OUT_BARNO_" + i, maxlength = 25, onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetailsOutGrid", "T_StockAdj") + "','Barno Details','OUT_BARNO_" + i + "','OUT_BARNO_" + i + "=BARNO=0/OUT_MTRLJOBCD_" + i + "=MTRLJOBCD=2/OUT_PARTCD_" + i + "=PARTCD=8/OUT_PARTNMM_" + i + "=PARTNM/OUT_ITCD_" + i + "=ITCD/OUT_ITSTYLE_" + i + "=ITSTYLE/OUT_UOM_" + i + "=UOMCD/OUT_ITGRPCD_" + i + "=ITGRPCD/OUT_ITGRPNM_" + i + "=ITGRPNM/OUT_COLRCD_" + i + " =COLRCD/OUT_SIZECD_" + i + " =SIZECD/OUT_SIZENM_" + i + " =SIZENM/OUT_COLRNM_" + i + "=COLRNM/OUT_MTRLJOBNM_" + i + "=MTRLJOBNM/OUT_CLRBARCODE_" + i + "=CLRBARCODE/OUT_SZBARCODE_" + i + "=SZBARCODE/OUT_PRTBARCODE_" + i + "=PRTBARCODE/OUT_MTBARCODE_" + i + "=MTBARCODE/OUT_BARGENTYPE_" + i + "=BARGENTYPE','DOCDT/GOCD');", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetailsOutGrid", "T_StockAdj") + "','Barno Details','OUT_BARNO_" + i + "','OUT_BARNO_" + i + "=BARNO=0/OUT_MTRLJOBCD_" + i + "=MTRLJOBCD=2/OUT_PARTCD_" + i + "=PARTCD=8/OUT_PARTNMM_" + i + "=PARTNM/OUT_ITCD_" + i + "=ITCD/OUT_ITSTYLE_" + i + "=ITSTYLE/OUT_UOM_" + i + "=UOMCD/OUT_ITGRPCD_" + i + "=ITGRPCD/OUT_ITGRPNM_" + i + "=ITGRPNM/OUT_COLRCD_" + i + " =COLRCD/OUT_SIZECD_" + i + " =SIZECD/OUT_SIZENM_" + i + " =SIZENM/OUT_COLRNM_" + i + "=COLRNM/OUT_MTRLJOBNM_" + i + "=MTRLJOBNM/OUT_CLRBARCODE_" + i + "=CLRBARCODE/OUT_SZBARCODE_" + i + "=SZBARCODE/OUT_PRTBARCODE_" + i + "=PRTBARCODE/OUT_MTBARCODE_" + i + "=MTBARCODE/OUT_BARGENTYPE_" + i + "=BARGENTYPE','DOCDT/GOCD');", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetailsOutGrid", "T_StockAdj")','Barno Details','OUT_BARNO_@i','OUT_BARNO_@i=BARNO=0/OUT_MTRLJOBCD_@i=MTRLJOBCD=2/OUT_PARTCD_@i=PARTCD=8/OUT_PARTNMM_@i=PARTNM/OUT_ITCD_@i=ITCD/OUT_ITSTYLE_@i=ITSTYLE/OUT_UOM_@i=UOMCD/OUT_ITGRPCD_@i=ITGRPCD/OUT_ITGRPNM_@i=ITGRPNM/OUT_COLRCD_@i =COLRCD/OUT_SIZECD_@i =SIZECD/OUT_SIZENM_@i =SIZENM/OUT_COLRNM_@i=COLRNM/OUT_MTRLJOBNM_@i=MTRLJOBNM/OUT_CLRBARCODE_@i=CLRBARCODE/OUT_SZBARCODE_@i=SZBARCODE/OUT_PRTBARCODE_@i=PRTBARCODE/OUT_MTBARCODE_@i=MTBARCODE/OUT_BARGENTYPE_@i=BARGENTYPE','DOCDT/GOCD');" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].ITGRPCD, new { id = "OUT_ITGRPCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].ITGRPCD, new { id = "OUT_ITGRPCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].ITGRPNM, new { id = "OUT_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].ITGRPNM, new { id = "OUT_ITGRPNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL_OUT[i].BARGENTYPE, new { id = "OUT_BARGENTYPE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].ITCD, new { id = "OUT_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].ITCD, new { id = "OUT_ITCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].ITNM, new { id = "OUT_ITNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].ITSTYLE, new { id = "OUT_ITSTYLE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].UOM, new { id = "OUT_UOM_" + i, @class = " atextBoxFor ", maxlength = 5, @readonly = "readonly", @tabindex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].UOM, new { id = "OUT_UOM_" + i, @class = " atextBoxFor ",  @readonly = "readonly", @tabindex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.DropDownListFor(model => Model.TTXNDTL_OUT[i].STKTYPE, new SelectList(Model.TTXNDTL_OUT[i].DropDown_list2, "value", "text", Model.TTXNDTL_OUT[i].STKTYPE), new { id = "OUT_STKTYPE_" + i, @class = "atextBoxFor select_3d" })
+                                            @Html.DropDownListFor(model => Model.TBATCHDTL_OUT[i].STKTYPE, new SelectList(Model.DropDown_list2, "value", "text", Model.TBATCHDTL_OUT[i].STKTYPE), new { id = "OUT_STKTYPE_" + i, @class = "atextBoxFor select_3d" })
                                         </td>
                                         @if (Model.M_SYSCNFG.MNTNPART == "Y")
                                         {
                                             <td>
-                                                @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].PARTCD, new { id = "OUT_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].PARTCD, new { id = "OUT_PARTCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(model => model.TTXNDTL_OUT[i].PARTNM, new { @class = "atextBoxFor", id = "OUT_PARTNMM_" + i, maxlength = 15, @readonly = "readonly", @tabindex = -1 })
-                                                @Html.HiddenFor(model => model.TTXNDTL_OUT[i].PRTBARCODE, new { id = "OUT_PRTBARCODE_" + i })
+                                                @Html.TextBoxFor(model => model.TBATCHDTL_OUT[i].PARTNM, new { @class = "atextBoxFor", id = "OUT_PARTNMM_" + i, @readonly = "readonly", @tabindex = -1 })
+                                                @Html.HiddenFor(model => model.TBATCHDTL_OUT[i].PRTBARCODE, new { id = "OUT_PRTBARCODE_" + i })
                                             </td>
                                         }
                                         @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].COLRCD, new { id = "OUT_COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                                @Html.HiddenFor(model => model.TTXNDTL_OUT[i].CLRBARCODE, new { id = "OUT_CLRBARCODE_" + i })
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].COLRCD, new { id = "OUT_COLRCD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.HiddenFor(model => model.TBATCHDTL_OUT[i].CLRBARCODE, new { id = "OUT_CLRBARCODE_" + i })
                                             </td>
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].COLRNM, new { id = "OUT_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].COLRNM, new { id = "OUT_COLRNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>}
                                         @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].SIZECD, new { id = "OUT_SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
-                                                @Html.HiddenFor(model => model.TTXNDTL_OUT[i].SIZENM, new { id = "OUT_SIZENM_" + i })
-                                                @Html.HiddenFor(model => model.TTXNDTL_OUT[i].SZBARCODE, new { id = "OUT_SZBARCODE_" + i })
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].SIZECD, new { id = "OUT_SIZECD_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                                @Html.HiddenFor(model => model.TBATCHDTL_OUT[i].SIZENM, new { id = "OUT_SIZENM_" + i })
+                                                @Html.HiddenFor(model => model.TBATCHDTL_OUT[i].SZBARCODE, new { id = "OUT_SZBARCODE_" + i })
                                             </td>}
                                         <td>
-                                            @Html.TextBoxFor(model => model.TTXNDTL_OUT[i].QNTY, "{0:0.000}", new { id = "OUT_QNTY_" + i, @class = "atextBoxFor text-right", @onkeypress = "return numericOnly(this,3);", maxlength = 12 })
+                                            @Html.TextBoxFor(model => model.TBATCHDTL_OUT[i].QNTY, "{0:0.000}", new { id = "OUT_QNTY_" + i, @class = "atextBoxFor text-right", @onkeypress = "return numericOnly(this,3);", maxlength = 12, onblur = "CalculateTotal('OUT_','_T_StockAdj_OUT_TAB_GRID');" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(model => Model.TTXNDTL_OUT[i].MTRLJOBCD, new { @class = "atextBoxFor textbox_image", id = "OUT_MTRLJOBCD_" + i, onkeyup = "GetHelp('" + @Url.Action("GetMtrlJobDetails", "T_OUTRECPROCESS") + "','" + "OUT_MTRLJOBCD_" + i + "/" + "OUT_MTRLJOBNM_" + i + "','1/0','Part Details','" + "OUT_MTRLJOBCD_" + i + "')", onblur = "SelectMtrlJobCode(this.value," + "OUT_MTRLJOBCD_" + i + "," + "OUT_MTRLJOBNM_" + i + ");", maxlength = 4 })
-                                            <img src="~/Image/search.png" width="20px" class="Help_image_button_grid" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetMtrlJobDetails", "T_OUTRECPROCESS")','OUT_MTRLJOBCD_@i/OUT_MTRLJOBNM_@i','1/0','Part Details','OUT_MTRLJOBCD_@i')" />
+                                            @Html.TextBoxFor(model => Model.TBATCHDTL_OUT[i].MTRLJOBCD, new { id = "OUT_MTRLJOBCD_" + i, maxlength = 2, onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_StockAdj") + "','Material Job Details','" + "OUT_MTRLJOBCD_" + i + "','" + "OUT_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "OUT_MTRLJOBNM_" + i + "=MTRLJOBNM=0/" + "OUT_MTRLJOBNM_" + i + "=MTRLJOBNM');", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialDetails", "T_StockAdj") + "','Material Job Details','" + "OUT_MTRLJOBCD_" + i + "','" + "OUT_MTRLJOBCD_" + i + "=MTRLJOBCD=1/" + "OUT_MTRLJOBNM_" + i + "=MTRLJOBNM=0/" + "OUT_MTRLJOBNM_" + i + "=MTRLJOBNM');", @class = " atextBoxFor textbox_image" })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialDetails", "T_StockAdj")','Material Job Details','OUT_MTRLJOBCD_@i','OUT_MTRLJOBCD_@i=MTRLJOBCD=1/OUT_MTRLJOBNM_@i=MTRLJOBNM=0/OUT_MTBARCODE_@i=MTBARCODE')" />
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(model => model.TTXNDTL_OUT[i].MTRLJOBNM, new { @class = "atextBoxFor", id = "OUT_MTRLJOBNM_" + i, maxlength = 15 })
-                                            @Html.HiddenFor(model => model.TTXNDTL_OUT[i].MTBARCODE, new { id = "OUT_MTBARCODE_" + i })
+                                            @Html.TextBoxFor(model => model.TBATCHDTL_OUT[i].MTRLJOBNM, new { @class = "atextBoxFor", id = "OUT_MTRLJOBNM_" + i, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TBATCHDTL_OUT[i].MTBARCODE, new { id = "OUT_MTBARCODE_" + i })
 
 
                                         </td>
