@@ -23,7 +23,9 @@ namespace Improvar.Models
         public string Remarks { get; set; }
         public string Reason { get; set; }
         public string EWB { get; set; }
-            
+        public string TRANSLNM { get; set; }
+        public string LORRYNO { get; set; }
+
     }
 
 }

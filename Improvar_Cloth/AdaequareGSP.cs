@@ -46,6 +46,7 @@ namespace Improvar
                 Cn.SaveTextFile("Please add a row in MS_IPSMART table.");
                 return;
             }
+            IPSAPICODE = "AUTHENTICA";
             Dictionary<string, string> dic = new Dictionary<string, string>();
             dic.Add("gspappid", gspappid);
             dic.Add("gspappsecret", gspappsecret);
@@ -192,10 +193,10 @@ namespace Improvar
                 if (AI.ShipDtls != null)
                 {
                     if (string.IsNullOrEmpty(AI.ShipDtls.Gstin)) { AI.ShipDtls.Gstin = null; }
-                    if (AI.ShipDtls.Loc.Trim() == "") { msg += "ShipDtls.Location/Godown district should not blank; "; }
+                    if (AI.ShipDtls.Loc.retStr().Trim() == "") { msg += "ShipDtls.Location/Godown district should not blank; "; }
                     if (AI.ShipDtls.Pin < 100000 || AI.ShipDtls.Pin > 999999) { msg += "ShipDtls(" + AI.ShipDtls.Pin + ")Pin should be 6 digit; "; }
-                    if (AI.ShipDtls.Addr1.Trim() == "") { msg += "ShipDtls.Addr1 should not blank; "; }
-                    if (AI.ShipDtls.Addr2.Trim() == "") { AI.ShipDtls.Addr2 = "   "; }
+                    if (AI.ShipDtls.Addr1.retStr().Trim() == "") { msg += "ShipDtls.Addr1 should not blank; "; }
+                    if (AI.ShipDtls.Addr2.retStr().Trim() == "") { AI.ShipDtls.Addr2 = "   "; }
                     if (AI.ShipDtls.Addr1.retStr().Length > 100) { AI.ShipDtls.Addr1 = AI.ShipDtls.Addr1.Substring(0, 100); }
                     if (AI.ShipDtls.Addr2.retStr().Length > 100) { AI.ShipDtls.Addr2 = AI.ShipDtls.Addr2.Substring(0, 100); }
                 }
@@ -402,6 +403,7 @@ namespace Improvar
             try
             {
                 hdrString = url + System.Environment.NewLine;
+                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
                 using (HttpClient client = new HttpClient())
                 {
                     StringContent data = new StringContent(jsonStr, Encoding.UTF8, "application/json");
