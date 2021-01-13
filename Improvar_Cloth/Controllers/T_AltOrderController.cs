@@ -16,10 +16,10 @@ namespace Improvar.Controllers
     public class T_AltOrderController : Controller
     {
         // GET: T_AltOrder
-        Connection Cn = new Connection(); MasterHelp Master_Help = new MasterHelp(); MasterHelpFa MasterHelpFa = new MasterHelpFa(); SchemeCal Scheme_Cal = new SchemeCal(); Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable(); DataTable DTNEW = new DataTable();
+        Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp(); SchemeCal Scheme_Cal = new SchemeCal(); Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
         T_STCHALT TBH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_STCHALT_DTL TSCHDTL; T_STCHALT_DTL_COMP TSCHDTLCMP; T_TXNMEMO TTXNMEMO;
-         SMS SMS = new SMS();
+        SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         public ActionResult T_AltOrder(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "", string ThirdParty = "no")
         {
@@ -151,7 +151,7 @@ namespace Improvar.Controllers
                                 sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b ";
                                 sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG)";
 
-                                DataTable syscnfgdt = Master_Help.SQLquery(sql);
+                                DataTable syscnfgdt = masterHelp.SQLquery(sql);
                                 if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                                 {
                                     TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
@@ -172,8 +172,8 @@ namespace Improvar.Controllers
 
                                 if (VE.TTXNPYMT == null || VE.TTXNPYMT.Count == 0)
                                 {
-                                    var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" && i.PYMTTYPE=="C" select new { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD }).ToList();
-                                   
+                                    var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" && i.PYMTTYPE == "C" select new { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD }).ToList();
+
                                     if (MPAYMENT.Count > 0)
                                     {
                                         VE.TTXNPYMT = (from i in MPAYMENT select new TTXNPYMT { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD }).ToList();
@@ -250,20 +250,20 @@ namespace Improvar.Controllers
                 TCH = DB.T_CNTRL_HDR.Find(TBH.AUTONO);
                 if (TBH != null)
                 { if (TBH.INC_RATE == "Y") VE.INC_RATE = true; }
-              
+
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO); string Scmf = CommVar.FinSchema(UNQSNO);
-               
-                if (TTXNMEMO!=null)
+
+                if (TTXNMEMO != null)
                 {
-                   var rtdebcd = TTXNMEMO.RTDEBCD;
-                   string sql = "";
+                    var rtdebcd = TTXNMEMO.RTDEBCD;
+                    string sql = "";
                     sql += " select a.rtdebcd,b.rtdebnm,b.mobile,b.city,b.add1,b.add2,b.add3 ";
                     sql += "  from  " + Scm + ".T_TXNMEMO a, " + Scmf + ".M_RETDEB b ";
-                    sql += " where a.RTDEBCD=b.RTDEBCD and a.RTDEBCD= '"+ rtdebcd + "' ";
+                    sql += " where a.RTDEBCD=b.RTDEBCD and a.RTDEBCD= '" + rtdebcd + "' ";
 
-                    DataTable syscnfgdt = Master_Help.SQLquery(sql);
+                    DataTable syscnfgdt = masterHelp.SQLquery(sql);
                     if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                     {
                         VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
@@ -273,37 +273,38 @@ namespace Improvar.Controllers
 
                     }
                 }
-               
+
                 string str = "";
                 str += "select a.SLNO,a.AUTONO,a.STCHCD,a.QNTY,a.RATE,b.FLDCD,b.FLDVAL,b.FLDREM,b.FLDTYPE,nvl(C.FLDNM, c.flddesc) flddesc ";
                 str += "from " + Scm + ".T_STCHALT_DTL a, " + Scm + ".T_STCHALT_DTL_COMP b, " + Scm + ".M_STCHGRP_COMP c ";
                 str += "where a.AUTONO = b.AUTONO(+) and b.fldcd = c.fldcd(+) and a.STCHCD = C.STCHCD and a.slno = b.slno ";
                 str += "and a.AUTONO = '" + TBH.AUTONO + "' ";
                 str += "order by a.SLNO ";
-                DataTable tblTSTCHALT_DTLCOMP = Master_Help.SQLquery(str);
+                DataTable tblTSTCHALT_DTLCOMP = masterHelp.SQLquery(str);
                 VE.TSTCHALT_DTLCOMP = (from DataRow dr in tblTSTCHALT_DTLCOMP.Rows
-                                   select new TSTCHALT_DTLCOMP()
-                                   {
-                                       SLNO = Convert.ToByte(dr["SLNO"]),
-                                       FLDCD = dr["FLDCD"].retStr(),
-                                       FLDVAL = dr["FLDVAL"].retStr(),
-                                       FLDREM = dr["FLDREM"].retStr(),
-                                       FLDTYPE = dr["FLDTYPE"].retStr(),
-                                       STCHCD = dr["STCHCD"].retStr(),
-                                       QNTY =  (dr["QNTY"].retShort()),
-                                       RATE = dr["RATE"].retDbl(),
-                                       FLDDESC = dr["FLDDESC"].retStr(),
-                                   }).OrderBy(s => s.SLNO).ToList();
+                                       select new TSTCHALT_DTLCOMP()
+                                       {
+                                           SLNO = Convert.ToByte(dr["SLNO"]),
+                                           FLDCD = dr["FLDCD"].retStr(),
+                                           FLDVAL = dr["FLDVAL"].retStr(),
+                                           FLDREM = dr["FLDREM"].retStr(),
+                                           FLDTYPE = dr["FLDTYPE"].retStr(),
+                                           STCHCD = dr["STCHCD"].retStr(),
+                                           QNTY = (dr["QNTY"].retShort()),
+                                           RATE = dr["RATE"].retDbl(),
+                                           FLDDESC = dr["FLDDESC"].retStr(),
+                                       }).OrderBy(s => s.SLNO).ToList();
                 foreach (var i in VE.TSTCHALT_DTLCOMP)
-                { VE.STCHCD = i.STCHCD;
-                  VE.QNTY = i.QNTY;
-                  VE.RATE = i.RATE;
-                    
+                {
+                    VE.STCHCD = i.STCHCD;
+                    VE.QNTY = i.QNTY;
+                    VE.RATE = i.RATE;
+
                 }
                 string str2 = "select b.SLNO,b.PYMTCD,c.PYMTNM,b.AMT,b.CARDNO,b.INSTNO,b.INSTDT,b.PYMTREM,b.GLCD from " + Scm + ".T_STCHALT a," + Scm + ".t_txnpymt b," + Scm + ".m_payment c ";
                 str2 += "where a.autono=b.autono and  b.PYMTCD=c.PYMTCD and a.autono='" + TBH.AUTONO + "'";
-                var PYMT_DATA = Master_Help.SQLquery(str2);
-                if(PYMT_DATA!=null)
+                var PYMT_DATA = masterHelp.SQLquery(str2);
+                if (PYMT_DATA != null)
                 {
                     VE.TTXNPYMT = (from DataRow dr in PYMT_DATA.Rows
                                    select new TTXNPYMT()
@@ -353,7 +354,7 @@ namespace Improvar.Controllers
             if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
             sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
             sql += "order by docdt, docno ";
-            DataTable tbl = Master_Help.SQLquery(sql);
+            DataTable tbl = masterHelp.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
             var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Agst Memo No." + Cn.GCS() + "AUTO NO";
@@ -362,7 +363,7 @@ namespace Improvar.Controllers
                 //SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["mutslcd"] + ") </td><td>" + tbl.Rows[j]["regmobile"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                 SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td>" + tbl.Rows[j]["AGCMNO"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "3", "3"));
+            return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "3", "3"));
         }
         public ActionResult changeSTCHNM(string val)
         {
@@ -475,12 +476,12 @@ namespace Improvar.Controllers
         //    return Json(ex.Message + ex.InnerException, JsonRequestBehavior.AllowGet);
         //}
         //}
-        
+
         public ActionResult GetCashMemoNo(string val)
         {
             try
             {
-                var str = Master_Help.CashMemoNumber_help(val);
+                var str = masterHelp.CashMemoNumber_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -500,7 +501,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = Master_Help.RTDEBCD_help(val);
+                var str = masterHelp.RTDEBCD_help(val);
 
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -741,7 +742,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                string url = Master_Help.RetriveParkFromFile(value, Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString(), "Improvar.ViewModels.TransactionAltOrder");
+                string url = masterHelp.RetriveParkFromFile(value, Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString(), "Improvar.ViewModels.TransactionAltOrder");
                 return url;
             }
             catch (Exception ex)
@@ -752,27 +753,21 @@ namespace Improvar.Controllers
         public ActionResult SAVE(FormCollection FC, TransactionAltOrder VE)
         {
             Cn.getQueryString(VE);
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-            //Oracle Queries
             string dberrmsg = "";
             OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
             OraCon.Open();
             OracleCommand OraCmd = OraCon.CreateCommand();
-            OracleTransaction OraTrans;
+
             string dbsql = "", postdt = "", weekrem = "", duedatecalcon = "", sql = "";
             string[] dbsql1;
             double dbDrAmt = 0, dbCrAmt = 0;
 
-            OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
-            OraCmd.Transaction = OraTrans;
-            //
-            DB.Configuration.ValidateOnSaveEnabled = false;
-            using (var transaction = DB.Database.BeginTransaction())
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
             {
+                OraCmd.Transaction = OraTrans;
                 try
                 {
-                    //DB.Database.ExecuteSqlCommand("lock table " + CommVar.CurSchema(UNQSNO).ToString() + ".T_CNTRL_HDR in  row share mode");
                     OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
                     String query = "";
                     string dr = ""; string cr = ""; int isl = 0; string strrem = "";
@@ -789,7 +784,7 @@ namespace Improvar.Controllers
                         string DOCPATTERN = "";
                         TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
                         string Ddate = Convert.ToString(TCH.DOCDT);
-                        TBHDR.CLCD = CommVar.ClientCode(UNQSNO); 
+                        TBHDR.CLCD = CommVar.ClientCode(UNQSNO);
                         string auto_no = ""; string Month = "", DOCNO = "", DOCCD = "";
                         if (VE.DefaultAction == "A")
                         {
@@ -808,9 +803,11 @@ namespace Improvar.Controllers
                             DOCNO = VE.T_CNTRL_HDR.DOCONLYNO;
                             TBHDR.AUTONO = VE.T_STCHALT.AUTONO;
                             //TBHDR.AUTONO = VE.T_STCHALT.AUTONO;
-                            Month = VE.T_CNTRL_HDR.MNTHCD;
-                            var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_STCHALT.AUTONO select p.EMD_NO).Max();
-                            if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToInt16(MAXEMDNO + 1); }
+                            Month = VE.T_CNTRL_HDR.MNTHCD; var MAXEMDNO = "";
+                            sql = "select max(EMD_NO) EMD_NO from " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR where AUTONO ='" + VE.T_STCHALT.AUTONO + "'";
+                            var dt = masterHelp.SQLquery(sql);
+                            if (dt.Rows.Count > 0) { MAXEMDNO = dt.Rows[0]["EMD_NO"].retStr(); }
+                            if (MAXEMDNO == "") { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToInt16(MAXEMDNO + 1); }
                         }
 
                         TBHDR.AGCMNO = VE.T_STCHALT.AGCMNO;
@@ -825,7 +822,7 @@ namespace Improvar.Controllers
                         TTXNMEMO.AUTONO = TBHDR.AUTONO;
                         TTXNMEMO.CLCD = TBHDR.CLCD;
                         TTXNMEMO.RTDEBCD = VE.T_TXNMEMO.RTDEBCD;
-                        TTXNMEMO.NM= VE.T_TXNMEMO.NM;
+                        TTXNMEMO.NM = VE.T_TXNMEMO.NM;
                         TTXNMEMO.MOBILE = VE.T_TXNMEMO.MOBILE;
                         // -------------------------T_TXNPYMT_HDR--------------------------//   
                         TTXNPYMTHDR.EMD_NO = TBHDR.EMD_NO;
@@ -839,37 +836,37 @@ namespace Improvar.Controllers
                         //----------------------------------------------------------//
                         if (VE.DefaultAction == "E")
                         {
-                            dbsql = MasterHelpFa.TblUpdt("T_STCHALT_DTL_COMP", TBHDR.AUTONO, "E");
+                            dbsql = masterHelp.TblUpdt("T_STCHALT_DTL_COMP", TBHDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("T_STCHALT_DTL", TBHDR.AUTONO, "E");
+                            dbsql = masterHelp.TblUpdt("T_STCHALT_DTL", TBHDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("t_txnpymt", TBHDR.AUTONO, "E");
+                            dbsql = masterHelp.TblUpdt("t_txnpymt", TBHDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_rem", TBHDR.AUTONO, "E");
+                            dbsql = masterHelp.TblUpdt("t_cntrl_hdr_rem", TBHDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc", TBHDR.AUTONO, "E");
+                            dbsql = masterHelp.TblUpdt("t_cntrl_hdr_doc", TBHDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                            dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc_dtl", TBHDR.AUTONO, "E");
+                            dbsql = masterHelp.TblUpdt("t_cntrl_hdr_doc_dtl", TBHDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
 
-                            //dbsql = MasterHelpFa.TblUpdt("t_cntrl_doc_pass", TBHDR.AUTONO, "E");
+                            //dbsql = masterHelp.TblUpdt("t_cntrl_doc_pass", TBHDR.AUTONO, "E");
                             //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                        dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
+                        dbsql = masterHelp.RetModeltoSql(TBHDR, VE.DefaultAction);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                        dbsql = MasterHelpFa.RetModeltoSql(TTXNMEMO, VE.DefaultAction);
+                        dbsql = masterHelp.RetModeltoSql(TTXNMEMO, VE.DefaultAction);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                        dbsql = MasterHelpFa.RetModeltoSql(TTXNPYMTHDR, VE.DefaultAction);
+                        dbsql = masterHelp.RetModeltoSql(TTXNPYMTHDR, VE.DefaultAction);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         int COUNTER = 0;
-                    
+
                         int slno = 0;
                         if (VE.TSTCHALT_DTLCOMP != null)
                         {
@@ -898,9 +895,9 @@ namespace Improvar.Controllers
                                     TSTCHDTLCMP.FLDTYPE = VE.TSTCHALT_DTLCOMP[i].FLDTYPE;
                                     TSTCHDTLCMP.FLDREM = VE.TSTCHALT_DTLCOMP[i].FLDREM;
                                     //if (VE.DefaultAction == "A") { slno++; } 
-                                    dbsql = MasterHelpFa.RetModeltoSql(TSTCHDTL);
+                                    dbsql = masterHelp.RetModeltoSql(TSTCHDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                    dbsql = MasterHelpFa.RetModeltoSql(TSTCHDTLCMP);
+                                    dbsql = masterHelp.RetModeltoSql(TSTCHDTLCMP);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                                 }
@@ -928,7 +925,7 @@ namespace Improvar.Controllers
                                     }
                                     TTXNPYMNT.PYMTREM = VE.TTXNPYMT[i].PYMTREM;
                                     TTXNPYMNT.GLCD = VE.TTXNPYMT[i].GLCD;
-                                    dbsql = MasterHelpFa.RetModeltoSql(TTXNPYMNT);
+                                    dbsql = masterHelp.RetModeltoSql(TTXNPYMNT);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
@@ -940,12 +937,12 @@ namespace Improvar.Controllers
                             {
                                 for (int tr = 0; tr <= img.Item1.Count - 1; tr++)
                                 {
-                                    dbsql = MasterHelpFa.RetModeltoSql(img.Item1[tr]);
+                                    dbsql = masterHelp.RetModeltoSql(img.Item1[tr]);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                                 for (int tr = 0; tr <= img.Item2.Count - 1; tr++)
                                 {
-                                    dbsql = MasterHelpFa.RetModeltoSql(img.Item2[tr]);
+                                    dbsql = masterHelp.RetModeltoSql(img.Item2[tr]);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
@@ -957,7 +954,7 @@ namespace Improvar.Controllers
                             {
                                 for (int tr = 0; tr <= NOTE.Item1.Count - 1; tr++)
                                 {
-                                    dbsql = MasterHelpFa.RetModeltoSql(NOTE.Item1[tr]);
+                                    dbsql = masterHelp.RetModeltoSql(NOTE.Item1[tr]);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
@@ -972,40 +969,37 @@ namespace Improvar.Controllers
                         {
                             ContentFlg = "2";
                         }
-                        transaction.Commit();
                         OraTrans.Commit();
                         OraCon.Dispose();
                         return Content(ContentFlg);
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc_dtl", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("t_cntrl_hdr_doc_dtl", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("t_cntrl_hdr_doc", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_rem", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("t_cntrl_hdr_rem", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("t_txnpymt", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("t_txnpymt", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("T_STCHALT_DTL_COMP", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("T_STCHALT_DTL_COMP", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("T_STCHALT_DTL", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("T_STCHALT_DTL", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("T_TXNPYMT_HDR", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("T_TXNPYMT_HDR", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("T_TXNMEMO", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("T_TXNMEMO", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("T_STCHALT", VE.T_STCHALT.AUTONO, "D");
+                        dbsql = masterHelp.TblUpdt("T_STCHALT", VE.T_STCHALT.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
 
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_STCHALT.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(VE.T_STCHALT.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
-
-
+                                           
                         ModelState.Clear();
-                        transaction.Commit();
                         OraTrans.Commit();
                         OraCon.Dispose();
                         return Content("3");
@@ -1014,17 +1008,13 @@ namespace Improvar.Controllers
                     {
                         return Content("");
                     }
-                    goto dbok;
                     dbnotsave:;
-                    transaction.Rollback();
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
-                    dbok:;
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(ex.Message + ex.InnerException);
@@ -1038,7 +1028,7 @@ namespace Improvar.Controllers
                 //TSTCHALT_DTLCOMP RH = new TSTCHALT_DTLCOMP();
                 //TransactionAltOrder VE = new TransactionAltOrder();
                 //Cn.getQueryString(VE);
-              
+
                 //ModelState.Clear();
                 return Content("");
             }
@@ -1052,7 +1042,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = Master_Help.PAYMTCD_help(val);
+                var str = masterHelp.PAYMTCD_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

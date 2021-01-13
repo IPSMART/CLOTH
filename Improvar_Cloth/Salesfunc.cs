@@ -1742,6 +1742,28 @@ namespace Improvar
             }
             return IR;
         }
+        public List<DropDown_list_StkType> GetforStkTypeSelection(string stktype = "")
+        {
+            List<DropDown_list_StkType> DropDown_list_StkType = new List<DropDown_list_StkType>();
+
+            DropDown_list_StkType DropDown_list1 = new DropDown_list_StkType();
+            DropDown_list1.value = "R";
+            DropDown_list1.text = "Raka";
+            DropDown_list_StkType.Add(DropDown_list1);
+            DropDown_list_StkType DropDown_list2 = new DropDown_list_StkType();
+            DropDown_list2.value = "L";
+            DropDown_list2.text = "Loose";
+            DropDown_list_StkType.Add(DropDown_list2);
+            DropDown_list_StkType DropDown_list3 = new DropDown_list_StkType();
+            DropDown_list3.value = "D";
+            DropDown_list3.text = "Destroy";
+            DropDown_list_StkType.Add(DropDown_list3);
+            DropDown_list_StkType DropDown_list4 = new DropDown_list_StkType();
+            DropDown_list4.value = "F";
+            DropDown_list4.text = "";
+            DropDown_list_StkType.Add(DropDown_list4);
+            return DropDown_list_StkType;
+        }
 
     }
 }

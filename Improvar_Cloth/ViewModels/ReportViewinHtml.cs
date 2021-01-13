@@ -57,7 +57,8 @@ namespace Improvar.ViewModels
         public List<DropDown_list_AGSLCD> DropDown_list_AGSLCD { get; set; }
         public List<DropDown_list_ITGRP> DropDown_list_ITGRP { get; set; }
         public List<DropDown_list_ITEM> DropDown_list_ITEM { get; set; }
-         public List<DropDown_list_LINECD> DropDown_list_LINECD { get; set; }
+        public List<DropDown_list_GODOWN> DropDown_list_GODOWN { get; set; }
+        public List<DropDown_list_LINECD> DropDown_list_LINECD { get; set; }
         public List<DropDown_list_SLMSLCD> DropDown_list_SLMSLCD { get; set; }
         public List<DropDown_list_TXN> DropDown_list_TXN { get; set; }
         public List<DropDown_list_Class1> DropDown_list_Class1 { get; set; }
@@ -76,7 +77,7 @@ namespace Improvar.ViewModels
         public string Linenm { get; set; }
         public string Empnm { get; set; }
         public string Locnm { get; set; }
-
+        public string Gonm { get; set; }
 
 
     }
