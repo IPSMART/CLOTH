@@ -201,5 +201,6 @@ namespace Improvar.Models
         public string PRTBARCODE { get; set; }
         public string CLRBARCODE { get; set; }
         public string SZBARCODE { get; set; }
+        public string BARGENTYPE { get; set; }
     }
 }

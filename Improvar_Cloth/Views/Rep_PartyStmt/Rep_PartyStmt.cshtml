@@ -99,7 +99,7 @@
                         <input type="radio" name="Reptype" value="G" />Ledger Grouping(Analysis)
                     </div>
                 </div>
-                <div class="row">
+                @*<div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
                             @Html.Label("", "Price List")
@@ -117,8 +117,8 @@
                             </optgroup>
                         </select>
                     </div>
-                </div>
-                <div class="row" style="margin-top:6px">
+                </div>*@
+                @*<div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
                             @Html.Label("", "Broad Group")
@@ -127,7 +127,7 @@
                     <div class="col-md-6">
                         @(new HtmlString(Model.Brgrpnm))
                     </div>
-                </div>
+                </div>*@
                 <div class="row" style="margin-top:6px">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
@@ -159,14 +159,14 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-2">
+                    @*<div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
                             @Html.Label("", "Group analysis")
                         </div>
                     </div>
                     <div class="col-lg-2">
                         @Html.DropDownListFor(model => model.TEXTBOX2, new SelectList(Model.DropDown_list2, "Value", "Text"), "None", new { @class = "form-control", id = "TEXTBOX2" })
-                    </div>
+                    </div>*@
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top:5px">
                             @Html.Label("", "Grouping in")

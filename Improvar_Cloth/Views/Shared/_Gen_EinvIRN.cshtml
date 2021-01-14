@@ -22,7 +22,7 @@
             </center>
         </div>
         <div class="sticky-table sticky-ltr-cells">
-            <div style="height:auto;max-height:255px;width:1071px">
+            <div style="height:auto;max-height:255px;width:1290px">
                 <table id="_Gen_EinvIRN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
                     <thead>
                         <tr class="sticky-header" style="height:30px;">
@@ -32,9 +32,11 @@
                             <th class="" style="width: 39px;">SL No</th>
                             @*<th class="" style="width: 89px;">Document Type</th>*@
                             <th class="" style="width: 111px;">Document No.</th>
-                            <th class="" style="width: 89px;">Document Date</th>
+                            <th class="" style="width: 74px;">Document Date</th>
                             <th class="" style="width: 245px;">SLNM</th>
                             <th class="" style="width: 89px;text-align:right;">Bill Amount</th>
+                            <th class="" style="width: 164px;">Transporter Name</th>
+                            <th class="" style="width: 93px;">Vehicle No</th>
                             <th class="" style="width: 89px;text-align:right;">IRN No</th>
                             <th class="" style="width: 89px;">EWB</th>
                             <th class="" style="">Message</th>
@@ -72,6 +74,12 @@
                                     </td>
                                     <td class="">
                                         @Html.EditorFor(model => Model.GenEinvIRNGrid[i].BLAMT, new { htmlAttributes = new { id = "BLAMT_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly", maxlength = 14 } })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].TRANSLNM, new { id = "TRANSLNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].LORRYNO, new { id = "LORRYNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                     </td>
                                     <td class="">
                                         @Html.TextBoxFor(model => Model.GenEinvIRNGrid[i].IRNNO, new { id = "IRNNO_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })

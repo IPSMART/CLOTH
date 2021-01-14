@@ -20,7 +20,7 @@ namespace Improvar.Controllers
         Salesfunc Salesfunc = new Salesfunc();
         MasterHelpFa MasterHelpFa = new MasterHelpFa();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-        // GET: T_SORD
+        // GET: T_SORD//
         T_SORD sl; T_CNTRL_HDR sll; T_CNTRL_HDR_REM TCHR; M_JOBMST MJOB; M_FLRLOCA MFLOOR; M_DOCTYPE DOCTYP; M_SUBLEG Subleg;
         public ActionResult T_SORD(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "", string loadOrder = "N")
         {

@@ -93,29 +93,29 @@ namespace Improvar.Controllers
                     else
                     {
 
-                        string Excel_Header = "SLNO" + "|" + "DOCUMENT NO." + "|" + "DOCUMENT DATE " + "|" + "SLNM" + "|" + "BILL AMOUNT" + "|" + "IRN NO." + "|" + "EWB" + "|" + "MESSAGE";
-                        using (ExcelRange Rng = wsSheet1.Cells["A1:H1"])
+                        string Excel_Header = "SLNO" + "|" + "DOCUMENT NO." + "|" + "DOCUMENT DATE " + "|" + "SLNM" + "|" + "BILL AMOUNT" + "|" + "Transporter Name" + "|" + "Vehicle No" + "|" + "IRN NO." + "|" + "EWB" + "|" + "MESSAGE"; 
+                        using (ExcelRange Rng = wsSheet1.Cells["A1:J1"])
                         {
                             Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                             Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
                             Rng.Style.Font.Size = 14; Rng.Style.Font.Bold = true;
                             wsSheet1.Cells["A1:A1"].Value = CommVar.CompName(UNQSNO);
                         }
-                        using (ExcelRange Rng = wsSheet1.Cells["A2:H2"])
+                        using (ExcelRange Rng = wsSheet1.Cells["A2:J2"])
                         {
                             Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                             Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
                             Rng.Style.Font.Size = 12; Rng.Style.Font.Bold = true;
                             wsSheet1.Cells["A2:A2"].Value = CommVar.LocName(UNQSNO);
                         }
-                        using (ExcelRange Rng = wsSheet1.Cells["A3:H3"])
+                        using (ExcelRange Rng = wsSheet1.Cells["A3:J3"])
                         {
                             Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                             Rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
                             Rng.Style.Font.Size = 11; Rng.Style.Font.Bold = true;
                             wsSheet1.Cells["A3:A3"].Value = "Generate E Invoice as on " + fdt + " to " + tdt;
                         }
-                        using (ExcelRange Rng = wsSheet1.Cells["A4:H4"])
+                        using (ExcelRange Rng = wsSheet1.Cells["A4:J4"])
                         {
                             Rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
                             Rng.Style.Font.Bold = true;
@@ -141,9 +141,11 @@ namespace Improvar.Controllers
                                     wsSheet1.Cells[er1, 3].Value = VE.GenEinvIRNGrid[i].BLDT;
                                     wsSheet1.Cells[er1, 4].Value = VE.GenEinvIRNGrid[i].SLNM;
                                     wsSheet1.Cells[er1, 5].Value = VE.GenEinvIRNGrid[i].BLAMT;
-                                    wsSheet1.Cells[er1, 6].Value = VE.GenEinvIRNGrid[i].IRNNO;
-                                    wsSheet1.Cells[er1, 7].Value = VE.GenEinvIRNGrid[i].EWB;
-                                    wsSheet1.Cells[er1, 8].Value = VE.GenEinvIRNGrid[i].MESSAGE;
+                                    wsSheet1.Cells[er1, 6].Value = VE.GenEinvIRNGrid[i].TRANSLNM;
+                                    wsSheet1.Cells[er1, 7].Value = VE.GenEinvIRNGrid[i].LORRYNO;
+                                    wsSheet1.Cells[er1, 8].Value = VE.GenEinvIRNGrid[i].IRNNO;
+                                    wsSheet1.Cells[er1, 9].Value = VE.GenEinvIRNGrid[i].EWB;
+                                    wsSheet1.Cells[er1, 10].Value = VE.GenEinvIRNGrid[i].MESSAGE;
                                     er1++;
                                 }
                             }
@@ -242,14 +244,14 @@ namespace Improvar.Controllers
 
                 sql = "";
                 string scmf = CommVar.FinSchema(UNQSNO);
-                sql = "select distinct a.autono,c.doctype,d.docno,d.docdt,b.SLCD,b.SLNM,sum(a.BLAMT ) BLAMT from " + scmf + ".t_vch_gst a,"
-                + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d "
-                    + " where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and ";
+                sql = "select distinct a.autono,c.doctype,d.docno,d.docdt,b.SLCD,b.SLNM,sum(a.BLAMT ) BLAMT,e.TRANSLCD,f.slnm TRANSLNM,e.LORRYNO from " + scmf + ".t_vch_gst a, "
+                + scmf + ".m_subleg b," + scmf + ".m_doctype c," + scmf + ".t_cntrl_hdr d," + scmf + ".t_txnewb e," + scmf + ".m_subleg f  "
+                + " where a.pcode=b.slcd and  a.doccd=c.doccd and  a.autono=d.autono and e.TRANSLCD=f.SLCD(+) and a.autono=e.autono(+) and ";
                 sql += " A.docdt >= TO_DATE('" + fdt + "', 'DD/MM/YYYY') AND A.docdt <= TO_DATE('" + tdt + "', 'DD/MM/YYYY') AND  ";
                 sql += " b.regntype in ('R') and a.salpur='S' and nvl(a.exemptedtype,' ') <> 'Z' and a.expcd is null ";
                 sql += " and a.autono not in (select autono from " + scmf + ".t_txneinv) ";
                 sql += " and d.compcd='" + CommVar.Compcd(UNQSNO) + "' and d.loccd='" + CommVar.Loccd(UNQSNO) + "'  and b.gstno is not null ";
-                sql += " group by a.autono,c.doctype,d.docno,d.docdt,b.SLCD,b.SLNM ";
+                sql += " group by a.autono,c.doctype,d.docno,d.docdt,b.SLCD,b.SLNM,e.TRANSLCD,f.slnm,e.LORRYNO ";
                 sql += " order by docdt,autono ";
                 DataTable txn = masterHelp.SQLquery(sql);
                 VE.GenEinvIRNGrid = (from DataRow dr in txn.Rows
@@ -260,7 +262,9 @@ namespace Improvar.Controllers
                                          BLNO = dr["docno"].retStr(),
                                          BLDT = dr["docdt"].retDateStr(),
                                          SLNM = dr["SLCD"].retStr() == "" ? "" : dr["SLNM"].retStr() + "[" + dr["SLCD"].retStr() + "]",
-                                         BLAMT = dr["BLAMT"].retDbl()
+                                         BLAMT = dr["BLAMT"].retDbl(),
+                                         TRANSLNM= dr["TRANSLCD"].retStr() == "" ? "" : dr["TRANSLNM"].retStr(),
+                                         LORRYNO = dr["LORRYNO"].retStr()
                                      }).OrderBy(a => a.BLDT).Distinct().ToList();
                 int slno = 1;
                 for (int p = 0; p <= VE.GenEinvIRNGrid.Count - 1; p++)
@@ -552,7 +556,7 @@ namespace Improvar.Controllers
                         {
                             adaequareIRN.DispDtls = dispDtls;
                         }
-                        if (buyerDtls.Gstin != shipDtls.Gstin || buyerDtls.Pin != shipDtls.Pin)
+                        if (string.IsNullOrEmpty(shipDtls.Gstin) && shipDtls.Pin != 0 && (buyerDtls.Gstin != shipDtls.Gstin || buyerDtls.Pin != shipDtls.Pin))
                         {
                             adaequareIRN.ShipDtls = shipDtls;
                         }

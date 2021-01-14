@@ -201,5 +201,10 @@ namespace Improvar.Models
         public string PRTBARCODE { get; set; }
         public string CLRBARCODE { get; set; }
         public string SZBARCODE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? WPRATE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? RPRATE { get; set; }
+        public string BARGENTYPE { get; set; }
     }
 }
