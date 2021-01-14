@@ -52,7 +52,8 @@
                                         </td>
                                         <td>
                                             @Html.TextBoxFor(model => Model.STOCK_ADJUSTMENT[i].STKTYPE, new { id = "S_T_STKTYPE_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>
+                                            @Html.HiddenFor(model => model.STOCK_ADJUSTMENT[i].STKTYPE_VALUE, new { id = "S_T_STKTYPE_VALUE_" + i })
+                                         </td>
                                         <td>
                                             @Html.TextBoxFor(model => Model.STOCK_ADJUSTMENT[i].IN_QNTY, "{0:0.000}", new { id = "S_T_IN_QNTY_" + i, @class = "atextBoxFor text-right", @TabIndex = -1, @readonly = "readonly" })
                                         </td>

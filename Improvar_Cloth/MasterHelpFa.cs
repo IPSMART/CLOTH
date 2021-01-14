@@ -1806,7 +1806,7 @@ namespace Improvar
                     sql = sql + ", glcd=" + filc(glcd);
                     sql = sql + ", slcd=" + filc(slcd);
                     sql = sql + ", docamt=" + docamt;
-                    sql = sql + ", lm_usr_id=" + filc(uIP);
+                    sql = sql + ", lm_usr_id=" + filc(uid);
                     sql = sql + ", lm_usr_entdt=SYSDATE";
                     sql = sql + ", lm_usr_lip=" + filc(uIP);
                     sql = sql + ", lm_usr_sip=" + filc(Cn.GetStaticIp());
@@ -1820,7 +1820,7 @@ namespace Improvar
                     sql = sql + "dtag=" + filc("D");
                     sql = sql + ", docdt=" + _docdt;
                     if (docno.retStr() != "") sql = sql + ", docno=" + filc(docno);
-                    sql = sql + ", del_usr_id=" + filc(uIP);
+                    sql = sql + ", del_usr_id=" + filc(uid);
                     sql = sql + ", del_usr_entdt=SYSDATE";
                     sql = sql + ", del_usr_lip=" + filc(uIP);
                     sql = sql + ", del_usr_sip=" + filc(Cn.GetStaticIp());
