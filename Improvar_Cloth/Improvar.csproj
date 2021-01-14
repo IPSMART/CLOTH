@@ -290,8 +290,10 @@
     <Compile Include="Controllers\Rep_Doc_PrintController.cs" />
     <Compile Include="Controllers\Rep_EnvelopeController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
+    <Compile Include="Controllers\Rep_Job_LedgerController.cs" />
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_PartyStmtController.cs" />
+    <Compile Include="Controllers\Rep_Pend_JobController.cs" />
     <Compile Include="Controllers\Rep_RegController.cs" />
     <Compile Include="Controllers\Rep_Stk_LegController.cs" />
     <Compile Include="Controllers\Rep_Stk_StmtController.cs" />
@@ -300,6 +302,7 @@
     <Compile Include="Controllers\Sys_StkTrnfController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
     <Compile Include="Controllers\SaleBill_PrintController.cs" />
+    <Compile Include="Controllers\T_AckController.cs" />
     <Compile Include="Controllers\T_AltOrderController.cs" />
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
@@ -730,6 +733,7 @@
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
     <Compile Include="ViewModels\TransactionSaleEntry.cs" />
     <Compile Include="ViewModels\TransactionSalePosEntry.cs" />
+    <Compile Include="ViewModels\TTxnAckEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
     <Compile Include="ViewModels\UserGroupLinkDetails.cs" />
     <Compile Include="ViewModels\UserGuideImprovar.cs" />
@@ -1230,6 +1234,9 @@
     <Content Include="Views\Shared\_T_AltOrder_Measure.cshtml" />
     <Content Include="Views\M_BLTYPE\M_BLTYPE.cshtml" />
     <Content Include="Views\Sys_StkTrnf\Sys_StkTrnf.cshtml" />
+    <Content Include="Views\Rep_Pend_Job\Rep_Pend_Job.cshtml" />
+    <Content Include="Views\Rep_Job_Ledger\Rep_Job_Ledger.cshtml" />
+    <Content Include="Views\T_Ack\T_Ack.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
