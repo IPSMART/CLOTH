@@ -255,6 +255,7 @@
     <Compile Include="Controllers\ImageData.cs" />
     <Compile Include="Controllers\Image_Link_BarcodeController.cs" />
     <Compile Include="Controllers\M_AmttypeController.cs" />
+    <Compile Include="Controllers\M_BLTYPEController.cs" />
     <Compile Include="Controllers\M_BOMController.cs" />
     <Compile Include="Controllers\M_BrandController.cs" />
     <Compile Include="Controllers\M_CollectionController.cs" />
@@ -296,6 +297,7 @@
     <Compile Include="Controllers\Rep_Stk_StmtController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
+    <Compile Include="Controllers\Sys_StkTrnfController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
     <Compile Include="Controllers\SaleBill_PrintController.cs" />
     <Compile Include="Controllers\T_AltOrderController.cs" />
@@ -668,6 +670,7 @@
     <Compile Include="SMS.cs" />
     <Compile Include="ViewModels\AmountTypeMasterEntry.cs" />
     <Compile Include="ViewModels\AreaCodeMasterEntry.cs" />
+    <Compile Include="ViewModels\BillTypeMaster.cs" />
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
     <Compile Include="ViewModels\GenEinvIRN.cs" />
@@ -1225,6 +1228,8 @@
     <Content Include="Views\Shared\_T_SORDCANC_MAIN.cshtml" />
     <Content Include="Views\Shared\_T_SORDCANC_SIZE.cshtml" />
     <Content Include="Views\Shared\_T_AltOrder_Measure.cshtml" />
+    <Content Include="Views\M_BLTYPE\M_BLTYPE.cshtml" />
+    <Content Include="Views\Sys_StkTrnf\Sys_StkTrnf.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
