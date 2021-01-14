@@ -287,6 +287,33 @@ namespace Improvar
                       }).OrderBy(A => A.text).ToList();
             return sllist;
         }
-      
+        public List<DropDown_list_ITGRP> GetItgrpcdforSelection(string itgrptype = "")
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+
+            if (itgrptype == "")
+            {
+                itgrptype = string.Join(",", (from a in DB.M_GROUP select a.ITGRPTYPE).Distinct().ToList());
+            }
+            string[] selgrpcd = itgrptype.Split(',');
+            List<DropDown_list_ITGRP> sllist = new List<DropDown_list_ITGRP>();
+            sllist = (from a in DB.M_GROUP
+                      where (selgrpcd.Contains(a.ITGRPTYPE))
+                      select new DropDown_list_ITGRP()
+                      {
+                          text = a.ITGRPNM,
+                          value = a.ITGRPCD
+                      }).OrderBy(A => A.text).ToList();
+            return sllist;
+        }
+        public List<DropDown_list_LINECD> GetLinecdforSelection()
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            List<DropDown_list_LINECD> LineList = new List<DropDown_list_LINECD>();
+            LineList = (from a in DB.M_LINEMAST join i in DB.M_CNTRL_HDR on a.M_AUTONO equals i.M_AUTONO where i.INACTIVE_TAG == "N" select new DropDown_list_LINECD() { text = a.LINENM, value = a.LINECD }).ToList();
+            return LineList;
+        }
+
     }
 }

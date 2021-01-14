@@ -1,0 +1,492 @@
+﻿@model Improvar.ViewModels.TTxnAckEntry
+
+@{   switch (Model.ACK_FLAG1)
+    {
+        case "COUR": ViewBag.Title = "Courier Entry"; break;
+        case "SIGN": ViewBag.Title = "Signed Chalan"; break;
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    string PageControllerName = "T_Ack";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            modeView();
+            $("#floppy_remove_nav").remove();
+            $("#print_nav").remove();
+            $("#user_nav").remove();
+        }
+        else if ("@Model.DefaultAction" == "E") {
+            $("#BLDOCCD").removeAttr("onkeyup");
+            $("#BLDOCCD").prev('img').hide();
+            $("#BLDOCCD").next('img').hide();
+            $('#BLDOCCD').attr('readonly', true);
+            $("#BLDOCNO").removeAttr("onkeyup");
+            $("#BLDOCNO").prev('img').hide();
+            $("#BLDOCNO").next('img').hide();
+            $('#BLDOCNO').attr('readonly', true);
+
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        $("#WaitingMode").hide();
+    });
+</script>
+<script>
+    function requiredFieldValidator() {
+        if (!emptyFieldCheck("Please Select A Document Type", "BLDOCCD")) { return false; }
+        if (!emptyFieldCheck("Please Choose A Date", "BLDOCDT")) { return false; }
+        if (!emptyFieldCheck("Please Select A Party Code", "BLSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select Date of entry", "DOCDT")) { return false; }
+        //if (!emptyFieldCheck("Please Provide Budgetate of sen Category", "BUDGCTG")) { return false; }
+        //if (!emptyFieldCheck("Please Provide Budget No.", "BUDGREFNO")) { return false; }
+        //if (!emptyFieldCheck("Please Give a Budget Name", "BUDGNM")) { return false; }
+        return true;
+    }
+</script>
+<script>
+    @{
+        string mldauto = "";
+        if (@Model.T_TXNACK != null)
+        {
+            if (@Model.T_TXNACK.AUTONO != null)
+            {
+                mldauto = Model.T_TXNACK.AUTONO.ToString();
+                if (Model.T_CNTRL_HDR.CANCEL == "Y")
+                {
+                    ViewBag.formname = ViewBag.formname + "   " + "(Record Cancelled)";
+                }
+            }
+        }
+        else
+        {
+            mldauto = "";
+        }
+    }
+    function ModifyLogDetails() {
+        if ("@Model.DefaultAction" == "V") {
+            ModifyLogDtl('@mldauto');
+        }
+    }
+</script>
+<script>
+    $(function () {
+        if ("@Model.DefaultAction" != "V") {
+            $("#REFDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+            //$("#TODT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+
+        }
+    });
+</script>
+<script>
+
+    function SelectDOCCode(id) {
+       if ("@Model.DefaultAction" != "V") {
+            if (id == "") {
+                $("#BLDOCCD").val("");
+                $("#BLDOCNM").val("");
+                $("#BLDOCNO").val("");
+                $("#BLDOCDT").val("");
+                $("#BLAUTONO").val("");
+            }
+            else {
+                $.ajax({
+                    type: 'GET',
+                    url: "@Url.Action("GetDOC_Code", PageControllerName)",
+                    beforesend: $("#WaitingMode").show(),
+                    data: { val: id },
+                    success: function (result) {
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            $("#tempHDD").val(result);
+                            var findstr = $("#tempHDD").val();
+                            document.getElementById("BLDOCCD").value = returncolvalue(findstr, "DOCCD");
+                            document.getElementById("BLDOCNM").value = returncolvalue(findstr, "DOCNM");
+                            document.getElementById("BLAUTONO").value = returncolvalue(findstr, "AUTONO");
+                            message_value = "BLDOCCD";
+                        }
+                        else {
+                            msgInfo(result);
+                            $("#BLDOCCD").val("");
+                            $("#BLDOCNM").val("");
+                            message_value = "BLDOCCD";
+                        }
+                        $("#WaitingMode").hide();
+                        return false;
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError("Error: " + textStatus + "," + errorThrown);
+                    }
+                });
+            }
+        }
+    }
+
+    function SelectDOCNumber(id) {
+        if (id == "") {
+            $("#BLDOCNO").val("");
+            $("#BLDOCDT").val("");
+            $("#BLAUTONO").val("");
+            $("#BLSLCD").val("");
+            $("#BLDOCCD").prev('img').show();
+            $('#BLDOCCD').attr('readonly', false);
+
+        }
+        else {
+            var DOC_CODE = document.getElementById("BLDOCCD").value;
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetDOC_Number", PageControllerName)",
+                data: { val: id, Code: DOC_CODE, },
+                beforesend: $("#WaitingMode").show(),
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        var findstr = result;
+                        document.getElementById("BLDOCNO").value = returncolvalue(findstr, "DOCONLYNO");
+                        document.getElementById("BLDOCDT").value = returncolvalue(findstr, "DOCDT");
+                        document.getElementById("BLAUTONO").value = returncolvalue(findstr, "AUTONO");
+                        document.getElementById("BLSLCD").value = returncolvalue(findstr, "SLCD");
+                        document.getElementById("BLTRANSLCD").value = returncolvalue(findstr, "TRANSLCD");
+                        document.getElementById("BLLRNO").value = returncolvalue(findstr, "LRNO");
+                        document.getElementById("BLLRDT").value = returncolvalue(findstr, "LRDT");
+                        document.getElementById("BLSLNM").value = returncolvalue(findstr, "SLNM");
+                        document.getElementById("BLTRANSLNM").value = returncolvalue(findstr, "TRANSLNM");
+                        $("#BLDOCCD").removeAttr("onkeyup");
+                        $("#BLDOCCD").prev('img').hide();
+                        $("#BLDOCCD").next('img').hide();
+                        $('#BLDOCCD').attr('readonly', true);
+                        $("#WaitingMode").hide();
+                    }
+                    else {
+                        $("#WaitingMode").hide();
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#BLDOCNO").val("");
+                        $("#BLDOCDT").val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = DOCNO.id;
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectSubLedgerCode(id, SLCD, SLNM) {
+        if (id == "") {
+            $("#" + SLCD.id).val("");
+            $("#" + SLNM.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetSubLedgerDetails", PageControllerName)",
+                data: { val: id },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        var findstr = result;
+                        document.getElementById(SLCD.id).value = returncolvalue(findstr, "SLCD");
+                        document.getElementById(SLNM.id).value = returncolvalue(findstr, "SLNM");
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + SLCD.id).val("");
+                        $("#" + SLNM.id).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = SLCD.id;
+                    }
+                }
+            });
+        }
+    }
+
+</script>
+<script>
+    function AddDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("AddDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+    function DeleteDOCrow() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("DeleteDOCRow", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivDocument").animate({ marginTop: '0px' }, 50);
+                $("#partialdivDocument").html(result);
+            }
+        });
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        <div class="form-horizontal" style="padding-left:5px;padding-right:5px;">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+            <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+            <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(a => a.BLAUTONO, new { id = "BLAUTONO" })
+            @Html.HiddenFor(c => c.ACK_FLAG1)
+            @Html.HiddenFor(c => c.ACK_DOCCTG)
+            <div class="row" style="margin-top:-15px;">
+                <ul class="nav nav-tabs" style="margin-top: 11px;">
+                    <li class="active"><a data-toggle="tab" href="#Main">Main</a></li>
+                    <li class=""><a data-toggle="tab" href="#Documents">Documents</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Doc Code")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOC_Code", PageControllerName)','BLDOCCD/BLDOCNM','1/0','Select Document Type Details','BLDOCCD')" />
+                                    @Html.EditorFor(model => model.BLDOCCD, new { htmlAttributes = new { @class = "form-control textbox_image text-uppercase", id = "BLDOCCD", onkeyup = "GetHelp('" + @Url.Action("GetDOC_Code", PageControllerName) + "','BLDOCCD/BLDOCNM','1/0','Select Document Type Details','BLDOCCD');", onblur = "SelectDOCCode(this.value);", @placeholder = "Code", maxlength = 4, required = "required" } })
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLDOCNM, new { htmlAttributes = new { @class = "form-control", id = "BLDOCNM", @TabIndex = -1, @placeholder = "Document Name", maxlength = 45, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Document No")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BLDOCNO", onkeyup = "GetHelp_WithId('" + Url.Action("GetDOC_Number", PageControllerName) + "','BLDOCNO/BLDOCDT','0/1','Select Document Number','BLDOCNO','BLDOCCD')", onblur = "SelectDOCNumber(this.value,'BLDOCNO','BLDOCDT');", @placeholder = "DocNo.", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp_WithId('@Url.Action("GetDOC_Number", PageControllerName)','BLDOCNO/BLDOCDT','0/1','Select Docno and Docdt Details','BLDOCNO','BLDOCCD')" />
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;text-align:right">
+                                    @Html.Label("", "Document Date")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLDOCDT, new { htmlAttributes = new { @class = "form-control", id = "BLDOCDT", autocomplete = "off", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "Party Code")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLSLCD, new { htmlAttributes = new { @class = "form-control", id = "BLSLCD", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-11">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLSLNM, new { htmlAttributes = new { @class = "form-control", id = "BLSLNM", maxlength = 50, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "Transporter Code")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLTRANSLCD, new { htmlAttributes = new { @class = "form-control", id = "BLTRANSLCD", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-11">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLTRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "BLTRANSLNM", maxlength = 50, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "LR No.")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLLRNO, new { htmlAttributes = new { @class = "form-control", id = "BLLRNO", maxlength = 50, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "LR Date")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.BLLRDT, new { htmlAttributes = new { @class = "form-control", id = "BLLRDT", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "Date Of Entry")
+                                    <b style="color:Red;">*</b>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNACK.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-field" style="margin-top: 4px;">
+                                    @Html.Label("", "Courier/Transport")
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNACK.TRSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRSLCD", @placeholder = "Code", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','TRSLCD/TRSLNM','1/0','Sub Ledger Details','TRSLCD');", onblur = "SelectSubLedgerCode(this.value,TRSLCD,TRSLNM);" } })
+                                    <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetSubLedgerDetails", PageControllerName)','TRSLCD/TRSLNM','1/0','Sub Ledger Details','TRSLCD')" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TRSLNM, new { htmlAttributes = new { @class = "form-control ", id = "TRSLNM", @placeholder = "Sub Ledger Name", maxlength = 45, @readonly = "readonly" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "Ref No")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNACK.REFNO, new { htmlAttributes = new { @class = "form-control", id = "REFNO", maxlength = 20 } })
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "Ref Date")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNACK.REFDT, new { htmlAttributes = new { @class = "form-control", id = "REFDT", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNACK.WT, new { htmlAttributes = new { @class = "form-control", id = "WT", @maxlength = 11, @onkeypress = "return numericOnly(this,4);" } })
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "Amt")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNACK.AMT, new { htmlAttributes = new { @class = "form-control", id = "AMT", maxlength = "11", @onkeypress = "return numericOnly(this,3);" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "Person Name")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNACK.PERSNAME, new { htmlAttributes = new { @class = "form-control", id = "PERSNAME", maxlength = 50 } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 5px;">
+                                    @Html.Label("", "REMARKS")
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <div class="editor-field">
+                                    @Html.TextAreaFor(model => model.T_TXNACK.REMARKS, new { @class = "form-control", id = "REMARKS" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Documents" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row" style="margin-top: 11px;width:1024px;height:auto;background-color:#c4b9b9">
+                            <div id="partialdivDocument">
+                                @Html.Partial("_UPLOADDOCUMENTS")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+        <div id="Msgdiv">
+            @(new HtmlString(ViewBag.Message))
+        </div>
+    </div>
+}
+
+

@@ -30,7 +30,7 @@ namespace Improvar.Models
         [Column(Order = 1)]
         [StringLength(5)]
         public string FLAG1 { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? DOCDT { get; set; }
 
         [StringLength(8)]
@@ -38,7 +38,7 @@ namespace Improvar.Models
 
         [StringLength(20)]
         public string REFNO { get; set; }
-
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? REFDT { get; set; }
 
         [StringLength(50)]

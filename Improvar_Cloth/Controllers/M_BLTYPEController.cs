@@ -223,6 +223,7 @@ namespace Improvar.Controllers
                         if (VE.DefaultAction == "A")
                         {
                             DB.M_CNTRL_HDR.Add(MCH);
+                            DB.SaveChanges();
                             DB.M_BLTYPE.Add(MLINE);
                             
                         }

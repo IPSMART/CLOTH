@@ -1764,6 +1764,221 @@ namespace Improvar
             DropDown_list_StkType.Add(DropDown_list4);
             return DropDown_list_StkType;
         }
+        public string genStockinExcel(DataTable rsPendOrd, string fld = "qnty", string hd = "", double checkpcs = 0, bool onlynegstk = false)
+        {
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            int testloop = 0;
+            int testloop1 = 0;
+            int testloop3 = 0;
+            try
+            {
+                rsPendOrd.DefaultView.Sort = "itgrpnm, itgrpcd, styleno, itcd, print_seq, sizecdgrp, sizenm";
+                rsPendOrd = rsPendOrd.DefaultView.ToTable();
+
+                string selitcd = "";
+                selitcd = "'" + string.Join("','", (from DataRow dr in rsPendOrd.AsEnumerable() select dr.Field<string>("itcd")).Distinct()) + "'";
+                DataTable tbl = new DataTable();
+
+                Int32 maxR = rsPendOrd.Rows.Count - 1;
+                Int32 maxC = 0, rNo = 0;
+                Int32 i = 0; double totbox = 0, approxvalue = 0;
+
+                string excelstr = "";
+                excelstr += "<table> ";
+
+                if (hd != "") excelstr += "<thead><tr><td colspan=5 style='font-size:18px;font-weight: bold'>" + hd + "</td></tr></thead><tbody>";
+                var rsDtl = rsPendOrd.Select("");
+
+                maxC = rsDtl.Length - 1;
+                int slno = 0;
+                double tbox = 0, tpcs = 0, tset = 0;
+                selitcd = "'" + string.Join("','", (from DataRow dr in rsDtl.AsEnumerable() select dr.Field<string>("itcd")).Distinct()) + "'";
+                // Checking for size grouping
+                DataTable rssize = retSizeGrpData(selitcd);
+                int j = 0;
+
+                while (j <= maxC)
+                {
+                    ++testloop;
+                    if (testloop == 22)
+                    {
+                        //testloop = 0;
+                    }
+                    string itgrpcd = rsDtl[j]["itgrpcd"].ToString();
+                    string itgrpnm = rsDtl[j]["itgrpnm"].ToString();
+                    var rssizehead = (from DataRow dr in rssize.Rows
+                                      select new
+                                      {
+                                          itgrpcd = dr["itgrpcd"],
+                                          sizecdgrp = dr["sizecdgrp"],
+                                          print_seq = dr["print_seq"]
+                                      }).Where(x => x.itgrpcd.ToString() == itgrpcd).Distinct().OrderBy(x => x.print_seq.ToString()).ToList();
+
+                    DataTable tblsizegrp = ListToDatatable.LINQResultToDataTable(rssizehead);
+
+                    string exlhd = "";
+
+                    DataTable IR = new DataTable();
+                    IR.Columns.Add("itgrpcd", typeof(string), "");
+                    IR.Columns.Add("itgrpnm", typeof(string), "");
+                    IR.Columns.Add("itcd", typeof(string), "");
+                    IR.Columns.Add("stktype", typeof(string), "");
+                    IR.Columns.Add("negstk", typeof(string), "");
+                    IR.Columns.Add("styleno", typeof(string), "");
+                    IR.Columns.Add("sizecd", typeof(string), "");
+                    IR.Columns.Add("rate", typeof(double), "");
+                    IR.Columns.Add("sizecdgrp", typeof(string), "");
+                    IR.Columns.Add("pcsperbox", typeof(double), "");
+                    IR.Columns.Add("pcsperset", typeof(double), "");
+                    IR.Columns.Add("mixsize", typeof(string), "");
+                    IR.Columns.Add("itmexist", typeof(string), "");
+                    IR.Columns.Add("tqnty", typeof(double), "");
+                    for (int z = 0; z <= tblsizegrp.Rows.Count - 1; z++)
+                    {
+                        string sznm = retsizemaxmin(tblsizegrp.Rows[z]["sizecdgrp"].ToString());
+                        IR.Columns.Add(sznm, typeof(double), "");
+                    }
+                    bool itgrpshowthis = false;
+                    testloop1 = 0;
+                    while (rsDtl[j]["itgrpcd"].ToString() == itgrpcd)
+                    {
+                        ++testloop1;
+                        if (testloop == 22 && testloop1 == 488)
+                        {
+                            //testloop1 = 0;
+                        }
+                        string check1 = rsDtl[j]["itcd"].ToString() + rsDtl[j]["stktype"].ToString();
+                        double ibox = 0, ipcs = 0, rate = 0, ordqnty = 0, chkpcs = 0;
+
+                        string itcd = rsDtl[j]["itcd"].ToString();
+                        string stktype = rsDtl[j]["stktype"].ToString();
+
+                        string itmexist = "Y";
+                        bool itemshowthis = false, negstock = false;
+
+                        double box; testloop3 = 0;
+                        while (rsDtl[j]["itcd"].ToString() == itcd && rsDtl[j]["stktype"].ToString() == stktype)
+                        {
+                            ++testloop3;
+                            if (testloop == 22 && testloop1 == 7 && testloop3 == 4)
+                            {
+                                //testloop3 = 0;
+                            }
+                            string sizecdgrp = rsDtl[j]["sizecdgrp"].ToString(), sizes = "", boxes = "";
+                            ordqnty = 0;
+                            while (rsDtl[j]["itcd"].ToString() == itcd && rsDtl[j]["stktype"].ToString() == stktype && rsDtl[j]["sizecdgrp"].ToString() == sizecdgrp)
+                            {
+                                ordqnty = ordqnty + Convert.ToDouble(rsDtl[j][fld]);
+                                approxvalue += Math.Round(rate * Convert.ToDouble(rsDtl[j][fld]), 2);
+                                j++;
+                                if (j > maxC) break;
+                            }
+
+                            box = ConvPcstoBox(ordqnty, Convert.ToDouble(rsDtl[j - 1]["pcsperbox"]));
+                            string szfld = retsizemaxmin(sizecdgrp);
+                            if (szfld == "")
+                            {
+                                var sql1 = "select * from " + CommVar.CurSchema(UNQSNO) + ".t_txndtl where sizecd='" + rsDtl[j]["sizecd"].ToString() + "' and stktype='" + stktype + "'  and rownum=1";
+                                var dt = MasterHelpFa.SQLquery(sql1);
+                                if (dt.Rows.Count > 0)
+                                {
+                                    return "Sizecd:" + rsDtl[j]["sizecd"].ToString() + " not found in the Item master( article no:" + rsDtl[j]["styleno"].ToString() + ") "
+                                        + rsDtl[j]["sizecd"].ToString() + " found in [autono:" + dt.Rows[0]["autono"].retStr() + " date:" + dt.Rows[0]["docdt"].retDateStr() + "]";
+                                }
+                            }
+
+                            bool showthis = true;
+                            showthis = true;
+                            if (checkpcs > 0 && box < checkpcs) showthis = false;
+                            if (onlynegstk == true && box > 0) showthis = false;
+                            if (ordqnty == 0) showthis = false;
+                            if (ordqnty < 0 && onlynegstk == false)
+                            {
+                                negstock = true;
+                            }
+                            if (showthis == true)
+                            {
+                                if (itgrpshowthis == false)
+                                {
+                                    exlhd += "<thead><tr><td colspan=5 style='font-size:15px;font-weight: bold'>" + itgrpnm + " [" + itgrpcd + "]" + "</td></tr></thead>";
+                                    itgrpshowthis = true;
+                                }
+                                if (itemshowthis == false)
+                                {
+                                    itemshowthis = true;
+                                    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                    IR.Rows[rNo]["itcd"] = itcd;
+                                    IR.Rows[rNo]["styleno"] = rsDtl[j - 1]["styleno"];
+                                    IR.Rows[rNo]["stktype"] = rsDtl[j - 1]["stktype"];
+                                    IR.Rows[rNo]["itmexist"] = "Y";
+                                    if (negstock == true) IR.Rows[rNo]["negstk"] = "Y";
+                                    //IR.Rows[rNo]["rate"] = 0; // Convert.ToDouble(rsDtl[j]["rate"]);
+                                }
+                                IR.Rows[rNo][szfld] = box;
+                                ipcs = ipcs + ordqnty;
+                            }
+                            if (j > maxC) break;
+                        }
+                        if (itemshowthis == true)
+                        {
+                            box = ConvPcstoBox(ipcs, Convert.ToDouble(rsDtl[j - 1]["pcsperbox"]));
+                            ibox = ibox + box;
+                            IR.Rows[rNo]["tqnty"] = ibox;
+                            tbox = tbox + ibox;
+                            tpcs = tpcs + ipcs;
+                        }
+                        if (j > maxC) break;
+                    }
+                    Int32 s = 0, maxS = 0;
+                    maxS = IR.Rows.Count - 1;
+
+                    if (itgrpshowthis == true)
+                    {
+                        excelstr += exlhd + "<thead><tr>";
+
+                        excelstr += "<th style='border:0.5pt solid;width:130px'>" + "Style No" + "</th>";
+                        for (int es = 13; es <= IR.Columns.Count - 1; es++)
+                        {
+                            string colnm = IR.Columns[es].ColumnName;
+                            excelstr += "<th style='border:0.5pt solid;width:60px'>" + colnm + "</th>";
+                        }
+                        excelstr += "</tr></thead><tbody>";
+
+                        while (s <= maxS)
+                        {
+                            excelstr += "<tr>";
+                            string itmcolr = "";
+                            if (IR.Rows[s]["itmexist"].ToString() == "N") itmcolr = "color:red;";
+                            if (IR.Rows[s]["negstk"].ToString() == "Y") itmcolr = "color:red;";
+                            excelstr += "<td style='border:0.1pt solid;" + itmcolr + "'>" + IR.Rows[s]["styleno"].ToString() + "</td>";
+                            for (int es = 13; es <= IR.Columns.Count - 1; es++)
+                            {
+                                excelstr += "<td style='border:0.1pt solid;" + itmcolr + "'>" + IR.Rows[s][es] + "</td>";
+                            }
+                            excelstr += "</tr>";
+                            s++;
+                        }
+                        excelstr += "</tbody><tr>" + "</tr>";
+                    }
+                    //
+                }
+                excelstr += "<tr>" + CommFunc.retHtmlCell("") + "</tr>";
+
+                excelstr += "<tr>";
+                excelstr += CommFunc.retHtmlCell("Total Boxes", "C", true, 14);
+                excelstr += CommFunc.retHtmlCell(tbox.ToString(), "N", true, 16);
+                excelstr += "</tr>";
+
+                excelstr = excelstr + "</table>";
+
+                return (excelstr);
+            }
+            catch (Exception ex)
+            {
+                var tyd = testloop;
+                return "";
+            }
+        }
 
     }
 }
