@@ -37,11 +37,12 @@
     function requiredFieldValidator() {
         //if (!emptyFieldCheck("Please Select / Enter a Valid Party", "SLCD")) { return false; }
         // if (!emptyFieldCheck("Please Select / Enter a Valid Delivery At", "CONSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
         var flagout = true; var errmsgout = ""; var errmsgin = "";
         for (var i = 0; i <= $("#_T_StockAdj_OUT_TAB_GRID > tbody > tr").length - 1; i++) {
             if ($("#OUT_BARNO_" + i).val() != "" && retFloat($("#OUT_QNTY_" + i).val()) != 0) {
                 if ($("#OUT_MTRLJOBCD_" + i).val() == "") {
-                    errmsgout += $("#OUT_SLNO_" + i).val()+", ";
+                    errmsgout += $("#OUT_SLNO_" + i).val() + ", ";
                 }
             }
         }
@@ -293,6 +294,7 @@
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Godown")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-7">

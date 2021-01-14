@@ -206,6 +206,19 @@ namespace Improvar.Controllers
                                 {
                                     VE.GONM = DB.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
+                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "OP")
+                                {
+                                    var mtrljobcd = (from a in DB.M_MTRLJOBMST
+                                                     join b in DB.M_CNTRL_HDR on a.M_AUTONO equals b.M_AUTONO
+                                                     where b.INACTIVE_TAG == "N"
+                                                     select new { a.MTRLJOBCD, a.MTRLJOBNM, a.MTBARCODE }).ToList();
+                                    if (mtrljobcd.Count() == 1)
+                                    {
+                                        VE.MTRLJOBCD = mtrljobcd[0].MTRLJOBCD;
+                                        VE.MTRLJOBNM = mtrljobcd[0].MTRLJOBNM;
+                                        VE.MTBARCODE = mtrljobcd[0].MTBARCODE;
+                                    }
+                                }
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;

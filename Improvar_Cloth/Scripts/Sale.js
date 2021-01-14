@@ -106,6 +106,7 @@ function Add_BarCodeRow() {
 
 }
 function FillBarcodeArea(str, Table, i) {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
@@ -123,9 +124,11 @@ function FillBarcodeArea(str, Table, i) {
         $("#TXNSLNO").val(returncolvalue(str, "TXNSLNO"));
         $("#ITGRPCD").val(returncolvalue(str, "ITGRPCD"));
         $("#ITGRPNM").val(returncolvalue(str, "ITGRPNM"));
-        $("#MTRLJOBCD").val(returncolvalue(str, "MTRLJOBCD"));
-        $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
-        $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
+        if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP") {
+            $("#MTRLJOBCD").val(returncolvalue(str, "MTRLJOBCD"));
+            $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
+            $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
+        }
         $("#ITCD").val(returncolvalue(str, "ITCD"));
         $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
         $("#STYLENO").val(returncolvalue(str, "STYLENO"));
@@ -513,7 +516,7 @@ function ClearBarcodeArea(TAG) {
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
     if (MENU_PARA == "PB" || MENU_PARA == "OP") {
         ClearAllTextBoxes("BALENO,OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
     }
@@ -538,6 +541,9 @@ function ClearBarcodeArea(TAG) {
     }
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
         ClearAllTextBoxes("LISTPRICE,LISTDISCPER");
+    }
+    if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP") {
+        ClearAllTextBoxes("MTRLJOBCD,MTRLJOBNM,MTBARCODE");
     }
 }
 function Fill_DetailData() {
