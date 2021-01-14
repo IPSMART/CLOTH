@@ -60,7 +60,9 @@
                 GetAllMtrljobcd();
             }
             Checked_Disable();
-            changeBARGENTYPE();
+            if ('@Model.MENU_PARA' == "PB" || '@Model.MENU_PARA' == "PR") {
+                changeBARGENTYPE();
+            }
             if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "OP") {
                 $('#barfirstrow input').attr('readonly', 'readonly');
                 $('#barfirstrow input').removeAttr("onblur");
@@ -624,7 +626,7 @@
                                     </datalist>
                                 </div>
                             </div>
-                            @if (Model.MENU_PARA == "PB"|| Model.MENU_PARA == "OP")
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                             {
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
@@ -735,7 +737,7 @@
                                     @Html.HiddenFor(model => model.TDSCALCON, new { id = "TDSCALCON" })
                                     @Html.HiddenFor(model => model.AMT, new { id = "AMT" })
                                     @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
-                                    @if (Model.MENU_PARA == "PB"|| Model.MENU_PARA == "OP")
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                     {
                                         @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                     }
@@ -803,18 +805,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-5" style="margin-top: 6px;">
-                                <div class="editor-label">
-                                    @Html.Label("", "Bar Generation")
+                        @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR")
+                        {
+                            <div class="row">
+                                <div class="col-md-5" style="margin-top: 6px;">
+                                    <div class="editor-label">
+                                        @Html.Label("", "Bar Generation")
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE", onchange = "changeBARGENTYPE()" })
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.T_TXN.BARGENTYPE, new SelectList(Model.BARGEN_TYPE, "Value", "Text"), new { @class = "form-control", id = "BARGENTYPE", onchange = "changeBARGENTYPE()" })
-                                </div>
-                            </div>
-                        </div>
+                        }
                         <div class="row">
                             @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                             {
@@ -1037,7 +1042,7 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.CUTLENGTH, new { htmlAttributes = new { @class = "form-control", id = "CUTLENGTH", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Length", @title = "Length", @onchange= "CalculateBargridQnty();" } })
+                                                    @Html.EditorFor(model => model.CUTLENGTH, new { htmlAttributes = new { @class = "form-control", id = "CUTLENGTH", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Length", @title = "Length", @onchange = "CalculateBargridQnty();" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -1047,7 +1052,7 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onchange= "CalculateBargridQnty('', '', 'QNTY');" } })
+                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onchange = "CalculateBargridQnty('', '', 'QNTY');" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
@@ -1055,7 +1060,7 @@
                                                     @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "UOM", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
                                                 </div>
                                             </div>
-                                           
+
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR", @title = "FLAGMTR" } })
