@@ -13,20 +13,20 @@
     }
 }
 
-<style>
-    .TextAreaRemarks {
-        height: 190px;
-    }
-</style>
+@*<style>
+        .TextAreaRemarks {
+            height: 190px;
+        }
+    </style>*@
 <script src="~/Scripts/jquery.min.js"></script>
-<link rel="stylesheet" href="~/Content/jquery.stickytable.css">
+@*<link rel="stylesheet" href="~/Content/jquery.stickytable.css">*@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
-            $(".sl_bom_grid").prop("disabled", false);
-            $("#save").hide();
+            //$(".sl_bom_grid").prop("disabled", false);
+            //$("#save").hide();
 
         }
         else if ("@Model.DefaultAction" == "E") {
@@ -134,25 +134,25 @@
         });
     }
 </script>
-<script>
+@*<script>
 
-    function DeleteRow() {
-        $.ajax({
-            type: 'POST',
-            url: "@Url.Action("DeleteRow", PageControllerName)",
-            data: $('form').serialize(),
-            success: function (result) {
-                $("#partialdivMain").animate({ marginTop: '0px' }, 50);
-                $("#partialdivMain").html(result);
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
+        function DeleteRow() {
+            $.ajax({
+                type: 'POST',
+                url: "@Url.Action("DeleteRow", PageControllerName)",
+                data: $('form').serialize(),
+                success: function (result) {
+                    $("#partialdivMain").animate({ marginTop: '0px' }, 50);
+                    $("#partialdivMain").html(result);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    </script>*@
 
 <script>
     function changeSTCHNM(id) {
@@ -166,6 +166,7 @@
             },
             success: function (result) {
                 $("#tbl_STCHALTDTLCOMP").html(result);
+                $("#ComponentAdd").val("Add");
                 $("#WaitingMode").hide();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -237,27 +238,20 @@
 
 
 <script>
-    function SaveDressStyle(i) {
+    function AddDressStyle() {
         debugger;
-        var STHCD = ($("#STCHCD").find(":selected").val());
-        var QNTY = $("#QNTY").val(); var RATE = $("#RATE").val();
-        var FLDDESC = "", FLDVAL = "", FLDREM = "", FLDCD = "", FLDTYPE = "";
-        var GridSTCHALTDTLCOMP = $("#tbl_STCHALTDTLCOMP > tbody > tr").length;
-        for (var i = 0; i <= GridSTCHALTDTLCOMP - 1; i++) {
-            FLDDESC = document.getElementById("FLDDESC" + i);
-            FLDVAL = document.getElementById("FLDVAL" + i);
-            FLDREM = document.getElementById("FLDREM" + i);
-            FLDCD = document.getElementById("FLDCD" + i);
-            FLDTYPE = document.getElementById("FLDTYPE" + i);
-        }
+        if (!emptyFieldCheck("Please Select STCHCD/Dress stype", "STCHCD")) { return false; }
+        var AU = $("#ComponentAdd").val().split(' ');
+        var slno = "";
+        if (AU.length > 1) slno = AU[1];
         $.ajax({
-            type: 'get',
+            type: 'post',
             beforesend: $("#WaitingMode").show(),
-            url: "@Url.Action("SaveDressStyle", PageControllerName)",
-            data: "&STHCD=" + STHCD + "&QNTY=" + QNTY + "&FLDDESC=" + FLDDESC + "&FLDVAL=" + FLDVAL + "&FLDREM=" + FLDREM + "&FLDCD=" + FLDCD + "&FLDTYPE=" + FLDTYPE,
+            url: "@Url.Action("AddMeasurement", PageControllerName)",
+            data: $('form').serialize() + "&slno=" + slno,
             success: function (result) {
                 $("#WaitingMode").hide();
-                //$("#tbl_STCHALTDTLCOMP").html(result);
+                $("#partialdivMeasure").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -266,26 +260,36 @@
             }
         });
     }
-
-    //function SaveDressStyle(i) {
-
-    //    $.getJSON("T_AltOrder/SaveDressStyle",
-    //    function (json) {
-    //        var tr;
-    //        //Append each row to html table
-    //        for (var i = 0; i < json.length; i++) {
-    //            tr = $('<tr/>');
-    //            tr.append("<td>" + json[i].Id + "</td>");
-    //            tr.append("<td>" + json[i].Name + "</td>");
-    //            tr.append("<td>" + json[i].City + "</td>");
-    //            tr.append("<td>" + json[i].Address + "</td>");
-    //            $('table').append(tr);
-    //        }
-    //    });
-    //}
-
 </script>
+<script>
+    function GetComponent(i, Mode) {
+        debugger;
+        var slno = retInt(i) + 1;
+        var STCHCD = $("#MEASUREMENT_STCHCD_" + i).val();
+        var QNTY = $("#MEASUREMENT_QNTY_" + i).val();
+        var RATE = $("#MEASUREMENT_RATE_" + i).val();
+        $("#STCHCD").val(STCHCD);
+        $("#QNTY").val(QNTY);
+        $("#RATE").val(RATE);
 
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("GetComponent", PageControllerName)",
+            data: $('form').serialize() + "&slno=" + slno, // "&STHCD=" + STHCD + "&QNTY=" + QNTY + "&FLDDESC=" + FLDDESC + "&FLDVAL=" + FLDVAL + "&FLDREM=" + FLDREM + "&FLDCD=" + FLDCD + "&FLDTYPE=" + FLDTYPE,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#tbl_STCHALTDTLCOMP").html(result);
+                $("#ComponentAdd").val("Update " + slno);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -548,7 +552,7 @@
                             </div>
                             <div class="col-md-9">
                                 <table class="table table-responsive table-condensed table-striped" id="tbl_STCHALTDTLCOMP">
-                                    <thead><tr><th style="width: 106px;">Comp</th><th>Value</th><th>Remarks</th></tr></thead>
+                                    <thead><tr><th style="width: 106px;">Component</th><th>Value</th><th>Remarks</th></tr></thead>
                                     <tbody>
                                         @if (Model.TSTCHALT_DTLCOMP != null)
                                         {
@@ -559,13 +563,14 @@
                                                         @Html.DisplayFor(model => model.TSTCHALT_DTLCOMP[i].FLDDESC)
                                                     </td>
                                                     <td>
-                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDCD, new { id = "FLDCD" })
-                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDTYPE, new { id = "FLDTYPE" })
-                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].SLNO, new { id = "SLNO" })
-                                                        @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDVAL, new { htmlAttributes = new { @class = "form-control", id = "FLDVAL", maxlength = Model.FLDLEN } })
+                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDCD, new { id = "FLDCD_" + i })
+                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDTYPE, new { id = "FLDTYPE_" + i })
+                                                        @Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].SLNO, new { id = "SLNO_" + i })
+                                                        @*@Html.HiddenFor(model => model.TSTCHALT_DTLCOMP[i].FLDDATACOMBO, new { id = "FLDDATACOMBO" })*@
+                                                        @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDVAL, new { htmlAttributes = new { @class = "form-control", maxlength = Model.FLDLEN } })
                                                     </td>
                                                     <td>
-                                                        @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDREM, new { htmlAttributes = new { @class = "form-control", id = "FLDREM", maxlength = 12 } })
+                                                        @Html.EditorFor(model => model.TSTCHALT_DTLCOMP[i].FLDREM, new { htmlAttributes = new { @class = "form-control", maxlength = 12 } })
                                                     </td>
                                                 </tr>
                                             }
@@ -581,8 +586,17 @@
                             <div class="col-md-9">
                                 @if (Model.DefaultAction != "V")
                                 {
-                                    <input type="button" class="btn btn-info btn-block" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="save" value="Add" title="Click to Save Deress style details" onclick="SaveDressStyle()" />
+                                    <input type="button" class="btn btn-info btn-block" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="ComponentAdd" value="Add" title="Click to Save Dress style details" onclick="AddDressStyle()" />
                                 }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                            </div>
+                            <div class="col-md-9">
+                                <div id="partialdivMeasure" style="margin-top:0px;">
+                                    @Html.Partial("_T_AltOrder_Measure")
+                                </div>
                             </div>
                         </div>
                     </div>
