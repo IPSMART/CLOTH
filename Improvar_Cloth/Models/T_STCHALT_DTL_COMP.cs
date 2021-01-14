@@ -28,7 +28,7 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 1)]
-        public byte SLNO { get; set; }
+        public int SLNO { get; set; }
 
         [Key]
         [Column(Order = 2)]
