@@ -169,6 +169,7 @@ namespace Improvar.Models
     {
         public short SLNO { get; set; }
         public string STKTYPE { get; set; }
+        public string STKTYPE_VALUE { get; set; }
         public double IN_QNTY { get; set; }
         public double OUT_QNTY { get; set; }
         public List<DropDown_list2> DropDown_list2 { get; set; }

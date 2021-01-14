@@ -34,6 +34,6 @@ namespace Improvar.ViewModels
         public double SIZE_T_QNTY { get; set; }
         public M_SYSCNFG M_SYSCNFG { get; set; }
         public List<BARGEN_TYPE> BARGEN_TYPE { get; set; }
-        public List<DropDown_list2> DropDown_list2 { get; set; }
+        public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
     }
 }

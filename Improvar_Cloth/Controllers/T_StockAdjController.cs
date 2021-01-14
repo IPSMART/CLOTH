@@ -43,7 +43,7 @@ namespace Improvar.Controllers
                     string COM = CommVar.Compcd(UNQSNO);
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                     VE.BARGEN_TYPE = Master_Help.BARGEN_TYPE();
-                    VE.DropDown_list2 = Master_Help.STOCK_TYPE();
+                    VE.DropDown_list_StkType = Master_Help.STK_TYPE();
                     if (op.Length != 0)
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
@@ -130,12 +130,12 @@ namespace Improvar.Controllers
                                 VE.TBATCHDTL = TBATCHDTL;
 
                                 List<STOCK_ADJUSTMENT> STOCK_ADJUSTMENT = new List<STOCK_ADJUSTMENT>();
-                                var stktype = Master_Help.STOCK_TYPE();
-                                for (int i = 0; i <= stktype.Count() - 1; i++)
+                                for (int i = 0; i <= VE.DropDown_list_StkType.Count() - 1; i++)
                                 {
                                     STOCK_ADJUSTMENT STOCK_ADJ1 = new STOCK_ADJUSTMENT();
                                     STOCK_ADJ1.SLNO = Convert.ToInt16(i + 1);
-                                    STOCK_ADJ1.STKTYPE = stktype[i].text;
+                                    STOCK_ADJ1.STKTYPE = VE.DropDown_list_StkType[i].text;
+                                    STOCK_ADJ1.STKTYPE_VALUE = VE.DropDown_list_StkType[i].value;
                                     STOCK_ADJUSTMENT.Add(STOCK_ADJ1);
                                 }
                                 VE.STOCK_ADJUSTMENT = STOCK_ADJUSTMENT;
@@ -164,12 +164,12 @@ namespace Improvar.Controllers
                         else if (VE.DefaultAction == "E")
                         {
                             List<STOCK_ADJUSTMENT> STOCK_ADJUSTMENT = new List<STOCK_ADJUSTMENT>();
-                            var stktype = Master_Help.STOCK_TYPE();
-                            for (int i = 0; i < stktype.Count() - 1; i++)
+                            for (int i = 0; i <= VE.DropDown_list_StkType.Count() - 1; i++)
                             {
                                 STOCK_ADJUSTMENT STOCK_ADJ1 = new STOCK_ADJUSTMENT();
                                 STOCK_ADJ1.SLNO = Convert.ToInt16(i + 1);
-                                STOCK_ADJ1.STKTYPE = stktype[i].text;
+                                STOCK_ADJ1.STKTYPE = VE.DropDown_list_StkType[i].text;
+                                STOCK_ADJ1.STKTYPE_VALUE = VE.DropDown_list_StkType[i].value;
                                 STOCK_ADJUSTMENT.Add(STOCK_ADJ1);
                             }
                             VE.STOCK_ADJUSTMENT = STOCK_ADJUSTMENT;
@@ -228,10 +228,10 @@ namespace Improvar.Controllers
                 #region IN TAB DATA
                 string str = "";
                 str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,j.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
-                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,j.WPRATE,j.RPRATE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE ";
-                str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_BATCHMST j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
+                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE ";
+                str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p ";
-                str += "where i.BARNO = j.BARNO(+) and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) ";
+                str += "where i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) ";
                 str += "and i.AUTONO = '" + sl.AUTONO + "' and i.SLNO > 1000 ";
                 str += "order by i.SLNO ";
                 DataTable tbl_in = Master_Help.SQLquery(str);
@@ -257,8 +257,8 @@ namespace Improvar.Controllers
                                     SIZECD = dr["SIZECD"].retStr(),
                                     SIZENM = dr["SIZENM"].retStr(),
                                     SZBARCODE = dr["SZBARCODE"].retStr(),
-                                    WPRATE = dr["WPRATE"].retDbl(),
-                                    RPRATE = dr["RPRATE"].retDbl(),
+                                    //WPRATE = dr["WPRATE"].retDbl(),
+                                    //RPRATE = dr["RPRATE"].retDbl(),
                                     QNTY = dr["QNTY"].retDbl(),
                                     MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
                                     MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
@@ -271,10 +271,10 @@ namespace Improvar.Controllers
                 #region OUT TAB DATA
                 str = "";
                 str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,j.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
-                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,j.WPRATE,j.RPRATE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE ";
-                str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_BATCHMST j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
+                str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE ";
+                str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p ";
-                str += "where i.BARNO = j.BARNO(+) and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) ";
+                str += "where  i.autono=j.autono and i.txnslno=j.slno and j.ITCD=k.ITCD and k.ITGRPCD=l.ITGRPCD and i.PARTCD=m.PARTCD(+) and j.SIZECD=n.SIZECD(+) and j.COLRCD=o.COLRCD(+) and i.MTRLJOBCD=p.MTRLJOBCD(+) ";
                 str += "and i.AUTONO = '" + sl.AUTONO + "' and i.SLNO < 1000 ";
                 str += "order by i.SLNO ";
                 DataTable tbl_out = Master_Help.SQLquery(str);
@@ -395,8 +395,9 @@ namespace Improvar.Controllers
                 string barnoOrStyle = val.retStr();
                 string DOCDT = data[0].retStr();
                 string GOCD = data[1].retStr() == "" ? "" : data[1].retStr().retSqlformat();
+                string MTRLJOBCD = data[2].retStr() == "" ? "" : data[2].retStr().retSqlformat();
 
-                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "", GOCD);
+                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, menupara, DOCDT, "", GOCD,"", MTRLJOBCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -443,7 +444,7 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                VE.DropDown_list2 = Master_Help.STOCK_TYPE();
+                VE.DropDown_list_StkType = Master_Help.STK_TYPE();
                 if (TABLE == "_T_StockAdj_IN_TAB_GRID")
                 {
                     List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
@@ -497,7 +498,7 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                VE.DropDown_list2 = Master_Help.STOCK_TYPE();
+                VE.DropDown_list_StkType = Master_Help.STK_TYPE();
                 if (TABLE == "_T_StockAdj_IN_TAB_GRID")
                 {
                     List<TBATCHDTL> TBATCHDTL = new List<TBATCHDTL>();
@@ -571,6 +572,43 @@ namespace Improvar.Controllers
             ModelState.Clear();
             VE.DefaultView = true;
             return PartialView("_UPLOADDOCUMENTS", VE);
+        }
+        public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
+        {
+            List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
+            int slno = 0;
+            try
+            {
+                var BarImages = BarImage.retStr().Split((char)179);
+                foreach (string image in BarImages)
+                {
+                    if (image != "")
+                    {
+                        var imagedes = image.Split('~');
+                        T_BATCH_IMG_HDR mdoc = new T_BATCH_IMG_HDR();
+                        mdoc.CLCD = CommVar.ClientCode(UNQSNO);
+                        mdoc.EMD_NO = EMD;
+                        mdoc.SLNO = Convert.ToByte(++slno);
+                        mdoc.DOC_CTG = "PRODUCT";
+                        var extension = Path.GetExtension(imagedes[0]);
+                        mdoc.DOC_FLNAME = BARNO + "_" + slno + extension;
+                        mdoc.DOC_DESC = imagedes[1].retStr().Replace('~', ' ');
+                        mdoc.BARNO = BARNO;
+                        mdoc.DOC_EXTN = extension;
+                        doc.Add(mdoc);
+                        string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
+                        topath = Path.Combine(topath, "");
+                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
+                        Cn.CopyImage(frompath, topath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, BarImage);
+            }
+            var result = Tuple.Create(doc);
+            return result;
         }
         public ActionResult SAVE(FormCollection FC, StockAdjustmentsConversionEntry VE)
         {
@@ -686,6 +724,19 @@ namespace Improvar.Controllers
                         sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='" + TTXN.DOCCD + "'";
                         dt = Master_Help.SQLquery(sql);
                         if (dt != null && dt.Rows.Count > 0) docbarcode = dt.Rows[0]["docbarcode"].retStr();
+
+                        // SAVE T_CNTRL_HDR_UNIQNO
+
+                        if (VE.DefaultAction == "A")
+                        {
+                            T_CNTRL_HDR_UNIQNO TCHUNIQNO = new T_CNTRL_HDR_UNIQNO();
+                            TCHUNIQNO.CLCD = TTXN.CLCD;
+                            TCHUNIQNO.AUTONO = TTXN.AUTONO;
+                            TCHUNIQNO.UNIQNO = UNIQNO;
+                            dbsql = Master_Help.RetModeltoSql(TCHUNIQNO);
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        }
+                        //END T_CNTRL_HDR_UNIQNO 
 
                         #region IN TAB ENTRY
                         double IN_TOTAL_QNTY = 0;
@@ -958,26 +1009,26 @@ namespace Improvar.Controllers
 
                                         bool flagbatch = false;
                                         string barno = "";
-                                        if (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL_OUT[i].BARGENTYPE == "E")
+                                        //if (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL_OUT[i].BARGENTYPE == "E")
+                                        //{
+                                        //    barno = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL_OUT[i].SLNO));
+                                        //    flagbatch = true;
+                                        //}
+                                        //else
+                                        //{
+                                        barno = salesfunc.GenerateBARNO(VE.TBATCHDTL_OUT[i].ITCD, VE.TBATCHDTL_OUT[i].CLRBARCODE, VE.TBATCHDTL_OUT[i].SZBARCODE);
+                                        sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_BARCODE where barno='" + barno + "'";
+                                        dt = Master_Help.SQLquery(sql);
+                                        if (dt.Rows.Count == 0)
                                         {
-                                            barno = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL_OUT[i].SLNO));
-                                            flagbatch = true;
+                                            dberrmsg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TBATCHDTL_OUT[i].SLNO + " and itcd=" + VE.TBATCHDTL_OUT[i].ITCD; goto dbnotsave;
                                         }
-                                        else
-                                        {
-                                            barno = salesfunc.GenerateBARNO(VE.TBATCHDTL_OUT[i].ITCD, VE.TBATCHDTL_OUT[i].CLRBARCODE, VE.TBATCHDTL_OUT[i].SZBARCODE);
-                                            sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".M_SITEM_BARCODE where barno='" + barno + "'";
-                                            dt = Master_Help.SQLquery(sql);
-                                            if (dt.Rows.Count == 0)
-                                            {
-                                                dberrmsg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TBATCHDTL_OUT[i].SLNO + " and itcd=" + VE.TBATCHDTL_OUT[i].ITCD; goto dbnotsave;
-                                            }
-                                            sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
-                                            OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
-                                            if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
+                                        sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
+                                        OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                                        if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
 
-                                            if (recoexist == false) flagbatch = true;
-                                        }
+                                        if (recoexist == false) flagbatch = true;
+                                        //}
 
                                         //checking barno exist or not
                                         string Action = "", SqlCondition = "";
@@ -988,7 +1039,7 @@ namespace Improvar.Controllers
                                         else
                                         {
                                             sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where autono='" + TTXN.AUTONO + "' and slno = " + VE.TBATCHDTL_OUT[i].SLNO + " and barno='" + barno + "' ";
-                                            OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
+                                            OraCmd.CommandText = sql; OraReco = OraCmd.ExecuteReader();
                                             if (OraReco.HasRows == false) recoexist = false; else recoexist = true; OraReco.Dispose();
 
                                             if (recoexist == true)
@@ -1140,215 +1191,7 @@ namespace Improvar.Controllers
                             }
                         }
 
-                        //#region STOCK CHECKING INTAB
-                        //var ITCD = string.Join(",", (from Z in VE.TBATCHDTL select "'" + Z.ITCD + "'").Distinct());
-                        //var stocktype = string.Join(",", (from Z in VE.TBATCHDTL where Z.STKTYPE.retStr() != "" select "'" + Z.STKTYPE + "'").Distinct());
-                        //var mtrljobcd = string.Join(",", (from Z in VE.TBATCHDTL where Z.MTRLJOBCD.retStr() != "" select "'" + Z.MTRLJOBCD + "'").Distinct());
-                        //if (mtrljobcd.retStr() == "")
-                        //{
-                        //    mtrljobcd = "'FS'";
-                        //}
-                        //var ITEM_STOCK_DATA = Salesfunc.GetStock(VE.T_TXN.DOCDT.Value.ToString("dd/MM/yyyy"), "'" + VE.T_TXN.GOCD + "'", ITCD, mtrljobcd, (VE.T_TXN.AUTONO == null ? "" : VE.T_TXN.AUTONO), "", "", "", "", stocktype, "", "", "", true, true);
 
-                        //string ERROR_MESSAGE = ""; int ERROR_COUNT = 0;
-                        //if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
-                        //{
-                        //    for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
-                        //    {
-                        //        string STKTYPE = VE.TBATCHDTL[i].STKTYPE;
-                        //        string ITEM = VE.TBATCHDTL[i].ITCD;
-
-                        //        string QNTY = "";
-
-                        //        if (VE.TBATCHDTL[i].ALL_SIZE.retStr() != "")
-                        //        {
-                        //            string[] SIZE = VE.TBATCHDTL[i].ALL_SIZE.Split(',');
-                        //            if (VE.TBATCHDTL[i].ChildData != null)
-                        //            {
-                        //                string data = VE.TBATCHDTL[i].ChildData;
-                        //                var helpM = new List<Improvar.Models.TTXNDTL_OUT_SIZE>();
-                        //                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                        //                helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.TTXNDTL_OUT_SIZE>>(data);
-                        //                if (SIZE != null) helpM = helpM.Where(a => SIZE.Contains(a.SIZECD)).ToList();
-                        //                for (int j = 0; j <= helpM.Count - 1; j++)
-                        //                {
-                        //                    if (helpM[j].SLNO != 0 && helpM[j].QNTY != null && helpM[j].QNTY != 0)
-                        //                    {
-                        //                        QNTY = "";
-                        //                        var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
-                        //                           .Where(g => g.Field<string>("itcd") == ITEM && g.Field<string>("stktype") == STKTYPE && g.Field<string>("sizecd") == helpM[j].SIZECD)
-                        //                               .GroupBy(g => new { itcd = g["itcd"], stktype = g["stktype"] })
-                        //                                .Select(g =>
-                        //                                {
-                        //                                    var row = ITEM_STOCK_DATA.NewRow();
-                        //                                    row["qnty"] = g.Sum(r => r.Field<decimal>("qnty"));
-                        //                                    return row;
-                        //                                });
-                        //                        if (vQNTY != null && vQNTY.Count() > 0)
-                        //                        {
-                        //                            var vQNTY1 = vQNTY.CopyToDataTable();
-                        //                            QNTY = vQNTY1.Rows[0]["qnty"].retStr();
-                        //                        }
-
-                        //                        var STOCK_QNTY = QNTY.retDbl(); double SHORTAGE_QNTY = 0;
-                        //                        STOCK_QNTY = STOCK_QNTY + helpM[j].QNTY.retDbl();
-                        //                        if (STOCK_QNTY < 0)
-                        //                        {
-                        //                            ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - helpM[j].QNTY.retDbl();
-
-                        //                            ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Article Number : " + VE.TBATCHDTL[i].STYLENO + " (" + VE.TBATCHDTL[i].ITNM + ")" + " , Stock Type : " + VE.TBATCHDTL[i].STKTYPE + " , Size : " + helpM[j].SIZECD.retStr() + " , Stock Quantity : " + QNTY.retDbl() + ", Entered Quantity : " + helpM[j].QNTY + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
-                        //                        }
-
-                        //                    }
-                        //                }
-
-                        //            }
-                        //        }
-                        //        else
-                        //        {
-                        //            var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
-                        //                                 .Where(g => g.Field<string>("itcd") == ITEM && g.Field<string>("stktype") == STKTYPE)
-                        //                                     .GroupBy(g => new { itcd = g["itcd"], stktype = g["stktype"] })
-                        //                                      .Select(g =>
-                        //                                      {
-                        //                                          var row = ITEM_STOCK_DATA.NewRow();
-                        //                                          row["qnty"] = g.Sum(r => r.Field<decimal>("qnty"));
-                        //                                          return row;
-                        //                                      });
-                        //            if (vQNTY != null && vQNTY.Count() > 0)
-                        //            {
-                        //                var vQNTY1 = vQNTY.CopyToDataTable();
-                        //                QNTY = vQNTY1.Rows[0]["qnty"].retStr();
-                        //            }
-
-                        //            var STOCK_QNTY = QNTY.retDbl(); double SHORTAGE_QNTY = 0;
-                        //            STOCK_QNTY = STOCK_QNTY + VE.TBATCHDTL[i].QNTY.retDbl();
-                        //            if (STOCK_QNTY < 0)
-                        //            {
-                        //                ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - VE.TBATCHDTL[i].QNTY.retDbl();
-
-                        //                ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Article Number : " + VE.TBATCHDTL[i].STYLENO + " (" + VE.TBATCHDTL[i].ITNM + ")" + " , Stock Type : " + VE.TBATCHDTL[i].STKTYPE + " , Stock Quantity : " + QNTY.retDbl() + ", Entered Quantity : " + VE.TBATCHDTL[i].QNTY + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
-                        //            }
-                        //        }
-
-
-
-
-
-                        //    }
-                        //    if (ERROR_MESSAGE.Length > 0)
-                        //    {
-                        //        transaction.Rollback();
-                        //        return Content("Entry Can't Save ! Stock Not Available in In Tab for Following :-</br></br>" + ERROR_MESSAGE + "");
-                        //    }
-
-                        //}
-                        //#endregion
-
-                        //#region STOCK CHECKING OUTTAB
-                        //ITCD = string.Join(",", (from Z in VE.TBATCHDTL_OUT select "'" + Z.ITCD + "'").Distinct());
-                        //stocktype = string.Join(",", (from Z in VE.TBATCHDTL_OUT where Z.STKTYPE.retStr() != "" select "'" + Z.STKTYPE + "'").Distinct());
-                        //mtrljobcd = string.Join(",", (from Z in VE.TBATCHDTL_OUT where Z.MTRLJOBCD.retStr() != "" select "'" + Z.MTRLJOBCD + "'").Distinct());
-                        //if (mtrljobcd.retStr() == "")
-                        //{
-                        //    mtrljobcd = "'FS'";
-                        //}
-                        //ITEM_STOCK_DATA = Salesfunc.GetStock(VE.T_TXN.DOCDT.Value.ToString("dd/MM/yyyy"), "'" + VE.T_TXN.GOCD + "'", ITCD, mtrljobcd, (VE.T_TXN.AUTONO == null ? "" : VE.T_TXN.AUTONO), "", "", "", "", stocktype, "", "", "", true);
-
-                        //ERROR_MESSAGE = ""; ERROR_COUNT = 0;
-                        //if (VE.TBATCHDTL_OUT != null && VE.TBATCHDTL_OUT.Count > 0)
-                        //{
-                        //    for (int i = 0; i <= VE.TBATCHDTL_OUT.Count - 1; i++)
-                        //    {
-                        //        string STKTYPE = VE.TBATCHDTL_OUT[i].STKTYPE;
-                        //        string ITEM = VE.TBATCHDTL_OUT[i].ITCD;
-
-                        //        string QNTY = "";
-
-                        //        if (VE.TBATCHDTL_OUT[i].ALL_SIZE.retStr() != "")
-                        //        {
-                        //            string[] SIZE = VE.TBATCHDTL_OUT[i].ALL_SIZE.Split(',');
-                        //            if (VE.TBATCHDTL_OUT[i].ChildData != null)
-                        //            {
-                        //                string data = VE.TBATCHDTL_OUT[i].ChildData;
-                        //                var helpM = new List<Improvar.Models.TTXNDTL_OUT_SIZE>();
-                        //                var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                        //                helpM = javaScriptSerializer.Deserialize<List<Improvar.Models.TTXNDTL_OUT_SIZE>>(data);
-                        //                if (SIZE != null) helpM = helpM.Where(a => SIZE.Contains(a.SIZECD)).ToList();
-                        //                for (int j = 0; j <= helpM.Count - 1; j++)
-                        //                {
-                        //                    if (helpM[j].SLNO != 0 && helpM[j].QNTY != null && helpM[j].QNTY != 0)
-                        //                    {
-                        //                        QNTY = "";
-                        //                        var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
-                        //                           .Where(g => g.Field<string>("itcd") == ITEM && g.Field<string>("stktype") == STKTYPE && g.Field<string>("sizecd") == helpM[j].SIZECD)
-                        //                               .GroupBy(g => new { itcd = g["itcd"], stktype = g["stktype"] })
-                        //                                .Select(g =>
-                        //                                {
-                        //                                    var row = ITEM_STOCK_DATA.NewRow();
-                        //                                    row["qnty"] = g.Sum(r => r.Field<decimal>("qnty"));
-                        //                                    return row;
-                        //                                });
-                        //                        if (vQNTY != null && vQNTY.Count() > 0)
-                        //                        {
-                        //                            var vQNTY1 = vQNTY.CopyToDataTable();
-                        //                            QNTY = vQNTY1.Rows[0]["qnty"].retStr();
-                        //                        }
-
-                        //                        var STOCK_QNTY = QNTY.retDbl(); double SHORTAGE_QNTY = 0;
-                        //                        STOCK_QNTY = STOCK_QNTY - helpM[j].QNTY.retDbl();
-                        //                        if (STOCK_QNTY < 0)
-                        //                        {
-                        //                            ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - helpM[j].QNTY.retDbl();
-
-                        //                            ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Article Number : " + VE.TBATCHDTL_OUT[i].STYLENO + " (" + VE.TBATCHDTL_OUT[i].ITNM + ")" + " , Stock Type : " + VE.TBATCHDTL_OUT[i].STKTYPE + " , Size : " + helpM[j].SIZECD.retStr() + " , Stock Quantity : " + QNTY.retDbl() + ", Entered Quantity : " + helpM[j].QNTY + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
-                        //                        }
-
-                        //                    }
-                        //                }
-
-                        //            }
-                        //        }
-                        //        else
-                        //        {
-                        //            var vQNTY = ITEM_STOCK_DATA.AsEnumerable()
-                        //                                 .Where(g => g.Field<string>("itcd") == ITEM && g.Field<string>("stktype") == STKTYPE)
-                        //                                     .GroupBy(g => new { itcd = g["itcd"], stktype = g["stktype"] })
-                        //                                      .Select(g =>
-                        //                                      {
-                        //                                          var row = ITEM_STOCK_DATA.NewRow();
-                        //                                          row["qnty"] = g.Sum(r => r.Field<decimal>("qnty"));
-                        //                                          return row;
-                        //                                      });
-                        //            if (vQNTY != null && vQNTY.Count() > 0)
-                        //            {
-                        //                var vQNTY1 = vQNTY.CopyToDataTable();
-                        //                QNTY = vQNTY1.Rows[0]["qnty"].retStr();
-                        //            }
-
-                        //            var STOCK_QNTY = QNTY.retDbl(); double SHORTAGE_QNTY = 0;
-                        //            STOCK_QNTY = STOCK_QNTY - VE.TBATCHDTL_OUT[i].QNTY.retDbl();
-                        //            if (STOCK_QNTY < 0)
-                        //            {
-                        //                ERROR_COUNT += 1; SHORTAGE_QNTY = QNTY.retDbl() - VE.TBATCHDTL_OUT[i].QNTY.retDbl();
-
-                        //                ERROR_MESSAGE = ERROR_MESSAGE + "(" + ERROR_COUNT + ") " + "Article Number : " + VE.TBATCHDTL_OUT[i].STYLENO + " (" + VE.TBATCHDTL_OUT[i].ITNM + ")" + " , Stock Type : " + VE.TBATCHDTL_OUT[i].STKTYPE + " , Stock Quantity : " + QNTY.retDbl() + ", Entered Quantity : " + VE.TBATCHDTL_OUT[i].QNTY + ", Shortage Quantity : " + SHORTAGE_QNTY + "</br>";
-                        //            }
-                        //        }
-
-
-
-
-
-                        //    }
-                        //    if (ERROR_MESSAGE.Length > 0)
-                        //    {
-                        //        transaction.Rollback();
-                        //        return Content("Entry Can't Save ! Stock Not Available in Out Tab for Following :-</br></br>" + ERROR_MESSAGE + "");
-                        //    }
-
-                        //}
-                        //#endregion
                         DB.SaveChanges();
                         ModelState.Clear();
                         OraTrans.Commit();
@@ -1414,6 +1257,9 @@ namespace Improvar.Controllers
                             }
                         }
                         dbsql = Master_Help.TblUpdt("t_txndtl", VE.T_TXN.AUTONO, "D");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                        dbsql = Master_Help.TblUpdt("t_cntrl_hdr_uniqno", VE.T_TXN.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
                         dbsql = Master_Help.TblUpdt("t_txnoth", VE.T_TXN.AUTONO, "D");
@@ -1508,43 +1354,6 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
-        }
-        public Tuple<List<T_BATCH_IMG_HDR>> SaveBarImage(string BarImage, string BARNO, short EMD)
-        {
-            List<T_BATCH_IMG_HDR> doc = new List<T_BATCH_IMG_HDR>();
-            int slno = 0;
-            try
-            {
-                var BarImages = BarImage.retStr().Split((char)179);
-                foreach (string image in BarImages)
-                {
-                    if (image != "")
-                    {
-                        var imagedes = image.Split('~');
-                        T_BATCH_IMG_HDR mdoc = new T_BATCH_IMG_HDR();
-                        mdoc.CLCD = CommVar.ClientCode(UNQSNO);
-                        mdoc.EMD_NO = EMD;
-                        mdoc.SLNO = Convert.ToByte(++slno);
-                        mdoc.DOC_CTG = "PRODUCT";
-                        var extension = Path.GetExtension(imagedes[0]);
-                        mdoc.DOC_FLNAME = BARNO + "_" + slno + extension;
-                        mdoc.DOC_DESC = imagedes[1].retStr().Replace('~', ' ');
-                        mdoc.BARNO = BARNO;
-                        mdoc.DOC_EXTN = extension;
-                        doc.Add(mdoc);
-                        string topath = CommVar.SaveFolderPath() + "/ItemImages/" + mdoc.DOC_FLNAME;
-                        topath = Path.Combine(topath, "");
-                        string frompath = System.Web.Hosting.HostingEnvironment.MapPath("/UploadDocuments/" + imagedes[0]);
-                        Cn.CopyImage(frompath, topath);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, BarImage);
-            }
-            var result = Tuple.Create(doc);
-            return result;
         }
     }
 }
