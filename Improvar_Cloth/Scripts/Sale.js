@@ -46,11 +46,11 @@ function GetBarnoDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("BARCODE,MTRLJOBCD,PARTCD,ITCD");
+                    ClearAllTextBoxes("BARCODE,PARTCD,ITCD");
                     $('#SearchFldValue').val('BARCODE');
                     $('#helpDIV').html(result);
-                    $('#ReferanceFieldID').val('BARCODE/MTRLJOBCD/PARTCD');
-                    $('#ReferanceColumn').val('0/2/8');
+                    $('#ReferanceFieldID').val('BARCODE/PARTCD');
+                    $('#ReferanceColumn').val('0/8');
                     $('#helpDIV_Header').html('Barno Details');
                 }
                 else {
@@ -106,6 +106,7 @@ function Add_BarCodeRow() {
 
 }
 function FillBarcodeArea(str, Table, i) {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
@@ -123,9 +124,11 @@ function FillBarcodeArea(str, Table, i) {
         $("#TXNSLNO").val(returncolvalue(str, "TXNSLNO"));
         $("#ITGRPCD").val(returncolvalue(str, "ITGRPCD"));
         $("#ITGRPNM").val(returncolvalue(str, "ITGRPNM"));
-        $("#MTRLJOBCD").val(returncolvalue(str, "MTRLJOBCD"));
-        $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
-        $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
+        if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP") {
+            $("#MTRLJOBCD").val(returncolvalue(str, "MTRLJOBCD"));
+            $("#MTRLJOBNM").val(returncolvalue(str, "MTRLJOBNM"));
+            $("#MTBARCODE").val(returncolvalue(str, "MTBARCODE"));
+        }
         $("#ITCD").val(returncolvalue(str, "ITCD"));
         $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
         $("#STYLENO").val(returncolvalue(str, "STYLENO"));
@@ -312,6 +315,7 @@ function UpdateBarCodeRow() {
         var balancestock = BALSTOCK - QNTY;
         if (balancestock < 0) {
             if (NEGSTOCK != "Y") {
+                ClearAllTextBoxes("CUTLENGTH,NOS,QNTY");
                 msgInfo("Quantity should not be grater than Stock !");
                 message_value = "QNTY";
                 return false;
@@ -513,7 +517,7 @@ function ClearBarcodeArea(TAG) {
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK");
     if (MENU_PARA == "PB" || MENU_PARA == "OP") {
         ClearAllTextBoxes("BALENO,OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
     }
@@ -538,6 +542,9 @@ function ClearBarcodeArea(TAG) {
     }
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
         ClearAllTextBoxes("LISTPRICE,LISTDISCPER");
+    }
+    if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP") {
+        ClearAllTextBoxes("MTRLJOBCD,MTRLJOBNM,MTBARCODE");
     }
 }
 function Fill_DetailData() {
@@ -687,6 +694,7 @@ function CalculateTotal_Barno() {
             var balancestock = BALSTOCK - QNTY;
             if (balancestock < 0) {
                 if (NEGSTOCK != "Y") {
+                    ClearAllTextBoxes("B_CUTLENGTH_" + i + ",B_NOS_" + i + ",B_QNTY_"+i);
                     msgInfo("Quantity should not be grater than Stock !");
                     message_value = "B_QNTY_" + i;
                     return false;
@@ -1536,6 +1544,7 @@ function AddBarCodeGrid() {
         var balancestock = BALSTOCK - QNTY;
         if (balancestock < 0) {
             if (NEGSTOCK != "Y") {
+                ClearAllTextBoxes("CUTLENGTH,NOS,QNTY");
                 msgInfo("Quantity should not be grater than Stock !");
                 message_value = "QNTY";
                 return false;
@@ -1785,13 +1794,13 @@ function AddBarCodeGrid() {
     tr += '        <input id="B_NEGSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + CUTLENGTH + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + NOS + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + QNTY + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ', \'QNTY\');" value="' + QNTY + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + QNTY + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + UOM + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -2719,7 +2728,7 @@ function GetItcd(id) {
 
     }
 }
-function CalculateBargridQnty(tableid, index, fldid) {
+function CalculateBargridQnty(tableid, index) {
     debugger;
     var CUTLENGTHID = "", NOSID = "", QNTY = "";
     if (tableid == "_T_SALE_PRODUCT_GRID") {
@@ -2735,22 +2744,6 @@ function CalculateBargridQnty(tableid, index, fldid) {
     if (retFloat($("#" + CUTLENGTHID).val()) != 0 && retFloat($("#" + NOSID).val()) != 0) {
         var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
         $("#" + QNTYID).val(retFloat(qnty));
-    }
-    else if (fldid != "QNTY") {
-        if (retFloat($("#" + CUTLENGTHID).val()) != 0) {
-            $("#" + QNTYID).val(retFloat($("#" + CUTLENGTHID).val()));
-        }
-        else if (retFloat($("#" + NOSID).val()) != 0) {
-            $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
-        }
-    }
-    else {
-        if (retFloat($("#" + CUTLENGTHID).val()) != 0) {
-            $("#" + CUTLENGTHID).val(retFloat($("#" + QNTYID).val()));
-        }
-        else if (retFloat($("#" + NOSID).val()) != 0) {
-            $("#" + NOSID).val(retFloat($("#" + QNTYID).val()));
-        }
     }
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CalculateTotal_Barno();

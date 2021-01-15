@@ -436,7 +436,7 @@ namespace Improvar.Controllers
                         MSYSCNFG.INSPOLDESC = VE.M_SYSCNFG.INSPOLDESC;
                         MSYSCNFG.BLTERMS = VE.M_SYSCNFG.BLTERMS;
                         MSYSCNFG.DUEDATECALCON = VE.M_SYSCNFG.DUEDATECALCON;
-                        MSYSCNFG.BANLSLNO = VE.M_SYSCNFG.BANLSLNO;
+                        MSYSCNFG.BANKSLNO = VE.M_SYSCNFG.BANKSLNO;
                         MSYSCNFG.WPPER = VE.M_SYSCNFG.WPPER;
                         MSYSCNFG.RPPER = VE.M_SYSCNFG.RPPER;
                         MSYSCNFG.PRICEINCODE = VE.M_SYSCNFG.PRICEINCODE;

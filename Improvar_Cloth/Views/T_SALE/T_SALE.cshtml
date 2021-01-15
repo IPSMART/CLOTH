@@ -885,8 +885,8 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
+                                            @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetBarnoDetails(this.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />
                                         </div>
                                     </div>
                                 }
@@ -1052,7 +1052,7 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
-                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onchange = "CalculateBargridQnty('', '', 'QNTY');" } })
+                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onblur = "CalculateBargridQnty();" } })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">

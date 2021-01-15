@@ -1750,13 +1750,13 @@ namespace Improvar
         public string GOCD_help(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string sql = "";
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
             sql += "select a.GOCD,a.GONM ";
-            sql += "from " + scm + ".M_GODOWN a, " + scm + ".M_CNTRL_HDR b ";
+            sql += "from " + scmf + ".M_GODOWN a, " + scmf + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
             if (valsrch.retStr() != "") sql += "and ( upper(a.GOCD) = '" + valsrch + "' ) ";
             sql += "order by a.GOCD,a.GONM";

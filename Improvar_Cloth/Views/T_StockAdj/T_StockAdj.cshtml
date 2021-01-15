@@ -24,7 +24,8 @@
             modeView();
         }
         else if ("@Model.DefaultAction" == "E") {
-
+            CalculateTotal('OUT_', '_T_StockAdj_OUT_TAB_GRID');
+            CalculateTotal('IN_', '_T_StockAdj_IN_TAB_GRID')
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -36,6 +37,40 @@
     function requiredFieldValidator() {
         //if (!emptyFieldCheck("Please Select / Enter a Valid Party", "SLCD")) { return false; }
         // if (!emptyFieldCheck("Please Select / Enter a Valid Delivery At", "CONSLCD")) { return false; }
+        if (!emptyFieldCheck("Please Select / Enter Godown", "GOCD")) { return false; }
+        var flagout = true; var errmsgout = ""; var errmsgin = "";
+        for (var i = 0; i <= $("#_T_StockAdj_OUT_TAB_GRID > tbody > tr").length - 1; i++) {
+            if ($("#OUT_BARNO_" + i).val() != "" && retFloat($("#OUT_QNTY_" + i).val()) != 0) {
+                if ($("#OUT_MTRLJOBCD_" + i).val() == "") {
+                    errmsgout += $("#OUT_SLNO_" + i).val() + ", ";
+                }
+            }
+        }
+        if (errmsgout != "") {
+            msgInfo("Please add(out tab) MTRL JOBCD at slno : " + errmsgout);
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+        for (var i = 0; i <= $("#_T_StockAdj_IN_TAB_GRID > tbody > tr").length - 1; i++) {
+            if ($("#IN_BARNO_" + i).val() != "" && retFloat($("#IN_QNTY_" + i).val()) != 0) {
+                if ($("#IN_MTRLJOBCD_" + i).val() == "") {
+                    errmsgin += $("#IN_SLNO_" + i).val() + ", ";
+                }
+            }
+        }
+        if (errmsgin != "") {
+            msgInfo("Please add(in tab) MTRL JOBCD at slno : " + errmsgin);
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(2)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            return false;
+        }
+
         return true;
     }
 </script>
@@ -168,44 +203,29 @@
 </script>
 <script>
     function CalculateTotal(ID, TABLE) {
-        var T_QNTY = 0; var T_BOX = 0; var T_SET = 0; var T_FQNTY = 0; var T_RQNTY = 0; var T_LQNTY = 0; var T_DQNTY = 0;
-        var GridRow = $("#" + TABLE + " > tbody > tr").length;
-        for (var i = 0; i <= GridRow - 1; i++) {
-            var QNTY = document.getElementById(ID + "QNTY_" + i).value; if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
-
-            var STK_TYPE = document.getElementById(ID + "STKTYPE_" + i).value;
-            if (STK_TYPE == "F") {
-                if (QNTY != "") { T_FQNTY = T_FQNTY + parseFloat(QNTY); } else { T_FQNTY = T_FQNTY + parseFloat(0); }
-            }
-            else if (STK_TYPE == "R") {
-                if (QNTY != "") { T_RQNTY = T_RQNTY + parseFloat(QNTY); } else { T_RQNTY = T_RQNTY + parseFloat(0); }
-            }
-            else if (STK_TYPE == "L") {
-                if (QNTY != "") { T_LQNTY = T_LQNTY + parseFloat(QNTY); } else { T_LQNTY = T_LQNTY + parseFloat(0); }
-            }
-            else if (STK_TYPE == "D") {
-                if (QNTY != "") { T_DQNTY = T_DQNTY + parseFloat(QNTY); } else { T_DQNTY = T_DQNTY + parseFloat(0); }
-            }
-        }
-        if (ID == "IN_") {
-            document.getElementById("S_T_IN_QNTY_0").value = parseFloat(T_FQNTY).toFixed(3);
-            document.getElementById("S_T_IN_QNTY_1").value = parseFloat(T_RQNTY).toFixed(3);
-            document.getElementById("S_T_IN_QNTY_2").value = parseFloat(T_LQNTY).toFixed(3);
-            document.getElementById("S_T_IN_QNTY_3").value = parseFloat(T_DQNTY).toFixed(3);
-        }
-        else {
-            document.getElementById("S_T_OUT_QNTY_0").value = parseFloat(T_FQNTY).toFixed(3);
-            document.getElementById("S_T_OUT_QNTY_1").value = parseFloat(T_RQNTY).toFixed(3);
-            document.getElementById("S_T_OUT_QNTY_2").value = parseFloat(T_LQNTY).toFixed(3);
-            document.getElementById("S_T_OUT_QNTY_3").value = parseFloat(T_DQNTY).toFixed(3);
-        }
-
-        var GridRowSTOCK = $("#_T_StockAdj_STK_TYPE_QNTY_GRID > tbody > tr").length;
         var TOTAL_IN = 0; var TOTAL_OUT = 0;
-        for (var i = 0; i <= GridRowSTOCK - 1; i++) {
-            var IN_QNTY = document.getElementById("S_T_IN_QNTY_" + i).value; if (IN_QNTY != "") { TOTAL_IN = TOTAL_IN + parseFloat(IN_QNTY); } else { TOTAL_IN = TOTAL_IN + parseFloat(0); }
-            var OUT_QNTY = document.getElementById("S_T_OUT_QNTY_" + i).value; if (OUT_QNTY != "") { TOTAL_OUT = TOTAL_OUT + parseFloat(OUT_QNTY); } else { TOTAL_OUT = TOTAL_OUT + parseFloat(0); }
+        var GridRow = $("#" + TABLE + " > tbody > tr").length;
+        for (var i = 0; i <= $("#_T_StockAdj_STK_TYPE_QNTY_GRID > tbody > tr").length - 1; i++) {
+            var T_STKQNTY = 0; var T_QNTY = 0;
+            var stktype = $("#S_T_STKTYPE_VALUE_" + i).val();
+            for (var j = 0; j <= GridRow - 1; j++) {
+                var QNTY = retFloat($("#" + ID + "QNTY_" + j).val());
+                T_QNTY += retFloat(QNTY);
+                var STK_TYPE = document.getElementById(ID + "STKTYPE_" + j).value;
+                if (STK_TYPE == stktype) {
+                    T_STKQNTY += retFloat(QNTY);
+                }
+            }
+            if (ID == "IN_") {
+                $("#S_T_IN_QNTY_" + i).val(retFloat(T_STKQNTY).toFixed(3));
+            }
+            else {
+                $("#S_T_OUT_QNTY_" + i).val(retFloat(T_STKQNTY).toFixed(3));
+            }
+            TOTAL_IN += retFloat($("#S_T_IN_QNTY_" + i).val());
+            TOTAL_OUT += retFloat($("#S_T_OUT_QNTY_" + i).val());
         }
+
         document.getElementById(ID + "T_QNTY").value = parseFloat(T_QNTY).toFixed(3);
         document.getElementById("TOTAL_IN_QNTY").value = parseFloat(TOTAL_IN).toFixed(3);
         document.getElementById("TOTAL_OUT_QNTY").value = parseFloat(TOTAL_OUT).toFixed(3);
@@ -220,7 +240,6 @@
             <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
-            <input type="hidden" id="hiddenITEM" name="hiddenITEM" value="" />
             @Html.HiddenFor(s => s.DefaultAction)
             @Html.HiddenFor(a => a.T_TXN.AUTONO)
             @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
@@ -236,7 +255,7 @@
                                 @Html.Label("", "Document Code")
                             </div>
                         </div>
-                        <div class="col-md-9" >
+                        <div class="col-md-9">
                             <div class="editor-field">
                                 @if (Model.DefaultAction == "A")
                     {
@@ -275,6 +294,7 @@
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Godown")
+                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-7">
@@ -297,7 +317,7 @@
                         </div>
                         <div class="col-md-11">
                             <div class="editor-field">
-                                @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM", @class = "form-control", @style = "width:430px;height:60px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
+                                @Html.TextAreaFor(model => model.T_TXNOTH.DOCREM, new { id = "DOCREM1", @class = "form-control", @style = "width:430px;height:60px;resize: none;", @placeholder = "Remarks", maxlength = 100 })
                             </div>
                         </div>
                         <div class="col-md-6" style="margin-top: 6px;">

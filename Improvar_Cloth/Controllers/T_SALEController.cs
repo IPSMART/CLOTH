@@ -204,7 +204,7 @@ namespace Improvar.Controllers
 
                                 if (gocd != "")
                                 {
-                                    VE.GONM = DB.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
+                                    VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
                                 VE.T_TXN = TTXN;
 
@@ -252,6 +252,20 @@ namespace Improvar.Controllers
                         }
                         var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
                         VE.M_SYSCNFG = MSYSCNFG;
+
+                        if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "OP")
+                        {
+                            var mtrljobcd = (from a in DB.M_MTRLJOBMST
+                                             join b in DB.M_CNTRL_HDR on a.M_AUTONO equals b.M_AUTONO
+                                             where b.INACTIVE_TAG == "N"
+                                             select new { a.MTRLJOBCD, a.MTRLJOBNM, a.MTBARCODE }).ToList();
+                            if (mtrljobcd.Count() == 1)
+                            {
+                                VE.MTRLJOBCD = mtrljobcd[0].MTRLJOBCD;
+                                VE.MTRLJOBNM = mtrljobcd[0].MTRLJOBNM;
+                                VE.MTBARCODE = mtrljobcd[0].MTBARCODE;
+                            }
+                        }
                     }
                     else
                     {
@@ -352,7 +366,7 @@ namespace Improvar.Controllers
                 VE.CONSLNM = TXN.CONSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXN.CONSLCD).Select(b => b.SLNM).FirstOrDefault();
                 VE.AGSLNM = TXNOTH.AGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.AGSLCD).Select(b => b.SLNM).FirstOrDefault();
                 VE.SAGSLNM = TXNOTH.SAGSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.SAGSLCD).Select(b => b.SLNM).FirstOrDefault();
-                VE.GONM = TXN.GOCD.retStr() == "" ? "" : DB.M_GODOWN.Where(a => a.GOCD == TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
+                VE.GONM = TXN.GOCD.retStr() == "" ? "" : DBF.M_GODOWN.Where(a => a.GOCD == TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
                 VE.PRCNM = TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
 
                 VE.TRANSLNM = TXNTRN.TRANSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.TRANSLCD).Select(b => b.SLNM).FirstOrDefault();
@@ -1739,10 +1753,13 @@ namespace Improvar.Controllers
                         {
 
                             VE.PENDINGORDER[p].PRODGRPGSTPER = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("prodgrpgstper")).FirstOrDefault();
-                            var gstper = salesfunc.retGstPer(VE.PENDINGORDER[p].PRODGRPGSTPER.retStr(), VE.PENDINGORDER[p].RATE.retDbl());
-                            if (gstper.retStr() != "")
+                            if (VE.PENDINGORDER[p].PRODGRPGSTPER.retStr() != "")
                             {
-                                VE.PENDINGORDER[p].GSTPER = gstper.Split(',').Sum(a => a.retDbl());
+                                var gstper = salesfunc.retGstPer(VE.PENDINGORDER[p].PRODGRPGSTPER.retStr(), VE.PENDINGORDER[p].RATE.retDbl());
+                                if (gstper.retStr() != "")
+                                {
+                                    VE.PENDINGORDER[p].GSTPER = gstper.Split(',').Sum(a => a.retDbl());
+                                }
                             }
                             var barimage = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("barimage")).FirstOrDefault();
                             if (barimage.retStr() != "")

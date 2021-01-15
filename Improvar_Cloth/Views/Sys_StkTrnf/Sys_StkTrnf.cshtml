@@ -1,0 +1,185 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+@{
+    ViewBag.Title = "Sys_StkTrnf";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+@{
+    var PageControllerName = "Sys_StkTrnf";
+}
+<script>
+    function Proceed() {
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("Sys_StkTrnf1", PageControllerName)",
+            beforesend:$("#WaitingMode").show(),
+            data: $('form').serialize(),
+            success: function (result)
+            {               
+                $("#WaitingMode").hide();
+                $("#Msgdiv1").show();
+                $("#info").show();
+                $("#btnok").focus();
+                $("#msgbody_info").html(result);
+        }
+    });
+    }
+</script>
+<script>
+    function SelectMtrlJobCode(id, MTRLJOBCD, MTRLJOBNM) {
+        if (id == "") {
+            $("#" + MTRLJOBCD).val("");
+            $("#" + MTRLJOBNM).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetMtrlJobDetails", PageControllerName)',
+                data: { val: id },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val();
+                        document.getElementById(MTRLJOBCD).value = returncolvalue(findstr, "MTRLJOBCD");
+                        document.getElementById(MTRLJOBNM).value = returncolvalue(findstr, "MTRLJOBNM");
+                    }
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + MTRLJOBCD).val("");
+                        $("#" + MTRLJOBNM).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = MTRLJOBCD;
+                    }
+                }
+            });
+        }
+    }
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "JOB/Status Code")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX1), new { @class = " form-control" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Material Job Code")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TEXTBOX3", maxlength = 2, onkeyup = "GetHelp('" + @Url.Action("GetMtrlJobDetails", PageControllerName) + "','TEXTBOX3/TEXTBOX6','1/0','Job Details','TEXTBOX3')", onblur = "SelectMtrlJobCode(this.value,'TEXTBOX3','TEXTBOX6');", @placeholder = "Code" } })
+                            <img src="~/Image/search.png" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetMtrlJobDetails", PageControllerName)','TEXTBOX3/TEXTBOX6','1/0','Job Details','TEXTBOX3')" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX6, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX6", maxlength = 15, @TabIndex = -1, @placeholder = "Material Job Name", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Pending Order from Prev.Year")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox2)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Pending Job Challans from Prev.Year")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox3)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Finish Stock from Prev.Year")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox4)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Other Stock from Prev.Year")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox5)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label">
+                            @Html.Label("", "Pcs Rate Balance from Prev.Year")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field" style="margin-top: 1px;">
+                            @Html.CheckBoxFor(model => model.Checkbox6)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-LG-10">
+                        <input type="button" value="Proceed" name="submitbutton" class="btn btn-default" style="width:150px; " onclick="Proceed();" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}
