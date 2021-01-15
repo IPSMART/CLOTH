@@ -20,7 +20,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection();
         MasterHelp masterHelp = new MasterHelp();
         MasterHelpFa Master_HelpFa = new MasterHelpFa(); Salesfunc salesfunc = new Salesfunc();
-        M_SITEM sl; M_CNTRL_HDR sll; M_GROUP slll; M_SUBBRAND slsb; M_BRAND slb; M_COLLECTION slc; M_UOM sluom;
+        M_SITEM sl; M_CNTRL_HDR sll; M_GROUP slll; M_SUBBRAND slsb; M_BRAND slb; M_COLLECTION slc; M_UOM sluom; M_PRODGRP sPROD;
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: M_FinProduct
         public ActionResult M_FinProduct(string op = "", string key = "", int Nindex = 0, string searchValue = "", string loadItem = "N")
@@ -188,6 +188,7 @@ namespace Improvar.Controllers
                             VE.M_BRAND = slb;
                             VE.M_COLLECTION = slc;
                             VE.M_UOM = sluom;
+                            VE.M_PRODGRP = sPROD;
                         }
                         if (op.ToString() == "A" && loadItem == "N")
                         {
@@ -311,6 +312,7 @@ namespace Improvar.Controllers
                     slb = DB.M_BRAND.Find(sl.BRANDCD);
                     slc = DB.M_COLLECTION.Find(sl.COLLCD);
                     sluom = DBF.M_UOM.Find(sl.UOMCD);
+                    sPROD = DB.M_PRODGRP.Find(sl.PRODGRPCD);
                     VE.HASTRANSACTION = salesfunc.IsTransactionFound(itcd.retSqlformat(), "", "") != "" ? true : false;
                     string fitcd = sl.FABITCD.retStr();
                     if (fitcd != "")
@@ -1586,8 +1588,8 @@ namespace Improvar.Controllers
                             MSITEM.FEATURE = VE.M_SITEM.FEATURE;
                             MSITEM.DMNSN = VE.M_SITEM.DMNSN;
                         }
-
                         MSITEM.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "";
+                        MSITEM.PRODGRPCD = VE.M_SITEM.PRODGRPCD;
                         //MSITEM.STD_RATE = VE.M_SITEM.STD_RATE;
                         //MSITEM.SAMPPC = VE.M_SITEM.SAMPPC;
                         //MSITEM.STDLOTQTY = VE.M_SITEM.SAMPPC;
@@ -2015,6 +2017,29 @@ namespace Improvar.Controllers
             {
                 Cn.SaveException(ex, "");
                 return Content(ex.Message);
+            }
+        }
+        public ActionResult GetProductGrp()
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            return PartialView("_Help2", masterHelp.PRODGRPCD_help(null));
+        }
+        public ActionResult ProductGrp(string val)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            var query = (from c in DB.M_PRODGRP where (c.PRODGRPCD == val) select c);
+            if (query.Any())
+            {
+                string str = "";
+                foreach (var i in query)
+                {
+                    str = i.PRODGRPCD + Cn.GCS() + i.PRODGRPNM;
+                }
+                return Content(str);
+            }
+            else
+            {
+                return Content("0");
             }
         }
     }

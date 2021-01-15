@@ -87,6 +87,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string NEGSTOCK { get; set; }
 
-    
+        [StringLength(4)]
+        public string PRODGRPCD { get; set; }
     }
 }
