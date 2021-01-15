@@ -982,6 +982,7 @@
     </Content>
     <None Include="Metadata\PublishProfiles\Improvar_ERP.pubxml" />
     <Content Include="Report\CORRES.rpt" />
+    <Content Include="Park.ini" />
     <None Include="Properties\PublishProfiles\IpSmart_Sales.pubxml" />
     <Content Include="Report\JobIssue1.rpt" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />

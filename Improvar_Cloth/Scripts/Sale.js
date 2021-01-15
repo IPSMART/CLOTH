@@ -46,11 +46,11 @@ function GetBarnoDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("BARCODE,MTRLJOBCD,PARTCD,ITCD");
+                    ClearAllTextBoxes("BARCODE,PARTCD,ITCD");
                     $('#SearchFldValue').val('BARCODE');
                     $('#helpDIV').html(result);
-                    $('#ReferanceFieldID').val('BARCODE/MTRLJOBCD/PARTCD');
-                    $('#ReferanceColumn').val('0/2/8');
+                    $('#ReferanceFieldID').val('BARCODE/PARTCD');
+                    $('#ReferanceColumn').val('0/8');
                     $('#helpDIV_Header').html('Barno Details');
                 }
                 else {
@@ -315,6 +315,7 @@ function UpdateBarCodeRow() {
         var balancestock = BALSTOCK - QNTY;
         if (balancestock < 0) {
             if (NEGSTOCK != "Y") {
+                ClearAllTextBoxes("CUTLENGTH,NOS,QNTY");
                 msgInfo("Quantity should not be grater than Stock !");
                 message_value = "QNTY";
                 return false;
@@ -693,6 +694,7 @@ function CalculateTotal_Barno() {
             var balancestock = BALSTOCK - QNTY;
             if (balancestock < 0) {
                 if (NEGSTOCK != "Y") {
+                    ClearAllTextBoxes("B_CUTLENGTH_" + i + ",B_NOS_" + i + ",B_QNTY_"+i);
                     msgInfo("Quantity should not be grater than Stock !");
                     message_value = "B_QNTY_" + i;
                     return false;
@@ -1542,6 +1544,7 @@ function AddBarCodeGrid() {
         var balancestock = BALSTOCK - QNTY;
         if (balancestock < 0) {
             if (NEGSTOCK != "Y") {
+                ClearAllTextBoxes("CUTLENGTH,NOS,QNTY");
                 msgInfo("Quantity should not be grater than Stock !");
                 message_value = "QNTY";
                 return false;
@@ -1791,13 +1794,13 @@ function AddBarCodeGrid() {
     tr += '        <input id="B_NEGSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + CUTLENGTH + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TBATCHDTL[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + NOS + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + QNTY + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ', \'QNTY\');" value="' + QNTY + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + QNTY + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + UOM + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -2725,7 +2728,7 @@ function GetItcd(id) {
 
     }
 }
-function CalculateBargridQnty(tableid, index, fldid) {
+function CalculateBargridQnty(tableid, index) {
     debugger;
     var CUTLENGTHID = "", NOSID = "", QNTY = "";
     if (tableid == "_T_SALE_PRODUCT_GRID") {
