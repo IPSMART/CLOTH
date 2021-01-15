@@ -209,9 +209,9 @@ namespace Improvar.Controllers
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO); 
                 string str = "";
-                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno ";
-                str += " from " + Scm + ".T_BILTY a ";
-                str += " where  a.autono='" + TBH.AUTONO + "'  ";
+                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,b.prefno,b.prefdt ";
+                str += " from " + Scm + ".T_BILTY a," + Scm + ".T_TXN b ";
+                str += " where  a.autono='" + TBH.AUTONO + "' and a.blautono=b.autono(+)  ";
                 str += "order by a.slno ";
 
                 DataTable tbiltytbl = Master_Help.SQLquery(str);
@@ -224,6 +224,8 @@ namespace Improvar.Controllers
                                    LRDT = dr["lrdt"].retDateStr(),
                                    LRNO = dr["lrno"].retStr(),
                                    BALENO = dr["baleno"].retStr(),
+                                   PREFNO= dr["prefno"].retStr(),
+                                   PREFDT = dr["prefdt"].retDateStr(),
                                }).OrderBy(s => s.SLNO).ToList();
                 foreach (var q in VE.TBILTY)
                 {
@@ -592,8 +594,8 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            TCH.DOCCD = VE.T_CNTRL_HDR.DOCCD;
-                            TCH.DOCNO = VE.T_CNTRL_HDR.DOCNO;
+                            DOCCD = VE.T_CNTRL_HDR.DOCCD;
+                            DOCNO = VE.T_CNTRL_HDR.DOCONLYNO;
                             TBHDR.AUTONO = VE.T_BILTY_HDR.AUTONO;
                             Month = VE.T_CNTRL_HDR.MNTHCD;
                             var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_BILTY_HDR.AUTONO select p.EMD_NO).Max();
@@ -642,8 +644,8 @@ namespace Improvar.Controllers
                                 TBILTY.DRCR = VE.DRCR;
                                 TBILTY.LRDT = Convert.ToDateTime(VE.TBILTY[i].LRDT);
                                 TBILTY.LRNO = VE.TBILTY[i].LRNO;
-                                TBILTY.BALEYR = "2020";
-                                TBILTY.BALENO = "123"/*VE.TBILTY[i].BALENO*/;
+                                TBILTY.BALEYR = VE.TBILTY[i].BALEYR;
+                                TBILTY.BALENO = VE.TBILTY[i].BALENO;
                                 dbsql = MasterHelpFa.RetModeltoSql(TBILTY);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
