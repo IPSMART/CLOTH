@@ -1495,7 +1495,7 @@ namespace Improvar.Controllers
                                   AGDOCDT = P.Key.AGDOCDT,
                                   LISTPRICE = P.Key.LISTPRICE,
                                   LISTDISCPER = P.Key.LISTDISCPER,
-                              }).ToList();
+                              }).OrderBy(a=>a.SLNO).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
                 var distnctslno = VE.TTXNDTL.Select(a => a.SLNO).Distinct().Count();
@@ -2444,7 +2444,7 @@ namespace Improvar.Controllers
                     string parglcd = "saldebglcd", parclass1cd = "";
                     string strblno = "", strbldt = "", strduedt = "", strrefno = "", strvtype = "BL";
                     dr = "D"; cr = "C";
-                    string sslcd = TTXN.SLCD;
+                    string sslcd = VE.T_TXN.SLCD;
                     if (VE.PSLCD.retStr() != "") sslcd = VE.PSLCD.ToString();
 
                     switch (VE.MENU_PARA)
@@ -2736,7 +2736,7 @@ namespace Improvar.Controllers
                     sql = "select doccd,docbarcode from " + CommVar.CurSchema(UNQSNO) + ".m_doctype_bar where doccd='" + TTXN.DOCCD + "'";
                     DataTable dt = masterHelp.SQLquery(sql);
                     if (dt != null && dt.Rows.Count > 0) docbarcode = dt.Rows[0]["docbarcode"].retStr();
-                    if (VE.DefaultAction == "A")
+                    if (VE.DefaultAction == "A" && docbarcode.retStr() != "")
                     {
                         T_CNTRL_HDR_UNIQNO TCHUNIQNO = new T_CNTRL_HDR_UNIQNO();
                         TCHUNIQNO.CLCD = TTXN.CLCD;
@@ -2888,7 +2888,7 @@ namespace Improvar.Controllers
                         }
                     }
 
-                    COUNTER = 0; int COUNTERBATCH = 0; bool recoexist = false;
+                    COUNTER = 0; int COUNTERBATCH = 0; bool recoexist = false; bool newbarnogen = false;
                     if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
                     {
                         for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
@@ -2927,6 +2927,7 @@ namespace Improvar.Controllers
                                     //barno = TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (COUNTERBATCH + 1));
                                     barno = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL[i].SLNO));
                                     flagbatch = true;
+                                    newbarnogen = true;
                                 }
                                 else
                                 {
@@ -3165,7 +3166,10 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-
+                    if (newbarnogen == true && docbarcode.retStr() == "")
+                    {
+                        dberrmsg = "Please add doccd in M_DOCTYPE_BAR table"; goto dbnotsave;
+                    }
                     if (dbqty == 0)
                     {
                         dberrmsg = "Quantity not entered"; goto dbnotsave;
