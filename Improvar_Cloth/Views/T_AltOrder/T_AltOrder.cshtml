@@ -36,6 +36,21 @@
             $('form :input:enabled:visible:not([readonly]):first').focus();
         }
         $("#WaitingMode").hide();
+
+        $('#ComponentAdd').on('keypress', function () {
+            debugger;
+            var code = event.charCode || event.keyCode;
+            if (code === 32 || code === 13) {
+                AddDressStyle();
+            }
+        });
+        if ($(window).width() < 767) {
+            $("#Cust_LI > a").html('C');
+            $("#Mes_LI > a").html('M');
+            $("#Adv_LI > a").html('A');
+            $("#Remarks_LI > a").html('R');
+            $("#Documents_LI > a").html('D');
+        }
     });
 </script>
 <script>
@@ -155,11 +170,13 @@
     </script>*@
 
 <script>
+ 
     function changeSTCHNM(id) {
         debugger;
         var value = ($("#" + id).find(":selected").val());
         $.ajax({
             type: 'GET',
+            beforesend: $("#WaitingMode").show(),
             url: "@Url.Action("changeSTCHNM", PageControllerName)",
             data: {
                 val: value
@@ -243,7 +260,9 @@
         if (!emptyFieldCheck("Please Select STCHCD/Dress stype", "STCHCD")) { return false; }
         var AU = $("#ComponentAdd").val().split(' ');
         var slno = "";
-        if (AU.length > 1) slno = AU[1];
+        if (AU.length > 1) {
+            slno = AU[1];
+        }
         $.ajax({
             type: 'post',
             beforesend: $("#WaitingMode").show(),
@@ -252,6 +271,7 @@
             success: function (result) {
                 $("#WaitingMode").hide();
                 $("#partialdivMeasure").html(result);
+                $("#ComponentAdd").val('Add');
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -262,25 +282,39 @@
     }
 </script>
 <script>
-    function GetComponent(i, Mode) {
+    function GetComponent(i, mode) {
         debugger;
-        var slno = retInt(i) + 1;
         var STCHCD = $("#MEASUREMENT_STCHCD_" + i).val();
+        var slno = $("#MEASUREMENT_SLNO_" + i).val();
+        if (mode == "D") {
+            if (!confirm("STCHCD:" + STCHCD + " Do you wnat to remove?")) { return false; }
+        }
         var QNTY = $("#MEASUREMENT_QNTY_" + i).val();
         var RATE = $("#MEASUREMENT_RATE_" + i).val();
         $("#STCHCD").val(STCHCD);
         $("#QNTY").val(QNTY);
         $("#RATE").val(RATE);
-
         $.ajax({
             type: 'post',
             beforesend: $("#WaitingMode").show(),
             url: "@Url.Action("GetComponent", PageControllerName)",
-            data: $('form').serialize() + "&slno=" + slno, // "&STHCD=" + STHCD + "&QNTY=" + QNTY + "&FLDDESC=" + FLDDESC + "&FLDVAL=" + FLDVAL + "&FLDREM=" + FLDREM + "&FLDCD=" + FLDCD + "&FLDTYPE=" + FLDTYPE,
+            data: $('form').serialize() + "&slno=" + slno + "&mode=" + mode,
             success: function (result) {
                 $("#WaitingMode").hide();
-                $("#tbl_STCHALTDTLCOMP").html(result);
-                $("#ComponentAdd").val("Update " + slno);
+                if (mode == "E") {
+                    $("#tbl_STCHALTDTLCOMP").html(result);
+                    $("#ComponentAdd").val("Update " + slno);
+                }
+                else if (mode == "D") {
+                    var MSG = result.indexOf('tblMeasure');
+                    if (MSG == -1) {
+                        msgInfo(result);
+                    }
+                    else {
+                        //msgInfo("Deleted Successfully !");
+                        $("#partialdivMeasure").html(result);
+                    }
+                }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -371,9 +405,19 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.AGCMNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CMNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile')", onblur = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile');", @placeholder = "Number", maxlength = 6 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetCashMemoNo", PageControllerName)','Cash Memo Details','CMNO','CMNO=docno=0/CSMAUTONO=autono/NM=nm/MOBNO=mobile')" />
+                                    @Html.EditorFor(model => model.T_STCHALT.AGCMNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "CMNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/AGCMDT=docdt=1/CSMAUTONO=autono/NM=nm/MOBNO=mobile')", onblur = "GetHelpBlur('" + @Url.Action("GetCashMemoNo", PageControllerName) + "','Cash Memo Details','CMNO','CMNO=docno=0/AGCMDT=docdt=1/CSMAUTONO=autono/NM=nm/MOBNO=mobile');", @placeholder = "Number", maxlength = 6 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetCashMemoNo", PageControllerName)','Cash Memo Details','CMNO','CMNO=docno=0/AGCMDT=docdt=1/CSMAUTONO=autono/NM=nm/MOBNO=mobile')" />
                                     @Html.HiddenFor(model => model.AUTONO, new { id = "CSMAUTONO" })
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Agst Memo Date")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_STCHALT.AGCMDT, new { htmlAttributes = new { @class = "form-control", id = "AGCMDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                 </div>
                             </div>
                             <div class="col-md-5" style="width: auto;">
@@ -388,16 +432,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-5">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Agst Memo Date")
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_STCHALT.AGCMDT, new { htmlAttributes = new { @class = "form-control", id = "AGCMDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                </div>
-                            </div>
+                     
                         </div>
                         <div class="row">
                             <div class="col-md-5">
@@ -520,7 +555,7 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.STCHCD, new SelectList(Model.DropDown_list1, "Value", "Text"), "Select Dress Style", new { @class = "form-control", id = "STCHCD", onchange = "changeSTCHNM(this.id)" })
+                                    @Html.DropDownListFor(model => model.STCHCD, new SelectList(Model.DropDown_list1, "Value", "Text"), "Select", new { @class = "form-control", id = "STCHCD", onchange = "changeSTCHNM(this.id)" })
                                 </div>
                             </div>
                             <div class="col-md-1">
@@ -590,6 +625,7 @@
                                 }
                             </div>
                         </div>
+                        <br />
                         <div class="row">
                             <div class="col-md-5">
                             </div>

@@ -1308,7 +1308,7 @@ namespace Improvar
             sql += " " + schema + ".m_sitem h, " + schema + ".m_group i, " + scmf + ".m_subleg j  ";
             sql += " where a.blautono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and  ";
             sql += " a.blautono = c.blautono(+) and a.balenoyr = c.balenoyr(+) and  ";
-            sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and b.blautono = g.autono(+) and  ";
+            sql += " a.blautono = e.autono(+) and a.blautono = f.autono(+) and a.blautono = g.autono(+) and a.baleno=g.baleno(+) and ";
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and a.mutslcd = j.slcd(+) ";
             if (mutslcd.retStr() != "") sql += " and a.mutslcd in ('" + mutslcd + "')  ";
             if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";

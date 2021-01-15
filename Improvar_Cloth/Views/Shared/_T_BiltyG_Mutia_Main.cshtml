@@ -45,6 +45,7 @@
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTY[i].LRNO, new { id = "LRNO_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TBILTY[i].BLAUTONO, new { id = "BLAUTONO_" + i })
+                                            @Html.HiddenFor(model => model.TBILTY[i].BALEYR, new { id = "BALEYR_" + i })
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTY[i].LRDT, new { id = "LRDT_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
@@ -59,7 +60,7 @@
                                             @Html.TextBoxFor(model => Model.TBILTY[i].PREFDT, new { id = "PREFNODT_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                     </tr>
-                                }
+                                } 
                             }
                         </tbody>
                     </table>

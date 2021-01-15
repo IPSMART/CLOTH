@@ -2410,13 +2410,20 @@ namespace Improvar.Controllers
                         TTXNEWB.EMD_NO = TTXN.EMD_NO;
                         TTXNEWB.CLCD = TTXN.CLCD;
                         TTXNEWB.DTAG = TTXN.DTAG;
-                        TTXNEWB.TRANSLCD = VE.T_TXNTRANS.TRANSLCD;
-                        TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
-                        TTXNEWB.LRNO = VE.T_TXNTRANS.LRNO;
-                        TTXNEWB.LRDT = VE.T_TXNTRANS.LRDT;
-                        TTXNEWB.LORRYNO = VE.T_TXNTRANS.LORRYNO;
-                        TTXNEWB.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
-                        TTXNEWB.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
+                        //TTXNEWB.TRANSLCD = VE.T_TXNTRANS.TRANSLCD;
+                        //TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
+                        //TTXNEWB.LRNO = VE.T_TXNTRANS.LRNO;
+                        //TTXNEWB.LRDT = VE.T_TXNTRANS.LRDT;
+                        //TTXNEWB.LORRYNO = VE.T_TXNTRANS.LORRYNO;
+                        //TTXNEWB.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
+                        //TTXNEWB.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
+                        TTXNEWB.TRANSLCD = null;
+                        TTXNEWB.EWAYBILLNO = null;
+                        TTXNEWB.LRNO = null;
+                        TTXNEWB.LRDT = null;
+                        TTXNEWB.LORRYNO = null;
+                        TTXNEWB.TRANSMODE = null;
+                        TTXNEWB.VECHLTYPE = null;
                         TTXNEWB.GOCD = VE.T_TXN.GOCD;
                         //----------------------------------------------------------//
 
