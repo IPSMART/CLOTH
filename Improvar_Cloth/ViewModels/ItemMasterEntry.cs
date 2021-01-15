@@ -16,6 +16,7 @@ namespace Improvar.ViewModels
         public M_COLLECTION M_COLLECTION { get; set; }
         public M_SUBBRAND M_SUBBRAND { get; set; }
         public M_UOM M_UOM { get; set; }
+        public M_PRODGRP M_PRODGRP { get; set; }
         public List<Gender> Gender { get; set; }
         public List<ProductType> ProductType { get; set; }
         public List<MSITEMPARTS> MSITEMPARTS { get; set; }
