@@ -2742,22 +2742,6 @@ function CalculateBargridQnty(tableid, index, fldid) {
         var qnty = retFloat($("#" + CUTLENGTHID).val()) * retFloat($("#" + NOSID).val());
         $("#" + QNTYID).val(retFloat(qnty));
     }
-    else if (fldid != "QNTY") {
-        if (retFloat($("#" + CUTLENGTHID).val()) != 0) {
-            $("#" + QNTYID).val(retFloat($("#" + CUTLENGTHID).val()));
-        }
-        else if (retFloat($("#" + NOSID).val()) != 0) {
-            $("#" + QNTYID).val(retFloat($("#" + NOSID).val()));
-        }
-    }
-    else {
-        if (retFloat($("#" + CUTLENGTHID).val()) != 0) {
-            $("#" + CUTLENGTHID).val(retFloat($("#" + QNTYID).val()));
-        }
-        else if (retFloat($("#" + NOSID).val()) != 0) {
-            $("#" + NOSID).val(retFloat($("#" + QNTYID).val()));
-        }
-    }
     if (tableid == "_T_SALE_PRODUCT_GRID") {
         CalculateTotal_Barno();
         HasChangeBarSale()

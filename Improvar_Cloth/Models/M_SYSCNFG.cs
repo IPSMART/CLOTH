@@ -60,7 +60,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string DUEDATECALCON { get; set; }
 
-        public byte? BANLSLNO { get; set; }
+        public byte? BANKSLNO { get; set; }
 
         public long M_AUTONO { get; set; }
 
