@@ -2794,9 +2794,9 @@ namespace Improvar
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td></tr>");
+                    SB.Append("<tr><td>" + tbl.Rows[i]["docno"] + "</td><td>" + tbl.Rows[i]["docdt"] + "</td></tr>");
                 }
-                var hdr = "Cash Memo Number";
+                var hdr = "Cash Memo Number" + Cn.GCS() + "Date";
                 return Generate_help(hdr, SB.ToString());
             }
             else

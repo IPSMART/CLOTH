@@ -29,14 +29,13 @@ namespace Improvar.Models
         public double? RATE { get; set; }
         public string FLDDESC { get; set; }
 
+        //public short? FLDLEN { get; set; }
+
     }
     public class TSTCHALT_MEASUREMENT
     {
-        public int SLNO { get; set; }        
-        public string FLDCD { get; set; }        
-        public string FLDVAL { get; set; }
+        public string SLNO { get; set; }
         public string STCHNM { get; set; }
-        public string FLDTYPE { get; set; }
         public string STCHCD { get; set; }
         public short QNTY { get; set; }
         public double? RATE { get; set; }

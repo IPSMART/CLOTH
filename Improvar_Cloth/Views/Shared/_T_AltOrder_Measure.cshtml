@@ -18,12 +18,13 @@
                             for (int j = 0; j < Model.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP.Count; j++)
                             {
                                 @Html.HiddenFor(model => model.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP[j].FLDCD)
+                                @Html.HiddenFor(model => model.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP[j].FLDDESC)
+                                @*@Html.HiddenFor(model => model.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP[j].FLDLEN)*@
                                 @Html.HiddenFor(model => model.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP[j].FLDVAL)
                                 @Html.HiddenFor(model => model.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP[j].FLDREM)
                                 @Html.HiddenFor(model => model.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP[j].FLDTYPE)
                             }
                         }
-
                     </td>
                     <td>
                         @Html.DisplayFor(model => model.TSTCHALT_MEASUREMENT[i].QNTY)
@@ -31,8 +32,12 @@
                     </td>
                     <td>
                         <a onclick="GetComponent(@i,'E')" style="cursor:pointer" id="Edit_@i"><span title="Edit" class="glyphicon glyphicon-pencil" style="font-size:small;color:#FFC107"></span></a>
-                        <a onclick="GetComponent(@i,'D')" style="cursor:pointer" id="Delete_@i"><span title="Delete" class="glyphicon glyphicon-trash" style="font-size:small;color:#E34724"></span></a>
-                    </td>
+                        &nbsp;&nbsp;&nbsp;
+                        @if (Model.DefaultAction != "V")
+                        {
+                            <a onclick="GetComponent(@i,'D')" style="cursor:pointer" id="Delete_@i"><span title="Delete" class="glyphicon glyphicon-trash" style="font-size:small;color:#E34724"></span></a>
+                        }                       
+                       </td>
                 </tr>
             }
         }

@@ -34,7 +34,7 @@ namespace Improvar.ViewModels
         public bool INC_RATE { get; set; }
         public string FLDTYPE { get; set; }
 
-        public short QNTY { get; set; }
+        public short? QNTY { get; set; }
 
         public double? RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]

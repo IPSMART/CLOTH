@@ -16,10 +16,11 @@ namespace Improvar.Controllers
     public class T_AltOrderController : Controller
     {
         // GET: T_AltOrder
-        Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp(); SchemeCal Scheme_Cal = new SchemeCal(); Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable(); DataTable DTNEW = new DataTable();
+        Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp();
+        Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable();
         EmailControl EmailControl = new EmailControl();
-        T_STCHALT TBH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_STCHALT_DTL TSCHDTL; T_STCHALT_DTL_COMP TSCHDTLCMP; T_TXNMEMO TTXNMEMO;
-        SMS SMS = new SMS();
+        T_STCHALT TBH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXNMEMO TTXNMEMO;
+        SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         public ActionResult T_AltOrder(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "", string ThirdParty = "no")
         {
@@ -146,7 +147,7 @@ namespace Improvar.Controllers
                                 VE.T_CNTRL_HDR = TCH;
                                 T_TXNMEMO TXNMEMO = new T_TXNMEMO();
                                 string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-                                string sql = "";
+                                sql = "";
                                 sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,b.city,b.add1,b.add2,b.add3,effdt ";
                                 sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b ";
                                 sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG)";
@@ -258,7 +259,7 @@ namespace Improvar.Controllers
                 if (TTXNMEMO != null)
                 {
                     var rtdebcd = TTXNMEMO.RTDEBCD;
-                    string sql = "";
+                    sql = "";
                     sql += " select a.rtdebcd,b.rtdebnm,b.mobile,b.city,b.add1,b.add2,b.add3 ";
                     sql += "  from  " + Scm + ".T_TXNMEMO a, " + Scmf + ".M_RETDEB b ";
                     sql += " where a.RTDEBCD=b.RTDEBCD and a.RTDEBCD= '" + rtdebcd + "' ";
@@ -273,77 +274,42 @@ namespace Improvar.Controllers
 
                     }
                 }
+                sql = "";
+                sql += "select a.AUTONO,a.SLNO,a.STCHCD,b.stchnm,a.QNTY,a.RATE ";
+                sql += "from " + CommVar.CurSchema(UNQSNO) + ".T_STCHALT_DTL a, " + CommVar.CurSchema(UNQSNO) + ".M_STCHGRP b ";
+                sql += "where a.stchcd = B.STCHCD and a.AUTONO ='" + TBH.AUTONO + "' ";
+                sql += "order by a.SLNO ";
 
-                string str = "";
-                str += "select a.SLNO,a.AUTONO,a.STCHCD,a.QNTY,a.RATE,b.FLDCD,b.FLDVAL,b.FLDREM,b.FLDTYPE,nvl(C.FLDNM, c.flddesc) flddesc,D.STCHNM ";
-                str += "from " + Scm + ".T_STCHALT_DTL a, " + Scm + ".T_STCHALT_DTL_COMP b, " + Scm + ".M_STCHGRP_COMP c," + CommVar.CurSchema(UNQSNO) + ".M_STCHGRP d ";
-                str += "where a.AUTONO = b.AUTONO(+) and b.fldcd = c.fldcd(+) and a.STCHCD = C.STCHCD and a.slno = b.slno and c.STCHCD= D.STCHCD ";
-                str += "and a.AUTONO = '" + TBH.AUTONO + "' ";
-                str += "order by a.SLNO ";
-                DataTable tblTSTCHALT_DTLCOMP = masterHelp.SQLquery(str);
+                DataTable tblTSTCHALT_DTLCOMP = masterHelp.SQLquery(sql);
                 VE.TSTCHALT_MEASUREMENT = (from DataRow dr in tblTSTCHALT_DTLCOMP.Rows
                                            select new TSTCHALT_MEASUREMENT()
                                            {
-                                               SLNO = Convert.ToByte(dr["SLNO"]),
-                                               //FLDCD = dr["FLDCD"].retStr(),
-                                               //FLDVAL = dr["FLDVAL"].retStr(),
-                                               //FLDREM = dr["FLDREM"].retStr(),
-                                               //FLDTYPE = dr["FLDTYPE"].retStr(),
+                                               SLNO = dr["SLNO"].retStr(),
                                                STCHCD = dr["STCHCD"].retStr(),
                                                QNTY = (dr["QNTY"].retShort()),
                                                RATE = dr["RATE"].retDbl(),
                                                STCHNM = dr["STCHNM"].retStr(),
-                                           }).DistinctBy(s => s.STCHCD).ToList();
-                foreach(var measure in VE.TSTCHALT_MEASUREMENT)
+                                           }).ToList();
+                foreach (var measure in VE.TSTCHALT_MEASUREMENT)
                 {
-                    str = "";
-                    str += "select a.SLNO,a.AUTONO,a.STCHCD,a.QNTY,a.RATE,b.FLDCD,b.FLDVAL,b.FLDREM,b.FLDTYPE,nvl(C.FLDNM, c.flddesc) flddesc,D.STCHNM ";
-                    str += "from " + Scm + ".T_STCHALT_DTL a, " + Scm + ".T_STCHALT_DTL_COMP b, " + Scm + ".M_STCHGRP_COMP c," + CommVar.CurSchema(UNQSNO) + ".M_STCHGRP d ";
-                    str += "where a.AUTONO = b.AUTONO(+) and b.fldcd = c.fldcd(+) and a.STCHCD = C.STCHCD and a.slno = b.slno and c.STCHCD= D.STCHCD ";
-                    str += "and a.AUTONO = '" + TBH.AUTONO + "' and slno='"+ measure .SLNO+ "' ";
-                    str += "order by a.SLNO ";
-                     tblTSTCHALT_DTLCOMP = masterHelp.SQLquery(str);
-                    VE.TSTCHALT_MEASUREMENT = (from DataRow dr in tblTSTCHALT_DTLCOMP.Rows
-                                               select new TSTCHALT_MEASUREMENT()
-                                               {
-                                                   //SLNO = Convert.ToByte(dr["SLNO"]),
-                                                   //FLDCD = dr["FLDCD"].retStr(),
-                                                   //FLDVAL = dr["FLDVAL"].retStr(),
-                                                   //FLDREM = dr["FLDREM"].retStr(),
-                                                   //FLDTYPE = dr["FLDTYPE"].retStr(),
-                                                   STCHCD = dr["STCHCD"].retStr(),
-                                                   QNTY = (dr["QNTY"].retShort()),
-                                                   RATE = dr["RATE"].retDbl(),
-                                                   STCHNM = dr["STCHNM"].retStr(),
-                                               }).DistinctBy(s => s.STCHCD).ToList();
+                    sql = "";
+                    sql += "select a.SLNO,a.AUTONO,a.STCHCD,a.QNTY,a.RATE,b.FLDCD,b.FLDVAL,b.FLDREM,b.FLDTYPE,nvl(C.FLDNM, c.flddesc) flddesc,D.STCHNM ";
+                    sql += "from " + Scm + ".T_STCHALT_DTL a, " + Scm + ".T_STCHALT_DTL_COMP b, " + Scm + ".M_STCHGRP_COMP c," + CommVar.CurSchema(UNQSNO) + ".M_STCHGRP d ";
+                    sql += "where a.AUTONO = b.AUTONO(+) and b.fldcd = c.fldcd(+) and a.slno = b.slno and c.STCHCD= D.STCHCD ";
+                    sql += "and a.AUTONO = '" + TBH.AUTONO + "' and a.slno='" + measure.SLNO + "' ";
+                    sql += "order by  nvl(C.FLDNM, c.flddesc) ";
+                    tblTSTCHALT_DTLCOMP = masterHelp.SQLquery(sql);
+                    var TSTCHALT_DTLCOMP = (from DataRow dr in tblTSTCHALT_DTLCOMP.Rows
+                                            select new TSTCHALT_DTLCOMP()
+                                            {
+                                                FLDCD = dr["FLDCD"].retStr(),
+                                                FLDVAL = dr["FLDVAL"].retStr(),
+                                                FLDREM = dr["FLDREM"].retStr(),
+                                                FLDTYPE = dr["FLDTYPE"].retStr(),
+                                            }).DistinctBy(s => s.FLDCD).ToList();
+                    measure.TSTCHALT_DTLCOMP = TSTCHALT_DTLCOMP;
                 }
 
-                foreach (var i in VE.TSTCHALT_MEASUREMENT)
-                {
-                 
-
-
-                }
-                //VE.TSTCHALT_DTLCOMP = (from DataRow dr in tblTSTCHALT_DTLCOMP.Rows
-                //                       select new TSTCHALT_DTLCOMP()
-                //                       {
-                //                           SLNO = Convert.ToByte(dr["SLNO"]),
-                //                           FLDCD = dr["FLDCD"].retStr(),
-                //                           FLDVAL = dr["FLDVAL"].retStr(),
-                //                           FLDREM = dr["FLDREM"].retStr(),
-                //                           FLDTYPE = dr["FLDTYPE"].retStr(),
-                //                           STCHCD = dr["STCHCD"].retStr(),
-                //                           QNTY = (dr["QNTY"].retShort()),
-                //                           RATE = dr["RATE"].retDbl(),
-                //                           FLDDESC = dr["FLDDESC"].retStr(),
-                //                       }).OrderBy(s => s.SLNO).ToList();
-                //foreach (var i in VE.TSTCHALT_DTLCOMP)
-                //{
-                //    VE.STCHCD = i.STCHCD;
-                //    VE.QNTY = i.QNTY;
-                //    VE.RATE = i.RATE;
-
-                //}
                 string str2 = "select b.SLNO,b.PYMTCD,c.PYMTNM,b.AMT,b.CARDNO,b.INSTNO,b.INSTDT,b.PYMTREM,b.GLCD from " + Scm + ".T_STCHALT a," + Scm + ".t_txnpymt b," + Scm + ".m_payment c ";
                 str2 += "where a.autono=b.autono and  b.PYMTCD=c.PYMTCD and a.autono='" + TBH.AUTONO + "'";
                 var PYMT_DATA = masterHelp.SQLquery(str2);
@@ -415,7 +381,7 @@ namespace Improvar.Controllers
                 TransactionAltOrder VE = new TransactionAltOrder();
                 Cn.getQueryString(VE);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                string str = "", strng = "";
+                string sql = "", strng = "";
                 var query = (from c in DB.M_STCHGRP
                              join d in DB.M_STCHGRP_COMP on c.STCHCD equals d.STCHCD
                              where (c.STCHCD == val)
@@ -460,7 +426,7 @@ namespace Improvar.Controllers
                         }
                         strng += "     </td> ";
                         strng += "     <td> ";
-                        strng += " <input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDREM must be a string with a maximum length of 100.\" data-val-length-max=\"100\" id=\"FLDREM+i+\" maxlength=\"12\" name=\"TSTCHALT_DTLCOMP[" + i + "].FLDREM\" type=\"text\" value=\"\"> ";
+                        strng += " <input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDREM must be a string with a maximum length of 100.\" data-val-length-max=\"100\" maxlength=\"12\" name=\"TSTCHALT_DTLCOMP[" + i + "].FLDREM\" type=\"text\" value=\"\"> ";
                         strng += "    </td> ";
                         strng += "    </tr> ";
                     }
@@ -470,8 +436,8 @@ namespace Improvar.Controllers
 
                 //if (query != null)
                 //{
-                //    str = Master_Help.ToReturnFieldValues(query.Take(1));
-                //    return Content(str);
+                //    sql = Master_Help.ToReturnFieldValues(query.Take(1));
+                //    return Content(sql);
                 //}
                 else { return Content("0"); }
 
@@ -487,13 +453,13 @@ namespace Improvar.Controllers
         //    try
         //    {
         //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-        //        string str = "";
+        //        string sql = "";
         //        var query = (from c in DB.M_STCHGRP join d in DB.M_STCHGRP_COMP on c.STCHCD equals d.STCHCD where (c.STCHCD == val)
         //                     select new { d.FLDCD, d.FLDDATACOMBO, d.FLDDESC, d.FLDNM, d.FLDLEN, d.FLDTYPE }).ToList();
 
         //        if (query != null)
         //        {
-        //            str = Master_Help.ToReturnFieldValues(query.Take(1));
+        //            sql = Master_Help.ToReturnFieldValues(query.Take(1));
         //            return Json("", JsonRequestBehavior.AllowGet);
         //        }
         //        //else { return Content("0"); }
@@ -524,14 +490,14 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = masterHelp.CashMemoNumber_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
+                var sql = masterHelp.CashMemoNumber_help(val);
+                if (sql.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", str);
+                    return PartialView("_Help2", sql);
                 }
                 else
                 {
-                    return Content(str);
+                    return Content(sql);
                 }
             }
             catch (Exception ex)
@@ -544,22 +510,22 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = masterHelp.RTDEBCD_help(val);
+                var sql = masterHelp.RTDEBCD_help(val);
 
-                if (str.IndexOf("='helpmnu'") >= 0)
+                if (sql.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", str);
+                    return PartialView("_Help2", sql);
                 }
                 else
                 {
-                    //var MSG = str.IndexOf(Cn.GCS());
+                    //var MSG = sql.IndexOf(Cn.GCS());
                     //if (MSG >= 0)
                     //{
                     //    DataTable Taxgrpcd = salesfunc.GetSlcdDetails(Code, "");
-                    //    str += "^TAXGRPCD=^" + Taxgrpcd.Rows[0]["taxgrpcd"] + Cn.GCS();
+                    //    sql += "^TAXGRPCD=^" + Taxgrpcd.Rows[0]["taxgrpcd"] + Cn.GCS();
                     //}
 
-                    return Content(str);
+                    return Content(sql);
                 }
             }
             catch (Exception ex)
@@ -913,9 +879,9 @@ namespace Improvar.Controllers
                                 TSTCHDTL.CLCD = TBHDR.CLCD;
                                 TSTCHDTL.AUTONO = TBHDR.AUTONO;
                                 TSTCHDTL.SLNO = Convert.ToByte(i + 1);
-                                TSTCHDTL.STCHCD = VE.STCHCD;
-                                TSTCHDTL.QNTY = VE.QNTY;
-                                TSTCHDTL.RATE = VE.RATE.retDbl();
+                                TSTCHDTL.STCHCD = VE.TSTCHALT_MEASUREMENT[i].STCHCD;
+                                TSTCHDTL.QNTY = VE.TSTCHALT_MEASUREMENT[i].QNTY.retShort();
+                                TSTCHDTL.RATE = VE.TSTCHALT_MEASUREMENT[i].RATE.retDbl();
                                 dbsql = masterHelp.RetModeltoSql(TSTCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 if (VE.TSTCHALT_MEASUREMENT[i].TSTCHALT_DTLCOMP != null)
@@ -1059,24 +1025,23 @@ namespace Improvar.Controllers
         {
             try
             {
-                var sl = slno.retInt();
                 string STCHCD = VE.STCHCD;
-                short QNTY = VE.QNTY;
+                short QNTY = VE.QNTY.retShort();
                 double RATE = VE.RATE.retDbl();
                 List<TSTCHALT_MEASUREMENT> tSTCHALT_MEASUREMENT = new List<TSTCHALT_MEASUREMENT>();
                 TSTCHALT_MEASUREMENT oldmeasure = new TSTCHALT_MEASUREMENT();
                 if (VE.TSTCHALT_MEASUREMENT != null)
                 {
-                    oldmeasure = VE.TSTCHALT_MEASUREMENT.Where(m => m.SLNO == sl).FirstOrDefault();
+                    oldmeasure = VE.TSTCHALT_MEASUREMENT.Where(m => m.SLNO == slno).FirstOrDefault();
                     if (oldmeasure != null)
                     {
-                        VE.TSTCHALT_MEASUREMENT.RemoveAll(m => m.SLNO == sl);
+                        VE.TSTCHALT_MEASUREMENT.RemoveAll(m => m.SLNO == slno);
                     }
                     for (int i = 0; i <= VE.TSTCHALT_MEASUREMENT.Count - 1; i++)
                     {
                         TSTCHALT_MEASUREMENT MLI2 = new TSTCHALT_MEASUREMENT();
                         MLI2 = VE.TSTCHALT_MEASUREMENT[i];
-                        MLI2.SLNO = i + 1;
+                        MLI2.SLNO = (i + 1).ToString();
                         tSTCHALT_MEASUREMENT.Add(MLI2);
                     }
                 }
@@ -1084,7 +1049,7 @@ namespace Improvar.Controllers
                 var MSTCHGRP = DB.M_STCHGRP.Where(r => r.STCHCD == STCHCD).FirstOrDefault();
                 TSTCHALT_MEASUREMENT MLI = new TSTCHALT_MEASUREMENT();
                 MLI.STCHCD = STCHCD;
-                MLI.SLNO = tSTCHALT_MEASUREMENT.Count + 1;
+                MLI.SLNO = (tSTCHALT_MEASUREMENT.Count + 1).ToString();
                 MLI.STCHNM = MSTCHGRP.STCHNM;
                 MLI.QNTY = QNTY;
                 MLI.RATE = RATE;
@@ -1102,81 +1067,81 @@ namespace Improvar.Controllers
             }
 
         }
-        public ActionResult GetComponent(TransactionAltOrder VE, string slno)
+        public ActionResult GetComponent(TransactionAltOrder VE, string slno, string mode)
         {
             try
             {
-                var ty = VE.TSTCHALT_MEASUREMENT.Where(m => m.SLNO == 0).FirstOrDefault();
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                string str = "", strng = "";
-                str += "select a.SLNO,a.AUTONO,a.STCHCD,a.QNTY,a.RATE,b.FLDCD,b.FLDVAL,b.FLDREM,b.FLDTYPE,nvl(C.FLDNM, c.flddesc) flddesc,D.STCHNM,c.FLDLEN ";
-                str += "from " + CommVar.CurSchema(UNQSNO) + ".T_STCHALT_DTL a, " + CommVar.CurSchema(UNQSNO) + ".T_STCHALT_DTL_COMP b, " + CommVar.CurSchema(UNQSNO) + ".M_STCHGRP_COMP c," + CommVar.CurSchema(UNQSNO) + ".M_STCHGRP d ";
-                str += "where a.AUTONO = b.AUTONO(+) and b.fldcd = c.fldcd(+) and a.STCHCD = C.STCHCD and a.slno = b.slno and c.STCHCD= D.STCHCD ";
-                str += "and  a.autono='" + VE.T_STCHALT.AUTONO + "' and a.slno = '" + slno + "' ";
-                str += "order by a.SLNO ";
-                DataTable tblTSTCHALT_DTLCOMP = masterHelp.SQLquery(str);
-                var query = (from DataRow dr in tblTSTCHALT_DTLCOMP.Rows
-                             select new
-                             {
-                                 FLDCD = dr["FLDCD"].retStr(),
-                                 FLDDESC = dr["FLDDESC"].retStr(),
-                                 FLDLEN = dr["FLDLEN"].retStr(),
-                                 FLDTYPE = dr["FLDTYPE"].retStr(),
-                                 STCHCD = dr["STCHCD"].retStr(),
-                                 QNTY = (dr["QNTY"].retShort()),
-                                 RATE = dr["RATE"].retDbl(),
-                                 STCHNM = dr["STCHNM"].retStr(),
-                                 FLDVAL = dr["FLDVAL"].retStr(),
-                                 FLDREM = dr["FLDREM"].retStr(),
-
-                             }).DistinctBy(s => s.STCHCD).ToList();
-
-                strng = "<thead><tr><th>Component</th><th>Value</th><th>Remarks</th></tr></thead>";
-                strng += " <tbody> ";
-                if (query != null)
+                if (mode == "E")
                 {
-                    for (int i = 0; i < query.Count; i++)
+                    //sql = "";
+                    //sql += "select a.SLNO,a.AUTONO,a.STCHCD,a.QNTY,a.RATE,b.FLDCD,b.FLDVAL,b.FLDREM,b.FLDTYPE,nvl(C.FLDNM, c.flddesc) flddesc,D.STCHNM,c.FLDLEN ";
+                    //sql += "from " + CommVar.CurSchema(UNQSNO) + ".T_STCHALT_DTL a, " + CommVar.CurSchema(UNQSNO) + ".T_STCHALT_DTL_COMP b, " + CommVar.CurSchema(UNQSNO) + ".M_STCHGRP_COMP c," + CommVar.CurSchema(UNQSNO) + ".M_STCHGRP d ";
+                    //sql += "where a.AUTONO = b.AUTONO(+) and b.fldcd = c.fldcd(+) and a.STCHCD = C.STCHCD and a.slno = b.slno and c.STCHCD= D.STCHCD ";
+                    //sql += "and  a.autono='" + VE.T_STCHALT.AUTONO + "' and a.slno = '" + slno + "' ";
+                    //sql += "order by a.SLNO ";
+                    //DataTable tblTSTCHALT_DTLCOMP = masterHelp.SQLquery(sql);
+                    var STCHGRPCmplst = DB.M_STCHGRP_COMP.Where(r => r.STCHCD != null).ToList();
+                    TSTCHALT_MEASUREMENT tSTCHALT_MEASUREMENT = VE.TSTCHALT_MEASUREMENT.Where(v => v.SLNO == slno).FirstOrDefault();
+                    var query = tSTCHALT_MEASUREMENT.TSTCHALT_DTLCOMP;
+                    string strng = "";
+                    strng = "<thead><tr><th>Component</th><th>Value</th><th>Remarks</th></tr></thead>";
+                    strng += " <tbody> ";
+                    if (query != null)
                     {
-                        strng += "<tr> ";
-                        strng += "  <td>";
-                        strng += query[i].FLDDESC;
-                        strng += "  </td> ";
-                        strng += "   <td> ";
-                        strng += "   <input class=\"form-control text-box single-line\" id=\"FLDCD" + i + "\"  name=\"TSTCHALT_DTLCOMP[" + i + "].FLDCD\" type=\"hidden\" value=\"" + query[i].FLDCD + "\"> ";
-                        strng += "   <input class=\"form-control text-box single-line\" id=\"FLDTYPE" + i + "\"  name=\"TSTCHALT_DTLCOMP[" + i + "].FLDTYPE\" type=\"hidden\" value=\"" + query[i].FLDTYPE + "\"> ";
-                        strng += "   <input class=\"form-control text-box single-line\" id=\"SLNO" + i + "\" name=\"TSTCHALT_DTLCOMP[" + i + "].SLNO\" type=\"hidden\" value=\"\"> ";
-                        //if (query[i].FLDTYPE == "D")
-                        //{
-                        //    strng += "<input class=\"form -control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required.\" id=\"FLDVAL+i+\" maxlength=\"+query[i].FLDLEN+\" name=\"TSTCHALT_DTLCOMP[i].FLDVAL,\"{ 0:dd / MM / yyyy} ";
-                        //    strng += "\" type=\"text\" placeholder = \"dd / mm / yyyy\" onblur = \"DocumentDateCHK(this)\" autocomplete = \"off\" value=\"\"> ";
-                        //    strng += "  < script > ";
-                        //    if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E")
-                        //    {
-                        //        strng += " $(function() { $(\"#\" + \"FLDVAL\").datepicker({ dateFormat: \"dd/mm/yy\", changeMonth: true, changeYear: true }); }); ";
-
-                        //        strng += "</ script > } ";
-
-                        //    }
-                        //}
-                        if (query[i].FLDTYPE == "N")
+                        for (int i = 0; i < query.Count; i++)
                         {
-                            strng += "<input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with "
-                                + "a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required"
-                                + ".\" id=\"TSTCHALT_DTLCOMP[" + i + "].FLDVAL\" maxlength=\"" + query[i].FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[" + i + "].FLDVAL\"  type=\"text\" "
-                                + "placeholder = \"0\" style = \"text-align: right;\" onkeypress =\"return numericOnly(this,4);\" value=\"" + query[i].FLDVAL + "\"> ";
+                            string fldcd = query[i].FLDCD;
+                            M_STCHGRP_COMP sTCHGRP = STCHGRPCmplst.Where(r => r.FLDCD == fldcd).FirstOrDefault();
+                            query[i].FLDDESC = sTCHGRP.FLDNM.retStr() + " " + sTCHGRP.FLDDESC.retStr();
+                            var FLDLEN = sTCHGRP.FLDLEN;
+                            strng += "<tr> ";
+                            strng += "  <td>";
+                            strng += query[i].FLDDESC;
+                            strng += "  </td> ";
+                            strng += "   <td> ";
+                            strng += "   <input class=\"form-control text-box single-line\" id=\"FLDCD" + i + "\"  name=\"TSTCHALT_DTLCOMP[" + i + "].FLDCD\" type=\"hidden\" value=\"" + query[i].FLDCD + "\"> ";
+                            strng += "   <input class=\"form-control text-box single-line\" id=\"FLDTYPE" + i + "\"  name=\"TSTCHALT_DTLCOMP[" + i + "].FLDTYPE\" type=\"hidden\" value=\"" + query[i].FLDTYPE + "\"> ";
+                            strng += "   <input class=\"form-control text-box single-line\" id=\"SLNO" + i + "\" name=\"TSTCHALT_DTLCOMP[" + i + "].SLNO\" type=\"hidden\" value=\"\"> ";
+                            //if (query[i].FLDTYPE == "D")
+                            //{
+                            //    strng += "<input class=\"form -control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required.\" id=\"FLDVAL+i+\" maxlength=\"+query[i].FLDLEN+\" name=\"TSTCHALT_DTLCOMP[i].FLDVAL,\"{ 0:dd / MM / yyyy} ";
+                            //    strng += "\" type=\"text\" placeholder = \"dd / mm / yyyy\" onblur = \"DocumentDateCHK(this)\" autocomplete = \"off\" value=\"\"> ";
+                            //    strng += "  < script > ";
+                            //    if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E")
+                            //    {
+                            //        strng += " $(function() { $(\"#\" + \"FLDVAL\").datepicker({ dateFormat: \"dd/mm/yy\", changeMonth: true, changeYear: true }); }); ";
+
+                            //        strng += "</ script > } ";
+
+                            //    }
+                            //}
+                            if (query[i].FLDTYPE == "N")
+                            {
+                                strng += "<input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with "
+                                    + "a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required"
+                                    + ".\" id=\"TSTCHALT_DTLCOMP[" + i + "].FLDVAL\" maxlength=\"" + sTCHGRP.FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[" + i + "].FLDVAL\"  type=\"text\" "
+                                    + "placeholder = \"0\" style = \"text-align: right;\" onkeypress =\"return numericOnly(this,4);\" value=\"" + query[i].FLDVAL + "\"> ";
+                            }
+                            else {
+                                strng += "<input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required.\" id=\"FLDVAL+i+\" maxlength=\"" + sTCHGRP.FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[i].FLDVAL ";
+                                strng += "\" type=\"text\" value=\"" + query[i].FLDVAL + "\"> ";
+                            }
+                            strng += "     </td> ";
+                            strng += "     <td> ";
+                            strng += " <input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDREM must be a string with a maximum length of 100.\" data-val-length-max=\"100\" maxlength=\"12\" name=\"TSTCHALT_DTLCOMP[" + i + "].FLDREM\" type=\"text\" value=\"" + query[i].FLDREM + "\"> ";
+                            strng += "    </td> ";
+                            strng += "    </tr> ";
                         }
-                        else {
-                            strng += "<input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required.\" id=\"FLDVAL+i+\" maxlength=\"" + query[i].FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[i].FLDVAL ";
-                            strng += "\" type=\"text\" value=\"" + query[i].FLDVAL + "\"> ";
-                        }
-                        strng += "     </td> ";
-                        strng += "     <td> ";
-                        strng += " <input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDREM must be a string with a maximum length of 100.\" data-val-length-max=\"100\" id=\"FLDREM+i+\" maxlength=\"12\" name=\"TSTCHALT_DTLCOMP[" + i + "].FLDREM\" type=\"text\" value=\"" + query[i].FLDREM + "\"> ";
-                        strng += "    </td> ";
-                        strng += "    </tr> ";
+                        strng += "   </tbody> ";
+                        return Content(strng);
                     }
-                    strng += "   </tbody> ";
-                    return Content(strng);
+                }
+                else if (mode == "D")
+                {
+                    VE.TSTCHALT_MEASUREMENT.RemoveAll(m => m.SLNO == slno);
+                    ModelState.Clear();
+                    return PartialView("_T_AltOrder_Measure", VE);
                 }
             }
             catch (Exception ex)
@@ -1190,14 +1155,14 @@ namespace Improvar.Controllers
         {
             try
             {
-                var str = masterHelp.PAYMTCD_help(val);
-                if (str.IndexOf("='helpmnu'") >= 0)
+                var sql = masterHelp.PAYMTCD_help(val);
+                if (sql.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", str);
+                    return PartialView("_Help2", sql);
                 }
                 else
                 {
-                    return Content(str);
+                    return Content(sql);
                 }
             }
             catch (Exception ex)
