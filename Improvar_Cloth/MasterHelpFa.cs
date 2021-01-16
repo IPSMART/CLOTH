@@ -2103,13 +2103,13 @@ namespace Improvar
         }
         public string retCompAddress(string gocd = "", string grpemailid = "")
         {
-            string scm1 = CommVar.CurSchema(UNQSNO), Scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string Scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string str, sql, goadd = "";
             string fssailicno = "";
             if (gocd == null) gocd = "";
             if (gocd != "")
             {
-                sql = "select goadd1, goadd2, goadd3, gophno, gonm, fssailicno from " + scm1 + ".m_godown where gocd='" + gocd + "'";
+                sql = "select goadd1, goadd2, goadd3, gophno, gonm, fssailicno from " + Scmf + ".m_godown where gocd='" + gocd + "'";
                 DataTable tbl = SQLquery(sql);
                 if (tbl.Rows.Count > 0)
                 {

@@ -167,11 +167,11 @@ namespace Improvar
         }
         public List<DropDown_list_GODOWN> GetGocdforSelection()
         {
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(),  CommVar.CurSchema(UNQSNO));
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(),  CommVar.FinSchema(UNQSNO));
             string COM = CommVar.Compcd(UNQSNO), LOC =  CommVar.Loccd(UNQSNO);
 
             List<DropDown_list_GODOWN> sllist = new List<DropDown_list_GODOWN>();
-            sllist = (from a in DB.M_GODOWN
+            sllist = (from a in DBF.M_GODOWN
                       select new DropDown_list_GODOWN()
                       {
                           text = a.GONM,

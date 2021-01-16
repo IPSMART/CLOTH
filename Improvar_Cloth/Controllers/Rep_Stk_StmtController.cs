@@ -84,6 +84,7 @@ namespace Improvar.Controllers
             try
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
                 //VE.DropDown_list1 = Salesfunc.Stock_Calc_Mehtod();
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO);
@@ -104,7 +105,7 @@ namespace Improvar.Controllers
 
                 if (selgocd == "" && summary == "G")
                 {
-                    selgocd = string.Join(",", (from a in DB.M_GODOWN select a.GOCD).ToList()).retSqlformat();
+                    selgocd = string.Join(",", (from a in DBF.M_GODOWN select a.GOCD).ToList()).retSqlformat();
                 }
 
                 string days_aging = VE.TEXTBOX5; // Days aging value

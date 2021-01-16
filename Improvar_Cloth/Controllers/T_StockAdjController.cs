@@ -219,7 +219,7 @@ namespace Improvar.Controllers
                 if (sl != null)
                 {
                     OTH = DB.T_TXNOTH.Find(sl.AUTONO);
-                    VE.GodownName = (from z in DB.M_GODOWN where z.GOCD == sl.GOCD select z.GONM).SingleOrDefault();
+                    VE.GodownName = (from z in DBF.M_GODOWN where z.GOCD == sl.GOCD select z.GONM).SingleOrDefault();
                 }
                 TCHR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), sl.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), sl.AUTONO);
@@ -336,7 +336,7 @@ namespace Improvar.Controllers
                 string sql = "";
 
                 sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.gocd, c.gonm ";
-                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scm + ".m_godown c ";
+                sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_godown c ";
                 sql += "where a.autono=b.autono and a.gocd=c.gocd(+) and b.doccd in (" + doccd + ") and ";
                 sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
                 sql += "order by docdt, docno ";
