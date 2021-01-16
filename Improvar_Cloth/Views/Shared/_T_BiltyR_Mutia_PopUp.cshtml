@@ -39,7 +39,6 @@
                                 <th class="" style="width:100px;">Bale No</th>
                                 <th class="" style="width: 100px;">Bill No</th>
                                 <th class="" style="width:55px;">Bill Date</th>
-
                             </tr>
                         </thead>
                         <tbody>
@@ -49,7 +48,7 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYR_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i ,Onclick= "SelectMatchingCheckBoxes();" })
+                                            @Html.CheckBoxFor(model => model.TBILTYR_POPUP[i].Checked, new { id = "chkid_R_POPUP_" + i ,Onclick= "SelectMatchingCheckBoxes("+i+");" })
                                             @Html.HiddenFor(model => model.TBILTYR_POPUP[i].BLAUTONO, new { id = "BLAUTONO_R_POPUP_" + i })
                                             @Html.HiddenFor(model => model.TBILTYR_POPUP[i].BALEYR, new { id = "BALEY_R_POPUP_" + i })
                                         </td>
@@ -71,6 +70,7 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYR_POPUP[i].PREFDT, new { id = "PREFDT_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
+                                       
                                     </tr>
                                 }
                             }
