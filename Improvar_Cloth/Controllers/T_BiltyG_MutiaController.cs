@@ -293,7 +293,7 @@ namespace Improvar.Controllers
             {
                 var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT);
                   DataView dv = new DataView(GetPendig_Data);
-                    string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
+                    string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM" };
                     GetPendig_Data = dv.ToTable(true, COL);
                     VE.TBILTY_POPUP = (from DataRow dr in GetPendig_Data.Rows
                                         select new TBILTY_POPUP
@@ -303,7 +303,8 @@ namespace Improvar.Controllers
                                             LRDT = dr["lrdt"].retDateStr(),
                                             BALENO = dr["baleno"].retStr(),
                                             PREFNO = dr["prefno"].retStr(),
-                                            PREFDT = dr["prefdt"].retDateStr()
+                                            PREFDT = dr["prefdt"].retDateStr(),
+                                            TRANSLNM = dr["TRANSLNM"].retStr(),
                                         }).Distinct().ToList();
                     for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
                     {

@@ -1231,12 +1231,12 @@ namespace Improvar
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
-            string scm = CommVar.CurSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             if (schema == "") schema = scm;
             string sql = "";
             sql = "";
             sql += "select distinct a.autono, a.baleno, a.baleyr, c.lrno, c.lrdt,	";
-            sql += " d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos from ";
+            sql += " d.prefno, d.prefdt, 1 - nvl(b.bnos, 0) bnos,c.TRANSLCD,e.slnm TRANSLNM from ";
             sql += "  (select distinct a.autono, b.baleno, b.baleyr, b.baleyr || b.baleno balenoyr ";
             sql += "  from " + schema + ".t_txn a, " + schema + ".t_txndtl b, " + schema + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
@@ -1248,8 +1248,8 @@ namespace Improvar
             sql += " from " + schema + ".t_bilty a, " + scm + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) ";
             sql += "group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b, ";
-            sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ";
-            sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and ";
+            sql += "" + schema + ".t_txntrans c, " + schema + ".t_txn d ," + scmf + ".m_subleg e ";
+            sql += "where a.autono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and c.TRANSLCD = e.slcd(+) and ";
             sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null  ";
             if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")  ";
             sql += " and 1 - nvl(b.bnos, 0) > 0 ";
