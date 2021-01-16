@@ -315,16 +315,16 @@ namespace Improvar.Controllers
                 //query1 += " -- and a.prccd = d.prccd(+) ";
                 query1 += "  and  b.compcd = '" + COM + "' ";
                 if (selloccd == "") query1 += " and b.loccd = '" + LOC + "'  "; else query1 += " and b.loccd in (" + selloccd + ")  ";
-                query1 += "and  a.GOCD in('" + GODOWN + "') and ";
+                if (GODOWN.retStr() != "") query1 += "and  a.GOCD in('" + GODOWN + "')  ";
                 if (repsorton == "bldt")
                 {
-                    if (fdt != "") query1 += "a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
-                    if (tdt != "") query1 += "a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                    if (fdt != "") query1 += "and a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
+                    if (tdt != "") query1 += "and a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
                 }
                 else
                 {
-                    if (fdt != "") query1 += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and  ";
-                    if (tdt != "") query1 += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                    if (fdt != "") query1 += "and b.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
+                    if (tdt != "") query1 += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
                 }
 
                 //query1 += "--and  a.itgrpcd in (" + itgrpcd + ") ";

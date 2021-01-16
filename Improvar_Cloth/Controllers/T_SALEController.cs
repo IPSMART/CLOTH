@@ -1495,7 +1495,7 @@ namespace Improvar.Controllers
                                   AGDOCDT = P.Key.AGDOCDT,
                                   LISTPRICE = P.Key.LISTPRICE,
                                   LISTDISCPER = P.Key.LISTDISCPER,
-                              }).OrderBy(a=>a.SLNO).ToList();
+                              }).OrderBy(a => a.SLNO).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
                 var distnctslno = VE.TTXNDTL.Select(a => a.SLNO).Distinct().Count();
@@ -2532,6 +2532,10 @@ namespace Improvar.Controllers
                         TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
                         //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
                         DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TTXN.DOCNO), TTXN.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
+                        if (DOCPATTERN.retStr().Length > 16)
+                        {
+                            dberrmsg = "Document No. length should be less than 16.change from Document type master "; goto dbnotsave;
+                        }
                         auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TTXN.DOCNO, TTXN.DOCCD, Ddate);
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
@@ -2797,7 +2801,7 @@ namespace Improvar.Controllers
                     VE.BALEYR = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).Year.retStr();
                     for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
                     {
-                        if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null && VE.TTXNDTL[i].MTRLJOBCD != null && VE.TTXNDTL[i].STKTYPE != null)
+                        if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD.retStr() != "" && VE.TTXNDTL[i].MTRLJOBCD.retStr() != "" && VE.TTXNDTL[i].STKTYPE.retStr() != "" && VE.TTXNDTL[i].QNTY.retDbl() != 0)
                         {
                             if (i == lastitemno) { _rpldist = _baldist; _rpldistq = _baldistq; }
                             else
@@ -2893,7 +2897,7 @@ namespace Improvar.Controllers
                     {
                         for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
                         {
-                            if (VE.TBATCHDTL[i].ITCD != null && VE.TBATCHDTL[i].QNTY != 0)
+                            if (VE.TBATCHDTL[i].ITCD.retStr() != "" && VE.TBATCHDTL[i].QNTY.retDbl() != 0)
                             {
                                 //double batchamt = (VE.TBATCHDTL[i].QNTY * VE.TBATCHDTL[i].RATE).retDbl().toRound(2);
                                 //double batchdsic = (batchamt * VE.TBATCHDTL[i].DISC)xxxxx
