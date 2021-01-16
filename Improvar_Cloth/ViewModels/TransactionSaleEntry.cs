@@ -11,7 +11,7 @@ namespace Improvar.ViewModels
     {
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_TXN T_TXN { get; set; }
-        
+
         public M_SYSCNFG M_SYSCNFG { get; set; }
         public T_TXN_LINKNO T_TXN_LINKNO { get; set; }
         public T_TXNACK T_TXNACK { get; set; }
@@ -175,7 +175,7 @@ namespace Improvar.ViewModels
         public string SLOCNM { get; set; }
         public string PORTNM { get; set; }
         public List<INVTYPE_list> INVTYPE_list { get; set; }
-        public List<EXPCD_list> EXPCD_list { get; set; }        
+        public List<EXPCD_list> EXPCD_list { get; set; }
         public List<REV_CHRG> Reverse_Charge { get; set; }
         public string TDSNM { get; set; }
         [StringLength(30)]

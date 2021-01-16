@@ -148,7 +148,7 @@ namespace Improvar.Controllers
                                 INI INIF = new INI();
                                 INIF.DeleteKey(Session["UR_ID"].ToString(), parkID, Server.MapPath("~/Park.ini"));
                             }
-                            VE = (SalesOrderEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COMP, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), CommVar.UserID());
+                            VE = (SalesOrderEntry)Cn.CheckPark(VE, VE.MENU_DETAILS, LOC, COMP, CommVar.CurSchema(UNQSNO), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                             VE.TSORDDTL.ForEach(A => A.DropDown_list2 = Master_Help.STOCK_TYPE());
                             VE.TSORDDTL.ForEach(A => A.DropDown_list3 = Master_Help.FREE_STOCK());
                         }
@@ -992,7 +992,7 @@ namespace Improvar.Controllers
                                     {
                                         TSORDDTL.STKDRCR = "C";
                                     }
-                                    TSORDDTL.STKTYPE = "T";// VE.TSORDDTL[i].STKTYPE;
+                                    TSORDDTL.STKTYPE = "F";//"T";// VE.TSORDDTL[i].STKTYPE;
                                     TSORDDTL.FREESTK = VE.TSORDDTL[i].FREESTK;
                                     TSORDDTL.ITCD = VE.TSORDDTL[i].ITCD;
                                     TSORDDTL.SIZECD = VE.TSORDDTL[i].SIZECD;
@@ -1005,7 +1005,7 @@ namespace Improvar.Controllers
                                     TSORDDTL.TAXAMT = 0;
                                     TSORDDTL.ORDAUTONO = VE.TSORDDTL[i].ORDAUTONO;
                                     TSORDDTL.ORDSLNO = VE.TSORDDTL[i].ORDSLNO;
-                                    TSORDDTL.PRCCD = "EXFI";// VE.TSORDDTL[i].PRCCD;
+                                    TSORDDTL.PRCCD = "WP";// VE.TSORDDTL[i].PRCCD;
                                     TSORDDTL.PRCEFFDT = VE.TSORDDTL[i].PRCEFFDT;
                                     TSORDDTL.DELVDT = VE.TSORDDTL[i].DELVDT;
                                     TSORDDTL.ITREM = VE.TSORDDTL[i].ITREM;
@@ -1122,24 +1122,31 @@ namespace Improvar.Controllers
             TempData["printparameter"] = ind;
             return Content("");
         }
-        public ActionResult ParkRecord(FormCollection FC, SalesOrderEntry stream, string menuID, string menuIndex)
+        public ActionResult ParkRecord(FormCollection FC, SalesOrderEntry stream)
         {
             try
             {
-                Connection cn = new Connection();
+                Cn.getQueryString(stream);
+                if (stream.T_SORD.DOCCD.retStr() != "")
+                {
+                    stream.T_CNTRL_HDR.DOCCD = stream.T_SORD.DOCCD.retStr();
+                }
+                string MNUDET = stream.MENU_DETAILS;
+                var menuID = MNUDET.Split('~')[0];
+                var menuIndex = MNUDET.Split('~')[1];
                 string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
                 ID = ID.Replace(" ", "_");
                 string Userid = Session["UR_ID"].ToString();
                 INI Handel_ini = new INI();
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 string JR = javaScriptSerializer.Serialize(stream);
-                Handel_ini.IniWriteValue(Userid, ID, cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
+                Handel_ini.IniWriteValue(Userid, ID, Cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
                 return Content("1");
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
+                return Content(ex.Message);
             }
         }
         public string RetrivePark(string value)
@@ -1152,10 +1159,10 @@ namespace Improvar.Controllers
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                return ex.Message + ex.InnerException;
+                return ex.Message;
             }
         }
-        //public ActionResult ShowLogDetails(TransactionSaleEntry TSP, string DOCNO, string DOC_CD)
+        //public ActionResult ShowLogDetails(SalesOrderEntry TSP, string DOCNO, string DOC_CD)
         //{
         //    ReportViewinHtml ind = new ReportViewinHtml();
         //    ind.DOCCD = DOC_CD;
