@@ -415,13 +415,13 @@ namespace Improvar.Controllers
                         //}
                         if (query[i].FLDTYPE == "N")
                         {
-                            strng += "<input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with "
+                            strng += "<input class=\"form-control text-box single-line\" autocomplete='off'  data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with "
                                 + "a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required"
                                 + ".\" id=\"TSTCHALT_DTLCOMP[" + i + "].FLDVAL\" maxlength=\"" + query[i].FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[" + i + "].FLDVAL\"  type=\"text\" "
                                 + "placeholder = \"0\" style = \"text-align: right;\" onkeypress =\"return numericOnly(this,4);\" value=\"\"> ";
                         }
                         else {
-                            strng += "<input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required.\" id=\"FLDVAL+i+\" maxlength=\"" + query[i].FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[i].FLDVAL ";
+                            strng += "<input class=\"form-control text-box single-line\" autocomplete='off'  data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required.\" id=\"FLDVAL+i+\" maxlength=\"" + query[i].FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[i].FLDVAL ";
                             strng += "\" type=\"text\" value=\"\"> ";
                         }
                         strng += "     </td> ";
@@ -1118,13 +1118,13 @@ namespace Improvar.Controllers
                             //}
                             if (query[i].FLDTYPE == "N")
                             {
-                                strng += "<input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with "
+                                strng += "<input class=\"form-control text-box single-line\" autocomplete='off' data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with "
                                     + "a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required"
                                     + ".\" id=\"TSTCHALT_DTLCOMP[" + i + "].FLDVAL\" maxlength=\"" + sTCHGRP.FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[" + i + "].FLDVAL\"  type=\"text\" "
                                     + "placeholder = \"0\" style = \"text-align: right;\" onkeypress =\"return numericOnly(this,4);\" value=\"" + query[i].FLDVAL + "\"> ";
                             }
                             else {
-                                strng += "<input class=\"form-control text-box single-line\" data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required.\" id=\"FLDVAL+i+\" maxlength=\"" + sTCHGRP.FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[i].FLDVAL ";
+                                strng += "<input class=\"form-control text-box single-line\" autocomplete='off' data-val=\"true\" data-val-length=\"The field FLDVAL must be a string with a maximum length of 500.\" data-val-length-max=\"500\" data-val-required=\"The FLDVAL field is required.\" id=\"FLDVAL+i+\" maxlength=\"" + sTCHGRP.FLDLEN + "\" name=\"TSTCHALT_DTLCOMP[i].FLDVAL ";
                                 strng += "\" type=\"text\" value=\"" + query[i].FLDVAL + "\"> ";
                             }
                             strng += "     </td> ";
