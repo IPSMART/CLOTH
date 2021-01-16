@@ -432,11 +432,11 @@ namespace Improvar.Controllers
                         {
                             MSYSCNFG.RPPRICEGEN = VE.RPPRICEGENCD.retStr() + VE.RPPRICEGENAMT.retStr().PadLeft(2, '0');//NT99
                         }
-                        MSYSCNFG.DEALSIN = VE.M_SYSCNFG.DEALSIN;
-                        MSYSCNFG.INSPOLDESC = VE.M_SYSCNFG.INSPOLDESC;
-                        MSYSCNFG.BLTERMS = VE.M_SYSCNFG.BLTERMS;
+                        //MSYSCNFG.DEALSIN = VE.M_SYSCNFG.DEALSIN;
+                        //MSYSCNFG.INSPOLDESC = VE.M_SYSCNFG.INSPOLDESC;
+                        //MSYSCNFG.BLTERMS = VE.M_SYSCNFG.BLTERMS;
                         MSYSCNFG.DUEDATECALCON = VE.M_SYSCNFG.DUEDATECALCON;
-                        MSYSCNFG.BANKSLNO = VE.M_SYSCNFG.BANKSLNO;
+                        //MSYSCNFG.BANKSLNO = VE.M_SYSCNFG.BANKSLNO;
                         MSYSCNFG.WPPER = VE.M_SYSCNFG.WPPER;
                         MSYSCNFG.RPPER = VE.M_SYSCNFG.RPPER;
                         MSYSCNFG.PRICEINCODE = VE.M_SYSCNFG.PRICEINCODE;
