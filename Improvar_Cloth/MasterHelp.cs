@@ -2782,9 +2782,9 @@ namespace Improvar
             string sql = "";
             string valsrch = val.ToUpper().Trim();
             sql = "select b.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt,d.nm,d.mobile ";
-            sql += "from "+ scm + ".t_cntrl_hdr b," + scm + ".T_TXNMEMO d ";
-            sql += "where b.autono=d.autono(+) and ";
-            sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
+            sql += "from "+ scm + ".t_cntrl_hdr b," + scm + ".m_doctype c," + scm + ".T_TXNMEMO d ";
+            sql += "where b.autono=d.autono and  b.doccd=c.doccd and ";
+            sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' and c.doctype='SBCM' ";
             if (valsrch.retStr() != "") sql += "and ( upper(b.docno) = '" + valsrch + "' ) ";
             sql += "order by docdt, docno ";
             DataTable tbl = SQLquery(sql);
