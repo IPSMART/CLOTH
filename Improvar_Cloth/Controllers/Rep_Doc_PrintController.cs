@@ -179,7 +179,7 @@ namespace Improvar.Controllers
             sql += "c.doccd, c.docno, to_char(c.docdt,'dd/mm/yyyy') docdt, b.gocd, g.gonm, i.itgrpnm, j.uomnm, j.decimals, k.docrem remarks, ";
             sql += "decode(a.stkdrcr,'D','IN','OUT') inout, a.autono, c.usr_id, c.usr_entdt, m.user_name ";
             sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c, ";
-            sql += scm1 + ".m_sitem f, " + scm1 + ".m_godown g, " + scm1 + ".m_group i, ";
+            sql += scm1 + ".m_sitem f, " + scmf + ".m_godown g, " + scm1 + ".m_group i, ";
             sql += scmf + ".m_uom j, " + scm1 + ".t_txnoth k, improvar.user_appl m, " + scm1 + ".m_size n ";
             sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and c.usr_id=m.user_id(+) and ";
             sql += "a.itcd = f.itcd(+) and a.sizecd=n.sizecd(+) and f.itgrpcd = i.itgrpcd(+) and ";

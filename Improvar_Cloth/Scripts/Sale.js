@@ -359,15 +359,19 @@ function UpdateBarCodeRow() {
                                     retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && $("#HSNCODE").val() == $("#B_HSNCODE_" + j).val() && $("#PRODGRPGSTPER").val() == $("#B_PRODGRPGSTPER_" + j).val() &&
                                     $("#GLCD").val() == $("#B_GLCD_" + j).val() && $("#SLNO").val() != $("#B_SLNO_" + j).val()) {
 
-                        matchslno[countmatchslno] = parseInt($("#B_TXNSLNO_" + j).val());
+                        matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                         countmatchslno++;
                     }
                 }
-                allslno[j] = parseInt($("#B_TXNSLNO_" + j).val());
+                allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
             }
 
             if (matchslno.length > 0) {
                 TXNSLNO = Math.max.apply(Math, matchslno);
+                if (TXNSLNO == 0) {
+                    TXNSLNO = Math.max.apply(Math, allslno);
+                    TXNSLNO++;
+                }
             }
             else {
                 TXNSLNO = Math.max.apply(Math, allslno);
@@ -376,7 +380,7 @@ function UpdateBarCodeRow() {
         }
     }
     else {
-        TXNSLNO = parseInt($("#TXNSLNO").val());
+        TXNSLNO = retInt($("#TXNSLNO").val());
     }
 
     var FLAGMTR = $("#FLAGMTR").val();
@@ -505,7 +509,7 @@ function UpdateBarCodeRow() {
     $("#AddRow_Barcode").show();
     $("#UpdateRow_Barcode").hide();
     if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-        $("#TXNSLNO").focus();
+        $("#ITCD").focus();
     } else {
         $("#BARCODE").focus();
     }
@@ -532,7 +536,7 @@ function ClearBarcodeArea(TAG) {
         $("#AddRow_Barcode").show();
         $("#UpdateRow_Barcode").hide();
         if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-            $("#TXNSLNO").focus();
+            $("#ITCD").focus();
         } else {
             $("#BARCODE").focus();
         }
@@ -1643,10 +1647,10 @@ function AddBarCodeGrid() {
     if (BarImages == '') { NoOfBarImages = ''; }
     var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     var SLNO = 1;
-    if (parseInt(rowindex) != 0) {
-        var LASTROWINDEX = parseInt(rowindex) - 1;
+    if (retInt(rowindex) != 0) {
+        var LASTROWINDEX = retInt(rowindex) - 1;
         var LASTSLNO = $("#B_SLNO_" + LASTROWINDEX).val();
-        SLNO = parseInt(LASTSLNO) + 1;
+        SLNO = retInt(LASTSLNO) + 1;
     }
     var BALSTOCK = $("#BALSTOCK").val();
     var NEGSTOCK = $("#NEGSTOCK").val();
@@ -1693,15 +1697,19 @@ function AddBarCodeGrid() {
                                     retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && HSNCODE == $("#B_HSNCODE_" + j).val() && PRODGRPGSTPER == $("#B_PRODGRPGSTPER_" + j).val() &&
                                     GLCD == $("#B_GLCD_" + j).val()) {
 
-                        matchslno[countmatchslno] = parseInt($("#B_TXNSLNO_" + j).val());
+                        matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                         countmatchslno++;
                     }
                 }
-                allslno[j] = parseInt($("#B_TXNSLNO_" + j).val());
+                allslno[j] = retInt($("#B_TXNSLNO_" + j).val());
             }
 
             if (matchslno.length > 0) {
                 TXNSLNO = Math.max.apply(Math, matchslno);
+                if (TXNSLNO == 0) {
+                    TXNSLNO = Math.max.apply(Math, allslno);
+                    TXNSLNO++;
+                }
             }
             else {
                 TXNSLNO = Math.max.apply(Math, allslno);
@@ -1710,7 +1718,7 @@ function AddBarCodeGrid() {
         }
     }
     else {
-        TXNSLNO = parseInt($("#TXNSLNO").val());
+        TXNSLNO = retInt($("#TXNSLNO").val());
     }
     var tr = "";
     tr += ' <tr style="font-size:12px; font-weight:bold;">';
@@ -1912,7 +1920,7 @@ function AddBarCodeGrid() {
 
     ClearBarcodeArea();
     if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-        $("#TXNSLNO").focus();
+        $("#ITCD").focus();
     } else {
         $("#BARCODE").focus();
     }
@@ -1989,7 +1997,7 @@ function UploadBarnoImage(i) {
     if (OpenImageModal == "") {
         OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
     } else {
-        OpenImageModal = parseInt(OpenImageModal) + 1;
+        OpenImageModal = retInt(OpenImageModal) + 1;
         actt = "";
     }
     $('#BarImagesCount_' + i).val(OpenImageModal);
