@@ -938,7 +938,7 @@ namespace Improvar.Controllers
                 query += "d.tloccd || d.tgocd tlocagocd, d.tloccd || ', ' || l.gonm tlocagonm,m.docrem ";
                 query += "from " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_txndtl b, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr c, " + CommVar.CurSchema(UNQSNO) + ".t_stktrnf d, ";
                 query += "" + CommVar.CurSchema(UNQSNO) + ".m_sitem e, " + CommVar.FinSchema(UNQSNO) + ".m_uom f, " + CommVar.CurSchema(UNQSNO) + ".m_group g, ";
-                query += "" + CommVar.FinSchema(UNQSNO) + ".m_loca i, " + CommVar.CurSchema(UNQSNO) + ".m_godown j, " + CommVar.FinSchema(UNQSNO) + ".m_loca k, " + CommVar.CurSchema(UNQSNO) + ".m_godown l, " + CommVar.CurSchema(UNQSNO) + ".t_txnoth m ";
+                query += "" + CommVar.FinSchema(UNQSNO) + ".m_loca i, " + CommVar.FinSchema(UNQSNO) + ".m_godown j, " + CommVar.FinSchema(UNQSNO) + ".m_loca k, " + CommVar.CurSchema(UNQSNO) + ".m_godown l, " + CommVar.CurSchema(UNQSNO) + ".t_txnoth m ";
                 query += "where a.autono = b.autono and a.autono = c.autono and a.autono = d.autono(+) and ";
                 query += "b.itcd = e.itcd(+) and e.uomcd = f.uomcd(+) and a.itgrpcd = g.itgrpcd(+) and ";
                 query += "c.loccd = i.loccd(+) and a.gocd = j.gocd(+) and d.tloccd = k.loccd(+) and d.tgocd = l.gocd(+) and a.autono = m.autono(+) ";

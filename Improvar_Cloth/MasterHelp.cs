@@ -2012,13 +2012,13 @@ namespace Improvar
         public string LOCABIN_help(string val)
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
-            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
+            string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string sql = "";
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
             sql += "select a.LOCABIN,a.GOCD,c.GONM ";
-            sql += "from " + scm + ".M_LOCABIN a, " + scm + ".M_CNTRL_HDR b, " + scm + ".M_GODOWN c ";
+            sql += "from " + scm + ".M_LOCABIN a, " + scm + ".M_CNTRL_HDR b, " + scmf + ".M_GODOWN c ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and a.GOCD=c.GOCD(+) and b.INACTIVE_TAG = 'N' ";
             if (valsrch.retStr() != "") sql += "and ( upper(a.LOCABIN) like '%" + valsrch + "%' or upper(a.GOCD) like '%" + valsrch + "%' ) ";
             sql += "order by a.LOCABIN,a.GOCD";
