@@ -1,7 +1,9 @@
 ﻿@model Improvar.ViewModels.SubLedgerEntry
     <script>
         $(document).ready(function () {
+         
             $(".km").blur(function () {
+                debugger;
                 var id = $(this).attr("id");
                 var DISTANCE = $("#" + id).val();
                 var idn= id.split('_');
@@ -9,7 +11,7 @@
                 var LOCCD = $("#LOCCD_" + idno).val();
                 var Table_name = "#examplesubledgeOther > tbody > tr";
                 var lngth = $(Table_name).length;
-                for (var i = 0; i < lngth - 1; i++) {                   
+                for (var i = 0; i < lngth - 1; i++) {                  
                     //check with compcd                 
                     var loc_ = $("#LOCCD_" + i).val();
                     if (LOCCD == loc_) {

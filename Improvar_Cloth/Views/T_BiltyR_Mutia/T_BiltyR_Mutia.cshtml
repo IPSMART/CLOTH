@@ -170,21 +170,55 @@
 
 </script>
 <script>
-    function SelectMatchingCheckBoxes() {
-        debugger;;
-        var arr = new Array();
-        var GridRowMain = $("#T_BiltyR_Mutia_PopUp > tbody > tr").length;
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            var chkbox = document.getElementById("chkid_R_POPUP_" + i);
-            if (chkbox.checked) { arr.push(document.getElementById("BLAUTONO_R_POPUP_" + i)); }
+    //function SelectMatchingCheckBoxes() {
+    //    debugger;;
+    //    var arr = new Array();
+    //    var GridRowMain = $("#T_BiltyR_Mutia_PopUp > tbody > tr").length;
+    //    for (i = 0; i <= GridRowMain - 1; i++) {
+    //        var chkbox = document.getElementById("chkid_R_POPUP_" + i);
+    //        if (chkbox.checked) { arr.push(document.getElementById("BLAUTONO_R_POPUP_" + i)); }
 
-        }
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            if (arr.indexOf(document.getElementById("BLAUTONO_R_POPUP_" + i)) != -1) {
-                document.getElementById("chkid_R_POPUP_" + i).checked = true;
+    //    }
+    //    for (i = 0; i <= GridRowMain - 1; i++) {
+    //        if (arr.indexOf(document.getElementById("BLAUTONO_R_POPUP_" + i)) != -1) {
+    //            document.getElementById("chkid_R_POPUP_" + i).checked = true;
+    //        }
+    //    }
+
+    //}
+    function SelectMatchingCheckBoxes(i) {
+        debugger;
+        var id = $("#chkid_POPUP_" + i).attr("id");
+        //var id = $("#chkid_POPUP_").id();
+        var chkboxid = $("#" + id).val();
+        var idn = id.split('_');
+        var idno = idn[2];
+        var LRNO = $("#LRNO_POPUP" + idno).val();
+        var chkbox = document.getElementById("chkid_POPUP_" + i).checked;
+        if (chkbox == true) {
+            var Table_name = "#T_BiltyG_Mutia_PopUp > tbody > tr";
+            var lngth = $(Table_name).length;
+            for (var i = 0; i <= lngth - 1; i++) {
+                //check with lrno                 
+                var lrno = $("#LRNO_POPUP" + i).val();
+                if (LRNO == lrno) {
+                    //$("#chkid_POPUP_" + i).checked = true;
+                    document.getElementById("chkid_POPUP_" + i).checked = true;
+                }
             }
         }
-
+        else {
+            var Table_name = "#T_BiltyG_Mutia_PopUp > tbody > tr";
+            var lngth = $(Table_name).length;
+            for (var i = 0; i <= lngth - 1; i++) {
+                //check with lrno                 
+                var lrno = $("#LRNO_POPUP" + i).val();
+                if (LRNO == lrno) {
+                    //$("#chkid_POPUP_" + i).checked = true;
+                    document.getElementById("chkid_POPUP_" + i).checked = false;
+                }
+            }
+        }
     }
     function SelectPendingLRNO() {
         debugger;

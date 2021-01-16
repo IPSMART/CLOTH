@@ -15,7 +15,7 @@
 <script>
     $("#popup").ready(function () { $("#dragclass").draggable({ cursor: "move" }); if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") { modeView(); } });
 </script>
-<div id="dragclass" style="overflow-y:auto;max-height:330px;height:auto;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;left:5%;">
+<div id="dragclass" style="overflow-y:auto;max-height:330px;height:auto;width:fit-content;background-color:#c4b9b9;padding:7px;border-radius: 7px;transform: translate(0%, 0%);z-index: 1100;left:5%;">
     <div class="table-responsive">
         @if (Model.DefaultView == true)
             {
@@ -38,7 +38,8 @@
                                     <th class="" style="width:100px;">LR Date</th>
                                     <th class="" style="width:100px;">Bale No</th>
                                     <th class="" style="width: 100px;">Bill No</th>
-                                    <th class="" style="width:55px;">Bill Date</th>
+                                    <th class="" style="width:78px;">Bill Date</th>
+                                    <th class="">Transporter Name</th>
                                     
                                 </tr>
                             </thead>
@@ -49,7 +50,7 @@
                                     {
                                         <tr style="font-size:12px; font-weight:bold;">
                                             <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                                @Html.CheckBoxFor(model => model.TBILTY_POPUP[i].Checked, new { id = "chkid_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes();" })
+                                                @Html.CheckBoxFor(model => model.TBILTY_POPUP[i].Checked, new { id = "chkid_POPUP_" + i, @class = "chkid_popup_", onclick = "SelectMatchingCheckBoxes("+i+")" })
                                                 @Html.HiddenFor(model => model.TBILTY_POPUP[i].BLAUTONO, new { id = "BLAUTONO_POPUP_" + i })
                                             </td>
                                             <td class="">
@@ -70,6 +71,9 @@
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].PREFDT, new { id = "PREFDT_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBILTY_POPUP[i].TRANSLNM, new { id = "TRANSLNM_POPUP" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            </td>
                                         </tr>
                                     }
                                 }
@@ -85,7 +89,7 @@
             <div class="editor-label" style="margin-top: 6px;">
             </div>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-8">
             <div class="editor-label" style="margin-top: 6px;">
                 <input type="button" class="btn btn-success" id="btnCloseRMPM" value="Procced" onclick="SelectPendingLRNO();" />
                 <input type="button" class="btn btn-danger" id="btnCancelRMPM" value="Cancel" onclick="CancelLRNO();" />

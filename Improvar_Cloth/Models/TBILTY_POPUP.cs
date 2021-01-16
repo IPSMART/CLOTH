@@ -19,5 +19,7 @@ namespace Improvar.Models
         public string PREFNO { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string PREFDT { get; set; }
+        public string TRANSLNM { get; set; }
+        
     }
 }

@@ -87,7 +87,7 @@ namespace Improvar.Controllers
                     cell.Colspan = COLPERPAGE;
                     maintable.AddCell(cell);
 
-                    cell = new PdfPCell(new Phrase("Sales Barcode "));
+                    cell = new PdfPCell(new Phrase("Images as on "+System.DateTime.Now.retDateStr()));
                     cell.Border = Rectangle.NO_BORDER;
                     cell.Colspan = COLPERPAGE;
                     maintable.AddCell(cell);
@@ -123,7 +123,7 @@ namespace Improvar.Controllers
                         maintable.AddCell(table);
                     }
                     int actualcolumn = (DtBarImage.Rows.Count / COLPERPAGE).retInt();
-                    actualcolumn = COLPERPAGE - ((actualcolumn * COLPERPAGE) + DtBarImage.Rows.Count);
+                    actualcolumn = (COLPERPAGE + (actualcolumn * COLPERPAGE) )- DtBarImage.Rows.Count;
                     for (int i = 0; i < actualcolumn; i++)
                     {
                         cell = new PdfPCell(new Phrase(""));
