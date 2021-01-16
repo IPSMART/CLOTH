@@ -18,7 +18,7 @@
 <script>
     function Show_rep() {
         debugger;
-        if (!emptyFieldCheck("Select Group Code", "ITGRPCDvalue")) { return false; }
+        //if (!emptyFieldCheck("Select Group Code", "ITGRPCDvalue")) { return false; }
         if (!emptyFieldCheck("Enter/Select From Date", "FDT")) { return false; }
         if (!emptyFieldCheck("Enter/Select To Date ", "TDT")) { return false; }
         var reptype = $("#TEXTBOX1").val();
@@ -125,7 +125,7 @@
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Group Code")
-                            <sup style="color:red">*</sup>
+                            @*<sup style="color:red">*</sup>*@
                         </div>
                     </div>
                     <div class="col-lg-2">

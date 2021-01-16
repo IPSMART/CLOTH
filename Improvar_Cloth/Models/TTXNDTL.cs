@@ -206,5 +206,7 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? RPRATE { get; set; }
         public string BARGENTYPE { get; set; }
+        public int? PAGENO { get; set; }
+        public int? PAGESLNO { get; set; }
     }
 }
