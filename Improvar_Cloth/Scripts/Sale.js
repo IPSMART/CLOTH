@@ -2772,6 +2772,117 @@ function CalculateBargridQnty(tableid, index) {
         HasChangeBarSale()
     }
 }
+var hlpblurval = "";
+function GetHelpBlur_T_Sale(urlstring, caption, hlpfield, blurflds, dependfldIds, formdata) {
+    debugger;
+    const keyName = event.key;
+    const keyType = event.type;
+    var blurvalue = "";
+    var value = $("#" + hlpfield).val();
+    var exactbarno = "Y";
+    if (value == hlpblurval && (keyType == "mousedown" || keyName == "F2")) {
+        value = "";
+        exactbarno = "N";
+    }
+    if (keyName != "F2" && keyName != undefined) { return true; }
+    //if ($('#' + hlpfield).is('[readonly]')) { return false; }
+    var fldIdseq = "", hpnlIndexseq = "";
+    if (typeof dependfldIds != "undefined" && dependfldIds != "") {
+        var strarr = dependfldIds.split('/');
+        dependfldIds = "";
+        for (var i = 0; i < strarr.length; i++) {
+            if (i == 0) {
+                if (strarr[i] != "") {
+                    dependfldIds += $("#" + strarr[i]).val();
+                }
+            }
+            else {
+                dependfldIds += String.fromCharCode(181) + $("#" + strarr[i]).val();
+            }
+        }
+    }
+    else {
+        dependfldIds = "";
+    }
+    var tmpbid = blurflds.split("/");//(e.g:"ColSLCD=SLCD/ColGLCD=glCD")
+    var fldid = [20];//(e.g:"ColSLCD,ColGLCD")
+    for (var i = 0; i <= tmpbid.length - 1; i++) {
+        var tmpvlas = tmpbid[i].split("=");
+        fldid[i] = tmpvlas[0];
+        if (tmpvlas.length > 2) {
+            if (i == 0) {
+                hpnlIndexseq = tmpvlas[2];
+                fldIdseq = tmpvlas[0];
+            }
+            else {
+
+                hpnlIndexseq += '/' + tmpvlas[2];
+                fldIdseq += '/' + tmpvlas[0];
+            }
+        }
+    }
+    if (keyType == "mousedown" || keyName == "F2") {
+        $("#WaitingMode").show()
+    }
+    if (keyType != "mousedown" && keyName != "F2" && value == "") {
+        ClearBarcodeArea();
+    }
+    else {
+        var Data = "";
+        if (formdata == "Y") {
+            Data = $('form').serialize() + "&val=" + value + "&Code=" + dependfldIds + "&exactbarno=" + exactbarno;
+        }
+        else {
+            Data = "&val=" + value + "&Code=" + dependfldIds + "&exactbarno=" + exactbarno;
+        }
+        if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+        if ($("#TAXGRPCD").val() == "") { $("#BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
+        if ($("#PRCCD").val() == "") { $("#BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
+
+        $.ajax({
+            type: 'POST',
+            url: urlstring,
+            //data: "&val=" + value + "&Code=" + dependfldIds,
+            data: Data,
+            success: function (result) {
+                var MSG = result.indexOf('#helpDIV');
+                if (MSG >= 0) {
+                    if (keyType != "mousedown") {
+                        ClearBarcodeArea();
+                    }
+                    $('#SearchFldValue').val(hlpfield);
+                    $('#helpDIV').html(result);
+                    $('#ReferanceFieldID').val(fldIdseq);
+                    $('#ReferanceColumn').val(hpnlIndexseq);
+                    $('#helpDIV_Header').html(caption);
+                }
+                else {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        FillBarcodeArea(result);
+                        changeBARGENTYPE();
+                        hlpblurval = $("#" + hlpfield).val();
+                    }
+                    else {
+                        $('#helpDIV').html("");
+                        msgInfo("" + result + " !");
+                        ClearBarcodeArea();
+                        message_value = hlpfield;
+                    }
+                }
+                //if (keyName == "F2") {
+                //    $("#" + hlpfield).attr("onblur", blurvalue);
+                //}
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+}
 
 
 

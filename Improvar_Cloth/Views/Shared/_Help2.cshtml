@@ -49,6 +49,7 @@
                 $('#helpDIV').html("");
                 event.preventDefault();
                 $('#' + fieldIDseq[0]).focus();
+                hlpblurval = $("#" + fieldIDseq[0]).val();
             }
         });
         $('#helpDIV tbody').on('click', 'tr', function () {
@@ -63,6 +64,7 @@
                 }
                 $('#helpDIV').html("");
                 $('#' + fieldIDseq[0]).focus();
+                hlpblurval = $("#" + fieldIDseq[0]).val();
         });
 
         //NEVIGATION will not work any type key press
@@ -121,7 +123,7 @@
         else if (KeyID == undefined)
         {
             $('#helpDIV').html("");
-          //  $("#" + sp).focus();
+            $("#" + sp).focus();
         }
         else {
         }
