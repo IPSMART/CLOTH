@@ -20,7 +20,7 @@
     $("#ALLMTRLJOBCD").val(allcode);
 
 }
-function GetBarnoDetails(id,HelpFrom) {
+function GetBarnoDetails(id, HelpFrom) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     if (id == "") {
@@ -30,6 +30,7 @@ function GetBarnoDetails(id,HelpFrom) {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         if ($("#TAXGRPCD").val() == "") { $("#BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
         if ($("#PRCCD").val() == "") { $("#BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
+        if ($("#GOCD").val() == "") { $("#GOCD").val(""); msgInfo("Godown not available.Please Select / Enter Godown"); message_value = "GOCD"; return false; }
         var MTRLJOBCD = $("#MTRLJOBCD").val();
         var PARTCD = $("#PARTCD").val();
         var docdt = $("#DOCDT").val();
@@ -38,7 +39,7 @@ function GetBarnoDetails(id,HelpFrom) {
         var prccd = $("#PRCCD").val();
         var allmtrljobcd = $("#ALLMTRLJOBCD").val();
         var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom;
-        var hlpfieldid = "", hlpfieldindex="";
+        var hlpfieldid = "", hlpfieldindex = "";
         if (HelpFrom == "Bar") {
             hlpfieldid = "BARCODE";
             hlpfieldindex = "0";
@@ -58,8 +59,8 @@ function GetBarnoDetails(id,HelpFrom) {
                     ClearBarcodeArea();
                     $('#SearchFldValue').val(hlpfieldid);
                     $('#helpDIV').html(result);
-                    $('#ReferanceFieldID').val(hlpfieldid+'/PARTCD');
-                    $('#ReferanceColumn').val(hlpfieldindex+'/8');
+                    $('#ReferanceFieldID').val(hlpfieldid + '/PARTCD');
+                    $('#ReferanceColumn').val(hlpfieldindex + '/8');
                     $('#helpDIV_Header').html('Barno Details');
                 }
                 else {
@@ -602,7 +603,7 @@ function Fill_DetailData() {
         return false;
     }
     if (glcdblank == true) {
-        msgInfo("Please Fill glcd in Barcode Grid !!");
+        msgInfo("Please Fill glcd in Barcode Grid at slno " + (i + 1) + " !!");
         $("li").removeClass("active").addClass("");
         $(".nav-tabs li:nth-child(2)").addClass('active');
         //below set the  child sequence
@@ -721,7 +722,7 @@ function CalculateTotal_Barno() {
             var balancestock = BALSTOCK - QNTY;
             if (balancestock < 0) {
                 if (NEGSTOCK != "Y") {
-                    ClearAllTextBoxes("B_CUTLENGTH_" + i + ",B_NOS_" + i + ",B_QNTY_"+i);
+                    ClearAllTextBoxes("B_CUTLENGTH_" + i + ",B_NOS_" + i + ",B_QNTY_" + i);
                     msgInfo("Quantity should not be grater than Stock !");
                     message_value = "B_QNTY_" + i;
                     return false;
