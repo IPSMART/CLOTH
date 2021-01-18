@@ -1384,8 +1384,7 @@ namespace Improvar.Controllers
                     glcd = str.retCompValue("SALGLCD");
 
                     str += "^GLCD=^" + glcd + Cn.GCS();
-
-                 
+                    return Content(str);
                 }
             }
             catch (Exception ex)
