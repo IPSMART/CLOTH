@@ -1,4 +1,5 @@
 ﻿function GetBarnoDetails(barhlpId) {
+    debugger;
     var BARCODE = $("#" + barhlpId).val();
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
@@ -53,8 +54,10 @@
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
                         if (barhlpId == 'M_BARCODE') {
+                            ClearAllTextBoxes("PARTCD");
                             AddMainRow(result);
                         } else if (barhlpId == 'R_BARCODE') {
+                            ClearAllTextBoxes("PARTCD");
                             AddReturnRow(result);
                         }
                     }
