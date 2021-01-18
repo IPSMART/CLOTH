@@ -290,6 +290,9 @@ namespace Improvar.Controllers
                                                RATE = dr["RATE"].retDbl(),
                                                STCHNM = dr["STCHNM"].retStr(),
                                            }).ToList();
+                //VE.DropDown_list1 = (from i in VE.TSTCHALT_MEASUREMENT
+                //                     select new DropDown_list1()
+                //                     { value = i.STCHCD, text = i.STCHNM }).Distinct().OrderBy(s => s.text).ToList();
                 foreach (var measure in VE.TSTCHALT_MEASUREMENT)
                 {
                     sql = "";
@@ -308,6 +311,8 @@ namespace Improvar.Controllers
                                                 FLDTYPE = dr["FLDTYPE"].retStr(),
                                             }).DistinctBy(s => s.FLDCD).ToList();
                     measure.TSTCHALT_DTLCOMP = TSTCHALT_DTLCOMP;
+                    VE.QNTY = measure.QNTY;
+                    VE.RATE = measure.RATE;
                 }
 
                 string str2 = "select b.SLNO,b.PYMTCD,c.PYMTNM,b.AMT,b.CARDNO,b.INSTNO,b.INSTDT,b.PYMTREM,b.GLCD from " + Scm + ".T_STCHALT a," + Scm + ".t_txnpymt b," + Scm + ".m_payment c ";
