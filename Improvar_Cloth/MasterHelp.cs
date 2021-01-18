@@ -2293,7 +2293,7 @@ namespace Improvar
             }
         }
 
-        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true)
+        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true,string partcd="")
         {
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             if (menupara == "PB" || menupara == "OP")
@@ -2306,7 +2306,7 @@ namespace Improvar
             }
             else
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno,partcd);
             }
             if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)
             {

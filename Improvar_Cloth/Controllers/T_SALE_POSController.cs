@@ -1372,7 +1372,7 @@ namespace Improvar.Controllers
                 string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
                 string PRCCD = data[5].retStr();
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "",true,PARTCD);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1384,7 +1384,8 @@ namespace Improvar.Controllers
                     glcd = str.retCompValue("SALGLCD");
 
                     str += "^GLCD=^" + glcd + Cn.GCS();
-                    return Content(str);
+
+                 
                 }
             }
             catch (Exception ex)
