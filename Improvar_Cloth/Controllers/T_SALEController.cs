@@ -1343,7 +1343,7 @@ namespace Improvar.Controllers
                 string PRCCD = data[5].retStr();
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, PARTCD);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1691,7 +1691,7 @@ namespace Improvar.Controllers
             }
             else
             {
-                dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", VE.MENU_PARA);
+                dt = salesfunc.GetPendOrder(SLCD, "", "", "", "","", VE.MENU_PARA);
                 string glcd = MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].ToString();
                 DataTable PRODGRPDATA = new DataTable();
                 if (dt != null && dt.Rows.Count > 0)
