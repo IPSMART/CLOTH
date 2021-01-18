@@ -1627,8 +1627,8 @@ namespace Improvar
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), scm = CommVar.CurSchema(UNQSNO);
-            string sql = "",valsrch=""; 
-           if(val!=null) valsrch = val.ToUpper().Trim();
+            string sql = "", valsrch = "";
+            if (val != null) valsrch = val.ToUpper().Trim();
             sql = "";
             sql += "select a.RTDEBCD,a.RTDEBNM,MOBILE,(ADD1 || ADD2 || ADD3)ADDR ";
             sql += "from " + scmf + ".M_RETDEB a, " + scmf + ".M_CNTRL_HDR b ";
@@ -2293,20 +2293,20 @@ namespace Improvar
             }
         }
 
-        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "")
+        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true)
         {
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             if (menupara == "PB" || menupara == "OP")
             {
-                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara);
+                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno);
             }
             else if (menupara == "ALL")
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno);
             }
             else
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr());
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno);
             }
             if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)
             {
@@ -2341,7 +2341,8 @@ namespace Improvar
                 }
                 else
                 {
-                    return "Invalid Bar Code ! Please Enter a Valid Bar Code !!";
+                    string caption = exactbarno == true ? "Bar Code" : "Design No";
+                    return "Invalid " + caption + " ! Please Enter a Valid Bar Code !!";
                 }
             }
         }
@@ -2782,7 +2783,7 @@ namespace Improvar
             string sql = "";
             string valsrch = val.ToUpper().Trim();
             sql = "select b.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt,d.nm,d.mobile ";
-            sql += "from "+ scm + ".t_cntrl_hdr b," + scm + ".m_doctype c," + scm + ".T_TXNMEMO d ";
+            sql += "from " + scm + ".t_cntrl_hdr b," + scm + ".m_doctype c," + scm + ".T_TXNMEMO d ";
             sql += "where b.autono=d.autono and  b.doccd=c.doccd and ";
             sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' and c.doctype='SBCM' ";
             if (valsrch.retStr() != "") sql += "and ( upper(b.docno) = '" + valsrch + "' ) ";

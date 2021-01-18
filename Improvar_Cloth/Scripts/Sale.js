@@ -20,7 +20,7 @@
     $("#ALLMTRLJOBCD").val(allcode);
 
 }
-function GetBarnoDetails(id) {
+function GetBarnoDetails(id,HelpFrom) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     if (id == "") {
@@ -37,7 +37,16 @@ function GetBarnoDetails(id) {
         var gocd = $("#GOCD").val();
         var prccd = $("#PRCCD").val();
         var allmtrljobcd = $("#ALLMTRLJOBCD").val();
-        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd;
+        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom;
+        var hlpfieldid = "", hlpfieldindex="";
+        if (HelpFrom == "Bar") {
+            hlpfieldid = "BARCODE";
+            hlpfieldindex = "0";
+        }
+        else {
+            hlpfieldid = "STYLENO";
+            hlpfieldindex = "3";
+        }
         $.ajax({
             type: 'POST',
             beforesend: $("#WaitingMode").show(),
@@ -46,11 +55,11 @@ function GetBarnoDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("BARCODE,PARTCD,ITCD");
-                    $('#SearchFldValue').val('BARCODE');
+                    ClearBarcodeArea();
+                    $('#SearchFldValue').val(hlpfieldid);
                     $('#helpDIV').html(result);
-                    $('#ReferanceFieldID').val('BARCODE/PARTCD');
-                    $('#ReferanceColumn').val('0/8');
+                    $('#ReferanceFieldID').val(hlpfieldid+'/PARTCD');
+                    $('#ReferanceColumn').val(hlpfieldindex+'/8');
                     $('#helpDIV_Header').html('Barno Details');
                 }
                 else {
@@ -62,8 +71,8 @@ function GetBarnoDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("BARCODE,MTRLJOBCD,PARTCD,ITCD");
-                        message_value = "BARCODE";
+                        ClearBarcodeArea();
+                        message_value = hlpfieldid;
                     }
                 }
                 $("#WaitingMode").hide();
