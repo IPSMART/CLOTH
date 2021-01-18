@@ -466,7 +466,7 @@ namespace Improvar.Controllers
                 DataTable tbl = masterHelp.SQLquery(str1);
 
                 VE.TsalePos_TBATCHDTL = (from DataRow dr in tbl.Rows
-                                         where dr["STKDRCR"].retStr() == "C" && dr["SLNO"].retShort() <= 1000
+                                         where dr["SLNO"].retShort() <= 1000
                                          select new TsalePos_TBATCHDTL()
                                          {
                                              SLNO = dr["SLNO"].retShort(),
@@ -540,7 +540,7 @@ namespace Improvar.Controllers
                 #region Return tab
 
                 VE.TsalePos_TBATCHDTL_RETURN = (from DataRow dr in tbl.Rows
-                                                where dr["STKDRCR"].retStr() == "D" && dr["SLNO"].retShort() > 1000
+                                                where  dr["SLNO"].retShort() > 1000
                                                 select new TsalePos_TBATCHDTL_RETURN()
                                                 {
                                                     SLNO = dr["SLNO"].retShort(),
