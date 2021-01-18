@@ -837,7 +837,7 @@ namespace Improvar
             if (rtval < 0) rtval = 0;
             return rtval;
         }
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true,string partcd="")
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -912,7 +912,7 @@ namespace Improvar
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, ";
-            sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, e.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
+            sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.styleno||' '||d.itnm itstyle, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,f.clrbarcode, nvl(d.prodgrpcd,e.prodgrpcd)prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
             sql += "i.mtrljobnm,i.mtbarcode, d.uomcd, k.stkname, j.partnm,j.prtbarcode, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,l.sizenm,l.szbarcode, e.wppricegen, e.rppricegen ";
             sql += "from ";
@@ -1014,7 +1014,7 @@ namespace Improvar
             sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k, " + scm + ".m_size l ";
-            sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
+            sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and nvl(d.prodgrpcd,e.prodgrpcd)=z.prodgrpcd and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
             if (stylelike.retStr() != "")
             {
@@ -1033,7 +1033,7 @@ namespace Improvar
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+)and a.sizecd=l.sizecd(+) ";
-           if(partcd.retStr()!="") sql += "and a.partcd='" + partcd+"'  ";
+            if (partcd.retStr() != "") sql += "and a.partcd='" + partcd + "'  ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
 
@@ -1123,7 +1123,7 @@ namespace Improvar
             return rtval;
         }
 
-        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string menupara = "", string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true)
+        public DataTable GetBarHelp(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string menupara = "", string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "")
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -1143,7 +1143,7 @@ namespace Improvar
 
             sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, a.itcd, a.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, ";
             sql += "c.slcd, g.slnm, h.docdt, h.docno, b.prccd, b.effdt, b.rate, e.bargentype, d.styleno||' '||d.itnm itstyle, ";
-            sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm, e.prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
+            sql += "d.itnm,nvl(d.negstock,e.negstock)negstock, d.styleno, d.itgrpcd, e.itgrpnm,e.salglcd,e.purglcd,e.salretglcd,e.purretglcd, f.colrnm,nvl(d.prodgrpcd,e.prodgrpcd)prodgrpcd, z.prodgrpgstper, y.barimagecount, y.barimage, ";
             sql += "(case e.bargentype when 'E' then nvl(c.hsncode,nvl(d.hsncode,e.hsncode)) else nvl(d.hsncode,e.hsncode) end) hsncode, ";
             sql += "i.mtrljobnm, d.uomcd, k.stkname, j.partnm, c.pdesign, c.flagmtr, c.dia, c.locabin,balqnty, balnos,i.mtbarcode,j.prtbarcode,f.clrbarcode,l.szbarcode,l.sizenm, e.wppricegen, e.rppricegen, m.decimals ";
             sql += "from ";
@@ -1227,7 +1227,7 @@ namespace Improvar
             sql += "" + scm + ".t_batchmst c, " + scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_color f, ";
             sql += "" + scmf + ".m_subleg g, " + scm + ".t_cntrl_hdr h, ";
             sql += scm + ".m_mtrljobmst i, " + scm + ".m_parts j, " + scm + ".m_stktype k , " + scm + ".m_size l, " + scmf + ".m_uom m ";
-            sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and e.prodgrpcd=z.prodgrpcd(+) and a.barno=y.barno(+) and ";
+            sql += "where a.barno=c.barno(+) and a.barno=b.barno(+) and nvl(d.prodgrpcd,e.prodgrpcd)=z.prodgrpcd and a.barno=y.barno(+) and ";
             sql += "a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and ";
             if (stylelike.retStr() != "")
             {
@@ -1240,11 +1240,12 @@ namespace Improvar
                     sql += " (d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
                 }
             }
-               
+
             //if (stylelike.retStr() != "") sql += " (a.barno=" + stylelike + " or d.styleno like '%" + stylelike.Replace("'", "") + "%') and ";
             //if (stylelike.retStr() != "") sql += "  d.styleno like '%" + stylelike + "%' and ";
             if (itgrpcd.retStr() != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
             if (brandcd.retStr() != "") sql += "d.brandcd in (" + brandcd + ") and ";
+            if (partcd.retStr() != "") sql += "a.partcd='" + partcd + "' and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+)  and d.uomcd=m.uomcd(+) ";
             tbl = MasterHelpFa.SQLquery(sql);
@@ -1699,7 +1700,7 @@ namespace Improvar
             IR.Columns.Add("rslno", typeof(int));
             IR.Columns.Add("mtrljobcd", typeof(string));
             IR.Columns.Add("mtrljobnm", typeof(string));
-            string sitcd = "", ssizecd = "", spartcd = "", sitsizecd = "", sitnm="";
+            string sitcd = "", ssizecd = "", spartcd = "", sitsizecd = "", sitnm = "";
 
             Int32 maxF = 0, f = 0;
             Int32 maxR = 0, i = 0;

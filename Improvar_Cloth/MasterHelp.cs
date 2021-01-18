@@ -2298,11 +2298,11 @@ namespace Improvar
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             if (menupara == "PB" || menupara == "OP")
             {
-                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno);
+                tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno,partcd);
             }
             else if (menupara == "ALL")
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), "", ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno,partcd);
             }
             else
             {
