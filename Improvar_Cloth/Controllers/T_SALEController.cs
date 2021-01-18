@@ -1343,7 +1343,7 @@ namespace Improvar.Controllers
                 string PRCCD = data[5].retStr();
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD,"", exactbarno);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -1743,15 +1743,20 @@ namespace Improvar.Controllers
                 }
                 if (VE.PENDINGORDER != null)
                 {
+                    string scm = CommVar.CurSchema(UNQSNO);
                     string mtrljobcd = "FS";
                     string mtrljobnm = DB.M_MTRLJOBMST.Find("FS").MTRLJOBNM;
                     string mtbarcode = DB.M_MTRLJOBMST.Find("FS").MTBARCODE;
                     int slno = 1;
                     DataTable syscnfgdata = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retStr().Remove(10));
+                    string itgrpcdarr = VE.PENDINGORDER.Select(a => a.ITGRPCD).ToArray().retSqlfromStrarray();
+                    string sql = "select " + glcd + ",itgrpcd from " + scm + ".m_group where itgrpcd in (" + itgrpcdarr + ") ";
+                    DataTable groupdata = masterHelp.SQLquery(sql);
                     for (int p = 0; p <= VE.PENDINGORDER.Count - 1; p++)
                     {
                         VE.PENDINGORDER[p].SLNO = slno.retShort();
                         string itcd = VE.PENDINGORDER[p].ITCD.retStr();
+                        string itgrpcd= VE.PENDINGORDER[p].ITGRPCD.retStr();
                         if (PRODGRPDATA != null)
                         {
 
@@ -1796,7 +1801,7 @@ namespace Improvar.Controllers
                                     }
                                 }
                             }
-                            VE.PENDINGORDER[p].GLCD = PRODGRPDATA.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>(glcd)).FirstOrDefault();
+                            VE.PENDINGORDER[p].GLCD = groupdata.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == itgrpcd).Select(b => b.Field<string>(glcd)).FirstOrDefault();
 
                         }
                         VE.PENDINGORDER[p].MTRLJOBCD = mtrljobcd;
