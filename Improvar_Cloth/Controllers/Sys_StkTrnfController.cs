@@ -554,7 +554,7 @@ namespace Improvar.Controllers
                         string oldfinschema = CommVar.FinSchema(UNQSNO);
                         dtype = "'SORD'";
 
-                        tbl = Salesfunc.GetPendOrder("", "", "", "", "", "SB", "", "", true, "", "", "", "", "", oldschema, oldfinschema);
+                        tbl = Salesfunc.GetPendOrder("", "", "", "", "","", "SB", "", true, "", "", "", "", "", oldschema, oldfinschema);
                         tbl.DefaultView.Sort = "autono, styleno, itnm, itcd, print_seq, sizenm";
                         tbl = tbl.DefaultView.ToTable();
 
