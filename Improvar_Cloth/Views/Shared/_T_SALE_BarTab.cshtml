@@ -127,6 +127,11 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARGENTYPE, new { id = "B_BARGENTYPE_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].GLCD, new { id = "B_GLCD_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].ChildData, new { id = "B_ChildData_" + i })
+                                            @if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1)
+                                            {
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].PAGENO, new { id = "B_PAGENO_" + i })
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].PAGESLNO, new { id = "B_PAGESLNO_" + i })
+                                            }
                                         </td>
                                         <td class="sticky-cell" style="left:17px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })

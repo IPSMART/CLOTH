@@ -2109,7 +2109,7 @@ namespace Improvar
             if (gocd == null) gocd = "";
             if (gocd != "")
             {
-                sql = "select goadd1, goadd2, goadd3, gophno, gonm, fssailicno from " + Scmf + ".m_godown where gocd='" + gocd + "'";
+                sql = "select goadd1, goadd2, goadd3, gophno, gonm, fssailicno, loccd from " + Scmf + ".m_godown where gocd='" + gocd + "'";
                 DataTable tbl = SQLquery(sql);
                 if (tbl.Rows.Count > 0)
                 {
@@ -2117,6 +2117,7 @@ namespace Improvar
                     goadd = goadd.Trim();
                     if (tbl.Rows[0]["gophno"].ToString() != "") goadd = goadd + " Phone : " + tbl.Rows[0]["gophno"].ToString();
                     fssailicno = tbl.Rows[0]["fssailicno"].ToString();
+                    if (tbl.Rows[0]["loccd"].retStr() == LOC) goadd = "";
                 }
             }
 

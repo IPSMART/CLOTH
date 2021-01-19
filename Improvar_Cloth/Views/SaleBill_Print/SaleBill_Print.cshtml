@@ -50,7 +50,7 @@
                     </div>
                     <div class="col-lg-2">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.FDOCNO, new { htmlAttributes = new { @class = "form-control", id = "FDOCNO", @placeholder = "FDOCNO", maxlength =8 } })
+                            @Html.EditorFor(model => model.FDOCNO, new { htmlAttributes = new { @class = "form-control", id = "FDOCNO", @placeholder = "FDOCNO", maxlength = 8 } })
 
                         </div>
                     </div>
@@ -123,17 +123,30 @@
                     </div>
                     @if (Model.MENU_PARA != "SBCM" && Model.MENU_PARA != "SBCMR")
                     {
-                    <div class="col-lg-2" style="width:auto;">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Print Image")
+                        <div class="col-lg-2" style="width:auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Print Image")
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field" style="margin-top: 5px;">
-                            @Html.HiddenFor(model => model.BARNO)
-                            @Html.CheckBoxFor(model => model.Checkbox8)
+                        <div class="col-md-1">
+                            <div class="editor-field" style="margin-top: 5px;">
+                                @Html.HiddenFor(model => model.BARNO)
+                                @Html.CheckBoxFor(model => model.Checkbox8)
+                            </div>
                         </div>
-                    </div>
+                    }
+                    @if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1)
+                    {
+                        <div class="col-lg-2" style="width:auto;">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Show Individual Pcs.")
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="editor-field" style="margin-top: 5px;">
+                                @Html.CheckBoxFor(model => model.Checkbox9)
+                            </div>
+                        </div>
                     }
                 </div>
                 <div class="row">
