@@ -2969,11 +2969,11 @@ namespace Improvar.Controllers
                 DataTable rsStkPrcDesc;
                 sql = "";
                 sql += "select distinct a.autono,a.txnslno,a.barno,a.shade,a.nos,a.qnty,a.flagmtr,a.disctype,a.discrate,a.scmdisctype,a.scmdiscrate, ";
-                sql += "a.tddisctype,a.tddiscrate,a.itrem,a.baleno,a.cutlength ";
+                sql += "a.tddisctype,a.tddiscrate,a.itrem,a.baleno,a.cutlength,a.slno ";
                 sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_cntrl_hdr c ";
                 sql += "where  ";
                 sql += sqlc;
-                sql += "a.autono=c.autono ";
+                sql += "a.autono=c.autono order by a.autono,a.slno ";
                 rsStkPrcDesc = masterHelp.SQLquery(sql);
 
                 string blterms = "", inspoldesc = "", dealsin = "";
@@ -3514,13 +3514,13 @@ namespace Improvar.Controllers
                             //dr1["weekno"] = tbl.Rows[i]["weekno"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["weekno"]);
                             dr1["irnno"] = tbl.Rows[i]["irnno"].retStr() == "" ? "" : "IRN : " + tbl.Rows[i]["irnno"].ToString();
                             dr1["QRIMGPATH"] = tbl.Rows[i]["IRNNO"].ToString() == "" ? "" : "C:\\IPSMART\\IRNQrcode\\" + tbl.Rows[i]["IRNNO"].ToString() + ".png";
-                            dr1["ackno"] = tbl.Rows[i]["ackno"].retStr() == "" ? "" : "Ack # "+tbl.Rows[i]["ackno"].ToString()+"/" + tbl.Rows[i]["ackdt"].ToString();
+                            dr1["ackno"] = tbl.Rows[i]["ackno"].retStr() == "" ? "" : "Ack # " + tbl.Rows[i]["ackno"].ToString() + "/" + tbl.Rows[i]["ackdt"].ToString();
                             dr1["slcd"] = tbl.Rows[i]["slcd"].ToString();
                             //if (tbl.Rows[i]["partycd"].ToString() != "") dr1["partycd"] = "SAP - " + tbl.Rows[i]["partycd"].ToString();
                             dr1["slnm"] = tbl.Rows[i]["slnm"].ToString();
                             dr1["regemailid"] = tbl.Rows[i]["regemailid"].ToString();
 
-                            
+
                             string cfld = "", rfld = ""; int rf = 0;
                             for (int f = 1; f <= 6; f++)
                             {
@@ -3815,13 +3815,28 @@ namespace Improvar.Controllers
                                         pcsdesc += batch_data[a]["cutlength"].retDbl();
                                     }
                                     else {
-                                        pcsdesc += batch_data[a]["cutlength"].retStr() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
+                                        if (VE.Checkbox9 == true)
+                                        {
+                                            for (int v = 0; v < batch_data[a]["nos"].retDbl(); v++)
+                                            {
+
+                                                pcsdesc += batch_data[a]["cutlength"].retStr() + "+";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            pcsdesc += batch_data[a]["cutlength"].retStr() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
+                                        }
                                     }
-                                    if (batch_data[a]["flagmtr"].retDbl() > 0)
+                                    if (batch_data[a]["flagmtr"].retStr() != "")
                                     {
-                                        string flagmtr = batch_data[a]["flagmtr"].retDbl().ToINRFormat();
-                                        pcsdesc += "(F" + flagmtr.Substring(flagmtr.Length - 2).Remove(1) + ")";
+                                        double flagmtr = batch_data[a]["flagmtr"].retDbl() - Math.Truncate(batch_data[a]["flagmtr"].retDbl());
+                                        if (flagmtr.retDbl() > 0)
+                                        {
+                                            pcsdesc += "(F" + flagmtr + ")";
+                                        }
                                     }
+
                                     if (batch_data[a]["scmdiscrate"].retDbl() > 0)
                                     {
                                         pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";

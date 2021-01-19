@@ -288,7 +288,7 @@ function FillBarcodeArea(str, Table, i) {
                 $("#BARCODE").focus();
             }
         }
-        
+
     }
 }
 function changeBARGENTYPE() {
@@ -664,6 +664,7 @@ function Fill_DetailData() {
 function UpdateBarCodeRow_FrmDet(i) {
     var MENU_PARA = $("#MENU_PARA").val();
     var DefaultAction = $("#DefaultAction").val();
+    var ModuleCode = $("#ModuleCode").val();
     if (DefaultAction == "V") return true;
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
     var TXNSLNO = $("#D_SLNO_" + i).val();
@@ -713,6 +714,12 @@ function UpdateBarCodeRow_FrmDet(i) {
                 $("#B_AGDOCNO_" + j).val($("#D_AGDOCNO_" + i).val());
                 $("#B_AGDOCDT_" + j).val($("#D_AGDOCDT_" + i).val());
             }
+
+            if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                $("#B_PAGENO_" + j).val($("#D_PAGENO_" + i).val());
+                $("#B_PAGESLNO_" + j).val($("#D_PAGESLNO_" + i).val());
+            }
+
         }
     }
 }
@@ -1552,6 +1559,7 @@ function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
 function AddBarCodeGrid() {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
+    var ModuleCode = $("#ModuleCode").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
     var MNTNPART = $("#MNTNPART").val();
@@ -1701,6 +1709,8 @@ function AddBarCodeGrid() {
 
     //get bill slno
     var TXNSLNO = "";
+    var PAGENO = "";
+    var PAGESLNO = "";
     if ($("#TXNSLNO").val() == "" || $("#TXNSLNO").val() == "0") {
         var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         if (GridRowMain == 0) {
@@ -1709,6 +1719,7 @@ function AddBarCodeGrid() {
         else {
             var allslno = [];
             var matchslno = [];
+            var pageno = [];
             countmatchslno = 0;
             for (j = 0; j <= GridRowMain - 1; j++) {
                 var flag = true;
@@ -1739,6 +1750,12 @@ function AddBarCodeGrid() {
                                     GLCD == $("#B_GLCD_" + j).val()) {
 
                         matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
+                        if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                            var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                            str1 += "^PAGENO=^" + retInt($("#B_PAGENO_" + j).val()) + String.fromCharCode(181);
+                            str1 += "^PAGESLNO=^" + retInt($("#B_PAGESLNO_" + j).val()) + String.fromCharCode(181);
+                            pageno[countmatchslno] = str1;
+                        }
                         countmatchslno++;
                     }
                 }
@@ -1750,6 +1767,13 @@ function AddBarCodeGrid() {
                 if (TXNSLNO == 0) {
                     TXNSLNO = Math.max.apply(Math, allslno);
                     TXNSLNO++;
+                }
+                else {
+                    if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                        var strpageno = pageno.find(element => element.indexOf("^TXNSLNO=^" + TXNSLNO + String.fromCharCode(181)) != -1);
+                        PAGENO = returncolvalue(strpageno, "PAGENO");
+                        PAGESLNO = returncolvalue(strpageno, "PAGESLNO");
+                    }
                 }
             }
             else {
@@ -1776,6 +1800,10 @@ function AddBarCodeGrid() {
     tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
     tr += '        <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_GLCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';
     tr += '        <input id="B_BARGENTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARGENTYPE" type="hidden" value="' + ITMBARGENTYPE + '">';
+    if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+        tr += '        <input id="B_PAGENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PAGENO" type="hidden" value="' + PAGENO + '">';
+        tr += '        <input id="B_PAGESLNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PAGESLNO" type="hidden" value="' + PAGESLNO + '">';
+    }
     tr += '    </td>';
     tr += '    <td class="sticky-cell" style="left:17px;" title="' + SLNO + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';

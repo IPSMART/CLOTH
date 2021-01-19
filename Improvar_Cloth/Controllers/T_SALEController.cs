@@ -397,13 +397,13 @@ namespace Improvar.Controllers
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
                 str1 += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH ";
-                if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") str1 += ",s.AGDOCNO,s.AGDOCDT ";
+                str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
-                if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") str1 += "," + Scm + ".T_TXNDTL s ";
+                str1 += "," + Scm + ".T_TXNDTL s ";
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
                 str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO=r.AUTONO(+) ";
-                if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") str1 += "and i.autono=s.autono and i.txnslno=s.slno ";
+                str1 += "and i.autono=s.autono and i.txnslno=s.slno ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
                 str1 += "order by i.SLNO ";
                 DataTable tbl = masterHelp.SQLquery(str1);
@@ -470,6 +470,8 @@ namespace Improvar.Controllers
                                     LISTPRICE = dr["LISTPRICE"].retDbl(),
                                     LISTDISCPER = dr["LISTDISCPER"].retDbl(),
                                     CUTLENGTH = dr["CUTLENGTH"].retDbl(),
+                                    PAGENO = dr["PAGENO"].retInt(),
+                                    PAGESLNO = dr["PAGESLNO"].retInt(),
                                 }).OrderBy(s => s.SLNO).ToList();
 
                 str1 = "";
@@ -805,7 +807,7 @@ namespace Improvar.Controllers
                 string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
                 string sql = "";
 
-                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt ";
+                sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.slcd, c.slnm, c.district, nvl(a.blamt,0) blamt,a.PREFDT,a.PREFno ";
                 sql += "from " + scm + ".t_txn a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c ";
                 sql += "where a.autono=b.autono and a.slcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
                 if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
@@ -817,12 +819,24 @@ namespace Improvar.Controllers
                 DataTable tbl = masterHelp.SQLquery(sql);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
-                for (int j = 0; j <= tbl.Rows.Count - 1; j++)
+                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP")
                 {
-                    SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                    var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "Pblno" + Cn.GCS() + "Pbldt" + Cn.GCS() + "AUTO NO";
+                    for (int j = 0; j <= tbl.Rows.Count - 1; j++)
+                    {
+                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["PREFNO"] + " </td><td>" + tbl.Rows[j]["PREFDT"].retStr().Remove(10) + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                    }
+                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "6", "6"));
                 }
-                return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
+                else
+                {
+                    var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Bill Amt" + Cn.GCS() + "AUTO NO";
+                    for (int j = 0; j <= tbl.Rows.Count - 1; j++)
+                    {
+                        SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["slcd"] + ") </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                    }
+                    return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
+                }
             }
             catch (Exception ex)
             {
@@ -1469,6 +1483,8 @@ namespace Improvar.Controllers
                                   x.AGDOCDT,
                                   x.LISTPRICE,
                                   x.LISTDISCPER,
+                                  x.PAGENO,
+                                  x.PAGESLNO,
                               } into P
                               select new TTXNDTL
                               {
@@ -1509,6 +1525,8 @@ namespace Improvar.Controllers
                                   AGDOCDT = P.Key.AGDOCDT,
                                   LISTPRICE = P.Key.LISTPRICE,
                                   LISTDISCPER = P.Key.LISTDISCPER,
+                                  PAGENO = P.Key.PAGENO,
+                                  PAGESLNO = P.Key.PAGESLNO,
                               }).OrderBy(a => a.SLNO).ToList();
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
