@@ -144,21 +144,23 @@ namespace Improvar.Controllers
                                                  STKDRCR = dr["STKDRCR"].retStr(),
                                                  QNTY = dr["QNTY"].retDbl(),
                                                  DOCNM = dr["DOCNM"].retStr(),
-                                                 DISCPER = dr["RATE"].retStr() + " " + dr["DISCTYPE"].retStr()
+                                                 DISCPER = dr["DISCRATE"].retDbl() == 0 ? "" : dr["DISCRATE"].retDbl() + " " + dr["DISCTYPE"].retStr(),
+                                                 INQNTY = dr["STKDRCR"].retStr() == "D" ? dr["QNTY"].retDbl() : "".retDbl(),
+                                                 OUTQNTY = dr["STKDRCR"].retStr() == "C" ? dr["QNTY"].retDbl() : "".retDbl(),
                                              }).OrderBy(a => a.SLNO).Distinct().ToList();
                         double TINQTY = 0, TOUTQTY = 0, TNOS = 0;
                         for (int p = 0; p <= VE.BARCODEHISTORY.Count - 1; p++)
                         {
-                            var INQNTY = (from i in VE.BARCODEHISTORY
-                                          where i.STKDRCR == "D"
-                                          select i.QNTY).FirstOrDefault();
-                            var OUTQNTY = (from i in VE.BARCODEHISTORY
-                                           where i.STKDRCR == "C"
-                                           select i.QNTY).FirstOrDefault();
-                            VE.BARCODEHISTORY[p].INQNTY = INQNTY.retDbl();
-                            VE.BARCODEHISTORY[p].OUTQNTY = OUTQNTY.retDbl();
-                            TINQTY = TINQTY + INQNTY.retDbl();
-                            TOUTQTY = TOUTQTY + OUTQNTY.retDbl();
+                            //var INQNTY = (from i in VE.BARCODEHISTORY
+                            //              where i.STKDRCR == "D"
+                            //              select i.QNTY).FirstOrDefault();
+                            //var OUTQNTY = (from i in VE.BARCODEHISTORY
+                            //               where i.STKDRCR == "C"
+                            //               select i.QNTY).FirstOrDefault();
+                            //VE.BARCODEHISTORY[p].INQNTY = INQNTY.retDbl();
+                            //VE.BARCODEHISTORY[p].OUTQNTY = OUTQNTY.retDbl();
+                            TINQTY = TINQTY + VE.BARCODEHISTORY[p].INQNTY.retDbl();
+                            TOUTQTY = TOUTQTY + VE.BARCODEHISTORY[p].OUTQNTY.retDbl();
                             TNOS = TNOS + VE.BARCODEHISTORY[p].NOS.retDbl();
                         }
                         VE.T_INQNTY = TINQTY; VE.T_OUTQNTY = TOUTQTY; VE.T_NOS = TNOS;

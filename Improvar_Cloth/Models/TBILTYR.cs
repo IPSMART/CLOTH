@@ -64,6 +64,7 @@ namespace Improvar.Models
         public string QNTY { get; set; }
         public string UOMCD { get; set; }
         public string PAGENO { get; set; }
+        public string PAGESLNO { get; set; }
         public string PBLNO { get; set; }
         public string PBLDT { get; set; }
         public string SHADE { get; set; }

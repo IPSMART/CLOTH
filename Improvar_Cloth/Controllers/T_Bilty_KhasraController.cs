@@ -596,6 +596,7 @@ namespace Improvar.Controllers
                     {
                         T_BALE_HDR TBHDR = new T_BALE_HDR();
                         T_BILTY_HDR TBLTHDR = new T_BILTY_HDR();
+                        
                         T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                         string DOCPATTERN = "";
                         TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
@@ -626,7 +627,12 @@ namespace Improvar.Controllers
 
                         TBHDR.MUTSLCD = VE.T_BALE_HDR.MUTSLCD;
                         TBHDR.TXTAG = "KH";
-
+                        //TTXN.EMD_NO = 0;
+                        //TTXN.DOCCD = DOCCD;
+                        //TTXN.DOCNO = DOCNO;
+                        //TTXN.AUTONO = TBHDR.AUTONO;
+                        //TTXN.DOCTAG = VE.MENU_PARA.retStr().Length > 2 ? VE.MENU_PARA.retStr().Remove(2) : VE.MENU_PARA.retStr();
+                       
                         if (VE.DefaultAction == "E")
                         {
                             dbsql = MasterHelpFa.TblUpdt("T_BALE", TBHDR.AUTONO, "E");
@@ -661,6 +667,7 @@ namespace Improvar.Controllers
                             {
                                 COUNTER = COUNTER + 1;
                                 T_BALE TBILTYKHASRA = new T_BALE();
+                                //T_TXN TTXN = new T_TXN();
                                 TBILTYKHASRA.CLCD = TBHDR.CLCD;
                                 TBILTYKHASRA.AUTONO = TBHDR.AUTONO;
                                 TBILTYKHASRA.SLNO = VE.TBILTYKHASRA[i].SLNO;
@@ -672,6 +679,10 @@ namespace Improvar.Controllers
                                 TBILTYKHASRA.BALENO = VE.TBILTYKHASRA[i].BALENO;
                                 TBILTYKHASRA.BLSLNO = VE.TBILTYKHASRA[i].BLSLNO;
                                 TBILTYKHASRA.GOCD = VE.TBILTYKHASRA[i].GOCD;
+                                //TTXN.PREFDT = Convert.ToDateTime(VE.TBILTYKHASRA[i].PBLDT);
+                                //TTXN.PREFNO = VE.TBILTYKHASRA[i].PBLNO;
+                                //TTXN.GOCD = VE.TBILTYKHASRA[i].GOCD;
+                               
                                 dbsql = MasterHelpFa.RetModeltoSql(TBILTYKHASRA);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

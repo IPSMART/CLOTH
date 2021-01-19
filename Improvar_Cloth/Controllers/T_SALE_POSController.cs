@@ -2179,7 +2179,7 @@ namespace Improvar.Controllers
                         dberrmsg = "Debtor/Creditor code not setup"; goto dbnotsave;
                     }
 
-                    sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
+                    sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, ";
                     sql += "'" + glcd + "' prodglcd,'" + rglcd + "' prodrglcd, ";
                     //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR") sql += "b.igst_p igstcd, b.cgst_p cgstcd, b.sgst_p sgstcd, b.cess_p cesscd, b.duty_p dutycd, ";
                     sql += "b.igst_s igstcd, b.cgst_s cgstcd, b.sgst_s sgstcd, b.cess_s cesscd, b.duty_s dutycd, ";
@@ -3079,6 +3079,7 @@ namespace Improvar.Controllers
                             if (adrcr == "D") dbDrAmt = dbDrAmt + dbamt;
                             else dbCrAmt = dbCrAmt + dbamt;
                         }
+
                         //  Party wise posting
                         isl = 1; //isl + 1;
                         dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), cr,

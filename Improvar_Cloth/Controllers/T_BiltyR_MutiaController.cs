@@ -209,7 +209,7 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str = "";
                 str += "select distinct a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno, ";
-                str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,c.itnm||' '||c.styleno itstyle,d.prefno,d.prefdt  ";
+                str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,b.pageslno,c.itnm||' '||c.styleno itstyle,d.prefno,d.prefdt  ";
                 str += " from " + Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d  ";
                 str += " where a.blautono=b.autono(+) and b.itcd=c.itcd(+) and a.blautono=d.autono(+) and a.baleno=b.baleno(+) and a.blslno=b.slno(+) and a.autono='" + TBH.AUTONO + "'  ";
                 str += "order by a.slno ";
@@ -226,6 +226,7 @@ namespace Improvar.Controllers
                                  NOS = dr["nos"].retStr(),
                                  QNTY = dr["qnty"].retStr(),
                                  PAGENO = dr["pageno"].retStr(),
+                                 PAGESLNO = dr["pageslno"].retStr(),
                                  LRDT = dr["lrdt"].retDateStr(),
                                  LRNO = dr["lrno"].retStr(),
                                  BALENO = dr["baleno"].retStr(),
@@ -235,11 +236,13 @@ namespace Improvar.Controllers
                                  PBLNO= dr["prefno"].retStr(),
                                  PBLDT = dr["prefdt"].retDateStr()
                              }).OrderBy(s => s.SLNO).ToList();
-                //for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
-                //{
-                //    VE.TBILTYR[i].RSLNO = (VE.T_BALE_HDR.STARTNO + Convert.ToInt32(i + 1)).retShort();
+                string concatStr = "";
+                for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
+                {
+                    if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO != "") concatStr = "/"; else concatStr = "";
+                    VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
 
-                //}
+                }
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
@@ -311,7 +314,7 @@ namespace Improvar.Controllers
                                            BALENO = dr["baleno"].retStr(),
                                            PREFNO = dr["prefno"].retStr(),
                                            PREFDT = dr["prefdt"].retDateStr()
-                                       }).Distinct().ToList();
+                                       }).Distinct().OrderBy(a=>a.BALENO).OrderBy(a=>a.PREFNO).ToList();
                     for (int p = 0; p <= VE.TBILTYR_POPUP.Count - 1; p++)
                     {
                         VE.TBILTYR_POPUP[p].SLNO = Convert.ToInt16(p + 1);
@@ -349,7 +352,7 @@ namespace Improvar.Controllers
                 }
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD, sqlbillautonos);
-              
+              string concatStr="";
                 VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
                                     select new TBILTYR
                                     {
@@ -362,17 +365,19 @@ namespace Improvar.Controllers
                                         SHADE = dr["shade"].retStr(),
                                         BALENO = dr["baleno"].retStr(),
                                         PAGENO = dr["pageno"].retStr(),
+                                        PAGESLNO = dr["pageslno"].retStr(),
                                         LRNO = dr["lrno"].retStr(),
                                         LRDT = dr["lrdt"].retDateStr(),
                                         BALEYR = dr["baleyr"].retStr(),
                                         BLSLNO = dr["blslno"].retShort(),
-                                        PREFNO = dr["prefno"].retStr(),
-                                        PREFDT = dr["prefdt"].retDateStr(),
+                                        PBLNO = dr["prefno"].retStr(),
+                                        PBLDT = dr["prefdt"].retDateStr(),
                                     }).Distinct().ToList();
                 var startno = VE.T_BALE_HDR.STARTNO;
                 if (startno == null) startno = 0;
                 for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
-                {
+                {if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO!="") concatStr = "/"; else concatStr = "";
+                    VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
                     VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
                     VE.TBILTYR[i].RSLNO = (startno + Convert.ToInt32(i + 1)).retShort();
                 }

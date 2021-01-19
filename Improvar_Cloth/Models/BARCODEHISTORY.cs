@@ -10,11 +10,11 @@ namespace Improvar.Models
     {
         public string AUTONO { get; set; }
         public short SLNO { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? NOS { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? OUTQNTY { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? INQNTY { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }

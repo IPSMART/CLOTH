@@ -1313,22 +1313,26 @@ namespace Improvar
             sql += " select a.blautono, a.mutslcd, a.trem, j.slnm mutianm, j.regmobile, a.baleno, a.baleyr, e.lrno, e.lrdt,	 ";
             sql += " g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.slno blslno, g.nos, g.qnty,	";
             sql += " '' shade, g.pageno, g.pageslno, ";
-            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0) bnos, h.styleno||' '||h.itnm  itstyle from ";
+            sql += " f.prefno, f.prefdt, nvl(b.bnos, 0)-nvl(c.bnos,0) bnos, h.styleno||' '||h.itnm  itstyle from ";
             sql += " (select distinct a.blautono, b.mutslcd, b.trem, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
             sql += "  from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += "  where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
             sql += "  d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and  ";
             sql += "  d.docdt <= to_date('" + docdt + "', 'dd/mm/yyyy') ) a, ";
+
             sql += " (select a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr,	";
             sql += " sum(case a.drcr when 'D' then 1 when 'C' then - 1 end) bnos  ";
             sql += " from " + schema + ".t_bilty a, " + schema + ".t_bilty_hdr b, " + schema + ".t_cntrl_hdr d ";
             sql += " where a.autono = b.autono(+) and a.autono = d.autono(+)  ";
             sql += " group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) b,  ";
-            sql += " (select a.blautono, a.baleyr || a.baleno balenoyr,  ";
-            sql += " sum(case a.drcr when 'C' then 1 when 'D' then - 1 end) bnos  ";
+
+            sql += " (select a.blautono, a.balenoyr,  ";
+            sql += " sum(case a.drcr when 'C' then 1 when 'D' then - 1 end) bnos  from ";
+            sql += " (select a.blautono, a.baleyr || a.baleno balenoyr, a.drcr ";
             sql += " from " + schema + ".t_bale a, " + schema + ".t_bale_hdr b, " + schema + ".t_cntrl_hdr d  ";
-            sql += " where a.autono = b.autono(+) and a.autono = d.autono(+) and b.txtag = 'RC' and nvl(d.cancel, 'N')= 'N'  ";
-            sql += " group by a.blautono, a.baleno, a.baleyr, a.baleyr || a.baleno) c,	";
+            sql += " where a.autono = b.autono(+) and a.autono = d.autono(+) and b.txtag = 'RC' and nvl(d.cancel, 'N')= 'N'  ) a ";
+            sql += " group by a.blautono, a.balenoyr) c,	";
+
             sql += " " + schema + ".t_txntrans e, " + schema + ".t_txn f, " + schema + ".t_txndtl g,  ";
             sql += " " + schema + ".m_sitem h, " + schema + ".m_group i, " + scmf + ".m_subleg j  ";
             sql += " where a.blautono = b.blautono(+) and a.balenoyr = b.balenoyr(+) and  ";
@@ -1337,7 +1341,7 @@ namespace Improvar
             sql += " g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and a.mutslcd = j.slcd(+) ";
             if (mutslcd.retStr() != "") sql += " and a.mutslcd in ('" + mutslcd + "')  ";
             if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
-            sql += " and nvl(b.bnos, 0) > 0 ";
+            sql += " and nvl(b.bnos, 0)-nvl(c.bnos,0) > 0 ";
             tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
