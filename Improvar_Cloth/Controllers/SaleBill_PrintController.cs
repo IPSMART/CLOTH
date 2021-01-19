@@ -3815,7 +3815,7 @@ namespace Improvar.Controllers
                                         pcsdesc += batch_data[a]["cutlength"].retDbl();
                                     }
                                     else {
-                                        pcsdesc += batch_data[a]["cutlength"].retDbl() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
+                                        pcsdesc += batch_data[a]["cutlength"].retStr() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
                                     }
                                     if (batch_data[a]["flagmtr"].retDbl() > 0)
                                     {
