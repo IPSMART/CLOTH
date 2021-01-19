@@ -275,6 +275,21 @@ function FillBarcodeArea(str, Table, i) {
         $("#UpdateRow_Barcode").show();
     }
     changeBARGENTYPE();
+    if (event.key == "F8") {
+        debugger;
+        var ModuleCode = $("#ModuleCode").val();
+        if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+            $("#CUTLENGTH").focus();
+        }
+        else {
+            if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                $("#ITCD").focus();
+            } else {
+                $("#BARCODE").focus();
+            }
+        }
+        
+    }
 }
 function changeBARGENTYPE() {
     var BARGENTYPE = $("#BARGENTYPE").val();
@@ -1703,7 +1718,7 @@ function AddBarCodeGrid() {
                     }
                 }
                 if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
-                    if (LISTPRICE != $("#B_LISTPRICE_" + j).val() || LISTDISCPER != $("#B_LISTDISCPER_" + j).val()) {
+                    if (retFloat(LISTPRICE) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat(LISTDISCPER) != retFloat($("#B_LISTDISCPER_" + j).val())) {
                         flag = false;
                     }
                 }
@@ -1713,6 +1728,8 @@ function AddBarCodeGrid() {
                     }
                 }
                 if (flag == true) {
+                    var aa = retFloat($("#RATE").val());
+                    var bb = retFloat($("#B_RATE_" + j).val());
                     if (ITGRPCD == $("#B_ITGRPCD_" + j).val() && MTRLJOBCD == $("#B_MTRLJOBCD_" + j).val() &&
                                     MTBARCODE == $("#B_MTBARCODE_" + j).val() && ITCD == $("#B_ITCD_" + j).val() && ITSTYLE == $("#B_ITSTYLE_" + j).val() &&
                                     DISCTYPE == $("#B_DISCTYPE_" + j).val() && TDDISCTYPE == $("#B_TDDISCTYPE_" + j).val() &&

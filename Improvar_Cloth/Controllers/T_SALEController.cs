@@ -1422,6 +1422,17 @@ namespace Improvar.Controllers
             try
             {
                 Cn.getQueryString(VE);
+                VE.TBATCHDTL.ForEach(x =>
+                {
+                    x.RATE = x.RATE.retDbl();
+                    x.DISCRATE = x.DISCRATE.retDbl();
+                    x.SCMDISCRATE = x.SCMDISCRATE.retDbl();
+                    x.TDDISCRATE = x.TDDISCRATE.retDbl();
+                    x.GSTPER = x.GSTPER.retDbl();
+                    x.FLAGMTR = x.FLAGMTR.retDbl();
+                    x.LISTPRICE = x.LISTPRICE.retDbl();
+                    x.LISTDISCPER = x.LISTDISCPER.retDbl();
+                });
                 VE.TTXNDTL = (from x in VE.TBATCHDTL
                               group x by new
                               {
@@ -1691,7 +1702,7 @@ namespace Improvar.Controllers
             }
             else
             {
-                dt = salesfunc.GetPendOrder(SLCD, "", "", "", "","", VE.MENU_PARA);
+                dt = salesfunc.GetPendOrder(SLCD, "", "", "", "", "", VE.MENU_PARA);
                 string glcd = MenuDescription(VE.MENU_PARA).Rows[0]["glcd"].ToString();
                 DataTable PRODGRPDATA = new DataTable();
                 if (dt != null && dt.Rows.Count > 0)
@@ -1756,7 +1767,7 @@ namespace Improvar.Controllers
                     {
                         VE.PENDINGORDER[p].SLNO = slno.retShort();
                         string itcd = VE.PENDINGORDER[p].ITCD.retStr();
-                        string itgrpcd= VE.PENDINGORDER[p].ITGRPCD.retStr();
+                        string itgrpcd = VE.PENDINGORDER[p].ITGRPCD.retStr();
                         if (PRODGRPDATA != null)
                         {
 
@@ -2405,25 +2416,26 @@ namespace Improvar.Controllers
                                        select new
                                        {
                                            ITCD = P.Key.ITCD,
-                                           QTY = P.Sum(A => A.QNTY),
-                                           NOS = P.Sum(A => A.NOS)
+                                           QTY = P.Sum(A => A.QNTY).retDbl().toRound(3),
+                                           NOS = P.Sum(A => A.NOS).retDbl()
                                        }).Where(a => a.QTY != 0).ToList();
                     var txndtldata = (from x in VE.TTXNDTL
                                       group x by new { x.ITCD } into P
                                       select new
                                       {
                                           ITCD = P.Key.ITCD,
-                                          QTY = P.Sum(A => A.QNTY),
-                                          NOS = P.Sum(A => A.NOS)
+                                          QTY = P.Sum(A => A.QNTY).retDbl().toRound(3),
+                                          NOS = P.Sum(A => A.NOS).retDbl()
                                       }).Where(a => a.QTY != 0).ToList();
 
                     var difList = barcodedata.Where(a => !txndtldata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))
                      .Union(txndtldata.Where(a => !barcodedata.Any(a1 => a1.ITCD == a.ITCD && a1.QTY == a.QTY && a1.NOS == a.NOS))).ToList();
                     if (difList != null && difList.Count > 0)
                     {
+                        string diffitcd = difList.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
                         OraTrans.Rollback();
                         OraCon.Dispose();
-                        return Content("Barcode grid & Detail grid itcd wise qnty, nos should match !!");
+                        return Content("Barcode grid & Detail grid itcd [" + diffitcd + "] wise qnty, nos should match !!");
                     }
 
                     T_TXN TTXN = new T_TXN();
