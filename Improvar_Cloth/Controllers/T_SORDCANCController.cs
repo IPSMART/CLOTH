@@ -520,7 +520,7 @@ namespace Improvar.Controllers
                                         COLRCD = dr["COLRCD"].ToString(),
                                         COLRNM = dr["COLRNM"].ToString(),
                                         ALL_SIZE = dr["SIZECD"].ToString(),
-                                        TOTAL_PCS = dr["PCSPERBOX"] == null ? 0 : Convert.ToDouble(dr["PCSPERBOX"].ToString()),
+                                        //TOTAL_PCS = dr["PCSPERBOX"] == null ? 0 : Convert.ToDouble(dr["PCSPERBOX"].ToString()),
                                         UOM = dr["UOMCD"].ToString(),
                                         STKTYPE = dr["STKTYPE"].ToString(),
                                         STKTYP_HIDDEN = dr["STKTYPE"].ToString(),
@@ -529,7 +529,8 @@ namespace Improvar.Controllers
                                         QNTY = dr["BALQNTY"] == null ? 0 : Convert.ToDouble(dr["BALQNTY"].ToString()),
                                     }).ToList();
 
-                VE.TSORDDTL_CANC = (from p in VE.TSORDDTL_CANC group p by new { p.ORDAUTONO, p.ITCD, p.ITNM, p.ARTNO, p.TOTAL_PCS, p.UOM, p.STKTYPE, p.FREESTK, p.ChildData, p.QNTY } into z select new TSORDDTL_CANC { ORDAUTONO = z.Key.ORDAUTONO, ITCD = z.Key.ITCD, ITNM = z.Key.ITNM, ARTNO = z.Key.ARTNO, TOTAL_PCS = z.Key.TOTAL_PCS, UOM = z.Key.UOM, STKTYPE = z.Key.STKTYPE, FREESTK = z.Key.FREESTK, ChildData = z.Key.ChildData, QNTY = z.Sum(x => x.QNTY), ALL_SIZE = string.Join(",", z.Select(i => i.SIZECD)) }).ToList();
+                //VE.TSORDDTL_CANC = (from p in VE.TSORDDTL_CANC group p by new { p.ORDAUTONO, p.ITCD, p.ITNM, p.ARTNO, p.TOTAL_PCS, p.UOM, p.STKTYPE, p.FREESTK, p.ChildData, p.QNTY } into z select new TSORDDTL_CANC { ORDAUTONO = z.Key.ORDAUTONO, ITCD = z.Key.ITCD, ITNM = z.Key.ITNM, ARTNO = z.Key.ARTNO, TOTAL_PCS = z.Key.TOTAL_PCS, UOM = z.Key.UOM, STKTYPE = z.Key.STKTYPE, FREESTK = z.Key.FREESTK, ChildData = z.Key.ChildData, QNTY = z.Sum(x => x.QNTY), ALL_SIZE = string.Join(",", z.Select(i => i.SIZECD)) }).ToList();
+                VE.TSORDDTL_CANC = (from p in VE.TSORDDTL_CANC group p by new { p.ORDAUTONO, p.ITCD, p.ITNM, p.ARTNO, p.UOM, p.STKTYPE, p.FREESTK, p.ChildData, p.QNTY } into z select new TSORDDTL_CANC { ORDAUTONO = z.Key.ORDAUTONO, ITCD = z.Key.ITCD, ITNM = z.Key.ITNM, ARTNO = z.Key.ARTNO, UOM = z.Key.UOM, STKTYPE = z.Key.STKTYPE, FREESTK = z.Key.FREESTK, ChildData = z.Key.ChildData, QNTY = z.Sum(x => x.QNTY), ALL_SIZE = string.Join(",", z.Select(i => i.SIZECD)) }).ToList();
 
                 for (int i = 0; i <= VE.TSORDDTL_CANC.Count - 1; i++)
                 {
@@ -549,7 +550,7 @@ namespace Improvar.Controllers
                                                  STKTYPE_HIDDEN = dr["STKTYPE"].ToString(),
                                                  FREESTK_HIDDEN = dr["FREESTK"].ToString(),
                                                  ITCOLSIZE = dr["ITCD"].ToString() + dr["COLRCD"].ToString() + dr["SIZECD"].ToString(),
-                                                 PCS_HIDDEN = dr["PCSPERBOX"] == null ? 0 : Convert.ToDouble(dr["PCSPERBOX"].ToString())
+                                                 //PCS_HIDDEN = dr["PCSPERBOX"] == null ? 0 : Convert.ToDouble(dr["PCSPERBOX"].ToString())
                                              }).OrderBy(s => s.PRINT_SEQ).ToList();
                     var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                     string JR = javaScriptSerializer.Serialize(VE.TSORDDTL_CANC_SIZE);
@@ -581,7 +582,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult OPENSIZE(OrderCancelEntry VE, short SerialNo, string ITEM, string ITEM_NM, string ART_NO, string UOM, double? PCS, double? QNTY, string STK_TYPE, string FREE_STK, string AUTO_NO)
+        public ActionResult OPENSIZE(OrderCancelEntry VE, short SerialNo, string ITEM, string ITEM_NM, string ART_NO, string UOM, double? QNTY, string STK_TYPE, string FREE_STK, string AUTO_NO)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             string COM = CommVar.Compcd(UNQSNO); string LOC = CommVar.Loccd(UNQSNO); string scm1 = DB.CacheKey.ToString();
@@ -591,7 +592,7 @@ namespace Improvar.Controllers
                 ART_NO = ART_NO.Replace('μ', '+'); ART_NO = ART_NO.Replace('‡', '&');
                 string Header = "";
                 if (VE.DOC_CODE == "DOCAN") { Header = "Delivery Order Cancel"; } else { Header = "Sales Order Cancel"; }
-                ViewBag.Header = Header; ViewBag.Article = ART_NO; ViewBag.Pcs = PCS; short POSRL = Convert.ToInt16(SerialNo);
+                ViewBag.Header = Header; ViewBag.Article = ART_NO; short POSRL = Convert.ToInt16(SerialNo);
                 if (VE.DefaultAction == "V")
                 {
                     if (VE.TSORDDTL_CANC != null && VE.TSORDDTL_CANC.Count > 0)
@@ -618,7 +619,7 @@ namespace Improvar.Controllers
                             helpMT.ForEach(a =>
                             {
                                 a.ParentSerialNo = SerialNo; a.ITCD_HIDDEN = ITEM;
-                                a.ITNM_HIDDEN = ITEM_NM; a.ARTNO_HIDDEN = ART_NO; a.UOM_HIDDEN = UOM; a.PCS_HIDDEN = PCS.Value;
+                                a.ITNM_HIDDEN = ITEM_NM; a.ARTNO_HIDDEN = ART_NO; a.UOM_HIDDEN = UOM;/* a.PCS_HIDDEN = PCS.Value;*/
                                 a.QNTY_HIDDEN = QNTY;
                                 //a.STKTYPE_HIDDEN = STK_TYPE; a.FREESTK_HIDDEN = FREE_STK;
                             });
@@ -668,14 +669,14 @@ namespace Improvar.Controllers
             {
                 var FILTER_DATA = (from p in DTL_SIZE
                                    group p by new
-                                   { p.AUTONO, p.ITCD_HIDDEN, p.ITNM_HIDDEN, p.ARTNO_HIDDEN, p.PCS_HIDDEN, p.UOM_HIDDEN, p.STKTYPE_HIDDEN, p.FREESTK_HIDDEN } into g
+                                   { p.AUTONO, p.ITCD_HIDDEN, p.ITNM_HIDDEN, p.ARTNO_HIDDEN, p.UOM_HIDDEN, p.STKTYPE_HIDDEN, p.FREESTK_HIDDEN } into g
                                    select new
                                    {
                                        AUTONO = g.Key.AUTONO,
                                        ITCD_HIDDEN = g.Key.ITCD_HIDDEN,
                                        ITNM_HIDDEN = g.Key.ITNM_HIDDEN,
                                        ARTNO_HIDDEN = g.Key.ARTNO_HIDDEN,
-                                       PCS_HIDDEN = g.Key.PCS_HIDDEN,
+                                       //PCS_HIDDEN = g.Key.PCS_HIDDEN,
                                        UOM_HIDDEN = g.Key.UOM_HIDDEN,
                                        STKTYPE_HIDDEN = g.Key.STKTYPE_HIDDEN,
                                        FREESTK_HIDDEN = g.Key.FREESTK_HIDDEN,
@@ -691,7 +692,7 @@ namespace Improvar.Controllers
                                                    ITCD = a.ITCD_HIDDEN,
                                                    ITNM = a.ITNM_HIDDEN,
                                                    ARTNO = a.ARTNO_HIDDEN,
-                                                   TOTAL_PCS = a.PCS_HIDDEN,
+                                                   //TOTAL_PCS = a.PCS_HIDDEN,
                                                    UOM = a.UOM_HIDDEN,
                                                    STKTYPE = a.STKTYPE_HIDDEN,
                                                    FREESTK = a.FREESTK_HIDDEN,

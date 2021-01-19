@@ -213,9 +213,9 @@ namespace Improvar.Controllers
                 sql = "";
                 sql += "select a.autono||a.cancel autono, a.cancel, b.slcd, s.slnm, c.docno, b.prefno, a.docdt, a.doctag, a.itcd, a.partcd, a.mtrljobcd, a.stktype, a.itcolsize, ";
                 if (showsizes == true) sql += "a.sizecd, ";
-                sql += "d.itnm, d.styleno, nvl(d.pcsperbox,0) pcsperbox, nvl(d.pcsperset,0) pcsperset, ";
+                sql += "d.itnm, d.styleno, nvl(d.pcsperset,0) pcsperset, ";
                 if (reptype == "S" || mtrljobcd != "FS") sql += "'' itgrpcd, '' itgrpnm, "; else sql += "d.itgrpcd, e.itgrpnm, ";
-                sql += "e.brandcd, f.brandnm, a.stkdrcr, a.qnty,i.slnm agslnm from ( ";
+                sql += "d.brandcd, f.brandnm, a.stkdrcr, a.qnty,i.slnm agslnm from ( ";
                 sql += "select a.autono, a.cancel, a.docdt, a.doccd, a.doctag, a.itcd, a.partcd, a.mtrljobcd, a.stktype, a.itcolsize," + (showsizes == true ? "a.sizecd, " : "") + " a.stkdrcr, sum(a.qnty) qnty from ( ";
 
                 sql += "select (case when c.docdt < to_date('" + fdt + "','dd/mm/yyyy') then 'opng' else a.autono end) autono, nvl(c.cancel,'N') cancel, ";
@@ -223,10 +223,10 @@ namespace Improvar.Controllers
                 sql += "c.doccd, b.doctag, nvl(d.linkitcd,a.itcd) itcd, a.partcd, a.mtrljobcd, nvl(a.stktype,'F') stktype, ";
                 sql += "nvl(a.stktype,'F')||a.itcd" + (showsizes == true ? "||a.sizecd" : "") + " itcolsize, " + (showsizes == true ? "a.sizecd, " : "") + "a.stkdrcr, ";
                 //sql += "(case when a.mtrljobcd in ('YP','YD','GT','FT','TF','WA','PF','WS') then nvl(a.qnty,0) else nvl(nvl(e.qnty,a.qnty),0) end)*decode(nvl(e.skipstk,'N'),'Y',0,1) qnty ";
-                sql += "nvl(a.qnty,0)*decode(nvl(e.skipstk,'N'),'Y',0,1) qnty ";
+                sql += "nvl(a.qnty,0) qnty ";
                 sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_sitem d, " + scm + ".t_batchdtl e, " + scm + ".t_batchmst f ";
                 sql += "where a.autono=b.autono and a.autono=c.autono and a.stkdrcr in ('D','C') and ";
-                sql += "a.autono=e.autono(+) and a.slno=e.slno(+) and e.batchautono=f.autono(+) and e.batchslno=f.slno(+) and ";
+                sql += "a.autono=e.autono(+) and a.slno=e.slno(+) and e.autono=f.autono(+) and e.slno=f.slno(+) and ";
                 //sql += "(case when a.mtrljobcd in ('YP','YD','GT','FT','TF') then a.mtrljobcd else nvl(f.jobcd,a.mtrljobcd) end) in (" + mtrljobcd + ") and ";
                 sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
                 if (gocd != "") sql += "b.gocd in (" + gocd + ") and ";
@@ -245,10 +245,10 @@ namespace Improvar.Controllers
                 //if (reptype != "T") sql += "decode(a.stkdrcr,'D','C','D') stkdrcr, (case when a.mtrljobcd in ('YP','YD','GT','FT','TF','WA','PF') then nvl(a.qnty,0) else nvl(nvl(e.qnty,a.qnty),0) end) qnty ";
                 //else sql += "a.stkdrcr, (case when a.mtrljobcd in ('YP','YD','GT','FT','TF','WA','PF','WS') then nvl(a.qnty,0) else nvl(nvl(e.qnty,a.qnty),0) end)*-1*decode(nvl(e.skipstk,'N'),'Y',0,1) qnty ";
                 if (reptype != "T") sql += "decode(a.stkdrcr,'D','C','D') stkdrcr, (case when a.mtrljobcd in ('YP','YD','GT','FT','TF','PF') then nvl(a.qnty,0) else nvl(nvl(e.qnty,a.qnty),0) end) qnty ";
-                else sql += "a.stkdrcr, (case when a.mtrljobcd in ('YP','YD','GT','FT','TF') then nvl(a.qnty,0) else nvl(nvl(e.qnty,a.qnty),0) end)*-1*decode(nvl(e.skipstk,'N'),'Y',0,1) qnty ";
+                else sql += "a.stkdrcr, (case when a.mtrljobcd in ('YP','YD','GT','FT','TF') then nvl(a.qnty,0) else nvl(nvl(e.qnty,a.qnty),0) end) qnty ";
                 sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scm + ".m_sitem d, " + scm + ".t_batchdtl e, " + scm + ".t_batchmst f ";
                 sql += "where a.autono=b.autono and a.autono=c.autono and a.stkdrcr in ('D','C') and ";
-                sql += "a.autono=e.autono(+) and a.slno=e.slno(+) and e.batchautono=f.autono(+) and e.batchslno=f.slno(+) and ";
+                sql += "a.autono=e.autono(+) and a.slno=e.slno(+) and e.autono=f.autono(+) and e.slno=f.slno(+) and ";
                 //sql += "(case when a.mtrljobcd in ('YP','YD','GT','FT','TF','WA','PF','WS') then a.mtrljobcd else nvl(f.jobcd,a.mtrljobcd) end) in (" + mtrljobcd + ") and ";
                 sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
                 if (gocd != "") sql += "b.gocd in (" + gocd + ") and ";
@@ -262,10 +262,10 @@ namespace Improvar.Controllers
 
                 sql += scm + ".t_txn b, " + scm + ".t_cntrl_hdr c, " + scmf + ".m_subleg s, ";
                 sql += scm + ".m_sitem d, " + scm + ".m_group e, " + scm + ".m_brand f, " + scm + ".m_doctype g, " + scm + ".t_txnoth h, " + scmf + ".m_subleg i ";
-                sql += "where a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and e.brandcd=f.brandcd(+) and c.doccd=g.doccd(+) and ";
+                sql += "where a.itcd=d.itcd(+) and d.itgrpcd=e.itgrpcd(+) and d.brandcd=f.brandcd(+) and c.doccd=g.doccd(+) and ";
                 if (itcd != "") sql += "a.itcd in (" + itcd + ") and ";
                 if (unselitcd != "") sql += "a.itcd not in (" + unselitcd + ") and ";
-                if (brandcd != "") sql += "e.brandcd in (" + brandcd + ") and ";
+                if (brandcd != "") sql += "d.brandcd in (" + brandcd + ") and ";
                 if (itgrpcd != "") sql += "d.itgrpcd in (" + itgrpcd + ") and ";
                 if (skipdoccd != "") sql += "a.doccd not in (" + skipdoccd + ") and ";
                 if (slcd != "") sql += "b.slcd in (" + slcd + ") and ";

@@ -34,7 +34,7 @@
                                 <th class="" style="width: 40px;text-align:center;">SL No.</th>
                                 <th class="" style="width: 130px;">Article</th>
                                 <th class="" style="width: 470px;">Item Name</th>
-                                <th class="" style="width: 75px;text-align:right;">PCS/Box</th>
+                                @*<th class="" style="width: 75px;text-align:right;">PCS/Box</th>*@
                                 <th class="" style="width: 70px;">UOM</th>
                                 <th class="" style="width: 80px;">Stock Type</th>
                                 <th class="" style="width:70px;">Free</th>
@@ -66,9 +66,9 @@
                                         <td class="">
                                             @Html.TextBoxFor(model => model.TSORDDTL_CANC[i].ITNM, new { id = "ITNM_" + i, @class = " atextBoxFor ", maxlength = 60, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
-                                        <td class="">
+                                        @*<td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].TOTAL_PCS, new { id = "TOTAL_PCS_" + i, @style = "text-align:right;", @class = " atextBoxFor", @readonly = "readonly" })
-                                        </td>
+                                        </td>*@
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].UOM, new { id = "UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
@@ -82,7 +82,8 @@
                                             @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].QNTY, new { id = "QNTY_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 12, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].CANCQNTY, new { id = "CANCQNTY_" + i, @class = " atextBoxFor", @style = "text-align: right;", onclick = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','" + "ORDAUTONO_" + i + "');", onkeydown = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','" + "ORDAUTONO_" + i + "');", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" })
+                                            @*@Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].CANCQNTY, new { id = "CANCQNTY_" + i, @class = " atextBoxFor", @style = "text-align: right;", onclick = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','" + "ORDAUTONO_" + i + "');", onkeydown = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "TOTAL_PCS_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','" + "ORDAUTONO_" + i + "');", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" })*@
+                                            @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].CANCQNTY, new { id = "CANCQNTY_" + i, @class = " atextBoxFor", @style = "text-align: right;", onclick = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','" + "ORDAUTONO_" + i + "');", onkeydown = "OpenSize(this.value,'" + "SLNO_" + i + "','" + "ITCD_" + i + "','" + "ITNM_" + i + "','" + "ARTNO_" + i + "','" + "UOM_" + i + "','" + "STKTYPE_" + i + "','" + "FREESTK_" + i + "','" + "ORDAUTONO_" + i + "');", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TSORDDTL_CANC[i].ALL_SIZE, new { id = "ALL_SIZE_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })

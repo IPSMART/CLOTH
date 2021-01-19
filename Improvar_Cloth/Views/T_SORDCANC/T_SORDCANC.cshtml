@@ -136,8 +136,9 @@
     }
 </script>
 <script>
-    function OpenSize(id, SLNO, ITCD, ITNM, ARTNO, UOM, TOTAL_PCS, STKTYPE, FREESTK, AUTO)
+    function OpenSize(id, SLNO, ITCD, ITNM, ARTNO, UOM, STKTYPE, FREESTK, AUTO)
     {
+        debugger;
         const keyName = event.key;
         if (keyName == undefined || keyName == " ")
         {
@@ -148,8 +149,8 @@
             var ITEM_NM = document.getElementById(ITNM).value;
             var ART_NO = document.getElementById(ARTNO).value; ART_NO = ART_NO.replace('+', 'μ'); ART_NO = ART_NO.replace('&', '‡');
             var UOM = document.getElementById(UOM).value;
-            var PCS = document.getElementById(TOTAL_PCS).value;
-            if (PCS == "") { PCS = parseFloat(0) } else { PCS = parseFloat(PCS) }
+            //var PCS = document.getElementById(TOTAL_PCS).value;
+            //if (PCS == "") { PCS = parseFloat(0) } else { PCS = parseFloat(PCS) }
             var STK_TYPE = document.getElementById(STKTYPE).value;
             var FREE_STK = document.getElementById(FREESTK).value;
             var AUTO_NO = document.getElementById(AUTO).value;
@@ -160,7 +161,7 @@
                     type: 'POST',
                     url: $("#urlnameOPENSIZE").val(),
                     beforesend: $("#WaitingMode").show(),
-                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&ART_NO=" + ART_NO + "&UOM=" + UOM + "&PCS=" + PCS + "&QNTY=" + parseFloat(id) + "&STK_TYPE=" + STK_TYPE + "&FREE_STK=" + FREE_STK + "&AUTO_NO=" + AUTO_NO,
+                    data: $('form').serialize() + "&SerialNo=" + SerialNo + "&ITEM=" + ITEM + "&ITEM_NM=" + ITEM_NM + "&ART_NO=" + ART_NO + "&UOM=" + UOM  + "&QNTY=" + parseFloat(id) + "&STK_TYPE=" + STK_TYPE + "&FREE_STK=" + FREE_STK + "&AUTO_NO=" + AUTO_NO,
                     success: function (result)
                     {
                         $("#WaitingMode").hide();
