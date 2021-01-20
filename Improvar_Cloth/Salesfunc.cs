@@ -2008,6 +2008,39 @@ namespace Improvar
                 return "";
             }
         }
+        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false)
+        {
+            string UNQSNO = CommVar.getQueryStringUNQSNO();
+            DataTable tbl = new DataTable();
+            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            string sql = "";
+            sql += "select a.gocd, a.baleno, a.baleyr, a.itcd, a.shade, a.nos, a.qnty, ";
+            sql += "b.docno, b.docdt, b.prefno, b.prefdt, b.rate, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, ";
+            sql += "b.pageno, b.pageslno, b.lrno from ";
+            sql += "( select a.gocd, b.baleno, b.baleyr, b.itcd, a.shade, b.baleno||b.baleyr||b.itcd baleitcd, ";
+            sql += "sum(a.nos*decode(a.stkdrcr,'D',1,-1)) nos, sum(a.qnty*decode(a.stkdrcr,'D',1,-1)) qnty ";
+            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d ";
+            sql += "where a.autono=b.autono(+) and a.txnslno=b.slno(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and ";
+            sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and a.stkdrcr in ('D','C') and ";
+            sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+            if (mergeloca == false) sql += "d.loccd='" + LOC + "' and ";
+            sql += "d.compcd='" + COM + "' and nvl(d.cancel,'N')='N' and a.baleno is not null ";
+            sql += "group by a.gocd, b.baleno, b.baleyr, b.itcd, a.shade, b.baleno||b.baleyr||b.itcd ) a, ";
+
+            sql += "( select a.rate, c.lrno, nvl(b.prefno,d.docno) prefno, nvl(b.prefdt,d.docdt) prefdt, ";
+            sql += "d.docno, d.docdt, a.pageno, a.pageslno, a.baleno||a.baleyr||a.itcd baleitcd ";
+            sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_txntrans c, " + scm + ".t_cntrl_hdr d ";
+            sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and nvl(a.pageno,0) <> 0 ) b, ";
+            sql += "" + scm + ".m_sitem f, " + scmf + ".m_godown g ";
+            sql += "where a.baleitcd=b.baleitcd(+) and a.itcd=f.itcd(+) and ";
+            if (itgrpcd != "") sql += "f.itgrpcd in (" + itgrpcd + ") and ";
+            if (itcd != "") sql += "a.itcd in (" + itcd + ") and ";
+            if (baleno != "") sql += "a.baleno||baleyr in (" + baleno + ") and ";
+            sql += "a.gocd=g.gocd(+) ";
+            sql += "order by baleyr, baleno, styleno ";
+            return tbl;
+        }
+
 
     }
 }

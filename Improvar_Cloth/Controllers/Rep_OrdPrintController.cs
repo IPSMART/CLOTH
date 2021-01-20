@@ -129,84 +129,115 @@ namespace Improvar.Controllers
                 }
 
 
-                //DataTable IR = new DataTable();
+                DataTable IR = new DataTable();
                 //IR.Columns.Add("docno", typeof(string), "");
                 //IR.Columns.Add("docdt", typeof(string), "");
-                //IR.Columns.Add("slnm", typeof(string), "");
                 //IR.Columns.Add("slcd", typeof(string), "");
-                //IR.Columns.Add("trslnm", typeof(string), "");
-                //IR.Columns.Add("trslcd", typeof(string), "");
-                //IR.Columns.Add("cournm", typeof(string), "");
-                //IR.Columns.Add("destn", typeof(string), "");
-                //IR.Columns.Add("agslnm", typeof(string), "");
-                //IR.Columns.Add("agslcd", typeof(string), "");
-                //IR.Columns.Add("slmslnm", typeof(string), "");
-                //IR.Columns.Add("slmslcd", typeof(string), "");
-                //IR.Columns.Add("prcnm", typeof(string), "");
-                //IR.Columns.Add("rem", typeof(string), "");
-                //IR.Columns.Add("splnote", typeof(string), "");
-                //IR.Columns.Add("gstno", typeof(string), "");
-                //IR.Columns.Add("docth1", typeof(string), "");
-                //IR.Columns.Add("docth2", typeof(string), "");
-                //IR.Columns.Add("docth3", typeof(string), "");
-                //IR.Columns.Add("scmnm", typeof(string), "");
-                //IR.Columns.Add("totbox", typeof(string), "");
-                //IR.Columns.Add("toset", typeof(string), "");
-                //IR.Columns.Add("ordamt", typeof(double), "");
-                //IR.Columns.Add("delvtypedsc", typeof(string), "");
-                ////extra
-                //IR.Columns.Add("rateprint", typeof(string), "");
-                //IR.Columns.Add("crslcd", typeof(string), "");
-                //IR.Columns.Add("prccd", typeof(string), "");
-                //IR.Columns.Add("prceffdt", typeof(string), "");
-                //IR.Columns.Add("discrtcd", typeof(string), "");
-                //IR.Columns.Add("discrteffdt", typeof(string), "");
-                //IR.Columns.Add("district", typeof(string), "");
-                //IR.Columns.Add("crslnm", typeof(string), "");
-                //IR.Columns.Add("regemailid", typeof(string), "");
-                //IR.Columns.Add("add1", typeof(string), "");
-                //IR.Columns.Add("add2", typeof(string), "");
-                //IR.Columns.Add("add3", typeof(string), "");
-                //IR.Columns.Add("add4", typeof(string), "");
-                //IR.Columns.Add("add5", typeof(string), "");
-                //IR.Columns.Add("add6", typeof(string), "");
-                //IR.Columns.Add("add7", typeof(string), "");
-                //IR.Columns.Add("usr_id", typeof(string), "");
-                //IR.Columns.Add("usr_entdt", typeof(string), "");
-                //IR.Columns.Add("paytrmcd", typeof(string), "");
-                //IR.Columns.Add("paytrmnm", typeof(string), "");
-                //IR.Columns.Add("duedays", typeof(string), "");
-                ////details
-                //IR.Columns.Add("slno", typeof(double), "");
-                //IR.Columns.Add("styleno", typeof(string), "");
-                //IR.Columns.Add("itnm", typeof(string), "");
-                //IR.Columns.Add("stktype", typeof(string), "");
-                //IR.Columns.Add("pcstyle", typeof(string), "");
-                //IR.Columns.Add("sizes", typeof(string), "");
-                //IR.Columns.Add("boxpcs", typeof(string), "");
-                //IR.Columns.Add("tbox", typeof(double), "");
-                //IR.Columns.Add("tpcs", typeof(double), "");
-                //IR.Columns.Add("rate", typeof(double), "");
-                //IR.Columns.Add("obldt1", typeof(string), "");
-                //IR.Columns.Add("oblno1", typeof(string), "");
-                //IR.Columns.Add("oblamt1", typeof(string), "");
-                //IR.Columns.Add("osamt1", typeof(string), "");
-                //IR.Columns.Add("obldt2", typeof(string), "");
-                //IR.Columns.Add("oblno2", typeof(string), "");
-                //IR.Columns.Add("oblamt2", typeof(string), "");
-                //IR.Columns.Add("osamt2", typeof(string), "");
-                //IR.Columns.Add("totos", typeof(string), "");
-                //IR.Columns.Add("prefno", typeof(string), "");
-                //IR.Columns.Add("prefdt", typeof(string), "");
+                //IR.Columns.Add("SLNM", typeof(string), "");
+                //IR.Columns.Add("address", typeof(string), "");
+                IR.Columns.Add("slno", typeof(int), "");
+                IR.Columns.Add("itgrpcd", typeof(string), "");
+                IR.Columns.Add("itgrpnm", typeof(string), "");
+                IR.Columns.Add("ITCD", typeof(string), "");
+                IR.Columns.Add("ITNM", typeof(string), "");
+                IR.Columns.Add("STYLENO", typeof(string), "");
+                IR.Columns.Add("ITREM", typeof(string), "");
+                IR.Columns.Add("fabitcd", typeof(string), "");
+                IR.Columns.Add("PDESIGN", typeof(string), "");
+                IR.Columns.Add("STKDRCR", typeof(string), "");
+                IR.Columns.Add("STKTYPE", typeof(string), "");
+                IR.Columns.Add("FREESTK", typeof(string), "");
+                IR.Columns.Add("PCSPERSET", typeof(string), "");
+                IR.Columns.Add("sizecd", typeof(string), "");
+                IR.Columns.Add("UOMCD", typeof(string), "");
+                IR.Columns.Add("qnty", typeof(double), "");
+                IR.Columns.Add("rate", typeof(double), "");
+                IR.Columns.Add("scmdiscamt", typeof(double), "");
+                IR.Columns.Add("discamt", typeof(double), "");
+                IR.Columns.Add("DELVDT", typeof(string), "");
+
+
+                for (int m = 0; m <= rstbl.Rows.Count - 1; m++)
+                {
+                    DataRow fin1 = IR.NewRow();
+                    //fin1["docno"] = rstbl.Rows[m]["docno"].ToString();
+                    //fin1["docdt"] = rstbl.Rows[m]["docdt"].ToString().Remove(10);
+                    //fin1["slcd"] = rstbl.Rows[m]["slcd"].ToString();
+                    //fin1["SLNM"] = rstbl.Rows[m]["SLNM"].ToString();
+                    //fin1["address"] = rstbl.Rows[m]["address"].ToString();
+                    fin1["slno"] = rstbl.Rows[m]["slno"].retInt();
+                    fin1["itgrpcd"] = rstbl.Rows[m]["itgrpcd"].ToString();
+                    fin1["itgrpnm"] = rstbl.Rows[m]["itgrpnm"].ToString();
+                    fin1["ITCD"] = rstbl.Rows[m]["ITCD"].ToString();
+                    fin1["ITNM"] = rstbl.Rows[m]["ITNM"].ToString();
+                    fin1["STYLENO"] = rstbl.Rows[m]["STYLENO"].ToString();
+                    fin1["fabitcd"] = rstbl.Rows[m]["fabitcd"].ToString();
+                    fin1["PDESIGN"] = rstbl.Rows[m]["PDESIGN"].ToString();
+                    fin1["STKDRCR"] = rstbl.Rows[m]["STKDRCR"].ToString();
+                    fin1["STKTYPE"] = rstbl.Rows[m]["STKTYPE"].ToString();
+                    fin1["FREESTK"] = rstbl.Rows[m]["FREESTK"].ToString();
+                    fin1["PCSPERSET"] = rstbl.Rows[m]["PCSPERSET"].ToString();
+                    fin1["sizecd"] = rstbl.Rows[m]["sizecd"].ToString();
+                    fin1["UOMCD"] = rstbl.Rows[m]["UOMCD"].ToString();
+                    fin1["qnty"] = rstbl.Rows[m]["qnty"].ToString();
+                    fin1["rate"] = rstbl.Rows[m]["rate"].ToString();
+                    fin1["scmdiscamt"] = rstbl.Rows[m]["scmdiscamt"].ToString();
+                    fin1["discamt"] = rstbl.Rows[m]["discamt"].ToString();
+                    fin1["DELVDT"] = rstbl.Rows[m]["DELVDT"].ToString();
+                    fin1["ITREM"] = rstbl.Rows[m]["ITREM"].ToString();
+                    IR.Rows.Add(fin1);
+                }
+                string compaddress;
+                compaddress = Salesfunc.retCompAddress();
 
                 ExcelPackage workbook = new ExcelPackage();
                 ExcelWorksheet worksheet = workbook.Workbook.Worksheets.Add("Sheet1");
-                int excelRow = 1; int excelColumn = 1;
-
-                foreach (DataRow dr in rstbl.Rows)
+                int row = 1;
+                worksheet.Cells["A" + row].Value = compaddress.retCompValue("compnm");
+                worksheet.Cells["A" + row].Style.Font.Bold = true;
+                row++;
+                if (compaddress.retCompValue("compadd").retStr() != "")
                 {
-                    worksheet.Cells[excelRow, ++excelColumn].Value = dr["ITNM"].ToString();
+                    worksheet.Cells["A" + row++].Value = compaddress.retCompValue("compadd");
                 }
+                if (compaddress.retCompValue("compcommu").retStr() != "")
+                {
+                    worksheet.Cells["A" + row++].Value = compaddress.retCompValue("compcommu");
+                }
+                if (compaddress.retCompValue("compstat").retStr() != "")
+                {
+                    worksheet.Cells["A" + row++].Value = compaddress.retCompValue("compstat");
+                }
+                if (compaddress.retCompValue("corpadd").retStr() != "")
+                {
+                    worksheet.Cells["A" + row++].Value = compaddress.retCompValue("corpadd");
+                }
+                if (compaddress.retCompValue("corpcommu").retStr() != "")
+                {
+                    worksheet.Cells["A" + row++].Value = compaddress.retCompValue("corpcommu");
+                }
+                if (compaddress.retCompValue("locaadd").retStr() != "")
+                {
+                    worksheet.Cells["A" + row++].Value = compaddress.retCompValue("locaadd");
+                }
+                if (compaddress.retCompValue("locacommu").retStr() != "")
+                {
+                    worksheet.Cells["A" + row++].Value = compaddress.retCompValue("locacommu");
+                }
+                if (compaddress.retCompValue("locastat").retStr() != "")
+                {
+                    worksheet.Cells["A" + row++].Value = compaddress.retCompValue("locastat");
+                }
+                row++;
+                worksheet.Cells["A" + row++].Value = "To : " + rstbl.Rows[0]["slnm"] + "[" + rstbl.Rows[0]["slcd"] + "]";
+                worksheet.Cells["A" + row++].Value = rstbl.Rows[0]["address"];
+
+                row++;
+                worksheet.Cells["A" + row++].Value = "Order No: " + rstbl.Rows[0]["docno"];
+                worksheet.Cells["A" + row++].Value = "Order Date: " + rstbl.Rows[0]["docdt"].retStr().Remove(10);
+
+                row++;
+                worksheet.Cells["A" + row++].LoadFromDataTable(IR, true);
                 Response.ClearContent();
                 Response.Clear();
                 Response.Buffer = true;
