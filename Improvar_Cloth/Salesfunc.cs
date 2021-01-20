@@ -940,14 +940,10 @@ namespace Improvar
                 sql += "union all ";
                 sql += "select '' gocd, 'FS' mtrljobcd, 'F' stktype, d.barno, d.itcd, '' partcd, d.colrcd, d.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
                 sql += "from " + scm + ".m_sitem_barcode d, " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
-                sql += "where d.barno=a.barno(+) and a.barno=b.barno(+) and a.autono=c.autono(+) and ";
-                sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and a.stkdrcr in ('D','C') and ";
-                if (gocd.retStr() != "") sql += "a.gocd in (" + gocd + ") and ";
-                if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
-                if (itcd.retStr() != "") sql += "b.itcd in (" + itcd + ") and ";
-                if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
-                if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
-                sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and ";
+                sql += "where d.barno=a.barno(+) and a.barno=b.barno(+) and ";
+                if (barno.retStr() != "") sql += "upper(d.barno) in (" + barno + ") and ";
+                if (itcd.retStr() != "") sql += "d.itcd in (" + itcd + ") and ";
+                sql += "a.autono=c.autono(+) and ";
                 sql += "a.barno is null ";
             }
             if (pendpslipconsider == true)
