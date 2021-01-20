@@ -984,7 +984,6 @@
     <Content Include="Report\CORRES.rpt" />
     <Content Include="Park.ini" />
     <None Include="Properties\PublishProfiles\IpSmart_Sales.pubxml" />
-    <Content Include="Report\JobIssue1.rpt" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\capsLock.js" />
     <Content Include="Scripts\Cloth.js" />
@@ -1274,26 +1273,26 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Report\JobIssue.rpt">
+    <Content Include="Report\JobIssue.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>JobIssue.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Report\PrintBarcode.rpt">
+    </Content>
+    <Content Include="Report\PrintBarcode.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>PrintBarcode.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Report\SaleBill.rpt">
+    </Content>
+    <Content Include="Report\SaleBill.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Report\SaleBillHalf.rpt">
+    </Content>
+    <Content Include="Report\SaleBillHalf.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBillHalf.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Report\SaleBill_Cloth.rpt">
+    </Content>
+    <Content Include="Report\SaleBill_Cloth.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_Cloth.cs</LastGenOutput>
-    </EmbeddedResource>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
