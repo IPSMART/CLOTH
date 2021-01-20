@@ -290,6 +290,7 @@
         <input type="hidden" id="UrlRateHistory" value="@Url.Action("GetRateHistoryDetails", PageControllerName )" />
         <input type="hidden" id="UrlItemDetails" value="@Url.Action("GetItemDetails", PageControllerName )" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+        <input type="hidden" id="UrlCheckBillNumber" value="@Url.Action("CheckBillNumber", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -834,7 +835,7 @@
                                 </div>
                                 <div class="col-md-10">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO" } })
+                                        @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO", onblur = "CheckBillNumber();" } })
                                     </div>
                                 </div>
                                 <div class="col-md-4">

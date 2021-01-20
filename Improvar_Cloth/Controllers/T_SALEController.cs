@@ -2405,6 +2405,28 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+        public ActionResult CheckBillNumber(TransactionSaleEntry VE, string BILL_NO, string SUPPLIER, string AUTO_NO)
+        {
+            Cn.getQueryString(VE);
+            if (VE.DefaultAction == "A") AUTO_NO = "";
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            string COM_CD = CommVar.Compcd(UNQSNO);
+            if (BILL_NO.retStr() == "") return Content("0");
+
+            var query = (from c in DB.T_TXN
+                         join d in DB.T_CNTRL_HDR on c.AUTONO equals d.AUTONO
+                         where (c.PREFNO == BILL_NO && c.SLCD == SUPPLIER && c.AUTONO != AUTO_NO && d.COMPCD == COM_CD)
+                         select c);
+            if (query.Any())
+            {
+                return Content("1");
+            }
+            else
+            {
+                return Content("0");
+            }
+
+        }
         public ActionResult SAVE(FormCollection FC, TransactionSaleEntry VE)
         {
             Cn.getQueryString(VE);

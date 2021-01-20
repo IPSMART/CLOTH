@@ -2938,6 +2938,35 @@ function GetHelpBlur_T_Sale(urlstring, caption, hlpfield, blurflds, dependfldIds
         });
     }
 }
+function CheckBillNumber() {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var BILL_NO = $("#PREFNO").val();
+    var SUPPLIER = $("#SLCD").val();
+    var AUTO_NO = $("#AUTONO").val();
+    if (BILL_NO != "") {
+        $.ajax({
+            type: 'GET',
+            url: $("#UrlCheckBillNumber").val(), //"@Url.Action("CheckBillNumber", PageControllerName)",
+            data:
+        {
+            BILL_NO: BILL_NO, SUPPLIER: SUPPLIER, AUTO_NO: AUTO_NO,
+        },
+            success: function (result) {
+                if (result == "1") {
+                    msgInfo("Bill Number Already Exists, for Particular Sub Code : Please Enter a Different Bill Number !! ");
+                    message_value = "PREFNO";
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+}
 
 
 
