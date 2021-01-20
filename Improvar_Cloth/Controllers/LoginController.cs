@@ -109,6 +109,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return RedirectToAction("Datelock", "Login", new { str = ex.Message });
             }
         }
@@ -200,7 +201,7 @@ namespace Improvar.Controllers
                     bool validIP = Cn.LoginIPValidate(log.UserName);
                     if (validIP == false)
                     {
-                        msg = "You are not authorised to login from IP "+ Cn.GetStaticIp() + "... Contact System Administrator...";
+                        msg = "You are not authorised to login from IP " + Cn.GetStaticIp() + "... Contact System Administrator...";
                         ViewBag.Msg = msg;
                         ModelState.Clear();
                     }
@@ -247,33 +248,42 @@ namespace Improvar.Controllers
             }
             return View(log);
         }
-     
+
         public ActionResult ChangePassword(string USERID)
         {
+
             Password pass = new Password();
-            pass.UserName = USERID;
-            string sql = "select * from ipsmart_policy where rownum=1";
-            DataTable dt = masterHelp.SQLquery(sql);
-            var ipsmart_policy = (from DataRow dr in dt.Rows
-                      select new
-                      {
-                          NOOFTXTCHAR = dr["NOOFTXTCHAR"],
-                          NOOFLOWERCHAR = dr["NOOFLOWERCHAR"],
-                          NOOFUPPERCHAR = dr["NOOFUPPERCHAR"],
-                          NOOFSPCHAR = dr["NOOFSPCHAR"],
-                          NOOFNUMCHAR = dr["NOOFNUMCHAR"],
-                          MINPWDLENGTH = dr["MINPWDLENGTH"],
-                          MAXPWDLENGTH = dr["MAXPWDLENGTH"],
-                      }).FirstOrDefault();
-            if (ipsmart_policy != null)
+            try
             {
-                pass.NOOFTXTCHAR = ipsmart_policy.NOOFTXTCHAR.retInt();
-                pass.NOOFLOWERCHAR = ipsmart_policy.NOOFLOWERCHAR.retInt();
-                pass.NOOFUPPERCHAR = ipsmart_policy.NOOFUPPERCHAR.retInt();
-                pass.NOOFSPCHAR = ipsmart_policy.NOOFSPCHAR.retInt();
-                pass.NOOFNUMCHAR = ipsmart_policy.NOOFNUMCHAR.retInt();
-                pass.MINPWDLENGTH = ipsmart_policy.MINPWDLENGTH.retInt();
-                pass.MAXPWDLENGTH = ipsmart_policy.MAXPWDLENGTH.retInt();
+                pass.UserName = USERID;
+                string sql = "select * from ipsmart_policy where rownum=1";
+                DataTable dt = masterHelp.SQLquery(sql);
+                var ipsmart_policy = (from DataRow dr in dt.Rows
+                                      select new
+                                      {
+                                          NOOFTXTCHAR = dr["NOOFTXTCHAR"],
+                                          NOOFLOWERCHAR = dr["NOOFLOWERCHAR"],
+                                          NOOFUPPERCHAR = dr["NOOFUPPERCHAR"],
+                                          NOOFSPCHAR = dr["NOOFSPCHAR"],
+                                          NOOFNUMCHAR = dr["NOOFNUMCHAR"],
+                                          MINPWDLENGTH = dr["MINPWDLENGTH"],
+                                          MAXPWDLENGTH = dr["MAXPWDLENGTH"],
+                                      }).FirstOrDefault();
+                if (ipsmart_policy != null)
+                {
+                    pass.NOOFTXTCHAR = ipsmart_policy.NOOFTXTCHAR.retInt();
+                    pass.NOOFLOWERCHAR = ipsmart_policy.NOOFLOWERCHAR.retInt();
+                    pass.NOOFUPPERCHAR = ipsmart_policy.NOOFUPPERCHAR.retInt();
+                    pass.NOOFSPCHAR = ipsmart_policy.NOOFSPCHAR.retInt();
+                    pass.NOOFNUMCHAR = ipsmart_policy.NOOFNUMCHAR.retInt();
+                    pass.MINPWDLENGTH = ipsmart_policy.MINPWDLENGTH.retInt();
+                    pass.MAXPWDLENGTH = ipsmart_policy.MAXPWDLENGTH.retInt();
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
             return View(pass);
         }
@@ -402,6 +412,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 ViewBag.FlagCS = "0";
                 ViewBag.Msg = ex.Message;
             }
@@ -410,29 +421,36 @@ namespace Improvar.Controllers
         public ActionResult ForgotPassword(string USERID)
         {
             Password pass = new Password();
-            pass.UserName = USERID;
-            string sql = "select * from ipsmart_policy where rownum=1";
-            DataTable dt = masterHelp.SQLquery(sql);
-            var ipsmart_policy = (from DataRow dr in dt.Rows
-                                  select new
-                                  {
-                                      NOOFTXTCHAR = dr["NOOFTXTCHAR"],
-                                      NOOFLOWERCHAR = dr["NOOFLOWERCHAR"],
-                                      NOOFUPPERCHAR = dr["NOOFUPPERCHAR"],
-                                      NOOFSPCHAR = dr["NOOFSPCHAR"],
-                                      NOOFNUMCHAR = dr["NOOFNUMCHAR"],
-                                      MINPWDLENGTH = dr["MINPWDLENGTH"],
-                                      MAXPWDLENGTH = dr["MAXPWDLENGTH"],
-                                  }).FirstOrDefault();
-            if (ipsmart_policy != null)
+            try
             {
-                pass.NOOFTXTCHAR = ipsmart_policy.NOOFTXTCHAR.retInt();
-                pass.NOOFLOWERCHAR = ipsmart_policy.NOOFLOWERCHAR.retInt();
-                pass.NOOFUPPERCHAR = ipsmart_policy.NOOFUPPERCHAR.retInt();
-                pass.NOOFSPCHAR = ipsmart_policy.NOOFSPCHAR.retInt();
-                pass.NOOFNUMCHAR = ipsmart_policy.NOOFNUMCHAR.retInt();
-                pass.MINPWDLENGTH = ipsmart_policy.MINPWDLENGTH.retInt();
-                pass.MAXPWDLENGTH = ipsmart_policy.MAXPWDLENGTH.retInt();
+                pass.UserName = USERID;
+                string sql = "select * from ipsmart_policy where rownum=1";
+                DataTable dt = masterHelp.SQLquery(sql);
+                var ipsmart_policy = (from DataRow dr in dt.Rows
+                                      select new
+                                      {
+                                          NOOFTXTCHAR = dr["NOOFTXTCHAR"],
+                                          NOOFLOWERCHAR = dr["NOOFLOWERCHAR"],
+                                          NOOFUPPERCHAR = dr["NOOFUPPERCHAR"],
+                                          NOOFSPCHAR = dr["NOOFSPCHAR"],
+                                          NOOFNUMCHAR = dr["NOOFNUMCHAR"],
+                                          MINPWDLENGTH = dr["MINPWDLENGTH"],
+                                          MAXPWDLENGTH = dr["MAXPWDLENGTH"],
+                                      }).FirstOrDefault();
+                if (ipsmart_policy != null)
+                {
+                    pass.NOOFTXTCHAR = ipsmart_policy.NOOFTXTCHAR.retInt();
+                    pass.NOOFLOWERCHAR = ipsmart_policy.NOOFLOWERCHAR.retInt();
+                    pass.NOOFUPPERCHAR = ipsmart_policy.NOOFUPPERCHAR.retInt();
+                    pass.NOOFSPCHAR = ipsmart_policy.NOOFSPCHAR.retInt();
+                    pass.NOOFNUMCHAR = ipsmart_policy.NOOFNUMCHAR.retInt();
+                    pass.MINPWDLENGTH = ipsmart_policy.MINPWDLENGTH.retInt();
+                    pass.MAXPWDLENGTH = ipsmart_policy.MAXPWDLENGTH.retInt();
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
             }
             return View(pass);
         }
@@ -440,92 +458,101 @@ namespace Improvar.Controllers
         {
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CommSchema()))
             {
-                USER_APPL userdata = DB.USER_APPL.Where(s => s.USER_ID.ToUpper() == USERID.ToUpper()).FirstOrDefault();
-                if (userdata == null)
-                {
-                    return Content("user id not found");
-                }
-                userdata = DB.USER_APPL.Where(s => s.USER_ID.ToUpper() == USERID.ToUpper() && s.ACTIVE_TAG != "N").FirstOrDefault();
-                if (userdata == null)
-                {
-                    return Content("User Id not activated.Please Contact System Administrator.");
-                }
-                bool validIP = Cn.LoginIPValidate(USERID);
-                if (validIP == false)
-                {
-                    return Content("You are not authorised to login from IP " + Cn.GetStaticIp() + "... Contact System Administrator...");
-                }
-                string otp = Cn.GenerateOTP(false, 6);
-                // bool otpsend = false;
-                string sql = "";
-
-                sql = "insert into pssw_invalid (user_id, password, login_date, user_ip, user_static_ip) values (";
-                sql += "'" + USERID + "','OTP',SYSDATE,'" + Cn.GetIp() + "','" + Cn.GetStaticIp() + "')";
-                masterHelp.SQLNonQuery(sql);
-                sql = "select count(*) treco from pssw_invalid where user_id='" + USERID + "' and password='OTP' and " ;
-                sql += "to_char(login_date,'yyyy') = to_char(sysdate,'yyyy')";
-                DataTable tblpw = masterHelp.SQLquery(sql);
-                if (tblpw.Rows.Count > 0)
-                {
-                    if (Convert.ToDouble(tblpw.Rows[0]["treco"]) > 40)
-                    {
-                        return Content("You have tried maximum 40 attempt in OTP/Forgot Password..Contact Administrator");
-                    }
-                }
                 string msg = "";
-                string smsbody = otp + " is your OTP for forgot password on IPSMART ERP. Do not share with anyone.";
-                if (string.IsNullOrEmpty(userdata.MOBILE))
+                try
                 {
-                    msg += " Mobile No Not Found. ";
-                }
-                if (string.IsNullOrEmpty(userdata.EMAIL))
-                {
-                    msg += " Email ID No Not Found. ";
-                }
-                sql = "select max(schema_name) schema_name from IMPROVAR.FIN_COMPANY";
-                string schemaname = "";
-                DataTable dt = masterHelp.SQLquery(sql);
-                if (dt != null && dt.Rows.Count > 0)
-                {
-                    try
+                    USER_APPL userdata = DB.USER_APPL.Where(s => s.USER_ID.ToUpper() == USERID.ToUpper()).FirstOrDefault();
+                    if (userdata == null)
                     {
-                        schemaname = dt.Rows[0]["schema_name"].ToString();
-                        sql = "select a.smsurl from " + schemaname + ".m_sms_config a order by slno";
-                        DataTable tbl = masterHelp.SQLquery(sql);
-                        string smsurl = "";
-                        if (tbl.Rows.Count > 0) smsurl = tbl.Rows[0]["smsurl"].ToString();
-                        if (smsurl == "")
+                        return Content("user id not found");
+                    }
+                    userdata = DB.USER_APPL.Where(s => s.USER_ID.ToUpper() == USERID.ToUpper() && s.ACTIVE_TAG != "N").FirstOrDefault();
+                    if (userdata == null)
+                    {
+                        return Content("User Id not activated.Please Contact System Administrator.");
+                    }
+                    bool validIP = Cn.LoginIPValidate(USERID);
+                    if (validIP == false)
+                    {
+                        return Content("You are not authorised to login from IP " + Cn.GetStaticIp() + "... Contact System Administrator...");
+                    }
+                    string otp = Cn.GenerateOTP(false, 6);
+                    // bool otpsend = false;
+                    string sql = "";
+
+                    sql = "insert into pssw_invalid (user_id, password, login_date, user_ip, user_static_ip) values (";
+                    sql += "'" + USERID + "','OTP',SYSDATE,'" + Cn.GetIp() + "','" + Cn.GetStaticIp() + "')";
+                    masterHelp.SQLNonQuery(sql);
+                    sql = "select count(*) treco from pssw_invalid where user_id='" + USERID + "' and password='OTP' and ";
+                    sql += "to_char(login_date,'yyyy') = to_char(sysdate,'yyyy')";
+                    DataTable tblpw = masterHelp.SQLquery(sql);
+                    if (tblpw.Rows.Count > 0)
+                    {
+                        if (Convert.ToDouble(tblpw.Rows[0]["treco"]) > 40)
                         {
-                            smsurl = "http://59.162.167.52/api/MessageCompose?admin=info@nkinfo.in&user=ipsmart@nkinfo.in:ipsmart12345&senderID=IPSMRT&receipientno=#MOBILENO#&msgtxt=#MESSAGE#&state=4";
-                        }
-                        if (userdata.MOBILE != "")
-                        {
-                            smsurl = smsurl.Replace("#MOBILENO#", userdata.MOBILE);
-                            smsurl = smsurl.Replace("#MESSAGE#", smsbody);
-                            WebRequest rqst = HttpWebRequest.Create(smsurl);
-                            HttpWebResponse rspns = (HttpWebResponse)rqst.GetResponse();
-                            Stream strm = (Stream)rspns.GetResponseStream();
-                            StreamReader strmrdr = new StreamReader(strm);
-                            smsurl = strmrdr.ReadToEnd();
-                            rspns.Close();
-                            strm.Close();
-                            strmrdr.Close();
-                            // otpsend = true;
-                            msg += " SMS send to " + userdata.MOBILE;
+                            return Content("You have tried maximum 40 attempt in OTP/Forgot Password..Contact Administrator");
                         }
                     }
-                    catch (Exception ex)
+
+                    string smsbody = otp + " is your OTP for forgot password on IPSMART ERP. Do not share with anyone.";
+                    if (string.IsNullOrEmpty(userdata.MOBILE))
                     {
-                        msg = ex.Message;
+                        msg += " Mobile No Not Found. ";
                     }
+                    if (string.IsNullOrEmpty(userdata.EMAIL))
+                    {
+                        msg += " Email ID No Not Found. ";
+                    }
+                    sql = "select max(schema_name) schema_name from IMPROVAR.FIN_COMPANY";
+                    string schemaname = "";
+                    DataTable dt = masterHelp.SQLquery(sql);
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        try
+                        {
+                            schemaname = dt.Rows[0]["schema_name"].ToString();
+                            sql = "select a.smsurl from " + schemaname + ".m_sms_config a order by slno";
+                            DataTable tbl = masterHelp.SQLquery(sql);
+                            string smsurl = "";
+                            if (tbl.Rows.Count > 0) smsurl = tbl.Rows[0]["smsurl"].ToString();
+                            if (smsurl == "")
+                            {
+                                smsurl = "http://59.162.167.52/api/MessageCompose?admin=info@nkinfo.in&user=ipsmart@nkinfo.in:ipsmart12345&senderID=IPSMRT&receipientno=#MOBILENO#&msgtxt=#MESSAGE#&state=4";
+                            }
+                            if (userdata.MOBILE != "")
+                            {
+                                smsurl = smsurl.Replace("#MOBILENO#", userdata.MOBILE);
+                                smsurl = smsurl.Replace("#MESSAGE#", smsbody);
+                                WebRequest rqst = HttpWebRequest.Create(smsurl);
+                                HttpWebResponse rspns = (HttpWebResponse)rqst.GetResponse();
+                                Stream strm = (Stream)rspns.GetResponseStream();
+                                StreamReader strmrdr = new StreamReader(strm);
+                                smsurl = strmrdr.ReadToEnd();
+                                rspns.Close();
+                                strm.Close();
+                                strmrdr.Close();
+                                // otpsend = true;
+                                msg += " SMS send to " + userdata.MOBILE;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Cn.SaveException(ex, "");
+                            msg = ex.Message;
+                        }
+                    }
+                    string body = "Hi " + userdata.USER_NAME + ",<br/><br/><b>" + otp + "</b> is your OTP for forgot password on IPSMART ERP. Do not share with anyone. <br/><br/><br/> Thanks and regards<br/> IPSMART TEAM <BR/>PH: 033-4602-1119";
+                    if (EmailControl.SendEmailfromIpsmart(userdata.EMAIL, "Forgot Password", body, "") == true)
+                    {
+                        //   otpsend = true;
+                        msg += " Mail send to " + userdata.EMAIL;
+                    }
+                    Session["FORGOTOTP"] = otp;
                 }
-                string body = "Hi " + userdata.USER_NAME + ",<br/><br/><b>" + otp + "</b> is your OTP for forgot password on IPSMART ERP. Do not share with anyone. <br/><br/><br/> Thanks and regards<br/> IPSMART TEAM <BR/>PH: 033-4602-1119";
-                if (EmailControl.SendEmailfromIpsmart(userdata.EMAIL, "Forgot Password", body, "") == true)
+                catch (Exception ex)
                 {
-                    //   otpsend = true;
-                    msg += " Mail send to " + userdata.EMAIL;
+                    Cn.SaveException(ex, "");
                 }
-                Session["FORGOTOTP"] = otp;
                 return Content(msg);
             }
         }
@@ -623,10 +650,11 @@ namespace Improvar.Controllers
                 {
                     ViewBag.FlagCS = "0";
                 }
-                ViewBag.Msg = msg;  
+                ViewBag.Msg = msg;
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 ViewBag.FlagCS = "0";
                 ViewBag.Msg = ex.Message;
             }
