@@ -21,6 +21,7 @@
 
 }
 function GetBarnoDetails(id, HelpFrom) {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     if (id == "") {
@@ -38,15 +39,21 @@ function GetBarnoDetails(id, HelpFrom) {
         var gocd = $("#GOCD").val();
         var prccd = $("#PRCCD").val();
         var allmtrljobcd = $("#ALLMTRLJOBCD").val();
-        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom;
-        var hlpfieldid = "", hlpfieldindex = "";
+        var BARCODE = $("#BARCODE").val();
+        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE;
+
+        var hlpfieldid = "", hlpfieldindex = "", ReferanceFieldID = "", ReferanceFieldIndex = "";
         if (HelpFrom == "Bar") {
             hlpfieldid = "BARCODE";
             hlpfieldindex = "0";
+            ReferanceFieldID = "/STYLENO";
+            ReferanceFieldIndex = "/3";
         }
         else {
             hlpfieldid = "STYLENO";
             hlpfieldindex = "3";
+            ReferanceFieldID = "/BARCODE";
+            ReferanceFieldIndex = "/0";
         }
         $.ajax({
             type: 'POST',
@@ -59,8 +66,8 @@ function GetBarnoDetails(id, HelpFrom) {
                     ClearBarcodeArea();
                     $('#SearchFldValue').val(hlpfieldid);
                     $('#helpDIV').html(result);
-                    $('#ReferanceFieldID').val(hlpfieldid + '/PARTCD');
-                    $('#ReferanceColumn').val(hlpfieldindex + '/8');
+                    $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/PARTCD');
+                    $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/8');
                     $('#helpDIV_Header').html('Barno Details');
                 }
                 else {
