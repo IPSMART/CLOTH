@@ -3735,7 +3735,11 @@ namespace Improvar.Controllers
                         #endregion
                     }
 
-
+                    if ((igst != 0 && (cgst + sgst) != 0) || (igst + cgst + sgst == 0))
+                    {
+                        dberrmsg = "We can't add igst+cgst+sgst for the same party.";
+                        goto dbnotsave;
+                    }
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
                     {
                         dberrmsg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
