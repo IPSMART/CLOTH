@@ -60,7 +60,7 @@ namespace Improvar.Controllers
         [HttpPost]
         public ActionResult Rep_Bale_History(FormCollection FC, ReportViewinHtml VE)
         {
-            try
+            try  
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
