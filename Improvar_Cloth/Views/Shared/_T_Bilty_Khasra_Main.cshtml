@@ -8,7 +8,7 @@
             @Html.ValidationSummary(true)
             <div class="grid_title">
                 @*<img src="~/Image/Plus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnAddPART" title="Add Row" onclick="AddRowPARTS()" />*@
-                <img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeletePART" title="Delete Row" onclick="DeleteRow()" />
+                @*<img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeletePART" title="Delete Row" onclick="DeleteRow()" />*@
 
                 <div class="col-md-10">
                     <input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_Bilty_Khasra_Main');" />
@@ -57,26 +57,21 @@
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].ITCD, new { id = "ITCD_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
-
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].ITNM, new { id = "ITNM_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
-
                                         </td>
-                                        <td class="grid_td">
+                                        <td class="grid_td" >
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].NOS, new { id = "ITNM_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
-
                                         </td>
                                         <td class="grid_td">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].QNTY, new { id = "QNTY_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
-
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].QNTY, new { id = "QNTY_" + i, maxlength = 15, @title = "Only For Display", style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="grid_td">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].RATE, new { id = "QNTY_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
-
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].RATE, new { id = "QNTY_" + i, maxlength = 15, @title = "Only For Display", style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="grid_td">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].UOMCD, new { id = "UOMCD_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].UOMCD, new { id = "UOMCD_" + i, maxlength = 10, @title = "Only For Display", style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].SHADE, new { id = "SHADE_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })

@@ -643,6 +643,7 @@ function Fill_DetailData() {
         success: function (result) {
             if (result == "0") {
                 msgInfo("Bill Sl# duplicate in barcode tab!");
+                message_value = "FillDetail";
                 return false;
             }
             else {

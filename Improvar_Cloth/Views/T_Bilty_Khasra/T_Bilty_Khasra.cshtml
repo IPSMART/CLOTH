@@ -3,10 +3,10 @@
     string PageControllerName = "T_Bilty_Khasra";
     switch (Model.MENU_PARA)
     {
-        case "SBCM":
-            ViewBag.Title = "Cash Memo"; break;
-        case "SBCMR":
-            ViewBag.Title = "Cash Memo Credit Note"; break;
+        case "KHSR":
+            ViewBag.Title = "Khasra"; break;
+        case "TRFB":
+            ViewBag.Title = "Sotck Transfer Bale"; break;
         default: ViewBag.Title = ""; break;
     }
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -64,7 +64,33 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter Party", "MUTSLCD")) { return false; }
+        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+       
+        if ("@Model.MENU_PARA" == "TRFB")
+        {
+            var gocd = $("#GOCD").val();
+            if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
+            for (var i = 0; i < GridRowMain;i++)
+            {
+                var grgocd=$("#GOCD_"+i).val();
+                if (gocd == grgocd) {
+                    msgInfo("GOCD header and grid should not same. ");
+                    message_value = "GOCD";
+                    return false;
+                }
+            }
+        }
+        else if ("@Model.MENU_PARA" == "KHSR")
+        { 
+            for (var i = 0; i < GridRowMain; i++) {
+                var grgocd = $("#GOCD_" + i).val();
+                if ( grgocd=="") {
+                    msgInfo("GOCD enter in the grid");
+                    message_value = "GOCD_"+i;
+                    return false;
+                }
+            }
+        }
         return true;
     }
 </script>
@@ -112,24 +138,6 @@
     }
 </script>
 <script>
-    function pageprinting() {
-        var ty = $("#DOCCD").val();
-        $.ajax({
-            type: 'get',
-            url: "@Url.Action("Print", PageControllerName)",
-            data: "DOCNO=" + $("#DOCNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
-            success: function (result) {
-                window.open("@Url.Action("Rep_OrdPrint", "Rep_OrdPrint", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
-            }
-        });
-    }
-</script>
-<script>
 
     function DeleteRow() {
         $.ajax({
@@ -150,9 +158,12 @@
 </script>
 <script>
     function GetData() {
-        debugger;
         if ("@Model.DefaultAction" != "V") {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            if ("@Model.MENU_PARA" == "TRFB")
+            {
+                if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
+            }
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("GetData", PageControllerName)",
@@ -238,8 +249,42 @@
         $('.PopUp_Backround').fadeOut();
     }
 </script>
-<script></script>
+<script>
+    function CalulateTareWt(GRWT, NTWT, TRWT) {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var GROSS = document.getElementById(GRWT.id).value;
+        if (GROSS == "") {
+            GROSS = parseFloat(0);
+        }
+        var NET = document.getElementById(NTWT.id).value;
+        if (NET == "") {
+            NET = parseFloat(0);
+        }
+        var TARE = GROSS - NET;
+        document.getElementById(TRWT.id).value = TARE.toFixed(3);
 
+    }
+</script>
+<script>
+    function pageprinting() {
+        debugger;
+        var ty = $("#DOCCD").val();
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("Print", PageControllerName)",
+            data: $('form').serialize() + "&DOCNO=" + $("#DOCONLYNO").val() + "&DOC_CD=" + $("#DOCCD").val() + "&DOCDT=" + $("#DOCDT").val(),
+            success: function (result) {
+                window.open("@Url.Action("Khasra_BaleTrnf_Print", "Khasra_BaleTrnf_Print", new { US = Model.UNQSNO_ENCRYPTED })", "_blank")
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -310,25 +355,25 @@
                     }
             </div>
             <div class="row">
-                <div class="col-md-1">
+                @if (Model.MENU_PARA == "TRFB")
+                {
+                <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Godown")
-                        <b style="color:Red;">*</b>
                     </div>
                 </div>
                 <div class="col-md-1">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
-                        @*@Html.HiddenFor(model => model.GONM, new { id = "GONM" })*@
                     </div>
                 </div>
-
-                <div class="col-md-1">
+                <div class="col-md-4">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
                     </div>
                 </div>
+                }
                 <div class="col-md-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Bale Open")
