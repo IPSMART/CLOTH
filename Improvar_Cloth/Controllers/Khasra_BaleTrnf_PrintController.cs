@@ -191,6 +191,7 @@ namespace Improvar.Controllers
                         dr1["nos"] = restbl.Rows[i]["nos"].ToString();
                         dr1["qnty"] = restbl.Rows[i]["qnty"].ToString();
                         dr1["lrno"] = restbl.Rows[i]["lrno"].ToString();
+                        dr1["pageno"] = restbl.Rows[i]["pageno"].ToString()+"/";
                         dr1["gonm"] = restbl.Rows[i]["gonm"].ToString();
                         dr1["baleopen"] = restbl.Rows[i]["baleopen"].ToString();
 
