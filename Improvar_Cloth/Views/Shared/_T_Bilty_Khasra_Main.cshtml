@@ -27,6 +27,7 @@
                                 <th class="grid_th" style="width:257px;">Item Name</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Nos</th>
                                 <th class="grid_th" style="width:111px;text-align:right;">Quantity</th>
+                                <th class="grid_th" style="width:111px;text-align:right;">Rate</th>
                                 <th class="grid_th" style="width:47px;">UOM</th>
                                 <th class="grid_th" style="width: 177px;">Shade</th>
                                 <th class="grid_th" style="width:125px;">Bale No</th>
@@ -68,6 +69,10 @@
                                         </td>
                                         <td class="grid_td">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].QNTY, new { id = "QNTY_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+
+                                        </td>
+                                        <td class="grid_td">
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].RATE, new { id = "QNTY_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
 
                                         </td>
                                         <td class="grid_td">

@@ -62,6 +62,7 @@ namespace Improvar.Models
         public string ITCD { get; set; }
         public string ITNM { get; set; }
         public string QNTY { get; set; }
+        public string RATE { get; set; }
         public string UOMCD { get; set; }
         public string PAGENO { get; set; }
         public string PBLNO { get; set; }
