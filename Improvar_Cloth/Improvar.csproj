@@ -286,6 +286,7 @@
     <Compile Include="Controllers\Prepare_JSONController.cs" />
     <Compile Include="Controllers\PrintPageController.cs" />
     <Compile Include="Controllers\Rep_Bale_HistoryController.cs" />
+    <Compile Include="Controllers\Rep_Bale_StockController.cs" />
     <Compile Include="Controllers\Rep_BarcodeImageController.cs" />
     <Compile Include="Controllers\Rep_BarcodePrintController.cs" />
     <Compile Include="Controllers\Rep_Bar_HistoryController.cs" />
@@ -1248,6 +1249,7 @@
     <Content Include="Views\Rep_Bale\Rep_Bale.cshtml" />
     <Content Include="Views\Rep_Bale_History\Rep_Bale_History.cshtml" />
     <Content Include="Views\Khasra_BaleTrnf_Print\Khasra_BaleTrnf_Print.cshtml" />
+    <Content Include="Views\Rep_Bale_Stock\Rep_Bale_Stock.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
