@@ -60,5 +60,7 @@ namespace Improvar.Models
         [Required]
         [StringLength(6)]
         public string GOCD { get; set; }
+        [StringLength(1)]
+        public string BALEOPEN { get; set; }
     }
 }
