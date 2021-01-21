@@ -64,7 +64,33 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        //if (!emptyFieldCheck("Please Select / Enter Party", "MUTSLCD")) { return false; }
+        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+       
+        if ("@Model.MENU_PARA" == "TRFB")
+        {
+            var gocd = $("#GOCD").val();
+            if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
+            for (var i = 0; i < GridRowMain;i++)
+            {
+                var grgocd=$("#GOCD_"+i).val();
+                if (gocd == grgocd) {
+                    msgInfo("GOCD header and grid should not same. ");
+                    message_value = "GOCD";
+                    return false;
+                }
+            }
+        }
+        else if ("@Model.MENU_PARA" == "KHSR")
+        { 
+            for (var i = 0; i < GridRowMain; i++) {
+                var grgocd = $("#GOCD_" + i).val();
+                if ( grgocd=="") {
+                    msgInfo("GOCD enter in the grid");
+                    message_value = "GOCD_"+i;
+                    return false;
+                }
+            }
+        }
         return true;
     }
 </script>
@@ -132,9 +158,12 @@
 </script>
 <script>
     function GetData() {
-        debugger;
         if ("@Model.DefaultAction" != "V") {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            if ("@Model.MENU_PARA" == "TRFB")
+            {
+                if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
+            }
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("GetData", PageControllerName)",
@@ -326,17 +355,17 @@
                     }
             </div>
             <div class="row">
+                @if (Model.MENU_PARA == "TRFB")
+                {
                 <div class="col-md-5">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Godown")
-                        @*<b style="color:Red;">*</b>*@
                     </div>
                 </div>
                 <div class="col-md-1">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
                         <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
-                        @*@Html.HiddenFor(model => model.GONM, new { id = "GONM" })*@
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -344,6 +373,7 @@
                         @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
                     </div>
                 </div>
+                }
                 <div class="col-md-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Bale Open")
