@@ -127,7 +127,9 @@ namespace Improvar.Controllers
 
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return Content("no records..");
-
+                DataView dv = new DataView(tbl);
+                dv.Sort = "baleno,styleno,usr_entdt";
+                tbl = dv.ToTable();
                 return ReportHistory(tbl, RepeatAllRow, VE.Checkbox2, VE.Checkbox6);
 
 
