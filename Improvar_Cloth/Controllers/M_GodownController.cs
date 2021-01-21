@@ -116,7 +116,7 @@ namespace Improvar.Controllers
                 }
                 sl = DBF.M_GODOWN.Find(aa[0].Trim());
                 sll = DBF.M_CNTRL_HDR.Find(sl.M_AUTONO);
-
+                if (sl.LOCCD != null) VE.LOCNM = DBF.M_LOCA.Where(a => a.LOCCD == sl.LOCCD).Select(a => a.LOCNM).FirstOrDefault();  
                 //company view
                 //  ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
 
@@ -312,6 +312,8 @@ namespace Improvar.Controllers
                         MGODF.GOPHNO = VE.M_GODOWN.GOPHNO;
                         MGODF.GOEMAIL = VE.M_GODOWN.GOEMAIL;
                         MGODF.FSSAILICNO = VE.M_GODOWN.FSSAILICNO;
+                        MGODF.LOCCD = VE.M_GODOWN.LOCCD;
+                        MGODF.FLAG1 = VE.M_GODOWN.FLAG1;
                         if (dt.Rows.Count > 0)
                         {
                             MGODF.M_AUTONO = dt.Rows[0]["M_AUTONO"].retInt();
@@ -432,6 +434,18 @@ namespace Improvar.Controllers
                 }
             }
             // }
+        }
+        public ActionResult GetLocationDetails(string val)
+        {
+            var str = Master_Help.Location_Help(val);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
+            }
         }
     }
 }
