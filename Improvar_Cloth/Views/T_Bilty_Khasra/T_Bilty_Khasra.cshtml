@@ -1,7 +1,14 @@
 ﻿@model Improvar.ViewModels.TransactionKhasraEntry
 @{
     string PageControllerName = "T_Bilty_Khasra";
-    ViewBag.Title = "Khasra";
+    switch (Model.MENU_PARA)
+    {
+        case "SBCM":
+            ViewBag.Title = "Cash Memo"; break;
+        case "SBCMR":
+            ViewBag.Title = "Cash Memo Credit Note"; break;
+        default: ViewBag.Title = ""; break;
+    }
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
@@ -142,19 +149,17 @@
     }
 </script>
 <script>
-    function GetPendingData() {
+    function GetData() {
         debugger;
         if ("@Model.DefaultAction" != "V") {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-            var mutslcd = "";
-            var docdt = $("#DOCDT").val();
-            if ($("#MUTSLCD").val() != "") mutslcd = $("#MUTSLCD").val();
-
             $.ajax({
                 type: 'POST',
-                url: "@Url.Action("GetPendingData", PageControllerName)",
-                data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
+                url: "@Url.Action("GetData", PageControllerName)",
+                beforesend: $("#WaitingMode").show(),
+                data:  $('form').serialize(),
                 success: function (result) {
+                    $("#WaitingMode").hide();
                     if (result == 0)
                     { return msgWarning("Record not Found! Please enter valid Document date."); }
                     $("#popup").animate({ marginTop: '-10px' }, 50);
@@ -168,7 +173,6 @@
             });
         }
     }
-
 </script>
 <script>
     function SelectMatchingCheckBoxes() {
@@ -256,61 +260,83 @@
             {
                 @Html.Partial("_FilteredSearch")
             }
-            <div class="row" style="margin-top: 5px;">
-                <div class="row">
-                    <div class="col-md-5" style="margin-top: 6px;">
-                        <div class="editor-label">
-                            @Html.Label("", "Document Code")
-                            <b style="color:Red;">*</b>
-                        </div>
+            <div class="row">
+                <div class="col-md-5" style="margin-top: 6px;">
+                    <div class="editor-label">
+                        @Html.Label("", "Document Code")
+                        <b style="color:Red;">*</b>
                     </div>
-                    <div class="col-md-7">
-                        <div class="editor-field">
-                            @if (Model.DefaultAction == "A")
-                            {
-                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
-                            }
-                            else
-                            {
-                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
-                            }
-                        </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @if (Model.DefaultAction == "A")
+                        {
+                            @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                        }
                     </div>
-                    <div class="col-md-4">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Document Date")
-                            <b style="color:Red;">*</b>
-                        </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document Date")
+                        <b style="color:Red;">*</b>
                     </div>
-                    <div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                        </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_CNTRL_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                     </div>
-                    <div class="col-md-3">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Document No.")
-                        </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Document No.")
                     </div>
-                    <div class="col-md-6">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCONLYNO, new { htmlAttributes = new { @class = "form-control", id = "DOCONLYNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
-                        </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_CNTRL_HDR.DOCONLYNO, new { htmlAttributes = new { @class = "form-control", id = "DOCONLYNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                     </div>
-                    @if (Model.DefaultAction != "V")
+                </div>
+                @if (Model.DefaultAction != "V")
                     {
-
-                        <div class="col-md-7">
-                            <div class="editor-field" style="margin-top: 2px;">
-                                <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Pending Data " onclick="GetPendingData()" />
-                            </div>
+                    <div class="col-md-7">
+                        <div class="editor-field" style="margin-top: 2px;">
+                            <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Data " onclick="GetData()" />
                         </div>
+                    </div>
                     }
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Godown")
+                        <b style="color:Red;">*</b>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
+                        @*@Html.HiddenFor(model => model.GONM, new { id = "GONM" })*@
+                    </div>
+                </div>
+
+                <div class="col-md-1">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
+                    </div>
+                </div>
+                <div class="editor-field" style="margin-top:6px;">
+                    @Html.CheckBoxFor(model => model.BALEOPEN, new { id = "BALEOPEN" })
                 </div>
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
+                    <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
@@ -323,6 +349,122 @@
                                 @Html.Partial("_T_Bilty_Khasra_Main")
                             </div>
 
+                        </div>
+                    </div>
+                    <div id="Transport" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Transporter")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRANSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TRANSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Transport Mode")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.T_TXNTRANS.TRANSMODE, new SelectList(Model.TRANSMODE, "Value", "Text"), "=Select=", new { @class = "form-control", id = "TRANSMODE" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Eway Bill Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.EWAYBILLNO, new { htmlAttributes = new { @class = "form-control", id = "EWAYBILLNO", maxlength = 20, @placeholder = "Eway Bill Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "LR Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LRNO, new { htmlAttributes = new { @class = "form-control", id = "LRNO", maxlength = 15, @placeholder = "LR Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "LR Date")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LRDT, new { htmlAttributes = new { @class = "form-control", id = "LRDT", maxlength = 10, onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Vechicle Number")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.LORRYNO, new { htmlAttributes = new { @class = "form-control", id = "LORRYNO", maxlength = 16, @placeholder = "Vechicle Number" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Vehicle Type")
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.T_TXNTRANS.VECHLTYPE, new SelectList(Model.VECHLTYPE, "Value", "Text"), "=Select=", new { @class = "form-control", id = "VECHLTYPE" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Gross Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.GRWT, new { htmlAttributes = new { @class = "form-control", id = "GRWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Gross Weight" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Net Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.NTWT, new { htmlAttributes = new { @class = "form-control", id = "NTWT", onblur = "CalulateTareWt(GRWT,NTWT,TRWT);", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Net Weight" } })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Tare Weight")
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNTRANS.TRWT, new { htmlAttributes = new { @class = "form-control", id = "TRWT", @onkeypress = "return numericOnly(this,4);", maxlength = 12, @placeholder = "Tare Weight", @readonly = "readonly" } })
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div id="Remarks" class="tab-pane fade">
