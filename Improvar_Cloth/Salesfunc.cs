@@ -1379,7 +1379,6 @@ namespace Improvar
         }
         public DataTable getPendKhasra(string docdt, string blautono = "", string skipautono = "", string schema = "")
         {
-            //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
@@ -1390,7 +1389,7 @@ namespace Improvar
             sql += "select a.autono, a.docno, a.docdt, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
             sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, ";
             sql += "listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
-            sql += "g.pageno, g.pageslno, ";
+            sql += "g.pageno, g.pageslno, g.rate, ";
             sql += "f.prefno, f.prefdt, nvl(b.bnos, 0) bnos from ";
 
             sql += "  (select distinct a.autono, d.docdt, d.docno, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr ";
@@ -2049,35 +2048,65 @@ namespace Improvar
                 return "";
             }
         }
-        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false)
+        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false, string schema = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
+            if (schema.retStr() != "") scm = schema;
             string sql = "";
-            sql += "select a.gocd, a.baleno, a.baleyr, a.itcd, a.shade, a.nos, a.qnty, ";
-            sql += "b.docno, b.docdt, b.prefno, b.prefdt, b.rate, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, ";
-            sql += "b.pageno, b.pageslno, b.lrno from ";
-            sql += "( select a.gocd, b.baleno, b.baleyr, b.itcd, a.shade, b.baleno||b.baleyr||b.itcd baleitcd, ";
-            sql += "sum(a.nos*decode(a.stkdrcr,'D',1,-1)) nos, sum(a.qnty*decode(a.stkdrcr,'D',1,-1)) qnty ";
-            sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d ";
-            sql += "where a.autono=b.autono(+) and a.txnslno=b.slno(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and ";
-            sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and a.stkdrcr in ('D','C') and ";
-            sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
-            if (mergeloca == false) sql += "d.loccd='" + LOC + "' and ";
-            sql += "d.compcd='" + COM + "' and nvl(d.cancel,'N')='N' and a.baleno is not null ";
-            sql += "group by a.gocd, b.baleno, b.baleyr, b.itcd, a.shade, b.baleno||b.baleyr||b.itcd ) a, ";
+            //sql += "select a.gocd, a.baleno, a.baleyr, a.itcd, a.shade, a.nos, a.qnty, ";
+            //sql += "b.docno, b.docdt, b.prefno, b.prefdt, b.rate, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, ";
 
-            sql += "( select a.rate, c.lrno, nvl(b.prefno,d.docno) prefno, nvl(b.prefdt,d.docdt) prefdt, ";
-            sql += "d.docno, d.docdt, a.pageno, a.pageslno, a.baleno||a.baleyr||a.itcd baleitcd ";
-            sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_txntrans c, " + scm + ".t_cntrl_hdr d ";
-            sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and nvl(a.pageno,0) <> 0 ) b, ";
-            sql += "" + scm + ".m_sitem f, " + scmf + ".m_godown g ";
-            sql += "where a.baleitcd=b.baleitcd(+) and a.itcd=f.itcd(+) and ";
+            //sql += "b.pageno, b.pageslno, b.lrno from ";
+
+            //sql += "( select a.gocd, b.baleno, b.baleyr, b.itcd, a.shade, b.baleno||b.baleyr||b.itcd baleitcd, ";
+            //sql += "sum(a.nos*decode(a.stkdrcr,'D',1,-1)) nos, sum(a.qnty*decode(a.stkdrcr,'D',1,-1)) qnty ";
+            //sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d ";
+            //sql += "where a.autono=b.autono(+) and a.txnslno=b.slno(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and ";
+            //sql += "d.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and a.stkdrcr in ('D','C') and ";
+            //sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
+            //if (mergeloca == false) sql += "d.loccd='" + LOC + "' and ";
+            //sql += "d.compcd='" + COM + "' and nvl(d.cancel,'N')='N' and a.baleno is not null ";
+            //sql += "group by a.gocd, b.baleno, b.baleyr, b.itcd, a.shade, b.baleno||b.baleyr||b.itcd ) a, ";
+
+            //sql += "( select a.rate, c.lrno, nvl(b.prefno,d.docno) prefno, nvl(b.prefdt,d.docdt) prefdt, ";
+            //sql += "d.docno, d.docdt, a.pageno, a.pageslno, a.baleno||a.baleyr||a.itcd baleitcd ";
+            //sql += "from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_txntrans c, " + scm + ".t_cntrl_hdr d ";
+            //sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and a.autono=d.autono(+) and nvl(a.pageno,0) <> 0 ) b, ";
+            //sql += "" + scm + ".m_sitem f, " + scmf + ".m_godown g ";
+            //sql += "where a.baleitcd=b.baleitcd(+) and a.itcd=f.itcd(+) and ";
+            //if (itgrpcd != "") sql += "f.itgrpcd in (" + itgrpcd + ") and ";
+            //if (itcd != "") sql += "a.itcd in (" + itcd + ") and ";
+            //if (baleno != "") sql += "a.baleno||baleyr in (" + baleno + ") and ";
+            //sql += "a.gocd=g.gocd(+) ";
+            //sql += "order by baleyr, baleno, styleno ";
+
+            sql += "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
+            sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
+            sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
+            sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";
+            sql += "from  ( ";
+            sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
+            sql += "sum(case c.stkdrcr when 'D' then c.qnty when 'C' then c.qnty*-1 end) qnty ";
+            sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d ";
+            sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+            sql += "a.autono=c.autono(+) and a.slno=c.slno(+) and c.stkdrcr in ('D','C') and ";
+            sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
+            if (mergeloca == false) sql += "d.loccd='" + LOC + "' and ";
+            sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
+            sql += "group by c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno ";
+
+            sql += ") a, ";
+            sql += "" + scm + ".t_txntrans e, " + scm + ".t_txn f, " + scm + ".t_txndtl g, " + scm + ".m_sitem h, " + scm + ".m_group i, " + scm + ".t_batchdtl j, " + scmf + ".m_godown k ";
+            sql += "where a.blautono = e.autono(+) and a.blautono = f.autono(+) and ";
+            sql += "g.autono=j.autono(+) and g.slno=j.txnslno(+) and a.blautono = g.autono(+) and a.blslno = g.slno(+) and g.itcd = h.itcd(+) and ";
             if (itgrpcd != "") sql += "f.itgrpcd in (" + itgrpcd + ") and ";
             if (itcd != "") sql += "a.itcd in (" + itcd + ") and ";
             if (baleno != "") sql += "a.baleno||baleyr in (" + baleno + ") and ";
-            sql += "a.gocd=g.gocd(+) ";
+            sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) and nvl(a.qnty, 0) > 0 ";
+            sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
+            sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, f.prefno, f.prefdt ";
             sql += "order by baleyr, baleno, styleno ";
             return tbl;
         }
