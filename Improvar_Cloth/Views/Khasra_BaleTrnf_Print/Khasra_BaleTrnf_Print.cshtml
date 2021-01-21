@@ -1,0 +1,147 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+@{
+    switch (Model.MENU_PARA)
+    {
+        case "KHSR":
+            ViewBag.Title = "Khasra Printing"; break;
+        case "TRFB":
+            ViewBag.Title = "Sotck Transfer Bale Printing"; break;
+        default: ViewBag.Title = ""; break;
+    }
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+
+<script src="~/Scripts/jquery.min.js"></script>
+
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+    });
+</script>
+
+@{
+    string PageControllerName = "SaleBill_Print";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+            @Html.HiddenFor(model => model.maxdate)
+            @Html.HiddenFor(model => model.MENU_PARA)
+            <input type="hidden" id="partylinkcd" value="D,C" />
+
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Doc Code")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCCD", onkeyup = "GetHelp('" + @Url.Action("Getdocno", PageControllerName) + "','DOCCD/TEXTBOX2','1/0','Select UOM Details','DOCCD');", @placeholder = "Code", maxlength = 4, required = "required" } })
+                            @*<img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("Getdocno", PageControllerName)','DOCCD/TEXTBOX2','1/0','Select Docno and Docdt Details','DOCCD')" />*@
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Doc No")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FDOCNO, new { htmlAttributes = new { @class = "form-control", id = "FDOCNO", @placeholder = "FDOCNO", maxlength = 8 } })
+
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Doc No")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TDOCNO, new { htmlAttributes = new { @class = "form-control", id = "TDOCNO", @placeholder = "FDOCNO", maxlength = 8 } })
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @*<input name="FDT" id="FDT" class="form-control" onblur="DocumentDateCHK(this)" autocomplete="off" />*@
+                            @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", @style = "text-transform:uppercase;", @placeholder = "dd/mm/yyyy", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @*<input name="TDT" id="TDT" class="form-control" onblur="DocumentDateCHK(this)" autocomplete="off" />*@
+                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", @style = "text-transform:uppercase;", @placeholder = "dd/mm/yyyy", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Party")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=SLCD=1/SLNM=slnm=0','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=SLCD=1/SLNM=slnm=0','partylinkcd');", @placeholder = "SLCD", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0','partylinkcd')" />
+
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control", id = "SLNM", @TabIndex = -1, @placeholder = "Party Name", maxlength = 45, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Report Format")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => model.TEXTBOX6, new SelectList(Model.DropDown_list1, "Value", "Text"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-LG-10">
+                        <input type="submit" value="Print" name="submitbutton" class="btn btn-default" style="width:66px;" formtarget="_blank" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}
