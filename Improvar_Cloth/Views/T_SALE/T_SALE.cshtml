@@ -117,6 +117,27 @@
                 $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 return false;
             }
+
+            var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+            var balenoexist = false;
+            if (GridRow != 0) {
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    if ($("#D_BALENO_" + i).val() != "") {
+                        balenoexist = true;
+                        break;
+                    }
+                }
+            }
+            if (balenoexist == true && $("#LRNO").val() == "") {
+                msgInfo("if Bale No. exist then you have to fill LR Number in Transport Tab !!");
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(5)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                message_value = "LRNO";
+                return false;
+            }
         }
         //start of finalise
         if ($("#bardatachng").val() == "Y") {
@@ -785,7 +806,7 @@
                             </div>
                             <div class="col-md-9">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.TDSNM, new { htmlAttributes = new { @class = "form-control", id = "TDSNM", @placeholder = "TDS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
+                                    @Html.EditorFor(model => model.TDSNM, new { htmlAttributes = new { @class = "form-control", id = "TDSNM", @placeholder = "TCS Name", @TabIndex = -1, @readonly = "readonly", @title = "Only for View" } })
                                 </div>
                             </div>
                         </div>

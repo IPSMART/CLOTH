@@ -234,7 +234,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#MTRLJOBNM").val($(FieldidStarting + "MTRLJOBNM_" + i).val());
         $("#MTBARCODE").val($(FieldidStarting + "MTBARCODE_" + i).val());
         $("#ITCD").val($(FieldidStarting + "ITCD_" + i).val());
-        $("#ITSTYLE").val($(FieldidStarting + "ITSTYLE_" + i).val());
+        $("#ITSTYLE").val($(FieldidStarting + "ITSTYLE_" + i).val().trim());
         $("#STYLENO").val($(FieldidStarting + "STYLENO_" + i).val());
         $("#STKTYPE").val($(FieldidStarting + "STKTYPE_" + i).val());
         $("#PARTCD").val($(FieldidStarting + "PARTCD_" + i).val());
@@ -368,28 +368,29 @@ function UpdateBarCodeRow() {
             for (j = 0; j <= GridRowMain - 1; j++) {
                 var flag = true;
                 if (MENU_PARA == "SR" || MENU_PARA == "PR") {
-                    if ($("#AGDOCNO").val() != $("#B_AGDOCNO_" + j).val() || $("#AGDOCDT").val() != $("#B_AGDOCDT_" + j).val()) {
+                    if (retStr($("#AGDOCNO").val()) != retStr($("#B_AGDOCNO_" + j).val()) || retStr($("#AGDOCDT").val()) != retStr($("#B_AGDOCDT_" + j).val())) {
                         flag = false;
                     }
                 }
                 if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
-                    if ($("#LISTPRICE").val() != $("#B_LISTPRICE_" + j).val() || $("#LISTDISCPER").val() != $("#B_LISTDISCPER_" + j).val()) {
+                    if (retFloat($("#LISTPRICE").val()) != retFloat($("#B_LISTPRICE_" + j).val()) || retFloat($("#LISTDISCPER").val()) != retFloat($("#B_LISTDISCPER_" + j).val())) {
                         flag = false;
                     }
                 }
                 if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-                    if ($("#BALENO").val() != $("#B_BALENO_" + j).val()) {
+                    if (retStr($("#BALENO").val()) != retStr($("#B_BALENO_" + j).val())) {
                         flag = false;
                     }
                 }
                 if (flag == true) {
-                    if ($("#ITGRPCD").val() == $("#B_ITGRPCD_" + j).val() && $("#MTRLJOBCD").val() == $("#B_MTRLJOBCD_" + j).val() &&
-                                    $("#MTBARCODE").val() == $("#B_MTBARCODE_" + j).val() && $("#ITCD").val() == $("#B_ITCD_" + j).val() && $("#ITSTYLE").val() == $("#B_ITSTYLE_" + j).val() &&
-                                    $("#DISCTYPE").val() == $("#B_DISCTYPE_" + j).val() && $("#TDDISCTYPE").val() == $("#B_TDDISCTYPE_" + j).val() &&
-                                     $("#SCMDISCTYPE").val() == $("#B_SCMDISCTYPE_" + j).val() && $("#UOM").val() == $("#B_UOM_" + j).val() && $("#STKTYPE").val() == $("#B_STKTYPE_" + j).val() && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
+                   
+                    if (retStr($("#ITGRPCD").val()) == retStr($("#B_ITGRPCD_" + j).val()) && retStr($("#MTRLJOBCD").val()) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                                    retStr($("#MTBARCODE").val()) == retStr($("#B_MTBARCODE_" + j).val()) && retStr($("#ITCD").val()) == retStr($("#B_ITCD_" + j).val()) &&
+                                    retStr($("#DISCTYPE").val()) == retStr($("#B_DISCTYPE_" + j).val()) && retStr($("#TDDISCTYPE").val()) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                                     retStr($("#SCMDISCTYPE").val()) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr($("#UOM").val()) == retStr($("#B_UOM_" + j).val()) && retStr($("#STKTYPE").val()) == retStr($("#B_STKTYPE_" + j).val()) && retFloat($("#RATE").val()) == retFloat($("#B_RATE_" + j).val()) &&
                                     retFloat($("#DISCRATE").val()) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat($("#SCMDISCRATE").val()) == retFloat($("#SCMDISCRATE").val()) && retFloat($("#TDDISCRATE").val()) == retFloat($("#TDDISCRATE").val()) && retFloat($("#GSTPER").val()) == retFloat($("#GSTPER").val()) &&
-                                    retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && $("#HSNCODE").val() == $("#B_HSNCODE_" + j).val() && $("#PRODGRPGSTPER").val() == $("#B_PRODGRPGSTPER_" + j).val() &&
-                                    $("#GLCD").val() == $("#B_GLCD_" + j).val() && $("#SLNO").val() != $("#B_SLNO_" + j).val()) {
+                                    retFloat($("#FLAGMTR").val()) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr($("#HSNCODE").val()) == retStr($("#B_HSNCODE_" + j).val()) && retStr($("#PRODGRPGSTPER").val()) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                                    retStr($("#GLCD").val()) == retStr($("#B_GLCD_" + j).val()) && retStr($("#SLNO").val()) != retStr($("#B_SLNO_" + j).val())) {
 
                         matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                         countmatchslno++;
@@ -447,7 +448,7 @@ function UpdateBarCodeRow() {
             $("#B_MTRLJOBNM_" + j).val($("#MTRLJOBNM").val());
             $("#B_MTBARCODE_" + j).val($("#MTBARCODE").val());
             $("#B_ITCD_" + j).val($("#ITCD").val());
-            $("#B_ITSTYLE_" + j).val($("#ITSTYLE").val());
+            $("#B_ITSTYLE_" + j).val($("#ITSTYLE").val().trim());
             $("#B_STYLENO_" + j).val($("#STYLENO").val());
             $("#B_STKTYPE_" + j).val($("#STKTYPE").val());
             $("#B_PARTCD_" + j).val($("#PARTCD").val());
@@ -1639,7 +1640,7 @@ function AddBarCodeGrid() {
     var MTRLJOBNM = $("#MTRLJOBNM").val();
     var MTBARCODE = $("#MTBARCODE").val();
     var ITCD = $("#ITCD").val();
-    var ITSTYLE = $("#ITSTYLE").val();
+    var ITSTYLE = $("#ITSTYLE").val().trim();
     var STYLENO = $("#STYLENO").val();
     var STKTYPE = $("#STKTYPE").val();
     var PARTCD = $("#PARTCD").val();
@@ -1731,7 +1732,7 @@ function AddBarCodeGrid() {
             for (j = 0; j <= GridRowMain - 1; j++) {
                 var flag = true;
                 if (MENU_PARA == "SR" || MENU_PARA == "PR") {
-                    if (AGDOCNO != $("#B_AGDOCNO_" + j).val() || AGDOCDT != $("#B_AGDOCDT_" + j).val()) {
+                    if (retStr(AGDOCNO) != retStr($("#B_AGDOCNO_" + j).val()) || retStr(AGDOCDT) != retStr($("#B_AGDOCDT_" + j).val())) {
                         flag = false;
                     }
                 }
@@ -1741,20 +1742,18 @@ function AddBarCodeGrid() {
                     }
                 }
                 if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-                    if (BALENO != $("#B_BALENO_" + j).val()) {
+                    if (retStr(BALENO) != retStr($("#B_BALENO_" + j).val())) {
                         flag = false;
                     }
                 }
                 if (flag == true) {
-                    var aa = retFloat($("#RATE").val());
-                    var bb = retFloat($("#B_RATE_" + j).val());
-                    if (ITGRPCD == $("#B_ITGRPCD_" + j).val() && MTRLJOBCD == $("#B_MTRLJOBCD_" + j).val() &&
-                                    MTBARCODE == $("#B_MTBARCODE_" + j).val() && ITCD == $("#B_ITCD_" + j).val() && ITSTYLE == $("#B_ITSTYLE_" + j).val() &&
-                                    DISCTYPE == $("#B_DISCTYPE_" + j).val() && TDDISCTYPE == $("#B_TDDISCTYPE_" + j).val() &&
-                                     SCMDISCTYPE == $("#B_SCMDISCTYPE_" + j).val() && UOM == $("#B_UOM_" + j).val() && STKTYPE == $("#B_STKTYPE_" + j).val() && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
-                                    retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#SCMDISCRATE").val()) && retFloat(TDDISCRATE) == retFloat($("#TDDISCRATE").val()) && retFloat(GSTPER) == retFloat($("#GSTPER").val()) &&
-                                    retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && HSNCODE == $("#B_HSNCODE_" + j).val() && PRODGRPGSTPER == $("#B_PRODGRPGSTPER_" + j).val() &&
-                                    GLCD == $("#B_GLCD_" + j).val()) {
+                    if (retStr(ITGRPCD) == retStr($("#B_ITGRPCD_" + j).val()) && retStr(MTRLJOBCD) == retStr($("#B_MTRLJOBCD_" + j).val()) &&
+                 retStr(MTBARCODE) == retStr($("#B_MTBARCODE_" + j).val()) && retStr(ITCD) == retStr($("#B_ITCD_" + j).val()) &&
+                 retStr(DISCTYPE) == retStr($("#B_DISCTYPE_" + j).val()) && retStr(TDDISCTYPE) == retStr($("#B_TDDISCTYPE_" + j).val()) &&
+                  retStr(SCMDISCTYPE) == retStr($("#B_SCMDISCTYPE_" + j).val()) && retStr(UOM) == retStr($("#B_UOM_" + j).val()) && retStr(STKTYPE) == retStr($("#B_STKTYPE_" + j).val()) && retFloat(RATE) == retFloat($("#B_RATE_" + j).val()) &&
+                 retFloat(DISCRATE) == retFloat($("#B_DISCRATE_" + j).val()) && retFloat(SCMDISCRATE) == retFloat($("#SCMDISCRATE").val()) && retFloat(TDDISCRATE) == retFloat($("#TDDISCRATE").val()) && retFloat(GSTPER) == retFloat($("#GSTPER").val()) &&
+                 retFloat(FLAGMTR) == retFloat($("#B_FLAGMTR_" + j).val()) && retStr(HSNCODE) == retStr($("#B_HSNCODE_" + j).val()) && retStr(PRODGRPGSTPER) == retStr($("#B_PRODGRPGSTPER_" + j).val()) &&
+                 retStr(GLCD) == retStr($("#B_GLCD_" + j).val())) {
 
                         matchslno[countmatchslno] = retInt($("#B_TXNSLNO_" + j).val());
                         if (ModuleCode.indexOf("SALESCLOTH") != -1) {

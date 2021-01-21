@@ -254,6 +254,7 @@
     <Compile Include="Controllers\Gen_EinvIRNController.cs" />
     <Compile Include="Controllers\ImageData.cs" />
     <Compile Include="Controllers\Image_Link_BarcodeController.cs" />
+    <Compile Include="Controllers\Khasra_BaleTrnf_PrintController.cs" />
     <Compile Include="Controllers\M_AmttypeController.cs" />
     <Compile Include="Controllers\M_BLTYPEController.cs" />
     <Compile Include="Controllers\M_BOMController.cs" />
@@ -284,7 +285,7 @@
     <Compile Include="Controllers\M_USR_ACS_GRPDTLController.cs" />
     <Compile Include="Controllers\Prepare_JSONController.cs" />
     <Compile Include="Controllers\PrintPageController.cs" />
-    <Compile Include="Controllers\Rep_Bale_HistoryController.cs" />
+    <Compile Include="Controllers\Rep_BaleController.cs" />
     <Compile Include="Controllers\Rep_BarcodeImageController.cs" />
     <Compile Include="Controllers\Rep_BarcodePrintController.cs" />
     <Compile Include="Controllers\Rep_Bar_HistoryController.cs" />
@@ -1238,7 +1239,8 @@
     <Content Include="Views\Rep_Pend_Job\Rep_Pend_Job.cshtml" />
     <Content Include="Views\Rep_Job_Ledger\Rep_Job_Ledger.cshtml" />
     <Content Include="Views\T_Ack\T_Ack.cshtml" />
-    <Content Include="Views\Rep_Bale_History\Rep_Bale_History.cshtml" />
+    <Content Include="Views\Rep_Bale\Rep_Bale.cshtml" />
+    <Content Include="Views\Khasra_BaleTrnf_Print\Khasra_BaleTrnf_Print.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
