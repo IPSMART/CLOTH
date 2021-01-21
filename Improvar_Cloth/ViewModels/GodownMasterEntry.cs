@@ -12,6 +12,7 @@ namespace Improvar.ViewModels
         public M_GODOWN M_GODOWN { get; set; }
         public List<CompanyLocationName> CompanyLocationName { get; set; }
         public bool Deactive { get; set; }
+       public string LOCNM { get; set; }
         //public List<Attendance_type> Attendance_type { get; set; }
         //public List<Attendance_day> Attendance_day { get; set; }
 
