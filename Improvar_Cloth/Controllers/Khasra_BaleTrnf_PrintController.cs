@@ -101,7 +101,7 @@ namespace Improvar.Controllers
                 string slcd = VE.TEXTBOX3;
 
                 string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
-
+                string yr_cd = CommVar.YearCode(UNQSNO);
                 string sql = "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
                 sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
                 sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
@@ -113,9 +113,11 @@ namespace Improvar.Controllers
                 sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
                 sql += "a.autono=c.autono(+) and a.slno=c.slno(+) and c.stkdrcr in ('D','C') and ";
                 sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
-                sql += "d.loccd='" + LOC + "'  ";
+                sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
                 if (fdate.retStr() != "") sql += "and d.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
                 if (tdate.retStr() != "") sql += "and d.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
+                if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' ";
+                if (tdocno != "") sql += "and d.doconlyno <= '" + tdocno + "'   ";
                 sql += "group by c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno,a.autono,a.slno,d.docno,d.docdt,a.baleopen ";
 
                 sql += ") a, ";
@@ -188,7 +190,7 @@ namespace Improvar.Controllers
                         dr1["hdrgoemail"] = restbl.Rows[i]["hdrgoemail"].ToString();
                         dr1["slno"] = restbl.Rows[i]["slno"].ToString();
                         dr1["prefno"] = restbl.Rows[i]["prefno"].ToString();
-                        dr1["prefdt"] = restbl.Rows[i]["prefdt"].retStr()==""?"": restbl.Rows[i]["prefdt"].retStr().Remove(10);
+                        dr1["prefdt"] = restbl.Rows[i]["prefdt"].retStr() == "" ? "" : restbl.Rows[i]["prefdt"].retStr().Remove(10);
                         dr1["styleno"] = restbl.Rows[i]["styleno"].ToString();
                         dr1["shade"] = restbl.Rows[i]["shade"].ToString();
                         dr1["baleno"] = restbl.Rows[i]["baleno"].ToString();
