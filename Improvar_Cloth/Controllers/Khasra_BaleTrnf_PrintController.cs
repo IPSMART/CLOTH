@@ -31,7 +31,6 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Document Printing";
                     ReportViewinHtml VE;
                     if (TempData["printparameter"] == null)
                     {
@@ -42,11 +41,16 @@ namespace Improvar.Controllers
                         VE = (ReportViewinHtml)TempData["printparameter"];
                     }
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
-
+                    switch (VE.MENU_PARA)
+                    {
+                        case "KHSR":
+                            ViewBag.formname = "Khasra Printing"; break;
+                        case "TRFB":
+                            ViewBag.formname = "Sotck Transfer Bale Printing"; break;
+                        default: ViewBag.formname = ""; break;
+                    }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
-                    //string reptype = "SALEBILL";
-                    string reptype = "SALEBILL";
-                    if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
+                    string reptype = "KHSR";
                     DataTable repformat = Salesfunc.getRepFormat(reptype);
 
                     if (repformat != null)
@@ -75,28 +79,8 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetSubLedgerDetails(string val, string code)
-        {
-            try
-            {
-                var str = masterHelp.SLCD_help(val, code);
-                if (str.IndexOf("='helpmnu'") >= 0)
-                {
-                    return PartialView("_Help2", str);
-                }
-                else
-                {
-                    return Content(str);
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
-            }
-        }
         [HttpPost]
-        public ActionResult GetSubLedgerDetails(ReportViewinHtml VE, FormCollection FC)
+        public ActionResult Khasra_BaleTrnf_Print(ReportViewinHtml VE, FormCollection FC)
         {
             try
             {
@@ -121,7 +105,7 @@ namespace Improvar.Controllers
                 string sql = "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
                 sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
                 sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
-                sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,a.autono,f.gocd hdrgocd,l.goadd1 hdrgoadd1,l.goadd2 hdrgoadd2,l.goadd3 hdrgoadd3,l.gophno hdrgophno,l.goemail hdrgoemail ";
+                sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,a.autono,f.gocd hdrgocd,l.gonm hdrgonm,l.goadd1 hdrgoadd1,l.goadd2 hdrgoadd2,l.goadd3 hdrgoadd3,l.gophno hdrgophno,l.goemail hdrgoemail ";
                 sql += "from  ( ";
                 sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
                 sql += "sum(case c.stkdrcr when 'D' then c.qnty when 'C' then c.qnty*-1 end) qnty,a.autono ";
@@ -158,68 +142,58 @@ namespace Improvar.Controllers
                 IR.Columns.Add("autono", typeof(string), "");
                 IR.Columns.Add("docno", typeof(string), "");
                 IR.Columns.Add("docdt", typeof(string), "");
+                IR.Columns.Add("hdrgocd", typeof(string), "");
+                IR.Columns.Add("hdrgonm", typeof(string), "");
+                IR.Columns.Add("hdrgoadd1", typeof(string), "");
+                IR.Columns.Add("hdrgoadd2", typeof(string), "");
+                IR.Columns.Add("hdrgoadd3", typeof(string), "");
+                IR.Columns.Add("hdrgophno", typeof(string), "");
+                IR.Columns.Add("hdrgoemail", typeof(string), "");
 
+                //det
                 IR.Columns.Add("slno", typeof(double), "");
-               
-                IR.Columns.Add("nslcd", typeof(string), "");
-                IR.Columns.Add("nslnm", typeof(string), "");
-                IR.Columns.Add("nadd1", typeof(string), "");
-                IR.Columns.Add("nadd2", typeof(string), "");
-                IR.Columns.Add("nadd3", typeof(string), "");
-                IR.Columns.Add("nadd4", typeof(string), "");
-                IR.Columns.Add("nadd5", typeof(string), "");
-                IR.Columns.Add("nadd6", typeof(string), "");
-                IR.Columns.Add("nadd7", typeof(string), "");
-                IR.Columns.Add("ngstno", typeof(string), "");
-                IR.Columns.Add("dslcd", typeof(string), "");
-                IR.Columns.Add("dslnm", typeof(string), "");
-                IR.Columns.Add("dadd1", typeof(string), "");
-                IR.Columns.Add("dadd2", typeof(string), "");
-                IR.Columns.Add("dadd3", typeof(string), "");
-                IR.Columns.Add("dadd4", typeof(string), "");
-                IR.Columns.Add("dadd5", typeof(string), "");
-                IR.Columns.Add("dadd6", typeof(string), "");
-                IR.Columns.Add("dadd7", typeof(string), "");
-                IR.Columns.Add("dgstno", typeof(string), "");
-                IR.Columns.Add("mslcd", typeof(string), "");
-                IR.Columns.Add("mslnm", typeof(string), "");
-                IR.Columns.Add("madd1", typeof(string), "");
-                IR.Columns.Add("madd2", typeof(string), "");
-                IR.Columns.Add("madd3", typeof(string), "");
-                IR.Columns.Add("madd4", typeof(string), "");
-                IR.Columns.Add("madd5", typeof(string), "");
-                IR.Columns.Add("madd6", typeof(string), "");
-                IR.Columns.Add("madd7", typeof(string), "");
-                IR.Columns.Add("mgstno", typeof(string), "");
-                IR.Columns.Add("refno", typeof(string), "");
-                IR.Columns.Add("itcd", typeof(string), "");
-                IR.Columns.Add("itnm", typeof(string), "");
-                IR.Columns.Add("countno", typeof(string), "");
-                IR.Columns.Add("qtynos", typeof(string), "");
+                IR.Columns.Add("prefno", typeof(string), "");
+                IR.Columns.Add("prefdt", typeof(string), "");
+                IR.Columns.Add("styleno", typeof(string), "");
+                IR.Columns.Add("shade", typeof(string), "");
+                IR.Columns.Add("baleno", typeof(string), "");
+                IR.Columns.Add("nos", typeof(string), "");
                 IR.Columns.Add("qnty", typeof(string), "");
-                IR.Columns.Add("uomcd", typeof(string), "");
-                IR.Columns.Add("hsnsaccd", typeof(string), "");
-                IR.Columns.Add("packsize", typeof(string), "");
-                IR.Columns.Add("rate", typeof(double), "");
-                IR.Columns.Add("bname", typeof(string), "");
-                IR.Columns.Add("pytrem", typeof(string), "");
-                IR.Columns.Add("docrem", typeof(string), "");
-                IR.Columns.Add("DELVRYREM", typeof(string), "");
-                IR.Columns.Add("PYTDAYS", typeof(string), "");
-                IR.Columns.Add("taxgrpcd", typeof(string), "");
-                IR.Columns.Add("exmillamt", typeof(double), "");
-                IR.Columns.Add("ratetype", typeof(string), "");
+                IR.Columns.Add("lrno", typeof(string), "");
+                IR.Columns.Add("pageno", typeof(string), "");
+                IR.Columns.Add("gonm", typeof(string), "");
+                IR.Columns.Add("baleopen", typeof(string), "");
 
                 int maxR = restbl.Rows.Count - 1;
                 Int32 i = 0;
-                int ir1 = 0;
                 while (i <= maxR)
                 {
                     string autono = restbl.Rows[i]["autono"].ToString();
                     while (restbl.Rows[i]["autono"].ToString() == autono)
                     {
                         DataRow dr1 = IR.NewRow();
-                        dr1["cancel"] = restbl.Rows[i]["cancel"].ToString();
+                        dr1["autono"] = restbl.Rows[i]["autono"].ToString();
+                        dr1["docno"] = restbl.Rows[i]["docno"].ToString();
+                        dr1["docdt"] = restbl.Rows[i]["docdt"].ToString();
+                        dr1["hdrgocd"] = restbl.Rows[i]["hdrgocd"].ToString();
+                        dr1["hdrgonm"] = restbl.Rows[i]["hdrgonm"].ToString();
+                        dr1["hdrgoadd1"] = restbl.Rows[i]["hdrgoadd1"].ToString();
+                        dr1["hdrgoadd2"] = restbl.Rows[i]["hdrgoadd2"].ToString();
+                        dr1["hdrgoadd3"] = restbl.Rows[i]["hdrgoadd3"].ToString();
+                        dr1["hdrgophno"] = restbl.Rows[i]["hdrgophno"].ToString();
+                        dr1["hdrgoemail"] = restbl.Rows[i]["hdrgoemail"].ToString();
+                        dr1["slno"] = restbl.Rows[i]["slno"].ToString();
+                        dr1["prefno"] = restbl.Rows[i]["prefno"].ToString();
+                        dr1["prefdt"] = restbl.Rows[i]["prefdt"].ToString();
+                        dr1["styleno"] = restbl.Rows[i]["styleno"].ToString();
+                        dr1["shade"] = restbl.Rows[i]["shade"].ToString();
+                        dr1["baleno"] = restbl.Rows[i]["baleno"].ToString();
+                        dr1["nos"] = restbl.Rows[i]["nos"].ToString();
+                        dr1["qnty"] = restbl.Rows[i]["qnty"].ToString();
+                        dr1["lrno"] = restbl.Rows[i]["lrno"].ToString();
+                        dr1["gonm"] = restbl.Rows[i]["gonm"].ToString();
+                        dr1["baleopen"] = restbl.Rows[i]["baleopen"].ToString();
+
                         IR.Rows.Add(dr1);
                         i = i + 1;
                         if (i > maxR) break;
@@ -262,7 +236,7 @@ namespace Improvar.Controllers
                 reportdocument.SetParameterValue("corpadd", compaddress.retCompValue("corpadd"));
                 reportdocument.SetParameterValue("corpcommu", compaddress.retCompValue("corpcommu"));
                 reportdocument.SetParameterValue("formerlynm", compaddress.retCompValue("formerlynm"));
-
+                reportdocument.SetParameterValue("menu_para", VE.MENU_PARA);
 
                 Response.Buffer = false;
                 Response.ClearContent();

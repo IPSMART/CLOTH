@@ -627,6 +627,12 @@
       <DependentUpon>JobIssue.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\Khasra_BaleTrnf.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Khasra_BaleTrnf.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\PrintBarcode.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1241,6 +1247,7 @@
     <Content Include="Views\T_Ack\T_Ack.cshtml" />
     <Content Include="Views\Rep_Bale\Rep_Bale.cshtml" />
     <Content Include="Views\Rep_Bale_History\Rep_Bale_History.cshtml" />
+    <Content Include="Views\Khasra_BaleTrnf_Print\Khasra_BaleTrnf_Print.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1297,6 +1304,12 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_Cloth.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Report\Khasra_BaleTrnf.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>Khasra_BaleTrnf.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

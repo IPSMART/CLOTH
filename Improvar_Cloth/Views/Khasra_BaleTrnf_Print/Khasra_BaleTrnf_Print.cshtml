@@ -1,6 +1,13 @@
 ﻿@model Improvar.ViewModels.ReportViewinHtml
 @{
-    ViewBag.Title = "Khasra BaleTrnf Print";
+    switch (Model.MENU_PARA)
+    {
+        case "KHSR":
+            ViewBag.Title = "Khasra Printing"; break;
+        case "TRFB":
+            ViewBag.Title = "Sotck Transfer Bale Printing"; break;
+        default: ViewBag.Title = ""; break;
+    }
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
 }
 
