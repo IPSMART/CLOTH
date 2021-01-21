@@ -1534,6 +1534,7 @@ namespace Improvar.Controllers
                 //chk duplicate slno
                 var allslno = VE.TTXNDTL.Select(a => a.SLNO).Count();
                 var distnctslno = VE.TTXNDTL.Select(a => a.SLNO).Distinct().Count();
+
                 if (allslno != distnctslno)
                 {
                     //checking
