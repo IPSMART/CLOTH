@@ -1,0 +1,326 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+@{
+    ViewBag.Title = "Bale Report";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    string PageControllerName = "Rep_Bale";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+    });
+</script>
+<script>
+    function Show_rep() {
+        debugger;
+        if (!emptyFieldCheck("Enter/Select From Date", "FDT")) { return false; }
+        if (!emptyFieldCheck("Enter/Select To Date ", "TDT")) { return false; }
+        var reptype = $("#TEXTBOX1").val();
+        $("#form1").attr('target', '_blank');
+        if (reptype == "Stock Transfer" || reptype == "Stock Conversion" || reptype == "Stock Adjustment") {
+            $("#form1").attr('action', 'Rep_Reg_Stock');
+            $("#form1").submit();
+        }
+        else {
+            $("#form1").attr('action', 'Rep_Reg');
+            $("#form1").submit();
+        }
+    }
+</script>
+
+<script>
+    function SelectGodownCode(id, TEXTBOX3, TEXTBOX4) {
+        debugger;
+        @*if ("@Model.DefaultAction" == "V") {return false}*@
+        if (id == "") {
+            $("#" + TEXTBOX3.id).val("");
+            $("#" + TEXTBOX4.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetGodownDetails", PageControllerName)',
+                data: { val: id },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val();
+                        document.getElementById(TEXTBOX3.id).value = returncolvalue(findstr, "TEXTBOX3");
+                        document.getElementById(TEXTBOX4.id).value = returncolvalue(findstr, "TEXTBOX4");
+                    }
+                    else {
+                        $("#" + TEXTBOX3.id).val("");
+                        $("#" + TEXTBOX4.id).val("");
+                        msgInfo(result);
+                        message_value = TEXTBOX3.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectDOCNumber(id, DOCNO, DOCDT) {
+        if (id == "") {
+            $("#" + DOCNO.id).val("");
+            $("#" + DOCDT).val("");
+        }
+        else {
+            var DOC_CODE = document.getElementById("DOCCD").value;
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetDOC_Number", PageControllerName)",
+                data: { val: id, Code: DOC_CODE, },
+
+            success: function (result) {
+
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#tempHDD").val(result);
+                    var str = $("#tempHDD").val().split(String.fromCharCode(181))
+                    $("#" + DOCNO.id).val(str[0].toString());
+                    $("#" + DOCDT.id).val(str[1].toString());
+                }
+
+                else {
+                    $("#Msgdiv1").show();
+                    $("#info").show();
+                    $("#" + DOCNO.id).val("");
+                    $("#" + DOCDT).val("");
+                    $("#btnok").focus();
+                    $("#msgbody_info").html(result);
+                    message_value = DOCNO.id;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    }
+</script>
+
+@using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+            <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 0% 22% 2% 22%;">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Group Code")
+                            @*<sup style="color:red">*</sup>*@
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        @(new HtmlString(Model.Itgrpnm))
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Reg Type")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1" })
+                    </div>
+                </div>
+                @*<div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sales/Purchase")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => Model.TEXTBOX7, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX7), new { @class = "form-control", id = "TEXTBOX7" })
+                        </div>
+                    </div>*@
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                            <sup style="color:red">*</sup>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            <input name="FDT" id="FDT" required class="form-control" onblur="DocumentDateCHK(this)" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                            <sup style="color:red">*</sup>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            <input name="TDT" required id="TDT" class="form-control" onblur="DocumentDateCHK(this)" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+                @*<div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "From Doc No")
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.FDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "FDOCNO", onkeyup = "GetHelp_WithId('" + Url.Action("GetDOCNO", PageControllerName) + "','FDOCNO/TEXTBOX2','1/0','Select Docno and Docdt Details','FDOCNO','DOCCD')", onblur = "SelectDocCode(this,FDOCNO,TEXTBOX2);", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOCNO", PageControllerName)','FDOCNO/TEXTBOX2','1/0','Select Docno and Docdt Details','FDOCNO','DOCCD')" />
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "To Doc No")
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.TDOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TDOCNO", onkeyup = "GetHelp_WithId('" + Url.Action("GetDOCNO", PageControllerName) + "','TDOCNO/TEXTBOX2','1/0','Select Docno and Docdt Details','TDOCNO','DOCCD')", onblur = "SelectDocCode(this,TDOCNO,TEXTBOX2);", @placeholder = "Code", maxlength = 8 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOCNO", PageControllerName)','TDOCNO/TEXTBOX2','1/0','Select Docno and Docdt Details','TDOCNO','DOCCD')" />
+                            </div>
+                        </div>
+                    </div>*@
+
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Party")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @(new HtmlString(Model.Slnm))
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Godown")
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="editor-field">
+
+                            @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TEXTBOX3", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','TEXTBOX3','TEXTBOX3=GOCD=1/TEXTBOX4=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','TEXTBOX3','TEXTBOX3=GOCD=1/TEXTBOX4=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','TEXTBOX3','TEXTBOX3=GOCD=1/TEXTBOX4=GONM=0')" />
+
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX4", @TabIndex = -1, @placeholder = "Godown Name", maxlength = 20, @readonly = "readonly" } })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px;">
+                    <div class="col-lg-2"></div>
+                    <table style="border:1px solid">
+                        <tr>
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox1, true)</td>
+                            <td style="border:1px groove;">Item details</td>
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox4, true)</td>
+                            <td style="border:1px groove;">Price List Name Print</td>
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox7, true)</td>
+                            <td style="border:1px groove;">Order Details Print</td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox2, true)</td>
+                            <td style="border:1px groove;">Batch Details</td>
+                            @*<td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox5, true)</td>
+                                <td style="border:1px groove;">SAP BillNo Print</td>*@
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox8, true)</td>
+                            <td style="border:1px groove;">Acount head Separation </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox3, true)</td>
+                            <td style="border:1px groove;">Transporter/ Consignee Details</td>
+                            <td style="border:1px groove;">@Html.CheckBoxFor(model => model.Checkbox6, true)</td>
+                            <td style="border:1px groove;">Item Remarks</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Rep Type")
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <input type="radio" name="Reptype" value="Normal" checked />Normal
+                        @*<input type="radio" name="Reptype" value="Product" />Only Products
+                            <input type="radio" name="Reptype" value="Annex" />Annexure List*@
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Sorting on")
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <input type="radio" name="RepSortOn" value="docdt" checked />Doc Date
+                        <input type="radio" name="RepSortOn" value="bldt" />Purchase Bill Date [Mother Invoice]
+                        <input type="radio" name="RepSortOn" value="partywise" />Party-wise
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:6px">
+                            @Html.Label("", "Location")
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        @(new HtmlString(Model.TEXTBOX5))
+                    </div>
+                </div>
+
+                @*<div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Insurance By")
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.DropDownListFor(model => model.TEXTBOX6, new SelectList(Model.DropDown_list2, "Value", "Text"), new { @class = "form-control", id = "TEXTBOX6" })
+                            </div>
+                        </div>
+                    </div>*@
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="button" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}
