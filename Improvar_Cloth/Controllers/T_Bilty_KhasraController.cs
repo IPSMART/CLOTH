@@ -337,7 +337,7 @@ namespace Improvar.Controllers
                 }
                 else if (VE.MENU_PARA == "TRFB")
                 {
-                    dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr());
+                    dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(),VE.T_TXN.GOCD);
                 }
 
                 VE.TBILTYKHASRA_POPUP = (from DataRow dr in dt.Rows
@@ -413,7 +413,8 @@ namespace Improvar.Controllers
                                        LRNO = dr["lrno"].retStr(),
                                        LRDT = dr["lrdt"].retDateStr(),
                                        BALEYR = dr["baleyr"].retStr(),
-                                       BLSLNO = dr["blslno"].retShort()
+                                       BLSLNO = dr["blslno"].retShort(),
+                                       //PBLNO=
                                    }).Distinct().ToList();
 
                 for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)

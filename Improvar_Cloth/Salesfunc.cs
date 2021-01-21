@@ -2106,7 +2106,7 @@ namespace Improvar
             if (baleno != "") sql += "a.baleno||baleyr in (" + baleno + ") and ";
             sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) and nvl(a.qnty, 0) > 0 ";
             sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
-            sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, f.prefno, f.prefdt ";
+            sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";
             sql += "order by baleyr, baleno, styleno ";
             return tbl;
         }
