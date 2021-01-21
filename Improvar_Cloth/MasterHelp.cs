@@ -2300,13 +2300,13 @@ namespace Improvar
             {
                 tbl = salesfunc.GetBarHelp(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, menupara, "", "", false, false, exactbarno, PARTCD);
             }
-            else if (menupara == "ALL")
-            {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno, PARTCD);
-            }
+            //else if (menupara == "ALL")
+            //{
+            //    tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno, PARTCD);
+            //}
             else
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, false, "", "", false, false, exactbarno, PARTCD);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD,true);
             }
             if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)
             {
@@ -2812,6 +2812,47 @@ namespace Improvar
                     return "Invalid Cash Memo Number ! Please Select / Enter a Valid Cash Memo Number !!";
                 }
             }
+        }
+        public string Location_Help(string val)
+        {
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                string scmf = CommVar.FinSchema(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
+                string sql = "";
+                sql += "select LOCCD,LOCNM from " + scmf + ".M_LOCA ";
+                if (valsrch.retStr() != "") sql += "where upper(LOCCD) = '" + valsrch + "'  ";
+                DataTable tbl = SQLquery(sql);
+                if (val.retStr() == "" || tbl.Rows.Count > 1)
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["LOCNM"] + "</td><td>" + tbl.Rows[i]["LOCCD"] + "</td></tr>");
+                    }
+                    var hdr = "Location Name" + Cn.GCS() + "Location Code";
+                    return Generate_help(hdr, SB.ToString());
+                }
+                else
+                {
+                    string str = "";
+                    if (tbl.Rows.Count > 0)
+                    {
+                        str = ToReturnFieldValues("", tbl);
+                    }
+                    else
+                    {
+                        str = "Invalid Location Code ! Please Select / Enter a Valid Location Code !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
+
         }
     }
 }

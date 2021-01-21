@@ -3065,20 +3065,20 @@ namespace Improvar.Controllers
                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                         }
                         //  Ronded off
-                        dbamt = Convert.ToDouble(VE.T_TXN.ROAMT);
-                        if (dbamt != 0)
-                        {
-                            string adrcr = cr;
-                            if (dbamt < 0) adrcr = dr;
-                            if (dbamt < 0) dbamt = dbamt * -1;
+                        //dbamt = Convert.ToDouble(VE.T_TXN.ROAMT);
+                        //if (dbamt != 0)
+                        //{
+                        //    string adrcr = cr;
+                        //    if (dbamt < 0) adrcr = dr;
+                        //    if (dbamt < 0) dbamt = dbamt * -1;
 
-                            isl = isl + 1;
-                            dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), adrcr, rogl, null,
-                                    dbamt, strrem, parglcd, TTXN.SLCD, 0, 0, 0);
-                            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                            if (adrcr == "D") dbDrAmt = dbDrAmt + dbamt;
-                            else dbCrAmt = dbCrAmt + dbamt;
-                        }
+                        //    isl = isl + 1;
+                        //    dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), adrcr, rogl, null,
+                        //            dbamt, strrem, parglcd, TTXN.SLCD, 0, 0, 0);
+                        //    OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+                        //    if (adrcr == "D") dbDrAmt = dbDrAmt + dbamt;
+                        //    else dbCrAmt = dbCrAmt + dbamt;
+                        //}
 
                         //  Party wise posting
                         isl = 1; //isl + 1;

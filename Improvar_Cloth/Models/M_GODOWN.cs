@@ -55,6 +55,12 @@ namespace Improvar.Models
         public string FSSAILICNO { get; set; }
 
         public long M_AUTONO { get; set; }
+        [StringLength(4)]
+        public string LOCCD { get; set; }
+        [StringLength(10)]
+        public string FLAG1 { get; set; }
         
+
+
     }
 }

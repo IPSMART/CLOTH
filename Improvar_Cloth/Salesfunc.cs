@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Improvar.Models;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace Improvar
 {
@@ -837,14 +838,14 @@ namespace Improvar
             if (rtval < 0) rtval = 0;
             return rtval;
         }
-        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "")
+        public DataTable GetStock(string tdt, string gocd = "", string barno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string prccd = "WP", string taxgrpcd = "C001", string stktype = "", string brandcd = "", bool pendpslipconsider = true, bool shownilstock = false, string curschema = "", string finschema = "", bool mergeitem = false, bool mergeloca = false, bool exactbarno = true, string partcd = "", bool showallitems = false)
         {
             //showbatchno = true;
             string UNQSNO = CommVar.getQueryStringUNQSNO();
             DataTable tbl = new DataTable();
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "";
-            bool showallitems = true;
+            //bool showallitems = true;
 
             if (curschema != "") scm = curschema;
             if (finschema != "") scmf = finschema;
@@ -937,8 +938,14 @@ namespace Improvar
             sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             if (showallitems == true)
             {
+                string godown = "''";
+                if (gocd.IndexOf(",") == -1)
+                {
+                    godown = gocd;
+                }
+
                 sql += "union all ";
-                sql += "select '' gocd, 'FS' mtrljobcd, 'F' stktype, d.barno, d.itcd, '' partcd, d.colrcd, d.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
+                sql += "select " + godown + " gocd, 'FS' mtrljobcd, 'F' stktype, d.barno, d.itcd, '' partcd, d.colrcd, d.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
                 sql += "from " + scm + ".m_sitem_barcode d, " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
                 sql += "where d.barno=a.barno(+) and a.barno=b.barno(+) and ";
                 if (barno.retStr() != "") sql += "upper(d.barno) in (" + barno + ") and ";
