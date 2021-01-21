@@ -1,0 +1,210 @@
+﻿@model Improvar.ViewModels.ReportViewinHtml
+@{
+    ViewBag.Title = "Bale Report";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    string PageControllerName = "Rep_Bale_History";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    $(function () {
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
+    });
+</script>
+<script>
+    function Show_rep() {
+        debugger;
+        if (!emptyFieldCheck("Enter/Select From Date", "FDT")) { return false; }
+        if (!emptyFieldCheck("Enter/Select To Date ", "TDT")) { return false; }
+        $("#form1").attr('target', '_blank');
+        $("#form1").attr('action', 'Rep_Bale_History');
+        $("#form1").submit();
+       
+    }
+</script>
+
+<script>
+    function SelectGodownCode(id, TEXTBOX3, TEXTBOX4) {
+        debugger;
+        @*if ("@Model.DefaultAction" == "V") {return false}*@
+        if (id == "") {
+            $("#" + TEXTBOX3.id).val("");
+            $("#" + TEXTBOX4.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetGodownDetails", PageControllerName)',
+                data: { val: id },
+                success: function (result) {
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var findstr = $("#tempHDD").val();
+                        document.getElementById(TEXTBOX3.id).value = returncolvalue(findstr, "TEXTBOX3");
+                        document.getElementById(TEXTBOX4.id).value = returncolvalue(findstr, "TEXTBOX4");
+                    }
+                    else {
+                        $("#" + TEXTBOX3.id).val("");
+                        $("#" + TEXTBOX4.id).val("");
+                        msgInfo(result);
+                        message_value = TEXTBOX3.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    function SelectDOCNumber(id, DOCNO, DOCDT) {
+        if (id == "") {
+            $("#" + DOCNO.id).val("");
+            $("#" + DOCDT).val("");
+        }
+        else {
+            var DOC_CODE = document.getElementById("DOCCD").value;
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("GetDOC_Number", PageControllerName)",
+                data: { val: id, Code: DOC_CODE, },
+
+            success: function (result) {
+
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG >= 0) {
+                    $("#tempHDD").val(result);
+                    var str = $("#tempHDD").val().split(String.fromCharCode(181))
+                    $("#" + DOCNO.id).val(str[0].toString());
+                    $("#" + DOCDT.id).val(str[1].toString());
+                }
+
+                else {
+                    $("#Msgdiv1").show();
+                    $("#info").show();
+                    $("#" + DOCNO.id).val("");
+                    $("#" + DOCDT).val("");
+                    $("#btnok").focus();
+                    $("#msgbody_info").html(result);
+                    message_value = DOCNO.id;
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    }
+</script>
+
+@using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
+{
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+            <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 0% 22% 2% 22%;">
+               
+                @*<div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Sales/Purchase")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => Model.TEXTBOX7, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX7), new { @class = "form-control", id = "TEXTBOX7" })
+                        </div>
+                    </div>*@
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                            <sup style="color:red">*</sup>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            <input name="FDT" id="FDT" required class="form-control" onblur="DocumentDateCHK(this)" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                            <sup style="color:red">*</sup>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            <input name="TDT" required id="TDT" class="form-control" onblur="DocumentDateCHK(this)" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Bale No.")
+                            @*<sup style="color:red">*</sup>*@
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        @(new HtmlString(Model.TEXTBOX1))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Item")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @(new HtmlString(Model.Itnm))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Item Group")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @(new HtmlString(Model.Itgrpnm))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Group value repeat in all row")
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        @Html.CheckBoxFor(model => model.Checkbox1, true)
+                    </div>
+                </div>
+             
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="button" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" onclick="Show_rep()" />
+                        @*<input type="submit" formtarget="_blank" name="submitbutton" value="Show Report" title="Show report in a new tab" class="btn btn-default" />*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}
