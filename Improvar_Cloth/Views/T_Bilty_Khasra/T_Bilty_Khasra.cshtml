@@ -374,6 +374,10 @@
                     </div>
                 </div>
                 }
+                else
+                {
+                    @Html.HiddenFor(a => a.T_TXN.GOCD)
+                }
                 <div class="col-md-3">
                     <div class="editor-label" style="margin-top: 6px;">
                         @Html.Label("", "Bale Open")

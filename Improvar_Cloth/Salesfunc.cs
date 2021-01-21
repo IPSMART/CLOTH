@@ -2051,7 +2051,7 @@ namespace Improvar
         public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false, string schema = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
-            DataTable tbl = new DataTable();
+
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             if (schema.retStr() != "") scm = schema;
             string sql = "";
@@ -2108,6 +2108,7 @@ namespace Improvar
             sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
             sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";
             sql += "order by baleyr, baleno, styleno ";
+            DataTable tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
 
