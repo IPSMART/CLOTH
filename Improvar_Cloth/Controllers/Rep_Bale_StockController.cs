@@ -121,9 +121,9 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     double tqty, tnos, tval,gdtqty,gdtval;
-                    tnos = 0; tqty = 0; tval = 0; gdtqty = 0;gdtval = 0;
-                  
-                    bool balefirst = true; 
+                    tnos = 0;  gdtqty = 0;gdtval = 0;
+                   
+
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     chkval1 = tbl.Rows[i]["gocd"].ToString();
                     if (RepeatAllRow == false || gonmfirst == false) IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -131,10 +131,13 @@ namespace Improvar.Controllers
                     if (RepeatAllRow == false || gonmfirst == false) IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     while (tbl.Rows[i]["gocd"].ToString() == chkval1)
                     {
+                        tval = 0; tqty = 0;
+                        bool balefirst = true;
                         gonm = tbl.Rows[i]["gonm"].ToString();
                         chkval = tbl.Rows[i]["BaleNoBaleYrcd"].ToString();
                         while (tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval)
                         {
+                           
                             bool itemfirst = true;
                             baleno = tbl.Rows[i]["baleno"].ToString();
                             chkval2 = tbl.Rows[i]["itcd"].ToString();
@@ -192,8 +195,8 @@ namespace Improvar.Controllers
                         IR.Rows[rNo]["qnty"] = gdtqty;
                         IR.Rows[rNo]["value"] = gdtval;
                     }
-                    gtqty = gtqty + tqty;
-                    gtval = gtval + tval;
+                    gtqty = gtqty + gdtqty;
+                    gtval = gtval + gdtval;
                     flag++; gonmfirst = true;
                     if (i > maxR) break;
                 
