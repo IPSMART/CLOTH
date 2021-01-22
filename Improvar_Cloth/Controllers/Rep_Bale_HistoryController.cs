@@ -82,52 +82,51 @@ namespace Improvar.Controllers
                 bool RepeatAllRow = VE.Checkbox1;
 
                 string sql = "";
-                sql += "select a.autono, a.txnslno, a.gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, a.itcd, a.shade, a.nos, a.qnty, c.usr_entdt, ";
-                sql += "c.docno, c.docdt, d.prefno, d.slcd, h.slnm, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
+                sql += "select a.autono, a.blautono, a.txnslno, a.gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, a.itcd, b.shade, a.nos, a.qnty, c.usr_entdt, ";
+                sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
                 sql += "b.pageno, b.pageslno, b.lrno from ";
-                sql += "(select a.autono, a.txnslno, a.autono || a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, a.shade, c.slcd, ";
-                sql += "sum(a.nos) nos, sum(a.qnty) qnty ";
-                sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d ";
-                sql += "where a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
-                sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
-                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null ";
-                sql += "group by a.autono, a.txnslno, a.autono || a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, a.shade, c.slcd ";
-                sql += "union all ";
-                sql += "select e.autono, a.txnslno, a.autono || a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, a.shade, f.mutslcd slcd, ";
+
+                sql += "( select e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd slcd, ";
                 sql += "sum(a.nos) nos, sum(a.qnty) qnty ";
                 sql += "from " + scm + ".t_bilty e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bilty_hdr f, " + scm + ".m_doctype g ";
                 sql += "where e.blautono = a.autono(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and ";
                 sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
-                sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
-                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) and g.doctype not in ('KHSR') ";
-                sql += "group by e.autono, a.txnslno, a.autono || a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, a.shade, f.mutslcd ";
+                sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
+                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
+                sql += "group by e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd ";
                 sql += "union all ";
-                sql += "select e.autono, a.txnslno, a.autono || a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, a.shade, f.mutslcd slcd, ";
+                sql += "select e.autono, e.blautono, a.txnslno, e.blautono||e.blslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) slcd, ";
                 sql += "sum(a.nos) nos, sum(a.qnty) qnty ";
                 sql += "from " + scm + ".t_bale e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bale_hdr f, " + scm + ".m_doctype g ";
-                sql += "where e.blautono = a.autono(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and ";
+                sql += "where e.autono = a.autono(+) and e.slno=a.txnslno(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and ";
                 sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
-                sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
-                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) and g.doctype not in ('KHSR') ";
-                sql += "group by e.autono, a.txnslno, a.autono || a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, a.shade, f.mutslcd ) a, ";
+                sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
+                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
+                sql += "group by e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ) a, ";
 
-                sql += "(select a.autono, a.slno, a.autono || a.slno autoslno, c.lrno, a.pageno, a.pageslno ";
-                sql += " from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_txntrans c ";
-                sql += "where a.autono = b.autono(+) and a.autono = c.autono(+) and nvl(a.pageno, 0) <> 0 ) b, ";
+                sql += "(select a.autono, a.slno, b.slcd, a.autono||a.slno autoslno, b.prefno, c.lrno, a.pageno, a.pageslno, ";
+                sql += "listagg(d.shade,',') within group (order by d.autono, d.txnslno) as shade ";
+                sql += " from " + scm + ".t_txndtl a, " + scm + ".t_txn b, " + scm + ".t_txntrans c, " + scm + ".t_batchdtl d ";
+                sql += "where d.autono=a.autono(+) and d.txnslno=a.slno(+) and d.autono = b.autono(+) and d.autono = c.autono(+) and b.doctag in ('OP','PB') ";
+                sql += "group by a.autono, a.slno, b.slcd, a.autono||a.slno, b.prefno, c.lrno, a.pageno, a.pageslno ";
+                sql += ") b, ";
 
                 sql += "" + scm + ".t_cntrl_hdr c, " + scm + ".t_txn d, " + scm + ".m_doctype e, ";
-                sql += "" + scm + ".m_sitem f, " + scmf + ".m_godown g, " + scmf + ".m_subleg h ";
+                sql += "" + scm + ".m_sitem f, " + scmf + ".m_godown g, " + scmf + ".m_subleg h, " + scm + ".t_txn i, " + scm + ".t_txntrans j ";
                 sql += "where a.autoslno = b.autoslno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
+                sql += "a.blautono=i.autono(+) and a.blautono=j.autono(+) and ";
                 sql += "c.doccd = e.doccd(+) and a.itcd = f.itcd(+) and a.gocd = g.gocd(+) and a.slcd = h.slcd(+) ";
-                if (BalenoBaleyr.retStr() != "") sql += "and a.baleno || a.baleyr in(" + BalenoBaleyr + ")";
-                if (itcd.retStr() != "") sql += "and a.itcd in(" + itcd + ")";
-                if (selitgrpcd.retStr() != "") sql += "and f.itgrpcd in(" + selitgrpcd + ")";
+                if (BalenoBaleyr.retStr() != "") sql += "and a.baleno||a.baleyr in (" + BalenoBaleyr + ") ";
+                if (itcd.retStr() != "") sql += "and a.itcd in(" + itcd + ") ";
+                if (selitgrpcd.retStr() != "") sql += "and f.itgrpcd in(" + selitgrpcd + ") ";
                 sql += "order by baleyr, baleno, styleno, usr_entdt ";
 
 
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return Content("no records..");
-
+                DataView dv = new DataView(tbl);
+                dv.Sort = "baleno,styleno,usr_entdt";
+                tbl = dv.ToTable();
                 return ReportHistory(tbl, RepeatAllRow, VE.Checkbox2, VE.Checkbox6);
 
 
@@ -156,17 +155,17 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
 
                 HC.RepStart(IR, 3);
-                HC.GetPrintHeader(IR, "baleno", "string", "c,10", "Bale No");
-                HC.GetPrintHeader(IR, "styleno", "string", "c,25", "Style No");
+                HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale No");
                 HC.GetPrintHeader(IR, "pblno", "string", "c,20", "P/Blno");
-                HC.GetPrintHeader(IR, "lrno", "string", "c,10", "LR No");
-                HC.GetPrintHeader(IR, "docnm", "string", "c,10", "Activity In");
-                HC.GetPrintHeader(IR, "docdt", "string", "c,16", "Doc Date");
+                HC.GetPrintHeader(IR, "lrno", "string", "c,14", "LR No");
+                HC.GetPrintHeader(IR, "styleno", "string", "c,25", "Style No");
+                HC.GetPrintHeader(IR, "docnm", "string", "c,15", "Activity In");
+                HC.GetPrintHeader(IR, "docdt", "string", "c,11", "Doc Date");
                 HC.GetPrintHeader(IR, "docno", "string", "c,16", "Doc No");
                 HC.GetPrintHeader(IR, "gonm", "string", "c,16", "Godown");
-                HC.GetPrintHeader(IR, "slnm", "string", "c,16", "Particulars");
-                HC.GetPrintHeader(IR, "nos", "string", "c,16", "Nos");
-                HC.GetPrintHeader(IR, "qnty", "string", "c,16", "Qnty");
+                HC.GetPrintHeader(IR, "slnm", "string", "c,22", "Particulars");
+                HC.GetPrintHeader(IR, "nos", "double", "n,7", "Nos");
+                HC.GetPrintHeader(IR, "qnty", "double", "n,16,2", "Qnty");
 
                 double qty, amt = 0;
                 double tqty = 0, tnos = 0;
@@ -201,15 +200,15 @@ namespace Improvar.Controllers
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             if (RepeatAllRow == true || balefirst == true ) IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
                             if (RepeatAllRow == true || itemfirst ==true) IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
-                            IR.Rows[rNo]["pblno"] = tbl.Rows[i]["prefno"].ToString();
-                            IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].ToString();
+                            if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["pblno"] = tbl.Rows[i]["prefno"].ToString();
+                            if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].ToString();
                             IR.Rows[rNo]["docnm"] = tbl.Rows[i]["docnm"].ToString();
                             IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                             IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                             IR.Rows[rNo]["gonm"] = tbl.Rows[i]["gonm"].ToString();
                             IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                            IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].ToString();
-                            IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].ToString();
+                            IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
+                            IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
                             balefirst = false; itemfirst = false;
                             i = i + 1;
                             if (i > maxR) break;
