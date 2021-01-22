@@ -18,7 +18,6 @@
 <script>
     function Show_rep() {
         debugger;
-        if (!emptyFieldCheck("Enter/Select From Date", "FDT")) { return false; }
         if (!emptyFieldCheck("Enter/Select To Date ", "TDT")) { return false; }
         $("#form1").attr('target', '_blank');
         $("#form1").attr('action', 'Rep_Bale_Stock');
@@ -77,32 +76,32 @@
                 url: "@Url.Action("GetDOC_Number", PageControllerName)",
                 data: { val: id, Code: DOC_CODE, },
 
-            success: function (result) {
+                success: function (result) {
 
-                var MSG = result.indexOf(String.fromCharCode(181));
-                if (MSG >= 0) {
-                    $("#tempHDD").val(result);
-                    var str = $("#tempHDD").val().split(String.fromCharCode(181))
-                    $("#" + DOCNO.id).val(str[0].toString());
-                    $("#" + DOCDT.id).val(str[1].toString());
-                }
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#tempHDD").val(result);
+                        var str = $("#tempHDD").val().split(String.fromCharCode(181))
+                        $("#" + DOCNO.id).val(str[0].toString());
+                        $("#" + DOCDT.id).val(str[1].toString());
+                    }
 
-                else {
-                    $("#Msgdiv1").show();
-                    $("#info").show();
-                    $("#" + DOCNO.id).val("");
-                    $("#" + DOCDT).val("");
-                    $("#btnok").focus();
-                    $("#msgbody_info").html(result);
-                    message_value = DOCNO.id;
+                    else {
+                        $("#Msgdiv1").show();
+                        $("#info").show();
+                        $("#" + DOCNO.id).val("");
+                        $("#" + DOCDT).val("");
+                        $("#btnok").focus();
+                        $("#msgbody_info").html(result);
+                        message_value = DOCNO.id;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError("Error: " + textStatus + "," + errorThrown);
                 }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError("Error: " + textStatus + "," + errorThrown);
-            }
-        });
-    }
+            });
+        }
     }
 </script>
 
@@ -114,38 +113,16 @@
             @Html.HiddenFor(s => s.DefaultAction)
             <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />
             <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 0% 22% 2% 22%;">
-
-                @*<div class="row">
-                        <div class="col-lg-2">
-                            <div class="editor-field" style="margin-top: 4px;">
-                                @Html.Label("", "Sales/Purchase")
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            @Html.DropDownListFor(model => Model.TEXTBOX7, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX7), new { @class = "form-control", id = "TEXTBOX7" })
-                        </div>
-                    </div>*@
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "From Date")
+                            @Html.Label("", "As on date")
                             <sup style="color:red">*</sup>
                         </div>
                     </div>
                     <div class="col-md-9">
                         <div class="editor-field">
-                            <input name="FDT" id="FDT" required class="form-control" onblur="DocumentDateCHK(this)" autocomplete="off" />
-                        </div>
-                    </div>
-                    <div class="col-lg-1">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "To Date")
-                            <sup style="color:red">*</sup>
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            <input name="TDT" required id="TDT" class="form-control" onblur="DocumentDateCHK(this)" autocomplete="off" />
+                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", @TabIndex = -1, @placeholder = "DD/MM/YYY", onblur = "DocumentDateCHK(this)", autocomplete = "off" } })
                         </div>
                     </div>
                 </div>
@@ -153,7 +130,6 @@
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Bale No.")
-                            @*<sup style="color:red">*</sup>*@
                         </div>
                     </div>
                     <div class="col-lg-2">
@@ -178,6 +154,16 @@
                     </div>
                     <div class="col-md-11">
                         @(new HtmlString(Model.Itgrpnm))
+                    </div>
+                </div>
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Godown")
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        @(new HtmlString(Model.Gonm))
                     </div>
                 </div>
                 <div class="row" style="margin-top:6px">

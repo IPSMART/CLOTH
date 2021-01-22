@@ -44,8 +44,8 @@ namespace Improvar.Controllers
                     VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();
                     VE.Itgrpnm = MasterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
 
-                    VE.FDT = CommVar.FinStartDate(UNQSNO); VE.TDT = CommVar.CurrDate(UNQSNO);
-                    VE.Checkbox1 = true;
+                    VE.TDT = CommVar.CurrDate(UNQSNO);
+                    VE.Checkbox1 = false;
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -65,19 +65,15 @@ namespace Improvar.Controllers
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
 
+                string txntag = ""; string txnrettag = "";
+                string selitcd = "", unselitcd = "", selitgrpcd = "", selbalenoyr="", unselbalenoyr="";
 
-                string txntag = ""; string txnrettag = "", itcd = "";
-                //string reptype = FC["Reptype"].ToString();
-                //string repon = FC["PartyItem"].ToString();
-                //string grpcd = VE.TEXTBOX2;
-                //string groupingwith = VE.TEXTBOX3;
-                //bool WithoutParty = VE.Checkbox3;
-                string BalenoBaleyr = "";
-                string selitcd = "", unselitcd = "", plist = "", selslcd = "", unselslcd = "", selitgrpcd = "", selbrgrpcd = "";
-                if (FC.AllKeys.Contains("BaleNoBaleYrcdvalue")) BalenoBaleyr = CommFunc.retSqlformat(FC["BaleNoBaleYrcdvalue"].ToString());
+                if (FC.AllKeys.Contains("BaleNoBaleYrcdvalue")) selbalenoyr = FC["BaleNoBaleYrcdvalue"].retSqlformat();
+                if (FC.AllKeys.Contains("BaleNoBaleYrcdunselvalue")) unselbalenoyr = FC["BaleNoBaleYrcdunselvalue"].retSqlformat();
+                if (FC.AllKeys.Contains("itcdvalue")) selitcd = FC["itcdvalue"].retSqlformat();
+                if (FC.AllKeys.Contains("itcdunselvalue")) unselitcd = FC["itcdunselvalue"].retSqlformat();
+                if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = FC["itgrpcdvalue"].retSqlformat();
 
-                if (FC.AllKeys.Contains("itcdvalue")) itcd = FC["itcdvalue"].retSqlformat();
-                if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
                 txntag = txntag + txnrettag;
                 bool RepeatAllRow = VE.Checkbox1;
 
@@ -91,7 +87,8 @@ namespace Improvar.Controllers
                 sql += "from " + scm + ".t_bilty e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bilty_hdr f, " + scm + ".m_doctype g ";
                 sql += "where e.blautono = a.autono(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and ";
                 sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
-                sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
+                if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
+                sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
                 sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
                 sql += "group by e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd ";
                 sql += "union all ";
@@ -100,7 +97,8 @@ namespace Improvar.Controllers
                 sql += "from " + scm + ".t_bale e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bale_hdr f, " + scm + ".m_doctype g ";
                 sql += "where e.autono = a.autono(+) and e.slno=a.txnslno(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and ";
                 sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
-                sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
+                if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
+                sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
                 sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
                 sql += "group by e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ) a, ";
 
@@ -116,11 +114,12 @@ namespace Improvar.Controllers
                 sql += "where a.autoslno = b.autoslno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
                 sql += "a.blautono=i.autono(+) and a.blautono=j.autono(+) and ";
                 sql += "c.doccd = e.doccd(+) and a.itcd = f.itcd(+) and a.gocd = g.gocd(+) and a.slcd = h.slcd(+) ";
-                if (BalenoBaleyr.retStr() != "") sql += "and a.baleno||a.baleyr in (" + BalenoBaleyr + ") ";
-                if (itcd.retStr() != "") sql += "and a.itcd in(" + itcd + ") ";
+                if (selbalenoyr.retStr() != "") sql += "and a.baleno||a.baleyr in (" + selbalenoyr + ") ";
+                if (unselbalenoyr.retStr() != "") sql += "and a.baleno||a.baleyr not in (" + unselbalenoyr + ") ";
+                if (selitcd.retStr() != "") sql += "and a.itcd in(" + selitcd + ") ";
+                if (unselitcd.retStr() != "") sql += "and a.itcd not in (" + unselitcd + ") ";
                 if (selitgrpcd.retStr() != "") sql += "and f.itgrpcd in(" + selitgrpcd + ") ";
                 sql += "order by baleyr, baleno, styleno, usr_entdt ";
-
 
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return Content("no records..");
@@ -128,8 +127,6 @@ namespace Improvar.Controllers
                 dv.Sort = "baleno,styleno,usr_entdt";
                 tbl = dv.ToTable();
                 return ReportHistory(tbl, RepeatAllRow, VE.Checkbox2, VE.Checkbox6);
-
-
             }
             catch (Exception ex)
             {
@@ -181,11 +178,6 @@ namespace Improvar.Controllers
                     chkval = tbl.Rows[i]["BaleNoBaleYrcd"].ToString();
                     qty = 0; amt = 0;
                     bool balefirst = true;
-                    //IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    //IR.Rows[rNo]["cd"] = tbl.Rows[i]["cd"].ToString();
-                    //IR.Rows[rNo]["nm"] = tbl.Rows[i]["nm"].ToString();
-                    //IR.Rows[rNo]["snm"] = tbl.Rows[i]["snm"].ToString();
-                    //IR.Rows[rNo]["celldesign"] = "cd=font-weight:bold;font-size:13px;^nm=font-weight:bold;font-size:13px;^snm=font-weight:bold;font-size:13px; ";
                     while (tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval)
                     {
                         bool itemfirst = true;
@@ -221,10 +213,7 @@ namespace Improvar.Controllers
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["dammy"] = "";
-                        //IR.Rows[rNo]["baleno"] = "Total of Bale " + baleno + " ";
                         IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                        //IR.Rows[rNo]["nos"] = tnos;
-                        //IR.Rows[rNo]["qnty"] = tqty;
                     }
 
                     gtqty = gtqty + tnos;
@@ -235,7 +224,7 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["dammy"] = " ";
                 IR.Rows[rNo]["flag"] = " height:14px; ";
 
-                string pghdr1 = " Bale History from " + fdt + " to " + tdt;
+                string pghdr1 = " Bale History " + (fdt != ""?" from " + fdt + " to ":"as on ") + tdt;
                 string repname = "Bale Report";
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 

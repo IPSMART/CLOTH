@@ -44,9 +44,10 @@ namespace Improvar.Controllers
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
                     VE.DropDown_list_ITGRP = DropDownHelp.GetItgrpcdforSelection();
                     VE.Itgrpnm = MasterHelp.ComboFill("itgrpcd", VE.DropDown_list_ITGRP, 0, 1);
-
-                    VE.FDT = CommVar.FinStartDate(UNQSNO); VE.TDT = CommVar.CurrDate(UNQSNO);
-                    VE.Checkbox1 = true;
+                    VE.DropDown_list_GODOWN = DropDownHelp.GetGocdforSelection();
+                    VE.Gonm = MasterHelp.ComboFill("gocd", VE.DropDown_list_GODOWN, 0, 1);
+                    VE.TDT = CommVar.CurrDate(UNQSNO);
+                    VE.Checkbox1 = false;
                     VE.DefaultView = true;
                     return View(VE);
                 }
@@ -69,19 +70,20 @@ namespace Improvar.Controllers
 
                 string txntag = ""; string txnrettag = "", itcd = "";
                 string BalenoBaleyr = "";
-                string selitcd = "", unselitcd = "", plist = "", selslcd = "", unselslcd = "", selitgrpcd = "", selbrgrpcd = "";
+                string gocd = "", unselitcd = "", plist = "", selslcd = "", unselslcd = "", selitgrpcd = "", selbrgrpcd = "";
                 if (FC.AllKeys.Contains("BaleNoBaleYrcdvalue")) BalenoBaleyr = CommFunc.retSqlformat(FC["BaleNoBaleYrcdvalue"].ToString());
 
                 if (FC.AllKeys.Contains("itcdvalue")) itcd = FC["itcdvalue"].retSqlformat();
                 if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
+                if (FC.AllKeys.Contains("gocdvalue")) gocd = CommFunc.retSqlformat(FC["gocdvalue"].ToString());
                 txntag = txntag + txnrettag;
                 bool RepeatAllRow = VE.Checkbox1;
-                DataTable tbl = Salesfunc.GetBaleStock(tdt, "", BalenoBaleyr, itcd, "", "", selitgrpcd);
-                DataView dv = new DataView(tbl);
-                dv.Sort  = "baleno,styleno";
-                tbl = dv.ToTable();
+                DataTable tbl = Salesfunc.GetBaleStock(tdt, gocd, BalenoBaleyr, itcd, "", "", selitgrpcd);
                 if (tbl.Rows.Count == 0) return Content("no records..");
-
+                DataView dv = new DataView(tbl);
+                dv.Sort = "gocd,baleno,styleno";
+                tbl = dv.ToTable();
+               
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "", chkval2 = "";
@@ -96,99 +98,105 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
 
                 HC.RepStart(IR, 3);
+                if (RepeatAllRow == true) HC.GetPrintHeader(IR, "gonm", "string", "c,16", "Godown");
                 HC.GetPrintHeader(IR, "prefno", "string", "c,20", "Bill No");
                 HC.GetPrintHeader(IR, "prefdt", "string", "c,16", "Bill Date");
                 HC.GetPrintHeader(IR, "styleno", "string", "c,25", "Style No");
                 HC.GetPrintHeader(IR, "Shade", "string", "c,10", "Shade");
-                HC.GetPrintHeader(IR, "baleno", "string", "c,10", "Bale No");
-                HC.GetPrintHeader(IR, "nos", "double", "c,16", "Nos");
-                HC.GetPrintHeader(IR, "qnty", "double", "c,16", "Qnty");
-                HC.GetPrintHeader(IR, "rate", "double", "c,16,2", "Rate");
-                HC.GetPrintHeader(IR, "value", "double", "c,16", "Value");
-                HC.GetPrintHeader(IR, "lrno", "string", "c,10", "LR No");
+                HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale No");
+                HC.GetPrintHeader(IR, "nos", "double", "c,7", "Nos");
+                HC.GetPrintHeader(IR, "qnty", "double", "c,16,2", "Qnty");
+                HC.GetPrintHeader(IR, "rate", "double", "c,10,2", "Rate");
+                HC.GetPrintHeader(IR, "value", "double", "c,16,3", "Value");
+                HC.GetPrintHeader(IR, "lrno", "string", "c,14", "LR No");
                 HC.GetPrintHeader(IR, "pageno", "string", "c,10", "Page No.");
-                if (RepeatAllRow == true) HC.GetPrintHeader(IR, "gonm", "string", "c,20", "Godown");
-                double gtqty, gtnos, gtval;
-                gtqty = 0; gtnos = 0; gtval = 0;
-                 Int32 rNo = 0;
-                string baleno = "",cncat="";
+
+                double gtqty, gtnos, gtval, flag;
+                gtqty = 0; gtnos = 0; gtval = 0; flag = 0 ;
+                Int32 rNo = 0;
+                string baleno = "", cncat = ""; bool gonmfirst = true;
                 // Report begins
                 i = 0; maxR = tbl.Rows.Count - 1;
                 int count = 0;
                 while (i <= maxR)
                 {
-                    double tqty, tnos, tval;
-                    tnos = 0; tqty = 0; tval = 0;
+                    double tqty, tnos, tval,gdtqty;
+                    tnos = 0; tqty = 0; tval = 0; gdtqty = 0;
                     chkval = tbl.Rows[i]["BaleNoBaleYrcd"].ToString();
-                    bool balefirst = true; bool gonmfirst = true;
+                    bool balefirst = true; 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     chkval2 = tbl.Rows[i]["gocd"].ToString();
-                    //if (RepeatAllRow == false)
-                    //{
-                    //    IR.Rows[rNo]["prefno"] = tbl.Rows[i]["gocd"].ToString();
-                    //    IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["gonm"].ToString();
-                    //    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                    //}
-                        while (tbl.Rows[i]["gocd"].retStr() == chkval2)
+                    if (RepeatAllRow == false || gonmfirst == false) IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    if (RepeatAllRow == false || gonmfirst == false) IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["gocd"].retStr() + "  " + " </span>" + tbl.Rows[i]["gonm"].retStr();
+                    if (RepeatAllRow == false || gonmfirst == false) IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                    while (tbl.Rows[i]["gocd"].ToString() == chkval2)
                     {
-                        if (RepeatAllRow == false)
-                        {
-                            IR.Rows[rNo]["prefno"] = tbl.Rows[i]["gonm"].retStr()+"("+ tbl.Rows[i]["gocd"].retStr()+")";
-                            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                        }
+                       
                         while (tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval)
-                    {
-                        bool itemfirst = true;
-                        baleno = tbl.Rows[i]["baleno"].ToString();
-
-                        chkval2 = tbl.Rows[i]["itcd"].ToString();
-                        while (tbl.Rows[i]["itcd"].ToString() == chkval2)
                         {
-                            if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") cncat = "/";
-                            tnos = tnos + tbl.Rows[i]["nos"].retDbl();
-                            tqty = tqty + tbl.Rows[i]["qnty"].retDbl();
-                            var value = tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["rate"].retDbl();
-                            tval = tval + value;
-                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            //if (RepeatAllRow == true || gonmfirst == true) IR.Rows[rNo]["prefno"] = tbl.Rows[i]["gonm"].retStr();
-                            if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
-                            if (RepeatAllRow == true || itemfirst == true) IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
-                            IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
-                            IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
-                            IR.Rows[rNo]["shade"] = tbl.Rows[i]["shade"].retStr();
-                            IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
-                            IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                            IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
-                            IR.Rows[rNo]["value"] = value.retDbl();
-                            IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
-                            IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr() + cncat + tbl.Rows[i]["pageslno"].retStr();
-                            if (RepeatAllRow == true) IR.Rows[rNo]["gonm"] = tbl.Rows[i]["gonm"].retStr();
-                            balefirst = false; itemfirst = false; gonmfirst = false;
-                            i = i + 1;
+                            bool itemfirst = true;
+                            baleno = tbl.Rows[i]["baleno"].ToString();
+                            chkval2 = tbl.Rows[i]["itcd"].ToString();
+                          
+                            while (tbl.Rows[i]["itcd"].ToString() == chkval2)
+                            {
+                                if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") cncat = "/";
+                                tnos = tnos + tbl.Rows[i]["nos"].retDbl();
+                                tqty = tqty + tbl.Rows[i]["qnty"].retDbl();
+                                var value = tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["rate"].retDbl();
+                                tval = tval + value;
+                                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                                if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
+                                if (RepeatAllRow == true || itemfirst == true) IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
+                                if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].ToString();
+                                if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].ToString();
+                                IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
+                                IR.Rows[rNo]["shade"] = tbl.Rows[i]["shade"].retStr();
+                                IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
+                                IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
+                                IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                                IR.Rows[rNo]["value"] = value.retDbl();
+                                IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr() + cncat + tbl.Rows[i]["pageslno"].retStr();
+                                if (RepeatAllRow == true) IR.Rows[rNo]["gonm"] = tbl.Rows[i]["gonm"].retStr();
+                                balefirst = false; itemfirst = false; gonmfirst = false; 
+                                i = i + 1;
+                                if (i > maxR) break;
+                            }
+
+                            count++; 
                             if (i > maxR) break;
                         }
-
-                        count++;
+                        
+                        if (RepeatAllRow == false)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["dammy"] = "";
+                            IR.Rows[rNo]["prefno"] = "Total of " + baleno + " ";
+                            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                            IR.Rows[rNo]["qnty"] = tqty;
+                            IR.Rows[rNo]["value"] = tval;
+                        }
+                        gdtqty = gdtqty + tqty;
                         if (i > maxR) break;
                     }
-                    if (RepeatAllRow == false)
-                    {
-                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["dammy"] = "";
-                        IR.Rows[rNo]["prefno"] = "Total of Bale " + baleno + " ";
-                        IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                        IR.Rows[rNo]["qnty"] = tqty;
-                        IR.Rows[rNo]["value"] = tval;
-                    }
-
+                    //if (RepeatAllRow == true)
+                    //{
+                    //    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                    //    IR.Rows[rNo]["dammy"] = "";
+                    //    IR.Rows[rNo]["prefno"] = "Total of " + chkval2 + " ";
+                    //    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                    //    IR.Rows[rNo]["qnty"] = gdtqty;
+                    //    IR.Rows[rNo]["value"] = tval;
+                    //}
                     gtqty = gtqty + tqty;
                     gtval = gtval + tval;
+                    flag++; gonmfirst = true;
                     if (i > maxR) break;
-                    }
+                
                 }
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["dammy"] = "";
-                IR.Rows[rNo]["prefno"] = "Total " + count +" bales  ";
+                IR.Rows[rNo]["prefno"] = "Total " + count + " bales  ";
                 IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
                 IR.Rows[rNo]["qnty"] = gtqty;
                 IR.Rows[rNo]["value"] = gtval;
@@ -213,6 +221,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message);
             }
         }
-      
+
     }
 }
