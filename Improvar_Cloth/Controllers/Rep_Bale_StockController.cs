@@ -86,7 +86,7 @@ namespace Improvar.Controllers
                
                 Int32 i = 0;
                 Int32 maxR = 0;
-                string chkval, chkval1 = "", chkval2 = "";
+                string chkval, chkval1 = "", chkval2 = "",gonm="";
                 if (tbl.Rows.Count == 0)
                 {
                     return RedirectToAction("NoRecords", "RPTViewer");
@@ -120,18 +120,19 @@ namespace Improvar.Controllers
                 int count = 0;
                 while (i <= maxR)
                 {
-                    double tqty, tnos, tval,gdtqty;
-                    tnos = 0; tqty = 0; tval = 0; gdtqty = 0;
-                    chkval = tbl.Rows[i]["BaleNoBaleYrcd"].ToString();
+                    double tqty, tnos, tval,gdtqty,gdtval;
+                    tnos = 0; tqty = 0; tval = 0; gdtqty = 0;gdtval = 0;
+                  
                     bool balefirst = true; 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    chkval2 = tbl.Rows[i]["gocd"].ToString();
+                    chkval1 = tbl.Rows[i]["gocd"].ToString();
                     if (RepeatAllRow == false || gonmfirst == false) IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     if (RepeatAllRow == false || gonmfirst == false) IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["gocd"].retStr() + "  " + " </span>" + tbl.Rows[i]["gonm"].retStr();
                     if (RepeatAllRow == false || gonmfirst == false) IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
-                    while (tbl.Rows[i]["gocd"].ToString() == chkval2)
+                    while (tbl.Rows[i]["gocd"].ToString() == chkval1)
                     {
-                       
+                        gonm = tbl.Rows[i]["gonm"].ToString();
+                        chkval = tbl.Rows[i]["BaleNoBaleYrcd"].ToString();
                         while (tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval)
                         {
                             bool itemfirst = true;
@@ -143,8 +144,10 @@ namespace Improvar.Controllers
                                 if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") cncat = "/";
                                 tnos = tnos + tbl.Rows[i]["nos"].retDbl();
                                 tqty = tqty + tbl.Rows[i]["qnty"].retDbl();
+                                gdtqty = gdtqty + tbl.Rows[i]["qnty"].retDbl();
                                 var value = tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["rate"].retDbl();
                                 tval = tval + value;
+                                gdtval = gdtval + value;
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                                 if (RepeatAllRow == true || balefirst == true) IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
                                 if (RepeatAllRow == true || itemfirst == true) IR.Rows[rNo]["styleno"] = tbl.Rows[i]["styleno"].ToString();
@@ -176,18 +179,19 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["qnty"] = tqty;
                             IR.Rows[rNo]["value"] = tval;
                         }
-                        gdtqty = gdtqty + tqty;
+                        //gdtqty = gdtqty + tqty;
+                        
                         if (i > maxR) break;
                     }
-                    //if (RepeatAllRow == true)
-                    //{
-                    //    IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    //    IR.Rows[rNo]["dammy"] = "";
-                    //    IR.Rows[rNo]["prefno"] = "Total of " + chkval2 + " ";
-                    //    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
-                    //    IR.Rows[rNo]["qnty"] = gdtqty;
-                    //    IR.Rows[rNo]["value"] = tval;
-                    //}
+                    if (RepeatAllRow == true)
+                    {
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["dammy"] = "";
+                        IR.Rows[rNo]["prefno"] = "Total of " + gonm + " ";
+                        IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
+                        IR.Rows[rNo]["qnty"] = gdtqty;
+                        IR.Rows[rNo]["value"] = gdtval;
+                    }
                     gtqty = gtqty + tqty;
                     gtval = gtval + tval;
                     flag++; gonmfirst = true;
