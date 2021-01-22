@@ -204,8 +204,8 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
-                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm,  ";
-                str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.rate,c.pageno,d.itnm||' '||d.styleno itstyle,e.prefno,e.prefdt  ";
+                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm,b.flag1,  ";
+                str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.rate,c.pageno,d.itnm||' '||d.styleno itstyle,e.prefno,e.prefdt,a.baleopen  ";
                 str += " from " + Scm + ".T_BALE a," + scmf + ".M_GODOWN b, " + Scm + ".T_TXNDTL c," + Scm + ".M_SITEM d," + Scm + ".T_TXN e  ";
                 str += " where a.blautono=c.autono(+) and c.itcd=d.itcd(+) and a.blautono=e.autono(+) and a.gocd=b.gocd(+)  and ";
                 str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000 ";
@@ -223,6 +223,7 @@ namespace Improvar.Controllers
                                        BLSLNO = dr["blslno"].retShort(),
                                        GOCD = dr["gocd"].retStr(),
                                        GONM = dr["gonm"].retStr(),
+                                       FLAG1 = dr["FLAG1"].retStr(),
                                        ITCD = dr["itcd"].retStr(),
                                        ITNM = dr["itstyle"].retStr(),
                                        UOMCD = dr["uomcd"].retStr(),
@@ -231,14 +232,17 @@ namespace Improvar.Controllers
                                        RATE = dr["RATE"].retStr(),
                                        PAGENO = dr["pageno"].retStr(),
                                        PBLNO = dr["prefno"].retStr(),
-                                       PBLDT = dr["prefdt"].retDateStr()
-
+                                       PBLDT = dr["prefdt"].retDateStr(),
+                                       BALEOPEN = dr["BALEOPEN"].retStr(),
                                    }).OrderBy(s => s.SLNO).ToList();
-
-                if (TBALE != null)
+                foreach (var v in VE.TBILTYKHASRA)
                 {
-                    VE.BALEOPEN = TBALE.BALEOPEN == "Y" ? true : false;
+                    v.CheckedBALEOPEN = v.BALEOPEN.retStr() == "Y" ? true : false;
                 }
+                //if (TBALE != null)
+                //{
+                //    VE.BALEOPEN = TBALE.BALEOPEN == "Y" ? true : false;
+                //}
                 if (TXN != null)
                 {
                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == TXN.GOCD).Select(b => b.GONM).FirstOrDefault();
@@ -296,11 +300,12 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetGodownDetails(string val)
+        public ActionResult GetGodownDetails(string val, string code)
         {
             try
             {
-                var str = masterHelp.GOCD_help(val);
+                string SkipGocd = "'TR'" + (code.retStr() == "" ? "" : "," + code.retSqlformat());
+                var str = masterHelp.GOCD_help(val, SkipGocd);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -733,7 +738,6 @@ namespace Improvar.Controllers
 
                         string gocd = "";
                         int bslno = 0, mxlp = 1;
-                        if (VE.MENU_PARA == "KHSR") mxlp = 0;
                         for (int lp = 0; lp <= mxlp; lp++)
                         {
                             for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
@@ -741,7 +745,7 @@ namespace Improvar.Controllers
                                 if (VE.TBILTYKHASRA[i].SLNO != 0)
                                 {
                                     stkdrcr = lp == 0 ? "D" : "C";
-                                    if (lp == 0) gocd = VE.TBILTYKHASRA[i].GOCD; else gocd = VE.T_TXN.GOCD;
+                                    if (lp == 0) gocd = VE.TBILTYKHASRA[i].GOCD; else gocd = (VE.MENU_PARA == "KHSR" ? "TR" : VE.T_TXN.GOCD);
 
                                     T_BALE TBILTYKHASRA = new T_BALE();
                                     TBILTYKHASRA.CLCD = TBHDR.CLCD;
@@ -755,17 +759,17 @@ namespace Improvar.Controllers
                                     TBILTYKHASRA.BALENO = VE.TBILTYKHASRA[i].BALENO;
                                     TBILTYKHASRA.BLSLNO = VE.TBILTYKHASRA[i].BLSLNO;
                                     TBILTYKHASRA.GOCD = gocd;
+                                    TBILTYKHASRA.BALEOPEN = VE.TBILTYKHASRA[i].CheckedBALEOPEN == true ? "Y" : null;
 
-                                    TBILTYKHASRA.BALEOPEN = VE.BALEOPEN == true ? "Y" : "N";
                                     dbsql = MasterHelpFa.RetModeltoSql(TBILTYKHASRA);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                                     T_TXNDTL TTXNDTL = DBb.T_TXNDTL.Where(r => r.AUTONO == TBILTYKHASRA.BLAUTONO && r.SLNO == TBILTYKHASRA.BLSLNO).FirstOrDefault();
                                     TTXNDTL.AUTONO = TBHDR.AUTONO;
-                                    TTXNDTL.SLNO = VE.TBILTYKHASRA[i].SLNO;
+                                    TTXNDTL.SLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 1000)).retShort();
                                     TTXNDTL.STKDRCR = stkdrcr;
                                     TTXNDTL.GOCD = gocd;
-                                    if (VE.BALEOPEN == false)
+                                    if (VE.TBILTYKHASRA[i].CheckedBALEOPEN == false)
                                     {
                                         TTXNDTL.BALENO = VE.TBILTYKHASRA[i].BALENO;
                                     }
@@ -781,7 +785,8 @@ namespace Improvar.Controllers
                                         TBATCHDTlst[dtl].SLNO = Convert.ToInt16(bslno + (lp == 0 ? 0 : 1000));
                                         TBATCHDTlst[dtl].GOCD = gocd;
                                         TBATCHDTlst[dtl].STKDRCR = stkdrcr;
-                                        if (VE.BALEOPEN == true && lp == 0) TBATCHDTlst[dtl].BALENO = null;
+                                        TBATCHDTlst[dtl].TXNSLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 1000)).retShort();
+                                        if (VE.TBILTYKHASRA[i].CheckedBALEOPEN == true && lp == 0) TBATCHDTlst[dtl].BALENO = null;
                                         dbsql = masterHelp.RetModeltoSql(TBATCHDTlst[dtl]);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     }

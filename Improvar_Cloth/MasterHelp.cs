@@ -1747,7 +1747,7 @@ namespace Improvar
             var hdr = "Floor Name" + Cn.GCS() + "Floor Code";
             return Generate_help(hdr, SB.ToString());
         }
-        public string GOCD_help(string val)
+        public string GOCD_help(string val, string SkipGocd = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
@@ -1755,10 +1755,11 @@ namespace Improvar
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
-            sql += "select a.GOCD,a.GONM ";
+            sql += "select a.GOCD,a.GONM,a.FLAG1 ";
             sql += "from " + scmf + ".M_GODOWN a, " + scmf + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
             if (valsrch.retStr() != "") sql += "and ( upper(a.GOCD) = '" + valsrch + "' ) ";
+            if (SkipGocd.retStr() != "") sql += "and ( upper(a.GOCD) not in (" + SkipGocd + ") ) ";
             sql += "order by a.GOCD,a.GONM";
             DataTable tbl = SQLquery(sql);
             if (val.retStr() == "" || tbl.Rows.Count > 1)
@@ -2293,7 +2294,7 @@ namespace Improvar
             }
         }
 
-        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true,string PARTCD="", string BARNO = "")
+        public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true, string PARTCD = "", string BARNO = "")
         {
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             if (menupara == "PB" || menupara == "OP")
@@ -2306,7 +2307,7 @@ namespace Improvar
             //}
             else
             {
-                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD,true);
+                tbl = salesfunc.GetStock(DOCDT.retStr(), GOCD.retStr(), BARNO.retStr(), ITCD.retStr(), MTRLJOBCD.retStr(), "", "", barnoOrStyle, PRCCD.retStr(), TAXGRPCD.retStr(), "", "", true, true, "", "", false, false, exactbarno, PARTCD, true);
             }
             if (barnoOrStyle.retStr() == "" || tbl.Rows.Count > 1)
             {

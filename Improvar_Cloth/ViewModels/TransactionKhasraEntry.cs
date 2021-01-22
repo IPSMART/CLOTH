@@ -20,7 +20,6 @@ namespace Improvar.ViewModels
         public string REGMOBILE { get; set; }
         public string STRTNO { get; set; }
         public string GONM { get; set; }
-        public bool BALEOPEN { get; set; }
         public string TRANSLNM { get; set; }
         public List<VECHLTYPE> VECHLTYPE { get; set; }
         public List<TRANSMODE> TRANSMODE { get; set; }

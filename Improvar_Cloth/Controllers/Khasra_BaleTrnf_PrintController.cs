@@ -114,6 +114,7 @@ namespace Improvar.Controllers
                 sql += "a.autono=c.autono(+) and a.slno=c.slno(+) and c.stkdrcr in ('D','C') and ";
                 sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
                 sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
+                if (doccd.retStr() != "") sql += "and d.doccd ='" + doccd + "' ";
                 if (fdate.retStr() != "") sql += "and d.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
                 if (tdate.retStr() != "") sql += "and d.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
                 if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' ";

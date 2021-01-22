@@ -63,16 +63,15 @@
 </script>
 <script>
     function requiredFieldValidator() {
+        debugger;
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-       
-        if ("@Model.MENU_PARA" == "TRFB")
-        {
+        var GridRowMain = $("#T_Bilty_Khasra_Main > tbody > tr").length;
+
+        if ("@Model.MENU_PARA" == "TRFB") {
             var gocd = $("#GOCD").val();
             if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
-            for (var i = 0; i < GridRowMain;i++)
-            {
-                var grgocd=$("#GOCD_"+i).val();
+            for (var i = 0; i < GridRowMain; i++) {
+                var grgocd = $("#GOCD_" + i).val();
                 if (gocd == grgocd) {
                     msgInfo("GOCD header and grid should not same. ");
                     message_value = "GOCD";
@@ -80,13 +79,12 @@
                 }
             }
         }
-        else if ("@Model.MENU_PARA" == "KHSR")
-        { 
+        else if ("@Model.MENU_PARA" == "KHSR") {
             for (var i = 0; i < GridRowMain; i++) {
                 var grgocd = $("#GOCD_" + i).val();
-                if ( grgocd=="") {
+                if (grgocd == "") {
                     msgInfo("GOCD enter in the grid");
-                    message_value = "GOCD_"+i;
+                    message_value = "GOCD_" + i;
                     return false;
                 }
             }
@@ -160,15 +158,14 @@
     function GetData() {
         if ("@Model.DefaultAction" != "V") {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-            if ("@Model.MENU_PARA" == "TRFB")
-            {
+            if ("@Model.MENU_PARA" == "TRFB") {
                 if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
             }
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("GetData", PageControllerName)",
                 beforesend: $("#WaitingMode").show(),
-                data:  $('form').serialize(),
+                data: $('form').serialize(),
                 success: function (result) {
                     $("#WaitingMode").hide();
                     if (result == 0)
@@ -186,21 +183,72 @@
     }
 </script>
 <script>
-    function SelectMatchingCheckBoxes() {
-        debugger;;
-        var arr = new Array();
-        var GridRowMain = $("#T_Bilty_Khasra_PopUp > tbody > tr").length;
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            var chkbox = document.getElementById("chkid_K_POPUP_" + i);
-            if (chkbox.checked) { arr.push(document.getElementById("BLAUTONO_K_POPUP_" + i)); }
+    //function SelectMatchingCheckBoxes() {
+    //    debugger;;
+    //    var arr = new Array();
+    //    var GridRowMain = $("#T_Bilty_Khasra_PopUp > tbody > tr").length;
+    //    for (i = 0; i <= GridRowMain - 1; i++) {
+    //        var chkbox = document.getElementById("chkid_K_POPUP_" + i);
+    //        if (chkbox.checked) { arr.push(document.getElementById("BLAUTONO_K_POPUP_" + i)); }
 
-        }
-        for (i = 0; i <= GridRowMain - 1; i++) {
-            if (arr.indexOf(document.getElementById("BLAUTONO_K_POPUP_" + i)) != -1) {
-                document.getElementById("chkid_K_POPUP_" + i).checked = true;
+    //    }
+    //    for (i = 0; i <= GridRowMain - 1; i++) {
+    //        if (arr.indexOf(document.getElementById("BLAUTONO_K_POPUP_" + i)) != -1) {
+    //            document.getElementById("chkid_K_POPUP_" + i).checked = true;
+    //        }
+    //    }
+
+    //}
+    function SelectMatchingCheckBoxes(index, checkboxid, matchingid, tableid) {
+        debugger;
+        var arrmatchingfld = matchingid.split('/');
+        var chkbox = document.getElementById(checkboxid + index).checked;
+        if (chkbox == true) {
+            var Table_name = "#" + tableid + " > tbody > tr";
+            var lngth = $(Table_name).length;
+            for (var i = 0; i <= lngth - 1; i++) {
+                var flag = true;
+                var lrnoflag = false;
+                for (var j = 0; j <= arrmatchingfld.length - 1; j++) {
+                    if ($("#" + arrmatchingfld[j] + index).val() != $("#" + arrmatchingfld[j] + i).val()) {
+                        flag = false;
+                        break;
+                    }
+                    if (arrmatchingfld[j] == "LRNO_POPUP_") {
+                        lrnoflag = true;
+                    }
+                }
+                if (flag == true) {
+                    document.getElementById(checkboxid + i).checked = true;
+                    if (lrnoflag == true) {
+                        document.getElementById("chkid_K_POPUP_" + i).checked = true;
+                    }
+                }
             }
         }
-
+        else {
+            var Table_name = "#" + tableid + " > tbody > tr";
+            var lngth = $(Table_name).length;
+            for (var i = 0; i <= lngth - 1; i++) {
+                var flag = true;
+                var lrnoflag = false;
+                for (var j = 0; j <= arrmatchingfld.length - 1; j++) {
+                    if ($("#" + arrmatchingfld[j] + index).val() != $("#" + arrmatchingfld[j] + i).val()) {
+                        flag = false;
+                        break;
+                    }
+                    if (arrmatchingfld[j] == "LRNO_POPUP_") {
+                        lrnoflag = true;
+                    }
+                }
+                if (flag == true) {
+                    document.getElementById(checkboxid + i).checked = false;
+                    if (lrnoflag == true) {
+                        document.getElementById("chkid_K_POPUP_" + i).checked = false;
+                    }
+                }
+            }
+        }
     }
     function SelectPendingLRNO() {
         debugger;
@@ -220,7 +268,7 @@
                 type: 'post',
                 url: "@Url.Action("SelectPendingLRNO", PageControllerName )",
                 beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize()+"&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
+                data: $('form').serialize() + "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
 
@@ -247,6 +295,32 @@
     function CancelLRNO() {
         $('#popup').html("");
         $('.PopUp_Backround').fadeOut();
+    }
+    function GodownBaleopenFill(index) {
+        debugger;
+        var GOCD = $("#GOCD_" + index).val();
+        var GONM = $("#GONM_" + index).val();
+        var FLAG1 = $("#FLAG1_" + index).val();
+        var BALEOPEN = document.getElementById("CheckedBALEOPEN_" + index).checked;
+
+        var BLAUTONO = $("#BLAUTONO_" + index).val();
+        var BALENO = $("#BALENO_" + index).val();
+
+        var Table_name = "#T_Bilty_Khasra_Main > tbody > tr";
+        var lngth = $(Table_name).length;
+        for (var i = 0; i <= lngth - 1; i++) {
+            if (BLAUTONO == $("#BLAUTONO_" + i).val() && BALENO == $("#BALENO_" + i).val()) {
+                $("#GOCD_" + i).val(GOCD);
+                $("#GONM_" + i).val(GONM);
+                $("#FLAG1_" + i).val(FLAG1);
+                if (BALEOPEN == true && $("#FLAG1_" + i).val() == "SHOP") {
+                    document.getElementById("CheckedBALEOPEN_" + i).checked = true;
+                }
+                else {
+                    document.getElementById("CheckedBALEOPEN_" + i).checked = false;
+                }
+            }
+        }
     }
 </script>
 <script>
@@ -283,6 +357,59 @@
                 $("body span h1").remove(); $("#msgbody_error style").remove();
             }
         });
+    }
+</script>
+<script>
+    function GetGodown(id, index) {
+        if ("@Model.DefaultAction" != "V") {
+            debugger;
+            if (id == "") {
+                ClearAllTextBoxes("GOCD_" + index + ",GONM_" + index + ",FLAG1_" + index);
+                GodownBaleopenFill(index);
+            }
+            else {
+                var gocd = $("#GOCD").val();
+                $.ajax({
+                    type: 'POST',
+                    beforesend: $("#WaitingMode").show(),
+                    url: "@Url.Action("GetGodownDetails", PageControllerName)",
+                    data: "&Code=" + gocd + "&val=" + id,
+                    success: function (result) {
+                        var MSG = result.indexOf('#helpDIV');
+                        if (MSG >= 0) {
+                            ClearAllTextBoxes("GOCD_" + index + ",GONM_" + index + ",FLAG1_" + index);
+                            $('#SearchFldValue').val("GOCD_" + index);
+                            $('#helpDIV').html(result);
+                            $('#ReferanceFieldID').val("GOCD_" + index + "/GONM_" + index);
+                            $('#ReferanceColumn').val("1/0");
+                            $('#helpDIV_Header').html("Godown Details");
+                        }
+                        else {
+                            var MSG = result.indexOf(String.fromCharCode(181));
+                            if (MSG >= 0) {
+                                $("#GOCD_" + index).val(returncolvalue(result, "GOCD"));
+                                $("#GONM_" + index).val(returncolvalue(result, "GONM"));
+                                $("#FLAG1_" + index).val(returncolvalue(result, "FLAG1"));
+                                GodownBaleopenFill(index);
+                            }
+                            else {
+                                $('#helpDIV').html("");
+                                msgInfo("" + result + " !");
+                                ClearAllTextBoxes("GOCD_" + index + ",GONM_" + index + ",FLAG1_" + index);
+                                GodownBaleopenFill(index);
+                                message_value = "GOCD_" + index;
+                            }
+                        }
+                        $("#WaitingMode").hide();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#WaitingMode").hide();
+                        msgError(XMLHttpRequest.responseText);
+                        $("body span h1").remove(); $("#msgbody_error style").remove();
+                    }
+                });
+            }
+        }
     }
 </script>
 @using (Html.BeginForm())
@@ -343,6 +470,10 @@
                 <div class="col-md-6">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.T_CNTRL_HDR.DOCONLYNO, new { htmlAttributes = new { @class = "form-control", id = "DOCONLYNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
+                        @if (Model.MENU_PARA != "TRFB")
+                    {
+                            @Html.HiddenFor(a => a.T_TXN.GOCD, new { id = "GOCD" })
+                        }
                     </div>
                 </div>
                 @if (Model.DefaultAction != "V")
@@ -352,40 +483,40 @@
                             <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Data " onclick="GetData()" />
                         </div>
                     </div>
-                    }
+                }
             </div>
             <div class="row">
                 @if (Model.MENU_PARA == "TRFB")
                 {
-                <div class="col-md-5">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Godown")
+                    <div class="col-md-5">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Godown")
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
-                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
+                    <div class="col-md-1">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_TXN.GOCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "GOCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','GOCD','GOCD=GOCD=1/GONM=GONM=0')" />
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="editor-field">
-                        @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.GONM, new { htmlAttributes = new { @class = "form-control", @TabIndex = -1, @title = "Godown Name", @placeholder = "Godown Name", @readonly = "readonly" } })
+                        </div>
                     </div>
-                </div>
                 }
                 else
                 {
                     @Html.HiddenFor(a => a.T_TXN.GOCD)
                 }
-                <div class="col-md-3">
-                    <div class="editor-label" style="margin-top: 6px;">
-                        @Html.Label("", "Bale Open")
+                @*<div class="col-md-3">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Bale Open")
+                        </div>
                     </div>
-                </div>
-                <div class="editor-field" style="margin-top:6px;">
-                    @Html.CheckBoxFor(model => model.BALEOPEN, new { id = "BALEOPEN" })
-                </div>
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.CheckBoxFor(model => model.BALEOPEN, new { id = "BALEOPEN" })
+                    </div>*@
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
