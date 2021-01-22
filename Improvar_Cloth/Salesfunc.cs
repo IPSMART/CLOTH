@@ -2082,7 +2082,7 @@ namespace Improvar
             //sql += "a.gocd=g.gocd(+) ";
             //sql += "order by baleyr, baleno, styleno ";
 
-            sql += "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
+            sql += "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr BaleNoBaleYrcd, e.lrno, e.lrdt, ";
             sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
             sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
             sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";
@@ -2101,18 +2101,16 @@ namespace Improvar
             sql += "" + scm + ".t_txntrans e, " + scm + ".t_txn f, " + scm + ".t_txndtl g, " + scm + ".m_sitem h, " + scm + ".m_group i, " + scm + ".t_batchdtl j, " + scmf + ".m_godown k ";
             sql += "where a.blautono = e.autono(+) and a.blautono = f.autono(+) and ";
             sql += "g.autono=j.autono(+) and g.slno=j.txnslno(+) and a.blautono = g.autono(+) and a.blslno = g.slno(+) and g.itcd = h.itcd(+) and ";
-            if (itgrpcd != "") sql += "f.itgrpcd in (" + itgrpcd + ") and ";
-            if (itcd != "") sql += "a.itcd in (" + itcd + ") and ";
-            if (baleno != "") sql += "a.baleno||baleyr in (" + baleno + ") and ";
+            if (itgrpcd != "") sql += "h.itgrpcd in (" + itgrpcd + ") and ";
+            if (itcd != "") sql += "g.itcd in (" + itcd + ") and ";
+            if (baleno != "") sql += "a.baleno||a.baleyr in (" + baleno + ") and ";
             if (gocd != "") sql += "a.gocd in (" + gocd + ") and ";
             sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) and nvl(a.qnty, 0) > 0 ";
-            sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
+            sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
             sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";
             sql += "order by baleyr, baleno, styleno ";
             DataTable tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
         }
-
-
     }
 }
