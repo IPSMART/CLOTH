@@ -1246,7 +1246,6 @@
     <Content Include="Views\Rep_Pend_Job\Rep_Pend_Job.cshtml" />
     <Content Include="Views\Rep_Job_Ledger\Rep_Job_Ledger.cshtml" />
     <Content Include="Views\T_Ack\T_Ack.cshtml" />
-    <Content Include="Views\Rep_Bale\Rep_Bale.cshtml" />
     <Content Include="Views\Rep_Bale_History\Rep_Bale_History.cshtml" />
     <Content Include="Views\Khasra_BaleTrnf_Print\Khasra_BaleTrnf_Print.cshtml" />
     <Content Include="Views\Rep_Bale_Stock\Rep_Bale_Stock.cshtml" />
