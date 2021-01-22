@@ -391,6 +391,7 @@
     <Compile Include="Models\MSTCHGRPCOMP.cs" />
     <Compile Include="Models\MSUBLEGBRAND.cs" />
     <Compile Include="Models\MSUBLEGCONT.cs" />
+    <Compile Include="Models\MSUBLEGGRPCLASS1.cs" />
     <Compile Include="Models\MSubLegIFSC.cs" />
     <Compile Include="Models\MSUBLEGLOCOTH.cs" />
     <Compile Include="Models\MSUBLEGSDDTL.cs" />
@@ -496,6 +497,7 @@
     <Compile Include="Models\M_SUBLEG_CONT.cs" />
     <Compile Include="Models\M_SUBLEG_DTLLOC.cs" />
     <Compile Include="Models\M_SUBLEG_GL.cs" />
+    <Compile Include="Models\M_SUBLEG_GRP.cs" />
     <Compile Include="Models\M_SUBLEG_GRPCLASS1.cs" />
     <Compile Include="Models\M_SUBLEG_GRPHDR.cs" />
     <Compile Include="Models\M_SUBLEG_HSNAC.cs" />

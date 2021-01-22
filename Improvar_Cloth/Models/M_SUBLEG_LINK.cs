@@ -31,5 +31,6 @@ namespace Improvar.Models
         [StringLength(1)]
         public string LINKCD { get; set; }
 
+       
     }
 }

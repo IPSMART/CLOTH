@@ -37,5 +37,6 @@ namespace Improvar.Models
         public double? LWRRT { get; set; }
         public double? INTPER { get; set; }
 
+       
     }
 }

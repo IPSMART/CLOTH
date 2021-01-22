@@ -1101,6 +1101,8 @@ function AmountCalculation(i) {
 function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var GridRow = $("#AMOUNT_GRID > tbody > tr").length;
+    if (GridRow == 0) return true;
     var NEW_AMT = document.getElementById(id.id).value;
     var PERCENTAGE = document.getElementById(PER.id).value;
     var AMT = document.getElementById(AMOUNT.id).value;

@@ -59,6 +59,6 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string DEPT { get; set; }
-      
+       
     }
 }

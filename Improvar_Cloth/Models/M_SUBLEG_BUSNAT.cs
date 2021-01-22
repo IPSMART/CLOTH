@@ -30,6 +30,6 @@ namespace Improvar.Models
         [Column(Order = 1)]
         [StringLength(2)]
         public string NATBUSCD { get; set; }
-        
+
     }
 }
