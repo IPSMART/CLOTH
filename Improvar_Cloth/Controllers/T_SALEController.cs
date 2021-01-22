@@ -1537,7 +1537,7 @@ namespace Improvar.Controllers
                 if (allslno != distnctslno)
                 {
                     //checking
-                    //DataTable tbl = ListToDatatable.LINQResultToDataTable(VE.TTXNDTL);
+                    DataTable tbl = ListToDatatable.LINQResultToDataTable(VE.TTXNDTL);
                     return Content("0");
                 }
 

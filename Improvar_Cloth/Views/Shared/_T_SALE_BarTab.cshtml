@@ -57,10 +57,12 @@
                                 @if (Model.M_SYSCNFG.MNTNPART == "Y")
                                 {
                                     <th class="" style="width: 50px;">Part</th>
-                                }    @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
+                                }    
+                                @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                 {
                                     <th class="" style="width: 50px;">Color Code</th>
-                                    <th class="" style="width: 50px;">Color Name</th>}
+                                    <th class="" style="width: 50px;">Color Name</th>
+                                }
                                 @if (Model.M_SYSCNFG.MNTNSIZE == "Y")
                                 {
                                     <th class="" style="width: 50px;">Size</th>
@@ -415,12 +417,8 @@
                                 @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
-
-                                    <
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
-
                                 }
-                                <
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*RATE*@
                                 @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                                 {
