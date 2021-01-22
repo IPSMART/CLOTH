@@ -334,6 +334,10 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNFLAGMTR, new { id = "MNTNFLAGMTR" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNLISTPRICE, new { id = "MNTNLISTPRICE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNDISC1, new { id = "MNTNDISC1" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNDISC2, new { id = "MNTNDISC2" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSHADE, new { id = "MNTNSHADE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNWPRPPER, new { id = "MNTNWPRPPER" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -652,7 +656,7 @@
                                     </datalist>
                                 </div>
                             </div>
-                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNWPRPPER == "Y")
                             {
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
@@ -922,6 +926,25 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/BARCODE')" />
                                             @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur_T_Sale('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetHelpBlur_T_Sale('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD');", @placeholder = "Bar Code", maxlength = 25 } })
                                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur_T_Sale('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />*@
+                                            @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.TDDISCTYPE, new { id = "TDDISCTYPE" })
+                                                @Html.HiddenFor(model => model.TDDISCRATE, new { id = "TDDISCRATE" })
+                                            }
+                                            @if (Model.M_SYSCNFG.MNTNDISC2 != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.DISCTYPE, new { id = "DISCTYPE" })
+                                                @Html.HiddenFor(model => model.DISCRATE, new { id = "DISCRATE" })
+                                            }
+                                            @if (Model.M_SYSCNFG.MNTNSHADE != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.SHADE, new { id = "SHADE" })
+                                            }
+                                            @if (Model.M_SYSCNFG.MNTNWPRPPER != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.WPPER, new { id = "WPPER" })
+                                                @Html.HiddenFor(model => model.RPPER, new { id = "RPPER" })
+                                            }
                                         </div>
                                     </div>
                                     <div class="col-md-1">
@@ -1161,11 +1184,14 @@
                                                     @Html.HiddenFor(model => model.PRODGRPGSTPER, new { id = "PRODGRPGSTPER" })
                                                 </div>
                                             </div>
-                                            <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Shade", @placeholder = "Shade" } })
+                                            @if (Model.M_SYSCNFG.MNTNSHADE == "Y")
+                                            {
+                                                <div class="col-md-1">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Shade", @placeholder = "Shade" } })
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            }
                                             @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                             {
                                                 <div class="col-md-6">
@@ -1244,27 +1270,32 @@
                                             </div>
                                         </div>
                                     }
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.TDDISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "TDDISCTYPE", @title = "Disc-1" })
+                                    @if (Model.M_SYSCNFG.MNTNDISC1 == "Y")
+                                    {
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.DropDownListFor(model => model.TDDISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "TDDISCTYPE", @title = "Disc-1" })
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.TDDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "TDDISCRATE", @title = "Disc1 Rate" } })
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.TDDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "TDDISCRATE", @title = "Disc1 Rate" } })
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc-2" })
+                                    }
+                                    @if (Model.M_SYSCNFG.MNTNDISC2 == "Y")
+                                    {
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc-2" })
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <div class="editor-field">
-                                            @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc2 Rate" } })
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc2 Rate" } })
+                                            </div>
                                         </div>
-                                    </div>
-
+                                    }
                                     <div class="col-md-4">
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10, @title = "Location Bin" } })
