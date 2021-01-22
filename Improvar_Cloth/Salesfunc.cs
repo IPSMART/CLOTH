@@ -1413,7 +1413,7 @@ namespace Improvar
             sql += "a.blautono = e.autono(+) and a.blautono = f.autono(+) and g.autono=j.autono(+) and g.slno=j.txnslno(+) and ";
             sql += "a.blautono = g.autono(+) and a.blslno = g.slno(+) and ";
             if (blautono.retStr() != "") sql += "a.blautono in(" + blautono + ") and ";
-            sql += "g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and 1-nvl(b.bnos, 0) > 0 ";
+            sql += "g.itcd = h.itcd(+) and h.itgrpcd = i.itgrpcd(+) and 1+nvl(b.bnos, 0) > 0 ";
             sql += "group by a.autono, a.docno, a.docdt, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
             sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty, h.styleno||' '||h.itnm, ";
             sql += "g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt, nvl(b.bnos, 0) ";
@@ -2104,6 +2104,7 @@ namespace Improvar
             if (itgrpcd != "") sql += "f.itgrpcd in (" + itgrpcd + ") and ";
             if (itcd != "") sql += "a.itcd in (" + itcd + ") and ";
             if (baleno != "") sql += "a.baleno||baleyr in (" + baleno + ") and ";
+            if (gocd != "") sql += "a.gocd in (" + gocd.retSqlformat() + ") and ";
             sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) and nvl(a.qnty, 0) > 0 ";
             sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
             sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";
