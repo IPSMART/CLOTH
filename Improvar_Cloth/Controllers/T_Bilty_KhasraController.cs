@@ -324,14 +324,14 @@ namespace Improvar.Controllers
                 DataTable dt = new DataTable();
                 if (VE.MENU_PARA == "KHSR")
                 {
-                    var GetPendig_Data = salesfunc.getPendKhasra(VE.T_CNTRL_HDR.DOCDT.retDateStr());
+                    var GetPendig_Data = salesfunc.getPendKhasra(VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", VE.T_BALE_HDR.AUTONO.retSqlformat());
                     DataView dv = new DataView(GetPendig_Data);
                     string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
                     dt = dv.ToTable(true, COL);
                 }
                 else if (VE.MENU_PARA == "TRFB")
                 {
-                    dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD);
+                    dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retSqlformat());
                 }
 
                 VE.TBILTYKHASRA_POPUP = (from DataRow dr in dt.Rows
@@ -388,10 +388,21 @@ namespace Improvar.Controllers
                         blautonos.Add(i.BLAUTONO);
                     }
                 }
+                DataTable dt = new DataTable();
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
-                var GetPendig_Data = salesfunc.getPendKhasra(DOCDT, sqlbillautonos);
-
-                VE.TBILTYKHASRA = (from DataRow dr in GetPendig_Data.Rows
+                if (VE.MENU_PARA == "KHSR")
+                {
+                    var GetPendig_Data = salesfunc.getPendKhasra(DOCDT, sqlbillautonos, VE.T_BALE_HDR.AUTONO.retSqlformat());
+                    DataView dv = new DataView(GetPendig_Data);
+                    dt = dv.ToTable(true);
+                }
+                else if (VE.MENU_PARA == "TRFB")
+                {
+                    var GetPendig_Data = salesfunc.GetBaleStock(DOCDT, VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.retSqlformat());
+                    DataView dv = new DataView(GetPendig_Data);
+                    dt = dv.ToTable(true);
+                }
+                VE.TBILTYKHASRA = (from DataRow dr in dt.Rows
                                    select new TBILTYKHASRA
                                    {
                                        BLAUTONO = dr["blautono"].retStr(),
@@ -403,12 +414,12 @@ namespace Improvar.Controllers
                                        UOMCD = dr["uomcd"].retStr(),
                                        SHADE = dr["shade"].retStr(),
                                        BALENO = dr["baleno"].retStr(),
-                                       PAGENO = dr["pageno"].retStr()+"/"+ dr["pageslno"].retStr(),
+                                       PAGENO = dr["pageno"].retStr() + "/" + dr["pageslno"].retStr(),
                                        LRNO = dr["lrno"].retStr(),
                                        LRDT = dr["lrdt"].retDateStr(),
                                        BALEYR = dr["baleyr"].retStr(),
                                        BLSLNO = dr["blslno"].retShort(),
-                                       PBLNO= dr["prefno"].retStr(),
+                                       PBLNO = dr["prefno"].retStr(),
                                        PBLDT = dr["prefdt"].retDateStr()
                                    }).Distinct().ToList();
 
@@ -723,7 +734,7 @@ namespace Improvar.Controllers
                         string gocd = "";
                         int bslno = 0, mxlp = 1;
                         if (VE.MENU_PARA == "KHSR") mxlp = 0;
-                        for (int lp=0; lp <= mxlp; lp++)
+                        for (int lp = 0; lp <= mxlp; lp++)
                         {
                             for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
                             {
@@ -735,7 +746,7 @@ namespace Improvar.Controllers
                                     T_BALE TBILTYKHASRA = new T_BALE();
                                     TBILTYKHASRA.CLCD = TBHDR.CLCD;
                                     TBILTYKHASRA.AUTONO = TBHDR.AUTONO;
-                                    TBILTYKHASRA.SLNO =(VE.TBILTYKHASRA[i].SLNO + (lp==0?0:1000)).retShort();
+                                    TBILTYKHASRA.SLNO = (VE.TBILTYKHASRA[i].SLNO + (lp == 0 ? 0 : 1000)).retShort();
                                     TBILTYKHASRA.BLAUTONO = VE.TBILTYKHASRA[i].BLAUTONO;
                                     TBILTYKHASRA.DRCR = stkdrcr;
                                     TBILTYKHASRA.LRDT = Convert.ToDateTime(VE.TBILTYKHASRA[i].LRDT);
@@ -767,7 +778,7 @@ namespace Improvar.Controllers
                                     {
                                         bslno++;
                                         TBATCHDTlst[dtl].AUTONO = TBHDR.AUTONO;
-                                        TBATCHDTlst[dtl].SLNO = Convert.ToInt16(bslno + (lp==0?0:1000));
+                                        TBATCHDTlst[dtl].SLNO = Convert.ToInt16(bslno + (lp == 0 ? 0 : 1000));
                                         TBATCHDTlst[dtl].GOCD = gocd;
                                         TBATCHDTlst[dtl].STKDRCR = stkdrcr;
                                         if (VE.BALEOPEN == true && lp == 0) TBATCHDTlst[dtl].BALENO = null;
@@ -891,11 +902,11 @@ namespace Improvar.Controllers
                         return Content("");
                     }
                     goto dbok;
-                    dbnotsave:;
+                dbnotsave:;
                     OraTrans.Rollback();
                     OraCon.Dispose();
                     return Content(dberrmsg);
-                    dbok:;
+                dbok:;
                 }
                 catch (Exception ex)
                 {
