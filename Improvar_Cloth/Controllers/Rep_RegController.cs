@@ -37,8 +37,8 @@ namespace Improvar.Controllers
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
 
-                    VE.DropDown_list = (from i in DB.M_GROUP select new DropDown_list() { value = i.ITGRPCD, text = i.ITGRPNM }).OrderBy(s => s.text).ToList();
-                    VE.Itgrpnm = MasterHelp.ComboFill("ITGRPCD", VE.DropDown_list, 0, 1);
+                    //VE.DropDown_list = (from i in DB.M_GROUP select new DropDown_list() { value = i.ITGRPCD, text = i.ITGRPNM }).OrderBy(s => s.text).ToList();
+                    //VE.Itgrpnm = MasterHelp.ComboFill("ITGRPCD", VE.DropDown_list, 0, 1);
                     //=========For Report Type===========//
                     List<DropDown_list1> RT = new List<DropDown_list1>();
                     DropDown_list1 RT1 = new DropDown_list1();
