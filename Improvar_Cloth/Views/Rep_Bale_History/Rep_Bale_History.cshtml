@@ -22,7 +22,7 @@
         $("#form1").attr('target', '_blank');
         $("#form1").attr('action', 'Rep_Bale_History');
         $("#form1").submit();
-       
+
     }
 </script>
 
@@ -104,7 +104,7 @@
     }
     }
 </script>
-  
+
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
     if (Model.DefaultView == true)
@@ -177,7 +177,7 @@
                         @Html.CheckBoxFor(model => model.Checkbox1, true)
                     </div>
                 </div>
-             
+
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>

@@ -70,5 +70,8 @@ namespace Improvar.Models
         public string SHADE { get; set; }
         public string GOCD { get; set; }
         public string GONM { get; set; }
+        public string BALEOPEN { get; set; }
+        public bool CheckedBALEOPEN { get; set; }
+        public string FLAG1 { get; set; }
     }
 }

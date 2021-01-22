@@ -114,6 +114,7 @@ namespace Improvar.Controllers
                 sql += "a.autono=c.autono(+) and a.slno=c.slno(+) and c.stkdrcr in ('D','C') and ";
                 sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
                 sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
+                if (doccd.retStr() != "") sql += "and d.doccd ='" + doccd + "' ";
                 if (fdate.retStr() != "") sql += "and d.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
                 if (tdate.retStr() != "") sql += "and d.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
                 if (fdocno != "") sql += "and d.doconlyno >= '" + fdocno + "' ";
@@ -135,6 +136,18 @@ namespace Improvar.Controllers
 
                 DataTable restbl = new DataTable("restbl");
                 restbl = masterHelp.SQLquery(sql);
+
+
+                sql = "select a.autono,a.gocd hdrgocd,b.gonm hdrgonm,b.goadd1 hdrgoadd1,b.goadd2 hdrgoadd2,b.goadd3 hdrgoadd3,b.gophno hdrgophno,b.goemail hdrgoemail ";
+                sql += "from " + scm + ".t_txn a, " + scmf + ".m_godown b, " + scm + ".t_cntrl_hdr c ";
+                sql += "where a.gocd=b.gocd(+) and a.autono=c.autono ";
+                sql += "and c.compcd = '" + COM + "' and nvl(c.cancel, 'N') = 'N' and ";
+                sql += "c.loccd='" + LOC + "' and c.yr_cd = '" + yr_cd + "'  ";
+                if (doccd.retStr() != "") sql += "and c.doccd ='" + doccd + "' ";
+                if (fdate.retStr() != "") sql += "and c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') ";
+                if (tdate.retStr() != "") sql += "and c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') ";
+                DataTable restblgodown = new DataTable("restblgodown");
+                restblgodown = masterHelp.SQLquery(sql);
 
                 if (restbl.Rows.Count == 0)
                 {
@@ -175,19 +188,28 @@ namespace Improvar.Controllers
                 {
                     string autono = restbl.Rows[i]["autono"].ToString();
                     double countbaleno = restbl.AsEnumerable().Where(a => a.Field<string>("autono") == autono && a.Field<string>("baleno").retStr() != "").Select(b => b.Field<string>("baleno")).Distinct().Count();
+                    var rm1 = restblgodown.Select("autono = '" + autono + "'");
                     while (restbl.Rows[i]["autono"].ToString() == autono)
                     {
                         DataRow dr1 = IR.NewRow();
                         dr1["autono"] = restbl.Rows[i]["autono"].ToString();
                         dr1["docno"] = restbl.Rows[i]["docno"].ToString();
                         dr1["docdt"] = restbl.Rows[i]["docdt"].retStr().Remove(10);
-                        dr1["hdrgocd"] = restbl.Rows[i]["hdrgocd"].ToString();
-                        dr1["hdrgonm"] = restbl.Rows[i]["hdrgonm"].ToString();
-                        dr1["hdrgoadd1"] = restbl.Rows[i]["hdrgoadd1"].ToString();
-                        dr1["hdrgoadd2"] = restbl.Rows[i]["hdrgoadd2"].ToString();
-                        dr1["hdrgoadd3"] = restbl.Rows[i]["hdrgoadd3"].ToString();
-                        dr1["hdrgophno"] = restbl.Rows[i]["hdrgophno"].ToString();
-                        dr1["hdrgoemail"] = restbl.Rows[i]["hdrgoemail"].ToString();
+
+                        if (rm1 != null && rm1.Count() > 0)
+                        {
+                            for (int a = 0; a <= rm1.Count() - 1; a++)
+                            {
+                                dr1["hdrgocd"] = rm1[a]["hdrgocd"].ToString();
+                                dr1["hdrgonm"] = rm1[a]["hdrgonm"].ToString();
+                                dr1["hdrgoadd1"] = rm1[a]["hdrgoadd1"].ToString();
+                                dr1["hdrgoadd2"] = rm1[a]["hdrgoadd2"].ToString();
+                                dr1["hdrgoadd3"] = rm1[a]["hdrgoadd3"].ToString();
+                                dr1["hdrgophno"] = rm1[a]["hdrgophno"].ToString();
+                                dr1["hdrgoemail"] = rm1[a]["hdrgoemail"].ToString();
+                            }
+                        }
+
                         dr1["slno"] = restbl.Rows[i]["slno"].ToString();
                         dr1["prefno"] = restbl.Rows[i]["prefno"].ToString();
                         dr1["prefdt"] = restbl.Rows[i]["prefdt"].retStr() == "" ? "" : restbl.Rows[i]["prefdt"].retStr().Remove(10);

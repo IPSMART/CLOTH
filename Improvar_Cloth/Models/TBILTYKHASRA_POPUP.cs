@@ -20,5 +20,6 @@ namespace Improvar.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string PREFDT { get; set; }
         public string BALEYR { get; set; }
+        public bool Checked_LRNO { get; set; }
     }
 }

@@ -86,5 +86,14 @@ namespace Improvar.Models
         [StringLength(1)]
         public string MNTNLISTPRICE { get; set; }
 
+        [StringLength(1)]
+        public string MNTNDISC1 { get; set; }
+        [StringLength(1)]
+        public string MNTNDISC2 { get; set; }
+        [StringLength(1)]
+        public string MNTNSHADE { get; set; }
+        [StringLength(1)]
+        public string MNTNWPRPPER { get; set; }
+
     }
 }
