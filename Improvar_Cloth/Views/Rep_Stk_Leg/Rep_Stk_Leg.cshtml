@@ -116,6 +116,7 @@
         }
     }
 </script>
+<script></script>
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(a => Model.maxdate)
@@ -344,7 +345,7 @@
                 </label>
             </div>
         </div>
-        <div class="row" style="margin-top: 8px;">
+        @*<div class="row" style="margin-top: 8px;">
             <div class="col-md-6">
                 <div class="editor-label" style="margin-top: 6px;">
                     @Html.Label("", "Qnty taken as")
@@ -354,17 +355,17 @@
                 <label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "P", new { @checked = "checked" })  @Html.Label("Unit")
                 </label>
-                @*<label class="radio-inline">
+                <label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "B")  @Html.Label("Box")
-                </label>*@
+                </label>
                 <label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "S")  @Html.Label("Set")
                 </label>
-                @*<label class="radio-inline">
+                <label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "Z")  @Html.Label("Pcs&Box")
-                </label>*@
+                </label>
             </div>
-        </div>
+        </div>*@
         <div class="row" style="margin-top: 5px;">
             <div class="col-md-6">
                 <div class="editor-label" style="margin-top: 6px;">

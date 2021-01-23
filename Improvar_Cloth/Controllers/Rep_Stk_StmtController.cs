@@ -156,7 +156,7 @@ namespace Improvar.Controllers
                 double due1Amt = 0, due2Amt = 0, due3Amt = 0, due4Amt = 0;
                 double due1Qty = 0, due2Qty = 0, due3Qty = 0, due4Qty = 0;
                
-                DataTable tbl = Salesfunc.GetStock(asdt, selgocd,"", selitcd, "", "", selitgrpcd, "","","","","",false,false,"","",false,false);
+                DataTable tbl = Salesfunc.GetStock(asdt, selgocd,"", selitcd, "FS".retSqlformat(), "",selitgrpcd);
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 DataTable IR = new DataTable("");
@@ -203,7 +203,7 @@ namespace Improvar.Controllers
                             stritcd = tbl.Rows[i]["itcd"].ToString();
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                             IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + stritcd + "  " + " </span>" + tbl.Rows[i]["itnm"].ToString();
-                            IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomnm"] + "]";
+                            IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomcd"] + "]";
                             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                             double iqnty = 0, iamt = 0;
                             while (tbl.Rows[i]["itcd"].ToString() == stritcd)
@@ -214,10 +214,10 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["slcd"] = tbl.Rows[i]["slcd"].ToString();
                                 IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
                                 IR.Rows[rNo]["qnty"] = tbl.Rows[i]["balqnty"].ToString();
-                                IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].ToString();
-                                IR.Rows[rNo]["amt"] = tbl.Rows[i]["amt"].ToString();
-                                iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString());
-                                iamt = iamt + Convert.ToDouble(tbl.Rows[i]["amt"].ToString());
+                                IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
+                                IR.Rows[rNo]["amt"] = (tbl.Rows[i]["rate"].retDbl()* tbl.Rows[i]["balqnty"].retDbl()).retDbl();
+                                iqnty = iqnty + Convert.ToDouble(tbl.Rows[i]["balqnty"].retDbl());
+                                iamt = iamt + (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
                                 i++;
                                 if (i > maxR) break;
                             }
@@ -302,7 +302,7 @@ namespace Improvar.Controllers
                                     days = TSdys.Days;
                                 }
 
-                                double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = Convert.ToDouble(tbl.Rows[i]["amt"].ToString());
+                                double _qty = Convert.ToDouble(tbl.Rows[i]["balqnty"].ToString()), _amt = (tbl.Rows[i]["rate"].retDbl() * tbl.Rows[i]["balqnty"].retDbl()).retDbl();
                                 if (ageingperiod > 0)
                                 {
                                     if (days <= due1tDys && due1tDys != 0) { due1Qty = due1Qty + _qty; due1Amt = due1Amt + _amt; }
@@ -326,7 +326,7 @@ namespace Improvar.Controllers
                                     IR.Rows[rNo]["slno"] = islno;
                                     IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itcd"].ToString();
                                     IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itnm"].ToString();
-                                    IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomnm"].ToString();
+                                    IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomcd"].ToString();
                                     IR.Rows[rNo]["qnty"] = iqnty;
                                     IR.Rows[rNo]["rate"] = avrt;
                                     IR.Rows[rNo]["amt"] = iamt;
@@ -365,7 +365,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["slno"] = islno;
                                 IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itgrpcd"].ToString();
                                 IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itgrpnm"].ToString();
-                                IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomnm"].ToString();
+                                IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomcd"].ToString();
                                 IR.Rows[rNo]["qnty"] = bqnty;
                                 IR.Rows[rNo]["amt"] = bamt;
                             }
@@ -451,7 +451,7 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["slno"] = islno;
                             IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"].ToString();
                             IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].ToString();
-                            IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomnm"].ToString();
+                            IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomcd"].ToString();
 
                             while (tbl.Rows[i]["itcd"].ToString() == stritcd)
                             {
