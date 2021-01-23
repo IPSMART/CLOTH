@@ -83,24 +83,44 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
+        //public ActionResult GetGodownDetails(string val)
+        //{
+        //    try
+        //    {
+        //        if (val == null)
+        //        {
+        //            return PartialView("_Help2", MasterHelp.GOCD_help(val));
+        //        }
+        //        else
+        //        {
+        //            string str = MasterHelp.GOCD_help(val);
+        //            return Content(str);
+        //        }
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        Cn.SaveException(Ex, "");
+        //        return Content(Ex.Message + Ex.InnerException);
+        //    }
+        //}
         public ActionResult GetGodownDetails(string val)
         {
             try
             {
-                if (val == null)
+                var str = MasterHelp.GOCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", MasterHelp.GOCD_help(val));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = MasterHelp.GOCD_help(val);
                     return Content(str);
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                Cn.SaveException(Ex, "");
-                return Content(Ex.Message + Ex.InnerException);
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult GetMtrlJobDetails(string val)
