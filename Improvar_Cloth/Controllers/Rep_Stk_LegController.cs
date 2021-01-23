@@ -378,7 +378,7 @@ namespace Improvar.Controllers
                         while (tbl.Rows[i]["itcd"].ToString() == stritcd)
                         {
                             chk1 = "itgrpcd"; chk2 = tbl.Rows[i]["itgrpcd"].ToString();
-                            if (reptype == "I")
+                            if (reptype == "I"|| reptype == "S")
                             {
                                 chk1 = "itcd"; chk2 = tbl.Rows[i][chk1].ToString();
 
