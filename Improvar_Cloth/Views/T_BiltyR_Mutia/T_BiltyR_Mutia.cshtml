@@ -207,17 +207,20 @@
                 }
             }
         }
-        else {
-            var Table_name = "#T_BiltyR_Mutia_PopUp > tbody > tr";
-            var lngth = $(Table_name).length;
-            for (var i = 0; i <= lngth - 1; i++) {
-                //check with lrno                 
-                var lrno = $("#LRNO_POPUP" + i).val();
-                if (LRNO == lrno) {
-                    //$("#chkid_POPUP_" + i).checked = true;
-                    document.getElementById("chkid_R_POPUP_" + i).checked = false;
-                }
-            }
+        //else {
+        //    var Table_name = "#T_BiltyR_Mutia_PopUp > tbody > tr";
+        //    var lngth = $(Table_name).length;
+        //    for (var i = 0; i <= lngth - 1; i++) {
+        //        //check with lrno                 
+        //        var lrno = $("#LRNO_POPUP" + i).val();
+        //        if (LRNO == lrno) {
+        //            //$("#chkid_POPUP_" + i).checked = true;
+        //            document.getElementById("chkid_R_POPUP_" + i).checked = false;
+        //        }
+        //    }
+        //}
+        if (chkbox == false) {
+            document.getElementById("chkid_R_POPUP_" + i).checked = false;
         }
     }
     function SelectPendingLRNO() {

@@ -50,6 +50,7 @@
 </script>
 <script>
     function SelectGodownCode(id, TEXTBOX4, TEXTBOX5) {
+        debugger;
         if (id == "") {
             $("#" + TEXTBOX4.id).val("");
             $("#" + TEXTBOX5.id).val("");
@@ -258,11 +259,12 @@
             </div>
             <div class="col-md-6">
                 <div class="editor-field">
-                    @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TEXTBOX4", maxlength = 6, onkeyup = "GetHelp('" + @Url.Action("GetGodownDetails", PageControllerName) + "','TEXTBOX4/TEXTBOX5','1/0','Godown Details','TEXTBOX4')", onblur = "SelectGodownCode(this.value,TEXTBOX4,TEXTBOX5);", @placeholder = "Code" } })
-                    <img src="~/Image/search.png" id="GodownHelp" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetGodownDetails", PageControllerName)','TEXTBOX4/TEXTBOX5','1/0','Godown Details','TEXTBOX4')" />
+                  
+                    @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TEXTBOX4", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','TEXTBOX4','TEXTBOX4=GOCD=1/TEXTBOX5=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','TEXTBOX4','TEXTBOX4=GOCD=1/TEXTBOX5=GONM=0');", @placeholder = "Code", maxlength = 6 } })
+                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','TEXTBOX4','TEXTBOX4=GOCD=1/TEXTBOX5=GONM=0')" />
                 </div>
             </div>
-            <div class="col-md-10">
+            <div class="col-md-8">
                 <div class="editor-field">
                     @Html.EditorFor(model => model.TEXTBOX5, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX5", maxlength = 30, @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
                 </div>
@@ -348,19 +350,19 @@
                     @Html.Label("", "Qnty taken as")
                 </div>
             </div>
-            <div class="col-md-8" style="border: 2px groove;">
+            <div class="col-md-6" style="border: 2px groove;">
                 <label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "P", new { @checked = "checked" })  @Html.Label("Unit")
                 </label>
-                <label class="radio-inline">
+                @*<label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "B")  @Html.Label("Box")
-                </label>
+                </label>*@
                 <label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "S")  @Html.Label("Set")
                 </label>
-                <label class="radio-inline">
+                @*<label class="radio-inline">
                     @Html.RadioButtonFor(g => g.TEXTBOX2, "Z")  @Html.Label("Pcs&Box")
-                </label>
+                </label>*@
             </div>
         </div>
         <div class="row" style="margin-top: 5px;">

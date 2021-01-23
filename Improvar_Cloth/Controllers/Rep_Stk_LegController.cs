@@ -83,24 +83,44 @@ namespace Improvar.Controllers
                 return View(VE);
             }
         }
+        //public ActionResult GetGodownDetails(string val)
+        //{
+        //    try
+        //    {
+        //        if (val == null)
+        //        {
+        //            return PartialView("_Help2", MasterHelp.GOCD_help(val));
+        //        }
+        //        else
+        //        {
+        //            string str = MasterHelp.GOCD_help(val);
+        //            return Content(str);
+        //        }
+        //    }
+        //    catch (Exception Ex)
+        //    {
+        //        Cn.SaveException(Ex, "");
+        //        return Content(Ex.Message + Ex.InnerException);
+        //    }
+        //}
         public ActionResult GetGodownDetails(string val)
         {
             try
             {
-                if (val == null)
+                var str = MasterHelp.GOCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    return PartialView("_Help2", MasterHelp.GOCD_help(val));
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = MasterHelp.GOCD_help(val);
                     return Content(str);
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                Cn.SaveException(Ex, "");
-                return Content(Ex.Message + Ex.InnerException);
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
             }
         }
         public ActionResult GetMtrlJobDetails(string val)
@@ -329,8 +349,8 @@ namespace Improvar.Controllers
                     if (reptype != "I") HC.GetPrintHeader(IR, "itnm", "string", "c,35", "Item");
                     if (showsizes == true)
                     {
-                        HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "P/Box");
-                        HC.GetPrintHeader(IR, "sizedsp", "string", "c,50", "Sizes;(Box)");
+                        //HC.GetPrintHeader(IR, "pcsperbox", "double", "n,5", "P/Box");
+                        //HC.GetPrintHeader(IR, "sizedsp", "string", "c,50", "Sizes;(Box)");
                     }
                     HC.GetPrintHeader(IR, "inqnty", "double", qtydsp, "In " + qtyhd);
                     HC.GetPrintHeader(IR, "outqnty", "double", qtydsp, "Out " + qtyhd);
@@ -385,8 +405,8 @@ namespace Improvar.Controllers
                                         }
                                         if (i > maxR) break;
                                     }
-                                    if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
-                                    else if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
+                                    //if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                     if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
                                     else cqty = cpcs;
                                     cop = cop + cqty;
                                     if (i > maxR) break;
@@ -447,9 +467,9 @@ namespace Improvar.Controllers
                                                             i++;
                                                             if (i > maxR) break;
                                                         }
-                                                        double dbboxes = Salesfunc.ConvPcstoBox(pcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                                        //double dbboxes = Salesfunc.ConvPcstoBox(pcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                                         if (sizes != "") sizes += ", ";
-                                                        sizes += Salesfunc.retsizemaxmin(size) + "=" + dbboxes.ToString();
+                                                        //sizes += Salesfunc.retsizemaxmin(size) + "=" + dbboxes.ToString();
                                                     }
                                                     else
                                                     {
@@ -476,8 +496,8 @@ namespace Improvar.Controllers
                                             }
                                             if (stkcalcon == "B")
                                             {
-                                                lpcsdr = Salesfunc.ConvPcstoBox(chkpcsdr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
-                                                lpcscr = Salesfunc.ConvPcstoBox(chkpcscr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                                //lpcsdr = Salesfunc.ConvPcstoBox(chkpcsdr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                                //lpcscr = Salesfunc.ConvPcstoBox(chkpcscr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                             }
                                             else if (stkcalcon == "S")
                                             {
@@ -508,8 +528,8 @@ namespace Improvar.Controllers
                                         if (reptype != "I") IR.Rows[rNo]["itnm"] = itmdsp;
                                         if (showsizes == true)
                                         {
-                                            IR.Rows[rNo]["sizedsp"] = sizes;
-                                            IR.Rows[rNo]["pcsperbox"] = Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]);
+                                            //IR.Rows[rNo]["sizedsp"] = sizes;
+                                            //IR.Rows[rNo]["pcsperbox"] = Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]);
                                         }
                                         if (cdr != 0) IR.Rows[rNo]["inqnty"] = cdr;
                                         if (ccr != 0) IR.Rows[rNo]["outqnty"] = ccr;
@@ -641,11 +661,11 @@ namespace Improvar.Controllers
                                         }
                                         if (i > maxR) break;
                                     }
-                                    if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
-                                    else if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
+                                    //if (stkcalcon == "B") cqty = Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                     if (stkcalcon == "S") cqty = Salesfunc.ConvPcstoSet(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
                                     else cqty = cpcs;
                                     cop = cop + cqty;
-                                    cop1 = cop1 + Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                    //cop1 = cop1 + Salesfunc.ConvPcstoBox(chkpcs, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                     if (i > maxR) break;
                                 }
                                 cbal = cop; cbal1 = cop1;
@@ -690,9 +710,9 @@ namespace Improvar.Controllers
                                             }
                                             if (stkcalcon == "B")
                                             {
-                                                lpcsdr = Salesfunc.ConvPcstoBox(chkpcsdr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
-                                                lpcscr = Salesfunc.ConvPcstoBox(chkpcscr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
-                                                lpcsret = Salesfunc.ConvPcstoBox(chkpcsret, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                                //lpcsdr = Salesfunc.ConvPcstoBox(chkpcsdr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                                //lpcscr = Salesfunc.ConvPcstoBox(chkpcscr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                                //lpcsret = Salesfunc.ConvPcstoBox(chkpcsret, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                             }
                                             else if (stkcalcon == "S")
                                             {
@@ -703,8 +723,8 @@ namespace Improvar.Controllers
                                             cqty = lpcsdr + lpcscr;
 
                                             cdr = cdr + lpcsdr; ccr = ccr + lpcscr; cret = lpcsret;
-                                            cdr1 = cdr1 + Salesfunc.ConvPcstoBox(chkpcsdr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
-                                            ccr1 = ccr1 + Salesfunc.ConvPcstoBox(chkpcscr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                            //cdr1 = cdr1 + Salesfunc.ConvPcstoBox(chkpcsdr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
+                                            //ccr1 = ccr1 + Salesfunc.ConvPcstoBox(chkpcscr, Convert.ToDouble(tbl.Rows[i - 1]["pcsperbox"]));
                                             cret1 = cret1 + Salesfunc.ConvPcstoSet(chkpcsret, Convert.ToDouble(tbl.Rows[i - 1]["pcsperset"]));
                                             if (i > maxR) break;
                                         }

@@ -738,6 +738,7 @@ namespace Improvar.Controllers
         {
             try
             {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                 ItemMasterEntry VE = new ItemMasterEntry();
                 Cn.getQueryString(VE);
                 string str = masterHelp.ITGRPCD_help(val, VE.MENU_PARA);
@@ -747,6 +748,10 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    string prodgrpcd = "", prodgrpnm="";
+                    prodgrpcd = str.retCompValue("PRODGRPCD");
+                    prodgrpnm = DB.M_PRODGRP.Where(a => a.PRODGRPCD == prodgrpcd).Select(b => b.PRODGRPNM).FirstOrDefault();
+                    str += "^PRODGRPNM=^" + prodgrpnm + Cn.GCS();
                     return Content(str);
                 }
             }
