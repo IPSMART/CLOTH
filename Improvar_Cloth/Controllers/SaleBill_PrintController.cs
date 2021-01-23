@@ -3812,7 +3812,7 @@ namespace Improvar.Controllers
 
                                     if (batch_data[a]["nos"].retDbl() == 1)
                                     {
-                                        pcsdesc += batch_data[a]["cutlength"].retDbl();
+                                        pcsdesc += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr();
                                     }
                                     else {
                                         if (VE.Checkbox9 == true)

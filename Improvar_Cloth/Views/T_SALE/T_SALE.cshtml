@@ -143,11 +143,19 @@
         if ($("#bardatachng").val() == "Y") {
             debugger;
             var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-            var mtrlcdblank = false;
+            var mtrlcdblank = false; var slnoblank = false; var glcdblank = false;
             if (GridRow != 0) {
                 for (var i = 0; i <= GridRow - 1; i++) {
                     if ($("#B_MTRLJOBCD_" + i).val() == "") {
                         mtrlcdblank = true;
+                        break;
+                    }
+                    if ($("#B_TXNSLNO_" + i).val() == "") {
+                        slnoblank = true;
+                        break;
+                    }
+                    if ($("#B_GLCD_" + i).val() == "") {
+                        glcdblank = true;
                         break;
                     }
                 }
@@ -160,6 +168,26 @@
                 $(".tab-content div").removeClass("active");
                 $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 message_value = "B_MTRLJOBCD_" + i;
+                return false;
+            }
+            if (slnoblank == true) {
+                msgInfo("Please Fill Bill Sl # in Barcode Grid !!");
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                message_value = "B_TXNSLNO_" + i;
+                return false;
+            }
+            if (glcdblank == true) {
+                msgInfo("Please Fill glcd in Barcode Grid at slno " + (i + 1) + " !!");
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                message_value = "B_TXNSLNO_" + i;
                 return false;
             }
             $.ajax({
@@ -338,6 +366,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNDISC2, new { id = "MNTNDISC2" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSHADE, new { id = "MNTNSHADE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNWPRPPER, new { id = "MNTNWPRPPER" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNOURDESIGN, new { id = "MNTNOURDESIGN" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -457,6 +486,57 @@
                         </div>
                     }
                 </div>
+                <div class="row">
+                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                    {
+                        <div class="col-md-5">
+                            <div class="editor-field" style="margin-top: 6px;">
+                                @Html.Label("", "Purchase bill no")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                                <div class="col-md-10">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO", onblur = "CheckBillNumber();" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="editor-field" style="margin-top: 6px;">
+                                        @Html.Label("", "Purchase bill dt")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Bill Amount")
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
+                                    </div>
+                                </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-5">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Bill Amount")
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
+                            </div>
+                        </div>
+                    }
+                </div>
+
                 @if (Model.MENU_PARA == "SB")
                 {
                     <div class="row">
@@ -606,6 +686,28 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Doc. Remarks")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.DOCREM, new { htmlAttributes = new { @class = "form-control", id = "DOCREMOTH", @placeholder = "Doc. Remarks", maxlength = 100 } })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Payment Remarks")
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.T_TXNOTH.PAYTERMS, new { htmlAttributes = new { @class = "form-control", id = "PAYTERMS", @placeholder = "Payment Remarks", maxlength = 30 } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Select By")
                                 </div>
                             </div>
@@ -620,7 +722,7 @@
                                     </datalist>
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-4">
                                 <div class="editor-field" style="margin-top: 6px;">
                                     @Html.Label("", "Packed By")
                                 </div>
@@ -831,16 +933,7 @@
                                     @Html.EditorFor(model => model.T_TXN.ROAMT, new { htmlAttributes = new { @class = "form-control", id = "ROAMT", maxlength = 6, @TabIndex = -1, @placeholder = "Rounded off", @readonly = "readonly" } })
                                 </div>
                             </div>
-                            <div class="col-md-1">
-                                <div class="editor-label" style="margin-top: 6px;">
-                                    @Html.Label("", "Bill Amount")
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @TabIndex = -1, @placeholder = "Bill Amount", @readonly = "readonly", @style = "font-weight:bold;font-size:15px;text-align:right" } })
-                                </div>
-                            </div>
+                            
                         </div>
                         @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR")
                         {
@@ -857,33 +950,7 @@
                                 </div>
                             </div>
                         }
-                        <div class="row">
-                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
-                            {
-                                <div class="col-md-5">
-                                    <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Purchase bill no")
-                                        <b style="color:Red;">*</b>
-                                    </div>
-                                </div>
-                                <div class="col-md-10">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_TXN.PREFNO, new { htmlAttributes = new { @class = "form-control", id = "PREFNO", maxlength = 16, @placeholder = "PREFNO", onblur = "CheckBillNumber();" } })
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="editor-field" style="margin-top: 6px;">
-                                        @Html.Label("", "Purchase bill dt")
-                                        <b style="color:Red;">*</b>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="editor-field">
-                                        @Html.EditorFor(model => model.T_TXN.PREFDT, new { htmlAttributes = new { @class = "form-control", id = "PREFDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                        
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="editor-field" style="margin-top: 6px;">
@@ -1205,13 +1272,17 @@
                                                     </div>
                                                 </div>
                                             }
-                                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNOURDESIGN == "Y")
                                             {
                                                 <div class="col-md-4">
                                                     <div class="editor-field">
                                                         @Html.EditorFor(model => model.OURDESIGN, new { htmlAttributes = new { @class = "form-control", id = "OURDESIGN", @placeholder = "OurDesign", maxlength = 30, @title = "OurDesign" } })
                                                     </div>
                                                 </div>
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(model => model.OURDESIGN, new { id = "OURDESIGN" })
                                             }
                                             @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                             {
