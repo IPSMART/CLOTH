@@ -30,6 +30,5 @@ namespace Improvar.Models
         [Column(Order = 1)]
         [StringLength(8)]
         public string GLCD { get; set; }
-
     }
 }

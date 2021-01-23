@@ -60,6 +60,5 @@ namespace Improvar.Models
 
         [StringLength(50)]
         public string USR_MNM { get; set; }
-        
     }
 }

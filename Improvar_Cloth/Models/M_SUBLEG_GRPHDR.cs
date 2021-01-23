@@ -9,7 +9,7 @@ namespace Improvar.Models
     [Table("M_SUBLEG_GRPHDR")]
     public partial class M_SUBLEG_GRPHDR
     {
-        public int? EMD_NO { get; set; }
+        public short? EMD_NO { get; set; }
 
         [Required]
         [StringLength(4)]

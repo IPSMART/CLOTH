@@ -29,11 +29,11 @@ namespace Improvar.Models
         [StringLength(5)]
         public string USER_RIGHT { get; set; }
 
-        public short? A_DAY { get; set; }
+        public int? A_DAY { get; set; }
 
-        public short? E_DAY { get; set; }
+        public int? E_DAY { get; set; }
 
-        public short? D_DAY { get; set; }
+        public int? D_DAY { get; set; }
 
         [StringLength(40)]
         public string SCHEMA_NAME { get; set; }
