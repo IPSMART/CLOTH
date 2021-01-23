@@ -94,6 +94,7 @@ namespace Improvar.Models
         public string MNTNSHADE { get; set; }
         [StringLength(1)]
         public string MNTNWPRPPER { get; set; }
-
+        [StringLength(1)]
+        public string MNTNOURDESIGN { get; set; }
     }
 }

@@ -282,9 +282,8 @@ function FillBarcodeArea(str, Table, i) {
         $("#UpdateRow_Barcode").show();
     }
     changeBARGENTYPE();
+    var ModuleCode = $("#ModuleCode").val();
     if (event.key == "F8") {
-        debugger;
-        var ModuleCode = $("#ModuleCode").val();
         if (ModuleCode.indexOf("SALESCLOTH") != -1) {
             $("#CUTLENGTH").focus();
         }
@@ -297,6 +296,17 @@ function FillBarcodeArea(str, Table, i) {
         }
 
     }
+    else if (str != "") {
+        if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+            if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                $("#NOS").focus();
+            }
+            else {
+                $("#CUTLENGTH").focus();
+            }
+        }
+    }
+
 }
 function changeBARGENTYPE() {
     var BARGENTYPE = $("#BARGENTYPE").val();
