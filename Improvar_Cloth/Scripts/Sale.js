@@ -1119,7 +1119,11 @@ function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
     var AMT_1 = document.getElementById(AMT1.id).value;
     var AMT_2 = document.getElementById(AMT2.id).value;
     var AMT_3 = document.getElementById(AMT3.id).value;
-    var AMT_4 = document.getElementById(AMT4.id).value;
+    var AMT_4 = "";
+    if (AMT4 != "") {
+        AMT_4 = retFloat(document.getElementById(AMT4.id).value);
+    }
+    AMT_4 = retFloat(AMT_4);
     if (PERCENTAGE != "") {
         var CAL_ABET_AMT = parseFloat(AMT) * parseFloat(PERCENTAGE) / 100;
         var BAL_AMT = Math.abs(parseFloat(NEW_AMT) - parseFloat(CAL_ABET_AMT));
@@ -1913,7 +1917,7 @@ function AddBarCodeGrid() {
     tr += '    </td>';
 
     tr += '    <td class="">';
-    tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(' + rowindex + ')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
+    tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(\'B_ITCD_' + rowindex + '\', \'B_ITSTYLE_' + rowindex + '\', \'POPUP\')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
     tr += '    </td>';
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
         tr += '    <td class="" title="' + LISTPRICE + '">';
@@ -1949,11 +1953,17 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_RPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPRICEGEN" type="hidden" value="' + RPPRICEGEN + '">';
         tr += '        <input id="B_RPRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPRATE" type="hidden"  >';
     }
-
-    tr += '    <td class="" title="' + GSTPER + '">';
-    tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
-    tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
-    tr += '    </td>';
+    if (MENU_PARA != "OP")
+    {
+        tr += '    <td class="" title="' + GSTPER + '">';
+        tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
+        tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
+        tr += '    </td>';
+    }
+    else{
+        tr += '        <input id="B_GSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GSTPER" type="hidden" value="' + GSTPER + '">';
+        tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
+    }
     tr += '    <td class="" title="' + SCMDISCTYPE_DESC + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="' + SCMDISCTYPE_DESC + '">';
     tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
@@ -2207,7 +2217,7 @@ function GetPartyDetails(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     if (id == "") {
-        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
     }
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
@@ -2221,7 +2231,7 @@ function GetPartyDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
                     $('#SearchFldValue').val("SLCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
@@ -2242,7 +2252,7 @@ function GetPartyDetails(id) {
                         $("#AGSLNM").val(returncolvalue(result, "AGSLNM"));
                         $("#DUEDAYS").val(returncolvalue(result, "crdays"));
                         $("#PSLCD").val(returncolvalue(result, "PSLCD"));
-
+                        $("#PARTYCD").val(returncolvalue(result, "PARTYCD"));
                         //tcs
                         $("#TDSCODE").val(returncolvalue(result, "TCSCODE"));
                         $("#TDSNM").val(returncolvalue(result, "TCSNM"));
@@ -2258,7 +2268,7 @@ function GetPartyDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
                         message_value = "SLCD";
                     }
                 }
@@ -2483,15 +2493,25 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
 }
 
-function RateHistoryDetails(i) {
+function RateHistoryDetails(ITCDId,ITNMId, TAG) {
+    debugger;
+    SLCD = $("#SLCD").val();
+    PARTYCD = $("#PARTYCD").val();
+    ITCD = $("#" + ITCDId).val();
+    ITNM = $("#" + ITNMId).val();
     $.ajax({
         type: 'get',
         beforesend: $("#WaitingMode").show(),
-        url: $("#UrlRateHistory").val(),
-        data: "ITCD=" + $('#B_ITCD_' + i).val(),
+        url: $("#UrlRateHistory").val(),//GetRateHistoryDetails
+        data: "SLCD=" + SLCD + "&PARTYCD=" + PARTYCD + "&ITCD=" + ITCD + "&ITNM=" + ITNM + "&TAG=" + TAG,
         success: function (result) {
             $("#WaitingMode").hide();
-            $("#RateHistoryModal").html(result);
+            if (TAG == "GRID") {
+                $("#partialdivRateHistoryGrid").html(result);
+            }
+            else {
+                $("#RateHistoryModal").html(result);
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -2837,6 +2857,7 @@ function GetItcd(id) {
                         if (MENU_PARA == "PB" || MENU_PARA == "OP") {
                             changeBARGENTYPE();
                         }
+                        RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
                     }
                     else {
                         $('#helpDIV').html("");

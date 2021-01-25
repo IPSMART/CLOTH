@@ -1571,14 +1571,15 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetRateHistoryDetails(string ITCD)
+        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string ITCD, string TAG)
         {
             try
             {
                 RateHistory RH = new RateHistory();
                 TransactionOutIssProcess VE = new TransactionOutIssProcess();
                 Cn.getQueryString(VE);
-                var DTRateHistory = salesfunc.GetRateHistory(VE.DOC_CODE, ITCD);
+                //var DTRateHistory = salesfunc.GetRateHistory(VE.DOC_CODE, ITCD);
+                var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr(), PARTYCD.retStr(), VE.DOC_CODE.retStr().retSqlformat(), ITCD.retStr());
                 var doctP = (from DataRow dr in DTRateHistory.Rows
                              select new RateHistoryGrid()
                              {
@@ -1911,7 +1912,7 @@ namespace Improvar.Controllers
                         PropertyInfo propB = VE.TPROGBOM[k - 1].GetType().GetProperty(propA.Name);
                         propB.SetValue(MBILLDET, propA.GetValue(VE.TPROGBOM[k - 1], null), null);
                     }
-                    if(RowIndex == k)
+                    if (RowIndex == k)
                     {
                         MBILLDET.ITCD = "";
                         MBILLDET.ITNM = "";
@@ -1928,7 +1929,7 @@ namespace Improvar.Controllers
                         MBILLDET.EXTRAQNTY = 0;
                         MBILLDET.Q_CheckedSample = false;
                     }
-                   
+
                     copied = true;
                 }
                 else
