@@ -1571,7 +1571,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string DOCCD, string ITCD)
+        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string ITCD, string TAG)
         {
             try
             {
@@ -1579,7 +1579,7 @@ namespace Improvar.Controllers
                 TransactionOutIssProcess VE = new TransactionOutIssProcess();
                 Cn.getQueryString(VE);
                 //var DTRateHistory = salesfunc.GetRateHistory(VE.DOC_CODE, ITCD);
-                var DTRateHistory = salesfunc.GetRateHistory(SLCD, PARTYCD, DOCCD, ITCD);
+                var DTRateHistory = salesfunc.GetRateHistory(SLCD.retStr(), PARTYCD.retStr(), VE.DOC_CODE.retStr().retSqlformat(), ITCD.retStr());
                 var doctP = (from DataRow dr in DTRateHistory.Rows
                              select new RateHistoryGrid()
                              {

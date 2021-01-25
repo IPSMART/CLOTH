@@ -45,7 +45,7 @@ namespace Improvar.ViewModels
         public List<DISC_TYPE> DISC_TYPE1 { get; set; }
         public string PSLCD { get; set; }
         public string SLNM { get; set; }
-        public string PARTYGRP { get; set; }
+        public string PARTYCD { get; set; }
         public string SLAREA { get; set; }
         public string GSTNO { get; set; }
         public string GSTSLNM { get; set; }

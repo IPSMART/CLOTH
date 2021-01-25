@@ -25,7 +25,7 @@ namespace Improvar
             sql += "select z.slcd, b.taxgrpcd, a.agslcd, a.areacd, a.prccd, a.discrtcd, a.crdays, a.crlimit, a.cod, a.gstno, a.docth, b.trslcd, b.courcd, nvl(c.agslcd,a.agslcd) agslcd, ";
             sql += "g.slnm,nvl(g.slarea,g.district) slarea, h.slnm agslnm, i.slnm trslnm, e.taxgrpnm, f.prcnm, ";
             //sql += "f.prcnm, "; // c.prcdesc, c.effdt, c.itmprccd, ";
-            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno ";
+            sql += "nvl(a.crdays,0) crdays, nvl(a.crlimit,0) crlimit,g.pslcd,g.tcsappl,g.panno,g.partycd ";
             sql += "from ";
 
             sql += "(select a.slcd from " + scmf + ".m_subleg a where a.slcd='" + slcd + "' ) z, ";
@@ -1674,7 +1674,7 @@ namespace Improvar
             string sql = "";
 
             sql += "select distinct a.slcd, a.autono, d.docno, d.docdt, b.qnty, b.rate, e.slnm, e.district city, ";
-            sql += "nvl(b.scmdiscrate,0) scmdiscrate, scmdisctype, ";
+            sql += "nvl(b.scmdiscrate,0) scmdiscrate, scmdisctype ";
             sql += "from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
             sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd  and d.compcd='" + COM + "' and ";
             sql += "itcd ='" + itcd + "' and (e.slcd = '" + slcd + "' ";

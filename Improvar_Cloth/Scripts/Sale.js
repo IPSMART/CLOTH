@@ -2217,7 +2217,7 @@ function GetPartyDetails(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     if (id == "") {
-        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYGRP");
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
     }
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
@@ -2231,7 +2231,7 @@ function GetPartyDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYGRP");
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
                     $('#SearchFldValue').val("SLCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
@@ -2252,7 +2252,7 @@ function GetPartyDetails(id) {
                         $("#AGSLNM").val(returncolvalue(result, "AGSLNM"));
                         $("#DUEDAYS").val(returncolvalue(result, "crdays"));
                         $("#PSLCD").val(returncolvalue(result, "PSLCD"));
-                        $("#PARTYGRP").val(returncolvalue(result, "PARTYGRP"));
+                        $("#PARTYCD").val(returncolvalue(result, "PARTYCD"));
                         //tcs
                         $("#TDSCODE").val(returncolvalue(result, "TCSCODE"));
                         $("#TDSNM").val(returncolvalue(result, "TCSNM"));
@@ -2268,7 +2268,7 @@ function GetPartyDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYGRP");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
                         message_value = "SLCD";
                     }
                 }
@@ -2493,12 +2493,15 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
 }
 
-function RateHistoryDetails(i) {
+function RateHistoryDetails(ITCDId, TAG) {
+    SLCD = $("#SLCD").val();
+    PARTYCD = $("#PARTYCD").val();
+    ITCD = $("#" + ITCDId).val();
     $.ajax({
         type: 'get',
         beforesend: $("#WaitingMode").show(),
-        url: $("#UrlRateHistory").val(),
-        data: "ITCD=" + $('#B_ITCD_' + i).val(),
+        url: $("#UrlRateHistory").val(),//GetRateHistoryDetails
+        data: "SLCD=" + SLCD + "&PARTYCD=" + PARTYCD + "&ITCD=" + ITCD + "&TAG=" + TAG,
         success: function (result) {
             $("#WaitingMode").hide();
             $("#RateHistoryModal").html(result);
