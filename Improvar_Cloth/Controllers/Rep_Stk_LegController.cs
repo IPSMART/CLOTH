@@ -95,8 +95,8 @@ namespace Improvar.Controllers
 
                 string itgrpcd = VE.TEXTBOX1;
                 string rateqntybag = "B";
-                if (FC["RATEQNTYBAG"].ToString() == "BAGS") rateqntybag = "B";
-                else rateqntybag = "Q";
+                //if (FC["RATEQNTYBAG"].ToString() == "BAGS") rateqntybag = "B";
+                //else rateqntybag = "Q";
 
                 string query = ""; string query1 = "";
 
@@ -126,8 +126,8 @@ namespace Improvar.Controllers
                 bool showbatch = true;
 
                 string sql = "";
-                sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt, a.prefno, a.prefdt, a.slnm, a.gstno, a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
-                sql += "c.itnm, c.uomcd, d.uomnm, a.nos, a.qnty, nvl(a.netamt,0) netamt, b.batchnos from ";
+                sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt, a.prefno, a.prefdt, a.slnm, a.gstno,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
+                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.nos, a.qnty, nvl(a.netamt,0) netamt, b.batchnos from ";
                 sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd, ";
                 sql += " sum(nvl(a.netamt,0)) netamt, ";
                 sql += "sum(nvl(a.nos,0)) nos, sum(nvl(a.qnty,0)) qnty ";
@@ -168,8 +168,8 @@ namespace Improvar.Controllers
                 Models.PrintViewer PV = new Models.PrintViewer();
                 HtmlConverter HC = new HtmlConverter();
                 string qdsp = "";
-                if (rateqntybag == "B") qdsp = "n,12";
-                else qdsp = "n,12,4";
+                //if (rateqntybag == "B") qdsp = "n,12";
+                 qdsp = "n,12,4";
 
                 HC.RepStart(IR, 3);
                 HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yyyy", "Doc Date");
@@ -200,15 +200,16 @@ namespace Improvar.Controllers
                     iop = 0; idr = 0; icr = 0; icls = 0; idramt = 0; icramt = 0;
 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["dammy"] = tbl.Rows[i]["itcd"].ToString() + tbl.Rows[i]["itnm"].ToString() +"] [" + tbl.Rows[i]["uomcd"].ToString() + "]";
-                    IR.Rows[rNo]["flag"] = "itnm=font-weight:bold;font-size:13px; ";
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["itcd1"].ToString() + "  " + " </span>" + tbl.Rows[i]["itstyle"].ToString() ;
+                    IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomcd"] + "]";
+                    IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     while (tbl.Rows[i]["itcd"].ToString() == chkval)
                     {
                         double bqnty = 0, bnos = 0, bval = 0, bamt = 0;
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) < Convert.ToDateTime(fdt))
                         {
-                            if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
-                            else dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                            //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
+                             dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
 
                             if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
                             {
@@ -241,8 +242,8 @@ namespace Improvar.Controllers
                         }
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                         {
-                            if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
-                            else dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                            //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
+                             dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
                             dbamt = Convert.ToDouble(tbl.Rows[i]["netamt"]);
 
                             //string pdocno = tbl.Rows[i]["pblno"].ToString();
