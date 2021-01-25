@@ -55,7 +55,6 @@ namespace Improvar.Controllers
                     //                     { value = i.GRPCD, text = i.GRPNM }).Distinct().OrderBy(s => s.text).ToList();
                     VE.DropDown_list3 = new List<DropDown_list3>() {
                     new DropDown_list3{text="Item Group",value="ITGRPCD" },
-                    new DropDown_list3{text="Broad Group",value="BRGRPCD" },
                     new DropDown_list3{text="Item",value="ITCD" },
                     new DropDown_list3{text="Month",value="MONTH" }
                         };
@@ -100,7 +99,7 @@ namespace Improvar.Controllers
                 string txntag = ""; string txnrettag = "", selloccd = "" ;
                 string reptype = FC["Reptype"].ToString();
                 string repon = FC["PartyItem"].ToString();
-                string grpcd = VE.TEXTBOX2;
+                //string grpcd = VE.TEXTBOX2;
                 string groupingwith = VE.TEXTBOX3;
                 bool WithoutParty = VE.Checkbox3;
                 string selslcdgrpcd = "";
@@ -132,7 +131,7 @@ namespace Improvar.Controllers
                 string selitcd = "", unselitcd = "", plist = "", selslcd = "", unselslcd = "", selitgrpcd = "", selbrgrpcd = "";
                 if (FC.AllKeys.Contains("slcdgrpcdvalue")) selslcdgrpcd = CommFunc.retSqlformat(FC["slcdgrpcdvalue"].ToString());
                 if (FC.AllKeys.Contains("itgrpcdvalue")) selitgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].ToString());
-                if (FC.AllKeys.Contains("brgrpcdvalue")) selbrgrpcd = CommFunc.retSqlformat(FC["brgrpcdvalue"].ToString());
+                //if (FC.AllKeys.Contains("brgrpcdvalue")) selbrgrpcd = CommFunc.retSqlformat(FC["brgrpcdvalue"].ToString());
 
                 if (FC.AllKeys.Contains("plist")) plist = CommFunc.retSqlformat(FC["plist"].ToString());
 
@@ -155,47 +154,48 @@ namespace Improvar.Controllers
                         sql += "union all ";
                         scm1 = CommVar.LastYearSchema(UNQSNO);
                     }
-                    sql += "select a.autono, a.doctag, a.doccd, a.docdt, to_char(a.docdt, 'MON-YYYY') docmonth, a.itgrpcd,b.brgrpcd, ";
+                    sql += "select a.autono, a.doctag, a.doccd, a.docdt, to_char(a.docdt, 'MON-YYYY') docmonth, a.itgrpcd, ";
                     if (FC["SalPur"].ToString() == "S") sql += "a.docno, ";
                     else sql += "a.pblno docno, ";
                     if (repon == "P")
                     {
                         sql += "a.slcd cd, a.slnm nm, a.shortnm snm,a.conslcd,a.conslnm conslnm, ";
-                        sql += "b.itcd ocd, b.itnm onm, b.prodcd osnm, ";
+                        sql += "b.itcd ocd, b.itnm onm, b.prodgrpcd osnm, ";
                     }
                     else
                     {
                         sql += "a.slcd ocd, a.slnm onm, a.shortnm osnm,a.conslcd,a.conslnm conslnm, ";
-                        sql += "b.itcd cd, b.itnm nm, b.prodcd snm, ";
+                        sql += "b.itcd cd, b.itnm nm, b.prodgrpcd snm, ";
                     }
-                    sql += "b.stkdrcr,b.DAMSTOCK, b.uomnm, b.decimals, nvl(b.packsize,0) packsize, nvl(b.nos,0) nos, nvl(b.qnty,0) qnty, nvl(b.basamt,0) basamt, b.othramt, ";
+                    sql += "b.stkdrcr,b.styleno, b.uomnm, b.decimals, nvl(b.nos,0) nos, nvl(b.qnty,0) qnty, nvl(b.basamt,0) basamt, b.othramt, ";
                     sql += "b.batchno from ";
-                    sql += "( select a.autono, a.doctag, b.doccd, b.docno, b.docdt, a.itgrpcd, e.class1cd, ";
-                    sql += "a.slcd||nvl(e.class1cd,' ') slcdclass1cd, a.pblno, a.pbldt, ";
+                    sql += "( select a.autono, a.doctag, b.doccd, b.docno, b.docdt, e.itgrpcd, e.class1cd, ";
+                    sql += "a.slcd||nvl(e.class1cd,' ') slcdclass1cd, a.prefno, a.prefdt, ";
                     sql += "a.slcd, c.slnm,a.conslcd,f.slnm conslnm,c.shortnm ";
-                    sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm1 + ".m_itemplist d, " + scm1 + ".m_group e," + scmf + ".m_subleg f " ;
-                    sql += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and a.conslcd=f.slcd(+) and a.itmprccd=d.itmprccd(+) and a.itgrpcd=e.itgrpcd(+) and ";
+                    sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm1 + ".m_group e," + scmf + ".m_subleg f " ;
+                    sql += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and a.conslcd=f.slcd(+) and ";
+                        //a.itgrpcd=e.itgrpcd(+) and ";
                     sql += "b.compcd='" + COM + "' and ";
                     if (selloccd == "") sql = sql + "b.loccd='" + LOC + "' and ";
                     else sql = sql + "b.loccd in (" + selloccd + ") and ";
                     sql +=" nvl(b.cancel,'N') = 'N' and ";
                     sql += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
-                    if (selitgrpcd.retStr() != "") sql += "a.itgrpcd in (" + selitgrpcd + ") and ";
+                    if (selitgrpcd.retStr() != "") sql += "e.itgrpcd in (" + selitgrpcd + ") and ";
                     sql += "a.doctag in ( " + txntag + ") ";
                     sql += ") a, ( ";
-                    sql += "select a.autono, a.slno, a.itcd, nvl(b.prodcd,b.shortnm) prodcd, b.brgrpcd, b.itnm, e.itmprccd, f.prcdesc, a.stkdrcr,a.DAMSTOCK, c.uomnm, c.decimals, b.packsize, ";
+                    sql += "select a.autono, a.slno, a.itcd,b.prodgrpcd, b.itgrpcd, b.itnm, a.prccd, a.stkdrcr,b.styleno, c.uomnm, c.decimals, ";
                     sql += "sum(nvl(d.nos,a.nos)) nos, sum(nvl(d.qnty,a.qnty)) qnty, ";
                     sql += "listagg(e.batchno,',') within group (order by d.autono, d.slno) batchno, ";
                     //sql += "a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0) basamt, nvl(a.othramt,0) othramt ";
                     //sql += "sum(decode(nvl(d.rslno,0),1,a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0),0)) basamt, ";
                     //sql += "sum(decode(nvl(d.rslno,0),1,nvl(a.othramt,0),0)) othramt ";
-                    sql += "sum((case nvl(d.rslno,0) when 0 then a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0)" + taxfld + " when 1 then a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0)" + taxfld + " end)) basamt, ";
-                    sql += "sum((case nvl(d.rslno,0) when 0 then nvl(a.othramt,0) when 1 then nvl(a.othramt,0) end )) othramt ";
+                    sql += "sum((case nvl(d.txnslno,0) when 0 then a.amt-nvl(a.scmdiscamt,0)-nvl(a.tddiscamt,0)-nvl(a.discamt,0)" + taxfld + " when 1 then a.amt-nvl(a.scmdiscamt,0)-nvl(a.tddiscamt,0)-nvl(a.discamt,0)" + taxfld + " end)) basamt, ";
+                    sql += "sum((case nvl(d.txnslno,0) when 0 then nvl(a.othramt,0) when 1 then nvl(a.othramt,0) end )) othramt ";
                     sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".m_sitem b, " + scmf + ".m_uom c, ";
-                    sql += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scm1 + ".m_itemplist f  ";
+                    sql += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e  ";
                     sql += "where a.itcd=b.itcd(+) and b.uomcd=c.uomcd(+) and a.autono=d.autono(+) and a.slno=d.slno(+) and  ";
-                    sql += "d.batchautono=e.batchautono(+) and e.itmprccd=f.itmprccd(+) ";
-                    sql += "group by a.autono, a.slno, a.itcd, b.prodcd,b.shortnm,b.brgrpcd, b.itnm, e.itmprccd, f.prcdesc, a.stkdrcr,a.DAMSTOCK, c.uomnm, c.decimals, b.packsize ";
+                    sql += "d.autono=e.autono(+) ";
+                    sql += "group by a.autono, a.slno, a.itcd, b.prodgrpcd,b.itgrpcd, b.itnm, a.prccd, a.stkdrcr,b.styleno, c.uomnm, c.decimals ";
                     //sql += "a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0) , nvl(a.othramt,0) ";
                     sql += ") b, ";
 
@@ -216,13 +216,12 @@ namespace Improvar.Controllers
                     sql += "where a.rootcd = c.slcdgrpcd(+) and a.parentcd=b.slcdgrpcd(+) ) s ";
 
                     sql += "where a.autono=b.autono(+) and a.slcdclass1cd = s.slcdclass1cd(+) ";
-                    if (selbrgrpcd.retStr() != "") sql += "and b.brgrpcd in (" + selbrgrpcd + ") ";
                     if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") ";
                     if (unselitcd.retStr() != "") sql += "and b.itcd not in (" + unselitcd + ") ";
                     if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") ";
                     if (selslcd.retStr() != "") sql += "and a.slcd in (" + selslcd + ") ";
                     if (unselslcd.retStr() != "") sql += "and a.slcd not in (" + unselslcd + ") ";
-                    if (plist.retStr() != "") sql += "and b.itmprccd in (" + plist + ") ";
+                    if (plist.retStr() != "") sql += "and b.prccd in (" + plist + ") ";
                     if (selslcdgrpcd.retStr() != "") sql += "and (s.parentcd in (" + selslcdgrpcd + ") ) ";
                 }
                 if (reptype == "D") sql += " order by nm,cd,docdt,docno,docno,autono ";
@@ -233,7 +232,7 @@ namespace Improvar.Controllers
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return Content("no records..");
 
-                if (Convert.ToDouble(tbl.Rows[0]["packsize"]) == 0) showpacksize = false; else showpacksize = true;
+                //if (Convert.ToDouble(tbl.Rows[0]["packsize"]) == 0) showpacksize = false; else showpacksize = true;
 
                 if (FC["Reptype".ToString()] == "D")
                 {
@@ -241,9 +240,9 @@ namespace Improvar.Controllers
                 }
                 else if (reptype == "G")
                 {
-                    if (grpcd == null) { return Content("Please select Group for analysis !!"); }
+                    //if (grpcd == null) { return Content("Please select Group for analysis !!"); }
                     if (repon != "P") { return Content("Please Checked Report on Party wise analysis !!"); }
-                    return DownloadExcel(tbl, grpcd, groupingwith, WithoutParty, null);
+                    return DownloadExcel(tbl, "", groupingwith, WithoutParty, null);
                 }
                 else
                 {
@@ -287,10 +286,10 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "conslnm", "string", "c,35", "Consignee Name");
                 HC.GetPrintHeader(IR, "docdt", "string", "c,10", "Document Date");
                 HC.GetPrintHeader(IR, "docno", "string", "c,10", "Document No");
-                HC.GetPrintHeader(IR, "snm", "string", "c,15", "ProdCd");
+                HC.GetPrintHeader(IR, "snm", "string", "c,15", "prodgrpcd");
                 //HC.GetPrintHeader(IR, "docno", "string", "c,16", "Doc No");
 
-                if (showpacksize == true) HC.GetPrintHeader(IR, "packsize", "double", "n,10,6", "P/Size");
+                //if (showpacksize == true) HC.GetPrintHeader(IR, "packsize", "double", "n,10,6", "P/Size");
                 HC.GetPrintHeader(IR, "uom", "string", "c,4", "uom");
                 HC.GetPrintHeader(IR, "qnty", "double", qdsp, "Qnty");
                 if (showrate == true) HC.GetPrintHeader(IR, "rate", "double", qdsp, "Rate");
@@ -358,7 +357,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                                 IR.Rows[rNo]["snm"] = tbl.Rows[i]["osnm"].ToString();
-                                if (showpacksize == true) IR.Rows[rNo]["packsize"] = Convert.ToDouble(tbl.Rows[i]["packsize"]);
+                                //if (showpacksize == true) IR.Rows[rNo]["packsize"] = Convert.ToDouble(tbl.Rows[i]["packsize"]);
                                 IR.Rows[rNo]["uom"] = tbl.Rows[i]["uomnm"].ToString();
                                 IR.Rows[rNo]["qnty"] = dbqty;
                                 IR.Rows[rNo]["amt"] = namt;
@@ -464,7 +463,7 @@ namespace Improvar.Controllers
                 //if (repon == "I") dsp1 = "Party"; else dsp1 = "Item";
                 if (repon == "I") dsp1 = "Item"; else dsp1 = "Party";
                 //if (repon == "I") dsp2 = "Area"; else dsp2 = "ProdCd";
-                dsp2 = "ProdCd";
+                dsp2 = "prodgrpcd";
                 HC.RepStart(IR, 3);
              
                 HC.GetPrintHeader(IR, "cd", "string", "c,10", "Code");
@@ -474,7 +473,7 @@ namespace Improvar.Controllers
                 //HC.GetPrintHeader(IR, "docno", "string", "c,10", "Document No.");
                 HC.GetPrintHeader(IR, "snm", "string", "c,15", dsp2);
                 if (reptype != "SS") if (monthtotal == true) HC.GetPrintHeader(IR, "monthnm", "string", "c,10", "Month");
-                if (showpacksize == true) HC.GetPrintHeader(IR, "packsize", "double", "n,10,6", "Packsize");
+                //if (showpacksize == true) HC.GetPrintHeader(IR, "packsize", "double", "n,10,6", "Packsize");
                 HC.GetPrintHeader(IR, "uom", "string", "c,4", "uom");
                 HC.GetPrintHeader(IR, "qnty", "double", qdsp, "Qnty");
                 if (showrate == true) HC.GetPrintHeader(IR, "rate", "double", qdsp, "Av.Rate");
@@ -558,7 +557,7 @@ namespace Improvar.Controllers
                                 //if (reptype != "SS") { IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].ToString(); }
                                 //IR.Rows[rNo]["docno"] = tbl.Rows[i - 1]["docno"].ToString();
                                 IR.Rows[rNo]["snm"] = tbl.Rows[i - 1]["osnm"].ToString();
-                                if (showpacksize == true) IR.Rows[rNo]["packsize"] = Convert.ToDouble(tbl.Rows[i - 1]["packsize"]);
+                                //if (showpacksize == true) IR.Rows[rNo]["packsize"] = Convert.ToDouble(tbl.Rows[i - 1]["packsize"]);
                                 IR.Rows[rNo]["uom"] = tbl.Rows[i - 1]["uomnm"].ToString();
                                 IR.Rows[rNo]["qnty"] = bqnty;
                                 IR.Rows[rNo]["amt"] = bamt;
@@ -675,7 +674,7 @@ namespace Improvar.Controllers
                     tbl.Rows.Remove(row);
                 }
                 DataTable itgrpcdtbl = new DataView(tbl).ToTable(true, "itgrpcd");
-                DataTable brgrpcdtbl = new DataView(tbl).ToTable(true, "brgrpcd");
+                //DataTable brgrpcdtbl = new DataView(tbl).ToTable(true, "brgrpcd");
                 string[] itTBLCOLS = new string[] { "OCD", "ONM", "OSNM" };
                 DataTable itcdtbl = new DataView(tbl).ToTable(true, itTBLCOLS);
                 DataTable monthtbl = new DataView(tbl).ToTable(true, "docmonth");
@@ -688,7 +687,7 @@ namespace Improvar.Controllers
                 {
                     case "": grpabbr = "G"; break;
                     case "ITGRPCD": grpabbr = "Item Group Name"; break;
-                    case "BRGRPCD": grpabbr = "Broad Group Name"; break;
+                    //case "BRGRPCD": grpabbr = "Broad Group Name"; break;
                     case "ITCD": grpabbr = "Item Name"; break;
                     case "MONTH": grpabbr = "Month Name"; break;
                     default: break;
@@ -740,32 +739,7 @@ namespace Improvar.Controllers
                     wsSheet1.Column(hdrcount).Style.Numberformat.Format = "0.00";
                     //itgrp 
                 }
-                else if (groupingwith == "BRGRPCD")
-                {
-                    foreach (DataRow hrdr in brgrpcdtbl.Rows)
-                    {
-                        string brgrpcd = hrdr["brgrpcd"].ToString();
-                        //M_BRGRP brgrp = DB.M_BRGRP.Where(k => k.BRGRPCD == brgrpcd).First();
-                        wsSheet1.Cells[1, ++hdrcount].Value = "";// brgrp.BRGRPNM;
-                        wsSheet1.Cells[1, hdrcount, 1, hdrcount + 1].Merge = true;
-                        wsSheet1.Cells[1, hdrcount].Style.HorizontalAlignment = ExcelHorizontalAlignment.CenterContinuous;
-                        wsSheet1.Cells[2, hdrcount].Value = "Qnty";
-                        tblgrouphierarchy.Columns.Add(hdrcount + "_" + brgrpcd, typeof(Double));
-                        GroupHeaderlist.Add(hdrcount + "_" + brgrpcd);
-                        wsSheet1.Cells[2, ++hdrcount].Value = "Amt";
-                        tblgrouphierarchy.Columns.Add(brgrpcd, typeof(Double));
-                        GroupHeaderlist.Add(brgrpcd);
-                        wsSheet1.Column(hdrcount).Style.Numberformat.Format = "0.00";
-                    }
-                    //ADD TOTAL FIELD
-                    wsSheet1.Cells[1, ++hdrcount].Value = "Total";
-                    wsSheet1.Cells[2, hdrcount].Value = "Qnty";
-                    tblgrouphierarchy.Columns.Add("Qnty", typeof(Double));
-                    wsSheet1.Cells[2, ++hdrcount].Value = "Amt";
-                    tblgrouphierarchy.Columns.Add("BASAMT", typeof(Double));
-                    wsSheet1.Column(hdrcount).Style.Numberformat.Format = "0.00";
-                    //itgrp 
-                }
+             
                 else if (groupingwith == "ITCD")
                 {   //ITCD
                     foreach (DataRow hrdr in itcdtbl.Rows)
@@ -976,56 +950,7 @@ namespace Improvar.Controllers
                                     }
                                 }
                             }
-                            else if (groupingwith == "BRGRPCD")
-                            {
-                                var brgrptbl = tbl.AsEnumerable()
-                              .Where(w => w.Field<string>("cd") == slcd)
-                              .GroupBy(g => new { cd = g["cd"], BRGRPCD = g["BRGRPCD"] })
-                              .Select(g =>
-                              {
-                                  var row = tbl.NewRow();
-                                  row["cd"] = g.Key.cd;
-                                  row["BRGRPCD"] = g.Key.BRGRPCD;
-                                  row["QNTY"] = g.Sum(r => r.Field<decimal>("QNTY"));
-                                  row["BASAMT"] = g.Sum(r => r.Field<decimal>("BASAMT"));
-                                  return row;
-                              }).CopyToDataTable();
-                                foreach (DataRow drbrgrp in brgrptbl.Rows)
-                                {
-                                    var grpcd = drbrgrp["brgrpcd"].ToString();
-                                    var hrcyColumnindex = tblgrouphierarchy.Columns[grpcd].Ordinal;
-                                    //start summation of group total 
-                                    for (int i = 0; i < grpcdfull.Length; i += 6)
-                                    {
-                                        if ((i + 6) < grpcdfull.Length)
-                                        {
-                                            string slcdgrpcdtmp = grpcdfull.Substring(i, 6);
-                                            DataRow row = tblgrouphierarchy.Select("slcdgrpcd='" + slcdgrpcdtmp + "'").FirstOrDefault();
-                                            if (row != null)
-                                            {
-                                                int hrcyRowindex = tblgrouphierarchy.Rows.IndexOf(row);
-                                                tblgrouphierarchy.Rows[hrcyRowindex][hrcyColumnindex - 1] = tblgrouphierarchy.Rows[hrcyRowindex][hrcyColumnindex - 1].retDbl() + Convert.ToDouble(drbrgrp["QNTY"]);
-                                                tblgrouphierarchy.Rows[hrcyRowindex][hrcyColumnindex] = tblgrouphierarchy.Rows[hrcyRowindex][hrcyColumnindex].retDbl() + Convert.ToDouble(drbrgrp["BASAMT"]);
-                                                tblgrouphierarchy.Rows[hrcyRowindex]["QNTY"] = tblgrouphierarchy.Rows[hrcyRowindex]["QNTY"].retDbl() + Convert.ToDouble(drbrgrp["QNTY"]);
-                                                tblgrouphierarchy.Rows[hrcyRowindex]["BASAMT"] = tblgrouphierarchy.Rows[hrcyRowindex]["BASAMT"].retDbl() + Convert.ToDouble(drbrgrp["BASAMT"]);
-
-                                            }
-                                        }
-                                    } // end summation of group total 
-                                    //print column
-                                    var ColumnName = tblgrouphierarchy.Columns[hrcyColumnindex - 1].ColumnName;
-                                    if (ColumnName.Split('_').Length > 1)
-                                    {
-                                        columnindex = ColumnName.Split('_')[0].retInt();
-                                    }
-                                    wsSheet1.Cells[rowindex, columnindex].Value = drbrgrp["QNTY"];
-                                    wsSheet1.Cells[rowindex, columnindex + 1].Value = drbrgrp["BASAMT"];
-                                    if (WithoutParty)
-                                    {
-                                        wsSheet1.Row(rowindex).Hidden = true;
-                                    }
-                                }
-                            }
+                         
                             else if (groupingwith == "ITCD")
                             {
                                 var ittbl = tbl.AsEnumerable()
@@ -1286,43 +1211,7 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-                    else if (groupingwith == "BRGRPCD")
-                    {
-                        var brgrptbl = pendingtagtbl.AsEnumerable()
-                      .GroupBy(g => new { cd = g["cd"], nm = g["nm"], BRGRPCD = g["BRGRPCD"] })
-                      .Select(g =>
-                      {
-                          var row = pendingtagtbl.NewRow();
-                          row["cd"] = g.Key.cd;
-                          row["nm"] = g.Key.nm;
-                          row["BRGRPCD"] = g.Key.BRGRPCD;
-                          row["QNTY"] = g.Sum(r => r.Field<decimal>("QNTY"));
-                          row["BASAMT"] = g.Sum(r => r.Field<decimal>("BASAMT"));
-                          return row;
-                      }).CopyToDataTable();
-
-                        foreach (DataRow dritgrp in brgrptbl.Rows)
-                        {
-                            if (lastslcd != dritgrp["cd"].ToString())
-                            {
-                                lastslcd = dritgrp["cd"].ToString();
-                                wsSheet1.Cells[++rowindex, 5].Value = dritgrp["nm"].ToString();
-                            }
-                            foreach (string strgh in GroupHeaderlist)
-                            {
-
-                                if (strgh.Split('_').Length > 1)
-                                {
-                                    if (strgh.Split('_')[1].retStr() == dritgrp["BRGRPCD"].ToString())
-                                    {
-                                        columnindex = strgh.Split('_')[0].retInt();
-                                        wsSheet1.Cells[rowindex, columnindex].Value = dritgrp["QNTY"];
-                                        wsSheet1.Cells[rowindex, columnindex + 1].Value = dritgrp["BASAMT"];
-                                    }
-                                }
-                            }
-                        }
-                    }
+                  
                     else if (groupingwith == "ITCD")
                     {
                         var brgrptbl = pendingtagtbl.AsEnumerable()
