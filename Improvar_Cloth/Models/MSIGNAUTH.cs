@@ -31,6 +31,6 @@ namespace Improvar.Models
         public long? M_AUTONO { get; set; }
         public bool Checked { get; set; }
       
-        public short SLNO { get; set; }
+        public int SLNO { get; set; }
     }
 }
