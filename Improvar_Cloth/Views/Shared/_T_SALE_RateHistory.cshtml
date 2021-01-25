@@ -23,7 +23,7 @@
                                     <span class="text-right" style="float:unset;color:darkslateblue;"> Edited BY </span>
                                 </th>
                             </tr>*@
-                        <tr><th>DOCDT</th><th>DOCNO</th><th>Party Name</th><th>CITY</th><th>QNTY</th><th>RATE</th></tr>
+                        <tr><th>DOCDT</th><th>DOCNO</th><th>PARTY NAME</th><th>CITY</th><th>QNTY</th><th>RATE</th><th>DISC TYPE</th><th>DISC RATE</th></tr>
                     </thead>
                     <tbody>
                         @for (int i = 0; i <= Model.RateHistoryGrid.Count - 1; i++)
@@ -49,6 +49,12 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(model => model.RateHistoryGrid[i].RATE)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => model.RateHistoryGrid[i].SCMDISCTYPE)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => model.RateHistoryGrid[i].SCMDISCRATE)
                                 </td>
                             </tr>
                         }

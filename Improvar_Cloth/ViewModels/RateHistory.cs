@@ -25,6 +25,6 @@ namespace Improvar.Models
         public string QNTY { get; set; }
         public string RATE { get; set; }
         public string SCMDISCTYPE { get; set; }
-        public double? SCMDISCRATE { get; set; }
+        public string SCMDISCRATE { get; set; }
     }
 }

@@ -1917,7 +1917,7 @@ function AddBarCodeGrid() {
     tr += '    </td>';
 
     tr += '    <td class="">';
-    tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(' + rowindex + ')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
+    tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(\'B_ITCD_' + rowindex + '\', \'B_ITSTYLE_' + rowindex + '\', \'POPUP\')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
     tr += '    </td>';
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
         tr += '    <td class="" title="' + LISTPRICE + '">';
@@ -2493,18 +2493,25 @@ function CharmPrice(ChrmType, Rate, RoundVal) {
     }
 }
 
-function RateHistoryDetails(ITCDId, TAG) {
+function RateHistoryDetails(ITCDId,ITNMId, TAG) {
+    debugger;
     SLCD = $("#SLCD").val();
     PARTYCD = $("#PARTYCD").val();
     ITCD = $("#" + ITCDId).val();
+    ITNM = $("#" + ITNMId).val();
     $.ajax({
         type: 'get',
         beforesend: $("#WaitingMode").show(),
         url: $("#UrlRateHistory").val(),//GetRateHistoryDetails
-        data: "SLCD=" + SLCD + "&PARTYCD=" + PARTYCD + "&ITCD=" + ITCD + "&TAG=" + TAG,
+        data: "SLCD=" + SLCD + "&PARTYCD=" + PARTYCD + "&ITCD=" + ITCD + "&ITNM=" + ITNM + "&TAG=" + TAG,
         success: function (result) {
             $("#WaitingMode").hide();
-            $("#RateHistoryModal").html(result);
+            if (TAG == "GRID") {
+                $("#partialdivRateHistoryGrid").html(result);
+            }
+            else {
+                $("#RateHistoryModal").html(result);
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();
@@ -2850,6 +2857,7 @@ function GetItcd(id) {
                         if (MENU_PARA == "PB" || MENU_PARA == "OP") {
                             changeBARGENTYPE();
                         }
+                        RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
                     }
                     else {
                         $('#helpDIV').html("");

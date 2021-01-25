@@ -279,7 +279,7 @@
                                             </td>
                                         }
                                         else
-                                        { 
+                                        {
                                             @Html.HiddenFor(model => model.TTXNDTL[i].IGSTPER, new { id = "D_IGSTPER_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].PRODGRPGSTPER, new { id = "D_PRODGRPGSTPER_" + i })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].ALL_GSTPER, new { id = "D_ALL_GSTPER_" + i })
@@ -383,36 +383,36 @@
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.T_GROSS_AMT, new { htmlattributes = new { id = "T_GROSS_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
-@if (Model.MENU_PARA != "OP")
-{
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td style="text-align:right;">
-                                    @Html.EditorFor(model => Model.T_IGST_AMT, new { htmlattributes = new { id = "T_IGST_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-                                </td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td style="text-align:right;">
-                                    @Html.EditorFor(model => Model.T_CGST_AMT, new { htmlattributes = new { id = "T_CGST_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-                                </td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td style="text-align:right;">
-                                    @Html.EditorFor(model => Model.T_SGST_AMT, new { htmlattributes = new { id = "T_SGST_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-                                </td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td style="text-align:right;">
-                                    @Html.EditorFor(model => Model.T_CESS_AMT, new { htmlattributes = new { id = "T_CESS_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-                                </td>
-                                <td style="text-align:right;width:100px">
-                                    @Html.EditorFor(model => Model.T_NET_AMT, new { htmlattributes = new { id = "T_NET_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-                                </td>
-}
-else
-{
-    @Html.HiddenFor(model => model.T_IGST_AMT, new { id = "T_IGST_AMT" })
-    @Html.HiddenFor(model => model.T_CGST_AMT, new { id = "T_CGST_AMT"})
-    @Html.HiddenFor(model => model.T_SGST_AMT, new { id = "T_SGST_AMT"})
-    @Html.HiddenFor(model => model.T_CESS_AMT, new { id = "T_CESS_AMT"})
-    @Html.HiddenFor(model => model.T_NET_AMT, new { id = "T_NET_AMT" })
-}
+                                @if (Model.MENU_PARA != "OP")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td style="text-align:right;">
+                                        @Html.EditorFor(model => Model.T_IGST_AMT, new { htmlattributes = new { id = "T_IGST_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                    </td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td style="text-align:right;">
+                                        @Html.EditorFor(model => Model.T_CGST_AMT, new { htmlattributes = new { id = "T_CGST_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                    </td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td style="text-align:right;">
+                                        @Html.EditorFor(model => Model.T_SGST_AMT, new { htmlattributes = new { id = "T_SGST_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                    </td>
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                    <td style="text-align:right;">
+                                        @Html.EditorFor(model => Model.T_CESS_AMT, new { htmlattributes = new { id = "T_CESS_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                    </td>
+                                    <td style="text-align:right;width:100px">
+                                        @Html.EditorFor(model => Model.T_NET_AMT, new { htmlattributes = new { id = "T_NET_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
+                                    </td>
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(model => model.T_IGST_AMT, new { id = "T_IGST_AMT" })
+                                    @Html.HiddenFor(model => model.T_CGST_AMT, new { id = "T_CGST_AMT" })
+                                    @Html.HiddenFor(model => model.T_SGST_AMT, new { id = "T_SGST_AMT" })
+                                    @Html.HiddenFor(model => model.T_CESS_AMT, new { id = "T_CESS_AMT" })
+                                    @Html.HiddenFor(model => model.T_NET_AMT, new { id = "T_NET_AMT" })
+                                }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                 {
@@ -422,6 +422,7 @@ else
 
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                             </tr>
                         </tfoot>
                     </table>

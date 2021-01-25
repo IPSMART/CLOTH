@@ -43,6 +43,7 @@ namespace Improvar.ViewModels
         public List<PENDINGORDER> PENDINGORDER { get; set; }
         public List<DISC_TYPE> DISC_TYPE { get; set; }
         public List<DISC_TYPE> DISC_TYPE1 { get; set; }
+        public List<RateHistoryGrid> RateHistoryGrid { get; set; }
         public string PSLCD { get; set; }
         public string SLNM { get; set; }
         public string PARTYCD { get; set; }

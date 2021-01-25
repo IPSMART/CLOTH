@@ -2381,7 +2381,7 @@ namespace Improvar.Controllers
                 return ex.Message;
             }
         }
-        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string ITCD, string TAG)
+        public ActionResult GetRateHistoryDetails(string SLCD, string PARTYCD, string ITCD, string ITNM, string TAG)
         {
             try
             {
@@ -2401,15 +2401,22 @@ namespace Improvar.Controllers
                                  SLNM = dr["SLNM"].ToString(),
                                  CITY = dr["CITY"].ToString(),
                                  SCMDISCTYPE = dr["scmdiscrate"].retDbl() == 0 ? "" : dr["SCMDISCTYPE"].ToString(),
-                                 SCMDISCRATE = dr["scmdiscrate"].retDbl(),
+                                 SCMDISCRATE = dr["scmdiscrate"].retDbl() == 0 ? "" : dr["scmdiscrate"].retStr(),
                              }).ToList();
-                RH.RateHistoryGrid = doctP;
-                ModelState.Clear();
+
                 if (TAG == "GRID")
                 {
-                    return PartialView("_T_SALE_RateHistoryGrid", RH);
+                    ViewBag.ITEM = ITCD.retStr() == "" ? "" : ITNM + " (" + ITCD + ")";
+                    VE.RateHistoryGrid = doctP.Take(5).ToList();
+                    ModelState.Clear();
+                    return PartialView("_T_SALE_RateHistoryGrid", VE);
                 }
-                return PartialView("_T_SALE_RateHistory", RH);
+                else
+                {
+                    RH.RateHistoryGrid = doctP;
+                    ModelState.Clear();
+                    return PartialView("_T_SALE_RateHistory", RH);
+                }
             }
             catch (Exception ex)
             {
