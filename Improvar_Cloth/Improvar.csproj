@@ -367,6 +367,8 @@
     <Compile Include="Models\MDOCAUTHLAVEL5.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\MenuRightByUser.cs" />
+    <Compile Include="Models\MSHRMKTRATE.cs" />
+    <Compile Include="Models\MSIGNAUTHUSER.cs" />
     <Compile Include="Models\MSITEMBARCODE.cs" />
     <Compile Include="Models\MITEMPLISTADD.cs" />
     <Compile Include="Models\MITEMPLISTDTL.cs" />
@@ -402,7 +404,10 @@
     <Compile Include="Models\MS_COUNTRY.cs" />
     <Compile Include="Models\MS_CURRENCY.cs" />
     <Compile Include="Models\MS_DOCCTG.cs" />
+    <Compile Include="Models\MS_GLHDGRP.cs" />
     <Compile Include="Models\MS_GSTUOM.cs" />
+    <Compile Include="Models\MS_HSNSACCODES.cs" />
+    <Compile Include="Models\MS_IPSMART.cs" />
     <Compile Include="Models\MS_LINK.cs" />
     <Compile Include="Models\MS_MUSRACS.cs" />
     <Compile Include="Models\MS_NATBUSCODES.cs" />
