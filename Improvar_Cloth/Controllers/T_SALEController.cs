@@ -304,7 +304,7 @@ namespace Improvar.Controllers
             dt.Rows.Add("SBDIR", "Sales Bill", "SALGLCD", "", "", "", "", "");
             dt.Rows.Add("SR", "Sales Return (SRM)", "SALRETGLCD", "", "", "", "", "");
             dt.Rows.Add("SBEXP", "Sales Bill (Export)", "SALGLCD", "", "", "", "", "");
-            dt.Rows.Add("PI", "Proforma Invoice", "", "", "", "", "", "");
+            dt.Rows.Add("PI", "Proforma Invoice", "SALGLCD", "", "", "", "", "");
             dt.Rows.Add("PB", "Purchase Bill", "PURGLCD", "", "", "", "", "");
             dt.Rows.Add("PR", "Purchase Return (PRM)", "PURRETGLCD", "", "", "", "", "");
             dt.Rows.Add("OP", "Opening Stock", "PURGLCD", "", "", "", "", "");
@@ -456,7 +456,7 @@ namespace Improvar.Controllers
                                     LOCABIN = dr["LOCABIN"].retStr(),
                                     BALEYR = dr["BALEYR"].retStr(),
                                     BARGENTYPE = dr["BARGENTYPE"].retStr(),
-                                    GLCD = VE.MENU_PARA == "SBPCK" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SB" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBDIR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SR" ? dr["SALRETGLCD"].retStr() : VE.MENU_PARA == "SBCM" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBCMR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBEXP" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "PI" ? "" : (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") ? dr["PURGLCD"].retStr() : VE.MENU_PARA == "PR" ? dr["PURRETGLCD"].retStr() : "",
+                                    GLCD = VE.MENU_PARA == "SBPCK" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SB" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBDIR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SR" ? dr["SALRETGLCD"].retStr() : VE.MENU_PARA == "SBCM" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBCMR" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "SBEXP" ? dr["SALGLCD"].retStr() : VE.MENU_PARA == "PI" ? dr["SALGLCD"].retStr() : (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") ? dr["PURGLCD"].retStr() : VE.MENU_PARA == "PR" ? dr["PURRETGLCD"].retStr() : "",
                                     WPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") ? dr["WPRATE"].retDbl() : (double?)null,
                                     RPRATE = (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") ? dr["RPRATE"].retDbl() : (double?)null,
                                     ITREM = dr["ITREM"].retStr(),
@@ -1070,7 +1070,7 @@ namespace Improvar.Controllers
                         case "SBEXP"://Sales Bill (Export)
                             glcd = str.retCompValue("SALGLCD"); break;
                         case "PI"://Proforma Invoice
-                            glcd = ""; break;
+                            glcd = str.retCompValue("SALGLCD"); break; 
                         case "PB"://Purchase Bill
                             glcd = str.retCompValue("PURGLCD"); break;
                         case "PR"://Purchase Return (PRM)
@@ -1211,7 +1211,7 @@ namespace Improvar.Controllers
                             case "SBEXP"://Sales Bill (Export)
                                 glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
                             case "PI"://Proforma Invoice
-                                glcd = ""; break;
+                                glcd = tax_data.Rows[0]["SALGLCD"].retStr(); break;
                             case "PB"://Purchase Bill
                                 glcd = tax_data.Rows[0]["PURGLCD"].retStr(); break;
                             case "PR"://Purchase Return (PRM)
@@ -1385,7 +1385,7 @@ namespace Improvar.Controllers
                         case "SBEXP"://Sales Bill (Export)
                             glcd = str.retCompValue("SALGLCD"); break;
                         case "PI"://Proforma Invoice
-                            glcd = ""; break;
+                            glcd = str.retCompValue("SALGLCD"); break;
                         case "PB"://Purchase Bill
                             glcd = str.retCompValue("PURGLCD"); break;
                         case "PR"://Purchase Return (PRM)

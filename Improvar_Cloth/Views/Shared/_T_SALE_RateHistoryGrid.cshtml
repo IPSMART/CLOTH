@@ -4,10 +4,10 @@
     <div class="table-responsive">
 
         @Html.ValidationSummary(true)
-        <div class="grid_title">
+        <div class="grid_title" style="height:15px;">
             <div class="col-md-10">
-                <input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_RateHistoryGrid');" />
-                <img src="~/Image/search.png" title="Help" />
+                @*<input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_RateHistoryGrid');" />
+                <img src="~/Image/search.png" title="Help" />*@
             </div>
             <center style="font-size: 11px;color: darkmagenta; border: 1px inset;">
                 <b>Rate History</b>
@@ -21,7 +21,7 @@
             <div style="height:auto;overflow-y:scroll;max-height:235px;">
                 <table id="_T_SALE_RateHistoryGrid" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
                     <thead>
-                        <tr class="sticky-header" style="height:30px;">
+                        <tr class="sticky-header" style="height:15px;">
                             @*<th class="sticky-cell" style="width:27px;">SL. No.</th>*@
                             <th class="" style="width:80px;">Docdt</th>
                             <th class="" style="width:118px;">Docno</th>
@@ -29,8 +29,8 @@
                             <th class="" style="width:89px;">City</th>
                             <th class="" style="width:73px;text-align:right;">Quantity</th>
                             <th class="" style="width:73px;text-align:right;">Rate</th>
-                            <th class="" style="width:50px;">Disc Type</th>
-                            <th class="" style="width:50px;text-align:right;">Disc Rate</th>
+                            <th class="" style="width:62px;">Disc Type</th>
+                            <th class="" style="width:62px;text-align:right;">Disc Rate</th>
                         </tr>
                     </thead>
                     <tbody>
