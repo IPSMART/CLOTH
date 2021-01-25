@@ -1668,14 +1668,19 @@ namespace Improvar
             if (tbl.Rows.Count == 1) rtval = tbl.Rows[0]["amt"].retDbl();
             return rtval;
         }
-        public DataTable GetRateHistory(string doctype, string itcd)
+        public DataTable GetRateHistory(string slcd, string partycd, string doctype, string itcd)
         {
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "";
-            sql += " select distinct a.SLCD,a.autono,d.docno,d.docdt,b.qnty,b.rate,e.SLNM,e.district city ";
-            sql += " from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
-            sql += " where a.autono=b.autono and a.autono=d.autono and a.doccd=c.DOCCD and a.slcd=e.slcd  and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and itcd='" + itcd + "' and c.doctype='" + doctype + "' ";
-            sql += " order by d.docdt,d.docno desc ";
+
+            sql += "select distinct a.slcd, a.autono, d.docno, d.docdt, b.qnty, b.rate, e.slnm, e.district city, ";
+            sql += "nvl(b.scmdiscrate,0) scmdiscrate, scmdisctype, ";
+            sql += "from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
+            sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd  and d.compcd='" + COM + "' and ";
+            sql += "itcd ='" + itcd + "' and (e.slcd = '" + slcd + "' ";
+            if (partycd.retStr() != "") sql += "or e.partycd='" + partycd + "' ";
+            sql += ") and c.doctype in (" + doctype + ") ";
+            sql += "order by d.docdt,d.docno desc ";
             var dt = MasterHelpFa.SQLquery(sql);
             return dt;
         }

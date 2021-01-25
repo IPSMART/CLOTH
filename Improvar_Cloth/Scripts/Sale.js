@@ -1119,7 +1119,11 @@ function AmountChange(id, AMOUNT, PER, NETAMT, AMT1, AMT2, AMT3, AMT4) {
     var AMT_1 = document.getElementById(AMT1.id).value;
     var AMT_2 = document.getElementById(AMT2.id).value;
     var AMT_3 = document.getElementById(AMT3.id).value;
-    var AMT_4 = document.getElementById(AMT4.id).value;
+    var AMT_4 = "";
+    if (AMT4 != "") {
+        AMT_4 = retFloat(document.getElementById(AMT4.id).value);
+    }
+    AMT_4 = retFloat(AMT_4);
     if (PERCENTAGE != "") {
         var CAL_ABET_AMT = parseFloat(AMT) * parseFloat(PERCENTAGE) / 100;
         var BAL_AMT = Math.abs(parseFloat(NEW_AMT) - parseFloat(CAL_ABET_AMT));
@@ -1949,11 +1953,17 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_RPPRICEGEN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPPRICEGEN" type="hidden" value="' + RPPRICEGEN + '">';
         tr += '        <input id="B_RPRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].RPRATE" type="hidden"  >';
     }
-
-    tr += '    <td class="" title="' + GSTPER + '">';
-    tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
-    tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
-    tr += '    </td>';
+    if (MENU_PARA != "OP")
+    {
+        tr += '    <td class="" title="' + GSTPER + '">';
+        tr += '        <input class="atextBoxFor text-box single-line" data-val="true" data-val-number="The field GSTPER must be a number." id="B_GSTPER_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].GSTPER" onkeypress="return numericOnly(this,2);" style="text-align: right;" readonly="readonly" type="text" value="' + GSTPER + '">';
+        tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
+        tr += '    </td>';
+    }
+    else{
+        tr += '        <input id="B_GSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].GSTPER" type="hidden" value="' + GSTPER + '">';
+        tr += '        <input id="B_PRODGRPGSTPER_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PRODGRPGSTPER" type="hidden" value="' + PRODGRPGSTPER + '">';
+    }
     tr += '    <td class="" title="' + SCMDISCTYPE_DESC + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_SCMDISCTYPE_DESC_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE_DESC" readonly="readonly" type="text" value="' + SCMDISCTYPE_DESC + '">';
     tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
@@ -2207,7 +2217,7 @@ function GetPartyDetails(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     if (id == "") {
-        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
+        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYGRP");
     }
     else {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
@@ -2221,7 +2231,7 @@ function GetPartyDetails(id) {
             success: function (result) {
                 var MSG = result.indexOf('#helpDIV');
                 if (MSG >= 0) {
-                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
+                    ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYGRP");
                     $('#SearchFldValue').val("SLCD");
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
@@ -2242,7 +2252,7 @@ function GetPartyDetails(id) {
                         $("#AGSLNM").val(returncolvalue(result, "AGSLNM"));
                         $("#DUEDAYS").val(returncolvalue(result, "crdays"));
                         $("#PSLCD").val(returncolvalue(result, "PSLCD"));
-
+                        $("#PARTYGRP").val(returncolvalue(result, "PARTYGRP"));
                         //tcs
                         $("#TDSCODE").val(returncolvalue(result, "TCSCODE"));
                         $("#TDSNM").val(returncolvalue(result, "TCSNM"));
@@ -2258,7 +2268,7 @@ function GetPartyDetails(id) {
                     else {
                         $('#helpDIV').html("");
                         msgInfo("" + result + " !");
-                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM");
+                        ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYGRP");
                         message_value = "SLCD";
                     }
                 }

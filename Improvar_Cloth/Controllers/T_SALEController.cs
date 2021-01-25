@@ -353,11 +353,12 @@ namespace Improvar.Controllers
                 if (TXN.SLCD.retStr() != "")
                 {
                     string slcd = TXN.SLCD;
-                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO }).FirstOrDefault();
+                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.SLAREA, a.DISTRICT, a.GSTNO, a.PSLCD, a.TCSAPPL, a.PANNO,a.PARTYGRP }).FirstOrDefault();
                     VE.SLNM = subleg.SLNM;
                     VE.SLAREA = subleg.SLAREA == "" ? subleg.DISTRICT : subleg.SLAREA;
                     VE.GSTNO = subleg.GSTNO;
                     VE.PSLCD = subleg.PSLCD;
+                    VE.PARTYGRP = subleg.PARTYGRP;
                     VE.TCSAPPL = subleg.TCSAPPL;
                     if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
                     panno = subleg.PANNO;
@@ -2380,14 +2381,14 @@ namespace Improvar.Controllers
                 return ex.Message;
             }
         }
-        public ActionResult GetRateHistoryDetails(string ITCD)
+        public ActionResult GetRateHistoryDetails(string SLCD,string PARTYCD,string DOCCD,string ITCD)
         {
             try
             {
                 RateHistory RH = new RateHistory();
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
-                var DTRateHistory = salesfunc.GetRateHistory(VE.DOC_CODE, ITCD);
+                var DTRateHistory = salesfunc.GetRateHistory(SLCD,PARTYCD,DOCCD, ITCD);
                 var doctP = (from DataRow dr in DTRateHistory.Rows
                              select new RateHistoryGrid()
                              {
@@ -3881,6 +3882,8 @@ namespace Improvar.Controllers
                 ind.TDOCNO = DOCNO;
                 ind.FDT = DOCDT;
                 ind.TDT = DOCDT;
+                ind.TEXTBOX3 = VE.T_TXN.SLCD;
+                ind.TEXTBOX4 = VE.SLNM;
                 ind.MENU_PARA = "SALES";
                 if (TempData["printparameter"] != null)
                 {

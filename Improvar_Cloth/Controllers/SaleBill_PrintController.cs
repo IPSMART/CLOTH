@@ -2884,7 +2884,7 @@ namespace Improvar.Controllers
                 string sql = "";
                 string sqlc = "";
                 sqlc += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and c.yr_cd='" + yr_cd + "' and ";
-                if (fdocno != "") sqlc += "c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and ";
+                if (fdocno != "") sqlc += "c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
                 if (fdate != "") sqlc += "c.docdt >= to_date('" + fdate + "','dd/mm/yyyy') and ";
                 if (tdate != "") sqlc += "c.docdt <= to_date('" + tdate + "','dd/mm/yyyy') and ";
                 if (slcd != null) sqlc += "b.slcd='" + slcd + "' and ";
@@ -2919,7 +2919,7 @@ namespace Improvar.Controllers
                 sql += " from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono and a.itcd = d.itcd and a.autono = n.autono(+) and a.slno = n.txnslno(+) and n.barno = o.barno(+) and  ";
                 sql += " c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and  ";
+                if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and  ";
                 if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
                 if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
                 sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)  ";
@@ -2934,7 +2934,7 @@ namespace Improvar.Controllers
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,0 listprice,0 listdiscper  ";
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and ";
+                if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
                 if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
                 if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
                 sql += "c.doccd = '" + doccd + "'  ";
@@ -2970,10 +2970,10 @@ namespace Improvar.Controllers
                 sql = "";
                 sql += "select distinct a.autono,a.txnslno,a.barno,a.shade,a.nos,a.qnty,a.flagmtr,a.disctype,a.discrate,a.scmdisctype,a.scmdiscrate, ";
                 sql += "a.tddisctype,a.tddiscrate,a.itrem,a.baleno,a.cutlength,a.slno ";
-                sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_cntrl_hdr c ";
+                sql += "from " + Scm1 + ".t_batchdtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c ";
                 sql += "where  ";
                 sql += sqlc;
-                sql += "a.autono=c.autono order by a.autono,a.slno ";
+                sql += "a.autono=b.autono and a.autono=c.autono order by a.autono,a.slno ";
                 rsStkPrcDesc = masterHelp.SQLquery(sql);
 
                 string blterms = "", inspoldesc = "", dealsin = "";

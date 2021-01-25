@@ -1251,6 +1251,7 @@
     <Content Include="Views\Rep_Bale_History\Rep_Bale_History.cshtml" />
     <Content Include="Views\Khasra_BaleTrnf_Print\Khasra_BaleTrnf_Print.cshtml" />
     <Content Include="Views\Rep_Bale_Stock\Rep_Bale_Stock.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_RateHistoryGrid.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
