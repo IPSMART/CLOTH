@@ -267,24 +267,14 @@ namespace Improvar
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             string COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
-
-            //string[] selgrpcd = itgrpcd.Split(',');
             List<DropDown_list_ITEM> sllist = new List<DropDown_list_ITEM>();
-            //sllist = (from a in DB.M_SITEM
-            //          where (selgrpcd.Contains(a.ITGRPCD))
-            //          select new DropDown_list_ITEM()
-            //          {
-            //              text = a.ITNM,
-            //              packsize = a.PACKSIZE.Value,
-            //              shortnm = a.SHORTNM,
-            //              value = a.ITCD
-            //          }).OrderBy(A => A.text).ToList();
-            sllist = (from a in DB.M_SITEM
-                      select new DropDown_list_ITEM()
-                      {
-                          text = a.ITNM,
-                          value = a.ITCD
-                      }).OrderBy(A => A.text).ToList();
+            string sql = "select (STYLENO || ITNM)ITSTYLE,ITCD from "+CommVar.CurSchema(UNQSNO)+ ".M_SITEM ";
+            DataTable dt = MasterHelp.SQLquery(sql);
+            sllist = (from DataRow dr in dt.Rows select new DropDown_list_ITEM()
+            {
+                text = dr["ITSTYLE"].retStr(),
+                value = dr["ITCD"].retStr()
+            }).OrderBy(A => A.text).ToList();
             return sllist;
         }
         public List<DropDown_list_ITGRP> GetItgrpcdforSelection(string itgrptype = "")

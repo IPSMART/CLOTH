@@ -346,7 +346,7 @@ namespace Improvar.Controllers
                         sql += "a.hsncode, l.guomcd, l.guomnm, ";
                         sql += "o.gonm,o.goadd1||' '||o.goadd2 goadd1, o.goadd3 goadd2, o.district godistrict, o.pin gopin, ";
                         sql += "decode(nvl(j.gst_qntyconv,0),0,1,j.gst_qntyconv)*a.qnty qnty, a.amt txablamt, ";
-                        sql += "nvl((select distinct distance from " + fdbnm + ".m_subleg_locoth where slcd=a.pcode and compcd||loccd=b.compcd||b.loccd and nvl(distance,0) <> 0),0) distance, ";
+                        sql += "nvl((select distinct distance from " + fdbnm + ".m_subleg_locoth where slcd=nvl(a.conslcd,a.pcode) and compcd||loccd=b.compcd||b.loccd and nvl(distance,0) <> 0),0) distance, ";
                         sql += "nvl((select sum(blamt) blamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(blamt,0) <> 0),0) blamt, ";
                         sql += "nvl((select sum(roamt) roamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(roamt,0) <> 0),0) roamt,  ";
                         sql += "nvl((select sum(tcsamt) tcsamt from " + fdbnm + ".t_vch_gst where autono=a.autono and nvl(tcsamt,0) <> 0),0) tcsamt, ";
@@ -432,7 +432,7 @@ namespace Improvar.Controllers
                             }
 
                             //consign   ==paRTY   
-                            if (dt.Rows[i]["bgstno"].retStr() != dt.Rows[i]["gstno"].retStr())
+                            if (dt.Rows[i]["pin"].retStr().Trim() != "" && dt.Rows[i]["slnm"].retStr().Trim() != "")
                             {
                                 shipDtls.Gstin = dt.Rows[i]["gstno"].retStr();
                                 shipDtls.LglNm = dt.Rows[i]["LegalNm"].retStr() == "" ? dt.Rows[i]["slnm"].retStr() : dt.Rows[i]["LegalNm"].retStr();// dt.Rows[i][""].retStr();

@@ -1,406 +1,202 @@
 ﻿@model Improvar.ViewModels.ReportViewinHtml
 @{
-    ViewBag.Title = "Stock Ledger";
+    ViewBag.Title = "Rep_Stk_Leg";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
-}
-@{
-    switch (Model.MENU_PARA)
-    {
-        case "DY":
-            ViewBag.Title = "Dyer Register"; break;
-        case "FS":
-            ViewBag.Title = "Stock Ledger"; break;
-        default: ViewBag.Title = ""; break;
-    }
-    string PageControllerName = "Rep_Stk_Leg";
 }
 <script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="~/Content/bootstrap-select.css" />
 @Scripts.Render("~/Scripts/Multiple-Select-min.js")
 @Scripts.Render("~/Scripts/bootstrap-select.js")
 <script src="~/Scripts/jquery.min.js"></script>
+
+<script>
+    function LoadItemCode() {
+        var valu = document.getElementById("TEXTBOX1").value;
+        $.ajax({
+            type: 'post',
+            url: $("#urlLoadItemCode").val(),
+            data: {
+                val: valu,
+                Code:$()
+            },
+            success: function (result) {
+                if (result == "1") {
+                    $("#UOMCD").val("");
+                    msgInfo("Code Already Exists : Please Enter a Valid Code!! ");
+                    message_value = "UOMCD";
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 <script>
     $(function () {
-        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
-        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
     });
 </script>
-<script>
-    function inputhelp(id, id1) {
-        var str = $("#tempHDD").val().split(String.fromCharCode(181));
-        $("#" + id.id).val(str[0]);
-        $("#" + id1.id).val(str[1].toString());
-        $("#TEXTBOX1").val(str[2]);
-    }
-</script>
-<script>
-    $(document).ready(function () {
-        $('#Checkbox1').change(function () {
-            //if (!$(this).is(':checked')) {
-            $('#div_prccd').toggle()
-            //}
-        });
-
-        //$('#checkbox1').click(function () {
-        //    if (!$(this).is(':checked')) {
-        //        return confirm("Are you sure?");
-        //    }
-        //});
-    });
-</script>
-<script>
-    function SelectGodownCode(id, TEXTBOX4, TEXTBOX5) {
-        debugger;
-        if (id == "") {
-            $("#" + TEXTBOX4.id).val("");
-            $("#" + TEXTBOX5.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetGodownDetails", PageControllerName)',
-                data: { val: id },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        $("#tempHDD").val(result);
-                        var findstr = $("#tempHDD").val();
-                        document.getElementById(TEXTBOX4.id).value = returncolvalue(findstr, "GOCD");
-                        document.getElementById(TEXTBOX5.id).value = returncolvalue(findstr, "GONM");
-                    }
-                    else {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + TEXTBOX4.id).val("");
-                        $("#" + TEXTBOX5.id).val("");
-                        $("#btnok").focus();
-                        $("#msgbody_info").html(result);
-                        message_value = TEXTBOX4.id;
-                    }
-                }
-            });
-        }
-    }
-
-</script>
-<script>
-    function SelectMtrlJobCode(id, MTRLJOBCD, MTRLJOBNM) {
-        if (id == "") {
-            $("#" + MTRLJOBCD.id).val("");
-            $("#" + MTRLJOBNM.id).val("");
-        }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetMtrlJobDetails", PageControllerName)',
-                data: { val: id },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        $("#tempHDD").val(result);
-                        var findstr = $("#tempHDD").val();
-                        document.getElementById(MTRLJOBCD.id).value = returncolvalue(findstr, "MTRLJOBCD");
-                        document.getElementById(MTRLJOBNM.id).value = returncolvalue(findstr, "MTRLJOBNM");
-                    }
-                    else {
-                        $("#Msgdiv1").show();
-                        $("#info").show();
-                        $("#" + MTRLJOBCD.id).val("");
-                        $("#" + MTRLJOBNM.id).val("");
-                        $("#btnok").focus();
-                        $("#msgbody_info").html(result);
-                        message_value = MTRLJOBCD.id;
-                    }
-                }
-            });
-        }
-    }
-</script>
-<script></script>
+@{
+    var PageControllerName = "Rep_Stk_Leg";
+}
 @using (Html.BeginForm())
 {
-    @Html.HiddenFor(a => Model.maxdate)
-    @Html.HiddenFor(a => Model.mindate)
-    <div class="form-horizontal">
-        @Html.HiddenFor(s => s.DefaultAction)
-        <div class="row" style="margin-top: 8px;">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "From Date")
-                    <b style="color:Red;">
-                        <sup>*</sup>
-                    </b>
+    if (Model.DefaultView == true)
+    {
+        <div class="form-horizontal">
+            @Html.HiddenFor(s => s.DefaultAction)
+
+            <input type="hidden" id="urlLoadItemCode" value="@Url.Action("LoadItemCode", PageControllerName)" />
+            <div class="report_center" style="background-color:lightgrey; padding:1%;border: 1px solid; margin: 2% 22% 2% 22%;">
+
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Item Group")
+                            @*<b style="color:Red;">*</b>*@
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        @*@Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list, "Value", "Text", Model.TEXTBOX1), new { @class = " form-control" })*@
+                        @(new HtmlString(Model.Itgrpnm))
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "From Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top: 8px;">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "As on Date")
-                    <b style="color:Red;">
-                        <sup>*</sup>
-                    </b>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "To Date")
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", maxlength = 10, onblur = "DocumentDateCHK(this,true);", @placeholder = "dd/mm/yyyy" } })
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top:6px">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top:5px">
-                    @Html.Label("", "Brand")
-                </div>
-            </div>
-            <div class="col-md-6">
-                @(new HtmlString(Model.Brandnm))
-            </div>
-        </div>
-        <div class="row" style="margin-top:6px">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top:5px">
-                    @Html.Label("", "Item Group")
-                </div>
-            </div>
-            <div class="col-md-6">
-                @(new HtmlString(Model.Itgrpnm))
-            </div>
-        </div>
-        <div class="row" style="margin-top:6px">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top:5px">
-                    @Html.Label("", "Articles")
-                </div>
-            </div>
-            <div class="col-md-6">
-                @(new HtmlString(Model.Itnm))
-            </div>
-        </div>
-        <div class="row" style="margin-top:6px">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top:5px">
-                    @Html.Label("", "Item Sizes")
-                </div>
-            </div>
-            <div class="col-md-6">
-                @(new HtmlString(Model.TEXTBOX7))
-                @*<select id="ITSIZES" name="ITSIZES" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
-                        <optgroup label="ITSIZES">
-                            @foreach (var i in Model.DropDown_list4)
-                            {
-                                <option value="@i.value">
-                                    @i.text  [@i.value]
-                                </option>
-                            }
-                        </optgroup>
-                    </select>*@
-            </div>
-        </div>
-        <div class="row" style="margin-top:6px">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top:5px">
-                    @Html.Label("", "Stock type")
-                </div>
-            </div>
-            <div class="col-md-6">
-                @(new HtmlString(Model.TEXTBOX8))
-                @*<select id="STKTYPE" name="STKTYPE" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
-                        <optgroup label="STKTYPE">
-                            @foreach (var i in Model.DropDown_list_StkType)
-                            {
-                                if (i.value == "F")
-                                {
-                                    <option value="@i.value" selected="selected">
-                                        @i.text
-                                    </option>
-                                }
-                                else
+
+                @*<div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Price List")
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <select id="plist" name="plist" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
+                            <optgroup label="Employee">
+                                @foreach (var i in Model.DropDown_list1)
                                 {
                                     <option value="@i.value">
                                         @i.text
                                     </option>
                                 }
-                            }
-                        </optgroup>
-                    </select>*@
-            </div>
-        </div>
-        <div class="row" style="margin-top:6px">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top:5px">
-                    @Html.Label("", "Agent")
-                </div>
-            </div>
-            <div class="col-md-6">
-                @(new HtmlString(Model.Agslnm))
-            </div>
-        </div>
-        <div class="row" style="margin-top:6px">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top:5px">
-                    @Html.Label("", "Party")
-                </div>
-            </div>
-            <div class="col-md-6">
-                @(new HtmlString(Model.Slnm))
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Godown")
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="editor-field">
-                  
-                    @Html.EditorFor(model => model.TEXTBOX4, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TEXTBOX4", onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','TEXTBOX4','TEXTBOX4=GOCD=1/TEXTBOX5=GONM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", PageControllerName) + "','Godown Details','TEXTBOX4','TEXTBOX4=GOCD=1/TEXTBOX5=GONM=0');", @placeholder = "Code", maxlength = 6 } })
-                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", PageControllerName)','Godown Details','TEXTBOX4','TEXTBOX4=GOCD=1/TEXTBOX5=GONM=0')" />
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.TEXTBOX5, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX5", maxlength = 30, @TabIndex = -1, @placeholder = "Godown Name", @readonly = "readonly" } })
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top:6px">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top:5px">
-                    @Html.Label("", "Document Type")
-                </div>
-            </div>
-            <div class="col-md-6">
-                @(new HtmlString(Model.Docnm))
-            </div>
-        </div>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>*@
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Material Job Code")
-                </div>
-            </div>
-            <div class="col-md-1">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.TEXTBOX3, new { htmlAttributes = new { @class = "form-control textbox_image", id = "TEXTBOX3", maxlength = 2, onkeyup = "GetHelp('" + @Url.Action("GetMtrlJobDetails", PageControllerName) + "','TEXTBOX3/TEXTBOX6','1/0','Job Details','TEXTBOX3')", onblur = "SelectMtrlJobCode(this.value,TEXTBOX3,TEXTBOX6);", @placeholder = "Code" } })
-                    <img src="~/Image/search.png" width="20px" style="margin-top: 5px;" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetMtrlJobDetails", PageControllerName)','TEXTBOX3/TEXTBOX6','1/0','Job Details','TEXTBOX3')" />
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="editor-field">
-                    @Html.EditorFor(model => model.TEXTBOX6, new { htmlAttributes = new { @class = "form-control", id = "TEXTBOX6", maxlength = 15, @TabIndex = -1, @placeholder = "Material Job Name", @readonly = "readonly" } })
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top: 5px;">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Considered Stock Adjustments")
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="editor-field" style="margin-top:6px;">
-                    @Html.CheckBoxFor(model => model.Checkbox2)
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top: 5px;">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Merge All Locations")
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="editor-field" style="margin-top:6px;">
-                    @Html.CheckBoxFor(model => model.Checkbox3)
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top: 8px;">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Report type")
-                </div>
-            </div>
-            <div class="col-md-10" style="border: 2px groove;">
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(g => g.TEXTBOX1, "S", new { @checked = "checked" })  @Html.Label("Summary")
-                </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(g => g.TEXTBOX1, "I")  @Html.Label("Item")
-                </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(g => g.TEXTBOX1, "G")  @Html.Label("Item Group")
-                </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(g => g.TEXTBOX1, "T")  @Html.Label("Op/Dr Cr/Cl")
-                </label>
-            </div>
-        </div>
-        @*<div class="row" style="margin-top: 8px;">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Qnty taken as")
-                </div>
-            </div>
-            <div class="col-md-6" style="border: 2px groove;">
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(g => g.TEXTBOX2, "P", new { @checked = "checked" })  @Html.Label("Unit")
-                </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(g => g.TEXTBOX2, "B")  @Html.Label("Box")
-                </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(g => g.TEXTBOX2, "S")  @Html.Label("Set")
-                </label>
-                <label class="radio-inline">
-                    @Html.RadioButtonFor(g => g.TEXTBOX2, "Z")  @Html.Label("Pcs&Box")
-                </label>
-            </div>
-        </div>*@
-        <div class="row" style="margin-top: 5px;">
-            <div class="col-md-6">
-                <div class="editor-label" style="margin-top: 6px;">
-                    @Html.Label("", "Show Sizewise breakup")
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="editor-field" style="margin-top:6px;">
-                    @Html.CheckBoxFor(model => model.Checkbox1)
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <input type="submit" formtarget="_blank" name="Show_rep" value="Show Report" title="Show report in a new tab" class="btn btn-default" />
-            </div>
-        </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:6px">
+                            @Html.Label("", "Godown")
+                        </div>
+                    </div>
 
-        <div class="row">
-            <div class="col-md-6">
+                    <div class="col-md-6">
+                        <select id="Godown" name="Godown" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
+                            <optgroup label="Godown">
+                                @foreach (var i in Model.DropDown_list2)
+                                {
+                                    <option value="@i.value">
+                                        @i.text
+                                    </option>
+                                }
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
 
+                <div class="row" style="margin-top:6px">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top:5px">
+                            @Html.Label("", "Item")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.Itnm))
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Location")
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @(new HtmlString(Model.Locnm))
+                    </div>
+                </div>
+                @*<div class="row">
+                        <div class="col-lg-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Item")
+                                <b style="color:Red;">*</b>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <select id="ITEM" name="ITEM" class="selectpicker" multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" style="font-size: small;">
+                                <optgroup label="ITEM CODE">
+                                    @foreach (var i in Model.DropDown_list_text)
+                                    {
+                                        <option value="@i.value">
+                                            @i.text1
+                                        </option>
+                                    }
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>*@
+
+                @*<div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                        <div class="editor-field" style="margin-top: 4px;">
+                            @Html.Label("", "Stock Calculate on")
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <input type="radio" name="RATEQNTYBAG" value="BAGS" />BAGS
+                        <input type="radio" name="RATEQNTYBAG" value="QNTY" checked />QNTY
+                    </div>
+                </div>*@
+                <div class="row" style="margin-top:10PX">
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="submit" value="Show Report" name="submitbutton" class="btn btn-default" formtarget="_blank" />
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
-
-            </div>
-        </div>
-
-    </div>
-
+    }
     <div class="container">
-        <div id="helpDIV">
+        <div id="helpDIV" style="z-index: 2;">
 
         </div>
     </div>
-
 }
