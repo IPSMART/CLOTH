@@ -193,7 +193,7 @@ namespace Improvar.Controllers
                     sql += "sum((case nvl(d.txnslno,0) when 0 then nvl(a.othramt,0) when 1 then nvl(a.othramt,0) end )) othramt ";
                     sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".m_sitem b, " + scmf + ".m_uom c, ";
                     sql += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e  ";
-                    sql += "where a.itcd=b.itcd(+) and b.uomcd=c.uomcd(+) and a.autono=d.autono(+) and a.slno=d.slno(+) and  ";
+                    sql += "where a.itcd=b.itcd(+) and b.uomcd=c.uomcd(+) and a.autono=d.autono(+) and a.slno=d.txnslno(+) and  ";
                     sql += "d.autono=e.autono(+) ";
                     sql += "group by a.autono, a.slno, a.itcd, b.prodgrpcd,b.itgrpcd, b.itnm, a.prccd, a.stkdrcr,b.styleno, c.uomnm, c.decimals ";
                     //sql += "a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0) , nvl(a.othramt,0) ";

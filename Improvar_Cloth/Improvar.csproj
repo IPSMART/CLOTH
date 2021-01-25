@@ -312,6 +312,7 @@
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_OUTRECPROCESSController.cs" />
+    <Compile Include="Controllers\T_PhyStockController.cs" />
     <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SALE_POSController.cs" />
     <Compile Include="Controllers\T_SORDCANCController.cs" />
@@ -584,6 +585,8 @@
     <Compile Include="Models\T_INHISSMSTSJOB.cs" />
     <Compile Include="Models\T_INHRECMST.cs" />
     <Compile Include="Models\T_KARDTL.cs" />
+    <Compile Include="Models\T_PHYSTK.cs" />
+    <Compile Include="Models\T_PHYSTK_HDR.cs" />
     <Compile Include="Models\T_PROGBOM.cs" />
     <Compile Include="Models\T_PROGDTL.cs" />
     <Compile Include="Models\T_PROGMAST.cs" />
@@ -742,6 +745,7 @@
     <Compile Include="ViewModels\TransactionKhasraEntry.cs" />
     <Compile Include="ViewModels\TransactionOutRecProcess.cs" />
     <Compile Include="ViewModels\TransactionOutIssProcess.cs" />
+    <Compile Include="ViewModels\TransactionPhyStockEntry.cs" />
     <Compile Include="ViewModels\TransactionSaleEntry.cs" />
     <Compile Include="ViewModels\TransactionSalePosEntry.cs" />
     <Compile Include="ViewModels\TTxnAckEntry.cs" />
@@ -1252,6 +1256,7 @@
     <Content Include="Views\Khasra_BaleTrnf_Print\Khasra_BaleTrnf_Print.cshtml" />
     <Content Include="Views\Rep_Bale_Stock\Rep_Bale_Stock.cshtml" />
     <Content Include="Views\Shared\_T_SALE_RateHistoryGrid.cshtml" />
+    <Content Include="Views\T_PhyStock\T_PhyStock.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
