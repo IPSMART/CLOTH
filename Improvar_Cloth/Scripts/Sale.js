@@ -310,7 +310,12 @@ function FillBarcodeArea(str, Table, i) {
             }
         }
     }
-
+    if (event.key == "F8" || str == "") {
+        var value = modify_check();
+        if (value == "true") {
+            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+        }
+    }
 }
 function changeBARGENTYPE() {
     var BARGENTYPE = $("#BARGENTYPE").val();
@@ -602,7 +607,7 @@ function Fill_DetailData() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-    var mtrlcdblank = false; var slnoblank = false; var glcdblank = false;
+    var mtrlcdblank = false; var slnoblank = false; var glcdblank = false; var qntyblank = false;
     if (GridRow != 0) {
         for (var i = 0; i <= GridRow - 1; i++) {
             if ($("#B_MTRLJOBCD_" + i).val() == "") {
@@ -615,6 +620,10 @@ function Fill_DetailData() {
             }
             if ($("#B_GLCD_" + i).val() == "") {
                 glcdblank = true;
+                break;
+            }
+            if (retFloat($("#B_QNTY_" + i).val()) == 0) {
+                qntyblank = true;
                 break;
             }
         }
@@ -647,6 +656,16 @@ function Fill_DetailData() {
         $(".tab-content div").removeClass("active");
         $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
         message_value = "B_TXNSLNO_" + i;
+        return false;
+    }
+    if (qntyblank == true) {
+        msgInfo("Please Fill Quantity in Barcode Grid at slno " + (i + 1) + " !!");
+        $("li").removeClass("active").addClass("");
+        $(".nav-tabs li:nth-child(2)").addClass('active');
+        //below set the  child sequence
+        $(".tab-content div").removeClass("active");
+        $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+        message_value = "B_QNTY_" + i;
         return false;
     }
     $.ajax({

@@ -164,7 +164,7 @@
         if ($("#bardatachng").val() == "Y") {
             debugger;
             var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-            var mtrlcdblank = false; var slnoblank = false; var glcdblank = false;
+            var mtrlcdblank = false; var slnoblank = false; var glcdblank = false; var qntyblank = false;
             if (GridRow != 0) {
                 for (var i = 0; i <= GridRow - 1; i++) {
                     if ($("#B_MTRLJOBCD_" + i).val() == "") {
@@ -177,6 +177,10 @@
                     }
                     if ($("#B_GLCD_" + i).val() == "") {
                         glcdblank = true;
+                        break;
+                    }
+                    if (retFloat($("#B_QNTY_" + i).val()) == 0) {
+                        qntyblank = true;
                         break;
                     }
                 }
@@ -209,6 +213,16 @@
                 $(".tab-content div").removeClass("active");
                 $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 message_value = "B_TXNSLNO_" + i;
+                return false;
+            }
+            if (qntyblank == true) {
+                msgInfo("Please Fill Quantity in Barcode Grid at slno " + (i + 1) + " !!");
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                message_value = "B_QNTY_" + i;
                 return false;
             }
             $.ajax({
@@ -367,7 +381,7 @@
         <input type="hidden" id="courierlinkcd" value="U" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
         <input type="hidden" id="slcd_tag" value="Party" />
-        <input type="hidden" id="bardatachng" value="N" />
+        <input type="hidden" id="bardatachng" value="Y" />
         <input type="hidden" id="haspendorddata" value="N" />
         <input type="hidden" id="hiddenpendordJSON" />
         <input type="hidden" id="Defaultbar" value="Bar" />
@@ -1208,12 +1222,18 @@
                                                     @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "UOM", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
                                                 </div>
                                             </div>
-
+@if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
+{
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR", @title = "FLAGMTR" } })
                                                 </div>
                                             </div>
+}
+else
+{
+    @Html.HiddenFor(model => model.FLAGMTR, new { id = "FLAGMTR" })
+}
                                             @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                             {
                                                 <div class="col-md-1">
