@@ -75,6 +75,10 @@ function GetBarnoDetails(id, HelpFrom) {
                     if (MSG >= 0) {
                         FillBarcodeArea(result);
                         changeBARGENTYPE();
+                        var value = modify_check();
+                        if (value == "true") {
+                            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                        }
                     }
                     else {
                         $('#helpDIV').html("");
@@ -1916,9 +1920,7 @@ function AddBarCodeGrid() {
     tr += '        <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
     tr += '    </td>';
 
-    tr += '    <td class="">';
-    tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(\'B_ITCD_' + rowindex + '\', \'B_ITSTYLE_' + rowindex + '\', \'POPUP\')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
-    tr += '    </td>';
+  
     if ((MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "PI") && MNTNLISTPRICE == "Y") {
         tr += '    <td class="" title="' + LISTPRICE + '">';
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field LISTPRICE must be a number." id="B_LISTPRICE_' + rowindex + '" maxlength="14" name="TBATCHDTL[' + rowindex + '].LISTPRICE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="RateUpdate(' + rowindex + ',\'#B_\');" value="' + LISTPRICE + '" >';
@@ -2032,9 +2034,17 @@ function AddBarCodeGrid() {
     tr += '   <input id="B_BarImages_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BarImages" type="hidden" readonly="readonly" placeholder="" value=' + BarImages + '> ';
     tr += '   </td> ';
     if (MENU_PARA != "SB") {
+        tr += '    <td class="sticky-cell-opposite" style="right:40px;">';
+        tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(\'B_ITCD_' + rowindex + '\', \'B_ITSTYLE_' + rowindex + '\', \'POPUP\')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
+        tr += '    </td>';
         tr += '        <td class="sticky-cell-opposite">';
         tr += '            <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
         tr += '        </td>';
+    }
+    else {
+        tr += '    <td class="sticky-cell-opposite">';
+        tr += '        <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_"' + rowindex + ' title="Rate History" onclick="RateHistoryDetails(\'B_ITCD_' + rowindex + '\', \'B_ITSTYLE_' + rowindex + '\', \'POPUP\')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>';
+        tr += '    </td>';
     }
     tr += ' </tr>';
 
@@ -2857,7 +2867,10 @@ function GetItcd(id) {
                         if (MENU_PARA == "PB" || MENU_PARA == "OP") {
                             changeBARGENTYPE();
                         }
-                        RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                        var value = modify_check();
+                        if (value == "true") {
+                            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                        }
                     }
                     else {
                         $('#helpDIV').html("");
@@ -3038,6 +3051,22 @@ function CheckBillNumber() {
             }
         });
     }
+}
+function modify_check() {
+    debugger;
+    var ITCD = $("#ITCD").val();
+    var ITSTYLE = $("#ITSTYLE").val();
+    var Last_ITCD = $("#Last_ITCD").val();
+    if (Last_ITCD != ITCD || ITSTYLE == "") {
+        //Clear_data();
+        Last_ITCD = ITCD;
+        $("#Last_ITCD").val(Last_ITCD);
+        return "true";
+    }
+    else {
+        return "false";
+    }
+
 }
 
 

@@ -94,7 +94,7 @@
                                     <th class="" style="width:50px;text-align:right;">Net Amount</th>
                                 }
                                 <th class="" style="width:60px;">Hsn Code</th>
-                                @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")
                                 {
                                     <th class="" style="width:103px;">Bale No.</th>
                                 }
@@ -295,11 +295,15 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
-                                        @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                                        @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")
                                         {
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 12, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
                                             </td>
+                                        }
+                                        else
+                                        {  @Html.HiddenFor(model => model.TTXNDTL[i].BALENO, new { id = "D_BALENO_" + i })
+
                                         }
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].GLCD, new { htmlattributes = new { id = "D_GLCD_" + i, @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
@@ -414,12 +418,11 @@
                                     @Html.HiddenFor(model => model.T_NET_AMT, new { id = "T_NET_AMT" })
                                 }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                               
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
