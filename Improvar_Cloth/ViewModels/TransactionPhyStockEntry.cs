@@ -18,7 +18,9 @@ namespace Improvar.ViewModels
         public List<DocumentType> DocumentType { get; set; }
         public List<DropDown_list1> DropDown_list1 { get; set; }
         public string DRCR { get; set; }
-        public string SLNM { get; set; }
-        public string REGMOBILE { get; set; }
+        public string GONM { get; set; }
+        public string PRCNM { get; set; }
+        public string PRCCD { get; set; }
+        
     }
 }

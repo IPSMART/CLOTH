@@ -285,7 +285,7 @@
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
-        @Html.HiddenFor(a => a.T_BILTY_HDR.AUTONO, new { id = "AUTONO" })
+        @Html.HiddenFor(a => a.T_PHYSTK_HDR.AUTONO, new { id = "AUTONO" })
         @*@Html.HiddenFor(a => a.T_CNTRL_HDR.DOCONLYNO)*@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
@@ -368,7 +368,7 @@
                             @Html.EditorFor(model => model.T_PHYSTK_HDR.TREM, new { htmlAttributes = new { @class = "form-control", id = "TREM", @placeholder = "Remarks", maxlength = 100 } })
                         </div>
                     </div>
-                    @if (Model.DefaultAction != "V")
+                    @*@if (Model.DefaultAction != "V")
                     {
 
                         <div class="col-md-7">
@@ -376,9 +376,27 @@
                                 <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Pending Data " onclick="GetPendingData()" />
                             </div>
                         </div>
-                    }
+                    }*@
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Price Code")
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })
+                          
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PRCNM, new { htmlAttributes = new { @class = "form-control", id = "PRCNM", @TabIndex = -1, @title = "Price List Name", @placeholder = "Price List Name", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    </div>
+                </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
@@ -389,13 +407,17 @@
                 </div>
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
-                        <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+                        <div class="row">
+                             
+                        </div>
+                        @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
+
                             <div>
                                 <div id="partialdivMain" style="margin-top:0px;">
                                     @Html.Partial("_T_PhyStock_Main")
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
                     </div>
                     <div id="Remarks" class="tab-pane fade">
                         <div class="row">
