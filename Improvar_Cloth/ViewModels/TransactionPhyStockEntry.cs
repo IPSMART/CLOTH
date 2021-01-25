@@ -10,7 +10,7 @@ namespace Improvar.ViewModels
 {
     public class TransactionPhyStockEntry :Permission
     {
-        public T_PHYSTK_HDR T_PHYSTK_HDR { get; set; }
+        public T_PHYSTK_HDR T_PHYSTK_HDR { get; set; }  
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public T_PHYSTK T_PHYSTK { get; set; }
         public List<TBILTY> TBILTY { get; set; }

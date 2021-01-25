@@ -408,8 +408,17 @@
                 <div class="tab-content">
                     <div id="Main" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row">
-                             
+                            @if (Model.DefaultAction != "V")
+                            {
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Bar Code")
+                                        <b style="color:Red;">*</b>
+                                    </div>
+                                </div>
+                            }
                         </div>
+                            
                         @*<div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
 
                             <div>

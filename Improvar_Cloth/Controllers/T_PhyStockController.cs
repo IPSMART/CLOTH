@@ -201,7 +201,7 @@ namespace Improvar.Controllers
                 {
                     string slcd = TBH.MUTSLCD;
                     var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.REGMOBILE }).FirstOrDefault();
-                    VE.GONM = subleg.SLNM;
+                  //  VE.GONM = subleg.SLNM;
                     VE.REGMOBILE = subleg.REGMOBILE.ToString();
                 }
 
