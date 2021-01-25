@@ -202,7 +202,7 @@ namespace Improvar.Controllers
                         {
                             stritcd = tbl.Rows[i]["itcd"].ToString();
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + stritcd + "  " + " </span>" + tbl.Rows[i]["itnm"].ToString();
+                            IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + stritcd + "  " + " </span>" + tbl.Rows[i]["itstyle"].ToString();
                             IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomcd"] + "]";
                             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                             double iqnty = 0, iamt = 0;
@@ -222,7 +222,7 @@ namespace Improvar.Controllers
                                 if (i > maxR) break;
                             }
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                            IR.Rows[rNo]["slnm"] = "Total of " + tbl.Rows[i - 1]["itnm"].ToString();
+                            IR.Rows[rNo]["slnm"] = "Total of " + tbl.Rows[i - 1]["itstyle"].ToString();
                             IR.Rows[rNo]["qnty"] = iqnty;
                             IR.Rows[rNo]["amt"] = iamt;
                             IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
@@ -325,7 +325,7 @@ namespace Improvar.Controllers
                                     islno++;
                                     IR.Rows[rNo]["slno"] = islno;
                                     IR.Rows[rNo]["itcd"] = tbl.Rows[i - 1]["itcd"].ToString();
-                                    IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itnm"].ToString();
+                                    IR.Rows[rNo]["itnm"] = tbl.Rows[i - 1]["itstyle"].ToString();
                                     IR.Rows[rNo]["uomnm"] = tbl.Rows[i - 1]["uomcd"].ToString();
                                     IR.Rows[rNo]["qnty"] = iqnty;
                                     IR.Rows[rNo]["rate"] = avrt;
@@ -450,7 +450,7 @@ namespace Improvar.Controllers
                             islno++;
                             IR.Rows[rNo]["slno"] = islno;
                             IR.Rows[rNo]["itcd"] = tbl.Rows[i]["itcd"].ToString();
-                            IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itnm"].ToString();
+                            IR.Rows[rNo]["itnm"] = tbl.Rows[i]["itstyle"].ToString();
                             IR.Rows[rNo]["uomnm"] = tbl.Rows[i]["uomcd"].ToString();
 
                             while (tbl.Rows[i]["itcd"].ToString() == stritcd)
