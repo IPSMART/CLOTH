@@ -121,15 +121,28 @@ namespace Improvar
             {
                 try
                 {
-                    var GenIRNfail = JsonConvert.DeserializeObject<AdqrRespGenIRNfail>(jsonstr);
+                    AdqrRespGenIRNfail GenIRNfail = JsonConvert.DeserializeObject<AdqrRespGenIRNfail>(jsonstr);
                     adqrRespGENEWAYBILL.success = GenIRNfail.success;
                     adqrRespGENEWAYBILL.message = GenIRNfail.message;
-                    if (GenIRNfail.result != null && GenIRNfail.result[0] != null && GenIRNfail.result[0].Desc != null && GenIRNfail.result[0].Desc.Irn != null)
+                    if (adqrRespGENEWAYBILL.message == "2150 : Duplicate IRN")
                     {
-                        adqrRsltGenIRN.Irn = GenIRNfail.result[0].Desc.Irn;
-                        adqrRsltGenIRN.AckNo = GenIRNfail.result[0].Desc.AckNo;
-                        adqrRsltGenIRN.AckDt = GenIRNfail.result[0].Desc.AckDt;
+                        if (GenIRNfail.result != null && GenIRNfail.result[0] != null && GenIRNfail.result[0].Desc != null && GenIRNfail.result[0].Desc.Irn != null)
+                        {
+                            adqrRsltGenIRN.Irn = GenIRNfail.result[0].Desc.Irn;
+                            adqrRsltGenIRN.AckNo = GenIRNfail.result[0].Desc.AckNo;
+                            adqrRsltGenIRN.AckDt = GenIRNfail.result[0].Desc.AckDt;
+                            AdqrRespInvoiceByIRN InvByIRN = AdqrGetInvoicebyIRN(adqrRsltGenIRN.Irn);
+                            if (InvByIRN != null && InvByIRN.result != null )
+                            {
+                                adqrRsltGenIRN.SignedInvoice = InvByIRN.result.SignedInvoice;
+                                adqrRsltGenIRN.SignedQRCode = InvByIRN.result.SignedQRCode;
+                                adqrRsltGenIRN.EwbNo = InvByIRN.result.EwbNo;
+                                adqrRsltGenIRN.EwbDt = InvByIRN.result.EwbDt;
+                                adqrRsltGenIRN.EwbValidTill = InvByIRN.result.EwbValidTill;
+                            }
+                        }
                     }
+
                     adqrRespGENEWAYBILL.result = adqrRsltGenIRN;
                 }
                 catch
@@ -258,13 +271,13 @@ namespace Improvar
             AdqrRespExtractInvoice adqrRespExtractInvoice = JsonConvert.DeserializeObject<AdqrRespExtractInvoice>(jsonstr);
             return adqrRespExtractInvoice;
         }
-        public AdqrRespExtractInvoice AdqrGetInvoicebyIRN(string IRN)
+        public AdqrRespInvoiceByIRN AdqrGetInvoicebyIRN(string IRN)
         {//
             IPSAPICODE = "IRNDETAIL";
             url = "https://gsp.adaequare.com/test/enriched/ei/api/invoice/irn?irn=" + IRN + "";
             if (AppType == "LIVE") url = "https://gsp.adaequare.com/enriched/ei/api/invoice/irn?irn=" + IRN + "";
             var jsonstr = ConsumeAdqrAPI(url, "", AdaequareIRNHeader());
-            AdqrRespExtractInvoice adqrRespExtractInvoice = JsonConvert.DeserializeObject<AdqrRespExtractInvoice>(jsonstr);
+            AdqrRespInvoiceByIRN adqrRespExtractInvoice = JsonConvert.DeserializeObject<AdqrRespInvoiceByIRN>(jsonstr);
             return adqrRespExtractInvoice;
         }
         public AdqrRespIRNEWB AdqrGetEWBbyIRN(string IRN)
@@ -403,7 +416,6 @@ namespace Improvar
             try
             {
                 hdrString = url + System.Environment.NewLine;
-                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
                 using (HttpClient client = new HttpClient())
                 {
                     StringContent data = new StringContent(jsonStr, Encoding.UTF8, "application/json");
