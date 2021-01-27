@@ -333,6 +333,7 @@
     <Compile Include="EmailControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="IPAddress.cs" />
     <Compile Include="ListToDatatable.cs" />
     <Compile Include="Models\AdaequareIRN.cs" />
     <Compile Include="Models\APPL_MENU.cs" />
