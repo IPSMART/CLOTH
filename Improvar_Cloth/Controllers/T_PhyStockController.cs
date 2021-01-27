@@ -18,7 +18,7 @@ namespace Improvar.Controllers
         // GET: T_PhyStock
         Connection Cn = new Connection(); MasterHelp Master_Help = new MasterHelp(); MasterHelpFa MasterHelpFa = new MasterHelpFa(); SchemeCal Scheme_Cal = new SchemeCal(); Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
-        T_BILTY_HDR TBH; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR;
+        T_PHYSTK_HDR TBH; M_SYSCNFG TXNTRN; T_PHYSTK TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR;
         SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
       
@@ -33,7 +33,7 @@ namespace Improvar.Controllers
                 else
                 {
                     ViewBag.formname = "Physical Stock";
-                    TransactionBiltyGMutiaEntry VE = (parkID == "") ? new TransactionBiltyGMutiaEntry() : (Improvar.ViewModels.TransactionBiltyGMutiaEntry)Session[parkID];
+                    TransactionPhyStockEntry VE = (parkID == "") ? new TransactionPhyStockEntry() : (Improvar.ViewModels.TransactionPhyStockEntry)Session[parkID];
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
 
                     string LOC = CommVar.Loccd(UNQSNO);
@@ -42,18 +42,8 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
-                    //================= For Issue ================//
-                    List<DropDown_list1> ISSUE = new List<DropDown_list1>();
-                    DropDown_list1 ISSUE1 = new DropDown_list1();
-                    ISSUE1.text = "Issue";
-                    ISSUE1.value = "D";
-                    ISSUE.Add(ISSUE1);
-                    DropDown_list1 ISSUE2 = new DropDown_list1();
-                    ISSUE2.text = "Receive";
-                    ISSUE2.value = "C";
-                    ISSUE.Add(ISSUE2);
-                    VE.DropDown_list1 = ISSUE;
-                    // ================= For Issue ================//
+                    VE.DropDown_list_StkType = Master_Help.STK_TYPE();
+                  
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -77,9 +67,8 @@ namespace Improvar.Controllers
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
 
-                        VE.IndexKey = (from p in DB.T_BILTY_HDR
+                        VE.IndexKey = (from p in DB.T_PHYSTK_HDR
                                        join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
-                                       //join s in DB.T_PROGMAST on p.AUTONO equals (s.AUTONO)
                                        orderby q.DOCDT, q.DOCNO
                                        where XYZ.Contains(q.DOCCD) && q.LOCCD == LOC && q.COMPCD == COM && q.YR_CD == YR1
                                        select new IndexKey() { Navikey = p.AUTONO }).ToList();
@@ -125,7 +114,7 @@ namespace Improvar.Controllers
                                     VE = Navigation(VE, DB, Nindex, searchValue);
                                 }
                             }
-                            VE.T_BILTY_HDR = TBH;
+                            VE.T_PHYSTK_HDR = TBH;
                             VE.T_CNTRL_HDR = TCH;
                             VE.T_CNTRL_HDR_REM = SLR;
                             if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
@@ -150,8 +139,10 @@ namespace Improvar.Controllers
                                 INI INIF = new INI();
                                 INIF.DeleteKey(Session["UR_ID"].ToString(), parkID, Server.MapPath("~/Park.ini"));
                             }
-                            VE = (TransactionBiltyGMutiaEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+                            VE = (TransactionPhyStockEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
+                        var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
+                        VE.M_SYSCNFG = MSYSCNFG;
                     }
                     else
                     {
@@ -166,14 +157,14 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
-                TransactionBiltyGMutiaEntry VE = new TransactionBiltyGMutiaEntry();
+                TransactionPhyStockEntry VE = new TransactionPhyStockEntry();
                 VE.DefaultView = false;
                 VE.DefaultDay = 0;
                 ViewBag.ErrorMessage = ex.Message;
                 return View(VE);
             }
         }
-        public TransactionBiltyGMutiaEntry Navigation(TransactionBiltyGMutiaEntry VE, ImprovarDB DB, int index, string searchValue)
+        public TransactionPhyStockEntry Navigation(TransactionPhyStockEntry VE, ImprovarDB DB, int index, string searchValue)
         {
             ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
             ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
@@ -183,7 +174,7 @@ namespace Improvar.Controllers
             string DATABASEF = CommVar.FinSchema(UNQSNO);
             Cn.getQueryString(VE);
 
-            TBH = new T_BILTY_HDR(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM();
+            TBH = new T_PHYSTK_HDR(); TXNTRN = new M_SYSCNFG(); TXNOTH = new T_PHYSTK(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM();
             if (VE.IndexKey.Count != 0)
             {
                 string[] aa = null;
@@ -195,15 +186,15 @@ namespace Improvar.Controllers
                 {
                     aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                 }
-                TBH = DB.T_BILTY_HDR.Find(aa[0].Trim());
+                TBH = DB.T_PHYSTK_HDR.Find(aa[0].Trim());
                 TCH = DB.T_CNTRL_HDR.Find(TBH.AUTONO);
-                if (TBH.MUTSLCD.retStr() != "")
-                {
-                    string slcd = TBH.MUTSLCD;
-                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.REGMOBILE }).FirstOrDefault();
-                  //  VE.GONM = subleg.SLNM;
-                    VE.REGMOBILE = subleg.REGMOBILE.ToString();
-                }
+                //if (TBH.MUTSLCD.retStr() != "")
+                //{
+                //    string slcd = TBH.MUTSLCD;
+                //    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM, a.REGMOBILE }).FirstOrDefault();
+                //  //  VE.GONM = subleg.SLNM;
+                //    VE.REGMOBILE = subleg.REGMOBILE.ToString();
+                //}
 
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
@@ -214,31 +205,31 @@ namespace Improvar.Controllers
                 str += " where  a.autono='" + TBH.AUTONO + "' and a.blautono=b.autono(+)  ";
                 str += "order by a.slno ";
 
-                DataTable tbiltytbl = Master_Help.SQLquery(str);
-                VE.TBILTY = (from DataRow dr in tbiltytbl.Rows
-                             select new TBILTY()
-                             {
-                                 SLNO = Convert.ToInt16(dr["slno"]),
-                                 BLAUTONO = dr["blautono"].retStr(),
-                                 DRCR = dr["drcr"].retStr() == "" ? "" : dr["drcr"].retStr(),
-                                 LRDT = dr["lrdt"].retDateStr(),
-                                 LRNO = dr["lrno"].retStr(),
-                                 BALENO = dr["baleno"].retStr(),
-                                 PREFNO = dr["prefno"].retStr(),
-                                 PREFDT = dr["prefdt"].retDateStr(),
-                             }).OrderBy(s => s.SLNO).ToList();
-                foreach (var q in VE.TBILTY)
-                {
-                    VE.DRCR = q.DRCR;
+                DataTable TPHYSTKtbl = Master_Help.SQLquery(str);
+                //VE.TPHYSTK = (from DataRow dr in TPHYSTKtbl.Rows
+                //             select new TPHYSTK()
+                //             {
+                //                 SLNO = Convert.ToInt16(dr["slno"]),
+                //                 BLAUTONO = dr["blautono"].retStr(),
+                //                 DRCR = dr["drcr"].retStr() == "" ? "" : dr["drcr"].retStr(),
+                //                 LRDT = dr["lrdt"].retDateStr(),
+                //                 LRNO = dr["lrno"].retStr(),
+                //                 BALENO = dr["baleno"].retStr(),
+                //                 PREFNO = dr["prefno"].retStr(),
+                //                 PREFDT = dr["prefdt"].retDateStr(),
+                //             }).OrderBy(s => s.SLNO).ToList();
+                //foreach (var q in VE.TPHYSTK)
+                //{
+                //    VE.DRCR = q.DRCR;
 
-                }
+                //}
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
             if (TCH.CANCEL == "Y") VE.CancelRecord = true; else VE.CancelRecord = false;
             return VE;
         }
-        public ActionResult SearchPannelData(TransactionBiltyGMutiaEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
+        public ActionResult SearchPannelData(TransactionPhyStockEntry VE, string SRC_SLCD, string SRC_DOCNO, string SRC_FDT, string SRC_TDT)
         {
             string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), yrcd = CommVar.YearCode(UNQSNO);
             Cn.getQueryString(VE);
@@ -249,7 +240,7 @@ namespace Improvar.Controllers
             string sql = "";
 
             sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.mutslcd, c.slnm, c.district,c.regmobile ";
-            sql += "from " + scm + ".T_BILTY_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c  ";
+            sql += "from " + scm + ".T_PHYSTK_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c  ";
             sql += "where a.autono=b.autono and a.mutslcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
             if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
@@ -267,11 +258,47 @@ namespace Improvar.Controllers
             }
             return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
         }
-        public ActionResult GetSubLedgerDetails(string val, string code)
+        public ActionResult GetBarCodeDetails(string val, string Code)
         {
             try
             {
-                var str = Master_Help.SLCD_help(val, code);
+                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/HelpFrom
+                TransactionSaleEntry VE = new TransactionSaleEntry();
+                Cn.getQueryString(VE);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string barnoOrStyle = val.retStr();
+                string MTRLJOBCD = data[0].retSqlformat();
+                string PARTCD = data[1].retStr();
+                string DOCDT = data[2].retStr();
+                string TAXGRPCD = data[3].retStr();
+                string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
+                string PRCCD = data[5].retStr();
+                string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().retSqlformat();
+                bool exactbarno = data[7].retStr() == "Bar" ? true : false;
+                if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
+                string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
+                  
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetPartDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.PARTCD_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -287,92 +314,24 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetPendingData(TransactionBiltyGMutiaEntry VE, string DOCDT, string MUTSLCD)
+        public ActionResult GetMaterialJobDetails(string val)
         {
             try
             {
-                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT);
-                DataView dv = new DataView(GetPendig_Data);
-                string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM" };
-                GetPendig_Data = dv.ToTable(true, COL);
-                VE.TBILTY_POPUP = (from DataRow dr in GetPendig_Data.Rows
-                                   select new TBILTY_POPUP
-                                   {
-                                       BLAUTONO = dr["autono"].retStr(),
-                                       LRNO = dr["lrno"].retStr(),
-                                       LRDT = dr["lrdt"].retDateStr(),
-                                       BALENO = dr["baleno"].retStr(),
-                                       PREFNO = dr["prefno"].retStr(),
-                                       PREFDT = dr["prefdt"].retDateStr(),
-                                       TRANSLNM = dr["TRANSLNM"].retStr(),
-                                   }).Distinct().ToList();
-                for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
+                string str = Master_Help.MTRLJOBCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
                 {
-                    VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
+                    return PartialView("_Help2", str);
                 }
-                if (VE.TBILTY_POPUP.Count != 0)
+                else
                 {
-                    VE.DefaultView = true;
-                    return PartialView("_T_PhyStock_PopUp", VE);
-                }
-                else {
-                    VE.DefaultView = true;
-                    return Content("0");
+                    return Content(str);
                 }
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
-            }
-        }
-        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT)
-        {
-            Cn.getQueryString(VE);
-            try
-            {
-                string GC = Cn.GCS();
-                List<string> blautonos = new List<string>();
-                foreach (var i in VE.TBILTY_POPUP)
-                {
-                    if (i.Checked == true)
-                    {
-                        blautonos.Add(i.BLAUTONO);
-                    }
-                }
-                var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
-                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos);
-
-                VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
-                             select new TBILTY
-                             {
-                                 BLAUTONO = dr["autono"].retStr(),
-                                 BALENO = dr["baleno"].retStr(),
-                                 LRNO = dr["lrno"].retStr(),
-                                 LRDT = dr["lrdt"].retDateStr(),
-                                 PREFNO = dr["prefno"].retStr(),
-                                 PREFDT = dr["prefdt"].retDateStr(),
-                                 BALEYR = dr["baleyr"].retStr()
-                             }).Distinct().ToList();
-
-
-                for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                {
-                    VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
-                }
-
-                ModelState.Clear();
-                VE.DefaultView = true;
-                var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_PhyStock_Main", VE);
-                return Content(GRN_MAIN);
-            }
-            catch (Exception ex)
-            {
-                VE.DefaultView = false;
-                VE.DefaultDay = 0;
-                ViewBag.ErrorMessage = ex.Message + ex.InnerException;
-                Cn.SaveException(ex, "");
-                return View(VE);
             }
         }
         public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
@@ -387,26 +346,26 @@ namespace Improvar.Controllers
                 return stringWriter.GetStringBuilder().ToString();
             }
         }
-        public ActionResult DeleteRow(TransactionBiltyGMutiaEntry VE)
+        public ActionResult DeleteRow(TransactionPhyStockEntry VE)
         {
             try
             {
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                List<TBILTY> ITEMSIZE = new List<TBILTY>();
+                List<TPHYSTK> ITEMSIZE = new List<TPHYSTK>();
                 int count = 0;
-                for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                for (int i = 0; i <= VE.TPHYSTK.Count - 1; i++)
                 {
-                    if (VE.TBILTY[i].Checked == false)
+                    if (VE.TPHYSTK[i].Checked == false)
                     {
                         count += 1;
-                        TBILTY item = new TBILTY();
-                        item = VE.TBILTY[i];
+                        TPHYSTK item = new TPHYSTK();
+                        item = VE.TPHYSTK[i];
                         item.SLNO = count.retShort();
                         ITEMSIZE.Add(item);
                     }
 
                 }
-                VE.TBILTY = ITEMSIZE;
+                VE.TPHYSTK = ITEMSIZE;
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_PhyStock_Main", VE);
@@ -417,7 +376,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult AddDOCRow(TransactionBiltyGMutiaEntry VE)
+        public ActionResult AddDOCRow(TransactionPhyStockEntry VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             var doctP = (from i in DB1.MS_DOCCTG
@@ -453,7 +412,7 @@ namespace Improvar.Controllers
             return PartialView("_UPLOADDOCUMENTS", VE);
 
         }
-        public ActionResult DeleteDOCRow(TransactionBiltyGMutiaEntry VE)
+        public ActionResult DeleteDOCRow(TransactionPhyStockEntry VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             var doctP = (from i in DB1.MS_DOCCTG
@@ -481,7 +440,7 @@ namespace Improvar.Controllers
             return PartialView("_UPLOADDOCUMENTS", VE);
 
         }
-        public ActionResult cancelRecords(TransactionBiltyGMutiaEntry VE, string par1)
+        public ActionResult cancelRecords(TransactionPhyStockEntry VE, string par1)
         {
             try
             {
@@ -493,11 +452,11 @@ namespace Improvar.Controllers
                     T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                     if (par1 == "*#*")
                     {
-                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO));
+                        TCH = Cn.T_CONTROL_HDR(VE.T_PHYSTK_HDR.AUTONO, CommVar.CurSchema(UNQSNO));
                     }
                     else
                     {
-                        TCH = Cn.T_CONTROL_HDR(VE.T_BILTY_HDR.AUTONO, CommVar.CurSchema(UNQSNO), par1);
+                        TCH = Cn.T_CONTROL_HDR(VE.T_PHYSTK_HDR.AUTONO, CommVar.CurSchema(UNQSNO), par1);
                     }
                     DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
                     DB.SaveChanges();
@@ -511,7 +470,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ParkRecord(FormCollection FC, TransactionBiltyGMutiaEntry stream, string menuID, string menuIndex)
+        public ActionResult ParkRecord(FormCollection FC, TransactionPhyStockEntry stream, string menuID, string menuIndex)
         {
             try
             {
@@ -534,7 +493,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                string url = Master_Help.RetriveParkFromFile(value, Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString(), "Improvar.ViewModels.TransactionBiltyGMutiaEntry");
+                string url = Master_Help.RetriveParkFromFile(value, Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString(), "Improvar.ViewModels.TransactionPhyStockEntry");
                 return url;
             }
             catch (Exception ex)
@@ -542,7 +501,7 @@ namespace Improvar.Controllers
                 return ex.Message;
             }
         }
-        public ActionResult SAVE(FormCollection FC, TransactionBiltyGMutiaEntry VE)
+        public ActionResult SAVE(FormCollection FC, TransactionPhyStockEntry VE)
         {
             Cn.getQueryString(VE);
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
@@ -575,7 +534,7 @@ namespace Improvar.Controllers
                     string ContentFlg = "";
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
-                        T_BILTY_HDR TBHDR = new T_BILTY_HDR();
+                        T_PHYSTK_HDR TBHDR = new T_PHYSTK_HDR();
                         T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                         string DOCPATTERN = "";
                         TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
@@ -596,14 +555,14 @@ namespace Improvar.Controllers
                         {
                             DOCCD = VE.T_CNTRL_HDR.DOCCD;
                             DOCNO = VE.T_CNTRL_HDR.DOCONLYNO;
-                            TBHDR.AUTONO = VE.T_BILTY_HDR.AUTONO;
+                            TBHDR.AUTONO = VE.T_PHYSTK_HDR.AUTONO;
                             Month = VE.T_CNTRL_HDR.MNTHCD;
-                            var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_BILTY_HDR.AUTONO select p.EMD_NO).Max();
+                            var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == VE.T_PHYSTK_HDR.AUTONO select p.EMD_NO).Max();
                             if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToInt16(MAXEMDNO + 1); }
                         }
 
-                        TBHDR.MUTSLCD = VE.T_BILTY_HDR.MUTSLCD;
-                        TBHDR.TREM = VE.T_BILTY_HDR.TREM;
+                        //TBHDR.MUTSLCD = VE.T_PHYSTK_HDR.MUTSLCD;
+                        TBHDR.TREM = VE.T_PHYSTK_HDR.TREM;
 
                         if (VE.DefaultAction == "E")
                         {
@@ -624,29 +583,29 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null,null);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         int COUNTER = 0;
 
-                        for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                        for (int i = 0; i <= VE.TPHYSTK.Count - 1; i++)
                         {
-                            if (VE.TBILTY[i].SLNO != 0)
+                            if (VE.TPHYSTK[i].SLNO != 0)
                             {
                                 COUNTER = COUNTER + 1;
-                                T_BILTY TBILTY = new T_BILTY();
-                                TBILTY.CLCD = TBHDR.CLCD;
-                                TBILTY.AUTONO = TBHDR.AUTONO;
-                                TBILTY.SLNO = VE.TBILTY[i].SLNO;
-                                TBILTY.BLAUTONO = VE.TBILTY[i].BLAUTONO;
-                                TBILTY.DRCR = VE.DRCR;
-                                TBILTY.LRDT = Convert.ToDateTime(VE.TBILTY[i].LRDT);
-                                TBILTY.LRNO = VE.TBILTY[i].LRNO;
-                                TBILTY.BALEYR = VE.TBILTY[i].BALEYR;
-                                TBILTY.BALENO = VE.TBILTY[i].BALENO;
-                                dbsql = MasterHelpFa.RetModeltoSql(TBILTY);
+                                T_BILTY TPHYSTK = new T_BILTY();
+                                TPHYSTK.CLCD = TBHDR.CLCD;
+                                TPHYSTK.AUTONO = TBHDR.AUTONO;
+                                TPHYSTK.SLNO = VE.TPHYSTK[i].SLNO;
+                                //TPHYSTK.BLAUTONO = VE.TPHYSTK[i].BLAUTONO;
+                                TPHYSTK.DRCR = VE.DRCR;
+                                //TPHYSTK.LRDT = Convert.ToDateTime(VE.TPHYSTK[i].LRDT);
+                                //TPHYSTK.LRNO = VE.TPHYSTK[i].LRNO;
+                                TPHYSTK.BALEYR = VE.TPHYSTK[i].BALEYR;
+                                TPHYSTK.BALENO = VE.TPHYSTK[i].BALENO;
+                                dbsql = MasterHelpFa.RetModeltoSql(TPHYSTK);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                             }
@@ -698,21 +657,21 @@ namespace Improvar.Controllers
                     }
                     else if (VE.DefaultAction == "V")
                     {
-                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc_dtl", VE.T_BILTY_HDR.AUTONO, "D");
+                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc_dtl", VE.T_PHYSTK_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc", VE.T_BILTY_HDR.AUTONO, "D");
+                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc", VE.T_PHYSTK_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_rem", VE.T_BILTY_HDR.AUTONO, "D");
+                        dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_rem", VE.T_PHYSTK_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
-                        dbsql = MasterHelpFa.TblUpdt("t_bilty", VE.T_BILTY_HDR.AUTONO, "D");
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                        dbsql = MasterHelpFa.TblUpdt("T_BILTY_HDR", VE.T_BILTY_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
+                        dbsql = MasterHelpFa.TblUpdt("t_bilty", VE.T_PHYSTK_HDR.AUTONO, "D");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        dbsql = MasterHelpFa.TblUpdt("T_PHYSTK_HDR", VE.T_PHYSTK_HDR.AUTONO, "D");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_BILTY_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
+
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_PHYSTK_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
 
@@ -763,5 +722,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
+
     }
 }
