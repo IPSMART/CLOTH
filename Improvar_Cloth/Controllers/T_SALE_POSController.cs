@@ -287,7 +287,7 @@ namespace Improvar.Controllers
                             }
                             if (VE.TTXNPYMT == null || VE.TTXNPYMT.Count == 0)
                             {
-                                var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD }).ToList();
+                                var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD }).OrderBy(a=>a.PYMTCD).ToList();
                                 //var pymtcd = DB.M_PAYMENT.Select(b => b.PYMTCD).Max();
                                 if (MPAYMENT.Count > 0)
                                 {
@@ -2968,7 +2968,7 @@ namespace Improvar.Controllers
                                             dbamt, prodrem, parglcd, TTXN.SLCD, RAMTGLCD[i].QTY.retDbl(), 0, 0);
                                     OraCmd.CommandText = dbsql;
                                     OraCmd.ExecuteNonQuery();
-                                    if (cr == "D") dbDrAmt = dbDrAmt + dbamt;
+                                    if (dr == "D") dbDrAmt = dbDrAmt + dbamt;
                                     else dbCrAmt = dbCrAmt + dbamt;
                                     dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1001, Convert.ToSByte(isl), sslcd,
                                             RAMTGLCD[i].CLASS1CD, "", RAMTGLCD[i].TXBLVAL.retDbl(), 0, strrem);

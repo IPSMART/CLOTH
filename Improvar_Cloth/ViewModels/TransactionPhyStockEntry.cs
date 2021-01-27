@@ -50,6 +50,6 @@ namespace Improvar.ViewModels
         public string ALLMTRLJOBCD { get; set; }
         public double B_T_NOS { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
-        public double B_T_QNTY { get; set; }
+        public double B_T_QNTY { get; set; } 
     }
 }
