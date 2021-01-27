@@ -52,7 +52,7 @@ namespace Improvar.Models
 
         [StringLength(100)]
         public string ITREM { get; set; }
-        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? RATE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GROSSAMT { get; set; }
@@ -76,7 +76,7 @@ namespace Improvar.Models
         [StringLength(30)]
         public string ORDAUTONO { get; set; }
 
-        public string  ORDSLNO { get; set; }
+        public short? ORDSLNO { get; set; }
 
         public double? DIA { get; set; }
 
