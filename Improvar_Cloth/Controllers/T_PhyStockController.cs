@@ -43,7 +43,31 @@ namespace Improvar.Controllers
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                     VE.DropDown_list_StkType = Master_Help.STK_TYPE();
-                  
+                    VE.DropDown_list_MTRLJOBCD = Master_Help.MTRLJOBCD_List();
+                    if (VE.DropDown_list_MTRLJOBCD.Count() == 1)
+                    {
+                        VE.DropDown_list_MTRLJOBCD[0].Checked = true;
+                    }
+                    else
+                    {
+                        foreach (var v in VE.DropDown_list_MTRLJOBCD)
+                        {
+                            if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP")
+                            {
+                                if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == "PL" || v.MTRLJOBCD == "DY")
+                                {
+                                    v.Checked = true;
+                                }
+                            }
+                            else
+                            {
+                                if (v.MTRLJOBCD == "FS")
+                                {
+                                    v.Checked = true;
+                                }
+                            }
+                        }
+                    }
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -123,6 +147,7 @@ namespace Improvar.Controllers
                         {
                             if (parkID == "")
                             {
+                                VE.PRCCD = "WP";
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                                 TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 VE.T_CNTRL_HDR = TCH;
