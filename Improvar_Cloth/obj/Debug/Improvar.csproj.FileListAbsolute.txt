@@ -139,8 +139,6 @@ E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\roslyn\System.IO.FileSystem.Prim
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\roslyn\vbc.exe.config
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\roslyn\vbc.rsp
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Antlr3.Runtime.dll
-E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Bytescout.BarCode.dll
-E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Bytescout.BarCode.WPF.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\ClosedXML.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\DocumentFormat.OpenXml.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\EntityFramework.dll
@@ -175,8 +173,6 @@ E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\WebActivatorEx.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\WebGrease.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\stdole.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Antlr3.Runtime.pdb
-E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Bytescout.BarCode.xml
-E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Bytescout.BarCode.WPF.xml
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\ClosedXML.pdb
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\ClosedXML.xml
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\DocumentFormat.OpenXml.xml
@@ -212,3 +208,14 @@ E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.dll
 E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.pdb
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\obj\Debug\Improvar.csprojResolveAssemblyReference.cache
 D:\Project\Project_MVC_Cloth\Improvar_Cloth\bin\BarcodeLib.dll
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\BarcodeLib.dll
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\BouncyCastle.Crypto.dll
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.dll
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.dll
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\itextsharp.dll
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\QRCoder.dll
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.pdb
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.xml
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.pdb
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\Common.Logging.Core.xml
+E:\ASP.NET\Project_MVC_Cloth\Improvar_Cloth\bin\itextsharp.xml
