@@ -93,9 +93,9 @@ namespace Improvar.Controllers
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 fdt = VE.FDT.retDateStr(); tdt = VE.TDT.retDateStr();
 
-                string RateQntyBAg = "B";
-                if (FC["RATEQNTYBAG"].ToString() == "BAGS") RateQntyBAg = "B";
-                else RateQntyBAg = "Q";
+                string RateQntyBAg = "Q";
+                //if (FC["RATEQNTYBAG"].ToString() == "BAGS") RateQntyBAg = "B";
+                //else RateQntyBAg = "Q";
                 string txntag = ""; string txnrettag = "", selloccd = "" ;
                 string reptype = FC["Reptype"].ToString();
                 string repon = FC["PartyItem"].ToString();
