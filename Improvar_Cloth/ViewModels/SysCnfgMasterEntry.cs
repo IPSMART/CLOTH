@@ -28,7 +28,8 @@ namespace Improvar.ViewModels
         public bool MNTNPART { get; set; }
         public bool MNTNFLAGMTR { get; set; }
         public bool MNTNLISTPRCE { get; set; }
-        
+        public bool MNTNSHADE { get; set; }
+
 
     }
 }
