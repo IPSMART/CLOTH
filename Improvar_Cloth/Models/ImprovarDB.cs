@@ -15,6 +15,8 @@ namespace Improvar.Models
         {
             Database.SetInitializer<ImprovarDB>(null);
         }
+        
+        public virtual DbSet<T_PHYSTK_HDR> T_PHYSTK_HDR { get; set; }
         public virtual DbSet<T_STCHALT_DTL_COMP> T_STCHALT_DTL_COMP { get; set; }
         public virtual DbSet<T_STCHALT_DTL> T_STCHALT_DTL { get; set; }
         public virtual DbSet<T_STCHALT> T_STCHALT { get; set; }

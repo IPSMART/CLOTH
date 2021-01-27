@@ -541,6 +541,7 @@
     <Compile Include="Models\TBILTY_POPUP.cs" />
     <Compile Include="Models\TCNTRLAUTH.cs" />
     <Compile Include="Models\TextBoxDropDown.cs" />
+    <Compile Include="Models\TPHYSTK.cs" />
     <Compile Include="Models\TPROGBOM.cs" />
     <Compile Include="Models\TPROGDTL.cs" />
     <Compile Include="Models\TPSLIPDTL.cs" />
@@ -1262,6 +1263,7 @@
     <Content Include="Views\Rep_Bale_Stock\Rep_Bale_Stock.cshtml" />
     <Content Include="Views\Shared\_T_SALE_RateHistoryGrid.cshtml" />
     <Content Include="Views\T_PhyStock\T_PhyStock.cshtml" />
+    <Content Include="Views\Shared\_T_PhyStock_BarTab.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
