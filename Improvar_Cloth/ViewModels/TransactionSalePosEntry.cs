@@ -264,9 +264,11 @@ namespace Improvar.ViewModels
         public string BARNO { get; set; }
         public string R_DOCNO { get; set; }
         public string EFFDT { get; set; }
-        
 
-
+        public List<DISC_TYPE> DISC_TYPE { get; set; }
+        public List<PCSection> PCSActionList { get; set; }
+        public List<DropDown_list2> TDDISC_TYPE { get; set; }
+        public List<DropDown_list3> SCMDISC_TYPE { get; set; }
 
     }
 }

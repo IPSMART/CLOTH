@@ -31,7 +31,7 @@ namespace Improvar.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public short SLNO { get; set; }
 
-        [StringLength(6)]
+        [StringLength(8)]
         public string RTDEBCD { get; set; }
     }
 }

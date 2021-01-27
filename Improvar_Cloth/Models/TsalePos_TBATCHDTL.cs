@@ -134,7 +134,7 @@ namespace Improvar.Models
         public string UOM { get; set; }
         [StringLength(1)]
         public string STKTYPE { get; set; }
-        public List<PCSection> PCSActionList { get; set; }
+       
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? GSTPER { get; set; }
         [StringLength(15)]
@@ -177,9 +177,8 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? INCLRATE { get; set; }
         public string PCSACTION { get; set; }
-       public List<DISC_TYPE> DISC_TYPE { get; set; }
-        public List<DropDown_list2> TDDISC_TYPE { get; set; }
-        public List<DropDown_list3> SCMDISC_TYPE { get; set; }
+      
+       
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? DISCAMT { get; set; }
 

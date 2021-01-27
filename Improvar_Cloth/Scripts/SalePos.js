@@ -1,4 +1,4 @@
-﻿function GetBarnoDetails(barhlpId, HelpFrom) {
+﻿function GetBarnoDetails(barhlpId, HelpFrom,TabFrom) {
     debugger;
     var ID = $("#" + barhlpId).val();
     var DefaultAction = $("#DefaultAction").val();
@@ -58,7 +58,7 @@
             ReferanceFieldID = "/R_BARCODE";
             ReferanceFieldIndex = "/0";
         }
-        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE;
+        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE + String.fromCharCode(181) + TabFrom;
 
         $.ajax({
             type: 'POST',
