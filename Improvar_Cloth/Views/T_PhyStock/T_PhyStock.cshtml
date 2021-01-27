@@ -343,6 +343,8 @@
         @*@Html.HiddenFor(a => a.T_CNTRL_HDR.DOCONLYNO)*@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.TAXGRPCD, new { id = "TAXGRPCD" })
+        
         <input type="hidden" id="Defaultbar" value="Bar" />
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
@@ -473,13 +475,9 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="editor-field">
-                                    @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/BARCODE')", onblur = "GetBarnoDetails(this.value,Defaultbar.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action(" GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO =0/PARTCD =PARTCD =8/STYLENO =STYLENO =3','MTRLJOBCD/PARTCD/DOCDT/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/BARCODE')" />*@
-
+                                  
                                     @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "T_BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','T_BARCODE','T_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/T_BARCODE')", onblur = "GetBarnoDetails('T_BARCODE',Defaultbar.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','M_BARCODE','T_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE')" />
-
-
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','T_BARCODE','T_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/T_BARCODE')" />
 
                                     @if (Model.M_SYSCNFG.MNTNSHADE != "Y")
                                     {
