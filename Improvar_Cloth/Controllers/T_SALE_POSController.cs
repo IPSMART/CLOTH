@@ -2470,7 +2470,7 @@ namespace Improvar.Controllers
                                 dbsql = masterHelp.RetModeltoSql(R_TTXNDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                                dbqty = dbqty - VE.TsalePos_TBATCHDTL[i].QNTY.retDbl();
+                                dbqty = dbqty - VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl();
                                 igst = igst - VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT.retDbl();
                                 cgst = cgst - VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT.retDbl();
                                 sgst = sgst - VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT.retDbl();
@@ -3340,16 +3340,32 @@ namespace Improvar.Controllers
                                     else
                                     {
                                         string HSNforAmount = "";
-                                        HSNforAmount = (from a in VE.TsalePos_TBATCHDTL
-                                                        group a by new
-                                                        {
-                                                            HSNSACCD = a.HSNCODE
-                                                        } into X
-                                                        select new
-                                                        {
-                                                            HSNSACCD = X.Key.HSNSACCD,
-                                                            AMOUNT = X.Sum(Z => Z.GROSSAMT).retDbl(),
-                                                        }).OrderByDescending(a => a.AMOUNT).FirstOrDefault()?.HSNSACCD;
+                                        if(VE.MENU_PARA == "SBCM")
+                                        {
+                                            HSNforAmount = (from a in VE.TsalePos_TBATCHDTL
+                                                            group a by new
+                                                            {
+                                                                HSNSACCD = a.HSNCODE
+                                                            } into X
+                                                            select new
+                                                            {
+                                                                HSNSACCD = X.Key.HSNSACCD,
+                                                                AMOUNT = X.Sum(Z => Z.GROSSAMT).retDbl(),
+                                                            }).OrderByDescending(a => a.AMOUNT).FirstOrDefault()?.HSNSACCD;
+                                        }
+                                        else
+                                        {
+                                            HSNforAmount = (from a in VE.TsalePos_TBATCHDTL_RETURN
+                                                            group a by new
+                                                            {
+                                                                HSNSACCD = a.HSNCODE
+                                                            } into X
+                                                            select new
+                                                            {
+                                                                HSNSACCD = X.Key.HSNSACCD,
+                                                                AMOUNT = X.Sum(Z => Z.GROSSAMT).retDbl(),
+                                                            }).OrderByDescending(a => a.AMOUNT).FirstOrDefault()?.HSNSACCD;
+                                        }
                                         VE.TTXNAMT[i].HSNCODE = HSNforAmount;
                                     }
 
@@ -3385,10 +3401,11 @@ namespace Improvar.Controllers
                                     TVCHGST1.DRCR = cr;
                                     TVCHGST1.QNTY = 0;
                                     TVCHGST1.UOM = "OTH";
-                                    TVCHGST1.AGSTDOCNO = VE.TsalePos_TBATCHDTL[0].AGDOCNO;
-                                    if (VE.TsalePos_TBATCHDTL[0].AGDOCDT.retStr() != "")
+                                    TVCHGST1.AGSTDOCNO = VE.MENU_PARA == "SBCM"? VE.TsalePos_TBATCHDTL[0].AGDOCNO: VE.TsalePos_TBATCHDTL_RETURN[0].AGDOCNO;
+                                    string AGDOCDT= VE.MENU_PARA == "SBCM" ? VE.TsalePos_TBATCHDTL[0].AGDOCDT : VE.TsalePos_TBATCHDTL_RETURN[0].AGDOCDT;
+                                    if (AGDOCDT.retStr() != "")
                                     {
-                                        TVCHGST1.AGSTDOCDT = Convert.ToDateTime(VE.TsalePos_TBATCHDTL[0].AGDOCDT);
+                                        TVCHGST1.AGSTDOCDT = Convert.ToDateTime(AGDOCDT);
                                     }
                                     TVCHGST1.SALPUR = salpur;
                                     TVCHGST1.INVTYPECD = VE.T_VCH_GST.INVTYPECD == null ? "01" : VE.T_VCH_GST.INVTYPECD;

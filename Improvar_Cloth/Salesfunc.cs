@@ -923,7 +923,7 @@ namespace Improvar
             sql += "select gocd, mtrljobcd, stktype, barno, itcd, partcd, colrcd, sizecd, shade, cutlength, dia, ";
             sql += "sum(balqnty) balqnty, sum(balnos) balnos from ";
             sql += "( ";
-            sql += "select a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, ";
+            sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, ";
             sql += "sum(case a.stkdrcr when 'D' then a.qnty when 'C' then a.qnty*-1 end) balqnty, ";
             sql += "sum(case a.stkdrcr when 'D' then a.nos when 'C' then a.nos*-1 end) balnos ";
             sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
@@ -935,7 +935,7 @@ namespace Improvar
             if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
             if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
             sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-            sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
+            sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             if (showallitems == true)
             {
                 string godown = "''";
@@ -956,7 +956,7 @@ namespace Improvar
             if (pendpslipconsider == true)
             {
                 sql += "union all ";
-                sql += "select a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, ";
+                sql += "select a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia, ";
                 sql += "sum(a.qnty*-1) balqnty, sum(a.nos*-1) balnos ";
                 sql += "from " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c, ";
                 sql += "" + scm + ".m_doctype d, " + scm + ".t_txn_linkno e ";
@@ -969,7 +969,7 @@ namespace Improvar
                 if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
                 if (mtrljobcd.retStr() != "") sql += "a.mtrljobcd in (" + mtrljobcd + ") and ";
                 sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-                sql += "group by a.gocd, a.mtrljobcd, b.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
+                sql += "group by a.gocd, a.mtrljobcd, a.stktype, a.barno, b.itcd, a.partcd, b.colrcd, b.sizecd, b.shade, b.cutlength, b.dia ";
             }
             sql += ") ";
             if (shownilstock == false) sql += "where nvl(balqnty,0) <> 0 ";
