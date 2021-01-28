@@ -64,12 +64,13 @@
                                             @Html.TextBoxFor(model => Model.TTXNPYMT[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => model.TTXNPYMT[i].PYMTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PYMTCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "P_PYMTNM_" + i + "=PYMTNM=0/" + "P_GLCD_" + i + "=GLCD')", onblur = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "P_PYMTNM_" + i + "=PYMTNM=0 /" + "P_GLCD_" + i + "=GLCD');", @placeholder = "Code", maxlength = 6 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPaymentDetails", "T_SALE_POS")','Payment Details','PYMTCD_@i','PYMTCD_@i=PYMTCD=1/P_PYMTNM_@i=PYMTNM=0/P_GLCD_@i=GLCD')" />
+                                            @Html.EditorFor(model => model.TTXNPYMT[i].PYMTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PYMTCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "P_PYMTNM_" + i + "=PYMTNM=0/" + "P_GLCD_" + i + "=GLCD/" + "P_PYMTTYPE_" + i + "=PYMTTYPE')", onblur = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "P_PYMTNM_" + i + "=PYMTNM=0 /" + "P_GLCD_" + i + "=GLCD/" + "P_PYMTTYPE_" + i + "=PYMTTYPE');", @placeholder = "Code", maxlength = 6 } })
+                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPaymentDetails", "T_SALE_POS")','Payment Details','PYMTCD_@i','PYMTCD_@i=PYMTCD=1/P_PYMTNM_@i=PYMTNM=0/P_GLCD_@i=GLCD/P_PYMTTYPE_@i=PYMTTYPE')" />
 
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNPYMT[i].PYMTNM, new { id = "P_PYMTNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => model.TTXNPYMT[i].PYMTTYPE, new { id = "P_PYMTTYPE_" + i })
                                         </td>
 
                                         <td class="">

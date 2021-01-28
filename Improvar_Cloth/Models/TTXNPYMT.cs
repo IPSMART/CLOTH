@@ -19,5 +19,7 @@ namespace Improvar.Models
         public string INSTDT { get; set; }
         public string PYMTREM { get; set; }
         public string GLCD { get; set; }
+        [StringLength(1)]
+        public string PYMTTYPE { get; set; }
     }
 }

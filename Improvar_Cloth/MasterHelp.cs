@@ -2573,7 +2573,7 @@ namespace Improvar
             string valsrch = val.ToUpper().Trim();
 
             sql = "";
-            sql += "select a.PYMTCD,a.PYMTNM,a.GLCD ";
+            sql += "select a.PYMTCD,a.PYMTNM,a.GLCD,a.PYMTTYPE ";
             sql += "from " + scm + ".M_PAYMENT a, " + scm + ".M_CNTRL_HDR b ";
             sql += "where a.M_AUTONO=b.M_AUTONO(+) and b.INACTIVE_TAG = 'N' ";
             if (valsrch.retStr() != "") sql += "and ( upper(a.PYMTCD) = '" + valsrch + "' ) ";

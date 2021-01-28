@@ -291,7 +291,7 @@ namespace Improvar.Controllers
                             }
                             if (VE.TTXNPYMT == null || VE.TTXNPYMT.Count == 0)
                             {
-                                var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD }).OrderBy(a => a.PYMTCD).ToList();
+                                var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD, PYMTTYPE = i.PYMTTYPE }).OrderBy(a => a.PYMTCD).ToList();
                                 //var pymtcd = DB.M_PAYMENT.Select(b => b.PYMTCD).Max();
                                 if (MPAYMENT.Count > 0)
                                 {
@@ -299,7 +299,7 @@ namespace Improvar.Controllers
 
                                     //if (MPAYMENT.Count > 0)
                                     //{
-                                    VE.TTXNPYMT = (from i in MPAYMENT select new TTXNPYMT { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD }).ToList();
+                                    VE.TTXNPYMT = (from i in MPAYMENT select new TTXNPYMT { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD, PYMTTYPE = i.PYMTTYPE }).ToList();
                                     //}
                                     //else if (TTXNPAYMT.Count > 0)
                                     //{ VE.TTXNPYMT = (from i in TTXNPAYMT select new TTXNPYMT { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD, INSTNO = i.INSTNO, PYMTREM = i.PYMTREM, CARDNO = i.CARDNO, AMT = i.AMT, INSTDT = i.INSTDT.retDateStr() }).ToList(); }
@@ -903,8 +903,8 @@ namespace Improvar.Controllers
                 VE.T_ITAMT = S_T_GROSS_AMT.retDbl();
                 VE.T_BLAMT = T_BILL_AMT.retDbl();
 
-                string str2 = "select a.SLNO,a.PYMTCD,c.PYMTNM,a.AMT,a.CARDNO,a.INSTNO,a.INSTDT,a.PYMTREM,a.GLCD from " + Scm + ".t_txnpymt a," + Scm + ".t_txnpymt_hdr b," + Scm + ".m_payment c ";
-                str2 += "where a.autono=b.autono and  a.PYMTCD=c.PYMTCD and a.autono='" + VE.T_TXN.AUTONO + "'";
+                string str2 = "select a.SLNO,a.PYMTCD,c.PYMTNM,a.AMT,a.CARDNO,a.INSTNO,a.INSTDT,a.PYMTREM,a.GLCD,c.PYMTTYPE from " + Scm + ".t_txnpymt a," + Scm + ".t_txnpymt_hdr b," + Scm + ".m_payment c ";
+                str2 += "where a.autono=b.autono and  a.PYMTCD=c.PYMTCD and a.autono='" + VE.T_TXN.AUTONO + "' order by a.PYMTCD ";
                 var PYMT_DATA = masterHelp.SQLquery(str2);
                 VE.TTXNPYMT = (from DataRow dr in PYMT_DATA.Rows
                                select new TTXNPYMT()
@@ -918,6 +918,7 @@ namespace Improvar.Controllers
                                    INSTDT = dr["INSTDT"].retDateStr(),
                                    PYMTREM = dr["PYMTREM"].retStr(),
                                    GLCD = dr["GLCD"].retStr(),
+                                   PYMTTYPE = dr["PYMTTYPE"].retStr(),
                                }).ToList();
                 double T_PYMT_AMT = 0;
 
