@@ -2760,6 +2760,7 @@ namespace Improvar.Controllers
                                                              //TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
                                 TBATCHDTL.RECPROGAUTONO = TTXN.AUTONO;
                                 TBATCHDTL.RECPROGSLNO = VE.TBATCHDTL[i].RECPROGSLNO;
+                                TBATCHDTL.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

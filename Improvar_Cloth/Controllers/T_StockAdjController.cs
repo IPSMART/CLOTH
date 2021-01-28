@@ -935,6 +935,7 @@ namespace Improvar.Controllers
                                         TBATCHDTL.PARTCD = VE.TBATCHDTL[i].COLRCD;
                                         TBATCHDTL.PARTCD = VE.TBATCHDTL[i].PARTCD;
                                         TBATCHDTL.QNTY = VE.TBATCHDTL[i].QNTY;
+                                        TBATCHDTL.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                         IN_TOTAL_QNTY = IN_TOTAL_QNTY + VE.TBATCHDTL[i].QNTY.retDbl();
 
                                         dbsql = Master_Help.RetModeltoSql(TBATCHDTL);
@@ -1141,6 +1142,7 @@ namespace Improvar.Controllers
                                         TBATCHDTL_OUT.PARTCD = VE.TBATCHDTL_OUT[i].COLRCD;
                                         TBATCHDTL_OUT.PARTCD = VE.TBATCHDTL_OUT[i].PARTCD;
                                         TBATCHDTL_OUT.QNTY = VE.TBATCHDTL_OUT[i].QNTY;
+                                        TBATCHDTL_OUT.STKTYPE = VE.TBATCHDTL_OUT[i].STKTYPE;
                                         OUT_TOTAL_QNTY = OUT_TOTAL_QNTY + VE.TBATCHDTL_OUT[i].QNTY.retDbl();
 
                                         dbsql = Master_Help.RetModeltoSql(TBATCHDTL_OUT);

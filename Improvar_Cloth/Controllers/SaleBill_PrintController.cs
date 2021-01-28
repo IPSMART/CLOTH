@@ -46,6 +46,7 @@ namespace Improvar.Controllers
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     //string reptype = "SALEBILL";
                     string reptype = "SALEBILL";
+                    if (VE.MENU_PARA == "SBCM" || VE.MENU_PARA == "SBCMR") reptype = "CASHMEMO";
                     if (VE.maxdate == "CHALLAN") reptype = "CHALLAN";
                     DataTable repformat = Salesfunc.getRepFormat(reptype);
 
@@ -1389,7 +1390,7 @@ namespace Improvar.Controllers
                 string sql = "";
                 string sqlc = "";
                 sqlc += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and c.yr_cd='" + yr_cd + "' and ";
-                if (fdocno != "") sqlc += "c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and ";
+                if (fdocno != "") sqlc += "c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
                 if (fdate != "") sqlc += "c.docdt >= to_date('" + fdate + "','dd/mm/yyyy') and ";
                 if (tdate != "") sqlc += "c.docdt <= to_date('" + tdate + "','dd/mm/yyyy') and ";
                 if (slcd != null) sqlc += "b.slcd='" + slcd + "' and ";
@@ -1508,7 +1509,7 @@ namespace Improvar.Controllers
                 sql += " from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono and a.itcd = d.itcd and a.autono = n.autono(+) and a.slno = n.txnslno(+) and n.barno = o.barno(+)  and";
                 sql += " c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and  ";
+                if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and  ";
                 if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
                 if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
                 sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)  ";
@@ -1522,7 +1523,7 @@ namespace Improvar.Controllers
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,c.usr_id  ";
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono  and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= '" + fdocno + "' and c.doconlyno <= '" + tdocno + "' and ";
+                if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
                 if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
                 if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
                 sql += "c.doccd = '" + doccd + "'  ";
@@ -1977,8 +1978,11 @@ namespace Improvar.Controllers
                                                select a.UOM).FirstOrDefault();
                                     double DECIMAL = 0; string umnm = "";
                                     var uomdata = DBF.M_UOM.Find(uom);
-                                    DECIMAL = Convert.ToDouble(uomdata.DECIMALS);
-                                    umnm = uomdata.UOMNM;
+                                    if (uomdata != null)
+                                    {
+                                        DECIMAL = Convert.ToDouble(uomdata.DECIMALS);
+                                        umnm = uomdata.UOMNM;
+                                    }
                                     if (k.TIGSTAMT > 0) flagi = true;
                                     if (k.TCGSTAMT > 0) flagc = true;
 

@@ -3186,6 +3186,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.LISTPRICE = VE.TBATCHDTL[i].LISTPRICE;
                                 TBATCHDTL.LISTDISCPER = VE.TBATCHDTL[i].LISTDISCPER;
                                 TBATCHDTL.CUTLENGTH = VE.TBATCHDTL[i].CUTLENGTH;
+                                TBATCHDTL.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
