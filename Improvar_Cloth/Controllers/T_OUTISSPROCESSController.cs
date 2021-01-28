@@ -285,7 +285,6 @@ namespace Improvar.Controllers
                 VE.PRCNM = TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
 
                 VE.TRANSLNM = TXNTRN.TRANSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.TRANSLCD).Select(b => b.SLNM).FirstOrDefault();
-                VE.CRSLNM = TXNTRN.CRSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.CRSLCD).Select(b => b.SLNM).FirstOrDefault();
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 string Scm = CommVar.CurSchema(UNQSNO); double TOTAL_NOS = 0; double TOTAL_QNTY = 0; double TOTAL_BOMQNTY = 0; double TOTAL_EXTRAQNTY = 0; double TOTAL_QQNTY = 0;
@@ -421,13 +420,13 @@ namespace Improvar.Controllers
 
                 #region batch and detail data
                 string str1 = "";
-                str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO, ";
+                str1 += "select i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO, ";
                 str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,i.itrem,i.RECPROGSLNO ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q ";
                 str1 += "where i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
-                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+) ";
+                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) ";
                 str1 += "and i.AUTONO = '" + TXN.AUTONO + "' ";
                 str1 += "order by i.SLNO ";
                 DataTable tbl = masterHelp.SQLquery(str1);
@@ -2349,7 +2348,7 @@ namespace Improvar.Controllers
                                 TBATCHMST.AUTONO = TTXN.AUTONO;
                                 TBATCHMST.SLCD = TTXN.SLCD;
                                 TBATCHMST.MTRLJOBCD = VE.TPROGDTL[i].MTRLJOBCD;
-                                TBATCHMST.STKTYPE = stktype;
+                                //TBATCHMST.STKTYPE = stktype;
                                 TBATCHMST.JOBCD = TTXN.JOBCD;
                                 TBATCHMST.BARNO = barno;
                                 TBATCHMST.ITCD = VE.TPROGDTL[i].ITCD;
@@ -2689,7 +2688,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.AUTONO = TTXN.AUTONO;
                                     TBATCHMST.SLCD = TTXN.SLCD;
                                     TBATCHMST.MTRLJOBCD = VE.TBATCHDTL[i].MTRLJOBCD;
-                                    TBATCHMST.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
+                                    //TBATCHMST.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                     TBATCHMST.JOBCD = TTXN.JOBCD;
                                     TBATCHMST.BARNO = barno;
                                     TBATCHMST.ITCD = VE.TBATCHDTL[i].ITCD;
@@ -2761,6 +2760,7 @@ namespace Improvar.Controllers
                                                              //TBATCHDTL.BALENO = VE.TBATCHDTL[i].BALENO;
                                 TBATCHDTL.RECPROGAUTONO = TTXN.AUTONO;
                                 TBATCHDTL.RECPROGSLNO = VE.TBATCHDTL[i].RECPROGSLNO;
+                                TBATCHDTL.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 

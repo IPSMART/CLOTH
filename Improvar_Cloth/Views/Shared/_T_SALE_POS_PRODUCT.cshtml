@@ -42,7 +42,10 @@
                                 {
                                     <th class="" style="width: 50px;">Size</th>
                                 }
+@if (Model.M_SYSCNFG.MNTNSHADE == "Y")
+{
                                 <th class="" style="">Shade</th>
+}
                                 <th class="" style="width:50px;text-align:right;">Stock</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
@@ -146,9 +149,16 @@
                                                 @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].SZBARCODE, new { id = "B_SZBARCODE_" + i })
                                             </td>
                                         }
+@if (Model.M_SYSCNFG.MNTNSHADE == "Y")
+{
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
+}
+else
+{
+    @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i })
+}
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].BALSTOCK, new { htmlAttributes = new { id = "B_BALSTOCK_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" } })
                                             @Html.HiddenFor(model => model.TsalePos_TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
@@ -268,7 +278,10 @@
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
+@if (Model.M_SYSCNFG.MNTNSHADE == "Y")
+{
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+}
                                 <td style="text-align:right;">
                                     <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
                                 </td>
