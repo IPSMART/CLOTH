@@ -1278,7 +1278,7 @@ namespace Improvar.Controllers
                                         //xTBATCHMST.DOCCD = xTCHOLD.DOCCD;
                                         //xTBATCHMST.DOCDT = xTCHOLD.DOCDT;
                                         //xTBATCHMST.DOCNO = xTCHOLD.DOCONLYNO;
-                                        xTBATCHMST.STKTYPE = tbl.Rows[i]["stktype"].ToString();
+                                        //xTBATCHMST.STKTYPE = tbl.Rows[i]["stktype"].ToString();
                                         xTBATCHMST.ITCD = itcd;
                                         xTBATCHMST.PARTCD = tbl.Rows[i]["partcd"].ToString();
                                         xTBATCHMST.SIZECD = tbl.Rows[i]["sizecd"].ToString();

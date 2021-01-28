@@ -77,12 +77,11 @@
                                             @Html.TextBoxFor(model => Model.TTXNPYMT[i].AMT, "{0:0.00}", new { id = "P_AMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", onblur = "CalculateTotal();", maxlength = 15 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].INSTNO, new { id = "P_INSTNO_" + i, @class = " atextBoxFor ", maxlength = 10 })
-                                        </td>
-                                        <td class="">
                                             @Html.TextBoxFor(model => Model.TTXNPYMT[i].CARDNO, new { id = "P_CARDNO_" + i, @class = " atextBoxFor ", maxlength = 12 })
                                         </td>
-                                      
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TTXNPYMT[i].INSTNO, new { id = "P_INSTNO_" + i, @class = " atextBoxFor ", maxlength = 10 })
+                                        </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNPYMT[i].INSTDT, new { htmlAttributes = new { id = "P_INSTDT_" + i, @class = "atextBoxFor pytinsdt", maxlength = 10, autocomplete = "off", onblur = "DocumentDateCHK(this)" } })
 

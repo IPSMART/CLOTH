@@ -382,13 +382,13 @@ namespace Improvar.Controllers
 
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str1 = "";
-                str1 += "select distinct i.autono, i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.NEGSTOCK,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,j.STKTYPE,q.STKNAME,i.BARNO,i.INCLRATE,i.PCSACTION,i.ORDSLNO,i.ORDAUTONO,r.PRCCD,s.docno ORDNO,s.docdt ORDDT,  ";
+                str1 += "select distinct i.autono, i.SLNO,i.TXNSLNO,k.ITGRPCD,n.ITGRPNM,n.NEGSTOCK,n.BARGENTYPE,i.MTRLJOBCD,o.MTRLJOBNM,o.MTBARCODE,k.ITCD,k.ITNM,k.UOMCD,k.STYLENO,i.PARTCD,p.PARTNM,p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,i.INCLRATE,i.PCSACTION,i.ORDSLNO,i.ORDAUTONO,r.PRCCD,s.docno ORDNO,s.docdt ORDDT,  ";
                 str1 += "j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE,i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM ,r.DISCAMT,r.TDDISCAMT,r.SCMDISCAMT,r.TXBLVAL,r.IGSTPER,r.CGSTPER,r.SGSTPER,r.CESSPER,r.IGSTAMT,r.CGSTAMT,r.SGSTAMT,r.CESSAMT,r.NETAMT,r.TOTDISCAMT ,r.AMT,r.BLQNTY,r.STKDRCR,r.AGDOCNO,r.AGDOCDT ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q ," + Scm + ".T_TXNDTL r," + Scm + ".T_CNTRL_HDR s ";
                 str1 += "where i.AUTONO = r.AUTONO(+) and i.BARNO = j.BARNO(+) and j.ITCD = k.ITCD(+) and j.SIZECD = l.SIZECD(+) and j.COLRCD = m.COLRCD(+) and k.ITGRPCD=n.ITGRPCD(+) ";
-                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and j.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO = s.AUTONO(+) and i.txnslno=r.slno(+) ";
+                str1 += "and i.MTRLJOBCD=o.MTRLJOBCD(+) and i.PARTCD=p.PARTCD(+) and i.STKTYPE=q.STKTYPE(+) and i.ORDAUTONO = s.AUTONO(+) and i.txnslno=r.slno(+) ";
                 str1 += "and i.AUTONO = '" + VE.T_TXN.AUTONO + "'";
                 str1 += "order by i.SLNO ";
                 DataTable tbl = masterHelp.SQLquery(str1);
@@ -2203,6 +2203,8 @@ namespace Improvar.Controllers
                         // finance
                         dbsql = masterHelp.finTblUpdt("t_vch_gst", TTXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                        dbsql = masterHelp.finTblUpdt("t_vch_bl_adj", TTXN.AUTONO, "E");
+                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                         dbsql = masterHelp.finTblUpdt("t_vch_bl", TTXN.AUTONO, "E");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                         dbsql = masterHelp.finTblUpdt("t_vch_class", TTXN.AUTONO, "E");
@@ -2379,13 +2381,12 @@ namespace Improvar.Controllers
                                 dbsql = masterHelp.RetModeltoSql(TTXNDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                                dbqty = dbqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].QNTY);
-
-                                igst = igst + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].IGSTAMT);
-                                cgst = cgst + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].CGSTAMT);
-                                sgst = sgst + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].SGSTAMT);
-                                cess = cess + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].CESSAMT);
-                                duty = duty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].DUTYAMT);
+                                dbqty = dbqty + VE.TsalePos_TBATCHDTL[i].QNTY.retDbl();
+                                igst = igst + VE.TsalePos_TBATCHDTL[i].IGSTAMT.retDbl();
+                                cgst = cgst + VE.TsalePos_TBATCHDTL[i].CGSTAMT.retDbl();
+                                sgst = sgst + VE.TsalePos_TBATCHDTL[i].SGSTAMT.retDbl();
+                                cess = cess + VE.TsalePos_TBATCHDTL[i].CESSAMT.retDbl();
+                                duty = duty + VE.TsalePos_TBATCHDTL[i].DUTYAMT.retDbl();
                             }
                         }
                     }
@@ -2469,13 +2470,12 @@ namespace Improvar.Controllers
                                 dbsql = masterHelp.RetModeltoSql(R_TTXNDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                                //dbqty = dbqty + Convert.ToDouble(VE.TsalePos_TBATCHDTL[i].QNTY);
-                                dbqty = dbqty + Convert.ToDouble(50);
-                                igst = igst + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT) * -1;
-                                cgst = cgst + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT) * -1;
-                                sgst = sgst + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT) * -1;
-                                cess = cess + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT) * -1;
-                                duty = duty + Convert.ToDouble(VE.TsalePos_TBATCHDTL_RETURN[i].DUTYAMT) * -1;
+                                dbqty = dbqty - VE.TsalePos_TBATCHDTL[i].QNTY.retDbl();
+                                igst = igst - VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT.retDbl();
+                                cgst = cgst - VE.TsalePos_TBATCHDTL_RETURN[i].CGSTAMT.retDbl();
+                                sgst = sgst - VE.TsalePos_TBATCHDTL_RETURN[i].SGSTAMT.retDbl();
+                                cess = cess - VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT.retDbl();
+                                duty = duty - VE.TsalePos_TBATCHDTL_RETURN[i].DUTYAMT.retDbl();
                             }
                         }
                     }
@@ -2541,7 +2541,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.AUTONO = TTXN.AUTONO;
                                     TBATCHMST.SLCD = TTXN.SLCD;
                                     TBATCHMST.MTRLJOBCD = VE.TsalePos_TBATCHDTL[i].MTRLJOBCD;
-                                    TBATCHMST.STKTYPE = VE.TsalePos_TBATCHDTL[i].STKTYPE;
+                                    //TBATCHMST.STKTYPE = VE.TsalePos_TBATCHDTL[i].STKTYPE;
                                     TBATCHMST.JOBCD = TTXN.JOBCD;
                                     TBATCHMST.BARNO = barno;
                                     TBATCHMST.ITCD = VE.TsalePos_TBATCHDTL[i].ITCD;
@@ -2616,6 +2616,7 @@ namespace Improvar.Controllers
                                 TsalePos_TBATCHDTL.TXNSLNO = VE.TsalePos_TBATCHDTL[i].SLNO;
                                 TsalePos_TBATCHDTL.INCLRATE = VE.TsalePos_TBATCHDTL[i].INCLRATE.retDbl();
                                 TsalePos_TBATCHDTL.PCSACTION = VE.TsalePos_TBATCHDTL[i].PCSACTION.retStr();
+                                TsalePos_TBATCHDTL.STKTYPE = VE.TsalePos_TBATCHDTL[i].STKTYPE.retStr();
 
                                 dbsql = masterHelp.RetModeltoSql(TsalePos_TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -2684,7 +2685,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.AUTONO = TTXN.AUTONO;
                                     TBATCHMST.SLCD = TTXN.SLCD;
                                     TBATCHMST.MTRLJOBCD = VE.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD;
-                                    TBATCHMST.STKTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].STKTYPE;
+                                    //TBATCHMST.STKTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].STKTYPE;
                                     TBATCHMST.JOBCD = TTXN.JOBCD;
                                     TBATCHMST.BARNO = barno;
                                     TBATCHMST.ITCD = VE.TsalePos_TBATCHDTL_RETURN[i].ITCD;
@@ -2759,6 +2760,7 @@ namespace Improvar.Controllers
                                 TsalePos_TBATCHDTL_RETURN.TXNSLNO = VE.TsalePos_TBATCHDTL_RETURN[i].SLNO;
                                 TsalePos_TBATCHDTL_RETURN.INCLRATE = VE.TsalePos_TBATCHDTL_RETURN[i].INCLRATE.retDbl();
                                 TsalePos_TBATCHDTL_RETURN.PCSACTION = VE.TsalePos_TBATCHDTL_RETURN[i].PCSACTION.retStr();
+                                TsalePos_TBATCHDTL_RETURN.STKTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].STKTYPE.retStr();
 
                                 dbsql = masterHelp.RetModeltoSql(TsalePos_TBATCHDTL_RETURN);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -2987,7 +2989,7 @@ namespace Improvar.Controllers
                         foreach (var v in UOMWISEQNTY)
                         {
                             if (prodrem != "") prodrem += ",";
-                            prodrem += (VE.MENU_PARA == "SBCM" ? "Cash Memo" : "Cash Memo Credit Note") + " Q=" + v.QNTY + " " + v.UOM;
+                            prodrem += (VE.MENU_PARA == "SBCM" ? "Cash Memo" : "CM Return Note") + " Q=" + v.QNTY + " " + v.UOM;
                         }
 
                         var AMTGLCD = (from x in MAINAMTGLCD
@@ -3005,68 +3007,27 @@ namespace Improvar.Controllers
                             for (int i = 0; i <= AMTGLCD.Count - 1; i++)
                             {
                                 isl = isl + 1;
-                                if (AMTGLCD[i].TXBLVAL.retDbl() > 0)//for positive amt
-                                {
-                                    dbamt = AMTGLCD[i].TXBLVAL.retDbl();
-                                    dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), cr, AMTGLCD[i].GLCD, sslcd,
-                                            dbamt, prodrem, parglcd, TTXN.SLCD, AMTGLCD[i].QNTY.retDbl(), 0, 0);
-                                    OraCmd.CommandText = dbsql;
-                                    OraCmd.ExecuteNonQuery();
-                                    if (cr == "D") dbDrAmt = dbDrAmt + dbamt;
-                                    else dbCrAmt = dbCrAmt + dbamt;
-                                }
-                                else
-                                {
-                                    dbamt = AMTGLCD[i].TXBLVAL.retDbl();
-                                    dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), dr, AMTGLCD[i].GLCD, sslcd,
-                                            dbamt, prodrem, parglcd, TTXN.SLCD, AMTGLCD[i].QNTY.retDbl(), 0, 0);
-                                    OraCmd.CommandText = dbsql;
-                                    OraCmd.ExecuteNonQuery();
-                                    if (dr == "D") dbDrAmt = dbDrAmt + dbamt;
-                                    else dbCrAmt = dbCrAmt + dbamt;
-                                }
+                                string negamt = AMTGLCD[i].TXBLVAL.retDbl() < 0 ? "Y" : "N";
+                                string proddrcr = negamt == "Y" ? dr : cr;
+
+                                dbamt = AMTGLCD[i].TXBLVAL.retDbl() * (negamt == "Y" ? -1 : 1);
+                                dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr, AMTGLCD[i].GLCD, sslcd,
+                                        dbamt, prodrem, parglcd, TTXN.SLCD, AMTGLCD[i].QNTY.retDbl(), 0, 0);
+                                OraCmd.CommandText = dbsql;
+                                OraCmd.ExecuteNonQuery();
+
                                 dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
-                                        AMTGLCD[i].CLASS1CD, "", AMTGLCD[i].TXBLVAL.retDbl(), 0, strrem);
+                                        AMTGLCD[i].CLASS1CD, "", dbamt, 0, strrem);
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                 itamt = itamt + AMTGLCD[i].TXBLVAL.retDbl();
                                 expglcd = AMTGLCD[i].GLCD;
+
+                                if (proddrcr == "D") dbDrAmt = dbDrAmt + dbamt;
+                                else dbCrAmt = dbCrAmt + dbamt;
                             }
                         }
+                        if (itamt < 0) itamt = itamt * -1;
 
-                        #region Return tab
-                        //if (VE.TsalePos_TBATCHDTL_RETURN != null)
-                        //{
-                        //    var RAMTGLCD = (from x in VE.TsalePos_TBATCHDTL_RETURN
-                        //                    group x by new { x.GLCD, x.CLASS1CD } into P
-                        //                    select new
-                        //                    {
-                        //                        GLCD = P.Key.GLCD,
-                        //                        CLASS1CD = P.Key.CLASS1CD,
-                        //                        QTY = P.Sum(A => A.QNTY),
-                        //                        TXBLVAL = P.Sum(A => A.TXBLVAL)
-                        //                    }).Where(a => a.QTY != 0).ToList();
-
-                        //    if (RAMTGLCD != null && RAMTGLCD.Count > 0)
-                        //    {
-                        //        for (int i = 0; i <= RAMTGLCD.Count - 1; i++)
-                        //        {
-                        //            isl = isl + 1;
-                        //            dbamt = RAMTGLCD[i].TXBLVAL.retDbl();
-                        //            dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), dr, RAMTGLCD[i].GLCD, sslcd,
-                        //                    dbamt, prodrem_ret, parglcd, TTXN.SLCD, RAMTGLCD[i].QTY.retDbl(), 0, 0);
-                        //            OraCmd.CommandText = dbsql;
-                        //            OraCmd.ExecuteNonQuery();
-                        //            if (dr == "D") dbDrAmt = dbDrAmt + dbamt;
-                        //            else dbCrAmt = dbCrAmt + dbamt;
-                        //            dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1001, Convert.ToSByte(isl), sslcd,
-                        //                    RAMTGLCD[i].CLASS1CD, "", RAMTGLCD[i].TXBLVAL.retDbl(), 0, strrem);
-                        //            OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                        //            itamt = itamt + RAMTGLCD[i].TXBLVAL.retDbl();
-                        //            expglcd = RAMTGLCD[i].GLCD;
-                        //        }
-                        //    }
-                        //}
-                        #endregion
                         #region  GST Financial Part
                         string[] gstpostcd = new string[5];
                         double[] gstpostamt = new double[5];
@@ -3104,24 +3065,16 @@ namespace Improvar.Controllers
                             if (gstpostamt[gt] != 0)
                             {
                                 isl = isl + 1;
-                                if (gstpostamt[gt] > 0)//for positive
-                                {
-                                    dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), cr, gstpostcd[gt], sslcd,
-                                       gstpostamt[gt], prodrem, parglcd, TTXN.SLCD, dbqty, 0, 0);
-                                    OraCmd.CommandText = dbsql;
-                                    OraCmd.ExecuteNonQuery();
-                                    if (cr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
-                                    else dbCrAmt = dbCrAmt + gstpostamt[gt];
-                                }
-                                else
-                                {
-                                    dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), dr, gstpostcd[gt], sslcd,
-                                       gstpostamt[gt], prodrem, parglcd, TTXN.SLCD, dbqty, 0, 0);
-                                    OraCmd.CommandText = dbsql;
-                                    OraCmd.ExecuteNonQuery();
-                                    if (dr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
-                                    else dbCrAmt = dbCrAmt + gstpostamt[gt];
-                                }
+                                string negamt = gstpostamt[gt] < 0 ? "Y" : "N";
+                                string proddrcr = negamt == "Y" ? dr : cr;
+
+                                dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr, gstpostcd[gt], sslcd,
+                                   gstpostamt[gt], prodrem, parglcd, TTXN.SLCD, dbqty, 0, 0);
+                                OraCmd.CommandText = dbsql;
+                                OraCmd.ExecuteNonQuery();
+
+                                if (proddrcr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
+                                else dbCrAmt = dbCrAmt + gstpostamt[gt];
 
                                 dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
                                         parclass1cd, class2cd, gstpostamt[gt], 0, strrem);
@@ -3163,7 +3116,7 @@ namespace Improvar.Controllers
 
                         //  Party wise posting
                         isl = 1; //isl + 1;
-                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), cr,
+                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), dr,
                             parglcd, sslcd, Convert.ToDouble(VE.T_TXN.BLAMT), prodrem, prodglcd,
                             null, dbqty, 0, dbcurramt);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
@@ -3484,10 +3437,9 @@ namespace Improvar.Controllers
                             if (VE.TTXNPYMT[i].GLCD.retStr() != "" && VE.TTXNPYMT[i].AMT.retDbl() != 0)
                             {
                                 string pymtrem = "Cash";
-                                T_VCH_DET TVCHDET = new T_VCH_DET();
                                 pslno++; adjslno++;
 
-                                dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(pslno + 100), dr,
+                                dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(pslno + 100), cr,
                                     parglcd, sslcd, VE.TTXNPYMT[i].AMT.retDbl(), pymtrem, VE.TTXNPYMT[i].GLCD);
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                 if (parclass1cd.retStr() != "" || class2cd.retStr() != "")
@@ -3496,13 +3448,27 @@ namespace Improvar.Controllers
                                             parclass1cd, class2cd, VE.TTXNPYMT[i].AMT.retDbl());
                                     OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                 }
-                                masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DOCCD, adjslno, TTXN.AUTONO, 1, TTXN.BLAMT.Value, TTXN.AUTONO, Convert.ToSByte(pslno + 100), VE.TTXNPYMT[i].AMT.retDbl(), VE.TTXNPYMT[i].AMT.retDbl());
 
+                                dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, cr,
+                                   parglcd, sslcd, null, TTXNOTH.AGSLCD, parclass1cd, Convert.ToSByte(pslno + 100),
+                                    VE.TTXNPYMT[i].AMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), 0, TTXNOTH.POREFNO,
+                                    TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.TTXNPYMT[i].AMT.retDbl(),
+                                    "", "", "");
+                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
+                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(adjslno), TTXN.AUTONO, 1, TTXN.BLAMT.Value, TTXN.AUTONO, Convert.ToSByte(pslno + 100), VE.TTXNPYMT[i].AMT.retDbl(), VE.TTXNPYMT[i].AMT.retDbl());
+                                OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
+
+                                T_VCH_DET TVCHDET = new T_VCH_DET();
                                 TVCHDET.AUTONO = TTXN.AUTONO; TVCHDET.CLCD = TTXN.CLCD; TVCHDET.DTAG = TTXN.DTAG; TVCHDET.EMD_NO = TTXN.EMD_NO;
                                 TVCHDET.DOCCD = TTXN.DOCCD; TVCHDET.DOCDT = TTXN.DOCDT; TVCHDET.DOCNO = TTXN.DOCNO;
-                                TVCHDET.SLNO = pslno + 2000; TVCHDET.DRCR = cr; TVCHDET.GLCD = VE.TTXNPYMT[i].GLCD; TVCHDET.AMT = VE.TTXNPYMT[i].AMT; TVCHDET.R_GLCD = parglcd;
+                                TVCHDET.SLNO = pslno + 200; TVCHDET.DRCR = dr; TVCHDET.GLCD = VE.TTXNPYMT[i].GLCD; TVCHDET.AMT = VE.TTXNPYMT[i].AMT; TVCHDET.R_SLCD = sslcd; TVCHDET.R_GLCD = parglcd;
                                 TVCHDET.T_REM = pymtrem; TVCHDET.CHQNO = VE.TTXNPYMT[i].INSTNO; TVCHDET.OSLNO = pslno + 100;
                                 if (VE.TTXNPYMT[i].INSTDT.retDateStr() != "") TVCHDET.CHQDT = Convert.ToDateTime(VE.TTXNPYMT[i].INSTDT.retDateStr());
+
+                                dbsql = masterHelp.RetModeltoSql(TVCHDET, "A", scmf);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                                 recdamt = recdamt + VE.TTXNPYMT[i].AMT.retDbl();
                             }
@@ -3575,6 +3541,8 @@ namespace Improvar.Controllers
                     dbsql = masterHelp.TblUpdt("t_cntrl_auth", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.finTblUpdt("t_vch_gst", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                    dbsql = masterHelp.finTblUpdt("t_vch_bl_adj", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
                     dbsql = masterHelp.finTblUpdt("t_vch_bl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();

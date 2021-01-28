@@ -227,7 +227,7 @@ namespace Improvar.Controllers
 
                 #region IN TAB DATA
                 string str = "";
-                str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,j.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
+                str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,i.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
                 str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE ";
                 str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p ";
@@ -270,7 +270,7 @@ namespace Improvar.Controllers
 
                 #region OUT TAB DATA
                 str = "";
-                str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,j.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
+                str += "select i.SLNO,i.BARNO,k.ITGRPCD,l.ITGRPNM,l.BARGENTYPE,j.ITCD,k.ITNM,k.STYLENO,k.UOMCD,i.STKTYPE,i.PARTCD,m.PARTNM,m.PRTBARCODE, ";
                 str += "j.COLRCD,o.CLRBARCODE,o.COLRNM,j.SIZECD,n.SIZENM,n.SZBARCODE,i.QNTY,i.MTRLJOBCD,p.MTRLJOBNM,p.MTBARCODE ";
                 str += "from " + Scm + ".T_BATCHDTL i," + Scm + ".T_TXNDTL j," + Scm + ".M_SITEM k," + Scm + ".M_GROUP l," + Scm + ".M_PARTS m, " + Scm + ".M_SIZE n, " + Scm + ".M_COLOR o, ";
                 str += Scm + ".M_MTRLJOBMST p ";
@@ -859,7 +859,7 @@ namespace Improvar.Controllers
                                             TBATCHMST.SLNO = VE.TBATCHDTL[i].SLNO;
                                             TBATCHMST.BARNO = barno;
                                             TBATCHMST.MTRLJOBCD = VE.TBATCHDTL[i].MTRLJOBCD;
-                                            TBATCHMST.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
+                                            //TBATCHMST.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                             TBATCHMST.ITCD = VE.TBATCHDTL[i].ITCD;
                                             TBATCHMST.PARTCD = VE.TBATCHDTL[i].PARTCD;
                                             TBATCHMST.SIZECD = VE.TBATCHDTL[i].SIZECD;
@@ -1066,7 +1066,7 @@ namespace Improvar.Controllers
                                             TBATCHMST.SLNO = VE.TBATCHDTL_OUT[i].SLNO;
                                             TBATCHMST.BARNO = barno;
                                             TBATCHMST.MTRLJOBCD = VE.TBATCHDTL_OUT[i].MTRLJOBCD;
-                                            TBATCHMST.STKTYPE = VE.TBATCHDTL_OUT[i].STKTYPE;
+                                            //TBATCHMST.STKTYPE = VE.TBATCHDTL_OUT[i].STKTYPE;
                                             TBATCHMST.ITCD = VE.TBATCHDTL_OUT[i].ITCD;
                                             TBATCHMST.PARTCD = VE.TBATCHDTL_OUT[i].PARTCD;
                                             TBATCHMST.SIZECD = VE.TBATCHDTL_OUT[i].SIZECD;
