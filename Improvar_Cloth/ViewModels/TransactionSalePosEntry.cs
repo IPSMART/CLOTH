@@ -99,7 +99,6 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? T_PYMT_AMT { get; set; }
         public string TRANSLNM { get; set; }
-        public string CRSLNM { get; set; }
         public string BARCODE { get; set; }
         public short? TXNSLNO { get; set; }
         [StringLength(4)]

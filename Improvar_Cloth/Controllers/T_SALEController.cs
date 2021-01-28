@@ -371,7 +371,6 @@ namespace Improvar.Controllers
                 VE.PRCNM = TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
 
                 VE.TRANSLNM = TXNTRN.TRANSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.TRANSLCD).Select(b => b.SLNM).FirstOrDefault();
-                VE.CRSLNM = TXNTRN.CRSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.CRSLCD).Select(b => b.SLNM).FirstOrDefault();
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
 
@@ -1070,7 +1069,7 @@ namespace Improvar.Controllers
                         case "SBEXP"://Sales Bill (Export)
                             glcd = str.retCompValue("SALGLCD"); break;
                         case "PI"://Proforma Invoice
-                            glcd = str.retCompValue("SALGLCD"); break; 
+                            glcd = str.retCompValue("SALGLCD"); break;
                         case "PB"://Purchase Bill
                             glcd = str.retCompValue("PURGLCD"); break;
                         case "PR"://Purchase Return (PRM)
