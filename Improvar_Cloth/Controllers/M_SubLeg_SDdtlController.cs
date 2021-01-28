@@ -677,6 +677,7 @@ namespace Improvar.Controllers
                         MSUBLEGCOM.DISCRTCD = VE.M_SUBLEG_COM.DISCRTCD;
                         MSUBLEGCOM.COD = VE.M_SUBLEG_COM.COD;
                         MSUBLEGCOM.DOCTH = VE.M_SUBLEG_COM.DOCTH;
+                        MSUBLEGCOM.SAPCODE = VE.M_SUBLEG_COM.SAPCODE;
                         //grid saving
                         if (VE.DefaultAction == "E")
                         {

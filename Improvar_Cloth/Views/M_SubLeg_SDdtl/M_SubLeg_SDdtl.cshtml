@@ -527,6 +527,18 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
+                    <div class="editor-field" style="margin-top: 4px;">
+                        @Html.Label("", "SAP code")
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.M_SUBLEG_COM.SAPCODE, new { htmlAttributes = new { @class = "form-control", id = "SAPCODE", maxlength = 20, @placeholder = "SAP code" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
                     <div class="editor-label" style="margin-top:0px;margin-bottom: -5px;display: inline-block;">
                         @Html.Label("", "Deactivate")
                     </div>
