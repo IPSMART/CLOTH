@@ -14,7 +14,7 @@
 <script src="~/Scripts/jquery.min.js"></script>
 
 <link rel="stylesheet" href="~/Content/jquery.stickytable.css">
-<script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>
+@*<script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>*@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
@@ -298,7 +298,7 @@
         }
         if (tableid == "_T_PhyStock_GRID") {
             CalculateTotal_Barno();
-            HasChangeBarSale()
+            //HasChangeBarSale()
         }
     }
 
@@ -343,8 +343,12 @@
         @*@Html.HiddenFor(a => a.T_CNTRL_HDR.DOCONLYNO)*@
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSHADE, new { id = "MNTNSHADE" })
         @Html.HiddenFor(a => a.TAXGRPCD, new { id = "TAXGRPCD" })
-        
+        @Html.HiddenFor(a => a.MTRLJOBCD, new { id = "MTRLJOBCD" })
+        @Html.HiddenFor(a => a.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
+
         <input type="hidden" id="Defaultbar" value="Bar" />
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
@@ -443,7 +447,9 @@
                     </div>
                     <div class="col-md-4">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })
+                            @*@Html.EditorFor(model => model.PRCCD, new { htmlAttributes = new { @class = "form-control", id = "PRCCD", @TabIndex = -1, @title = "Only for View", @placeholder = "Code", @readonly = "readonly" } })*@
+                            @Html.EditorFor(model => model.PRCCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "PRCCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0')", onblur = "GetHelpBlur('" + @Url.Action("GetPriceDetails", PageControllerName) + "','Price Details','PRCCD','PRCCD=PRCCD=1/PRCNM=PRCNM=0');", @placeholder = "Code", maxlength = 4 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPriceDetails", PageControllerName)','Price Details','PRCCD','PRCCD=PRCCD =1/PRCNM =PRCNM =0')" />
 
                         </div>
                     </div>
@@ -476,13 +482,8 @@
                             <div class="col-md-8">
                                 <div class="editor-field">
                                   
-                                    @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "T_BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','T_BARCODE','T_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/T_BARCODE')", onblur = "GetBarnoDetails('T_BARCODE',Defaultbar.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','T_BARCODE','T_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/T_BARCODE')" />
-
-                                    @if (Model.M_SYSCNFG.MNTNSHADE != "Y")
-                                    {
-                                        @Html.HiddenFor(model => model.SHADE, new { id = "SHADE" })
-                                    }
+                                    @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "T_BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','T_BARCODE','T_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/STYLENO=STYLENO=3/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate/STKTYPE=stktype/LOCABIN=locabin','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/T_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','T_BARCODE','T_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/STYLENO=STYLENO=3/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate/STKTYPE=stktype/LOCABIN=locabin','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/T_BARCODE')", @placeholder = "Bar Code", maxlength = 25 } })
+                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','T_BARCODE','T_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/STYLENO=STYLENO=3/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate/STKTYPE=stktype/LOCABIN=locabin','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/T_BARCODE')" />
 
                                 </div>
                             </div>
@@ -494,18 +495,18 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="editor-field">
-                                    @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITNM", @title = "Item Name", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
+                                    @Html.EditorFor(model => model.ITNM, new { htmlAttributes = new { @class = "form-control", id = "ITSTYLE", @title = "Item Name", @placeholder = "Item Name", @readonly = "readonly", @TabIndex = -1 } })
 
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            @*<div class="col-md-1">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');GetAllMtrljobcd();", @placeholder = "Material Job Code", maxlength = 2, @title = "Material Job Code" } })
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')" />
                                     @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
                                     @Html.HiddenFor(model => model.MTBARCODE, new { id = "MTBARCODE" })
                                 </div>
-                            </div>
+                            </div>*@
                         </div>
                             <div class="row">
                                 <div class="col-md-2">
@@ -516,10 +517,18 @@
                                 </div>
                                 <div class="col-md-7">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/BARCODE=BARNO=0','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/BARCODE')", onblur = "GetBarnoDetails(this.value,Defaultstyle.value);", @placeholder = "Design No", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action(" GetBarCodeDetails", PageControllerName)','Bar Code Details','STYLENO','STYLENO=STYLENO =3/PARTCD =PARTCD =8/BARCODE =BARNO =0','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/BARCODE')" />
+                                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/T_BARCODE=BARNO=0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/T_BARCODE=BARNO=0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE')", @placeholder = "Design No", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action(" GetBarCodeDetails", PageControllerName)','Bar Code Details','STYLENO','STYLENO=STYLENO =3/PARTCD =PARTCD =8/T_BARCODE =BARNO =0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE')" />
                                     </div>
                                 </div>
+                                @if (Model.M_SYSCNFG.MNTNSHADE == "Y")
+                                {
+                                    <div class="col-md-1">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SHADE, new { htmlAttributes = new { @class = "form-control", id = "SHADE", maxlength = 15, @title = "Shade", @placeholder = "Shade" } })
+                                        </div>
+                                    </div>
+                                }
                                 @if (Model.M_SYSCNFG.MNTNPART == "Y")
                                 {
                                     <div class="col-md-1">
@@ -542,17 +551,17 @@
                                     </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.CUTLENGTH, new { htmlAttributes = new { @class = "form-control", id = "CUTLENGTH", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Length", @title = "Length", @onchange = "CalculateBargridQnty();" } })
+                                            @Html.EditorFor(model => model.CUTLENGTH, new { htmlAttributes = new { @class = "form-control", id = "CUTLENGTH", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Length", @title = "Length", @onchange = "CalculateBargridQnty_();" } })
                                         </div>
                                     </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos", @title = "Nos", @onchange = "CalculateBargridQnty();" } })
+                                            @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos", @title = "Nos", @onchange = "CalculateBargridQnty_();" } })
                                         </div>
                                     </div>
                                     <div class="col-md-1">
                                         <div class="editor-field">
-                                            @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onblur = "CalculateBargridQnty();" } })
+                                            @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onblur = "CalculateBargridQnty_();" } })
                                         </div>
                                     </div>
                                     <div class="col-md-1">

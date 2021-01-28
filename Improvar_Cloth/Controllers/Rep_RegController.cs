@@ -299,7 +299,7 @@ namespace Improvar.Controllers
                 //query1 += "--a.prcdesc, ";
                 query1 += "   b.slno, b.itcd, ";
                 //--b.prodgrpcd,  ";
-                query1 += "   b.itnm, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
+                query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
                 query1 += " b.qnty, b.rate, b.amt, b.tddiscamt, b.discamt, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 query1 += " e.slnm trslnm, f.lrno,f.lrdt, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
                 query1 += " b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt, b.batchno,b.blqnty from ( ";
@@ -332,7 +332,7 @@ namespace Improvar.Controllers
                 query1 += " ) a, ( ";
                 query1 += " select distinct a.autono, a.slno, a.itcd, a.itrem, ";
                 //--i.prodgrpcd,  ";
-                query1 += " b.itnm, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, ";
+                query1 += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, ";
                 query1 += "  a.nos, a.qnty, a.rate, a.amt,  listagg(e.batchno, ',') within group (order by d.autono, d.slno) batchno,  a.tddiscamt, a.discamt,  ";
                 query1 += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty from " + scm1 + ".t_txndtl a, ";
                 query1 += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e ";
@@ -342,9 +342,9 @@ namespace Improvar.Controllers
                 query1 += " a.autono, a.slno, a.itcd, a.itrem, ";
                 //--i.prodgrpcd, ";
                 query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,  ";
-                query1 += " a.tddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty ";
+                query1 += " a.tddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
                 //query1 += " --,a.bluomcd ";
-                query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ";
+                query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,''itstyle ";
                 //--'' prodgrpcd ";
                 query1 += " , b.amtnm itnm, a.hsncode,  ";
                 query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, 0 rate, a.amt,  '' batchno,  0 tddiscamt, 0 discamt, a.igstper, a.igstamt, ";
@@ -618,7 +618,7 @@ namespace Improvar.Controllers
                                 ino = ino + 1;
                                 DataRow dr = IR.NewRow();
                                 //dr["gstno"] = tbl.Rows[i]["prodcd"].ToString();
-                                dr["slnm"] = tbl.Rows[i]["itnm"].ToString();
+                                dr["slnm"] = tbl.Rows[i]["itstyle"].ToString();
                                 if (itemrem == true && itmdtl == true) dr["itrem"] = tbl.Rows[i]["itrem"].ToString();
                                 dr["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
                                 dr["uomcd"] = tbl.Rows[i]["uomcd"].ToString();

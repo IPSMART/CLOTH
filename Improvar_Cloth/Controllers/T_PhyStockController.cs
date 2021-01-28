@@ -147,7 +147,20 @@ namespace Improvar.Controllers
                         {
                             if (parkID == "")
                             {
-                                VE.PRCCD = "WP";
+                                string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                                string sql = "";
+                                sql += " select a.TAXGRPCD,a.prccd, b.prcnm ";
+                                sql += "  from  " + scm + ".T_TXNOTH a, " + scmf + ".m_prclst b ";
+                                sql += " where a.prccd=b.prccd(+) and a.prccd='WP' ";
+
+                                DataTable syscnfgdt = Master_Help.SQLquery(sql);
+                                if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                                {
+                                   
+                                    VE.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
+                                    VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
+                                    //VE.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
+                                }
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                                 TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 VE.T_CNTRL_HDR = TCH;
@@ -301,6 +314,7 @@ namespace Improvar.Controllers
                 string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().retSqlformat();
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
+                //if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = "FS".retSqlformat(); }
                 string str = Master_Help.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
@@ -732,6 +746,26 @@ namespace Improvar.Controllers
             try
             {
                 var str = Master_Help.GOCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetPriceDetails(string val)
+        {
+            try
+            {
+                var str = Master_Help.PRCCD_help(val);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
