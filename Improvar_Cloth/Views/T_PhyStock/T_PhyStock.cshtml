@@ -12,7 +12,6 @@
     }
 </style>
 <script src="~/Scripts/jquery.min.js"></script>
-
 <link rel="stylesheet" href="~/Content/jquery.stickytable.css">
 @*<script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>*@
 <script type="text/javascript">
@@ -20,7 +19,7 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
-            $(".sl_bom_grid").prop("disabled", false);
+           // $(".sl_bom_grid").prop("disabled", false);
         }
         else if ("@Model.DefaultAction" == "E") {
 
@@ -61,7 +60,7 @@
 <script>
     function requiredFieldValidator() {
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-        if (!emptyFieldCheck("Please Select / Enter Party", "MUTSLCD")) { return false; }
+        //if (!emptyFieldCheck("Please Select / Enter Party", "MUTSLCD")) { return false; }
         return true;
     }
 </script>
@@ -69,7 +68,7 @@
     $(function () {
         if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
-            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+           
         }
     });
 </script>
@@ -158,8 +157,8 @@
             url: "@Url.Action("DeleteRow", PageControllerName)",
             data: $('form').serialize(),
             success: function (result) {
-                $("#partialdivMain").animate({ marginTop: '0px' }, 50);
-                $("#partialdivMain").html(result);
+                $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
+                $("#partialdivBarCodeTab").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -170,6 +169,99 @@
     }
 </script>
 <script>
+    function FillBarcodeArea_(str, Table, i) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        var MENU_PARA = $("#MENU_PARA").val();
+        var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
+        if (DefaultAction == "V") return true;
+        if (Table == "COPYLROW") {
+            if (event.key != "F8") {
+                return true;
+            }
+            else {
+                i = $("#_T_PhyStock_GRID > tbody > tr").length - 1;
+            }
+        }
+        if (str != "") {
+            $("#T_BARCODE").val(returncolvalue(str, "BARNO"));
+           
+                $("#MTRLJOBCD").val(returncolvalue(str, "MTRLJOBCD"));
+              
+          
+            $("#ITCD").val(returncolvalue(str, "ITCD"));
+            $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
+            $("#STYLENO").val(returncolvalue(str, "STYLENO"));
+            $("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
+            $("#PARTCD").val(returncolvalue(str, "PARTCD"));
+            $("#QNTY").val(returncolvalue(str, "QNTY"));
+            $("#NOS").val(returncolvalue(str, "NOS"));
+            $("#CUTLENGTH").val(returncolvalue(str, "CUTLENGTH"));
+            var RATE = returncolvalue(str, "RATE");
+            $("#RATE").val(RATE);
+            $("#SHADE").val(returncolvalue(str, "SHADE"));
+             $("#ITREM").val(returncolvalue(str, "ITREM"));
+            $("#LOCABIN").val(returncolvalue(str, "LOCABIN"));
+         
+        }
+        else {
+            var FieldidStarting = "";
+            FieldidStarting = "#B_";
+            $("#SLNO").val($(FieldidStarting + "SLNO_" + i).val());
+            if (Table != "COPYLROW") {
+               // $("#TXNSLNO").val($(FieldidStarting + "TXNSLNO_" + i).val());
+            }
+            if (Table != "COPYLROW") {
+                $("#QNTY").val($(FieldidStarting + "QNTY_" + i).val());
+                $("#NOS").val($(FieldidStarting + "NOS_" + i).val());
+                $("#CUTLENGTH").val($(FieldidStarting + "CUTLENGTH_" + i).val());
+            }
+            $("#T_BARCODE").val($(FieldidStarting + "BARNO_" + i).val());          
+            $("#MTRLJOBCD").val($(FieldidStarting + "MTRLJOBCD_" + i).val());
+            $("#ITCD").val($(FieldidStarting + "ITCD_" + i).val());
+            $("#ITSTYLE").val($(FieldidStarting + "ITSTYLE_" + i).val().trim());
+            $("#STYLENO").val($(FieldidStarting + "STYLENO_" + i).val());
+            $("#STKTYPE").val($(FieldidStarting + "STKTYPE_" + i).val());
+            $("#PARTCD").val($(FieldidStarting + "PARTCD_" + i).val());
+            $("#RATE").val($(FieldidStarting + "RATE_" + i).val());
+            $("#SHADE").val($(FieldidStarting + "SHADE_" + i).val());
+            $("#ITREM").val($(FieldidStarting + "ITREM_" + i).val());
+            $("#LOCABIN").val($(FieldidStarting + "LOCABIN_" + i).val());
+
+        }
+        if (Table == "_T_PhyStock_GRID") {
+            $("#AddRow_Barcode").hide();
+            $("#UpdateRow_Barcode").prop("value", "Update Row [" + $(FieldidStarting + "SLNO_" + i).val() + "] (Alt+W)");
+            $("#UpdateRow_Barcode").show();
+        }
+       
+        var ModuleCode = $("#ModuleCode").val();
+        if (event.key == "F8") {
+            if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                $("#CUTLENGTH").focus();
+            }
+            else {
+                $("#T_BARCODE").focus();
+               
+            }
+
+        }
+        else if (str != "") {
+            if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+               
+                    $("#CUTLENGTH").focus();
+               
+            }
+        }
+        //if (event.key == "F8" || str == "") {
+        //    var value = modify_check();
+        //    if (value == "true") {
+        //        RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+        //    }
+        //}
+    }
+</script>
+<script>
     function AddBarCodeGrid_() {
         debugger;
         var DefaultAction = $("#DefaultAction").val();
@@ -177,14 +269,7 @@
         if (DefaultAction == "V") return true;
         var MENU_PARA = $("#MENU_PARA").val();
         var MNTNPART = $("#MNTNPART").val();
-
         var MNTNSHADE = $("#MNTNSHADE").val();
-      
-        if ($("#MTRLJOBCD").val() == "") {
-            msgInfo("Please enter Material Job Code !");
-            message_value = "MTRLJOBCD";
-            return false;
-        }
       
         if ($("#QNTY").val() == "0") {
             msgInfo("Quantity should not be zero(0) !");
@@ -194,7 +279,9 @@
        
         var QNTY = $("#QNTY").val();
 
-        var BARCODE = $("#BARCODE").val();
+        var BARCODE = $("#T_BARCODE").val();
+        var ITCD = $("#ITCD").val();
+        var ITSTYLE = $("#ITSTYLE").val();
         var MTRLJOBCD = $("#MTRLJOBCD").val();
         var MTRLJOBNM = $("#MTRLJOBNM").val();
         var MTBARCODE = $("#MTBARCODE").val();
@@ -208,8 +295,9 @@
         var BALENO = $("#BALENO").val();
         var BALEYR = $("#BALEYR").val();
         var LOCABIN = $("#LOCABIN").val();
+        var ITREM = $("#ITREM").val();
   
-        var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
+        var rowindex = $("#_T_PhyStock_GRID > tbody > tr").length;
         var SLNO = 1;
         if (retInt(rowindex) != 0) {
             var LASTROWINDEX = retInt(rowindex) - 1;
@@ -226,6 +314,8 @@
         tr += '        <input data-val="true" data-val-length="The field BALEYR must be a string with a maximum length of 4." data-val-length-max="4" id="B_BALEYR_' + rowindex + '" name="TPHYSTK[' + rowindex + '].BALEYR" type="hidden" value="' + BALEYR + '">';
         tr += '        <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="B_LOCABIN_' + rowindex + '" name="TPHYSTK[' + rowindex + '].LOCABIN" type="hidden" value="' + LOCABIN + '">';
         tr += '        <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_MTRLJOBCD_' + rowindex + '" name="TPHYSTK[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
+        tr += '        <input data-val="true" data-val-length="The field ITCD must be a string with a maximum length of 10." data-val-length-max="10" id="B_ITCD_' + rowindex + '" name="TPHYSTK[' + rowindex + '].ITCD" type="hidden" value="' + ITCD + '">';
+        tr += '        <input data-val="true" data-val-length="The field ITSTYLE must be a string with a maximum length of 10." data-val-length-max="10" id="B_ITSTYLE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].ITSTYLE" type="hidden" value="' + ITSTYLE + '">';
         if (MNTNPART == "Y")
         {
             tr += '        <input data-val="true" data-val-length="The field PARTCD must be a string with a maximum length of 4." data-val-length-max="4" id="B_PARTCD_' + rowindex + '" name="TPHYSTK[' + rowindex + '].PARTCD" type="hidden" value="' + PARTCD + '">';
@@ -250,13 +340,13 @@
             tr += '        <input id="B_SHADE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].SHADE" type="hidden" value="' + SHADE + '">';
         }
         tr += '    <td class="" title="' + CUTLENGTH + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TPHYSTK[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TPHYSTK[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty_(\'_T_PhyStock_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + NOS + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TPHYSTK[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + NOS + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TPHYSTK[' + rowindex + '].NOS" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onchange="CalculateBargridQnty_(\'_T_PhyStock_GRID\', ' + rowindex + ');" value="' + NOS + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + QNTY + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TPHYSTK[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty(\'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" value="' + QNTY + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TPHYSTK[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty_(\'_T_PhyStock_GRID\', ' + rowindex + ');" value="' + QNTY + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + RATE + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TPHYSTK[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" readonly="readonly" value="' + RATE + '" >';
@@ -264,16 +354,72 @@
         tr += '    <td class="" title="' + STKTYPE + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';
         tr += '     </td>';
+        tr += '    <td class="">';
+        tr += ' <input class=" atextBoxFor " data-target="#ZoomTextBoxModal" data-toggle="modal" data-val="true" data-val-length="The field ITREM must be a string with a maximum length of 100." data-val-length-max="100" id="B_ITREM_' + rowindex + '" maxlength="100" name="TPHYSTK[' + rowindex + '].ITREM" onclick="OpenZoomTextBoxModal(this.id)" type="text" value="' + ITREM + '">';
+        tr += '    </td>';
         tr += '        <td class="sticky-cell-opposite">';
-        tr += '            <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea(\'\', \'_T_SALE_PRODUCT_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
+        tr += '            <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea_(\'\', \'_T_PhyStock_GRID\', ' + rowindex + ');" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>';
         tr += '        </td>';
         tr += ' </tr>';
 
         $("#_T_PhyStock_GRID tbody").append(tr);
-        CalculateTotal_Barno();
+        CalculateTotal_Barno_();
 
-        ClearBarcodeArea();
-        $("#BARCODE").focus();
+        ClearBarcodeArea_();
+        $("#T_BARCODE").focus();
+        //$("#bardatachng").val("Y");
+    }
+
+    function UpdateBarCodeRow_() {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        var MENU_PARA = $("#MENU_PARA").val();
+        if (DefaultAction == "V") return true;
+        var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
+       
+        if ($("#QNTY").val() == "0") {
+            msgInfo("Quantity should not be zero(0) !");
+            message_value = "QNTY";
+            return false;
+        }
+      
+       
+        var FLAGMTR = $("#FLAGMTR").val();
+        var QNTY = $("#QNTY").val();
+     
+        var SLNO = $("#SLNO").val();
+        var GridRowMain = $("#_T_PhyStock_GRID > tbody > tr").length;
+        for (j = 0; j <= GridRowMain - 1; j++) {
+            if ($("#B_SLNO_" + j).val() == SLNO) {
+                $("#B_BARNO_" + j).val($("#T_BARCODE").val());
+                $("#B_MTRLJOBCD_" + j).val($("#MTRLJOBCD").val());
+                $("#B_ITCD_" + j).val($("#ITCD").val());
+                $("#B_ITSTYLE_" + j).val($("#ITSTYLE").val().trim());
+                $("#B_STYLENO_" + j).val($("#STYLENO").val());
+                $("#B_STKTYPE_" + j).val($("#STKTYPE").val());
+                $("#B_PARTCD_" + j).val($("#PARTCD").val());
+                $("#B_QNTY_" + j).val($("#QNTY").val());
+                $("#B_NOS_" + j).val($("#NOS").val());
+                $("#B_CUTLENGTH_" + j).val($("#CUTLENGTH").val());
+                $("#B_RATE_" + j).val($("#RATE").val());
+                $("#B_SHADE_" + j).val($("#SHADE").val());
+                $("#B_ITREM_" + j).val($("#ITREM").val())
+                $("#B_LOCABIN_" + j).val($("#LOCABIN").val());
+             
+            }
+
+        }
+        CalculateTotal_Barno_();
+        ClearBarcodeArea_();
+        //@*if (MENU_PARA == "PB") {
+        //    $("#BALENO").val("");
+        //}
+        //$("#DISCTYPE").val("P");
+        //$("#TDDISCTYPE").val("P");
+        //$("#SCMDISCTYPE").val("P");*@
+        $("#AddRow_Barcode").show();
+        $("#UpdateRow_Barcode").hide();
+        $("#T_BARCODE").focus();
         //$("#bardatachng").val("Y");
     }
 
@@ -297,7 +443,7 @@
             $("#" + QNTYID).val(retFloat(qnty));
         }
         if (tableid == "_T_PhyStock_GRID") {
-            CalculateTotal_Barno();
+            CalculateTotal_Barno_();
             //HasChangeBarSale()
         }
     }
@@ -306,25 +452,37 @@
         var DefaultAction = $("#DefaultAction").val();
         var MENU_PARA = $("#MENU_PARA").val();
         if (DefaultAction == "V") return true;
-        ClearAllTextBoxes("BARCODE,SHADE,ITCD,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,QNTY,NOS,CUTLENGTH,RATE,SHADE,LOCABIN,MTRLJOBCD,MTRLJOBNM,MTBARCODE");
-        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-            ClearAllTextBoxes("BALENO,OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
-        }
-        if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "PB" || MENU_PARA == "OP") {
-            ClearAllTextBoxes("ORDDOCNO,ORDDOCDT,ORDAUTONO,ORDSLNO");
-        }
+        ClearAllTextBoxes("T_BARCODE,SHADE,ITCD,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,QNTY,NOS,CUTLENGTH,RATE,SHADE,LOCABIN,MTRLJOBCD,MTRLJOBNM,MTBARCODE,ITREM");
+       
         $("#STKTYPE").val("F");
         if (TAG == "Y") {
             $("#AddRow_Barcode").show();
             $("#UpdateRow_Barcode").hide();
-             $("#BARCODE").focus();
+            $("#T_BARCODE").focus();
            
         }
       
     }
 </script>
-<script></script>
+<script>
+    function CalculateTotal_Barno_() {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var MENU_PARA = $("#MENU_PARA").val();
+        var T_QNTY = 0, T_NOS = 0;
+        var GridRow = $("#_T_PhyStock_GRID > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            var QNTY = $("#B_QNTY_" + i).val();
+            if (QNTY != "") { T_QNTY = T_QNTY + parseFloat(QNTY); } else { T_QNTY = T_QNTY + parseFloat(0); }
+            var NOS = $("#B_NOS_" + i).val();
+            if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
+        }
+        $("#B_T_QNTY").val(parseFloat(T_QNTY).toFixed(2));
+        $("#B_T_NOS").val(parseFloat(T_NOS).toFixed(0));
 
+    }
+</script>
 
 @using (Html.BeginForm())
 {
@@ -333,9 +491,9 @@
         @Html.HiddenFor(a => Model.maxdate)
         @Html.HiddenFor(a => Model.mindate)
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <input type="hidden" id="btnSave" value="@Url.Action(" SAVE", PageControllerName)" />
-        <input type="hidden" id="srhpnl" value="@Url.Action(" SearchPannelData", PageControllerName)" />
-        <input type="hidden" id="urlcancelrecord" value="@Url.Action(" cancelRecords", PageControllerName)" />
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
+        <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="UrlBarnoDetails" value="@Url.Action("GetBarCodeDetails", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
@@ -348,7 +506,7 @@
         @Html.HiddenFor(a => a.TAXGRPCD, new { id = "TAXGRPCD" })
         @Html.HiddenFor(a => a.MTRLJOBCD, new { id = "MTRLJOBCD" })
         @Html.HiddenFor(a => a.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
-
+        <input type="hidden" id="ModuleCode" value="@CommVar.ModuleCode()" />
         <input type="hidden" id="Defaultbar" value="Bar" />
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
@@ -367,11 +525,11 @@
                         <div class="editor-field">
                             @if (Model.DefaultAction == "A")
                     {
-                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                                @Html.DropDownListFor(model => model.T_PHYSTK_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
                             }
                             else
                             {
-                                @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                                @Html.DropDownListFor(model => model.T_PHYSTK_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
                             }
                         </div>
                     </div>
@@ -383,7 +541,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.T_CNTRL_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                            @Html.EditorFor(model => model.T_PHYSTK_HDR.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -429,15 +587,6 @@
                             @Html.EditorFor(model => model.T_PHYSTK_HDR.TREM, new { htmlAttributes = new { @class = "form-control", id = "TREM", @placeholder = "Remarks", maxlength = 100 } })
                         </div>
                     </div>
-                    @*@if (Model.DefaultAction != "V")
-                        {
-
-                        <div class="col-md-7">
-                            <div class="editor-field" style="margin-top: 2px;">
-                                <input type="button" class="btn btn-primary" style="padding:2px;" value="Get Pending Data " onclick="GetPendingData()" />
-                            </div>
-                        </div>
-                        }*@
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -499,14 +648,6 @@
 
                                 </div>
                             </div>
-                            @*<div class="col-md-1">
-                                <div class="editor-field">
-                                    @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');GetAllMtrljobcd();", @placeholder = "Material Job Code", maxlength = 2, @title = "Material Job Code" } })
-                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetMaterialJobDetails", PageControllerName)','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')" />
-                                    @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
-                                    @Html.HiddenFor(model => model.MTBARCODE, new { id = "MTBARCODE" })
-                                </div>
-                            </div>*@
                         </div>
                             <div class="row">
                                 <div class="col-md-2">
@@ -517,8 +658,12 @@
                                 </div>
                                 <div class="col-md-7">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/T_BARCODE=BARNO=0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/T_BARCODE=BARNO=0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE')", @placeholder = "Design No", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action(" GetBarCodeDetails", PageControllerName)','Bar Code Details','STYLENO','STYLENO=STYLENO =3/PARTCD =PARTCD =8/T_BARCODE =BARNO =0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE')" />
+                                      
+                                        @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/T_BARCODE=BARNO=0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/T_BARCODE=BARNO=0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE');", @placeholder = "Design No", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/T_BARCODE=BARNO=0/ITCD=itcd/ITSTYLE=itstyle/SHADE=shade/RATE=rate','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/T_BARCODE')" />
+
+
+
                                     </div>
                                 </div>
                                 @if (Model.M_SYSCNFG.MNTNSHADE == "Y")
@@ -571,6 +716,7 @@
                                     </div>
                                     @Html.HiddenFor(model => model.BALENO, new { id = "BALENO" })
                                     @Html.HiddenFor(model => model.BALEYR, new { id = "BALEYR" })
+                                    @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
 
                                 </div>
                                 <div class="row">
@@ -581,6 +727,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="editor-field">
+                                           
                                             @Html.EditorFor(model => model.LOCABIN, new { htmlAttributes = new { @class = "form-control textbox_image", id = "LOCABIN", onkeydown = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')", onblur = "GetHelpBlur('" + @Url.Action("GetLocationBinDetails", PageControllerName) + "','SLocation Binize Details','LOCABIN','LOCABIN=LOCABIN=2');", @placeholder = "Location Bin", maxlength = 10, @title = "Location Bin" } })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetLocationBinDetails", PageControllerName)','Location Bin Details','LOCABIN','LOCABIN=LOCABIN=2')" />
 
@@ -599,7 +746,7 @@
                                     <div class="col-md-1" style="width:auto;">
                                         @*<input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(A)" title="Click to Fill Data in Product Details" onclick="Add_BarCodeRow()" />*@
                                         <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="AddRow_Barcode" accesskey="A" value="Add Row(Alt+A)" title="Click to Fill Data in Barcode Details" onclick="AddBarCodeGrid_()" />
-                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="UpdateRow_Barcode" accesskey="W" value="Update Row(Alt+W)" title="Click to Update Data in Barcode Details" onclick="UpdateBarCodeRow()" />
+                                        <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="UpdateRow_Barcode" accesskey="W" value="Update Row(Alt+W)" title="Click to Update Data in Barcode Details" onclick="UpdateBarCodeRow_()" />
                                         <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Clear_Barcode" accesskey="Z" value="Clear(Alt+Z)" title="Click to Clear" onclick="ClearBarcodeArea_('Y')" />
 
                                     </div>
