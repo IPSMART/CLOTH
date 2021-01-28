@@ -179,7 +179,6 @@
         <input type="hidden" id="MTRLJOBCD" value="" />
         <input type="hidden" id="Defaultbar" value="Bar" />
         <input type="hidden" id="Defaultstyle" value="Style" />
-        <input type="hidden" id="TabFrom" value="Maintab" />
         @Html.HiddenFor(s => s.DefaultAction, new { id = "DefaultAction" })
         @Html.HiddenFor(s => s.MENU_PARA, new { id = "MENU_PARA" })
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
@@ -192,6 +191,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNFLAGMTR, new { id = "MNTNFLAGMTR" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSHADE, new { id = "MNTNSHADE" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -454,7 +454,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 15, @placeholder = "Memo Amount", @style = "font-weight:bold;font-size:15px;text-align:right", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.MEMOAMT, new { htmlAttributes = new { @class = "form-control", id = "MEMOAMT", maxlength = 15, @placeholder = "Memo Amount", @style = "font-weight:bold;font-size:15px;text-align:right", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-5" style="width: auto;">
@@ -484,7 +484,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.PAYABLE, new { htmlAttributes = new { @class = "form-control", id = "PAYABLE", maxlength = 15, @placeholder = "Payable Amount", @style = "text-align:right", @TabIndex = -1, @readonly = "readonly" } })
+                                @Html.EditorFor(model => model.T_TXN.BLAMT, new { htmlAttributes = new { @class = "form-control", id = "BLAMT", maxlength = 14, @placeholder = "Payable Amount", @style = "text-align:right", @TabIndex = -1, @readonly = "readonly" } })
                             </div>
                         </div>
                         <div class="col-md-5" style="width: auto;">
@@ -578,8 +578,8 @@
                                 </div>
                                 <div class="col-md-8">
                                     <div class="editor-field">
-                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "M_BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','M_BARCODE','M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE/TabFrom')", onblur = "GetBarnoDetails('M_BARCODE',Defaultbar.value,TabFrom.value);", @placeholder = "Bar Code", maxlength = 25 } })
-                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','M_BARCODE','M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE/TabFrom')" />
+                                        @Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "M_BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','M_BARCODE','M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE')", onblur = "GetBarnoDetails('M_BARCODE',Defaultbar.value);", @placeholder = "Bar Code", maxlength = 25 } })
+                                        <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','M_BARCODE','M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/M_STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/M_BARCODE')" />
                                         @Html.HiddenFor(a => a.PARTCD, new { id = "PARTCD" })
                                         @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')", onblur = "SelectBARCODEDetail(this.value,BARCODE,DOCDT)", @placeholder = "Bar Code", maxlength = 25 } })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
@@ -593,8 +593,8 @@
                                 </div>
                                                             <div class="col-md-7">
                                                                 <div class="editor-field">
-                                                                    @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "M_STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','M_STYLENO','M_STYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE/TabFrom')", onblur = "GetBarnoDetails('M_STYLENO',Defaultstyle.value,TabFrom.value);", @placeholder = "Design No", maxlength = 25 } })
-                                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','M_STYLENO','M_STYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE/TabFrom')" />
+                                                                    @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "M_STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','M_STYLENO','M_STYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", onblur = "GetBarnoDetails('M_STYLENO',Defaultstyle.value);", @placeholder = "Design No", maxlength = 25 } })
+                                                                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','M_STYLENO','M_STYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')" />
                                                                 </div>
                                                             </div>
                             }
