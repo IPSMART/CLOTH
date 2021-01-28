@@ -1,4 +1,4 @@
-﻿function GetBarnoDetails(barhlpId, HelpFrom,TabFrom) {
+﻿function GetBarnoDetails(barhlpId, HelpFrom) {
     debugger;
     var ID = $("#" + barhlpId).val();
     var DefaultAction = $("#DefaultAction").val();
@@ -20,7 +20,7 @@
             if ($("#TAXGRPCD").val() == "") { $("#M_BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
             if ($("#PRCCD").val() == "") { $("#M_BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
         } else if (barhlpId == 'R_BARCODE' || barhlpId == 'R_STYLENO') {
-            BARCODE = $("#M_BARCODE").val();
+            BARCODE = $("#R_BARCODE").val();
             if ($("#TAXGRPCD").val() == "") { $("#R_BARCODE").val(""); msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
             if ($("#PRCCD").val() == "") { $("#R_BARCODE").val(""); msgInfo("Price Code not available.Please Select / Enter another Party Code to get Price Code"); message_value = "SLCD"; return false; }
         }
@@ -58,7 +58,7 @@
             ReferanceFieldID = "/R_BARCODE";
             ReferanceFieldIndex = "/0";
         }
-        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE + String.fromCharCode(181) + TabFrom;
+        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE;
 
         $.ajax({
             type: 'POST',
@@ -193,6 +193,7 @@ function AddMainRow(hlpstr) {
     var MNTNPART = $("#MNTNPART").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
     var MNTNSIZE = $("#MNTNSIZE").val();
+    var MNTNSHADE = $("#MNTNSHADE").val();
     var INCLRATEASK = $("#INCLRATEASK").val();
 
     var BARNO = returncolvalue(hlpstr, "BARNO");
@@ -203,6 +204,7 @@ function AddMainRow(hlpstr) {
     var COLRNM = returncolvalue(hlpstr, "COLRNM");
     var SIZECD = returncolvalue(hlpstr, "SIZECD");
     var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");
+    var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
     var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOMCD");
     var NOS = returncolvalue(hlpstr, "NOS");
@@ -281,12 +283,17 @@ function AddMainRow(hlpstr) {
         tr += '     <input id="B_SZBARCODE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SZBARCODE" type="hidden" value="">';
         tr += ' </td>';
     }
-    tr += ' <td class="" title="">';
-    tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SHADE" type="text" value="">';
-    tr += ' </td>';
+    if (MNTNSHADE == "Y") {
+        tr += ' <td class="" title="">';
+        tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SHADE" type="text" value="">';
+        tr += ' </td>';
+    }
+    else {
+        tr += '   <input id="B_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].SHADE" type="hidden" value="">';
+    }
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor  text-box single-line" data-val="true" data-val-number="The field BALSTOCK must be a number." id="B_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
-    tr += '     <input id="B_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
+    tr += '     <input id="B_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
@@ -395,6 +402,7 @@ function AddReturnRow(hlpstr) {
     var MNTNPART = $("#MNTNPART").val();
     var MNTNCOLOR = $("#MNTNCOLOR").val();
     var MNTNSIZE = $("#MNTNSIZE").val();
+    var MNTNSHADE = $("#MNTNSHADE").val();
     var INCLRATEASK = $("#INCLRATEASK").val();
     var BARNO = returncolvalue(hlpstr, "BARNO");
     var ITGRPNM = returncolvalue(hlpstr, "ITGRPNM");
@@ -404,6 +412,7 @@ function AddReturnRow(hlpstr) {
     var COLRNM = returncolvalue(hlpstr, "COLRNM");
     var SIZECD = returncolvalue(hlpstr, "SIZECD");
     var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");
+    var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
     var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOMCD");
     var NOS = returncolvalue(hlpstr, "NOS");
@@ -488,9 +497,14 @@ function AddReturnRow(hlpstr) {
         tr += '     <input id="R_SZBARCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SZBARCODE" type="hidden" value="">';
         tr += ' </td>';
     }
+    if (MNTNSHADE == "Y") {
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="R_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SHADE" type="text" value="">';
     tr += ' </td>';
+    }
+    else {
+        tr += '   <input id="R_SHADE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].SHADE" type="hidden" value="">';
+    }
     //tr += ' <td class="" title="">';
     //tr += '     <input tabindex="-1" class=" atextBoxFor  text-box single-line" data-val="true" data-val-number="The field BALSTOCK must be a number." id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" readonly="readonly" style="text-align: right;" type="text" value="' + BALSTOCK + '">';
     //tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
@@ -501,7 +515,7 @@ function AddReturnRow(hlpstr) {
     tr += ' <td class="" title="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
     tr += '     <input id="R_BALSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BALSTOCK" type="hidden" value="' + BALSTOCK + '">';
-    tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
+    tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="R_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -979,21 +993,7 @@ function CalculateTotal() {
         totalbillamt = parseFloat(totalbillamt) - parseFloat(totaltax);
         totalRbillamt = parseFloat(totalRbillamt) - parseFloat(totaltax);
     }
-    if (ROUND_TAG == true) {
-        TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
-        TOTAL_ROUND = TOTAL_BILL_AMOUNT - totalbillamt;
-        R_TOTAL_BILL_AMOUNT = Math.round(totalRbillamt);
-        R_TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalRbillamt;
-        document.getElementById("BLAMT").value = parseFloat(TOTAL_BILL_AMOUNT).toFixed(2);
-        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
-        //document.getElementById("RETAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
-    }
-    else {
-        TOTAL_ROUND = 0;
-        document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
-        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
-        //document.getElementById("RETAMT").value = parseFloat(totalRbillamt).toFixed(2);
-    }
+   
     document.getElementById("RETAMT").value = parseFloat(totalRbillamt).toFixed(2);
     var RETAMT = document.getElementById("RETAMT").value;
     if (RETAMT == "") { RETAMT = parseFloat(0); } else { RETAMT = parseFloat(RETAMT) }
@@ -1003,10 +1003,28 @@ function CalculateTotal() {
     document.getElementById("PAYAMT").value = parseFloat(T_PYMT_AMT).toFixed(2);
     document.getElementById("RETAMT").value = parseFloat(RETAMT).toFixed(2);
     document.getElementById("OTHAMT").value = parseFloat(T_NET_AMT).toFixed(2);
-    document.getElementById("PAYABLE").value = retFloat(parseFloat(document.getElementById("BLAMT").value) - parseFloat(RETAMT)).toFixed(2);
-    document.getElementById("NETDUE").value = retFloat(parseFloat($("#PAYABLE").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
+    document.getElementById("MEMOAMT").value = parseFloat(totalbillamt).toFixed(2);
+    //document.getElementById("BLAMT").value = retFloat(parseFloat(document.getElementById("MEMOAMT").value) - parseFloat(RETAMT) + parseFloat(T_NET_AMT)).toFixed(2);
+   
 
-
+    var blamt = retFloat(parseFloat(totalbillamt) - parseFloat(RETAMT) + parseFloat(T_NET_AMT));
+    if (ROUND_TAG == true) {
+        TOTAL_BILL_AMOUNT = Math.round(blamt);
+        TOTAL_ROUND = TOTAL_BILL_AMOUNT - blamt;
+        R_TOTAL_BILL_AMOUNT = Math.round(totalRbillamt);
+        R_TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalRbillamt;
+        document.getElementById("BLAMT").value = parseFloat(TOTAL_BILL_AMOUNT).toFixed(2);
+        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+        //document.getElementById("RETAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+    }
+    else {
+        TOTAL_ROUND = 0;
+        document.getElementById("BLAMT").value = parseFloat(blamt).toFixed(2);
+        document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
+        //document.getElementById("RETAMT").value = parseFloat(totalRbillamt).toFixed(2);
+    }
+    var aa = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
+    document.getElementById("NETDUE").value = retFloat(parseFloat($("#BLAMT").val()) - parseFloat(T_PYMT_AMT)).toFixed(2);
     //SALESMAN GRID TOTAL
     var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
 
@@ -1014,14 +1032,14 @@ function CalculateTotal() {
     var R_T_TXBLVAL = retFloat($("#R_T_AMT").val());
 
     var R_T_GROSS_AMT = retFloat($("#R_T_GROSS_AMT").val());
-    var PAYABLE = retFloat($("#PAYABLE").val());
+    var BLAMT = retFloat($("#BLAMT").val());
     var Mtaxamt = T_TXBLVAL;
     //var Rtaxamt = R_T_GROSS_AMT;
     var Rtaxamt = R_T_TXBLVAL;
     var t_blamt = 0; var t_itamt = 0; var t_per = 0;
     for (var i = 0; i <= GridRow - 1; i++) {
         var PER_ = retFloat($("#S_PER_" + i).val());
-        var blamt = parseFloat(PAYABLE * PER_) / 100;
+        var blamt = parseFloat(BLAMT * PER_) / 100;
         $("#S_BLAMT_" + i).val(retFloat(blamt).toFixed(2));
 
         var itamt = parseFloat(Mtaxamt) - parseFloat(Rtaxamt);
