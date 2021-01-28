@@ -310,6 +310,7 @@
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
+    <Compile Include="Controllers\T_DataUploadController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_OUTRECPROCESSController.cs" />
     <Compile Include="Controllers\T_PhyStockController.cs" />
@@ -702,6 +703,7 @@
     <Compile Include="ViewModels\BillTypeMaster.cs" />
     <Compile Include="ViewModels\BOMMasterEntry.cs" />
     <Compile Include="ViewModels\BrandEntry.cs" />
+    <Compile Include="ViewModels\DataUploadVM.cs" />
     <Compile Include="ViewModels\GenEinvIRN.cs" />
     <Compile Include="ViewModels\GenEinvIRNCancel.cs" />
     <Compile Include="ViewModels\ImageLinkBarcode.cs" />
@@ -1270,6 +1272,7 @@
     <Content Include="Views\Shared\_T_SALE_RateHistoryGrid.cshtml" />
     <Content Include="Views\T_PhyStock\T_PhyStock.cshtml" />
     <Content Include="Views\Shared\_T_PhyStock_BarTab.cshtml" />
+    <Content Include="Views\T_DataUpload\T_DataUpload.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
