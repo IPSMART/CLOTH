@@ -39,7 +39,7 @@
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 20px;"></th>
-                                <th class="" style="width: 20px;text-align:center;left:17px">SL No</th>
+                                <th class="sticky-cell" style="width: 20px;text-align:center;left:17px">SL No</th>
                                 <th class="" style="width: 100px;">Bar No.</th>
                                 <th class="" style="width:45px;">Style No</th>
                                 @if (Model.M_SYSCNFG.MNTNSHADE == "Y")
@@ -51,6 +51,8 @@
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
                                 <th class="" style="width:80px;text-align:right;">Rate</th>
                                 <th class="" style="width: 34px;">Stock Type</th>
+                                <th class="" style="width:160px;">Item Remarks</th>
+                                <th class="sticky-cell-opposite" style="width: 34px;"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,13 +68,15 @@
                                             @Html.HiddenFor(model => model.TPHYSTK[i].BALEYR, new { id = "B_BALEYR_" + i })
                                             @Html.HiddenFor(model => model.TPHYSTK[i].LOCABIN, new { id = "B_LOCABIN_" + i })
                                             @Html.HiddenFor(model => model.TPHYSTK[i].MTRLJOBCD, new { id = "B_MTRLJOBCD_" + i })
+                                            @Html.HiddenFor(model => model.TPHYSTK[i].ITCD, new { id = "B_ITCD_" + i })
+                                            @Html.HiddenFor(model => model.TPHYSTK[i].ITSTYLE, new { id = "B_ITSTYLE_" + i })
                                             @if (Model.M_SYSCNFG.MNTNPART == "Y")
                                             {
                                                 @Html.HiddenFor(model => model.TPHYSTK[i].PARTCD, new { id = "B_PARTCD_" + i })
 
                                             }
                                         </td>
-                                        <td class="">
+                                        <td class="sticky-cell"  style="left:17px;">
                                             @Html.TextBoxFor(model => Model.TPHYSTK[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
@@ -114,7 +118,7 @@
                                             @Html.TextBoxFor(model => Model.TPHYSTK[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
                                         </td>
                                             <td class="sticky-cell-opposite">
-                                                <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea('', '_T_PhyStock_GRID', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
+                                                <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea_('', '_T_PhyStock_GRID', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </td>
                                     </tr>
                                 }
@@ -123,7 +127,7 @@
                         <tfoot>
                             <tr class="sticky-footer">
                                 <td class="sticky-cell" style="width:20px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
-                                <td class=""><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td class="sticky-cell"  style="left:17px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td style="text-align:right;">
                                     <input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right" readonly="readonly" />
                                 </td>
@@ -142,6 +146,8 @@
                                 </td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                               
                             </tr>
                         </tfoot>

@@ -52,6 +52,6 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double B_T_QNTY { get; set; }
         public string TAXGRPCD { get; set; }
-        
+        public short SLNO { get; set; }
     }
 }
