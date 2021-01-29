@@ -147,20 +147,7 @@ namespace Improvar.Controllers
                         {
                             if (parkID == "")
                             {
-                               string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-                                string sql = "";
-                                sql += " select a.prccd, a.prcnm ";
-                                sql += "  from " + scmf + ".m_prclst a ";
-                                sql += " where  a.prccd='WP' ";
-
-                                DataTable prcslist = Master_Help.SQLquery(sql);
-                                if (prcslist != null && prcslist.Rows.Count > 0)
-                                {
-                                   
-                                    VE.PRCCD = prcslist.Rows[0]["prccd"].retStr();
-                                    VE.PRCNM = prcslist.Rows[0]["prcnm"].retStr();
-                                   
-                                }
+                               
                                 T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                                 TCH.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 VE.T_CNTRL_HDR = TCH;
@@ -178,6 +165,20 @@ namespace Improvar.Controllers
                                 INIF.DeleteKey(Session["UR_ID"].ToString(), parkID, Server.MapPath("~/Park.ini"));
                             }
                             VE = (TransactionPhyStockEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
+                        }
+                        string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                        string sql = "";
+                        sql += " select a.prccd, a.prcnm ";
+                        sql += "  from " + scmf + ".m_prclst a ";
+                        sql += " where  a.prccd='WP' ";
+
+                        DataTable prcslist = Master_Help.SQLquery(sql);
+                        if (prcslist != null && prcslist.Rows.Count > 0)
+                        {
+
+                            VE.PRCCD = prcslist.Rows[0]["prccd"].retStr();
+                            VE.PRCNM = prcslist.Rows[0]["prcnm"].retStr();
+
                         }
                         var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
                         VE.M_SYSCNFG = MSYSCNFG;
@@ -227,10 +228,23 @@ namespace Improvar.Controllers
                 TBH = DB.T_PHYSTK_HDR.Find(aa[0].Trim());
                 TCH = DB.T_CNTRL_HDR.Find(TBH.AUTONO);
                 VE.GONM = TBH.GOCD.retStr() == "" ? "" : DBF.M_GODOWN.Where(a => a.GOCD == TBH.GOCD).Select(b => b.GONM).FirstOrDefault();
+                string scmf = CommVar.FinSchema(UNQSNO);  string Scm = CommVar.CurSchema(UNQSNO);
+                string sql = "";
+                sql += " select a.prccd, a.prcnm ";
+                sql += "  from " + scmf + ".m_prclst a ";
+                sql += " where  a.prccd='WP' ";
 
+                DataTable prcslist = Master_Help.SQLquery(sql);
+                if (prcslist != null && prcslist.Rows.Count > 0)
+                {
+
+                    VE.PRCCD = prcslist.Rows[0]["prccd"].retStr();
+                    VE.PRCNM = prcslist.Rows[0]["prcnm"].retStr();
+
+                }
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
-                string Scm = CommVar.CurSchema(UNQSNO);
+               
                 string str = "";
                 str += "select a.autono,b.itcd,a.slno,a.barno,a.stktype,a.mtrljobcd,a.partcd,a.nos,a.qnty,a.itrem,a.rate,a.cutlength,a.locabin,a.shade,a.baleyr,a.baleno,c.styleno||' '||c.itnm itstyle ";
                 str += " from " + Scm + ".T_PHYSTK a," + Scm + ".t_batchmst b," + Scm + ".m_sitem c ";
@@ -578,14 +592,14 @@ namespace Improvar.Controllers
                         T_PHYSTK_HDR TBHDR = new T_PHYSTK_HDR();
                         T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                         string DOCPATTERN = "";
-                        TCH.DOCDT = VE.T_PHYSTK_HDR.DOCDT;
+                        TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
                         string Ddate = Convert.ToString(TCH.DOCDT);
                         TBHDR.CLCD = CommVar.ClientCode(UNQSNO);
                         string auto_no = ""; string Month = "", DOCNO = "", DOCCD = "";
                         if (VE.DefaultAction == "A")
                         {
                             TBHDR.EMD_NO = 0;
-                            DOCCD = VE.T_PHYSTK_HDR.DOCCD;
+                            DOCCD = VE.T_CNTRL_HDR.DOCCD;
                             DOCNO = Cn.MaxDocNumber(DOCCD, Ddate);
                             DOCPATTERN = Cn.DocPattern(Convert.ToInt32(DOCNO), DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
                             auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), DOCNO, DOCCD, Ddate);
@@ -594,7 +608,7 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            DOCCD = VE.T_PHYSTK_HDR.DOCCD;
+                            DOCCD = VE.T_CNTRL_HDR.DOCCD;
                             DOCNO = VE.T_CNTRL_HDR.DOCONLYNO;
                             TBHDR.AUTONO = VE.T_PHYSTK_HDR.AUTONO;
                             Month = VE.T_CNTRL_HDR.MNTHCD;
@@ -602,7 +616,7 @@ namespace Improvar.Controllers
                             if (MAXEMDNO == null) { TBHDR.EMD_NO = 0; } else { TBHDR.EMD_NO = Convert.ToInt16(MAXEMDNO + 1); }
                         }
                         TBHDR.DOCCD = DOCCD;
-                        TBHDR.DOCDT = VE.T_PHYSTK_HDR.DOCDT;
+                        TBHDR.DOCDT = TCH.DOCDT;
                         TBHDR.DOCNO = DOCNO;
                         TBHDR.GOCD = VE.T_PHYSTK_HDR.GOCD;
                         TBHDR.TREM = VE.T_PHYSTK_HDR.TREM;
