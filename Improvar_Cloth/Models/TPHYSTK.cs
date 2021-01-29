@@ -66,5 +66,8 @@ namespace Improvar.Models
         public string BALENO { get; set; }
         public string STYLENO { get; set; }
         public bool Checked { get; set; }
+        public string ITCD { get; set; }
+        public string ITSTYLE { get; set; }
+
     }
 }

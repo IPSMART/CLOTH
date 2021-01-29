@@ -127,6 +127,7 @@ namespace Improvar.Models
 
         public double? LISTDISCPER { get; set; }
 
-
+        [StringLength(1)]
+        public string STKTYPE { get; set; }
     }
 }

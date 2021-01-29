@@ -39,9 +39,9 @@ namespace Improvar.Models
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
 
-        [Required]
-        [StringLength(1)]
-        public string STKTYPE { get; set; }
+        //[Required]
+        //[StringLength(1)]
+        //public string STKTYPE { get; set; }
 
         [StringLength(2)]
         public string JOBCD { get; set; }

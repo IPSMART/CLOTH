@@ -216,7 +216,6 @@ namespace Improvar.ViewModels
         public DateTime? AGDOCDT { get; set; }
         public List<VECHLTYPE> VECHLTYPE { get; set; }
         public List<TRANSMODE> TRANSMODE { get; set; }
-        public string CRSLNM { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? LISTPRICE { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
