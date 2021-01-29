@@ -917,6 +917,7 @@ namespace Improvar.Controllers
                 {
                     OraTrans.Rollback();
                     OraCon.Dispose();
+                    Cn.SaveException(ex, "");
                     return Content(ex.Message + ex.InnerException);
                 }
             }

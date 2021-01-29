@@ -44,24 +44,24 @@ namespace Improvar.Controllers
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                     VE.DropDown_list_StkType = Master_Help.STK_TYPE();
                     VE.DropDown_list_MTRLJOBCD = Master_Help.MTRLJOBCD_List();
-                    string[] autoEntryWork = ThirdParty.Split('~');// for zooming
-                    if (autoEntryWork[0] == "yes")
-                    {
-                        autoEntryWork[2] = autoEntryWork[2].Replace("$$$$$$$$", "&");
-                    }
-                    if (autoEntryWork[0] == "yes")
-                    {
-                        if (autoEntryWork[4] == "Y")
-                        {
-                            DocumentType dp = new DocumentType();
-                            dp.text = autoEntryWork[2];
-                            dp.value = autoEntryWork[1];
-                            VE.DocumentType.Clear();
-                            VE.DocumentType.Add(dp);
-                            VE.Edit = "E";
-                            VE.Delete = "D";
-                        }
-                    }
+                    //string[] autoEntryWork = ThirdParty.Split('~');// for zooming
+                    //if (autoEntryWork[0] == "yes")
+                    //{
+                    //    autoEntryWork[2] = autoEntryWork[2].Replace("$$$$$$$$", "&");
+                    //}
+                    //if (autoEntryWork[0] == "yes")
+                    //{
+                    //    if (autoEntryWork[4] == "Y")
+                    //    {
+                    //        DocumentType dp = new DocumentType();
+                    //        dp.text = autoEntryWork[2];
+                    //        dp.value = autoEntryWork[1];
+                    //        VE.DocumentType.Clear();
+                    //        VE.DocumentType.Add(dp);
+                    //        VE.Edit = "E";
+                    //        VE.Delete = "D";
+                    //    }
+                    //}
 
                     if (op.Length != 0)
                     {
@@ -264,9 +264,9 @@ namespace Improvar.Controllers
             string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
             string sql = "";
 
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd,a.gocd ";
-            sql += "from " + scm + ".T_PHYSTK_HDR a, " + scm + ".t_cntrl_hdr b ";
-            sql += "where a.autono=b.autono and b.doccd in (" + doccd + ") and ";
+            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd,a.gocd,c.gonm ";
+            sql += "from " + scm + ".T_PHYSTK_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_godown c ";
+            sql += "where a.autono=b.autono and a.gocd=c.gocd(+) and b.doccd in (" + doccd + ") and ";
             if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
@@ -276,19 +276,19 @@ namespace Improvar.Controllers
             DataTable tbl = Master_Help.SQLquery(sql);
 
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
-            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Party Name" + Cn.GCS() + "Registered Mobile No." + Cn.GCS() + "AUTO NO";
+            var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Godown Name" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= tbl.Rows.Count - 1; j++)
             {
-                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["slnm"] + "</b> [" + tbl.Rows[j]["district"] + "] (" + tbl.Rows[j]["mutslcd"] + ") </td><td>" + tbl.Rows[j]["regmobile"] + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
+                SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["gonm"] + "</b> [" + tbl.Rows[j]["gocd"] + "]</td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
             }
-            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "4", "4"));
+            return PartialView("_SearchPannel2", Master_Help.Generate_SearchPannel(hdr, SB.ToString(), "3", "3"));
         }
         public ActionResult GetBarCodeDetails(string val, string Code)
         {
             try
             {
                 //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/HelpFrom
-                TransactionSaleEntry VE = new TransactionSaleEntry();
+                TransactionPhyStockEntry VE = new TransactionPhyStockEntry();
                 Cn.getQueryString(VE);
                 var data = Code.Split(Convert.ToChar(Cn.GCS()));
                 string barnoOrStyle = val.retStr();
@@ -496,22 +496,30 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult ParkRecord(FormCollection FC, TransactionPhyStockEntry stream, string menuID, string menuIndex)
+        public ActionResult ParkRecord(FormCollection FC, TransactionPhyStockEntry stream)
         {
             try
             {
-                Connection cn = new Connection();
-                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO).ToString() + "*" + DateTime.Now;
+                Cn.getQueryString(stream);
+                if (stream.T_CNTRL_HDR.DOCCD.retStr() != "")
+                {
+                    stream.T_CNTRL_HDR.DOCCD = stream.T_CNTRL_HDR.DOCCD.retStr();
+                }
+                string MNUDET = stream.MENU_DETAILS;
+                var menuID = MNUDET.Split('~')[0];
+                var menuIndex = MNUDET.Split('~')[1];
+                string ID = menuID + menuIndex + CommVar.Loccd(UNQSNO) + CommVar.Compcd(UNQSNO) + CommVar.CurSchema(UNQSNO) + "*" + DateTime.Now;
                 ID = ID.Replace(" ", "_");
                 string Userid = Session["UR_ID"].ToString();
                 INI Handel_ini = new INI();
                 var javaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
                 string JR = javaScriptSerializer.Serialize(stream);
-                Handel_ini.IniWriteValue(Userid, ID, cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
+                Handel_ini.IniWriteValue(Userid, ID, Cn.Encrypt(JR), Server.MapPath("~/Park.ini"));
                 return Content("1");
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message);
             }
         }
@@ -524,6 +532,7 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                Cn.SaveException(ex, "");
                 return ex.Message;
             }
         }
@@ -677,7 +686,7 @@ namespace Improvar.Controllers
 
                         if (VE.DefaultAction == "A")
                         {
-                            ContentFlg = "1" + " (Issue No. " + DOCCD + DOCNO + ")~" + TBHDR.AUTONO;
+                            ContentFlg = "1" + " (Physical Stock No. " + DOCCD + DOCNO + ")~" + TBHDR.AUTONO;
                         }
                         else if (VE.DefaultAction == "E")
                         {
