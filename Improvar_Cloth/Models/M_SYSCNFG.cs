@@ -98,5 +98,7 @@ namespace Improvar.Models
         public string MNTNOURDESIGN { get; set; }
         [StringLength(1)]
         public string MNTNBALE { get; set; }
+        [StringLength(1)]
+        public string MNTNPCSTYPE { get; set; }
     }
 }

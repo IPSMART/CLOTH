@@ -129,5 +129,7 @@ namespace Improvar.Models
 
         [StringLength(1)]
         public string STKTYPE { get; set; }
+        [StringLength(15)]
+        public string PCSTYPE { get; set; }
     }
 }
