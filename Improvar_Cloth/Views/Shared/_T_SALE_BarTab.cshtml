@@ -110,18 +110,22 @@
                                     <th class="" style="width:50px;">Or Sl</th>
                                     <th class="" style="width:102px;">Order Date</th>
                                 }
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                                {
+                                    <th class="" style="width:160px;">Pcs. Type</th>
+                                }
                                 <th class="" style="width:160px;">Item Remarks</th>
                                 <th class="" style="width:30px; text-align:center">Img</th>
                                 <th class="">Image Upload</th>
-                               
+
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
-                                <th class="sticky-cell-opposite" style="width:43px;text-align:right;right:40px;">Rate Hist</th>
+                                    <th class="sticky-cell-opposite" style="width:43px;text-align:right;right:40px;">Rate Hist</th>
                                     <th class="sticky-cell-opposite" style="width:40px;"></th>
                                 }
                                 else
                                 {
-                                <th class="sticky-cell-opposite" style="width:43px;text-align:right;">Rate Hist</th>
+                                    <th class="sticky-cell-opposite" style="width:43px;text-align:right;">Rate Hist</th>
                                 }
                             </tr>
                         </thead>
@@ -242,7 +246,7 @@
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].UOM, new { id = "B_UOM_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                         </td>
 
-                                       
+
                                         @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                         {
                                             <td class="">
@@ -345,6 +349,12 @@
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].ORDDOCDT, new { htmlAttributes = new { id = "B_ORDDOCDT_" + i, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
                                             </td>
                                         }
+                                        @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                                        {
+                                            <td class="">
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 5 })
+                                            </td>
+                                        }
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].ITREM, new { id = "B_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal", onblur = "HasChangeBarSale();" })
                                         </td>
@@ -364,9 +374,9 @@
                                         </td>
                                         @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                         {
-                                        <td class="sticky-cell-opposite" style="right:40px;">
-                                            <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('B_ITCD_@i','B_ITSTYLE_@i','POPUP')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
-                                        </td>
+                                            <td class="sticky-cell-opposite" style="right:40px;">
+                                                <button class="atextBoxFor btn-info" type="button" id="btnRateHistory_@i" title="Rate History" onclick="RateHistoryDetails('B_ITCD_@i','B_ITSTYLE_@i','POPUP')" data-toggle="modal" data-target="#RateHistoryModal">Show</button>
+                                            </td>
                                             <td class="sticky-cell-opposite">
                                                 <button type="button" class="atextBoxFor btn-info" onclick="FillBarcodeArea('', '_T_SALE_PRODUCT_GRID', @i);" title="CLICK HERE TO EDIT BARCODEDATA"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </td>
@@ -469,13 +479,17 @@
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
+                                @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*upload*@
                                 @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
                                 {
-                                <td class="sticky-cell-opposite" style="right:40px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*rate hist*@
+                                    <td class="sticky-cell-opposite" style="right:40px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>@*rate hist*@
                                     <td class="sticky-cell-opposite"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
                                 else
@@ -493,10 +507,10 @@
             <div class="col-md-1" style="width:auto;">
                     <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="EditBarCodeRow()" />
                 </div>
-        </div>*@
-    @*<div class="row">
+        </div>
+     <div class="row">
             <div class="col-md-1" style="width:auto;">
                 <input type="button" class="btn btn-primary" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="Edit" value="Edit Row" title="Click to Fill Data in Product Details" onclick="EditBarCodeRow()" />
             </div>
         </div>*@
-</div>
+  

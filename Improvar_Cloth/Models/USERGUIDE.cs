@@ -29,7 +29,7 @@ namespace Improvar.Models
         [Required]
         [StringLength(10)]
         public string MODULE_CODE { get; set; }
-        public short SLNO { get; set; }
+        public int SLNO { get; set; }
         public bool Checked { get; set; }
     }
 }

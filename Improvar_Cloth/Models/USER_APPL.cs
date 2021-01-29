@@ -125,7 +125,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string OUTACCESS { get; set; }
 
-        public DateTime? DEACT_OUT { get; set; }
+        public DateTime? DEACT_OUTACCESS { get; set; }
 
         [StringLength(1)]
         public string MOBAPP1 { get; set; }

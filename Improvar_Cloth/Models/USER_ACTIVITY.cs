@@ -9,9 +9,6 @@ namespace Improvar.Models
     [Table("USER_ACTIVITY")]
     public partial class USER_ACTIVITY
     {
-        [StringLength(1)]
-        public string DTAG { get; set; }
-
         [Key]
         [Column(Order = 0)]
         [StringLength(40)]
