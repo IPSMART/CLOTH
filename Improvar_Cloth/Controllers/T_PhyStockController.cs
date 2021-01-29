@@ -44,30 +44,6 @@ namespace Improvar.Controllers
                     VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                     VE.DropDown_list_StkType = Master_Help.STK_TYPE();
                     VE.DropDown_list_MTRLJOBCD = Master_Help.MTRLJOBCD_List();
-                    if (VE.DropDown_list_MTRLJOBCD.Count() == 1)
-                    {
-                        VE.DropDown_list_MTRLJOBCD[0].Checked = true;
-                    }
-                    else
-                    {
-                        foreach (var v in VE.DropDown_list_MTRLJOBCD)
-                        {
-                            if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP")
-                            {
-                                if (v.MTRLJOBCD == "FS" || v.MTRLJOBCD == "PL" || v.MTRLJOBCD == "DY")
-                                {
-                                    v.Checked = true;
-                                }
-                            }
-                            else
-                            {
-                                if (v.MTRLJOBCD == "FS")
-                                {
-                                    v.Checked = true;
-                                }
-                            }
-                        }
-                    }
                     string[] autoEntryWork = ThirdParty.Split('~');// for zooming
                     if (autoEntryWork[0] == "yes")
                     {
@@ -167,19 +143,19 @@ namespace Improvar.Controllers
                             VE = (TransactionPhyStockEntry)Cn.CheckPark(VE, VE.MenuID, VE.MenuIndex, LOC, COM, CommVar.CurSchema(UNQSNO).ToString(), Server.MapPath("~/Park.ini"), Session["UR_ID"].ToString());
                         }
                         string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-                        string sql = "";
-                        sql += " select a.prccd, a.prcnm ";
-                        sql += "  from " + scmf + ".m_prclst a ";
-                        sql += " where  a.prccd='WP' ";
+                        //string sql = "";
+                        //sql += " select a.prccd, a.prcnm ";
+                        //sql += "  from " + scmf + ".m_prclst a ";
+                        //sql += " where  a.prccd='WP' ";
 
-                        DataTable prcslist = Master_Help.SQLquery(sql);
-                        if (prcslist != null && prcslist.Rows.Count > 0)
-                        {
+                        //DataTable prcslist = Master_Help.SQLquery(sql);
+                        //if (prcslist != null && prcslist.Rows.Count > 0)
+                        //{
 
-                            VE.PRCCD = prcslist.Rows[0]["prccd"].retStr();
-                            VE.PRCNM = prcslist.Rows[0]["prcnm"].retStr();
+                        VE.PRCCD = "WP"; //prcslist.Rows[0]["prccd"].retStr();
+                        //    VE.PRCNM = prcslist.Rows[0]["prcnm"].retStr();
 
-                        }
+                        //}
                         var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
                         VE.M_SYSCNFG = MSYSCNFG;
                     }
@@ -229,19 +205,19 @@ namespace Improvar.Controllers
                 TCH = DB.T_CNTRL_HDR.Find(TBH.AUTONO);
                 VE.GONM = TBH.GOCD.retStr() == "" ? "" : DBF.M_GODOWN.Where(a => a.GOCD == TBH.GOCD).Select(b => b.GONM).FirstOrDefault();
                 string scmf = CommVar.FinSchema(UNQSNO);  string Scm = CommVar.CurSchema(UNQSNO);
-                string sql = "";
-                sql += " select a.prccd, a.prcnm ";
-                sql += "  from " + scmf + ".m_prclst a ";
-                sql += " where  a.prccd='WP' ";
+                //string sql = "";
+                //sql += " select a.prccd, a.prcnm ";
+                //sql += "  from " + scmf + ".m_prclst a ";
+                //sql += " where  a.prccd='WP' ";
 
-                DataTable prcslist = Master_Help.SQLquery(sql);
-                if (prcslist != null && prcslist.Rows.Count > 0)
-                {
+                //DataTable prcslist = Master_Help.SQLquery(sql);
+                //if (prcslist != null && prcslist.Rows.Count > 0)
+                //{
 
-                    VE.PRCCD = prcslist.Rows[0]["prccd"].retStr();
-                    VE.PRCNM = prcslist.Rows[0]["prcnm"].retStr();
+                    VE.PRCCD ="WP"; //prcslist.Rows[0]["prccd"].retStr();
+                //    VE.PRCNM = prcslist.Rows[0]["prcnm"].retStr();
 
-                }
+                //}
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TBH.AUTONO);
                
@@ -272,11 +248,6 @@ namespace Improvar.Controllers
                               }).OrderBy(s => s.SLNO).ToList();
                 VE.B_T_QNTY = VE.TPHYSTK.Sum(a => a.QNTY).retDbl();
                 VE.B_T_NOS = VE.TPHYSTK.Sum(a => a.NOS).retDbl();
-                //foreach (var q in VE.TPHYSTK)
-                //{
-                //    VE.DRCR = q.DRCR;
-
-                //}
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
@@ -293,13 +264,13 @@ namespace Improvar.Controllers
             string doccd = DocumentType.Select(i => i.value).ToArray().retSqlfromStrarray();
             string sql = "";
 
-            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd, a.mutslcd, c.slnm, c.district,c.regmobile ";
-            sql += "from " + scm + ".T_PHYSTK_HDR a, " + scm + ".t_cntrl_hdr b, " + scmf + ".m_subleg c  ";
-            sql += "where a.autono=b.autono and a.mutslcd=c.slcd(+) and b.doccd in (" + doccd + ") and ";
+            sql = "select a.autono, b.docno, to_char(b.docdt,'dd/mm/yyyy') docdt, b.doccd,a.gocd ";
+            sql += "from " + scm + ".T_PHYSTK_HDR a, " + scm + ".t_cntrl_hdr b ";
+            sql += "where a.autono=b.autono and b.doccd in (" + doccd + ") and ";
             if (SRC_FDT.retStr() != "") sql += "b.docdt >= to_date('" + SRC_FDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_TDT.retStr() != "") sql += "b.docdt <= to_date('" + SRC_TDT.retDateStr() + "','dd/mm/yyyy') and ";
             if (SRC_DOCNO.retStr() != "") sql += "(b.vchrno like '%" + SRC_DOCNO.retStr() + "%' or b.docno like '%" + SRC_DOCNO.retStr() + "%') and ";
-            if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
+           // if (SRC_SLCD.retStr() != "") sql += "(a.slcd like '%" + SRC_SLCD.retStr() + "%' or upper(c.slnm) like '%" + SRC_SLCD.retStr().ToUpper() + "%') and ";
             sql += "b.loccd='" + LOC + "' and b.compcd='" + COM + "' and b.yr_cd='" + yrcd + "' ";
             sql += "order by docdt, docno ";
             DataTable tbl = Master_Help.SQLquery(sql);

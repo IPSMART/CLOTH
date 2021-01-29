@@ -6,14 +6,7 @@
 
     });
 </script>
-<script>
-    $(function () {
-        if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
-            debugger;
-            $(".agdocdt").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
-        }
-    });
-</script>
+
 <div style="transform: translate(0%, 0%);z-index: 1100;">
     <div class="table-responsive">
         @if (Model.DefaultView == true)
@@ -23,7 +16,7 @@
                 @*<input type="text" id="AddRowsMain" name="AddRowsMain" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />*@
                 @*<img src="~/Image/Plus.png" id="btnAddMain" title="Add Row" class="HelB_image_buttonAddRemove" onclick="AddRow('AddRowsMain')" />*@
               
-                <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteBarnoRow()" />
+                <img src="~/Image/Minus.png" id="btnDeleteMain" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
                 
                 <div class="col-md-8">
                     <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_PhyStock_GRID');" />
@@ -35,13 +28,13 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;max-height:235px;">
-                    <table id="_T_PhyStock_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1775px;">
+                    <table id="_T_PhyStock_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width: 1121px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 20px;"></th>
                                 <th class="sticky-cell" style="width: 20px;text-align:center;left:17px">SL No</th>
                                 <th class="" style="width: 100px;">Bar No.</th>
-                                <th class="" style="width:45px;">Style No</th>
+                                <th class="" style="width:103px;">Style No</th>
                                 @if (Model.M_SYSCNFG.MNTNSHADE == "Y")
                                 {
                                     <th class="" style="width: 50px;">Shade</th>

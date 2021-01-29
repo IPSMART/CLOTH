@@ -270,7 +270,11 @@
         var MENU_PARA = $("#MENU_PARA").val();
         var MNTNPART = $("#MNTNPART").val();
         var MNTNSHADE = $("#MNTNSHADE").val();
-      
+        if ($("#T_BARCODE").val() == "") {
+            msgInfo("Please Select/Enter Bar No.!");
+            message_value = "T_BARCODE";
+            return false;
+        }
         if ($("#QNTY").val() == "0") {
             msgInfo("Quantity should not be zero(0) !");
             message_value = "QNTY";
@@ -783,7 +787,7 @@
                                     <div class="col-md-3" style="width:auto;">
                                     </div>
                                 </div>
-                                <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;">
+                                <div style="margin-top:4px;background-color:#c4b9b9;border:5px groove;width: fit-content;">
                                     <div id="partialdivBarCodeTab">
                                         @Html.Partial("_T_PhyStock_BarTab")
                                     </div>
