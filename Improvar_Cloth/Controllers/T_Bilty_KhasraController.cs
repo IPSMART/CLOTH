@@ -352,7 +352,8 @@ namespace Improvar.Controllers
                 if (VE.TBILTYKHASRA != null)
                 {//checked when opend secone times.
                     var selectedbill = VE.TBILTYKHASRA.Select(e => e.BLAUTONO).Distinct().ToList();
-                    VE.TBILTYKHASRA_POPUP.Where(x => selectedbill.Contains(x.BLAUTONO)).ForEach(e => e.Checked = true);
+                    var selectedbillbaleno = VE.TBILTYKHASRA.Select(e => e.BALENO).Distinct().ToList();
+                    VE.TBILTYKHASRA_POPUP.Where(x => selectedbill.Contains(x.BLAUTONO) && selectedbillbaleno.Contains(x.BALENO)).ForEach(e => e.Checked = true);
                 }
                 for (int p = 0; p <= VE.TBILTYKHASRA_POPUP.Count - 1; p++)
                 {
@@ -385,12 +386,14 @@ namespace Improvar.Controllers
             try
             {
                 string GC = Cn.GCS();
+                List<string> baleno = new List<string>();
                 List<string> blautonos = new List<string>();
                 foreach (var i in VE.TBILTYKHASRA_POPUP)
                 {
                     if (i.Checked == true)
                     {
                         blautonos.Add(i.BLAUTONO);
+                        baleno.Add(i.BALENO);
                     }
                 }
                 DataTable dt = new DataTable();
@@ -408,6 +411,8 @@ namespace Improvar.Controllers
                     dt = dv.ToTable(true);
                 }
                 VE.TBILTYKHASRA = (from DataRow dr in dt.Rows
+                                   where baleno.Contains(dr["baleno"].retStr()) 
+                                   && blautonos.Contains(dr["blautono"].retStr())
                                    select new TBILTYKHASRA
                                    {
                                        BLAUTONO = dr["blautono"].retStr(),
