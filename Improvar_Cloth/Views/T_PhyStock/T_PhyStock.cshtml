@@ -308,9 +308,9 @@
             tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].SHADE" readonly="readonly" type="text" value="' + SHADE + '">';
             tr += '    </td>';
         }
-        else {
-            tr += '        <input id="B_SHADE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].SHADE" type="hidden" value="' + SHADE + '">';
-        }
+        //else {
+        //    tr += '        <input id="B_SHADE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].SHADE" type="hidden" value="' + SHADE + '">';
+        //}
         tr += '    <td class="" title="' + CUTLENGTH + '">';
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TPHYSTK[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty_(\'_T_PhyStock_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
         tr += '    </td>';

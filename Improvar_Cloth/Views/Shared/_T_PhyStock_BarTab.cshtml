@@ -73,7 +73,7 @@
                                             @Html.TextBoxFor(model => Model.TPHYSTK[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPHYSTK[i].BARNO, new { id = "B_BARNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPHYSTK[i].BARNO, new { id = "B_BARNO_" + i, @class = " atextBoxFor ", maxlength = 4, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPHYSTK[i].STYLENO, new { htmlAttributes = new { id = "B_STYLENO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
@@ -86,10 +86,10 @@
                                                 @Html.TextBoxFor(model => Model.TPHYSTK[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
                                         }
-                                        else
+                                        @*else
                                         {
                                             @Html.HiddenFor(model => model.TPHYSTK[i].SHADE, new { id = "B_SHADE_" + i })
-                                        }
+                                        }*@
                                       
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPHYSTK[i].CUTLENGTH, new { htmlAttributes = new { id = "B_CUTLENGTH_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @onchange = "CalculateBargridQnty_('_T_PhyStock_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 6 } })
