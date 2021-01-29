@@ -1006,8 +1006,15 @@ function CalculateTotal() {
     document.getElementById("MEMOAMT").value = parseFloat(totalbillamt).toFixed(2);
     //document.getElementById("BLAMT").value = retFloat(parseFloat(document.getElementById("MEMOAMT").value) - parseFloat(RETAMT) + parseFloat(T_NET_AMT)).toFixed(2);
    
+    var blamt = 0;
+    if (MENU_PARA == "SBCM") {
+        blamt = retFloat(parseFloat(totalbillamt) - parseFloat(RETAMT) + parseFloat(T_NET_AMT));
 
-    var blamt = retFloat(parseFloat(totalbillamt) - parseFloat(RETAMT) + parseFloat(T_NET_AMT));
+    }
+    else {
+        blamt = retFloat((parseFloat(RETAMT) + parseFloat(T_NET_AMT))* -1);
+
+    }
     if (ROUND_TAG == true) {
         TOTAL_BILL_AMOUNT = Math.round(blamt);
         TOTAL_ROUND = TOTAL_BILL_AMOUNT - blamt;

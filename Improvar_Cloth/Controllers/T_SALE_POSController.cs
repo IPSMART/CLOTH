@@ -3009,6 +3009,7 @@ namespace Improvar.Controllers
                                 isl = isl + 1;
                                 string negamt = AMTGLCD[i].TXBLVAL.retDbl() < 0 ? "Y" : "N";
                                 string proddrcr = negamt == "Y" ? dr : cr;
+                                if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
 
                                 dbamt = AMTGLCD[i].TXBLVAL.retDbl() * (negamt == "Y" ? -1 : 1);
                                 dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr, AMTGLCD[i].GLCD, sslcd,
@@ -3067,6 +3068,7 @@ namespace Improvar.Controllers
                                 isl = isl + 1;
                                 string negamt = gstpostamt[gt] < 0 ? "Y" : "N";
                                 string proddrcr = negamt == "Y" ? dr : cr;
+                                if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
 
                                 dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr, gstpostcd[gt], sslcd,
                                    gstpostamt[gt], prodrem, parglcd, TTXN.SLCD, dbqty, 0, 0);
