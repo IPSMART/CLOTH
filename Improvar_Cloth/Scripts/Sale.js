@@ -1615,7 +1615,7 @@ function AddBarCodeGrid() {
     var MNTNCOLOR = $("#MNTNCOLOR").val();
     var MNTNSIZE = $("#MNTNSIZE").val();
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
-
+    var MNTNPCSTYPE = $("#MNTNPCSTYPE").val();
     var MNTNSHADE = $("#MNTNSHADE").val();
     var MNTNDISC1 = $("#MNTNDISC1").val();
     var MNTNDISC2 = $("#MNTNDISC2").val();
@@ -2034,6 +2034,11 @@ function AddBarCodeGrid() {
         tr += '    </td>';
         tr += '    <td class="" title="' + ORDDOCDT + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ORDDOCDT_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ORDDOCDT" readonly="readonly" type="text" value="' + ORDDOCDT + '">';
+        tr += '    </td>';
+    }
+    if ((MENU_PARA == "PB" || MENU_PARA == "PR" || MENU_PARA == "OP") && MNTNPCSTYPE == "Y") {
+        tr += '    <td class="">';
+        tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
         tr += '    </td>';
     }
     tr += '    <td class="">';
