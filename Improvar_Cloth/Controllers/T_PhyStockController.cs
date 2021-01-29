@@ -626,7 +626,7 @@ namespace Improvar.Controllers
 
                         for (int i = 0; i <= VE.TPHYSTK.Count - 1; i++)
                         {
-                            if (VE.TPHYSTK[i].SLNO != 0 && (VE.TPHYSTK[i].QNTY != 0 || VE.TPHYSTK[i].QNTY != null))
+                            if (VE.TPHYSTK[i].SLNO != 0 && VE.TPHYSTK[i].QNTY != 0)
                             {
                                 COUNTER = COUNTER + 1;
                                 T_PHYSTK TPHYSTK = new T_PHYSTK();
