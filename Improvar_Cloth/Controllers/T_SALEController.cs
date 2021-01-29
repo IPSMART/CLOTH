@@ -860,13 +860,17 @@ namespace Improvar.Controllers
                 else
                 {
                     string str = masterHelp.TDSCODE_help(TAG, val, PARTY, "TCS", linktdscode);
-                    double TDSLIMIT = str.retCompValue("TDSLIMIT").retDbl();
+                    if (str.IndexOf(Convert.ToChar(Cn.GCS())) >= 0)
+                    {
+                        double TDSLIMIT = str.retCompValue("TDSLIMIT").retDbl();
 
-                    ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO).ToString());
-                    string panno = DBF.M_SUBLEG.Where(a => a.SLCD == PARTY).Select(b => b.PANNO).FirstOrDefault();
-                    string AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), TAG, VE.MENU_PARA, AUTONO.retStr()).ToString();
-                    AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
-                    str += "^AMT=^" + AMT + Cn.GCS();
+                        ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO).ToString());
+                        string panno = DBF.M_SUBLEG.Where(a => a.SLCD == PARTY).Select(b => b.PANNO).FirstOrDefault();
+                        string AMT = salesfunc.getSlcdTCSonCalc(panno.retStr(), TAG, VE.MENU_PARA, AUTONO.retStr()).ToString();
+                        AMT = AMT.retDbl() > TDSLIMIT.retDbl() ? TDSLIMIT.retStr() : AMT.retStr();
+                        str += "^AMT=^" + AMT + Cn.GCS();
+                    }
+                        
                     return Content(str);
                 }
             }
