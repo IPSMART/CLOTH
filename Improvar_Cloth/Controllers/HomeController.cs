@@ -332,13 +332,13 @@ namespace Improvar.Controllers
                 {
                     Session.Add("package", "Package is too old to run, Copy latest version no " + dataversion.ToString());
                     Response.BufferOutput = true;
-                    return RedirectToAction("CompanySelection", "Home", new { MSG = dataversion.ToString() });
+                    return RedirectToAction("CompanySelection", "Home");
                 }
                 else if (version > dataversion)
                 {
                     Session.Add("package", "Old Database version is running,Please install version no " + version.ToString());
                     Response.BufferOutput = true;
-                    return RedirectToAction("CompanySelection", "Home", new { MSG = version.ToString() });
+                    return RedirectToAction("CompanySelection", "Home");
                 }
                 else
                 {
@@ -358,32 +358,17 @@ namespace Improvar.Controllers
                             break;
                     }
                     Session.Add("ModuleNAME", CommVar.ModuleCode());
-                    sql = "select * from all_objects a ";
-                    sql += "where a.owner = '" + DatabaseSchemaName + "' and a.object_type = 'TABLE' and a.object_name = 'M_SYSCNFG'";
+
+                    sql = "select listagg('a.'||a.column_name,', ') within group(order by a.COLUMN_ID) colnm from all_tab_cols a ";
+                    sql += "where table_name = 'M_SYSCNFG' and owner = '" + DatabaseSchemaName + "'";
                     DataTable rstmp = masterHelp.SQLquery(sql);
                     if (rstmp.Rows.Count > 0)
                     {
                         sql = "";
-                        string pkgtype = "CHEM", prop1dsc = "prop1", prop2dsc = "prop2", prop3dsc = "prop3", prop4dsc = "prop4", prop5dsc = "prop5", prop6dsc = "prop6";
-                        sql = "select * from " + DatabaseSchemaName + ".m_syscnfg";
+                        sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a ";
                         rstmp = masterHelp.SQLquery(sql);
-                        if (rstmp.Rows.Count > 0)
-                        {
-                            pkgtype = rstmp.Rows[0]["pkgtype"].ToString();
-                            prop1dsc = rstmp.Rows[0]["prop1cap"].ToString();
-                            prop2dsc = rstmp.Rows[0]["prop2cap"].ToString();
-                            prop3dsc = rstmp.Rows[0]["prop3cap"].ToString();
-                            prop4dsc = rstmp.Rows[0]["prop4cap"].ToString();
-                            prop5dsc = rstmp.Rows[0]["prop5cap"].ToString();
-                            prop6dsc = rstmp.Rows[0]["prop6cap"].ToString();
-                        }
-                        Session.Add("PKGTYPE", pkgtype);
-                        Session.Add("PROP1CAP", prop1dsc);
-                        Session.Add("PROP2CAP", prop2dsc);
-                        Session.Add("PROP3CAP", prop3dsc);
-                        Session.Add("PROP4CAP", prop4dsc);
-                        Session.Add("PROP5CAP", prop5dsc);
-                        Session.Add("PROP6CAP", prop6dsc);
+
+                        Session.Add("M_SYSCNFG", rstmp);
                     }
                     Response.BufferOutput = true;
                     return RedirectToAction("multiVu", "Multiviewer", new { US = Cn.Encrypt_URL(UNIQUESESSION) });
@@ -392,7 +377,7 @@ namespace Improvar.Controllers
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                return RedirectToAction("CompanySelection", "Home", new { MSG = ex.Message });
+                return RedirectToAction("CompanySelection", "Home");
             }
         }
         public ActionResult ModuleSelector(string code, string controlschema, string menuschema, string sortby, string mname)
