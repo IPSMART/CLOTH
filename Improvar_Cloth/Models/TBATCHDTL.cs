@@ -187,6 +187,7 @@ namespace Improvar.Models
         public double? LISTDISCPER { get; set; }
         public int? PAGENO { get; set; }
         public int? PAGESLNO { get; set; }
-
+        [StringLength(15)]
+        public string PCSTYPE { get; set; }
     }
 }

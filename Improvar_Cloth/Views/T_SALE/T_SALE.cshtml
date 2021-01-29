@@ -914,7 +914,7 @@
                                     @Html.HiddenFor(model => model.TDSCALCON, new { id = "TDSCALCON" })
                                     @Html.HiddenFor(model => model.AMT, new { id = "AMT" })
                                     @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
-                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                                    @if (Model.MENU_PARA == "OP")// @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                     {
                                         @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                     }

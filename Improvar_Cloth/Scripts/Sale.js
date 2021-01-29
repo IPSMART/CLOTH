@@ -1328,6 +1328,7 @@ function ReverceCharges() {
 
 }
 function BillAmountCalculate() {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
 
@@ -1393,7 +1394,7 @@ function BillAmountCalculate() {
         TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
         if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
         document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
-        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+        if (MENU_PARA == "OP") {//if (MENU_PARA == "PB" || MENU_PARA == "OP") {
             TCSON = $("#TCSON").val();
             if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
         }
@@ -2313,6 +2314,7 @@ function GetPartyDetails(id) {
 
 }
 function GetTCSON(billamount) {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
