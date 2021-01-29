@@ -1595,6 +1595,7 @@ namespace Improvar.Controllers
                         }
                         MSITEM.NEGSTOCK = VE.NEGSTOCK == true ? "Y" : "";
                         MSITEM.PRODGRPCD = VE.M_SITEM.PRODGRPCD;
+                        MSITEM.SAPCODE = VE.M_SITEM.SAPCODE;
                         //MSITEM.STD_RATE = VE.M_SITEM.STD_RATE;
                         //MSITEM.SAMPPC = VE.M_SITEM.SAMPPC;
                         //MSITEM.STDLOTQTY = VE.M_SITEM.SAMPPC;

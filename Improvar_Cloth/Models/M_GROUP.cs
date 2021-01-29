@@ -74,6 +74,8 @@ namespace Improvar.Models
 
         [StringLength(2)]
         public string GRPBARCODE { get; set; }
+        [StringLength(20)]
+        public string SAPCODE { get; set; }
 
     }
 }

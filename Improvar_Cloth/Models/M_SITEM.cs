@@ -89,5 +89,7 @@ namespace Improvar.Models
 
         [StringLength(4)]
         public string PRODGRPCD { get; set; }
+        [StringLength(20)]
+        public string SAPCODE { get; set; }
     }
 }
