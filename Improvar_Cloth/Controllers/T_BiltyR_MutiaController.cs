@@ -777,5 +777,76 @@ namespace Improvar.Controllers
                 }
             }
         }
+        [HttpPost]
+        public ActionResult T_BiltyR_Mutia(FormCollection FC, TransactionBiltyRMutiaEntry VE)
+        {
+            try
+            {
+               
+                DataTable tbl;
+                string Scm = CommVar.CurSchema(UNQSNO);
+                string str = "";
+                str += "select distinct a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno, ";
+                str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,b.pageslno,c.itnm||' '||c.styleno itstyle,d.prefno,d.prefdt  ";
+                str += " from " + Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d  ";
+                str += " where a.blautono=b.autono(+) and b.itcd=c.itcd(+) and a.blautono=d.autono(+) and a.baleno=b.baleno(+) and a.blslno=b.slno(+) and a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ";
+                str += "order by a.slno ";
+                tbl = Master_Help.SQLquery(str);
+                if (tbl.Rows.Count != 0)
+                {
+                    DataTable IR = new DataTable("mstrep");
+
+                    Models.PrintViewer PV = new Models.PrintViewer();
+                    HtmlConverter HC = new HtmlConverter();
+
+                    HC.RepStart(IR, 2);
+                    HC.GetPrintHeader(IR, "prefno", "string", "c,12", "Bill No.");
+                    HC.GetPrintHeader(IR, "prefdt", "string", "c,12", "Date");
+                    HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Short No.");
+                    HC.GetPrintHeader(IR, "slno", "string", "c,7", "Slno");
+                    HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale");
+                    HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
+                    HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
+                    HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
+                    HC.GetPrintHeader(IR, "lrno", "string", "c,12", "Lrno");
+                    HC.GetPrintHeader(IR, "pageno", "string", "c,12", "Page");
+
+                    Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                    i = 0; maxR = tbl.Rows.Count - 1;
+
+                    while (i <= maxR)
+                    {
+
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].retStr();
+                        IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
+                        IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
+                        IR.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].retStr();
+                        IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
+                        IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
+                        IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
+                        IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+                        IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
+                        IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr();
+                        i = i + 1;
+                    }
+
+                    string pghdr1 = "";
+
+                    pghdr1 = "Receive from Mutia Details as on "+VE.T_CNTRL_HDR.DOCDT.retDateStr() + " ";
+
+                    PV = HC.ShowReport(IR, "T_BiltyR_Mutia", pghdr1, "", true, true, "P", false);
+
+                    TempData["T_BiltyR_Mutia"] = PV;
+                    return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = "T_BiltyR_Mutia" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+            return View();
+        }
     }
 }
