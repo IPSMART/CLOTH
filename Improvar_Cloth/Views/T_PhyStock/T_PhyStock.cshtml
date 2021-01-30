@@ -134,6 +134,7 @@
             success: function (result) {
                 $("#partialdivBarCodeTab").animate({ marginTop: '0px' }, 50);
                 $("#partialdivBarCodeTab").html(result);
+                CalculateTotal_Barno_();
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -307,9 +308,9 @@
             tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field SHADE must be a string with a maximum length of 15." data-val-length-max="15" id="B_SHADE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].SHADE" readonly="readonly" type="text" value="' + SHADE + '">';
             tr += '    </td>';
         }
-        else {
-            tr += '        <input id="B_SHADE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].SHADE" type="hidden" value="' + SHADE + '">';
-        }
+        //else {
+        //    tr += '        <input id="B_SHADE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].SHADE" type="hidden" value="' + SHADE + '">';
+        //}
         tr += '    <td class="" title="' + CUTLENGTH + '">';
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field CUTLENGTH must be a number." id="B_CUTLENGTH_' + rowindex + '" maxlength="6" name="TPHYSTK[' + rowindex + '].CUTLENGTH" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="CalculateBargridQnty_(\'_T_PhyStock_GRID\', ' + rowindex + ');" value="' + CUTLENGTH + '">';
         tr += '    </td>';
@@ -320,7 +321,7 @@
         tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TPHYSTK[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateBargridQnty_(\'_T_PhyStock_GRID\', ' + rowindex + ');" value="' + QNTY + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + RATE + '">';
-        tr += '        <input tabindex="-1" class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TPHYSTK[' + rowindex + '].RATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" readonly="readonly" value="' + RATE + '" >';
+        tr += '        <input tabindex="-1" class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TPHYSTK[' + rowindex + '].RATE" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text"   value="' + RATE + '" >';
         tr += '    </td>';
         tr += '    <td class="" title="' + STKTYPE + '">';
         tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TPHYSTK[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';

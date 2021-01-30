@@ -73,7 +73,7 @@
                                             @Html.TextBoxFor(model => Model.TPHYSTK[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TPHYSTK[i].BARNO, new { id = "B_BARNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.TPHYSTK[i].BARNO, new { id = "B_BARNO_" + i, @class = " atextBoxFor ", maxlength = 4, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPHYSTK[i].STYLENO, new { htmlAttributes = new { id = "B_STYLENO_" + i, @class = "atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
@@ -86,10 +86,10 @@
                                                 @Html.TextBoxFor(model => Model.TPHYSTK[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
                                         }
-                                        else
+                                        @*else
                                         {
                                             @Html.HiddenFor(model => model.TPHYSTK[i].SHADE, new { id = "B_SHADE_" + i })
-                                        }
+                                        }*@
                                       
                                         <td class="">
                                             @Html.EditorFor(model => Model.TPHYSTK[i].CUTLENGTH, new { htmlAttributes = new { id = "B_CUTLENGTH_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @onchange = "CalculateBargridQnty_('_T_PhyStock_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 6 } })
@@ -101,7 +101,7 @@
                                             @Html.EditorFor(model => Model.TPHYSTK[i].QNTY, new { htmlAttributes = new { id = "B_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", onblur = "CalculateBargridQnty_('_T_PhyStock_GRID', " + i + ");", @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TPHYSTK[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
+                                            @Html.EditorFor(model => Model.TPHYSTK[i].RATE, new { htmlAttributes = new { id = "B_RATE_" + i, @style = "text-align: right;", @class = " atextBoxFor", @onkeypress = "return numericOnly(this,3);", maxlength = 14 } })
                                         </td>
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TPHYSTK[i].STKTYPE, new { id = "B_STKTYPE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
