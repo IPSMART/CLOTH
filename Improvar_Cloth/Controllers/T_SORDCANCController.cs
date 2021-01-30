@@ -37,8 +37,8 @@ namespace Improvar.Controllers
                     {
                         case "SOCAN":
                             ViewBag.formname = "Sales Order Cancel Part / Full"; ViewBag.GridHeader = "Sales Order Cancel"; break;
-                        case "DOCAN":
-                            ViewBag.formname = "Delivery Order Cancel Part / Full"; ViewBag.GridHeader = "Delivery Order Cancel"; break;
+                        case "POCAN":
+                            ViewBag.formname = "Purchase Order Cancel Part / Full"; ViewBag.GridHeader = "Purchase Order Cancel"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
@@ -57,14 +57,9 @@ namespace Improvar.Controllers
                     if (op.Length != 0)
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
-                        if (VE.DOC_CODE == "SOCAN")
-                        {
-                            VE.IndexKey = (from p in DB.T_SORD_CANC join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO) where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COMP && q.YR_CD == YR1 select new IndexKey() { Navikey = p.AUTONO }).OrderBy(a => a.Navikey).ToList();
-                        }
-                        else
-                        {
-                            VE.IndexKey = (from p in DB.T_DO_CANC join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO) where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COMP && q.YR_CD == YR1 select new IndexKey() { Navikey = p.AUTONO }).OrderBy(a => a.Navikey).ToList();
-                        }
+
+                        VE.IndexKey = (from p in DB.T_SORD_CANC join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO) where XYZ.Contains(p.DOCCD) && q.LOCCD == LOC && q.COMPCD == COMP && q.YR_CD == YR1 select new IndexKey() { Navikey = p.AUTONO }).OrderBy(a => a.Navikey).ToList();
+
 
                         if (op == "E" || op == "D" || op == "V")
                         {
@@ -106,14 +101,10 @@ namespace Improvar.Controllers
                                     VE = Navigation(VE, DB, Nindex, searchValue);
                                 }
                             }
-                            if (VE.DOC_CODE == "SOCAN")
-                            {
-                                VE.T_SORD_CANC = sl;
-                            }
-                            else
-                            {
-                                VE.T_DO_CANC = sl1;
-                            }
+
+                            VE.T_SORD_CANC = sl;
+
+
                             VE.T_CNTRL_HDR = sll;
                             VE.T_CNTRL_HDR_REM = TCHR;
                             VE.M_DOCTYPE = DOCTYP;
@@ -138,18 +129,12 @@ namespace Improvar.Controllers
                                     TSORDDTL_CANC.Add(SORDDTL);
                                 }
                                 VE.TSORDDTL_CANC = TSORDDTL_CANC;
-                                if (VE.DOC_CODE == "SOCAN")
-                                {
-                                    T_SORD_CANC TSORDCANC = new T_SORD_CANC();
-                                    TSORDCANC.DOCDT = System.DateTime.Now.Date;
-                                    VE.T_SORD_CANC = TSORDCANC;
-                                }
-                                else
-                                {
-                                    T_DO_CANC TDOCANC = new T_DO_CANC();
-                                    TDOCANC.DOCDT = System.DateTime.Now.Date;
-                                    VE.T_DO_CANC = TDOCANC;
-                                }
+
+                                T_SORD_CANC TSORDCANC = new T_SORD_CANC();
+                                TSORDCANC.DOCDT = System.DateTime.Now.Date;
+                                VE.T_SORD_CANC = TSORDCANC;
+
+
                                 if (VE.DocumentType.Count > 0)
                                 {
                                     VE.DOC_ID = VE.DocumentType[0].value;
@@ -171,14 +156,10 @@ namespace Improvar.Controllers
                         }
                         string docdt = "";
                         if (VE.T_CNTRL_HDR != null) if (VE.T_CNTRL_HDR.DOCDT != null) docdt = VE.T_CNTRL_HDR.DOCDT.ToString().Remove(10);
-                        if (VE.DOC_CODE == "SOCAN")
-                        {
-                            Cn.getdocmaxmindate(VE.T_SORD_CANC.DOCCD, docdt, VE.DefaultAction, VE.T_SORD_CANC.DOCNO, VE);
-                        }
-                        else
-                        {
-                            Cn.getdocmaxmindate(VE.T_DO_CANC.DOCCD, docdt, VE.DefaultAction, VE.T_DO_CANC.DOCNO, VE);
-                        }
+
+                        Cn.getdocmaxmindate(VE.T_SORD_CANC.DOCCD, docdt, VE.DefaultAction, VE.T_SORD_CANC.DOCNO, VE);
+
+
                         ModelState.Clear();
                         return View(VE);
                     }
@@ -216,18 +197,12 @@ namespace Improvar.Controllers
                     aa = searchValue.Split(Convert.ToChar(Cn.GCS()));
                 }
                 string AUTO_NO = ""; string DOC_CODE = "";
-                if (VE.DOC_CODE == "SOCAN")
-                {
-                    sl = DB.T_SORD_CANC.Find(aa[0].Trim());
-                    AUTO_NO = sl.AUTONO;
-                    DOC_CODE = sl.DOCCD;
-                }
-                else
-                {
-                    sl1 = DB.T_DO_CANC.Find(aa[0].Trim());
-                    AUTO_NO = sl1.AUTONO;
-                    DOC_CODE = sl1.DOCCD;
-                }
+
+                sl = DB.T_SORD_CANC.Find(aa[0].Trim());
+                AUTO_NO = sl.AUTONO;
+                DOC_CODE = sl.DOCCD;
+
+
                 sll = DB.T_CNTRL_HDR.Find(AUTO_NO);
                 DOCTYP = DB.M_DOCTYPE.Find(DOC_CODE);
                 TCHR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), AUTO_NO);
@@ -237,80 +212,44 @@ namespace Improvar.Controllers
                     VE.DOC_ID = sl.DOCCD;
                     var Party = DBF.M_SUBLEG.Find(sl.SLCD); if (Party != null) { VE.PartyName = Party.SLNM; }
                 }
-                if (VE.DOC_CODE == "SOCAN")
-                {
-                    VE.TSORDDTL_CANC = (from i in DB.T_SORDDTL
-                                        join j in DB.M_SITEM on i.ITCD equals j.ITCD into x
-                                        from j in x.DefaultIfEmpty()
-                                        join k in DB.M_SIZE on i.SIZECD equals k.SIZECD into y
-                                        from k in y.DefaultIfEmpty()
-                                        join l in DB.M_COLOR on i.COLRCD equals l.COLRCD into z
-                                        from l in z.DefaultIfEmpty()
-                                        where i.AUTONO == AUTO_NO
-                                        select new TSORDDTL_CANC()
-                                        {
-                                            AUTONO = i.AUTONO,
-                                            SLNO = i.SLNO,
-                                            EMD_NO = i.EMD_NO,
-                                            CLCD = i.CLCD,
-                                            DTAG = i.DTAG,
-                                            TTAG = i.TTAG,
-                                            STKDRCR = i.STKDRCR,
-                                            STKTYPE = i.STKTYPE,
-                                            STKTYP_HIDDEN = i.STKTYPE,
-                                            FREESTK = i.FREESTK,
-                                            FREESTK_HIDDEN = i.FREESTK,
-                                            ITCD = i.ITCD,
-                                            ITNM = j.ITNM,
-                                            ARTNO = j.STYLENO,
-                                            //TOTAL_PCS = j.PCSPERBOX,
-                                            UOM = j.UOMCD,
-                                            SIZECD = i.SIZECD,
-                                            ALL_SIZE = i.SIZECD,
-                                            SIZENM = k.SIZENM,
-                                            COLRCD = i.COLRCD,
-                                            COLRNM = l.COLRNM,
-                                            CANCQNTY = i.QNTY,
-                                            DISCAMT = i.DISCAMT,
-                                            ORDAUTONO = i.ORDAUTONO
-                                        }).OrderBy(s => s.SLNO).ToList();
-                }
-                else
-                {
-                    VE.TSORDDTL_CANC = (from i in DB.T_DODTL
-                                        join j in DB.M_SITEM on i.ITCD equals j.ITCD into x
-                                        from j in x.DefaultIfEmpty()
-                                        join k in DB.M_SIZE on i.SIZECD equals k.SIZECD into y
-                                        from k in y.DefaultIfEmpty()
-                                        join l in DB.M_COLOR on i.COLRCD equals l.COLRCD into z
-                                        from l in z.DefaultIfEmpty()
-                                        where i.AUTONO == AUTO_NO
-                                        select new TSORDDTL_CANC()
-                                        {
-                                            AUTONO = i.AUTONO,
-                                            SLNO = i.SLNO,
-                                            EMD_NO = i.EMD_NO.retShort(),
-                                            CLCD = i.CLCD,
-                                            DTAG = i.DTAG,
-                                            TTAG = i.TTAG,
-                                            STKDRCR = i.STKDRCR,
-                                            STKTYPE = i.STKTYPE,
-                                            STKTYP_HIDDEN = i.STKTYPE,
-                                            ITCD = i.ITCD,
-                                            ITNM = j.ITNM,
-                                            ARTNO = j.STYLENO,
-                                            //TOTAL_PCS = j.PCSPERBOX,
-                                            UOM = j.UOMCD,
-                                            SIZECD = i.SIZECD,
-                                            ALL_SIZE = i.SIZECD,
-                                            SIZENM = k.SIZENM,
-                                            COLRCD = i.COLRCD,
-                                            COLRNM = l.COLRNM,
-                                            CANCQNTY = i.QNTY,
-                                            DISCAMT = i.DISCAMT,
-                                            ORDAUTONO = i.ORDAUTONO
-                                        }).OrderBy(s => s.SLNO).ToList();
-                }
+
+                VE.TSORDDTL_CANC = (from i in DB.T_SORDDTL
+                                    join j in DB.M_SITEM on i.ITCD equals j.ITCD into x
+                                    from j in x.DefaultIfEmpty()
+                                    join k in DB.M_SIZE on i.SIZECD equals k.SIZECD into y
+                                    from k in y.DefaultIfEmpty()
+                                    join l in DB.M_COLOR on i.COLRCD equals l.COLRCD into z
+                                    from l in z.DefaultIfEmpty()
+                                    where i.AUTONO == AUTO_NO
+                                    select new TSORDDTL_CANC()
+                                    {
+                                        AUTONO = i.AUTONO,
+                                        SLNO = i.SLNO,
+                                        EMD_NO = i.EMD_NO,
+                                        CLCD = i.CLCD,
+                                        DTAG = i.DTAG,
+                                        TTAG = i.TTAG,
+                                        STKDRCR = i.STKDRCR,
+                                        STKTYPE = i.STKTYPE,
+                                        STKTYP_HIDDEN = i.STKTYPE,
+                                        FREESTK = i.FREESTK,
+                                        FREESTK_HIDDEN = i.FREESTK,
+                                        ITCD = i.ITCD,
+                                        ITNM = j.ITNM,
+                                        ARTNO = j.STYLENO,
+                                        //TOTAL_PCS = j.PCSPERBOX,
+                                        UOM = j.UOMCD,
+                                        SIZECD = i.SIZECD,
+                                        ALL_SIZE = i.SIZECD,
+                                        SIZENM = k.SIZENM,
+                                        COLRCD = i.COLRCD,
+                                        COLRNM = l.COLRNM,
+                                        CANCQNTY = i.QNTY,
+                                        DISCAMT = i.DISCAMT,
+                                        ORDAUTONO = i.ORDAUTONO
+                                    }).OrderBy(s => s.SLNO).ToList();
+
+
                 foreach (var z in VE.TSORDDTL_CANC)
                 {
                     string ITEM = z.ITCD; string STK_TYPE = z.STKTYPE; string FREE_STK = z.FREESTK;
@@ -384,40 +323,23 @@ namespace Improvar.Controllers
             VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
             string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
             var MDT = (dynamic)null;
-            if (VE.DOC_CODE == "SOCAN")
-            {
-                MDT = (from j in DB.T_SORD_CANC
-                       join p in DB.T_CNTRL_HDR on j.AUTONO equals (p.AUTONO)
-                       where (XYZ.Contains(p.DOCCD) && p.AUTONO == j.AUTONO && p.LOCCD == LOC_CD && p.COMPCD == COMP_CD && p.YR_CD == YR1)
-                       orderby j.AUTONO
-                       select new { j.AUTONO, p.DOCNO, j.DOCDT, j.DOCCD, j.SLCD }).ToList().Select(x => new
-                       {
-                           AUTONO = x.AUTONO,
-                           DOCNO = x.DOCNO,
-                           DOCDT = x.DOCDT.Value.ToString().Replace('-', '/').Substring(0, 10),
-                           DOCCD = x.DOCCD,
-                           SLCD = x.SLCD,
-                           SLNM = (from Z in DBF.M_SUBLEG where Z.SLCD == x.SLCD select Z.SLNM).SingleOrDefault(),
-                           DISTRICT = (from Z in DBF.M_SUBLEG where Z.SLCD == x.SLCD select Z.DISTRICT).SingleOrDefault(),
-                       }).Distinct().OrderBy(s => s.AUTONO).ToList();
-            }
-            else
-            {
-                MDT = (from j in DB.T_DO_CANC
-                       join p in DB.T_CNTRL_HDR on j.AUTONO equals (p.AUTONO)
-                       where (XYZ.Contains(p.DOCCD) && p.AUTONO == j.AUTONO && p.LOCCD == LOC_CD && p.COMPCD == COMP_CD && p.YR_CD == YR1)
-                       orderby j.AUTONO
-                       select new { j.AUTONO, p.DOCNO, j.DOCDT, j.DOCCD, j.SLCD }).ToList().Select(x => new
-                       {
-                           AUTONO = x.AUTONO,
-                           DOCNO = x.DOCNO,
-                           DOCDT = x.DOCDT.Value.ToString().Replace('-', '/').Substring(0, 10),
-                           DOCCD = x.DOCCD,
-                           SLCD = x.SLCD,
-                           SLNM = (from Z in DBF.M_SUBLEG where Z.SLCD == x.SLCD select Z.SLNM).SingleOrDefault(),
-                           DISTRICT = (from Z in DBF.M_SUBLEG where Z.SLCD == x.SLCD select Z.DISTRICT).SingleOrDefault(),
-                       }).Distinct().OrderBy(s => s.AUTONO).ToList();
-            }
+
+            MDT = (from j in DB.T_SORD_CANC
+                   join p in DB.T_CNTRL_HDR on j.AUTONO equals (p.AUTONO)
+                   where (XYZ.Contains(p.DOCCD) && p.AUTONO == j.AUTONO && p.LOCCD == LOC_CD && p.COMPCD == COMP_CD && p.YR_CD == YR1)
+                   orderby j.AUTONO
+                   select new { j.AUTONO, p.DOCNO, j.DOCDT, j.DOCCD, j.SLCD }).ToList().Select(x => new
+                   {
+                       AUTONO = x.AUTONO,
+                       DOCNO = x.DOCNO,
+                       DOCDT = x.DOCDT.Value.ToString().Replace('-', '/').Substring(0, 10),
+                       DOCCD = x.DOCCD,
+                       SLCD = x.SLCD,
+                       SLNM = (from Z in DBF.M_SUBLEG where Z.SLCD == x.SLCD select Z.SLNM).SingleOrDefault(),
+                       DISTRICT = (from Z in DBF.M_SUBLEG where Z.SLCD == x.SLCD select Z.DISTRICT).SingleOrDefault(),
+                   }).Distinct().OrderBy(s => s.AUTONO).ToList();
+
+
             System.Text.StringBuilder SB = new System.Text.StringBuilder();
             var hdr = "Document Number" + Cn.GCS() + "Document Date" + Cn.GCS() + "Document Code" + Cn.GCS() + "AUTO NO";
             for (int j = 0; j <= MDT.Count - 1; j++)
@@ -468,7 +390,7 @@ namespace Improvar.Controllers
                 string[] VALUE = Code.Split(Convert.ToChar(Cn.GCS()));
                 Cn.getQueryString(VE);
 
-                DataTable PENDING_ORDER = SALES_FUNC.GetPendOrder(VALUE[0], VALUE[1], "", "", "","", VE.MENU_PARA, "");
+                DataTable PENDING_ORDER = SALES_FUNC.GetPendOrder(VALUE[0], VALUE[1], "", "", "", "", VE.MENU_PARA, "");
 
                 var query = (from DataRow dr in PENDING_ORDER.Rows
                              select new
@@ -591,7 +513,7 @@ namespace Improvar.Controllers
             {
                 ART_NO = ART_NO.Replace('μ', '+'); ART_NO = ART_NO.Replace('‡', '&');
                 string Header = "";
-                if (VE.DOC_CODE == "DOCAN") { Header = "Delivery Order Cancel"; } else { Header = "Sales Order Cancel"; }
+                if (VE.DOC_CODE == "POCAN") { Header = "Purchase Order Cancel"; } else { Header = "Sales Order Cancel"; }
                 ViewBag.Header = Header; ViewBag.Article = ART_NO; short POSRL = Convert.ToInt16(SerialNo);
                 if (VE.DefaultAction == "V")
                 {
@@ -873,77 +795,41 @@ namespace Improvar.Controllers
                         if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                         {
                             T_SORD_CANC TSORDCANC = new T_SORD_CANC();
-                            T_DO_CANC TDOCANC = new T_DO_CANC();
                             T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                             string DOCPATTERN = ""; string auto_no = ""; string Month = ""; string Ddate = "";
-                            if (VE.DOC_CODE == "SOCAN")
+
+                            TSORDCANC.DOCDT = VE.T_SORD_CANC.DOCDT;
+                            Ddate = Convert.ToString(TSORDCANC.DOCDT);
+                            TSORDCANC.CLCD = CommVar.ClientCode(UNQSNO);
+                            if (VE.DefaultAction == "A")
                             {
-                                TSORDCANC.DOCDT = VE.T_SORD_CANC.DOCDT;
-                                Ddate = Convert.ToString(TSORDCANC.DOCDT);
-                                TSORDCANC.CLCD = CommVar.ClientCode(UNQSNO);
-                                if (VE.DefaultAction == "A")
-                                {
-                                    TSORDCANC.EMD_NO = 0;
-                                    TSORDCANC.DOCCD = VE.DOC_ID;
-                                    TSORDCANC.DOCNO = Cn.MaxDocNumber(TSORDCANC.DOCCD, Ddate);
-                                    DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TSORDCANC.DOCNO), TSORDCANC.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
-                                    auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TSORDCANC.DOCNO, TSORDCANC.DOCCD, Ddate);
-                                    TSORDCANC.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
-                                    Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
-                                }
-                                else
-                                {
-                                    TSORDCANC.DTAG = "E";
-                                    TSORDCANC.DOCCD = VE.DOC_ID;
-                                    TSORDCANC.DOCNO = VE.T_SORD_CANC.DOCNO;
-                                    TSORDCANC.AUTONO = VE.T_SORD_CANC.AUTONO;
-                                    Month = VE.T_CNTRL_HDR.MNTHCD;
-                                    var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == TSORDCANC.AUTONO select p.EMD_NO).Max();
-                                    if (MAXEMDNO == null) { TSORDCANC.EMD_NO = 0; } else { TSORDCANC.EMD_NO = Convert.ToByte(MAXEMDNO + 1); }
-                                }
-                                TSORDCANC.SLCD = VE.T_SORD_CANC.SLCD;
-                                TSORDCANC.REM = VE.T_SORD_CANC.REM;
+                                TSORDCANC.EMD_NO = 0;
+                                TSORDCANC.DOCCD = VE.DOC_ID;
+                                TSORDCANC.DOCNO = Cn.MaxDocNumber(TSORDCANC.DOCCD, Ddate);
+                                DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TSORDCANC.DOCNO), TSORDCANC.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
+                                auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TSORDCANC.DOCNO, TSORDCANC.DOCCD, Ddate);
+                                TSORDCANC.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
+                                Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                             }
                             else
                             {
-                                TDOCANC.DOCDT = VE.T_DO_CANC.DOCDT;
-                                Ddate = Convert.ToString(TDOCANC.DOCDT);
-                                TDOCANC.CLCD = CommVar.ClientCode(UNQSNO);
-                                if (VE.DefaultAction == "A")
-                                {
-                                    TDOCANC.EMD_NO = 0;
-                                    TDOCANC.DOCCD = VE.DOC_ID;
-                                    TDOCANC.DOCNO = Cn.MaxDocNumber(TDOCANC.DOCCD, Ddate);
-                                    DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TDOCANC.DOCNO), TDOCANC.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
-                                    auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TDOCANC.DOCNO, TDOCANC.DOCCD, Ddate);
-                                    TDOCANC.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
-                                    Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
-                                }
-                                else
-                                {
-                                    TDOCANC.DTAG = "E";
-                                    TDOCANC.DOCCD = VE.DOC_ID;
-                                    TDOCANC.DOCNO = VE.T_DO_CANC.DOCNO;
-                                    TDOCANC.AUTONO = VE.T_DO_CANC.AUTONO;
-                                    Month = VE.T_CNTRL_HDR.MNTHCD;
-                                    var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == TDOCANC.AUTONO select p.EMD_NO).Max();
-                                    if (MAXEMDNO == null) { TDOCANC.EMD_NO = 0; } else { TDOCANC.EMD_NO = Convert.ToByte(MAXEMDNO + 1); }
-                                }
-                                TDOCANC.SLCD = VE.T_DO_CANC.SLCD;
-                                TDOCANC.REM = VE.T_DO_CANC.REM;
+                                TSORDCANC.DTAG = "E";
+                                TSORDCANC.DOCCD = VE.DOC_ID;
+                                TSORDCANC.DOCNO = VE.T_SORD_CANC.DOCNO;
+                                TSORDCANC.AUTONO = VE.T_SORD_CANC.AUTONO;
+                                Month = VE.T_CNTRL_HDR.MNTHCD;
+                                var MAXEMDNO = (from p in DB.T_CNTRL_HDR where p.AUTONO == TSORDCANC.AUTONO select p.EMD_NO).Max();
+                                if (MAXEMDNO == null) { TSORDCANC.EMD_NO = 0; } else { TSORDCANC.EMD_NO = Convert.ToByte(MAXEMDNO + 1); }
                             }
+                            TSORDCANC.SLCD = VE.T_SORD_CANC.SLCD;
+                            TSORDCANC.REM = VE.T_SORD_CANC.REM;
+
+
                             if (VE.DefaultAction == "E")
                             {
-                                if (VE.DOC_CODE == "SOCAN")
-                                {
-                                    DB.T_SORDDTL.Where(x => x.AUTONO == TSORDCANC.AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
-                                    DB.T_SORDDTL.RemoveRange(DB.T_SORDDTL.Where(x => x.AUTONO == TSORDCANC.AUTONO));
-                                }
-                                else
-                                {
-                                    DB.T_DODTL.Where(x => x.AUTONO == TDOCANC.AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
-                                    DB.T_DODTL.RemoveRange(DB.T_DODTL.Where(x => x.AUTONO == TDOCANC.AUTONO));
-                                }
+
+                                DB.T_SORDDTL.Where(x => x.AUTONO == TSORDCANC.AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
+                                DB.T_SORDDTL.RemoveRange(DB.T_SORDDTL.Where(x => x.AUTONO == TSORDCANC.AUTONO));
 
                                 DB.T_CNTRL_HDR_REM.Where(x => x.AUTONO == TSORDCANC.AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                                 DB.T_CNTRL_HDR_REM.RemoveRange(DB.T_CNTRL_HDR_REM.Where(x => x.AUTONO == TSORDCANC.AUTONO));
@@ -955,36 +841,24 @@ namespace Improvar.Controllers
                                 DB.T_CNTRL_HDR_DOC_DTL.RemoveRange(DB.T_CNTRL_HDR_DOC_DTL.Where(x => x.AUTONO == TSORDCANC.AUTONO));
                                 DB.SaveChanges();
                             }
-                            if (VE.DOC_CODE == "SOCAN")
-                            {
-                                TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, null, 0, null);
-                            }
-                            else
-                            {
-                                TCH = Cn.T_CONTROL_HDR(TDOCANC.DOCCD, TDOCANC.DOCDT, TDOCANC.DOCNO, TDOCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, null, 0, null);
-                            }
+
+                            TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, null, 0, null);
+
+
                             if (VE.DefaultAction == "A")
                             {
-                                if (VE.DOC_CODE == "SOCAN")
-                                {
-                                    DB.T_SORD_CANC.Add(TSORDCANC);
-                                }
-                                else
-                                {
-                                    DB.T_DO_CANC.Add(TDOCANC);
-                                }
+
+                                DB.T_SORD_CANC.Add(TSORDCANC);
+
+
                                 DB.T_CNTRL_HDR.Add(TCH);
                             }
                             else if (VE.DefaultAction == "E")
                             {
-                                if (VE.DOC_CODE == "SOCAN")
-                                {
-                                    DB.Entry(TSORDCANC).State = System.Data.Entity.EntityState.Modified;
-                                }
-                                else
-                                {
-                                    DB.Entry(TDOCANC).State = System.Data.Entity.EntityState.Modified;
-                                }
+
+                                DB.Entry(TSORDCANC).State = System.Data.Entity.EntityState.Modified;
+
+
                                 DB.Entry(TCH).State = System.Data.Entity.EntityState.Modified;
                             }
                             int COUNTER = 0;
@@ -1005,46 +879,26 @@ namespace Improvar.Controllers
                                             if (helpM[j].SLNO != 0 && helpM[j].CANCQNTY != null && helpM[j].CANCQNTY != 0)
                                             {
                                                 COUNTER = COUNTER + 1;
-                                                if (VE.DOC_CODE == "SOCAN")
-                                                {
-                                                    T_SORDDTL TSORDDTL_CANC = new T_SORDDTL();
-                                                    TSORDDTL_CANC.EMD_NO = TSORDCANC.EMD_NO;
-                                                    TSORDDTL_CANC.CLCD = TSORDCANC.CLCD;
-                                                    TSORDDTL_CANC.DTAG = TSORDCANC.DTAG;
-                                                    TSORDDTL_CANC.TTAG = TSORDCANC.TTAG;
-                                                    TSORDDTL_CANC.AUTONO = TSORDCANC.AUTONO;
-                                                    TSORDDTL_CANC.ORDAUTONO = VE.TSORDDTL_CANC[i].ORDAUTONO;
-                                                    TSORDDTL_CANC.SLNO = Convert.ToInt16(COUNTER);
-                                                    if (VE.MENU_PARA == "SB") { TSORDDTL_CANC.STKDRCR = "C"; } else { TSORDDTL_CANC.STKDRCR = "D"; }
-                                                    TSORDDTL_CANC.STKTYPE = VE.TSORDDTL_CANC[i].STKTYPE;
-                                                    TSORDDTL_CANC.FREESTK = VE.TSORDDTL_CANC[i].FREESTK;
-                                                    TSORDDTL_CANC.ITCD = VE.TSORDDTL_CANC[i].ITCD;
-                                                    TSORDDTL_CANC.SIZECD = helpM[j].SIZECD;
-                                                    TSORDDTL_CANC.COLRCD = helpM[j].COLRCD;
-                                                    TSORDDTL_CANC.QNTY = helpM[j].CANCQNTY;
-                                                    TSORDDTL_CANC.TAXAMT = 0;
-                                                    DB.T_SORDDTL.Add(TSORDDTL_CANC);
-                                                }
-                                                else
-                                                {
-                                                    T_DODTL TDODTL_CANC = new T_DODTL();
-                                                    TDODTL_CANC.EMD_NO = TSORDCANC.EMD_NO;
-                                                    TDODTL_CANC.CLCD = TSORDCANC.CLCD;
-                                                    TDODTL_CANC.DTAG = TSORDCANC.DTAG;
-                                                    TDODTL_CANC.TTAG = TSORDCANC.TTAG;
-                                                    TDODTL_CANC.AUTONO = TSORDCANC.AUTONO;
-                                                    TDODTL_CANC.ORDAUTONO = VE.TSORDDTL_CANC[i].ORDAUTONO;
-                                                    TDODTL_CANC.SLNO = Convert.ToInt16(COUNTER);
-                                                    if (VE.MENU_PARA == "SB") { TDODTL_CANC.STKDRCR = "C"; } else { TDODTL_CANC.STKDRCR = "D"; }
-                                                    TDODTL_CANC.STKTYPE = VE.TSORDDTL_CANC[i].STKTYPE;
-                                                    TDODTL_CANC.FREESTK = VE.TSORDDTL_CANC[i].FREESTK;
-                                                    TDODTL_CANC.ITCD = VE.TSORDDTL_CANC[i].ITCD;
-                                                    TDODTL_CANC.SIZECD = helpM[j].SIZECD;
-                                                    TDODTL_CANC.COLRCD = helpM[j].COLRCD;
-                                                    TDODTL_CANC.QNTY = helpM[j].CANCQNTY;
-                                                    TDODTL_CANC.TAXAMT = 0;
-                                                    DB.T_DODTL.Add(TDODTL_CANC);
-                                                }
+
+                                                T_SORDDTL TSORDDTL_CANC = new T_SORDDTL();
+                                                TSORDDTL_CANC.EMD_NO = TSORDCANC.EMD_NO;
+                                                TSORDDTL_CANC.CLCD = TSORDCANC.CLCD;
+                                                TSORDDTL_CANC.DTAG = TSORDCANC.DTAG;
+                                                TSORDDTL_CANC.TTAG = TSORDCANC.TTAG;
+                                                TSORDDTL_CANC.AUTONO = TSORDCANC.AUTONO;
+                                                TSORDDTL_CANC.ORDAUTONO = VE.TSORDDTL_CANC[i].ORDAUTONO;
+                                                TSORDDTL_CANC.SLNO = Convert.ToInt16(COUNTER);
+                                                if (VE.MENU_PARA == "SB") { TSORDDTL_CANC.STKDRCR = "C"; } else { TSORDDTL_CANC.STKDRCR = "D"; }
+                                                TSORDDTL_CANC.STKTYPE = VE.TSORDDTL_CANC[i].STKTYPE;
+                                                TSORDDTL_CANC.FREESTK = VE.TSORDDTL_CANC[i].FREESTK;
+                                                TSORDDTL_CANC.ITCD = VE.TSORDDTL_CANC[i].ITCD;
+                                                TSORDDTL_CANC.SIZECD = helpM[j].SIZECD;
+                                                TSORDDTL_CANC.COLRCD = helpM[j].COLRCD;
+                                                TSORDDTL_CANC.QNTY = helpM[j].CANCQNTY;
+                                                TSORDDTL_CANC.TAXAMT = 0;
+                                                DB.T_SORDDTL.Add(TSORDDTL_CANC);
+
+
                                             }
                                         }
                                     }
@@ -1088,11 +942,7 @@ namespace Improvar.Controllers
                                 DB.T_SORD_CANC.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                                 DB.T_SORDDTL.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                             }
-                            else
-                            {
-                                DB.T_DO_CANC.Where(x => x.AUTONO == VE.T_DO_CANC.AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
-                                DB.T_DODTL.Where(x => x.AUTONO == VE.T_DO_CANC.AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
-                            }
+
                             DB.T_CNTRL_HDR.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                             DB.T_CNTRL_HDR_DOC.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                             DB.T_CNTRL_HDR_DOC_DTL.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
@@ -1113,13 +963,7 @@ namespace Improvar.Controllers
                                 DB.T_SORD_CANC.RemoveRange(DB.T_SORD_CANC.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO));
                                 DB.SaveChanges();
                             }
-                            else
-                            {
-                                DB.T_DODTL.RemoveRange(DB.T_DODTL.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO));
-                                DB.SaveChanges();
-                                DB.T_DO_CANC.RemoveRange(DB.T_DO_CANC.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO));
-                                DB.SaveChanges();
-                            }
+
                             DB.T_CNTRL_HDR.RemoveRange(DB.T_CNTRL_HDR.Where(x => x.AUTONO == VE.T_SORD_CANC.AUTONO));
                             DB.SaveChanges();
 
