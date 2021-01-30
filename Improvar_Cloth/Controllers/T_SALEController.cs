@@ -2450,7 +2450,7 @@ namespace Improvar.Controllers
             }
 
         }
-        public ActionResult SAVE(FormCollection FC, TransactionSaleEntry VE)
+        public ActionResult SAVE(TransactionSaleEntry VE)
         {
             Cn.getQueryString(VE);
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
