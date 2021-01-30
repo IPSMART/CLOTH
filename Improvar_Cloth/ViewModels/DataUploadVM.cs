@@ -19,8 +19,7 @@ namespace Improvar.ViewModels
     }
     public class DUpGrid
     {
-        public string SLCD { get; set; }
-        public string SLNM { get; set; }
+        public string CUSTOMERNO { get; set; }
         public string BLNO { get; set; }
         public string BLDT { get; set; }
         public string MESSAGE { get; set; }
