@@ -314,7 +314,7 @@ namespace Improvar.Controllers
                                            BALENO = dr["baleno"].retStr(),
                                            PREFNO = dr["prefno"].retStr(),
                                            PREFDT = dr["prefdt"].retDateStr()
-                                       }).Distinct().OrderBy(a=>a.BALENO).OrderBy(a=>a.PREFNO).ToList();
+                                       }).Distinct().OrderBy(a=>a.BALENO).ThenBy(a=>a.PREFNO).ToList();
                     for (int p = 0; p <= VE.TBILTYR_POPUP.Count - 1; p++)
                     {
                         VE.TBILTYR_POPUP[p].SLNO = Convert.ToInt16(p + 1);
@@ -352,35 +352,132 @@ namespace Improvar.Controllers
                 }
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD, sqlbillautonos);
-              string concatStr="";
-                VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
-                                    select new TBILTYR
-                                    {
-                                        BLAUTONO = dr["blautono"].retStr(),
-                                        ITCD= dr["itcd"].retStr(),
-                                        ITNM = dr["itstyle"].retStr(),
-                                        NOS = dr["nos"].retStr(),
-                                        QNTY = dr["qnty"].retStr(),
-                                        UOMCD = dr["uomcd"].retStr(),
-                                        SHADE = dr["shade"].retStr(),
-                                        BALENO = dr["baleno"].retStr(),
-                                        PAGENO = dr["pageno"].retStr(),
-                                        PAGESLNO = dr["pageslno"].retStr(),
-                                        LRNO = dr["lrno"].retStr(),
-                                        LRDT = dr["lrdt"].retDateStr(),
-                                        BALEYR = dr["baleyr"].retStr(),
-                                        BLSLNO = dr["blslno"].retShort(),
-                                        PBLNO = dr["prefno"].retStr(),
-                                        PBLDT = dr["prefdt"].retDateStr(),
-                                    }).Distinct().ToList();
-                var startno = VE.T_BALE_HDR.STARTNO;
-                if (startno == null) startno = 0;
-                for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
-                {if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO!="") concatStr = "/"; else concatStr = "";
-                    VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
-                    VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
-                    VE.TBILTYR[i].RSLNO = (startno + Convert.ToInt32(i + 1)).retShort();
+                string concatStr="";
+                //  VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
+                //                      select new TBILTYR
+                //                      {
+                //                          BLAUTONO = dr["blautono"].retStr(),
+                //                          ITCD= dr["itcd"].retStr(),
+                //                          ITNM = dr["itstyle"].retStr(),
+                //                          NOS = dr["nos"].retStr(),
+                //                          QNTY = dr["qnty"].retStr(),
+                //                          UOMCD = dr["uomcd"].retStr(),
+                //                          SHADE = dr["shade"].retStr(),
+                //                          BALENO = dr["baleno"].retStr(),
+                //                          PAGENO = dr["pageno"].retStr(),
+                //                          PAGESLNO = dr["pageslno"].retStr(),
+                //                          LRNO = dr["lrno"].retStr(),
+                //                          LRDT = dr["lrdt"].retDateStr(),
+                //                          BALEYR = dr["baleyr"].retStr(),
+                //                          BLSLNO = dr["blslno"].retShort(),
+                //                          PBLNO = dr["prefno"].retStr(),
+                //                          PBLDT = dr["prefdt"].retDateStr(),
+                //                      }).Distinct().ToList();
+                //  var startno = VE.T_BALE_HDR.STARTNO;
+                //  if (startno == null) startno = 0;
+                //  for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
+                //  {if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO!="") concatStr = "/"; else concatStr = "";
+                //      VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
+                //      VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
+                //      VE.TBILTYR[i].RSLNO = (startno + Convert.ToInt32(i + 1)).retShort();
+                //  }
+
+                if (VE.TBILTYR == null)
+                {
+                    VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
+                                 select new TBILTYR
+                                 {
+                                     BLAUTONO = dr["blautono"].retStr(),
+                                     ITCD = dr["itcd"].retStr(),
+                                     ITNM = dr["itstyle"].retStr(),
+                                     NOS = dr["nos"].retStr(),
+                                     QNTY = dr["qnty"].retStr(),
+                                     UOMCD = dr["uomcd"].retStr(),
+                                     SHADE = dr["shade"].retStr(),
+                                     BALENO = dr["baleno"].retStr(),
+                                     PAGENO = dr["pageno"].retStr(),
+                                     PAGESLNO = dr["pageslno"].retStr(),
+                                     LRNO = dr["lrno"].retStr(),
+                                     LRDT = dr["lrdt"].retDateStr(),
+                                     BALEYR = dr["baleyr"].retStr(),
+                                     BLSLNO = dr["blslno"].retShort(),
+                                     PBLNO = dr["prefno"].retStr(),
+                                     PBLDT = dr["prefdt"].retDateStr()
+                                 }).Distinct().OrderBy(a=>a.BALENO).ThenBy(a=>a.PREFNO).ToList();
+                    var startno = VE.T_BALE_HDR.STARTNO;
+                    if (startno == null) startno = 0;
+                    for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
+                    {
+                        if (VE.TBILTYR[i].PAGENO != "" && VE.TBILTYR[i].PAGESLNO != "") concatStr = "/"; else concatStr = "";
+                        VE.TBILTYR[i].PAGENO = VE.TBILTYR[i].PAGENO + concatStr + VE.TBILTYR[i].PAGESLNO;
+                        VE.TBILTYR[i].SLNO = Convert.ToInt16(i + 1);
+                        VE.TBILTYR[i].RSLNO = (startno + Convert.ToInt32(i + 1)).retShort();
+                    }
                 }
+                else
+                {
+                    var tbilyr = (from DataRow dr in GetPendig_Data.Rows
+                                  select new TBILTYR
+                                  {
+                                      BLAUTONO = dr["blautono"].retStr(),
+                                      ITCD = dr["itcd"].retStr(),
+                                      ITNM = dr["itstyle"].retStr(),
+                                      NOS = dr["nos"].retStr(),
+                                      QNTY = dr["qnty"].retStr(),
+                                      UOMCD = dr["uomcd"].retStr(),
+                                      SHADE = dr["shade"].retStr(),
+                                      BALENO = dr["baleno"].retStr(),
+                                      PAGENO = dr["pageno"].retStr(),
+                                      PAGESLNO = dr["pageslno"].retStr(),
+                                      LRNO = dr["lrno"].retStr(),
+                                      LRDT = dr["lrdt"].retDateStr(),
+                                      BALEYR = dr["baleyr"].retStr(),
+                                      BLSLNO = dr["blslno"].retShort(),
+                                      PBLNO = dr["prefno"].retStr(),
+                                      PBLDT = dr["prefdt"].retDateStr()
+                                  }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+
+                    List<TBILTYR> MLocIFSC1 = new List<TBILTYR>();
+                    for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
+                    {
+                        TBILTYR MLI = new TBILTYR();
+                        MLI = VE.TBILTYR[i];
+                        MLocIFSC1.Add(MLI);
+                    }
+                    var startno = VE.T_BALE_HDR.STARTNO;
+                    if (startno == null) startno = 0;
+                    foreach (var j in tbilyr)
+                    {
+                        TBILTYR MLI1 = new TBILTYR();
+                        int SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
+
+                        MLI1.BLAUTONO = j.BLAUTONO.retStr();
+                        MLI1.ITCD = j.ITCD.retStr();
+                        MLI1.ITNM = j.ITNM.retStr();
+                        MLI1.NOS = j.NOS.retStr();
+                        MLI1.QNTY = j.QNTY.retStr();
+                        MLI1.UOMCD = j.UOMCD.retStr();
+                        MLI1.SHADE = j.SHADE.retStr();
+                        MLI1.BALENO = j.BALENO.retStr();
+                        MLI1.PAGENO = j.PAGENO.retStr();
+                        MLI1.PAGESLNO = j.PAGESLNO.retStr();
+                        MLI1.LRNO = j.LRNO.retStr();
+                        MLI1.LRDT = j.LRDT.retDateStr();
+                        MLI1.BALEYR = j.BALEYR.retStr();
+                        MLI1.BLSLNO = j.BLSLNO.retShort();
+                        MLI1.PBLNO = j.PBLNO.retStr();
+                        MLI1.PBLDT = j.PBLDT.retDateStr();
+                        if (j.PAGENO != "" && j.PAGESLNO != "") concatStr = "/"; else concatStr = "";
+                        MLI1.PAGENO = MLI1.PAGENO + concatStr + MLI1.PAGESLNO;
+                        MLI1.SLNO = (SERIAL + 1).retShort();
+                        MLI1.RSLNO = (startno +(SERIAL + 1)).retShort();
+
+                        MLocIFSC1.Add(MLI1);
+                    }
+                    VE.TBILTYR = MLocIFSC1;
+                }
+
+
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyR_Mutia_Main", VE);
@@ -776,6 +873,77 @@ namespace Improvar.Controllers
                     return Content(ex.Message + ex.InnerException);
                 }
             }
+        }
+        [HttpPost]
+        public ActionResult T_BiltyR_Mutia(FormCollection FC, TransactionBiltyRMutiaEntry VE)
+        {
+            try
+            {
+               
+                DataTable tbl;
+                string Scm = CommVar.CurSchema(UNQSNO);
+                string str = "";
+                str += "select distinct a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno, ";
+                str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,b.pageslno,c.itnm||' '||c.styleno itstyle,d.prefno,d.prefdt  ";
+                str += " from " + Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d  ";
+                str += " where a.blautono=b.autono(+) and b.itcd=c.itcd(+) and a.blautono=d.autono(+) and a.baleno=b.baleno(+) and a.blslno=b.slno(+) and a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ";
+                str += "order by a.slno ";
+                tbl = Master_Help.SQLquery(str);
+                if (tbl.Rows.Count != 0)
+                {
+                    DataTable IR = new DataTable("mstrep");
+
+                    Models.PrintViewer PV = new Models.PrintViewer();
+                    HtmlConverter HC = new HtmlConverter();
+
+                    HC.RepStart(IR, 2);
+                    HC.GetPrintHeader(IR, "prefno", "string", "c,12", "Bill No.");
+                    HC.GetPrintHeader(IR, "prefdt", "string", "c,12", "Date");
+                    HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Short No.");
+                    HC.GetPrintHeader(IR, "slno", "string", "c,7", "Slno");
+                    HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale");
+                    HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
+                    HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
+                    HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
+                    HC.GetPrintHeader(IR, "lrno", "string", "c,12", "Lrno");
+                    HC.GetPrintHeader(IR, "pageno", "string", "c,12", "Page");
+
+                    Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
+                    i = 0; maxR = tbl.Rows.Count - 1;
+
+                    while (i <= maxR)
+                    {
+
+                        IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].retStr();
+                        IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
+                        IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
+                        IR.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].retStr();
+                        IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
+                        IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
+                        IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
+                        IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+                        IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
+                        IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr();
+                        i = i + 1;
+                    }
+
+                    string pghdr1 = "";
+
+                    pghdr1 = "Receive from Mutia Details as on "+VE.T_CNTRL_HDR.DOCDT.retDateStr() + " ";
+
+                    PV = HC.ShowReport(IR, "T_BiltyR_Mutia", pghdr1, "", true, true, "P", false);
+
+                    TempData["T_BiltyR_Mutia"] = PV;
+                    return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = "T_BiltyR_Mutia" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message);
+            }
+            return View();
         }
     }
 }

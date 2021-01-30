@@ -270,7 +270,13 @@
         $('.PopUp_Backround').fadeOut();
     }
 </script>
-<script></script>
+<script>
+    function pageprinting()
+    {
+        debugger;
+        $("#btnprint").click();
+    }
+</script>
 
 @using (Html.BeginForm())
 {
@@ -282,6 +288,7 @@
         <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+        <input type="submit" id="btnprint" formtarget="_blank" style="display:none" />
         <input type="hidden" id="partylinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_BALE_HDR.AUTONO, new { id = "AUTONO" })

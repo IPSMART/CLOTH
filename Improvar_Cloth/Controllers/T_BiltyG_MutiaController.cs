@@ -226,6 +226,7 @@ namespace Improvar.Controllers
                                    BALENO = dr["baleno"].retStr(),
                                    PREFNO= dr["prefno"].retStr(),
                                    PREFDT = dr["prefdt"].retDateStr(),
+                                   BALEYR = dr["baleyr"].retStr()
                                }).OrderBy(s => s.SLNO).ToList();
                 foreach (var q in VE.TBILTY)
                 {
@@ -305,7 +306,7 @@ namespace Improvar.Controllers
                                             PREFNO = dr["prefno"].retStr(),
                                             PREFDT = dr["prefdt"].retDateStr(),
                                             TRANSLNM = dr["TRANSLNM"].retStr(),
-                                        }).Distinct().ToList();
+                                        }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
                     for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
                     {
                         VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
@@ -342,25 +343,64 @@ namespace Improvar.Controllers
                 }
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos);
-             
-                VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
-                              select new TBILTY
-                              {
-                                  BLAUTONO = dr["autono"].retStr(),
-                                  BALENO = dr["baleno"].retStr(),
-                                  LRNO = dr["lrno"].retStr(),
-                                  LRDT = dr["lrdt"].retDateStr(),
-                                  PREFNO = dr["prefno"].retStr(),
-                                  PREFDT = dr["prefdt"].retDateStr(),
-                                  BALEYR = dr["baleyr"].retStr()
-                              }).Distinct().ToList();
-
-              
-                for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                if (VE.TBILTY == null)
                 {
-                    VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
+                    VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
+                                 select new TBILTY
+                                 {
+                                     BLAUTONO = dr["autono"].retStr(),
+                                     BALENO = dr["baleno"].retStr(),
+                                     LRNO = dr["lrno"].retStr(),
+                                     LRDT = dr["lrdt"].retDateStr(),
+                                     PREFNO = dr["prefno"].retStr(),
+                                     PREFDT = dr["prefdt"].retDateStr(),
+                                     BALEYR = dr["baleyr"].retStr()
+                                 }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                    {
+                        VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
+                    }
                 }
-             
+                else
+                {
+                    var tbily = (from DataRow dr in GetPendig_Data.Rows
+                                 select new TBILTY
+                                 {
+                                     BLAUTONO = dr["autono"].retStr(),
+                                     BALENO = dr["baleno"].retStr(),
+                                     LRNO = dr["lrno"].retStr(),
+                                     LRDT = dr["lrdt"].retDateStr(),
+                                     PREFNO = dr["prefno"].retStr(),
+                                     PREFDT = dr["prefdt"].retDateStr(),
+                                     BALEYR = dr["baleyr"].retStr(),
+                                 }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                 
+                    List<TBILTY> MLocIFSC1 = new List<TBILTY>();
+                    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                    {
+                        TBILTY MLI = new TBILTY();
+                        MLI = VE.TBILTY[i];
+                        MLocIFSC1.Add(MLI);
+                    }
+                  
+                 
+                    foreach(var j in tbily)
+                    {
+                      TBILTY MLI1 = new TBILTY();
+                      int SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
+                      MLI1.BLAUTONO =j.BLAUTONO;
+                      MLI1.BALENO = j.BALENO;
+                      MLI1.LRNO = j.LRNO;
+                      MLI1.LRDT = j.LRDT;
+                      MLI1.PREFNO = j.PREFNO;
+                      MLI1.PREFDT = j.PREFDT;
+                      MLI1.BALEYR = j.BALEYR;
+                      MLI1.SLNO = (SERIAL + 1).retShort();
+                      MLocIFSC1.Add(MLI1);
+                    }
+                   
+                    VE.TBILTY = MLocIFSC1;
+                }
                 ModelState.Clear();
                 VE.DefaultView = true;
                 var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyG_Mutia_Main", VE);
