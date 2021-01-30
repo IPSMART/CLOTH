@@ -842,7 +842,7 @@ namespace Improvar.Controllers
                                 DB.SaveChanges();
                             }
 
-                            TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, null, 0, null);
+                            TCH = Cn.T_CONTROL_HDR(TSORDCANC.DOCCD, TSORDCANC.DOCDT, TSORDCANC.DOCNO, TSORDCANC.AUTONO, Month, DOCPATTERN, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString(), null, TSORDCANC.SLCD,0, null);
 
 
                             if (VE.DefaultAction == "A")
