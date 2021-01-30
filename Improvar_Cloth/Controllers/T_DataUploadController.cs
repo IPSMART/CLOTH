@@ -79,127 +79,193 @@ namespace Improvar.Controllers
                 T_TXN_LINKNO TTXNLINKNO = new T_TXN_LINKNO();
                 T_TXNEWB TTXNEWB = new T_TXNEWB();
                 string auto_no = ""; string Month = "";
-
-              //var er=  dbfdt
-
-
+                var outerDT = dbfdt.AsEnumerable()
+               .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"] })
+               .Select(g =>
+               {
+                   var row = dbfdt.NewRow();
+                   row["CUSTOMERNO"] = g.Key.CUSTOMERNO;
+                   row["INV_NO"] = g.Key.INV_NO;
+                   row["INVDATE"] = g.Key.INVDATE;
+                   row["LR_NO"] = g.Key.LR_NO;
+                   row["LR_DATE"] = g.Key.LR_DATE;
+                   row["CARR_NO"] = g.Key.CARR_NO;
+                   row["FREIGHT"] = g.Sum(r => r.Field<decimal>("FREIGHT"));
+                   row["INSURANCE"] = g.Sum(r => r.Field<decimal>("INSURANCE"));
+                   row["NET_AMT"] = g.Sum(r => r.Field<decimal>("NET_AMT"));
+                   row["TAX_AMT"] = g.Sum(r => r.Field<decimal>("TAX_AMT"));
+                   row["INTEGR_TAX"] = g.Average(r => r.Field<decimal>("INTEGR_TAX"));
+                   row["INTEGR_AMT"] = g.Sum(r => r.Field<decimal>("INTEGR_AMT"));
+                   row["CENT_TAX"] = g.Average(r => r.Field<decimal>("CENT_TAX"));
+                   row["CENT_AMT"] = g.Sum(r => r.Field<decimal>("CENT_AMT"));
+                   row["STATE_TAX"] = g.Average(r => r.Field<decimal>("STATE_TAX"));
+                   row["STATE_AMT"] = g.Sum(r => r.Field<decimal>("STATE_AMT"));
+                   return row;
+               }).CopyToDataTable();
 
                 TTXN.EMD_NO = 0;
                 TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "PB").FirstOrDefault()?.DOCCD;
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
                 List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
+                List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
                 short slno = 0;
-                foreach (DataRow dr in dbfdt.Rows)
+                foreach (DataRow oudr in outerDT.Rows)
                 {
-                    string CUSTOMERNO = dr["CUSTOMERNO"].ToString();
+                    string CUSTOMERNO = oudr["CUSTOMERNO"].ToString();
                     TTXN.SLCD = getSLCD(CUSTOMERNO);
-                    string Ddate = DateTime.ParseExact(dr["INVDATE"].ToString(), "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("dd/mm/yyyy");
+                    string Ddate = DateTime.ParseExact(oudr["INVDATE"].ToString(), "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("dd/mm/yyyy");
                     TTXN.DOCDT = Convert.ToDateTime(Ddate);
                     TTXN.GOCD = "TR";
                     TTXN.DOCTAG = "PB";
-                    TTXN.PREFNO = dr["INV_NO"].ToString();
+                    TTXN.PREFNO = oudr["INV_NO"].ToString();
                     TTXN.PREFDT = TTXN.DOCDT;
-                    TTXN.BLAMT = dr["NET_AMT"].retDbl();
+                    TTXN.BLAMT = oudr["NET_AMT"].retDbl();
 
-
-                    //-------------------------EWB--------------------------//
-                    string TRANSLCD = "";
-                    if (dr["CARR_NO"].ToString() != "")
+                    TTXNAMT TTXNAMT = new TTXNAMT();
+                    TTXNAMT.AUTONO = TTXN.AUTONO;
+                    TTXNAMT.EMD_NO = TTXN.EMD_NO;
+                    TTXNAMT.CLCD = TTXN.CLCD;
+                    TTXNAMT.DTAG = TTXN.DTAG;
+                    double igstper = oudr["INTEGR_TAX"].retDbl();
+                    double cgstper = oudr["CENT_AMT"].retDbl();
+                    if (oudr["FREIGHT"].retDbl() != 0)
                     {
-                        TRANSLCD = getSLCD(dr["CARR_NO"].ToString());
-                    }              
-                    TTXNEWB.AUTONO = TTXN.AUTONO;
-                    TTXNEWB.EMD_NO = TTXN.EMD_NO;
-                    TTXNEWB.CLCD = TTXN.CLCD;
-                    TTXNEWB.DTAG = TTXN.DTAG;
-                    TTXNEWB.TRANSLCD = getSLCD(dr["CARR_NO"].ToString());
-                    //TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
-                    TTXNEWB.LRNO = dr["LR_NO"].ToString();
-                    string LR_DATE = DateTime.ParseExact(dr["LR_DATE"].ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("dd/mm/yyyy");
-                    TTXNEWB.LRDT = Convert.ToDateTime(LR_DATE);
-                    //TTXNEWB.LORRYNO = VE.T_TXNTRANS.LORRYNO;
-                    //TTXNEWB.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
-                    //TTXNEWB.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
-                    //TTXNEWB.GOCD = VE.T_TXN.GOCD;
-                    //----------------------------------------------------------//
+                        TTXNAMT.SLNO = 1;
+                        TTXNAMT.AMTCD = "";
+                        TTXNAMT.AMTDESC = "";
+                        TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
+                        TTXNAMT.HSNCODE = "";
+                        TTXNAMT.AMT = TTXNAMT.AMTRATE;
+                        if (TTXNAMT.IGSTPER.retDbl() > 0)
+                        {
+                            TTXNAMT.IGSTAMT = oudr["FREIGHT"].retDbl() * igstper / 100;
+                        }
+                        else
+                        {
+                            TTXNAMT.CGSTPER = cgstper;
+                            TTXNAMT.CGSTAMT = oudr["FREIGHT"].retDbl() * cgstper / 100;
+                            TTXNAMT.SGSTPER = cgstper;
+                            TTXNAMT.SGSTAMT = oudr["FREIGHT"].retDbl() * cgstper / 100;
+                        }
+                        TTXNAMTlist.Add(TTXNAMT);
+                    }
+                    if (oudr["INSURANCE"].retDbl() != 0)
+                    {
+                        TTXNAMT.SLNO = 2;
+                        TTXNAMT.AMTCD = "0002";
+                        TTXNAMT.AMTDESC = "";
+                        TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
+                        TTXNAMT.HSNCODE = "";
+                        TTXNAMT.AMT = TTXNAMT.AMTRATE;
+                        if (TTXNAMT.IGSTPER.retDbl() > 0)
+                        {
+                            TTXNAMT.IGSTAMT = oudr["INSURANCE"].retDbl() * igstper / 100;
+                        }
+                        else
+                        {
+                            TTXNAMT.CGSTPER = cgstper;
+                            TTXNAMT.CGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
+                            TTXNAMT.SGSTPER = cgstper;
+                            TTXNAMT.SGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
+                        }
+                    }
+                    foreach (DataRow dr in dbfdt.Rows)
+                    {
+                        //-------------------------EWB--------------------------//
+                        string TRANSLCD = "0001";
+                        if (dr["CARR_NO"].ToString() != "")
+                        {
+                            TRANSLCD = getSLCD(dr["CARR_NO"].ToString());
+                        }
+                        TTXNEWB.AUTONO = TTXN.AUTONO;
+                        TTXNEWB.EMD_NO = TTXN.EMD_NO;
+                        TTXNEWB.CLCD = TTXN.CLCD;
+                        TTXNEWB.DTAG = TTXN.DTAG;
+                        TTXNEWB.TRANSLCD = getSLCD(dr["CARR_NO"].ToString());
+                        //TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
+                        TTXNEWB.LRNO = dr["LR_NO"].ToString();
+                        string LR_DATE = DateTime.ParseExact(dr["LR_DATE"].ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("dd/mm/yyyy");
+                        TTXNEWB.LRDT = Convert.ToDateTime(LR_DATE);
+                        //TTXNEWB.LORRYNO = VE.T_TXNTRANS.LORRYNO;
+                        //TTXNEWB.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
+                        //TTXNEWB.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
+                        //TTXNEWB.GOCD = VE.T_TXN.GOCD;
+                        //----------------------------------------------------------//
 
-                    //-------------------------Transport--------------------------//
-                    TXNTRANS.AUTONO = TTXN.AUTONO;
-                    TXNTRANS.EMD_NO = TTXN.EMD_NO;
-                    TXNTRANS.CLCD = TTXN.CLCD;
-                    TXNTRANS.DTAG = TTXN.DTAG;
-                    TXNTRANS.TRANSLCD = TRANSLCD;
-                    //TXNTRANS.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
-                    //TXNTRANS.CRSLCD = VE.T_TXNTRANS.CRSLCD;
-                    //TXNTRANS.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
-                    TXNTRANS.LRNO = dr["LR_NO"].ToString();
-                    TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
-                    //TXNTRANS.LORRYNO = VE.T_TXNTRANS.LORRYNO;
-                    //TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
-                    //TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
-                    //TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
-                    //TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;
-                    //TXNTRANS.RECVPERSON = VE.T_TXNTRANS.RECVPERSON;
-                    //TXNTRANS.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
-                    //TXNTRANS.GATEENTNO = VE.T_TXNTRANS.GATEENTNO;
-                    //----------------------------------------------------------//
+                        //-------------------------Transport--------------------------//
+                        TXNTRANS.AUTONO = TTXN.AUTONO;
+                        TXNTRANS.EMD_NO = TTXN.EMD_NO;
+                        TXNTRANS.CLCD = TTXN.CLCD;
+                        TXNTRANS.DTAG = TTXN.DTAG;
+                        TXNTRANS.TRANSLCD = TRANSLCD;
+                        //TXNTRANS.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
+                        //TXNTRANS.CRSLCD = VE.T_TXNTRANS.CRSLCD;
+                        //TXNTRANS.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
+                        TXNTRANS.LRNO = dr["LR_NO"].ToString();
+                        TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
+                        //TXNTRANS.LORRYNO = VE.T_TXNTRANS.LORRYNO;
+                        //TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
+                        //TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
+                        //TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
+                        //TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;
+                        //TXNTRANS.RECVPERSON = VE.T_TXNTRANS.RECVPERSON;
+                        //TXNTRANS.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
+                        //TXNTRANS.GATEENTNO = VE.T_TXNTRANS.GATEENTNO;
+                        //----------------------------------------------------------//
+
+                        T_TXNDTL TTXNDTL = new T_TXNDTL();
+                        TTXNDTL.CLCD = TTXN.CLCD;
+                        TTXNDTL.EMD_NO = TTXN.EMD_NO;
+                        TTXNDTL.AUTONO = TTXN.AUTONO;
+                        TTXNDTL.SLNO = ++slno;
+                        TTXNDTL.MTRLJOBCD = "FS";
+                        string style = dr["MAT_GRP"].ToString() + dr["MAT_GRP"].ToString().Split('-')[0];
+                        string grpnm = dr["MAT_DESCRI"].ToString();
+                        string HSNCODE = dr["HSN_CODE"].ToString();
+                        ItemDet ItemDet = CreateItem(style, "MTR", grpnm, HSNCODE);
+                        TTXNDTL.ITCD = ItemDet.ITCD;
+                        TTXNDTL.STKDRCR = "D";
+                        TTXNDTL.STKTYPE = "F";
+                        TTXNDTL.HSNCODE = HSNCODE;
+                        //TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
+                        TTXNDTL.BATCHNO = dr["BATCH"].ToString();
+                        TTXNDTL.BALENO = dr["BALENO"].ToString();
+                        TTXNDTL.GOCD = "TR";
+                        TTXNDTL.QNTY = dr["NET_QTY"].retDbl();
+                        TTXNDTL.NOS = 1;
+                        TTXNDTL.RATE = dr["RATE"].retDbl();
+                        TTXNDTL.AMT = dr["GROSS_AMT"].retDbl();
+                        TTXNDTL.FLAGMTR = dr["W_FLG_Q"].retDbl();
+                        string grade = dr["GRADATION"].ToString();
+                        string foc = dr["FOC"].ToString();
+                        string pCSTYPE = PCSTYPE(grade, foc);
+                        double W_FLG_Q = Math.Abs(dr["W_FLG_Q"].retDbl());
+                        double R_FLG_Q = Math.Abs(dr["R_FLG_Q"].retDbl());
+                        double discamt = Math.Abs(dr["QLTY_DISC"].retDbl());
+                        double discamt1 = Math.Abs(dr["MKTG_DISC"].retDbl());
+                        double Flagamt = (W_FLG_Q + R_FLG_Q) * TTXNDTL.RATE.retDbl();
+                        TTXNDTL.TOTDISCAMT = Flagamt;
+                        TTXNDTL.DISCTYPE = "F";
+                        TTXNDTL.DISCRATE = discamt;
+                        TTXNDTL.DISCAMT = discamt;
+                        TTXNDTL.SCMDISCTYPE = "F";
+                        TTXNDTL.SCMDISCRATE = discamt1;
+                        TTXNDTL.SCMDISCAMT = discamt1;
+                        TTXNDTL.GLCD = ItemDet.PURGLCD;
+                        double NET_AMT = dr["NET_AMT"].retDbl();
+                        TTXNDTL.TXBLVAL = dr["TAX_AMT"].retDbl();
+                        TTXNDTL.IGSTPER = dr["INTEGR_TAX"].retDbl();
+                        TTXNDTL.CGSTPER = dr["CENT_TAX"].retDbl();
+                        TTXNDTL.SGSTPER = dr["STATE_TAX"].retDbl();
+                        TTXNDTL.IGSTAMT = dr["INTEGR_AMT"].retDbl();
+                        TTXNDTL.CGSTAMT = dr["CENT_AMT"].retDbl();
+                        TTXNDTL.SGSTAMT = dr["STATE_AMT"].retDbl();
+                        TTXNDTL.NETAMT = NET_AMT;
 
 
 
-
-                    T_TXNDTL TTXNDTL = new T_TXNDTL();
-                    TTXNDTL.CLCD = TTXN.CLCD;
-                    TTXNDTL.EMD_NO = TTXN.EMD_NO;
-                    TTXNDTL.AUTONO = TTXN.AUTONO;
-                    TTXNDTL.SLNO = ++slno;
-                    TTXNDTL.MTRLJOBCD = "FS";
-                    string style = dr["MAT_GRP"].ToString() + dr["MAT_GRP"].ToString().Split('-')[0];
-                    string grpnm = dr["MAT_DESCRI"].ToString();
-                    string HSNCODE = dr["HSN_CODE"].ToString();
-                    ItemDet ItemDet = CreateItem(style, "MTR", grpnm, HSNCODE);
-                    TTXNDTL.ITCD = ItemDet.ITCD;
-                    TTXNDTL.STKDRCR = "D";
-                    TTXNDTL.STKTYPE = "F";
-                    TTXNDTL.HSNCODE = HSNCODE;
-                    //TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
-                    TTXNDTL.BATCHNO = dr["BATCH"].ToString();
-                    TTXNDTL.BALENO = dr["BALENO"].ToString();
-                    TTXNDTL.GOCD = "TR";
-                    TTXNDTL.QNTY = dr["NET_QTY"].retDbl();
-                    TTXNDTL.NOS = 1;
-                    TTXNDTL.RATE = dr["RATE"].retDbl();
-                    TTXNDTL.AMT = dr["GROSS_AMT"].retDbl();
-                    TTXNDTL.FLAGMTR = dr["W_FLG_Q"].retDbl();
-                    string grade = dr["GRADATION"].ToString();
-                    string foc = dr["FOC"].ToString();
-                    string pCSTYPE = PCSTYPE(grade, foc);
-                    double W_FLG_Q = Math.Abs(dr["W_FLG_Q"].retDbl());
-                    double R_FLG_Q = Math.Abs(dr["R_FLG_Q"].retDbl());
-                    double discamt = Math.Abs(dr["QLTY_DISC"].retDbl());
-                    double discamt1 = Math.Abs(dr["MKTG_DISC"].retDbl());
-                    double Flagamt = (W_FLG_Q + R_FLG_Q) * TTXNDTL.RATE.retDbl();
-                    TTXNDTL.TOTDISCAMT = Flagamt;
-                    TTXNDTL.DISCTYPE = "F";
-                    TTXNDTL.DISCRATE = discamt;
-                    TTXNDTL.DISCAMT = discamt;
-                    TTXNDTL.SCMDISCTYPE = "F";
-                    TTXNDTL.SCMDISCRATE = discamt1;
-                    TTXNDTL.SCMDISCAMT = discamt1;
-                    TTXNDTL.GLCD = ItemDet.PURGLCD;
-                    double NET_AMT = dr["NET_AMT"].retDbl();
-                    TTXNDTL.TXBLVAL = dr["TAX_AMT"].retDbl();
-                    TTXNDTL.IGSTPER = dr["INTEGR_TAX"].retDbl();
-                    TTXNDTL.CGSTPER = dr["CENT_TAX"].retDbl();
-                    TTXNDTL.SGSTPER = dr["STATE_TAX"].retDbl();
-                    TTXNDTL.IGSTAMT = dr["INTEGR_AMT"].retDbl();
-                    TTXNDTL.CGSTAMT = dr["CENT_AMT"].retDbl();
-                    TTXNDTL.SGSTAMT = dr["STATE_AMT"].retDbl();
-                    TTXNDTL.NETAMT = NET_AMT;
-
-
-
+                    }
                 }
-
 
 
 
