@@ -915,7 +915,8 @@
                                     @Html.HiddenFor(model => model.TDSCALCON, new { id = "TDSCALCON" })
                                     @Html.HiddenFor(model => model.AMT, new { id = "AMT" })
                                     @Html.HiddenFor(model => model.TDSROUNDCAL, new { id = "TDSROUNDCAL" })
-                                    @if (Model.MENU_PARA == "OP")// @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
+                                    @*@if (Model.MENU_PARA == "OP")//*@
+                                    @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                     {
                                         @Html.EditorFor(model => model.T_TXN.TCSON, new { htmlAttributes = new { @class = "form-control", id = "TCSON", maxlength = 15, @placeholder = "TCS on", onblur = "BillAmountCalculate();", @onkeypress = "return numericOnly(this,2);" } })
                                     }
@@ -1034,12 +1035,12 @@
                                             }
                                         </div>
                                     </div>
-                                                            <div class="col-md-1">
-                                                                <div class="editor-label" style="margin-top: 6px;">
-                                                                    @Html.Label("", "Design No.")
-                                                                    <b style="color:Red;">*</b>
-                                                                </div>
-                                                            </div>
+                                    <div class="col-md-1">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Design No.")
+                                            <b style="color:Red;">*</b>
+                                        </div>
+                                    </div>
                                                             <div class="col-md-7">
                                                                 <div class="editor-field">
                                                                     @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/BARCODE=BARNO=0','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/BARCODE')", onblur = "GetBarnoDetails(this.value,Defaultstyle.value);", @placeholder = "Design No", maxlength = 25 } })
@@ -1070,7 +1071,7 @@
                                         @Html.CheckBoxFor(model => model.itemfilter, new { id = "itemfilter" })
                                     </div>
                                 </div>
-                                                            <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;display:none;" id="show_order" value="Show Pending Oder" title="Click to Show Pending Oder" onclick="GetPendOrder('SHOWBTN')" />
                                 }
                             </div>
                             @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
@@ -1223,18 +1224,18 @@
                                                     @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "UOM", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
                                                 </div>
                                             </div>
-@if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
-{
-                                            <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR", @title = "FLAGMTR" } })
+                                            @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
+                                            {
+                                                <div class="col-md-1">
+                                                    <div class="editor-field">
+                                                        @Html.EditorFor(model => model.FLAGMTR, new { htmlAttributes = new { @class = "form-control", id = "FLAGMTR", @onkeypress = "return numericOnly(this,2);", maxlength = 8, @placeholder = "FLAGMTR", @title = "FLAGMTR" } })
+                                                    </div>
                                                 </div>
-                                            </div>
-}
-else
-{
-    @Html.HiddenFor(model => model.FLAGMTR, new { id = "FLAGMTR" })
-}
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(model => model.FLAGMTR, new { id = "FLAGMTR" })
+                                            }
                                             @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                             {
                                                 <div class="col-md-1">
@@ -1383,11 +1384,11 @@ else
                                                 @Html.DropDownListFor(model => model.TDDISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "TDDISCTYPE", @title = "Disc-1" })
                                             </div>
                                         </div>
-                                                                    <div class="col-md-1">
-                                                                        <div class="editor-field">
-                                                                            @Html.EditorFor(model => model.TDDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "TDDISCRATE", @title = "Disc1 Rate" } })
-                                                                        </div>
-                                                                    </div>
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.TDDISCRATE, new { htmlAttributes = new { @class = "form-control", id = "TDDISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "TDDISCRATE", @title = "Disc1 Rate" } })
+                                            </div>
+                                        </div>
                                     }
                                     @if (Model.M_SYSCNFG.MNTNDISC2 == "Y")
                                     {
@@ -1396,11 +1397,11 @@ else
                                                 @Html.DropDownListFor(model => model.DISCTYPE, new SelectList(Model.DISC_TYPE1, "Value", "Text"), new { @class = "form-control", id = "DISCTYPE", @title = "Disc-2" })
                                             </div>
                                         </div>
-                                                                    <div class="col-md-1">
-                                                                        <div class="editor-field">
-                                                                            @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc2 Rate" } })
-                                                                        </div>
-                                                                    </div>
+                                        <div class="col-md-1">
+                                            <div class="editor-field">
+                                                @Html.EditorFor(model => model.DISCRATE, new { htmlAttributes = new { @class = "form-control", id = "DISCRATE", @onkeypress = "return numericOnly(this,2);", maxlength = 10, @placeholder = "Disc. Rate", @title = "Disc2 Rate" } })
+                                            </div>
+                                        </div>
                                     }
                                     <div class="col-md-4">
                                         <div class="editor-field">

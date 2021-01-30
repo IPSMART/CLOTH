@@ -35,9 +35,9 @@ namespace Improvar.Controllers
             else
             {
                 ViewBag.formname = "Data Upload";
-                return View();
+                DataUploadVM VE = new DataUploadVM();
+                return View(VE);
             }
-            return View();
         }
         [HttpPost]
         public ActionResult T_DataUpload(DataUploadVM VE, FormCollection FC, String Command)
@@ -46,14 +46,15 @@ namespace Improvar.Controllers
             {
                 return RedirectToAction("Login", "Login");
             }
-            ReadRaymondPurchaseDBF();
-            return null;
+            if (Request.Files.Count == 0) return Content("No File Selected");
+            VE = ReadRaymondPurchaseDBF(VE);
+            return View(VE);
         }
-        public string ReadRaymondPurchaseDBF()
+        public DataUploadVM ReadRaymondPurchaseDBF(DataUploadVM VE)
         {
+            List<DUpGrid> DUGridlist = new List<DUpGrid>();
             try
             {
-
                 string Path = "C:\\IPSMART\\Temp";
                 if (!System.IO.Directory.Exists(Path)) { System.IO.Directory.CreateDirectory(Path); }
                 Path = "C:\\IPSMART\\Temp\\Raymond.dbf";
@@ -77,8 +78,13 @@ namespace Improvar.Controllers
                 T_TXNTRANS TXNTRANS = new T_TXNTRANS();
                 T_TXNOTH TTXNOTH = new T_TXNOTH();
                 T_TXN_LINKNO TTXNLINKNO = new T_TXN_LINKNO();
-                T_TXNEWB TTXNEWB = new T_TXNEWB();
-                string auto_no = ""; string Month = "";
+                var tys = dbfdt.Rows[0]["FREIGHT"].GetType();
+                var tsy = dbfdt.Rows[0]["INSURANCE"].GetType();
+                var tssy = dbfdt.Rows[0]["INTEGR_TAX"].GetType();
+                var ty = dbfdt.Rows[0]["CUSTOMERNO"].GetType();
+                var tysxs = dbfdt.Rows[0]["STATE_AMT"].GetType();
+                var tsay = dbfdt.Rows[0]["STATE_TAX"].GetType();
+                var tssay = dbfdt.Rows[0]["STATE_AMT"].GetType();
                 var outerDT = dbfdt.AsEnumerable()
                .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"] })
                .Select(g =>
@@ -90,16 +96,16 @@ namespace Improvar.Controllers
                    row["LR_NO"] = g.Key.LR_NO;
                    row["LR_DATE"] = g.Key.LR_DATE;
                    row["CARR_NO"] = g.Key.CARR_NO;
-                   row["FREIGHT"] = g.Sum(r => r.Field<decimal>("FREIGHT"));
-                   row["INSURANCE"] = g.Sum(r => r.Field<decimal>("INSURANCE"));
-                   row["NET_AMT"] = g.Sum(r => r.Field<decimal>("NET_AMT"));
-                   row["TAX_AMT"] = g.Sum(r => r.Field<decimal>("TAX_AMT"));
-                   row["INTEGR_TAX"] = g.Average(r => r.Field<decimal>("INTEGR_TAX"));
-                   row["INTEGR_AMT"] = g.Sum(r => r.Field<decimal>("INTEGR_AMT"));
-                   row["CENT_TAX"] = g.Average(r => r.Field<decimal>("CENT_TAX"));
-                   row["CENT_AMT"] = g.Sum(r => r.Field<decimal>("CENT_AMT"));
-                   row["STATE_TAX"] = g.Average(r => r.Field<decimal>("STATE_TAX"));
-                   row["STATE_AMT"] = g.Sum(r => r.Field<decimal>("STATE_AMT"));
+                   row["FREIGHT"] = g.Sum(r => r.Field<double>("FREIGHT"));
+                   row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
+                   row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
+                   row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
+                   row["INTEGR_TAX"] = g.Average(r => r.Field<double>("INTEGR_TAX"));
+                   row["INTEGR_AMT"] = g.Sum(r => r.Field<double>("INTEGR_AMT"));
+                   row["CENT_TAX"] = g.Average(r => r.Field<double>("CENT_TAX"));
+                   row["CENT_AMT"] = g.Sum(r => r.Field<double>("CENT_AMT"));
+                   row["STATE_TAX"] = g.Average(r => r.Field<double>("STATE_TAX"));
+                   row["STATE_AMT"] = g.Sum(r => r.Field<double>("STATE_AMT"));
                    return row;
                }).CopyToDataTable();
 
@@ -111,21 +117,30 @@ namespace Improvar.Controllers
                 short slno = 0;
                 foreach (DataRow oudr in outerDT.Rows)
                 {
-                    string CUSTOMERNO = oudr["CUSTOMERNO"].ToString();
-                    TTXN.SLCD = getSLCD(CUSTOMERNO);
-                    string Ddate = DateTime.ParseExact(oudr["INVDATE"].ToString(), "MM/dd/yyyy", CultureInfo.InvariantCulture).ToString("dd/mm/yyyy");
-                    TTXN.DOCDT = Convert.ToDateTime(Ddate);
+                    DUpGrid dupgrid = new DUpGrid();
                     TTXN.GOCD = "TR";
                     TTXN.DOCTAG = "PB";
                     TTXN.PREFNO = oudr["INV_NO"].ToString();
+                    dupgrid.BLNO = TTXN.PREFNO;
+                    string Ddate = DateTime.ParseExact(oudr["INVDATE"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                    TTXN.DOCDT = Convert.ToDateTime(Ddate);
+                    dupgrid.BLDT = Ddate;
                     TTXN.PREFDT = TTXN.DOCDT;
+                    dupgrid.BLNO = TTXN.PREFNO;
+                    string CUSTOMERNO = oudr["CUSTOMERNO"].ToString();
+                    TTXN.SLCD = getSLCD(CUSTOMERNO); dupgrid.SLCD = CUSTOMERNO;
+                    if (TTXN.SLCD == "")
+                    {
+                        dupgrid.MESSAGE = "Please add Customer No:(" + CUSTOMERNO + ") in the SAPCODE from [Tax code link up With Party].";
+                        DUGridlist.Add(dupgrid);
+                        break;
+                    }
                     TTXN.BLAMT = oudr["NET_AMT"].retDbl();
 
+
+                    TMPVE.T_TXN = TTXN;//adding to Viewmodel
+
                     TTXNAMT TTXNAMT = new TTXNAMT();
-                    TTXNAMT.AUTONO = TTXN.AUTONO;
-                    TTXNAMT.EMD_NO = TTXN.EMD_NO;
-                    TTXNAMT.CLCD = TTXN.CLCD;
-                    TTXNAMT.DTAG = TTXN.DTAG;
                     double igstper = oudr["INTEGR_TAX"].retDbl();
                     double cgstper = oudr["CENT_AMT"].retDbl();
                     if (oudr["FREIGHT"].retDbl() != 0)
@@ -136,7 +151,7 @@ namespace Improvar.Controllers
                         TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
                         TTXNAMT.HSNCODE = "";
                         TTXNAMT.AMT = TTXNAMT.AMTRATE;
-                        if (TTXNAMT.IGSTPER.retDbl() > 0)
+                        if (igstper > 0)
                         {
                             TTXNAMT.IGSTAMT = oudr["FREIGHT"].retDbl() * igstper / 100;
                         }
@@ -157,7 +172,7 @@ namespace Improvar.Controllers
                         TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
                         TTXNAMT.HSNCODE = "";
                         TTXNAMT.AMT = TTXNAMT.AMTRATE;
-                        if (TTXNAMT.IGSTPER.retDbl() > 0)
+                        if (igstper > 0)
                         {
                             TTXNAMT.IGSTAMT = oudr["INSURANCE"].retDbl() * igstper / 100;
                         }
@@ -168,55 +183,32 @@ namespace Improvar.Controllers
                             TTXNAMT.SGSTPER = cgstper;
                             TTXNAMT.SGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
                         }
+                        TTXNAMTlist.Add(TTXNAMT);
                     }
+                    TMPVE.TTXNAMT = TTXNAMTlist;//adding to Viewmodel
+
+                    //-------------------------Transport--------------------------//
+
+                    if (oudr["CARR_NO"].ToString() != "")
+                    {
+                        TXNTRANS.TRANSLCD = getSLCD(oudr["CARR_NO"].ToString());
+                        if (TXNTRANS.TRANSLCD == "")
+                        {
+                            dupgrid.MESSAGE = "Please add  CARR_NO:(" + oudr["CARR_NO"].ToString() + ")/Transporter in the SAPCODE from [Tax code link up With Party].";
+                            DUGridlist.Add(dupgrid); break;
+                        }
+                    }
+
+                    string LR_DATE = DateTime.ParseExact(oudr["LR_DATE"].ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                    TXNTRANS.LRNO = oudr["LR_NO"].ToString();
+                    TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
+                    //----------------------------------------------------------//
+
+
                     foreach (DataRow dr in dbfdt.Rows)
                     {
-                        //-------------------------EWB--------------------------//
-                        string TRANSLCD = "0001";
-                        if (dr["CARR_NO"].ToString() != "")
-                        {
-                            TRANSLCD = getSLCD(dr["CARR_NO"].ToString());
-                        }
-                        TTXNEWB.AUTONO = TTXN.AUTONO;
-                        TTXNEWB.EMD_NO = TTXN.EMD_NO;
-                        TTXNEWB.CLCD = TTXN.CLCD;
-                        TTXNEWB.DTAG = TTXN.DTAG;
-                        TTXNEWB.TRANSLCD = getSLCD(dr["CARR_NO"].ToString());
-                        //TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
-                        TTXNEWB.LRNO = dr["LR_NO"].ToString();
-                        string LR_DATE = DateTime.ParseExact(dr["LR_DATE"].ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("dd/mm/yyyy");
-                        TTXNEWB.LRDT = Convert.ToDateTime(LR_DATE);
-                        //TTXNEWB.LORRYNO = VE.T_TXNTRANS.LORRYNO;
-                        //TTXNEWB.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
-                        //TTXNEWB.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
-                        //TTXNEWB.GOCD = VE.T_TXN.GOCD;
-                        //----------------------------------------------------------//
 
-                        //-------------------------Transport--------------------------//
-                        TXNTRANS.AUTONO = TTXN.AUTONO;
-                        TXNTRANS.EMD_NO = TTXN.EMD_NO;
-                        TXNTRANS.CLCD = TTXN.CLCD;
-                        TXNTRANS.DTAG = TTXN.DTAG;
-                        TXNTRANS.TRANSLCD = TRANSLCD;
-                        //TXNTRANS.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
-                        //TXNTRANS.CRSLCD = VE.T_TXNTRANS.CRSLCD;
-                        //TXNTRANS.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
-                        TXNTRANS.LRNO = dr["LR_NO"].ToString();
-                        TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
-                        //TXNTRANS.LORRYNO = VE.T_TXNTRANS.LORRYNO;
-                        //TXNTRANS.GRWT = VE.T_TXNTRANS.GRWT;
-                        //TXNTRANS.TRWT = VE.T_TXNTRANS.TRWT;
-                        //TXNTRANS.NTWT = VE.T_TXNTRANS.NTWT;
-                        //TXNTRANS.DESTN = VE.T_TXNTRANS.DESTN;
-                        //TXNTRANS.RECVPERSON = VE.T_TXNTRANS.RECVPERSON;
-                        //TXNTRANS.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
-                        //TXNTRANS.GATEENTNO = VE.T_TXNTRANS.GATEENTNO;
-                        //----------------------------------------------------------//
-
-                        T_TXNDTL TTXNDTL = new T_TXNDTL();
-                        TTXNDTL.CLCD = TTXN.CLCD;
-                        TTXNDTL.EMD_NO = TTXN.EMD_NO;
-                        TTXNDTL.AUTONO = TTXN.AUTONO;
+                        TTXNDTL TTXNDTL = new TTXNDTL();
                         TTXNDTL.SLNO = ++slno;
                         TTXNDTL.MTRLJOBCD = "FS";
                         string style = dr["MAT_GRP"].ToString() + dr["MAT_GRP"].ToString().Split('-')[0];
@@ -261,26 +253,20 @@ namespace Improvar.Controllers
                         TTXNDTL.CGSTAMT = dr["CENT_AMT"].retDbl();
                         TTXNDTL.SGSTAMT = dr["STATE_AMT"].retDbl();
                         TTXNDTL.NETAMT = NET_AMT;
-
-
-
+                        TTXNDTLlist.Add(TTXNDTL);
                     }
+                    var tssaddy = TSCntlr.SAVE(TMPVE);
+                    dupgrid.MESSAGE = "Success";
+                    DUGridlist.Add(dupgrid);
                 }
-
-
-
-
-
-
-
-
-
             }
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
+                VE.STATUS = ex.Message + ex.StackTrace;
             }
-            return null;
+            VE.DUpGrid = DUGridlist;
+            return VE;
         }
 
         public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE)
@@ -464,11 +450,7 @@ namespace Improvar.Controllers
             }
             return pcstype;
         }
-        public class ItemDet
-        {
-            public string ITCD { get; set; }
-            public string PURGLCD { get; set; }
-        }
+
         private string getSLCD(string sapcode)
         {
             sql = "select slcd from " + CommVar.CurSchema(UNQSNO) + ".m_subleg_com where sapcode='" + sapcode + "'";

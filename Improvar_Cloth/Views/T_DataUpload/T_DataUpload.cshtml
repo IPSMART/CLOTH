@@ -29,9 +29,33 @@
             </div>
             <div class="col-md-2">
                 <div class="editor-field">
-                    <input type="submit" value="Upload" name="Command" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
+                    <input type="submit" value="Upload" name="Command" formtarget="_blank" class="btn btn-primary" style="margin-top: 4px;padding: 2px 7px 2px 5px;" />
                 </div>
             </div>
+        </div>
+        <div>
+            @if (Model != null && Model.DUpGrid != null)
+            {
+                <table class="table table-bordered table-condensed" >
+                    <caption><h2>Upload Status</h2></caption>
+                    <thead>
+                        <tr><th>SLCD</th><th>SLNM</th><th>BLNO</th><th>MESSAGE</th></tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.DUpGrid.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model.DUpGrid[i].SLCD </td>
+                                <td>@Model.DUpGrid[i].SLNM </td>
+                                <td> @Model.DUpGrid[i].BLNO</td>
+                                <td> @Model.DUpGrid[i].BLDT</td>
+                                <td>@Model.DUpGrid[i].MESSAGE</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            <h2>@Model.STATUS</h2>
         </div>
     </div>
     <div class="container">
