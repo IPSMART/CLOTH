@@ -191,13 +191,14 @@ namespace Improvar.Controllers
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
+                                string ROUNDOFF = TempData["LASTROUNDOFF" + VE.MENU_PARA].retStr();
                                 TempData.Keep();
                                 if (TTXN.GOCD.retStr() == "")
                                 {
                                     if (VE.DocumentType.Count() > 0)
                                     {
                                         string doccd = VE.DocumentType.FirstOrDefault().value;
-                                        TTXN.GOCD = DB.T_TXN.Where(a => a.DOCCD == doccd).Select(b => b.GOCD).FirstOrDefault();
+                                        TTXN.GOCD = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a=>a.AUTONO).Select(b => b.GOCD).FirstOrDefault();
                                     }
                                 }
                                 string gocd = TTXN.GOCD.retStr();
@@ -206,11 +207,21 @@ namespace Improvar.Controllers
                                 {
                                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
+                                
+                                if (ROUNDOFF == "")
+                                {
+                                    if (VE.DocumentType.Count() > 0)
+                                    {
+                                        string doccd = VE.DocumentType.FirstOrDefault().value;
+                                        ROUNDOFF = DB.T_TXN.Where(a => a.DOCCD == doccd).OrderByDescending(a => a.AUTONO).Select(b => b.ROYN).FirstOrDefault();
+                                    }
+                                }
+                                VE.RoundOff = ROUNDOFF == "Y" ? true : false;
                                 VE.T_TXN = TTXN;
 
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); VE.T_TXNOTH = TXNOTH;
 
-                                VE.RoundOff = true;
+                                //VE.RoundOff = true;
                                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP")
                                 {
                                     DataTable data = salesfunc.GetSyscnfgData(VE.T_TXN.DOCDT.retDateStr());
@@ -375,7 +386,8 @@ namespace Improvar.Controllers
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
 
                 //tcsdata
-                var tdsdt = getTDS(TXN.DOCDT.retStr().Remove(10), TXN.SLCD, TXN.TDSCODE);
+                string TDSCODE = TXN.TDSCODE.retStr() == ""?"": TXN.TDSCODE.retStr().retSqlformat();
+                var tdsdt = getTDS(TXN.DOCDT.retStr().Remove(10), TXN.SLCD, TDSCODE);
                 if (tdsdt != null && tdsdt.Rows.Count > 0)
                 {
                     VE.TDSLIMIT = tdsdt.Rows[0]["TDSLIMIT"].retDbl();
@@ -2623,6 +2635,7 @@ namespace Improvar.Controllers
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
                         Month = auto_no.Split(Convert.ToChar(Cn.GCS()))[1].ToString();
                         TempData["LASTGOCD" + VE.MENU_PARA] = VE.T_TXN.GOCD;
+                        TempData["LASTROUNDOFF" + VE.MENU_PARA] = VE.RoundOff == true ? "Y" : "N";
                         //TCH = Cn.T_CONTROL_HDR(TTXN.DOCCD, TTXN.DOCDT, TTXN.DOCNO, TTXN.AUTONO, Month, DOCPATTERN, VE.DefaultAction, scm1, null, TTXN.SLCD, TTXN.BLAMT.Value, null);
                     }
                     else
@@ -3570,7 +3583,7 @@ namespace Improvar.Controllers
                         string dncntag = ""; string exemptype = "";
                         if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "SRPOS") dncntag = "SC";
                         if (VE.MENU_PARA == "PR") dncntag = "PD";
-                        double gblamt = TTXN.BLAMT.retDbl(); double groamt = TTXN.ROAMT.retDbl() + TTXN.TCSAMT.retDbl(); double gtcsamt = TTXN.TCSAMT.retDbl();
+                        double gblamt = TTXN.BLAMT.retDbl(); double groamt = TTXN.ROAMT.retDbl(); double gtcsamt = TTXN.TCSAMT.retDbl();
                         string pinv = VE.MENU_PARA == "PI" ? "Y" : "";
                         for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
                         {
