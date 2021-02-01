@@ -2996,14 +2996,14 @@ namespace Improvar.Controllers
                                            QNTY = P.Sum(A => A.QNTY),
                                            TXBLVAL = P.Sum(A => A.TXBLVAL)
                                        }).Where(a => a.QNTY != 0).ToList();
-
+                        string negamt="", proddrcr = "";
                         if (AMTGLCD != null && AMTGLCD.Count > 0)
                         {
                             for (int i = 0; i <= AMTGLCD.Count - 1; i++)
                             {
                                 isl = isl + 1;
-                                string negamt = AMTGLCD[i].TXBLVAL.retDbl() < 0 ? "Y" : "N";
-                                string proddrcr = negamt == "Y" ? dr : cr;
+                                negamt = AMTGLCD[i].TXBLVAL.retDbl() < 0 ? "Y" : "N";
+                                proddrcr = negamt == "Y" ? dr : cr;
                                 if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
 
                                 dbamt = AMTGLCD[i].TXBLVAL.retDbl() * (negamt == "Y" ? -1 : 1);
@@ -3061,8 +3061,8 @@ namespace Improvar.Controllers
                             if (gstpostamt[gt] != 0)
                             {
                                 isl = isl + 1;
-                                string negamt = gstpostamt[gt] < 0 ? "Y" : "N";
-                                string proddrcr = negamt == "Y" ? dr : cr;
+                                negamt = gstpostamt[gt] < 0 ? "Y" : "N";
+                                proddrcr = negamt == "Y" ? dr : cr;
                                 if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
                                 dbamt = gstpostamt[gt].retDbl() * (negamt == "Y" ? -1 : 1);
 
@@ -3113,13 +3113,18 @@ namespace Improvar.Controllers
                         }
 
                         //  Party wise posting
-                        isl = 1; //isl + 1;
-                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), dr,
-                            parglcd, sslcd, Convert.ToDouble(VE.T_TXN.BLAMT), prodrem, prodglcd,
+                        isl = 1;
+                        negamt = VE.T_TXN.BLAMT.retDbl() < 0 ? "Y" : "N";
+                        proddrcr = negamt == "Y" ? cr : dr;
+                        if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = dr;
+                        dbamt = VE.T_TXN.BLAMT.retDbl() * (negamt == "Y" ? -1 : 1);
+
+                        dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr,
+                            parglcd, sslcd, dbamt, prodrem, prodglcd,
                             null, dbqty, 0, dbcurramt);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
-                        if (dr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
+                        if (dr == "D") dbDrAmt = dbDrAmt + dbamt.retDbl();
                         else dbCrAmt = dbCrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
 
                         if (parclass1cd.retStr() != "" || class2cd.retStr() != "")
@@ -3139,9 +3144,9 @@ namespace Improvar.Controllers
                         string blconslcd = TTXN.CONSLCD;
                         if (TTXN.SLCD != sslcd) blconslcd = TTXN.SLCD;
                         if (blconslcd == sslcd) blconslcd = "";
-                        dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, dr,
+                        dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, proddrcr,
                                parglcd, sslcd, blconslcd, TTXNOTH.AGSLCD, parclass1cd, Convert.ToSByte(isl),
-                                VE.T_TXN.BLAMT.retDbl(), strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
+                                dbamt, strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
                                 TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
                                 "", "", "");
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();

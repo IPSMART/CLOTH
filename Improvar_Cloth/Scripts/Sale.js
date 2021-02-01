@@ -1327,11 +1327,13 @@ function ReverceCharges() {
     //SBILLBillAmount();
 
 }
-function BillAmountCalculate() {
+function BillAmountCalculate(TAG) {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-
+    if (event.key != "F8" && TAG == "TCSON" && event.key != undefined) {
+        return true;
+    }
     var R_TOTAL_BILL_AMOUNT = 0;
     var TOTAL_ROUND = 0;
     var netamt = 0;
@@ -1395,7 +1397,7 @@ function BillAmountCalculate() {
         if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
         document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
         //if (MENU_PARA == "OP") {
-        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+        if ((MENU_PARA == "PB" || MENU_PARA == "OP") && event.key != "F8") {
             TCSON = $("#TCSON").val();
             if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
         }
