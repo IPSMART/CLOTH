@@ -852,7 +852,7 @@
                             </div>
                         </div>
                         <div class="col-sm-1">
-                            @if (Model.DefaultAction != "V")
+                            @if (Model.DefaultAction != "V" && Model.IsAPIEnabled==true)
                             {
                                 <button type="button" style="margin-top:5px;padding-right:1px" name="button" class="btn-info" onclick="GetGstInfo();">Get Gst Info</button>
                             }
