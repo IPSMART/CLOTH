@@ -41,6 +41,8 @@ namespace Improvar.Controllers
                             ViewBag.formname = "Khasra"; break;
                         case "TRFB":
                             ViewBag.formname = "Sotck Transfer Bale"; break;
+                        case "TRWB":
+                            ViewBag.formname = "Stk Trnf with Waybill (Bale)"; break;
                         default: ViewBag.formname = ""; break;
                     }
                     string LOC = CommVar.Loccd(UNQSNO);

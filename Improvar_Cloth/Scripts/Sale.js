@@ -55,46 +55,55 @@ function GetBarnoDetails(id, HelpFrom) {
             ReferanceFieldID = "/BARCODE";
             ReferanceFieldIndex = "/0";
         }
-        $.ajax({
-            type: 'POST',
-            beforesend: $("#WaitingMode").show(),
-            url: $("#UrlBarnoDetails").val(),//"@Url.Action("GetBarCodeDetails", PageControllerName)",
-            data: "&val=" + id + "&Code=" + code,
-            success: function (result) {
-                var MSG = result.indexOf('#helpDIV');
-                if (MSG >= 0) {
-                    ClearBarcodeArea();
-                    $('#SearchFldValue').val(hlpfieldid);
-                    $('#helpDIV').html(result);
-                    $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/PARTCD');
-                    $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/8');
-                    $('#helpDIV_Header').html('Barno Details');
-                }
-                else {
-                    var MSG = result.indexOf(String.fromCharCode(181));
+        if ($("#Barnohelpopen").val() == "Y") {
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: $("#UrlBarnoDetails").val(),//"@Url.Action("GetBarCodeDetails", PageControllerName)",
+                data: "&val=" + id + "&Code=" + code,
+                success: function (result) {
+                    var MSG = result.indexOf('#helpDIV');
                     if (MSG >= 0) {
-                        FillBarcodeArea(result);
-                        changeBARGENTYPE();
-                        var value = modify_check();
-                        if (value == "true") {
-                            RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
-                        }
+                        ClearBarcodeArea();
+                        $('#SearchFldValue').val(hlpfieldid);
+                        $('#helpDIV').html(result);
+                        $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/PARTCD');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/8');
+                        $('#helpDIV_Header').html('Barno Details');
                     }
                     else {
-                        $('#helpDIV').html("");
-                        msgInfo("" + result + " !");
-                        ClearBarcodeArea();
-                        message_value = hlpfieldid;
+                        var MSG = result.indexOf(String.fromCharCode(181));
+                        if (MSG >= 0) {
+                            FillBarcodeArea(result);
+                            changeBARGENTYPE();
+                            var value = modify_check();
+                            if (value == "true") {
+                                RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                            }
+                        }
+                        else {
+                            $('#helpDIV').html("");
+                            msgInfo("" + result + " !");
+                            ClearBarcodeArea();
+                            message_value = hlpfieldid;
+                        }
                     }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
                 }
-                $("#WaitingMode").hide();
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("#WaitingMode").hide();
-                msgError(XMLHttpRequest.responseText);
-                $("body span h1").remove(); $("#msgbody_error style").remove();
+            });
+        }
+        else {
+            var value = modify_check();
+            if (value == "true") {
+                RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                $("#Barnohelpopen").val("Y");
             }
-        });
+        }
     }
 }
 function Add_BarCodeRow() {
@@ -138,6 +147,7 @@ function FillBarcodeArea(str, Table, i) {
         }
         else {
             i = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length - 1;
+            $("#Barnohelpopen").val("N");
         }
     }
     if (str != "") {
