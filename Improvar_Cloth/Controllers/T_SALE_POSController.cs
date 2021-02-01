@@ -2245,10 +2245,7 @@ namespace Improvar.Controllers
                     TTXNPYMTHDR.AUTONO = TTXN.AUTONO;
                     TTXNPYMTHDR.RTDEBCD = VE.T_TXNMEMO.RTDEBCD;
                     TTXNPYMTHDR.DRCR = stkdrcr;
-
                     //----------------------------------------------------------//
-
-
 
                     dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "S", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -2264,8 +2261,6 @@ namespace Improvar.Controllers
 
                     dbsql = masterHelp.RetModeltoSql(TTXNPYMTHDR, VE.DefaultAction);
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-
 
                     //  create header record in finschema
                     if (blactpost == true || blgstpost == true)
@@ -3036,7 +3031,7 @@ namespace Improvar.Controllers
                         {
                             gstpostcd[gt] = ""; gstpostamt[gt] = 0;
                         }
-
+                        //gstpostamt[0] = igst; gstpostamt[1] = cgst; gstpostamt[2] = sgst; gstpostamt[3] = cess; gstpostamt[4] = duty;
                         int gi = 0;
                         if (revcharge != "Y")
                         {
@@ -3069,17 +3064,18 @@ namespace Improvar.Controllers
                                 string negamt = gstpostamt[gt] < 0 ? "Y" : "N";
                                 string proddrcr = negamt == "Y" ? dr : cr;
                                 if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = cr;
+                                dbamt = gstpostamt[gt].retDbl() * (negamt == "Y" ? -1 : 1);
 
                                 dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr, gstpostcd[gt], sslcd,
                                    gstpostamt[gt], prodrem, parglcd, TTXN.SLCD, dbqty, 0, 0);
                                 OraCmd.CommandText = dbsql;
                                 OraCmd.ExecuteNonQuery();
 
-                                if (proddrcr == "D") dbDrAmt = dbDrAmt + gstpostamt[gt];
-                                else dbCrAmt = dbCrAmt + gstpostamt[gt];
+                                if (proddrcr == "D") dbDrAmt = dbDrAmt + dbamt;
+                                else dbCrAmt = dbCrAmt + dbamt;
 
                                 dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
-                                        parclass1cd, class2cd, gstpostamt[gt], 0, strrem);
+                                        parclass1cd, class2cd, dbamt, 0, strrem);
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                             }
                         }
@@ -3491,7 +3487,6 @@ namespace Improvar.Controllers
 
                                 recdamt = recdamt + VE.TTXNPYMT[i].AMT.retDbl();
                             }
-
                         }
                     }
                     #endregion
