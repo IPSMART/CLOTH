@@ -2996,7 +2996,7 @@ namespace Improvar.Controllers
                                            QNTY = P.Sum(A => A.QNTY),
                                            TXBLVAL = P.Sum(A => A.TXBLVAL)
                                        }).Where(a => a.QNTY != 0).ToList();
-                        string negamt="", proddrcr = "";
+                        string negamt = "", proddrcr = "";
                         if (AMTGLCD != null && AMTGLCD.Count > 0)
                         {
                             for (int i = 0; i <= AMTGLCD.Count - 1; i++)
@@ -3015,7 +3015,7 @@ namespace Improvar.Controllers
                                 dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
                                         AMTGLCD[i].CLASS1CD, "", dbamt, 0, strrem);
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
-                                itamt = itamt + AMTGLCD[i].TXBLVAL.retDbl();
+                                itamt = itamt + dbamt.retDbl();
                                 expglcd = AMTGLCD[i].GLCD;
 
                                 if (proddrcr == "D") dbDrAmt = dbDrAmt + dbamt;
@@ -3067,7 +3067,7 @@ namespace Improvar.Controllers
                                 dbamt = gstpostamt[gt].retDbl() * (negamt == "Y" ? -1 : 1);
 
                                 dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), proddrcr, gstpostcd[gt], sslcd,
-                                   gstpostamt[gt], prodrem, parglcd, TTXN.SLCD, dbqty, 0, 0);
+                                   dbamt, prodrem, parglcd, TTXN.SLCD, dbqty, 0, 0);
                                 OraCmd.CommandText = dbsql;
                                 OraCmd.ExecuteNonQuery();
 
@@ -3125,12 +3125,12 @@ namespace Improvar.Controllers
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
                         if (dr == "D") dbDrAmt = dbDrAmt + dbamt.retDbl();
-                        else dbCrAmt = dbCrAmt + Convert.ToDouble(VE.T_TXN.BLAMT);
+                        else dbCrAmt = dbCrAmt + dbamt.retDbl();
 
                         if (parclass1cd.retStr() != "" || class2cd.retStr() != "")
                         {
                             dbsql = masterHelp.InsVch_Class(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, 1, Convert.ToSByte(isl), sslcd,
-                                    parclass1cd, class2cd, Convert.ToDouble(VE.T_TXN.BLAMT), dbcurramt, strrem);
+                                    parclass1cd, class2cd, dbamt.retDbl(), dbcurramt, strrem);
                             OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                         }
 
@@ -3147,7 +3147,7 @@ namespace Improvar.Controllers
                         dbsql = masterHelp.InsVch_Bl(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, proddrcr,
                                parglcd, sslcd, blconslcd, TTXNOTH.AGSLCD, parclass1cd, Convert.ToSByte(isl),
                                 dbamt, strblno, strbldt, strrefno, strduedt, strvtype, TTXN.DUEDAYS.retDbl(), itamt, TTXNOTH.POREFNO,
-                                TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), VE.T_TXN.BLAMT.retDbl(),
+                                TTXNOTH.POREFDT == null ? "" : TTXNOTH.POREFDT.ToString().retDateStr(), dbamt.retDbl(),
                                 "", "", "");
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
@@ -3171,7 +3171,13 @@ namespace Improvar.Controllers
 
                         int gs = 0;
                         string dncntag = ""; string exemptype = "";
-                        double gblamt = TTXN.BLAMT.retDbl(); double groamt = TTXN.ROAMT.retDbl() + TTXN.TCSAMT.retDbl();
+                        double gblamt = TTXN.BLAMT.retDbl(); double groamt = TTXN.ROAMT.retDbl();
+
+                        string negamt = TTXN.BLAMT.retDbl() < 0 ? "Y" : "N";
+                        string proddrcr = negamt == "Y" ? dr : cr;
+                        if (negamt == "Y" && VE.MENU_PARA == "SBCMR") proddrcr = dr;
+                        gblamt = gblamt.retDbl() * (negamt == "Y" ? -1 : 1);
+
                         if (VE.TsalePos_TBATCHDTL != null)
                         {
                             for (int i = 0; i <= VE.TsalePos_TBATCHDTL.Count - 1; i++)
@@ -3209,7 +3215,7 @@ namespace Improvar.Controllers
                                     TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL[i].IGSTAMT;
                                     TVCHGST.CESSPER = VE.TsalePos_TBATCHDTL[i].CESSPER;
                                     TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL[i].CESSAMT;
-                                    TVCHGST.DRCR = cr;
+                                    TVCHGST.DRCR = proddrcr;//cr;
                                     TVCHGST.QNTY = (VE.TsalePos_TBATCHDTL[i].BLQNTY.retDbl() == 0 ? VE.TsalePos_TBATCHDTL[i].QNTY.retDbl() : VE.TsalePos_TBATCHDTL[i].BLQNTY.retDbl());
                                     TVCHGST.UOM = VE.TsalePos_TBATCHDTL[i].UOM;
                                     TVCHGST.AGSTDOCNO = VE.TsalePos_TBATCHDTL[i].AGDOCNO;
@@ -3252,6 +3258,7 @@ namespace Improvar.Controllers
                         #region Return tab
                         if (VE.TsalePos_TBATCHDTL_RETURN != null)
                         {
+                            proddrcr = negamt == "Y" ? cr : dr;
                             for (int i = 0; i <= VE.TsalePos_TBATCHDTL_RETURN.Count - 1; i++)
                             {
                                 if (VE.TsalePos_TBATCHDTL_RETURN[i].SLNO != 0 && VE.TsalePos_TBATCHDTL_RETURN[i].ITCD != null)
@@ -3287,7 +3294,7 @@ namespace Improvar.Controllers
                                     TVCHGST.IGSTAMT = VE.TsalePos_TBATCHDTL_RETURN[i].IGSTAMT;
                                     TVCHGST.CESSPER = VE.TsalePos_TBATCHDTL_RETURN[i].CESSPER;
                                     TVCHGST.CESSAMT = VE.TsalePos_TBATCHDTL_RETURN[i].CESSAMT;
-                                    TVCHGST.DRCR = dr;
+                                    TVCHGST.DRCR = proddrcr;// dr;
                                     TVCHGST.QNTY = (VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY.retDbl() == 0 ? VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl() : VE.TsalePos_TBATCHDTL_RETURN[i].BLQNTY.retDbl());
                                     TVCHGST.UOM = VE.TsalePos_TBATCHDTL_RETURN[i].UOM;
                                     TVCHGST.AGSTDOCNO = VE.TsalePos_TBATCHDTL_RETURN[i].AGDOCNO;
@@ -3330,6 +3337,7 @@ namespace Improvar.Controllers
                         #endregion
                         if (VE.TTXNAMT != null)
                         {
+                            proddrcr = negamt == "Y" ? dr : cr;
                             for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
                             {
 
@@ -3343,7 +3351,7 @@ namespace Improvar.Controllers
                                     else
                                     {
                                         string HSNforAmount = "";
-                                        if(VE.MENU_PARA == "SBCM")
+                                        if (VE.MENU_PARA == "SBCM")
                                         {
                                             HSNforAmount = (from a in VE.TsalePos_TBATCHDTL
                                                             group a by new
@@ -3401,11 +3409,11 @@ namespace Improvar.Controllers
                                     TVCHGST1.IGSTAMT = VE.TTXNAMT[i].IGSTAMT;
                                     TVCHGST1.CESSPER = VE.TTXNAMT[i].CESSPER;
                                     TVCHGST1.CESSAMT = VE.TTXNAMT[i].CESSAMT;
-                                    TVCHGST1.DRCR = cr;
+                                    TVCHGST1.DRCR = proddrcr;// cr;
                                     TVCHGST1.QNTY = 0;
                                     TVCHGST1.UOM = "OTH";
-                                    TVCHGST1.AGSTDOCNO = VE.MENU_PARA == "SBCM"? VE.TsalePos_TBATCHDTL[0].AGDOCNO: VE.TsalePos_TBATCHDTL_RETURN[0].AGDOCNO;
-                                    string AGDOCDT= VE.MENU_PARA == "SBCM" ? VE.TsalePos_TBATCHDTL[0].AGDOCDT : VE.TsalePos_TBATCHDTL_RETURN[0].AGDOCDT;
+                                    TVCHGST1.AGSTDOCNO = VE.MENU_PARA == "SBCM" ? VE.TsalePos_TBATCHDTL[0].AGDOCNO : VE.TsalePos_TBATCHDTL_RETURN[0].AGDOCNO;
+                                    string AGDOCDT = VE.MENU_PARA == "SBCM" ? VE.TsalePos_TBATCHDTL[0].AGDOCDT : VE.TsalePos_TBATCHDTL_RETURN[0].AGDOCDT;
                                     if (AGDOCDT.retStr() != "")
                                     {
                                         TVCHGST1.AGSTDOCDT = Convert.ToDateTime(AGDOCDT);
@@ -3476,7 +3484,7 @@ namespace Improvar.Controllers
                                     "", "", "");
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
-                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(adjslno), TTXN.AUTONO, 1, TTXN.BLAMT.Value, TTXN.AUTONO, Convert.ToSByte(pslno + 100), VE.TTXNPYMT[i].AMT.retDbl(), VE.TTXNPYMT[i].AMT.retDbl());
+                                dbsql = masterHelp.InsVch_Bl_Adj(TTXN.AUTONO, TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(adjslno), TTXN.AUTONO, 1, dbamt.retDbl(), TTXN.AUTONO, Convert.ToSByte(pslno + 100), VE.TTXNPYMT[i].AMT.retDbl(), VE.TTXNPYMT[i].AMT.retDbl());
                                 OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
 

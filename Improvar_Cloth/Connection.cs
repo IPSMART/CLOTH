@@ -1907,14 +1907,14 @@ namespace Improvar
                         {
                             DateTime startDT = convstr2date("01/" + maxDT.Month.ToString().PadLeft(2, '0') + "/" + maxDT.Year.ToString());
                             DateTime endDT = DateTime.Now;
-                            if (maxDT.Month == 1)
-                            {
-                                endDT = maxDT;
-                            }
-                            else
-                            {
+                            //if (maxDT.Month == 1)
+                            //{
+                            //    endDT = maxDT;
+                            //}
+                            //else
+                            //{
                                 endDT = maxDT.AddDays(-1);
-                            }
+                            //}
                             var days = Enumerable.Range(0, Int32.MaxValue)
                                          .Select(a => startDT.AddDays(a))
                                          .TakeWhile(a => a <= endDT)
