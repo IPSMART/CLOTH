@@ -18,7 +18,7 @@ namespace Improvar.Controllers
         // GET: T_BiltyR_Mutia
         Connection Cn = new Connection(); MasterHelp Master_Help = new MasterHelp(); MasterHelpFa MasterHelpFa = new MasterHelpFa(); SchemeCal Scheme_Cal = new SchemeCal(); Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable(); DataTable DTNEW = new DataTable();
         EmailControl EmailControl = new EmailControl();
-        T_BALE_HDR TBH;  T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR;
+        T_BALE_HDR TBH; T_TXNTRANS TXNTRN; T_TXNOTH TXNOTH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR;
         SMS SMS = new SMS();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         // GET: T_BiltyR_Mutia
@@ -182,7 +182,7 @@ namespace Improvar.Controllers
             string DATABASEF = CommVar.FinSchema(UNQSNO);
             Cn.getQueryString(VE);
 
-            TBH = new T_BALE_HDR();TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM();
+            TBH = new T_BALE_HDR(); TXNTRN = new T_TXNTRANS(); TXNOTH = new T_TXNOTH(); TCH = new T_CNTRL_HDR(); SLR = new T_CNTRL_HDR_REM();
             if (VE.IndexKey.Count != 0)
             {
                 string[] aa = null;
@@ -216,26 +216,26 @@ namespace Improvar.Controllers
 
                 DataTable TBILTYRtbl = Master_Help.SQLquery(str);
                 VE.TBILTYR = (from DataRow dr in TBILTYRtbl.Rows
-                             select new TBILTYR()
-                             {
-                                 SLNO = Convert.ToInt16(dr["slno"]),
-                                 BLAUTONO = dr["blautono"].retStr(),
-                                 ITCD = dr["itcd"].retStr(),
-                                 ITNM = dr["itstyle"].retStr(),
-                                 UOMCD = dr["uomcd"].retStr(),
-                                 NOS = dr["nos"].retStr(),
-                                 QNTY = dr["qnty"].retStr(),
-                                 PAGENO = dr["pageno"].retStr(),
-                                 PAGESLNO = dr["pageslno"].retStr(),
-                                 LRDT = dr["lrdt"].retDateStr(),
-                                 LRNO = dr["lrno"].retStr(),
-                                 BALENO = dr["baleno"].retStr(),
-                                 BALEYR = dr["baleyr"].retStr(),
-                                 BLSLNO = dr["blslno"].retShort(),
-                                 RSLNO = dr["rslno"].retShort(),
-                                 PBLNO= dr["prefno"].retStr(),
-                                 PBLDT = dr["prefdt"].retDateStr()
-                             }).OrderBy(s => s.SLNO).ToList();
+                              select new TBILTYR()
+                              {
+                                  SLNO = Convert.ToInt16(dr["slno"]),
+                                  BLAUTONO = dr["blautono"].retStr(),
+                                  ITCD = dr["itcd"].retStr(),
+                                  ITNM = dr["itstyle"].retStr(),
+                                  UOMCD = dr["uomcd"].retStr(),
+                                  NOS = dr["nos"].retStr(),
+                                  QNTY = dr["qnty"].retStr(),
+                                  PAGENO = dr["pageno"].retStr(),
+                                  PAGESLNO = dr["pageslno"].retStr(),
+                                  LRDT = dr["lrdt"].retDateStr(),
+                                  LRNO = dr["lrno"].retStr(),
+                                  BALENO = dr["baleno"].retStr(),
+                                  BALEYR = dr["baleyr"].retStr(),
+                                  BLSLNO = dr["blslno"].retShort(),
+                                  RSLNO = dr["rslno"].retShort(),
+                                  PBLNO = dr["prefno"].retStr(),
+                                  PBLDT = dr["prefdt"].retDateStr()
+                              }).OrderBy(s => s.SLNO).ToList();
                 string concatStr = "";
                 for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
                 {
@@ -298,37 +298,37 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetPendingData(TransactionBiltyRMutiaEntry VE, string DOCDT,string MUTSLCD)
+        public ActionResult GetPendingData(TransactionBiltyRMutiaEntry VE, string DOCDT, string MUTSLCD)
         {
             try
             {
-                var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD);                    DataView dv = new DataView(GetPendig_Data);
-                    string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
-                    GetPendig_Data = dv.ToTable(true, COL);
-                    VE.TBILTYR_POPUP = (from DataRow dr in GetPendig_Data.Rows
-                                       select new TBILTYR_POPUP
-                                       {
-                                           BLAUTONO = dr["blautono"].retStr(),
-                                           LRNO = dr["lrno"].retStr(),
-                                           LRDT = dr["lrdt"].retDateStr(),
-                                           BALENO = dr["baleno"].retStr(),
-                                           PREFNO = dr["prefno"].retStr(),
-                                           PREFDT = dr["prefdt"].retDateStr()
-                                       }).Distinct().OrderBy(a=>a.BALENO).ThenBy(a=>a.PREFNO).ToList();
-                    for (int p = 0; p <= VE.TBILTYR_POPUP.Count - 1; p++)
-                    {
-                        VE.TBILTYR_POPUP[p].SLNO = Convert.ToInt16(p + 1);
-                    }
-                    if (VE.TBILTYR_POPUP.Count != 0)
-                    {
-                        VE.DefaultView = true;
-                        return PartialView("_T_BiltyR_Mutia_PopUp", VE);
-                    }
-                    else {
-                        VE.DefaultView = true;
-                        return Content("0");
-                    }
-               
+                var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD); DataView dv = new DataView(GetPendig_Data);
+                string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
+                GetPendig_Data = dv.ToTable(true, COL);
+                VE.TBILTYR_POPUP = (from DataRow dr in GetPendig_Data.Rows
+                                    select new TBILTYR_POPUP
+                                    {
+                                        BLAUTONO = dr["blautono"].retStr(),
+                                        LRNO = dr["lrno"].retStr(),
+                                        LRDT = dr["lrdt"].retDateStr(),
+                                        BALENO = dr["baleno"].retStr(),
+                                        PREFNO = dr["prefno"].retStr(),
+                                        PREFDT = dr["prefdt"].retDateStr()
+                                    }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                for (int p = 0; p <= VE.TBILTYR_POPUP.Count - 1; p++)
+                {
+                    VE.TBILTYR_POPUP[p].SLNO = Convert.ToInt16(p + 1);
+                }
+                if (VE.TBILTYR_POPUP.Count != 0)
+                {
+                    VE.DefaultView = true;
+                    return PartialView("_T_BiltyR_Mutia_PopUp", VE);
+                }
+                else {
+                    VE.DefaultView = true;
+                    return Content("0");
+                }
+
             }
             catch (Exception ex)
             {
@@ -352,7 +352,7 @@ namespace Improvar.Controllers
                 }
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 var GetPendig_Data = salesfunc.getPendRecfromMutia(DOCDT, MUTSLCD, sqlbillautonos);
-                string concatStr="";
+                string concatStr = "";
                 //  VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
                 //                      select new TBILTYR
                 //                      {
@@ -385,25 +385,25 @@ namespace Improvar.Controllers
                 if (VE.TBILTYR == null)
                 {
                     VE.TBILTYR = (from DataRow dr in GetPendig_Data.Rows
-                                 select new TBILTYR
-                                 {
-                                     BLAUTONO = dr["blautono"].retStr(),
-                                     ITCD = dr["itcd"].retStr(),
-                                     ITNM = dr["itstyle"].retStr(),
-                                     NOS = dr["nos"].retStr(),
-                                     QNTY = dr["qnty"].retStr(),
-                                     UOMCD = dr["uomcd"].retStr(),
-                                     SHADE = dr["shade"].retStr(),
-                                     BALENO = dr["baleno"].retStr(),
-                                     PAGENO = dr["pageno"].retStr(),
-                                     PAGESLNO = dr["pageslno"].retStr(),
-                                     LRNO = dr["lrno"].retStr(),
-                                     LRDT = dr["lrdt"].retDateStr(),
-                                     BALEYR = dr["baleyr"].retStr(),
-                                     BLSLNO = dr["blslno"].retShort(),
-                                     PBLNO = dr["prefno"].retStr(),
-                                     PBLDT = dr["prefdt"].retDateStr()
-                                 }).Distinct().OrderBy(a=>a.BALENO).ThenBy(a=>a.PREFNO).ToList();
+                                  select new TBILTYR
+                                  {
+                                      BLAUTONO = dr["blautono"].retStr(),
+                                      ITCD = dr["itcd"].retStr(),
+                                      ITNM = dr["itstyle"].retStr(),
+                                      NOS = dr["nos"].retStr(),
+                                      QNTY = dr["qnty"].retStr(),
+                                      UOMCD = dr["uomcd"].retStr(),
+                                      SHADE = dr["shade"].retStr(),
+                                      BALENO = dr["baleno"].retStr(),
+                                      PAGENO = dr["pageno"].retStr(),
+                                      PAGESLNO = dr["pageslno"].retStr(),
+                                      LRNO = dr["lrno"].retStr(),
+                                      LRDT = dr["lrdt"].retDateStr(),
+                                      BALEYR = dr["baleyr"].retStr(),
+                                      BLSLNO = dr["blslno"].retShort(),
+                                      PBLNO = dr["prefno"].retStr(),
+                                      PBLDT = dr["prefdt"].retDateStr()
+                                  }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
                     var startno = VE.T_BALE_HDR.STARTNO;
                     if (startno == null) startno = 0;
                     for (int i = 0; i <= VE.TBILTYR.Count - 1; i++)
@@ -470,7 +470,7 @@ namespace Improvar.Controllers
                         if (j.PAGENO != "" && j.PAGESLNO != "") concatStr = "/"; else concatStr = "";
                         MLI1.PAGENO = MLI1.PAGENO + concatStr + MLI1.PAGESLNO;
                         MLI1.SLNO = (SERIAL + 1).retShort();
-                        MLI1.RSLNO = (startno +(SERIAL + 1)).retShort();
+                        MLI1.RSLNO = (startno + (SERIAL + 1)).retShort();
 
                         MLocIFSC1.Add(MLI1);
                     }
@@ -747,7 +747,7 @@ namespace Improvar.Controllers
                         }
 
                         //----------------------------------------------------------//
-                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month,DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
+                        dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "S", Month, DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TBHDR.EMD_NO.retShort(), DOCNO, Convert.ToDouble(DOCNO), null, null, null, TBHDR.MUTSLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                         dbsql = MasterHelpFa.RetModeltoSql(TBHDR, VE.DefaultAction);
@@ -775,7 +775,7 @@ namespace Improvar.Controllers
                                 TBILTYR.BALENO = VE.TBILTYR[i].BALENO;
                                 dbsql = MasterHelpFa.RetModeltoSql(TBILTYR);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                
+
 
                             }
                         }
@@ -840,14 +840,14 @@ namespace Improvar.Controllers
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                         dbsql = MasterHelpFa.TblUpdt("T_BALE_HDR", VE.T_BALE_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                      
+
 
 
                         dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_BALE_HDR.AUTONO, "D", "S", null, null, null, VE.T_CNTRL_HDR.DOCDT.retStr(), null, null, null);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
 
 
-                        ModelState.Clear(); 
+                        ModelState.Clear();
                         transaction.Commit();
                         OraTrans.Commit();
                         OraCon.Dispose();
@@ -879,7 +879,7 @@ namespace Improvar.Controllers
         {
             try
             {
-               
+
                 DataTable tbl;
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str = "";
@@ -930,7 +930,7 @@ namespace Improvar.Controllers
 
                     string pghdr1 = "";
 
-                    pghdr1 = "Receive from Mutia Details as on "+VE.T_CNTRL_HDR.DOCDT.retDateStr() + " ";
+                    pghdr1 = "Receive from Mutia Details as on " + VE.T_CNTRL_HDR.DOCDT.retDateStr() + " ";
 
                     PV = HC.ShowReport(IR, "T_BiltyR_Mutia", pghdr1, "", true, true, "P", false);
 
