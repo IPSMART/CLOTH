@@ -78,15 +78,9 @@ namespace Improvar.Controllers
                 T_TXNTRANS TXNTRANS = new T_TXNTRANS();
                 T_TXNOTH TTXNOTH = new T_TXNOTH();
                 T_TXN_LINKNO TTXNLINKNO = new T_TXN_LINKNO();
-                var tys = dbfdt.Rows[0]["FREIGHT"].GetType();
-                var tsy = dbfdt.Rows[0]["INSURANCE"].GetType();
-                var tssy = dbfdt.Rows[0]["INTEGR_TAX"].GetType();
-                var ty = dbfdt.Rows[0]["CUSTOMERNO"].GetType();
-                var tysxs = dbfdt.Rows[0]["STATE_AMT"].GetType();
-                var tsay = dbfdt.Rows[0]["STATE_TAX"].GetType();
-                var tssay = dbfdt.Rows[0]["STATE_AMT"].GetType();
+
                 var outerDT = dbfdt.AsEnumerable()
-               .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"] })
+               .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"], CARR_NAME = g["CARR_NAME"] })
                .Select(g =>
                {
                    var row = dbfdt.NewRow();
@@ -96,6 +90,7 @@ namespace Improvar.Controllers
                    row["LR_NO"] = g.Key.LR_NO;
                    row["LR_DATE"] = g.Key.LR_DATE;
                    row["CARR_NO"] = g.Key.CARR_NO;
+                   row["CARR_NAME"] = g.Key.CARR_NAME;
                    row["FREIGHT"] = g.Sum(r => r.Field<double>("FREIGHT"));
                    row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
                    row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
@@ -128,7 +123,7 @@ namespace Improvar.Controllers
                     TTXN.PREFDT = TTXN.DOCDT;
                     dupgrid.BLNO = TTXN.PREFNO;
                     string CUSTOMERNO = oudr["CUSTOMERNO"].ToString();
-                    TTXN.SLCD = getSLCD(CUSTOMERNO); dupgrid.SLCD = CUSTOMERNO;
+                    TTXN.SLCD = getSLCD(CUSTOMERNO); dupgrid.CUSTOMERNO = CUSTOMERNO;
                     if (TTXN.SLCD == "")
                     {
                         dupgrid.MESSAGE = "Please add Customer No:(" + CUSTOMERNO + ") in the SAPCODE from [Tax code link up With Party].";
@@ -194,7 +189,7 @@ namespace Improvar.Controllers
                         TXNTRANS.TRANSLCD = getSLCD(oudr["CARR_NO"].ToString());
                         if (TXNTRANS.TRANSLCD == "")
                         {
-                            dupgrid.MESSAGE = "Please add  CARR_NO:(" + oudr["CARR_NO"].ToString() + ")/Transporter in the SAPCODE from [Tax code link up With Party].";
+                            dupgrid.MESSAGE = "Please add  CARR_NO:(" + oudr["CARR_NO"].ToString() + ")/ Transporter,CARR_NAME:(" + oudr["CARR_NAME"].ToString() + ") in the SAPCODE from [Tax code link up With Party].";
                             DUGridlist.Add(dupgrid); break;
                         }
                     }
@@ -336,10 +331,10 @@ namespace Improvar.Controllers
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
                     M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-                    dbsql = masterHelp.RetModeltoSql(MCH, "A", CommVar.FinSchema(UNQSNO));
+                    dbsql = masterHelp.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                    dbsql = masterHelp.RetModeltoSql(MSITEM, "A", CommVar.FinSchema(UNQSNO));
+                    dbsql = masterHelp.RetModeltoSql(MSITEM, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                     OraTrans.Rollback();
                 }
@@ -370,6 +365,7 @@ namespace Improvar.Controllers
                 MGROUP.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
 
                 string txtst = grpnm.Substring(0, 1).Trim().ToUpper();
+                MGROUP.ITGRPNM = grpnm.ToUpper();
                 string sql = " select max(SUBSTR(ITGRPCD, 2)) ITGRPCD FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
                 string sql1 = " select max(GRPBARCODE) GRPBARCODE FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
                 var tbl = masterHelp.SQLquery(sql);
@@ -390,17 +386,22 @@ namespace Improvar.Controllers
                 {
                     MGROUP.GRPBARCODE = (10).ToString("D2");
                 }
+                MGROUP.SALGLCD = "10000001";
+                MGROUP.PURGLCD = "25999991";
+                MGROUP.ITGRPTYPE = "F";
+                MGROUP.PRODGRPCD = "G001";
+                MGROUP.BARGENTYPE = "C";
                 OraCon.Open();
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
                     M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-                    dbsql = masterHelp.RetModeltoSql(MCH, "A", CommVar.FinSchema(UNQSNO));
+                    dbsql = masterHelp.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                    dbsql = masterHelp.RetModeltoSql(MGROUP, "A", CommVar.FinSchema(UNQSNO));
+                    dbsql = masterHelp.RetModeltoSql(MGROUP, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    OraTrans.Rollback();
+                    OraTrans.Commit();
                 }
             }
             catch (Exception ex)
