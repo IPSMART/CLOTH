@@ -210,62 +210,19 @@ namespace Improvar.Controllers
                     }
                     if (sl.RTDEBCD != null)
                     { var Party = DBF.M_RETDEB.Find(sl.RTDEBCD); if (Party != null) { VE.RTDBNM = Party.RTDEBNM; } }
-                    if (sl.INC_RATE == "Y")
-                    {
-                        VE.INC_RATE = true;
-                    }
-                    else
-                    {
-                        VE.INC_RATE = false;
-                    }
-                    if (sl.MNTNSIZE == "Y")
-                    {
-                        VE.MNTNSIZE = true;
-                    }
-                    else
-                    {
-                        VE.MNTNSIZE = false;
-                    }
-                    if (sl.MNTNCOLOR == "Y")
-                    {
-                        VE.MNTNCOLOR = true;
-                    }
-                    else
-                    {
-                        VE.MNTNCOLOR = false;
-                    }
-                    if (sl.MNTNPART == "Y")
-                    {
-                        VE.MNTNPART = true;
-                    }
-                    else
-                    {
-                        VE.MNTNPART = false;
-                    }
-                    if (sl.MNTNFLAGMTR == "Y")
-                    {
-                        VE.MNTNFLAGMTR = true;
-                    }
-                    else
-                    {
-                        VE.MNTNFLAGMTR = false;
-                    }
-                    if (sl.MNTNLISTPRICE == "Y")
-                    {
-                        VE.MNTNLISTPRCE = true;
-                    }
-                    else
-                    {
-                        VE.MNTNLISTPRCE = false;
-                    }
-                    if (sl.MNTNSHADE == "Y")
-                    {
-                        VE.MNTNSHADE = true;
-                    }
-                    else
-                    {
-                        VE.MNTNSHADE = false;
-                    }
+                    if (sl.INC_RATE == "Y"){VE.INC_RATE = true; }else{VE.INC_RATE = false;}
+                    if (sl.MNTNSIZE == "Y"){VE.MNTNSIZE = true;}else{VE.MNTNSIZE = false;}
+                    if (sl.MNTNCOLOR == "Y"){VE.MNTNCOLOR = true;}else{VE.MNTNCOLOR = false;}
+                    if (sl.MNTNPART == "Y"){VE.MNTNPART = true;}else{ VE.MNTNPART = false;}
+                    if (sl.MNTNFLAGMTR == "Y"){VE.MNTNFLAGMTR = true; }else{VE.MNTNFLAGMTR = false;}
+                    if (sl.MNTNLISTPRICE == "Y"){VE.MNTNLISTPRCE = true;}else{VE.MNTNLISTPRCE = false;}
+                    if (sl.MNTNSHADE == "Y"){VE.MNTNSHADE = true;}else{ VE.MNTNSHADE = false;}
+                    if (sl.MNTNDISC1 == "Y"){VE.MNTNDISC1 = true;}else{VE.MNTNDISC1 = false;}
+                    if (sl.MNTNDISC2 == "Y"){VE.MNTNDISC2 = true;}else{VE.MNTNDISC2 = false;}
+                    if (sl.MNTNWPRPPER == "Y"){VE.MNTNWPRPPER = true;}else{VE.MNTNWPRPPER = false;}
+                    if (sl.MNTNBALE == "Y"){VE.MNTNBALE = true;}else{VE.MNTNBALE = false;}
+                    if (sl.MNTNOURDESIGN == "Y"){VE.MNTNOURDESIGN = true;}else{VE.MNTNOURDESIGN = false;}
+                    if (sl.MNTNPCSTYPE == "Y"){VE.MNTNPCSTYPE = true;}else{VE.MNTNPCSTYPE = false;}
                     if (sl.WPPRICEGEN.retStr() != "")
                     {
                         VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
@@ -457,6 +414,12 @@ namespace Improvar.Controllers
                         if (VE.MNTNFLAGMTR == true) { MSYSCNFG.MNTNFLAGMTR = "Y"; } else { MSYSCNFG.MNTNFLAGMTR = "N"; }
                         if (VE.MNTNLISTPRCE == true) { MSYSCNFG.MNTNLISTPRICE = "Y"; } else { MSYSCNFG.MNTNLISTPRICE = "N"; }
                         if (VE.MNTNSHADE == true) { MSYSCNFG.MNTNSHADE = "Y"; } else { MSYSCNFG.MNTNSHADE = "N"; }
+                        if (VE.MNTNDISC1 == true) { MSYSCNFG.MNTNDISC1 = "Y"; } else { MSYSCNFG.MNTNDISC1 = "N"; }
+                        if (VE.MNTNDISC2 == true) { MSYSCNFG.MNTNDISC2 = "Y"; } else { MSYSCNFG.MNTNDISC2 = "N"; }
+                        if (VE.MNTNWPRPPER == true) { MSYSCNFG.MNTNWPRPPER = "Y"; } else { MSYSCNFG.MNTNWPRPPER = "N"; }
+                        if (VE.MNTNBALE == true) { MSYSCNFG.MNTNBALE = "Y"; } else { MSYSCNFG.MNTNBALE = "N"; }
+                        if (VE.MNTNOURDESIGN == true) { MSYSCNFG.MNTNOURDESIGN = "Y"; } else { MSYSCNFG.MNTNOURDESIGN = "N"; }
+                        if (VE.MNTNPCSTYPE == true) { MSYSCNFG.MNTNPCSTYPE = "Y"; } else { MSYSCNFG.MNTNPCSTYPE = "N"; }
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {

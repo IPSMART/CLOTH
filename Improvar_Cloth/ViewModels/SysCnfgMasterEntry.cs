@@ -29,7 +29,12 @@ namespace Improvar.ViewModels
         public bool MNTNFLAGMTR { get; set; }
         public bool MNTNLISTPRCE { get; set; }
         public bool MNTNSHADE { get; set; }
+        public bool MNTNWPRPPER { get; set; }
+        public bool MNTNOURDESIGN { get; set; }
+        public bool MNTNBALE { get; set; }
+        public bool MNTNPCSTYPE { get; set; }
+        public bool MNTNDISC1 { get; set; }
 
-
+        public bool MNTNDISC2 { get; set; }
     }
 }
