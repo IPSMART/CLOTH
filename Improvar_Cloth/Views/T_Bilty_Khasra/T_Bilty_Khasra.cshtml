@@ -69,7 +69,7 @@
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         var GridRowMain = $("#T_Bilty_Khasra_Main > tbody > tr").length;
 
-        if ("@Model.MENU_PARA" == "TRFB") {
+        if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
             var gocd = $("#GOCD").val();
             if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
             for (var i = 0; i < GridRowMain; i++) {
@@ -163,7 +163,7 @@
     function GetData() {
         if ("@Model.DefaultAction" != "V") {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-            if ("@Model.MENU_PARA" == "TRFB") {
+            if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
                 if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
             }
             $.ajax({
@@ -432,6 +432,7 @@
         @Html.HiddenFor(a => a.T_BALE_HDR.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {

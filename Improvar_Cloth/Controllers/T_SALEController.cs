@@ -3664,7 +3664,7 @@ namespace Improvar.Controllers
                                 }
                                 TVCHGST.HSNCODE = VE.TTXNDTL[i].HSNCODE;
                                 TVCHGST.ITNM = VE.TTXNDTL[i].ITSTYLE;
-                                TVCHGST.AMT = VE.TTXNDTL[i].NETAMT;
+                                TVCHGST.AMT = VE.TTXNDTL[i].TXBLVAL;
                                 TVCHGST.CGSTPER = VE.TTXNDTL[i].CGSTPER;
                                 TVCHGST.SGSTPER = VE.TTXNDTL[i].SGSTPER;
                                 TVCHGST.IGSTPER = VE.TTXNDTL[i].IGSTPER;
