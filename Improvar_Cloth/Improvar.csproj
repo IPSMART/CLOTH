@@ -294,6 +294,7 @@
     <Compile Include="Controllers\Rep_EnvelopeController.cs" />
     <Compile Include="Controllers\Rep_EWB_GenController.cs" />
     <Compile Include="Controllers\Rep_Job_LedgerController.cs" />
+    <Compile Include="Controllers\Rep_Misc_Qry_UpdtController.cs" />
     <Compile Include="Controllers\Rep_OrdPrintController.cs" />
     <Compile Include="Controllers\Rep_PartyStmtController.cs" />
     <Compile Include="Controllers\Rep_Pend_JobController.cs" />
@@ -713,6 +714,7 @@
     <Compile Include="ViewModels\RepBarcodeImage.cs" />
     <Compile Include="ViewModels\RepBarcodePrint.cs" />
     <Compile Include="ViewModels\RepBarHistory.cs" />
+    <Compile Include="ViewModels\RepMiscQryUpdt.cs" />
     <Compile Include="ViewModels\StitchMaster.cs" />
     <Compile Include="ViewModels\StockAdjustmentsConversionEntry.cs" />
     <Compile Include="ViewModels\SysCnfgMasterEntry.cs" />
@@ -1273,6 +1275,7 @@
     <Content Include="Views\T_PhyStock\T_PhyStock.cshtml" />
     <Content Include="Views\Shared\_T_PhyStock_BarTab.cshtml" />
     <Content Include="Views\T_DataUpload\T_DataUpload.cshtml" />
+    <Content Include="Views\Rep_Misc_Qry_Updt\Rep_Misc_Qry_Updt.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
