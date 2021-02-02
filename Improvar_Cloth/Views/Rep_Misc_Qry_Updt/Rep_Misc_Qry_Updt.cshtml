@@ -229,8 +229,8 @@
                     </div>
                     <div class="col-md-6" style="margin-top: 10px;">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.BALENO2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO2", @placeholder = "Code", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO2/BALEYR2/OLDPAGENO,BLAUTONO1/','0/1/2/4','Bale No. Details','BALENO2','BLAUTONO2');", onblur = "SelectBaleNo(this.value,BALENO2,BALEYR2,LRNO2,LRDT2,OLDPAGENO,BLAUTONO2,TEXTBOX1);" } })
-                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO2/BALEYR2/OLDPAGENO,BLAUTONO2','0/1/2/4','Bale No. Details','BALENO2','BLAUTONO2')" />
+                            @Html.EditorFor(model => model.BALENO2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO2", @placeholder = "Code", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO2/BALEYR2/LRNO2/LRDT2/OLDPAGENO/BLAUTONO2/','0/1/4/5/3/7','Bale No. Details','BALENO2','BLAUTONO2');", onblur = "SelectBaleNo(this.value,BALENO2,BALEYR2,LRNO2,LRDT2,OLDPAGENO,BLAUTONO2,TEXTBOX1);" } })
+                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO2/BALEYR2/LRNO2/LRDT2/OLDPAGENO/BLAUTONO2','0/1/4/5/3/7','Bale No. Details','BALENO2','BLAUTONO2')" />
                         </div>
                     </div>
                     <div class="col-md-8" style="margin-top: 10px;">
