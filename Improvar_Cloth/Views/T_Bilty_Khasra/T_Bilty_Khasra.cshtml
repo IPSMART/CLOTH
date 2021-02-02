@@ -69,7 +69,7 @@
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
         var GridRowMain = $("#T_Bilty_Khasra_Main > tbody > tr").length;
 
-        if ("@Model.MENU_PARA" == "TRFB") {
+        if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
             var gocd = $("#GOCD").val();
             if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
             for (var i = 0; i < GridRowMain; i++) {
@@ -90,6 +90,9 @@
                     return false;
                 }
             }
+        }
+        if ("@Model.MENU_PARA" == "TRWB") {
+            if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
         }
         return true;
     }
@@ -160,7 +163,7 @@
     function GetData() {
         if ("@Model.DefaultAction" != "V") {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-            if ("@Model.MENU_PARA" == "TRFB") {
+            if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
                 if (!emptyFieldCheck("Please Select / Enter Document Godown", "GOCD")) { return false; }
             }
             $.ajax({
@@ -424,11 +427,12 @@
         <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
-        <input type="hidden" id="partylinkcd" value="T" />
+        <input type="hidden" id="partylinkcd" value="O" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_BALE_HDR.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -472,10 +476,10 @@
                 <div class="col-md-6">
                     <div class="editor-field">
                         @Html.EditorFor(model => model.T_CNTRL_HDR.DOCONLYNO, new { htmlAttributes = new { @class = "form-control", id = "DOCONLYNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
-                        @if (Model.MENU_PARA != "TRFB")
+                        @*@if (Model.MENU_PARA != "TRFB")
                     {
                             @Html.HiddenFor(a => a.T_TXN.GOCD, new { id = "GOCD" })
-                        }
+                        }*@
                     </div>
                 </div>
                 @if (Model.DefaultAction != "V")
@@ -488,7 +492,7 @@
                 }
             </div>
             <div class="row">
-                @if (Model.MENU_PARA == "TRFB")
+                @if (Model.MENU_PARA == "TRFB" || Model.MENU_PARA == "TRWB")
                 {
                     <div class="col-md-5">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -519,6 +523,26 @@
                     <div class="editor-field" style="margin-top:6px;">
                         @Html.CheckBoxFor(model => model.BALEOPEN, new { id = "BALEOPEN" })
                     </div>*@
+                @if (Model.MENU_PARA == "TRWB")
+                {
+                    <div class="col-md-4">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Mutia")
+                            <b style="color:Red;">*</b>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.T_BALE_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','MUTSLCD','MUTSLCD=SLCD=1/SLNM=slnm=0','partylinkcd');", @placeholder = "MUTSLCD", maxlength = 8 } })
+                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','MUTSLCD','MUTSLCD=slcd=1/SLNM=slnm=0','partylinkcd')" />
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
+                        </div>
+                    </div>
+                }
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
