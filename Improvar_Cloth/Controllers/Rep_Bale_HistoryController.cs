@@ -99,7 +99,8 @@ namespace Improvar.Controllers
                 sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
                 if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
                 sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
-                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
+                sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) and ";
+                sql += "not (g.doctype in ('KHSR') and a.gocd='TR') "; // g.doctype not in ('KHSR') ";
                 sql += "group by e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ) a, ";
 
                 sql += "(select a.autono, a.slno, b.slcd, a.autono||a.slno autoslno, b.prefno, c.lrno, a.pageno, a.pageslno, ";
@@ -119,7 +120,7 @@ namespace Improvar.Controllers
                 if (selitcd.retStr() != "") sql += "and a.itcd in(" + selitcd + ") ";
                 if (unselitcd.retStr() != "") sql += "and a.itcd not in (" + unselitcd + ") ";
                 if (selitgrpcd.retStr() != "") sql += "and f.itgrpcd in(" + selitgrpcd + ") ";
-                sql += "order by baleyr, baleno, styleno, usr_entdt ";
+                sql += "order by baleyr, baleno, styleno, itcd, usr_entdt ";
 
                 DataTable tbl = MasterHelp.SQLquery(sql);
                 if (tbl.Rows.Count == 0) return Content("no records..");
@@ -176,15 +177,14 @@ namespace Improvar.Controllers
                 while (i <= maxR)
                 {
                     chkval = tbl.Rows[i]["BaleNoBaleYrcd"].ToString();
+                    baleno = tbl.Rows[i]["baleno"].ToString();
                     qty = 0; amt = 0;
                     bool balefirst = true;
                     while (tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval)
                     {
                         bool itemfirst = true;
-                        baleno = tbl.Rows[i]["baleno"].ToString();
-
                         chkval2 = tbl.Rows[i]["itcd"].ToString();
-                        while (tbl.Rows[i]["itcd"].ToString() == chkval2)
+                        while (tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval && tbl.Rows[i]["itcd"].ToString() == chkval2)
                         {
                             tnos = tnos + tbl.Rows[i]["qnty"].retDbl();
                             tqty = tqty + tbl.Rows[i]["qnty"].retDbl();
@@ -201,11 +201,10 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
                             IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
                             IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                            balefirst = false; itemfirst = false;
+                            itemfirst = false; balefirst = false;
                             i = i + 1;
                             if (i > maxR) break;
                         }
-
                         count++;
                         if (i > maxR) break;
                     }

@@ -140,9 +140,9 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].BARNO, new { id = "B_BARNO_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].FLAGMTR, new { id = "B_FLAGMTR_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].HSNCODE, new { id = "B_HSNCODE_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
                                             @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                             {
-                                                @Html.HiddenFor(model => model.TBATCHDTL[i].BALENO, new { id = "B_BALENO_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].OURDESIGN, new { id = "B_OURDESIGN_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].PDESIGN, new { id = "B_PDESIGN_" + i })
                                             }
