@@ -25,7 +25,9 @@ namespace Improvar.ViewModels
         public string OLDPAGENO { get; set; }
         public string NEWPAGENO { get; set; }
         public string NEWSTYLENO { get; set; }
+        public string NEWPAGESLNO { get; set; }
         
+
 
 
     }

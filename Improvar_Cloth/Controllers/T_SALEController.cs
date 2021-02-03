@@ -2465,6 +2465,7 @@ namespace Improvar.Controllers
         {
             //Cn.getQueryString(VE);
             //Oracle Queries
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
             OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
             OraCon.Open();
             OracleCommand OraCmd = OraCon.CreateCommand();
@@ -2568,12 +2569,11 @@ namespace Improvar.Controllers
 
                     string slcdlink = "", slcdpara = VE.MENU_PARA;
                     if (VE.MENU_PARA == "PR") slcdpara = "PB";
+                    M_SYSCNFG MSYSCNFG = DB.M_SYSCNFG.FirstOrDefault();
                     string sql = "";
-                    sql = "select class1cd, " + parglcd + " glcd from " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg ";
-                    DataTable tblsys = masterHelp.SQLquery(sql);
-                    if (tblsys.Rows.Count == 0)
+                    if (MSYSCNFG == null)
                     {
-                        ContentFlg = "Debtor/Creditor code not setup"; goto dbnotsave;
+                        ContentFlg = "Debtor/Creditor code not setup/No data found at m_syscnfg"; goto dbnotsave;
                     }
 
                     sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
@@ -3257,7 +3257,7 @@ namespace Improvar.Controllers
                                 TBATCHDTL.CUTLENGTH = VE.TBATCHDTL[i].CUTLENGTH;
                                 TBATCHDTL.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
 
-                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") && VE.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                                if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") && MSYSCNFG.MNTNPCSTYPE == "Y")
                                 {
                                     TBATCHDTL.PCSTYPE = VE.TBATCHDTL[i].PCSTYPE;
                                 }

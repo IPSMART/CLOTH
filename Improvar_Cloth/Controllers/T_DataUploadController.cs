@@ -257,6 +257,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.SLNO = TTXNDTL.SLNO;  //COUNTER.retShort();
                         //TBATCHDTL.GOCD = VE.T_TXN.GOCD;
                         //TBATCHDTL.BARNO = barno;
+                        TBATCHDTL.ITCD = TTXNDTL.ITCD;
                         TBATCHDTL.MTRLJOBCD = TTXNDTL.MTRLJOBCD;
                         TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
                         TBATCHDTL.HSNCODE = TTXNDTL.HSNCODE;
@@ -392,6 +393,11 @@ namespace Improvar.Controllers
 
                     dbsql = masterHelp.RetModeltoSql(MSITEM, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    dbsql = masterHelp.RetModeltoSql(MSITEMBARCODE1, "A", CommVar.CurSchema(UNQSNO));
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+
                     OraTrans.Commit();
                 }
             }
