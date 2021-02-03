@@ -51,10 +51,10 @@
                                 <th class="" style="width:50px;">UOM</th>
                                 <th class="" style="width:60px;text-align:right;">Nos</th>
                                 <th class="" style="width:50px;text-align:right;">Quantity</th>
-@if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
-{
-                                <th class="" style="width:50px;text-align:right;">Flag</th>
-}
+                                @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
+                                {
+                                    <th class="" style="width:50px;text-align:right;">Flag</th>
+                                }
                                 <th class="" style="width:50px;text-align:right;">Bill Qnty</th>
                                 @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                 {
@@ -98,8 +98,8 @@
                                 }
                                 <th class="" style="width:60px;">Hsn Code</th>
                                 @*@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")*@
-@if (Model.M_SYSCNFG.MNTNBALE == "Y")
-{
+                                @if (Model.M_SYSCNFG.MNTNBALE == "Y")
+                                {
                                     <th class="" style="width:103px;">Bale No.</th>
                                 }
                                 <th class="" style="width:71px;">glcd</th>
@@ -114,6 +114,42 @@
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.TTXNDTL[i].Checked, new { id = "D_Checked_" + i, @TabIndex = -1 })
+                                            @if (Model.M_SYSCNFG.MNTNFLAGMTR != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].FLAGMTR, new { id = "D_FLAGMTR_" + i })
+                                            }
+                                            @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCTYPE_DESC, new { id = "D_TDDISCTYPE_DESC_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCTYPE, new { id = "D_TDDISCTYPE_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCRATE, new { id = "D_TDDISCRATE_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCAMT, new { id = "D_TDDISCAMT_" + i })
+                                            }
+                                            @if (Model.M_SYSCNFG.MNTNDISC2 != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE_DESC, new { id = "D_DISCTYPE_DESC_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE, new { id = "D_DISCTYPE_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].DISCRATE, new { id = "D_DISCRATE_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].DISCAMT, new { id = "D_DISCAMT_" + i })
+                                            }
+                                            @if (Model.MENU_PARA == "OP")
+                                            {
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].IGSTPER, new { id = "D_IGSTPER_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].PRODGRPGSTPER, new { id = "D_PRODGRPGSTPER_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].ALL_GSTPER, new { id = "D_ALL_GSTPER_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].IGSTAMT, new { id = "D_IGSTAMT_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].CGSTPER, new { id = "D_CGSTPER_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].CGSTAMT, new { id = "D_CGSTAMT_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].SGSTPER, new { id = "D_SGSTPER_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].SGSTAMT, new { id = "D_SGSTAMT_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].CESSPER, new { id = "D_CESSPER_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].CESSAMT, new { id = "D_CESSAMT_" + i })
+                                                @Html.HiddenFor(model => model.TTXNDTL[i].NETAMT, new { id = "D_NETAMT_" + i })
+                                            }
+                                            @if (Model.M_SYSCNFG.MNTNBALE != "Y")
+                                            {  @Html.HiddenFor(model => model.TTXNDTL[i].BALENO, new { id = "D_BALENO_" + i })
+
+                                            }
                                         </td>
                                         <td class="sticky-cell" style="left:27px;">
                                             @Html.TextBoxFor(model => Model.TTXNDTL[i].SLNO, new { id = "D_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -158,16 +194,12 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].QNTY, new { htmlAttributes = new { id = "D_QNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
-@if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
-{
-                                        <td class="">
-                                            @Html.EditorFor(model => Model.TTXNDTL[i].FLAGMTR, new { htmlAttributes = new { id = "D_FLAGMTR_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
-                                        </td>
-}
-else
-{
-    @Html.HiddenFor(model => model.TTXNDTL[i].FLAGMTR, new { id = "D_FLAGMTR_" + i })
-}
+                                        @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
+                                        {
+                                            <td class="">
+                                                @Html.EditorFor(model => Model.TTXNDTL[i].FLAGMTR, new { htmlAttributes = new { id = "D_FLAGMTR_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
+                                            </td>
+                                        }
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].BLQNTY, new { htmlAttributes = new { id = "D_BLQNTY_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,3);", @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
@@ -225,13 +257,7 @@ else
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].TDDISCAMT, new { htmlAttributes = new { id = "D_TDDISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                             </td>
                                         }
-                                        else
-                                        {
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCTYPE_DESC, new { id = "D_TDDISCTYPE_DESC_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCTYPE, new { id = "D_TDDISCTYPE_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCRATE, new { id = "D_TDDISCRATE_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].TDDISCAMT, new { id = "D_TDDISCAMT_" + i })
-                                        }
+
 
                                         @if (Model.M_SYSCNFG.MNTNDISC2 == "Y")
                                         {
@@ -246,13 +272,7 @@ else
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].DISCAMT, new { htmlAttributes = new { id = "D_DISCAMT_" + i, @class = " atextBoxFor text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                             </td>
                                         }
-                                        else
-                                        {
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE_DESC, new { id = "D_DISCTYPE_DESC_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].DISCTYPE, new { id = "D_DISCTYPE_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].DISCRATE, new { id = "D_DISCRATE_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].DISCAMT, new { id = "D_DISCAMT_" + i })
-                                        }
+
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].TXBLVAL, new { htmlattributes = new { id = "D_TXBLVAL_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                             @Html.HiddenFor(model => model.TTXNDTL[i].TOTDISCAMT, new { id = "D_TOTDISCAMT_" + i })
@@ -289,34 +309,18 @@ else
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].NETAMT, new { htmlattributes = new { id = "D_NETAMT_" + i, @class = " atextBoxFor  text-right", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly" } })
                                             </td>
                                         }
-                                        else
-                                        {
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].IGSTPER, new { id = "D_IGSTPER_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].PRODGRPGSTPER, new { id = "D_PRODGRPGSTPER_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].ALL_GSTPER, new { id = "D_ALL_GSTPER_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].IGSTAMT, new { id = "D_IGSTAMT_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].CGSTPER, new { id = "D_CGSTPER_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].CGSTAMT, new { id = "D_CGSTAMT_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].SGSTPER, new { id = "D_SGSTPER_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].SGSTAMT, new { id = "D_SGSTAMT_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].CESSPER, new { id = "D_CESSPER_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].CESSAMT, new { id = "D_CESSAMT_" + i })
-                                            @Html.HiddenFor(model => model.TTXNDTL[i].NETAMT, new { id = "D_NETAMT_" + i })
-                                        }
+
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].HSNCODE, new { htmlattributes = new { id = "D_HSNCODE_" + i, @class = " atextBoxFor", maxlength = 12 } })
                                         </td>
                                         @*@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")*@
-@if (Model.M_SYSCNFG.MNTNBALE == "Y")
-{
+                                        @if (Model.M_SYSCNFG.MNTNBALE == "Y")
+                                        {
                                             <td class="">
                                                 @Html.EditorFor(model => Model.TTXNDTL[i].BALENO, new { htmlattributes = new { id = "D_BALENO_" + i, @class = " atextBoxFor", maxlength = 12, @onchange = "UpdateBarCodeRow_FrmDet(" + i + ");" } })
                                             </td>
                                         }
-                                        else
-                                        {  @Html.HiddenFor(model => model.TTXNDTL[i].BALENO, new { id = "D_BALENO_" + i })
 
-                                        }
                                         <td class="">
                                             @Html.EditorFor(model => Model.TTXNDTL[i].GLCD, new { htmlattributes = new { id = "D_GLCD_" + i, @class = " atextBoxFor", maxlength = 12, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
@@ -330,7 +334,25 @@ else
                         </tbody>
                         <tfoot>
                             <tr class="sticky-footer">
-                                <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
+                                <td class="sticky-cell" style="width:27px;">
+                                    <input type="text" class="atextBoxFor" readonly="readonly" />
+                                    @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
+                                    {
+                                        @Html.HiddenFor(model => model.T_TDDISCAMT, new { id = "T_TDDISCAMT" })
+                                    }
+                                    @if (Model.M_SYSCNFG.MNTNDISC2 != "Y")
+                                    {
+                                        @Html.HiddenFor(model => model.T_DISCAMT, new { id = "T_DISCAMT" })
+                                    }
+                                    @if (Model.MENU_PARA == "OP")
+                                    {
+                                        @Html.HiddenFor(model => model.T_IGST_AMT, new { id = "T_IGST_AMT" })
+                                        @Html.HiddenFor(model => model.T_CGST_AMT, new { id = "T_CGST_AMT" })
+                                        @Html.HiddenFor(model => model.T_SGST_AMT, new { id = "T_SGST_AMT" })
+                                        @Html.HiddenFor(model => model.T_CESS_AMT, new { id = "T_CESS_AMT" })
+                                        @Html.HiddenFor(model => model.T_NET_AMT, new { id = "T_NET_AMT" })
+                                    }
+                                </td>
                                 <td class="sticky-cell" style="left:27px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                 {
@@ -351,10 +373,10 @@ else
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.T_QNTY, new { htmlAttributes = new { id = "T_QNTY", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
-@if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
-{
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-}
+                                @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
+                                {
+                                    <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> @*RATE*@
                                 @if ((Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PI") && Model.M_SYSCNFG.MNTNLISTPRICE == "Y")
                                 {
@@ -383,10 +405,7 @@ else
                                         @Html.EditorFor(model => Model.T_TDDISCAMT, new { htmlattributes = new { id = "T_TDDISCAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                     </td>
                                 }
-                                else
-                                {
-                                    @Html.HiddenFor(model => model.T_TDDISCAMT, new { id = "T_TDDISCAMT" })
-                                }
+
                                 @if (Model.M_SYSCNFG.MNTNDISC2 == "Y")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td> @*RATE*@
@@ -395,10 +414,7 @@ else
                                         @Html.EditorFor(model => Model.T_DISCAMT, new { htmlattributes = new { id = "T_DISCAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                     </td>
                                 }
-                                else
-                                {
-                                    @Html.HiddenFor(model => model.T_DISCAMT, new { id = "T_DISCAMT" })
-                                }
+
                                 <td style="text-align:right;">
                                     @Html.EditorFor(model => Model.T_GROSS_AMT, new { htmlattributes = new { id = "T_GROSS_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                 </td>
@@ -424,19 +440,12 @@ else
                                         @Html.EditorFor(model => Model.T_NET_AMT, new { htmlattributes = new { id = "T_NET_AMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
                                     </td>
                                 }
-                                else
-                                {
-                                    @Html.HiddenFor(model => model.T_IGST_AMT, new { id = "T_IGST_AMT" })
-                                    @Html.HiddenFor(model => model.T_CGST_AMT, new { id = "T_CGST_AMT" })
-                                    @Html.HiddenFor(model => model.T_SGST_AMT, new { id = "T_SGST_AMT" })
-                                    @Html.HiddenFor(model => model.T_CESS_AMT, new { id = "T_CESS_AMT" })
-                                    @Html.HiddenFor(model => model.T_NET_AMT, new { id = "T_NET_AMT" })
-                                }
+
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                               
+
                                 @*@if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNBALE == "Y")*@
-@if (Model.M_SYSCNFG.MNTNBALE == "Y")
-{
+                                @if (Model.M_SYSCNFG.MNTNBALE == "Y")
+                                {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
