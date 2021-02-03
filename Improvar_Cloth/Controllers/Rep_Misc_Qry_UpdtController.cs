@@ -49,18 +49,82 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetBaleNoDetails(string val, string BALEAUTONO = "")
+        public ActionResult GetBaleNoDetails(string val, string BLSLNO = "")
         {
             try
             {
+               
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 var tdt = CommVar.CurrDate(UNQSNO);
                 if (val == null)
                 {
-                    return PartialView("_Help2", MasterHelp.BaleNo_help(val, tdt, BALEAUTONO));
+                    return PartialView("_Help2", MasterHelp.BaleNo_help(val, tdt, BLSLNO));
+                }
+                else
+                { string sql = "select distinct BALENO,BALEYR,BLSLNO from " + CommVar.CurSchema(UNQSNO) + ".T_BALE where BALENO='" + val + "' ";
+                    if (BLSLNO.retStr() != "") sql += "and BLSLNO='" + BLSLNO + "' ";
+                    DataTable dt = MasterHelp.SQLquery(sql);
+                  
+                    if(dt.Rows.Count>1)
+                    { return Content("");
+                    }
+                    else {
+                        var balenoyr = (from DataRow dr in dt.Rows
+                                        select new
+                                        {
+                                            BALENO = dr["BALENO"].retStr() + dr["BALEYR"].retStr(),
+                                            BALESLNO = dr["BLSLNO"].retStr()
+                                    }).FirstOrDefault();
+                        val = balenoyr.BALENO;
+                        BLSLNO = balenoyr.BALESLNO;
+
+
+                    }
+                    string str = MasterHelp.BaleNo_help(val, tdt, BLSLNO);
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetBarCodeDetails(string val, string Code)
+        {
+            try
+            {
+                TransactionSalePosEntry VE = new TransactionSalePosEntry();
+                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
+                Cn.getQueryString(VE);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string barnoOrStyle = val.retStr();
+                string MTRLJOBCD = data[0].retSqlformat();
+                string PARTCD = data[1].retStr();
+                string DOCDT = data[2].retStr();
+                string TAXGRPCD = data[3].retStr();
+                string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
+                string PRCCD = data[5].retStr();
+                if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
+                string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().retSqlformat();
+                bool exactbarno = data[7].retStr() == "Bar" ? true : false;
+
+                if (GOCD == "")
+                {
+                    return Content("Please fill Godown");
+                }
+                string str = MasterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, PARTCD, BARNO);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
                 }
                 else
                 {
-                    string str = MasterHelp.BaleNo_help(val, tdt, BALEAUTONO);
+                    if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
+                    string glcd = "";
+                    glcd = str.retCompValue("SALGLCD");
+
+                    str += "^GLCD=^" + glcd + Cn.GCS();
                     return Content(str);
                 }
             }
@@ -88,7 +152,7 @@ namespace Improvar.Controllers
                 try
                 {
                     string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                    string ContentFlg = "", sql2="";
+                    string ContentFlg = "";
                     var schnm = CommVar.CurSchema(UNQSNO);
                     var CLCD = CommVar.ClientCode(UNQSNO);
                     if (VE.TEXTBOX1 == "Change Style")
@@ -97,169 +161,53 @@ namespace Improvar.Controllers
                         DataTable dt = MasterHelp.SQLquery(sql1);
                         var itcd = (from DataRow dr in dt.Rows select new { itcd = dr["itcd"]    
                         }).FirstOrDefault();
-                        string itcd_ = itcd.itcd.retStr();
-                        var msitm = (from i in DB.M_SITEM where i.STYLENO== VE.OLDSTYLENO select i).FirstOrDefault();
-                        var mitemuncnv = (from i in DB.M_ITEM_UN_CNV where i.ITCD == itcd_ select i).FirstOrDefault();
-                        //var mscitngrp = (from i in DB.M_SCMITMGRP where i.ITCD == itcd_ select i).FirstOrDefault();
-                        var msitmbom = (from i in DB.M_SITEMBOM where i.ITCD == itcd_ select i).FirstOrDefault();
-
-                        sql2 = "insert into " + CommVar.FinSchema(UNQSNO) + ".M_SITEM(EMD_NO,CLCD,DTAG,TTAG,ITCD,ITNM,FABITCD,QUALITY,ITGRPCD,STYLENO,BRANDCD,SBRANDCD,GENDER,COLLCD,HSNCODE,COLRCD,PCSPERSET,UOMCD,FEATURE,DMNSN,SZWISEDTL,COLRWISEDTL,MINPURQTY,COLRPERSET,LINKITCD,NEGSTOCK,M_AUTONO,PRODGRPCD,SAPCODE)"
-                                       + " values('" + msitm.EMD_NO + "','" + msitm.CLCD + "','" + msitm.DTAG + "','" + msitm.TTAG+"','"
-                                       + VE.NEWSTYLENO + "','" + msitm.ITNM + "','" + msitm.FABITCD + "','" + msitm.QUALITY + "','" + msitm.ITGRPCD 
-                                       + "','" + msitm.STYLENO + "','" + msitm.BRANDCD + "','" + msitm.SBRANDCD + "','" + msitm.GENDER + "','" 
-                                       + msitm.COLLCD + "','" + msitm.PCSPERSET + "','" + msitm.UOMCD + "','" + msitm.FEATURE + "','" + msitm.DMNSN 
-                                       + "','" + msitm.SZWISEDTL + "','" + msitm.COLRWISEDTL + "','" + msitm.MINPURQTY + "','" + msitm.COLRPERSET 
-                                       + "','" + msitm.LINKITCD + "','" + msitm.NEGSTOCK + "','" + msitm.M_AUTONO + "','" + msitm.PRODGRPCD + "','" 
-                                       + msitm.SAPCODE + "' )  ";
-                        OraCmd.CommandText = sql2; OraCmd.ExecuteNonQuery();
-
-                        sql2 = "insert into " + CommVar.FinSchema(UNQSNO) + ".M_ITEM_UN_CNV(EMD_NO,CLCD,DTAG,TTAG,ITCD,UOMCD,QNTY,CONV_FACT)"
-                                    + " values('" + mitemuncnv.EMD_NO + "','" + mitemuncnv.CLCD + "','" + mitemuncnv.DTAG + "','" + mitemuncnv.TTAG + "','"
-                                    + VE.NEWSTYLENO + "','" + mitemuncnv.UOM + "','" + mitemuncnv.QNTY + "','" + mitemuncnv.CONV_FACT + "')  ";
-                        OraCmd.CommandText = sql2; OraCmd.ExecuteNonQuery();
-
-                        sql2 = "insert into " + CommVar.FinSchema(UNQSNO) + ".M_ITEM_UN_CNV(EMD_NO,CLCD,DTAG,TTAG,ITCD,UOMCD,QNTY,CONV_FACT)"
-                                   + " values('" + mitemuncnv.EMD_NO + "','" + mitemuncnv.CLCD + "','" + mitemuncnv.DTAG + "','" + mitemuncnv.TTAG + "','"
-                                   + VE.NEWSTYLENO + "','" + mitemuncnv.UOM + "','" + mitemuncnv.QNTY + "','" + mitemuncnv.CONV_FACT + "')  ";
-                        OraCmd.CommandText = sql2; OraCmd.ExecuteNonQuery();
-
-
-
-                        sql = "update " + schnm + ". M_SITEM set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-                       + " where ITCD='" + itcd.itcd + "' ";
+                
+                        sql = "update " + schnm + ". M_SITEM set STYLENO= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
+                    + " where ITCD='" + itcd.itcd + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". M_ITEM_UN_CNV set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-                 + " where ITCD='" + itcd.itcd + "' ";
+                        sql = "update " + schnm + ". T_TXNDTL set  BALENO= '" + VE.BALENO1 + "',BALEYR= '" + VE.BALEYR1 + "', CLCD='" + CLCD + "' "
+                        + " where AUTONO='" + VE.BLAUTONO1 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                  //      sql = "update " + schnm + ". M_SCMITMGRP set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-                  //+ " where ITCD='" + itcd.itcd + "' ";
-                  //      OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                        sql = "update " + schnm + ". T_BATCHDTL set  BALENO= '" + VE.BALENO1 + "',BALEYR= '" + VE.BALEYR1 + "', CLCD='" + CLCD + "' "
+                            + " where AUTONO='" + VE.BLAUTONO1 + "' ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". M_SITEMBOM set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-         + " where ITCD='" + itcd.itcd + "' ";
+                        sql = "update " + schnm + ". T_BILTY set  BALENO='" + VE.BALENO1 + "',BALEYR= '" + VE.BALEYR1 + "',LRDT= to_date('" + VE.LRDT1 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO1 + "', CLCD='" + CLCD + "' "
+                       + " where BLAUTONO= '" + VE.BLAUTONO1 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
 
-                        sql = "update " + schnm + ". M_SITEMBOMMTRL set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-                       + " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-                        sql = "update " + schnm + ". M_SITEM_BARCODE set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-      + " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-                        sql = "update " + schnm + ". M_SITEM_MEASURE set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-   + " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-
-                        sql = "update " + schnm + ". M_SITEM_PARTS set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-+ " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-                        sql = "update " + schnm + ". T_BATCHMST set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-      + " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-                        sql = "update " + schnm + ". T_INHISSMST set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-+ " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-                        sql = "update " + schnm + ". T_INHRECMST set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-+ " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-                        sql = "update " + schnm + ". T_KARDTL set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-+ " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-                        sql = "update " + schnm + ". T_PREVYR_DTL set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-+ " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-                        sql = "update " + schnm + ". T_PROGBOM set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-+ " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-                        sql = "update " + schnm + ". T_PROGMAST set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-+ " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-                        sql = "update " + schnm + ". T_SORDDTL set ITCD= '" + VE.NEWSTYLENO + "', CLCD='" + CLCD + "' "
-              + " where ITCD='" + itcd.itcd + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-                        sql = "update " + schnm + ". T_TXNDTL set ITCD= '" + VE.NEWSTYLENO + "', BALEYR= '" + VE.BALEYR1 + "', CLCD='" + CLCD + "' "
-                        + " where BALENO='" + VE.BALENO1 + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-                        sql = "update " + schnm + ". T_BATCHDTL set  BALEYR= '" + VE.BALEYR1 + "', CLCD='" + CLCD + "' "
-                            + " where BALENO='" + VE.BALENO1 + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-                        sql = "update " + schnm + ". T_BILTY set  BALEYR= '" + VE.BALEYR1 + "', BLAUTONO= '" + VE.BLAUTONO1 + "',LRDT= to_date('" + VE.LRDT1 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO1 + "', CLCD='" + CLCD + "' "
-               + " where BALENO='" + VE.BALENO1 + "' ";
-                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-                        sql = "update " + schnm + ". T_BALE set  BALEYR= '" + VE.BALEYR1 + "', BLAUTONO= '" + VE.BLAUTONO1 + "',LRDT= to_date('" + VE.LRDT1 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO1 + "', CLCD='" + CLCD + "' "
-                          + " where BALENO='" + VE.BALENO1 + "' ";
+                        sql = "update " + schnm + ". T_BALE set BALENO='" + VE.BALENO1 + "', BALEYR= '" + VE.BALEYR1 + "',BLSLNO= '" + VE.BLSLNO1 + "',LRDT= to_date('" + VE.LRDT1 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO1 + "', CLCD='" + CLCD + "' "
+                          + " where BLAUTONO= '" + VE.BLAUTONO1 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                         
 
                     }
                     else
                     {
-                        var a = VE.NEWPAGENO.Split('/');
-                        var PAGENO = a[0];
-                        var PAGESLNO = a[1];
-                        sql = "update " + schnm + ". T_BALE set  BALEYR= '" + VE.BALEYR2 + "', BLAUTONO= '" + VE.BLAUTONO2 + "',LRDT= to_date('" + VE.LRDT2 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO2 + "', CLCD='" + CLCD + "' "
-                        + " where BALENO='" + VE.BALENO2 + "' ";
+                        sql = "update " + schnm + ". T_BALE set  BALENO='" + VE.BALENO2 + "',BALEYR= '" + VE.BALEYR2 + "',BLSLNO= '" + VE.BLSLNO2 + "',LRDT= to_date('" + VE.LRDT2 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO2 + "', CLCD='" + CLCD + "' "
+                        + " where BLAUTONO= '" + VE.BLAUTONO2 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". T_BILTY set  BALEYR= '" + VE.BALEYR2 + "', BLAUTONO= '" + VE.BLAUTONO2 + "',LRDT= to_date('" + VE.LRDT2 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO2 + "', CLCD='" + CLCD + "' "
-                              + " where BALENO='" + VE.BALENO2 + "' ";
+                        sql = "update " + schnm + ". T_BILTY set  BALENO='" + VE.BALENO2 + "',BALEYR= '" + VE.BALEYR2 + "',LRDT= to_date('" + VE.LRDT2 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO2 + "', CLCD='" + CLCD + "' "
+                              + " where BLAUTONO= '" + VE.BLAUTONO2 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". T_BATCHDTL set  BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "' "
-                              + " where BALENO='" + VE.BALENO2 + "' ";
+                        sql = "update " + schnm + ". T_BATCHDTL set BALENO='" + VE.BALENO2 + "', BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "' "
+                              + " where  AUTONO= '" + VE.BLAUTONO2 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". T_TXNDTL set  BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "',PAGENO='" + VE.NEWPAGENO + "',PAGESLNO='" + VE.NEWPAGESLNO + "'  "
-                        + " where BALENO='" + VE.BALENO2 + "' ";
+                        sql = "update " + schnm + ". T_TXNDTL set BALENO='" + VE.BALENO2 + "', BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "',PAGENO='" + VE.NEWPAGENO + "',PAGESLNO='" + VE.NEWPAGESLNO + "'  "
+                        + " where AUTONO='" + VE.BLAUTONO2 + "'  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
-
-
-                        //MasterHelp.SQLNonQuery("update " + schnm + ". T_TXNDTL set  BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "',PAGENO='" + PAGENO + "',PAGESLNO='" + PAGESLNO + "'  "
-                        //+ " where BALENO='" + VE.BALENO2 + "' ");
-                        //MasterHelp.SQLNonQuery("update " + schnm + ". T_BATCHDTL set  BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "' "
-                        //       + " where BALENO='" + VE.BALENO2 + "' ");
-                        //MasterHelp.SQLNonQuery("update " + schnm + ". T_BILTY set  BALEYR= '" + VE.BALEYR2 + "', BLAUTONO= '" + VE.BLAUTONO2 + "',LRDT= '" + VE.LRDT2 + "',LRNO= '" + VE.LRNO2 + "', CLCD='" + CLCD + "' "
-                        //     + " where BALENO='" + VE.BALENO2 + "' ");
-                        //MasterHelp.SQLNonQuery("update " + schnm + ". T_BALE set  BALEYR= '" + VE.BALEYR2 + "', BLAUTONO= '" + VE.BLAUTONO2 + "',LRDT= '" + VE.LRDT2 + "',LRNO= '" + VE.LRNO2 + "', CLCD='" + CLCD + "' "
-                        //   + " where BALENO='" + VE.BALENO2 + "' ");
                     }
-
-
-
-                    //DB.SaveChanges();
-                    //ContentFlg = "Update sucessfully";
-                    //DB.SaveChanges();
-                    //transaction.Commit();
                     ModelState.Clear();
                     transaction.Commit();
                     OraTrans.Commit();
                     OraTrans.Dispose();
-                    ContentFlg = "Update sucessfully";
+                    ContentFlg = "1";
                     return Content(ContentFlg);
                 }
                 catch (Exception ex)

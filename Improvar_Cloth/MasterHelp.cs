@@ -2855,7 +2855,7 @@ namespace Improvar
             }
 
         }
-        public string BaleNo_help(string val, string tdt,string blautono="")
+        public string BaleNo_help(string val, string tdt,string BLSLNO = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
@@ -2871,16 +2871,16 @@ namespace Improvar
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                     {if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") slash = "/"; else slash = "";
-                        SB.Append("<tr><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["baleyr"] + " </td><td>" + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["pageno"] + slash + tbl.Rows[i]["pageslno"]+" </td><td>" + tbl.Rows[i]["lrno"] + " </td><td>" + tbl.Rows[i]["lrdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["gonm"] + " </td><td>" + tbl.Rows[i]["blautono"] + " </td></tr>");
+                        SB.Append("<tr><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["baleyr"] + " </td><td>" + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["pageno"] + slash + tbl.Rows[i]["pageslno"]+" </td><td>" + tbl.Rows[i]["lrno"] + " </td><td>" + tbl.Rows[i]["lrdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["gonm"] + " </td><td>" + tbl.Rows[i]["blautono"] + " </td><td>" + tbl.Rows[i]["blslno"] + " </td></tr>");
                     }
-                    var hdr = "Bale No." + Cn.GCS() + "Bale year" + Cn.GCS() + "Style No." + Cn.GCS() + "Page No." + Cn.GCS() + "LR No." + Cn.GCS() + "LR Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Bill Autono";
-                    return Generate_help(hdr, SB.ToString());
+                    var hdr = "Bale No." + Cn.GCS() + "Bale year" + Cn.GCS() + "Style No." + Cn.GCS() + "Page No." + Cn.GCS() + "LR No." + Cn.GCS() + "LR Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Bill Autono" + Cn.GCS() + "Bill Serial No.";
+                    return Generate_help(hdr, SB.ToString(),"7");
 
                 }
                 else
                 {
-                    var query = (from DataRow dr in tbl.Rows
-                                 select new
+                    var query = (from DataRow dr in tbl.Rows where dr["blslno"].retStr()== BLSLNO
+                                 select new 
                                  {
                                      BLAUTONO = dr["blautono"].retStr(),
                                      ITCD = dr["itcd"].retStr(),
@@ -2905,7 +2905,7 @@ namespace Improvar
                         string str = "";
                         foreach (var i in query)
                         {
-                            str = i.BALENO + Cn.GCS() + i.BALEYR + Cn.GCS() + i.STYLENO + Cn.GCS() + i.PAGENO + Cn.GCS() + i.LRNO + Cn.GCS() + i.LRDT + Cn.GCS() + i.BLAUTONO;
+                            str = i.BALENO + Cn.GCS() + i.BALEYR + Cn.GCS() + i.STYLENO + Cn.GCS() + i.PAGENO + Cn.GCS() + i.LRNO + Cn.GCS() + i.LRDT + Cn.GCS() + i.BLAUTONO+Cn.GCS()+i.BLSLNO;
                         }
                         return str;
                     }

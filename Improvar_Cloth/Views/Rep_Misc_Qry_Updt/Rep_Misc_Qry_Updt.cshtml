@@ -22,66 +22,40 @@
         $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
     });
 </script>
+
 <script>
     function Show_rep() {
         debugger;
         var val = ($("#TEXTBOX1").find(":selected").val());
-        if (val == "Change Style")
-        {
+        if (val == "Change Style") {
             if (!emptyFieldCheck("Select/Enter Bale No.", "BALENO1")) { return false; }
-            if (!emptyFieldCheck("Select/Enter New Style No.", "NEWSTYLENO")) { return false; }
-        } else
-        {
+          //  if (!emptyFieldCheck("Select/Enter New Style No.", "NEWSTYLENO")) { return false; }
+        } else {
             if (!emptyFieldCheck("Select/Enter Bale No.", "BALENO2")) { return false; }
-            
-        }
-       
-        $("#form1").attr('target', '_blank');
-        $("#form1").attr('action', 'Save');
-        $("#form1").submit();
 
-    }
-</script>
-
-<script>
-    function SelectGodownCode(id, TEXTBOX3, TEXTBOX4) {
-        debugger;
-        @*if ("@Model.DefaultAction" == "V") {return false}*@
-        if (id == "") {
-            $("#" + TEXTBOX3.id).val("");
-            $("#" + TEXTBOX4.id).val("");
         }
-        else {
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetGodownDetails", PageControllerName)',
-                data: { val: id },
-                success: function (result) {
-                    var MSG = result.indexOf(String.fromCharCode(181));
-                    if (MSG >= 0) {
-                        $("#tempHDD").val(result);
-                        var findstr = $("#tempHDD").val();
-                        document.getElementById(TEXTBOX3.id).value = returncolvalue(findstr, "TEXTBOX3");
-                        document.getElementById(TEXTBOX4.id).value = returncolvalue(findstr, "TEXTBOX4");
-                    }
-                    else {
-                        $("#" + TEXTBOX3.id).val("");
-                        $("#" + TEXTBOX4.id).val("");
-                        msgInfo(result);
-                        message_value = TEXTBOX3.id;
-                    }
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
-                }
-            });
-        }
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("Save", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1")
+                { msgSuccess1("Update Successfully !"); }
+               
+                
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
     }
 </script>
 <script>
-    function SelectBaleNo(id, BALENO, BALEYR, LRNO, LRDT, OLDSTYLENO, BLAUTONO1) { // BALENO1,BALEYR1,LRNO1,LRDT1,OLDSTYLENO,BLAUTONO1
+    function SelectBaleNo(id, BALENO, BALEYR, LRNO, LRDT, OLDSTYLENO, BLAUTONO1, BLSLNO1) {
         debugger;
         if (id == "") {
             $("#" + BALEYR.id).val("");
@@ -90,20 +64,28 @@
             $("#" + LRDT.id).val("");
             $("#" + OLDSTYLENO.id).val("");
             $("#" + BLAUTONO1.id).val("");
+           
         }
         else {
-            //var blautono = document.getElementById("BLAUTONO1").value;
-            var blautono = $("#" + BLAUTONO1.id).val();
-            var balnoyr = $("#" + BALENO.id).val() + $("#" + BALEYR.id).val();
+            var blslno = "";
+            var val = ($("#TEXTBOX1").find(":selected").val());
+            if (val == "Change Style")
+            {
+                blslno = $("#BLSLNO1").val();
+            } else
+            { blslno = $("#BLSLNO2").val(); }
+           
+            var balnoyr = $("#" + BALENO.id).val();
             $.ajax({
                 type: 'GET',
                 url: "@Url.Action("GetBaleNoDetails", PageControllerName)",
                 data:
             {
                 val: balnoyr,
-                BALEAUTONO: blautono
+                BLSLNO: blslno
             },
                 success: function (result) {
+                    var a = result;
                     var MSG = result.indexOf(String.fromCharCode(181));
                     if (MSG >= 0) {
                         $("#tempHDD").val(result);
@@ -114,19 +96,45 @@
                         $("#" + LRDT.id).val(str[5].toString());
                         var val = ($("#TEXTBOX1").find(":selected").val());
                         if (val == "Change Style")
-                        { $("#" + OLDSTYLENO.id).val(str[2].toString()); }
-                        else { $("#" + OLDSTYLENO.id).val(str[3].toString()); }
+                        {
+                            $("#" + OLDSTYLENO.id).val(str[2].toString());
+                            $("#NEWSTYLENO").val(str[2].toString());
+                            $("#BLSLNO1").val(str[7].toString());
+                        }
+                        else {
+                            var pgnoslno = str[3].toString().split('/');
+                            $("#OLDPAGENO").val(pgnoslno[0]);
+                            $("#OLDPAGESLNO").val(pgnoslno[1]);
+                            $("#NEWPAGENO").val(pgnoslno[0]);
+                            $("#NEWPAGESLNO").val(pgnoslno[1]);
+                            $("#BLSLNO2").val(str[7].toString());
+                        }
                         $("#" + BLAUTONO1.id).val(str[6].toString());
+                        
                     }
                     else {
-                        $("#" + BALEYR.id).val("");
-                        $("#" + LRNO.id).val("");
-                        $("#" + BALENO.id).val("");
-                        $("#" + LRDT.id).val("");
-                        $("#" + OLDSTYLENO.id).val("");
-                        $("#" + BLAUTONO1.id).val("");
-                        msgInfo("Invalid Bale No. ! Please Enter a Valid Bale No. !!");
-                        message_value = BALENO.id;
+                        if (a == "") {
+                            msgInfo("Select/Enter Bale No. !!");
+                            $("#" + BALEYR.id).val("");
+                            $("#" + LRNO.id).val("");
+                            $("#" + BALENO.id).val("");
+                            $("#" + LRDT.id).val("");
+                            $("#" + OLDSTYLENO.id).val("");
+                            $("#" + BLAUTONO1.id).val("");
+                            $("#" + BLSLNO1.id).val("");
+                            message_value = BALENO.id;
+                        }
+                        else {
+                            $("#" + BALEYR.id).val("");
+                            $("#" + LRNO.id).val("");
+                            $("#" + BALENO.id).val("");
+                            $("#" + LRDT.id).val("");
+                            $("#" + OLDSTYLENO.id).val("");
+                            $("#" + BLAUTONO1.id).val("");
+                            $("#" + BLSLNO1.id).val("");
+                            msgInfo("Invalid Bale No. ! Please Enter a Valid Bale No. !!");
+                            message_value = BALENO.id;
+                        }
                     }
 
                 },
@@ -148,7 +156,7 @@
         else { $("#1stdiv").hide(); $("#2nddiv").show(); }
     }
 </script>
-<script></script>
+
 
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
@@ -159,11 +167,6 @@
             <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />
 
             <div class="row">
-                @*<div class="col-lg-2">
-                        <div class="editor-field" style="margin-top: 4px;">
-                            @Html.Label("", "Static Combo")
-                        </div>
-                    </div>*@
                 <div class="col-md-7">
                     @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1", onchange = "ChangeStylePageNo(TEXTBOX1);" })
                 </div>
@@ -178,8 +181,8 @@
                     </div>
                     <div class="col-md-6" style="margin-top: 10px;">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.BALENO1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO1", @placeholder = "Bale No.", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO1/BALEYR1/LRNO1/LRDT1/OLDSTYLENO/BLAUTONO1/','0/1/4/5/2/7','Bale No. Details','BALENO1');", onblur = "SelectBaleNo(this.value,BALENO1,BALEYR1,LRNO1,LRDT1,OLDSTYLENO,BLAUTONO1);" } })
-                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO1/BALEYR1/LRNO1/LRDT1/OLDSTYLENO/BLAUTONO1','0/1/4/5/2/7','Bale No. Details','BALENO1')" />
+                            @Html.EditorFor(model => model.BALENO1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO1", @placeholder = "Bale No.", maxlength = 34, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO1/BALEYR1/LRNO1/LRDT1/OLDSTYLENO/BLAUTONO1/BLSLNO1','0/1/4/5/2/7/8','Bale No. Details','BALENO1');", onblur = "SelectBaleNo(this.value,BALENO1,BALEYR1,LRNO1,LRDT1,OLDSTYLENO,BLAUTONO1,BLSLNO1);" } })
+                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO1/BALEYR1/LRNO1/LRDT1/OLDSTYLENO/BLAUTONO1/BLSLNO1','0/1/4/5/2/7/8','Bale No. Details','BALENO1')" />
 
                         </div>
                     </div>
@@ -199,6 +202,7 @@
                         <div class="editor-field">
                             @Html.EditorFor(model => model.LRDT1, new { htmlAttributes = new { @class = "form-control", id = "LRDT1", maxlength = 10, @title = "Only for View", @placeholder = "LR Date", @readonly = "readonly" } })
                             @Html.HiddenFor(model => model.BLAUTONO1, new { id = "BLAUTONO1" })
+                            @Html.HiddenFor(model => model.BLSLNO1, new { id = "BLSLNO1" })
 
                         </div>
                     </div>
@@ -211,7 +215,7 @@
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.OLDSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "OLDSTYLENO", maxlength = 1, @placeholder = "old Style No", @TabIndex = -1, @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.OLDSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "OLDSTYLENO", maxlength = 30, @placeholder = "old Style No", @TabIndex = -1, @readonly = "readonly" } })
                         </div>
                     </div>
                 </div>
@@ -219,12 +223,17 @@
                     <div class="col-md-5">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "New Style No")
-                            <b style="color:Red;">*</b>
+                            @*<b style="color:Red;">*</b>*@
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "NEWSTYLENO", maxlength = 15, @placeholder = "New Style No" } })
+                            @Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "NEWSTYLENO", maxlength = 30, @placeholder = "New Style No" } })
+
+                            @*@Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "NEWSTYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", @placeholder = "Design No", maxlength = 25 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')" />*@
+
+
                         </div>
                     </div>
                 </div>
@@ -240,8 +249,8 @@
                     </div>
                     <div class="col-md-6" style="margin-top: 10px;">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.BALENO2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO2", @placeholder = "Code", maxlength = 8, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO2/BALEYR2/LRNO2/LRDT2/OLDPAGENO/BLAUTONO2/','0/1/4/5/3/7','Bale No. Details','BALENO2','BLAUTONO2');", onblur = "SelectBaleNo(this.value,BALENO2,BALEYR2,LRNO2,LRDT2,OLDPAGENO,BLAUTONO2);" } })
-                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO2/BALEYR2/LRNO2/LRDT2/OLDPAGENO/BLAUTONO2','0/1/4/5/3/7','Bale No. Details','BALENO2','BLAUTONO2')" />
+                            @Html.EditorFor(model => model.BALENO2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO2", @placeholder = "Bale No", maxlength = 34, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO2/BALEYR2/LRNO2/LRDT2/BLAUTONO2/BLSLNO2','0/1/4/5/7/8','Bale No. Details','BALENO2');", onblur = "SelectBaleNo(this.value,BALENO2,BALEYR2,LRNO2,LRDT2,OLDPAGENO,BLAUTONO2,BLSLNO2);" } })
+                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO2/BALEYR2/LRNO2/LRDT2/BLAUTONO2/BLSLNO2','0/1/4/5/7/8','Bale No. Details','BALENO2')" />
                         </div>
                     </div>
                     <div class="col-md-4" style="margin-top: 10px;">
@@ -260,6 +269,7 @@
                         <div class="editor-field">
                             @Html.EditorFor(model => model.LRDT2, new { htmlAttributes = new { @class = "form-control", id = "LRDT2", maxlength = 10, @title = "Only for View", @placeholder = "LR Date", @readonly = "readonly" } })
                             @Html.HiddenFor(model => model.BLAUTONO2, new { id = "BLAUTONO2" })
+                            @Html.HiddenFor(model => model.BLSLNO2, new { id = "BLSLNO2" })
 
                         </div>
                     </div>
@@ -267,14 +277,23 @@
                 <div class="row">
                     <div class="col-md-5">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Old Page No /")
+                            @Html.Label("", "Old Page No")
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.OLDPAGENO, new { htmlAttributes = new { @class = "form-control", id = "OLDPAGENO", maxlength = 15, @placeholder = "Old Page No", @TabIndex = -1, @readonly = "readonly" } })
                         </div>
                     </div>
+                    <div class="col-md-1" style="width:auto">
+                        @Html.Label("", "/")
+                    </div>
+                    <div class="col-md-6">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.OLDPAGESLNO, new { htmlAttributes = new { @class = "form-control", id = "OLDPAGESLNO", maxlength = 15, @placeholder = "Old Page Sl No", @TabIndex = -1, @readonly = "readonly" } })
+                        </div>
+                    </div>
+
                 </div>
                 <div class="row">
                     <div class="col-md-5">
@@ -283,25 +302,20 @@
 
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.NEWPAGENO, new { htmlAttributes = new { @class = "form-control", id = "NEWPAGENO", maxlength = 6, @onkeypress = "return numericOnly(this);", @placeholder = "New Page No" } })
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "New Page Sl No")
+                    <div class="col-md-1" style="width:auto">
+                        @Html.Label("", "/")
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.NEWPAGESLNO, new { htmlAttributes = new { @class = "form-control", id = "NEWPAGESLNO", maxlength = 6, @onkeypress = "return numericOnly(this);", @placeholder = "New Page SL No" } })
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-8">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.NEWPAGESLNO, new { htmlAttributes = new { @class = "form-control", id = "NEWPAGESLNO", maxlength = 6, @onkeypress = "return numericOnly(this);",@placeholder = "New Page SL No" } })
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
             <div class="row" style="margin-top:10PX">
