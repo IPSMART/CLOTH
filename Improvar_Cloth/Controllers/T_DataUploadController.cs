@@ -77,8 +77,8 @@ namespace Improvar.Controllers
                 T_TXN TTXN = new T_TXN();
                 T_TXNTRANS TXNTRANS = new T_TXNTRANS();
                 T_TXNOTH TTXNOTH = new T_TXNOTH();
-                T_TXN_LINKNO TTXNLINKNO = new T_TXN_LINKNO();
-
+                TMPVE.DefaultAction = "A";
+                TMPVE.MENU_PARA = "PB";
                 var outerDT = dbfdt.AsEnumerable()
                .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"], CARR_NAME = g["CARR_NAME"] })
                .Select(g =>
@@ -105,13 +105,13 @@ namespace Improvar.Controllers
                }).CopyToDataTable();
 
                 TTXN.EMD_NO = 0;
-                TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "PB").FirstOrDefault()?.DOCCD;
+                TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "SPBL").FirstOrDefault()?.DOCCD;
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
-                List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
-                List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
                 short slno = 0;
                 foreach (DataRow oudr in outerDT.Rows)
                 {
+                    List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
+                    List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
                     DUpGrid dupgrid = new DUpGrid();
                     TTXN.GOCD = "TR";
                     TTXN.DOCTAG = "PB";
@@ -199,37 +199,36 @@ namespace Improvar.Controllers
                     TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
                     //----------------------------------------------------------//
 
-
-                    foreach (DataRow dr in dbfdt.Rows)
+                    DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
+                    foreach (DataRow inrdr in innerDt.Rows)
                     {
-
                         TTXNDTL TTXNDTL = new TTXNDTL();
                         TTXNDTL.SLNO = ++slno;
                         TTXNDTL.MTRLJOBCD = "FS";
-                        string style = dr["MAT_GRP"].ToString() + dr["MAT_GRP"].ToString().Split('-')[0];
-                        string grpnm = dr["MAT_DESCRI"].ToString();
-                        string HSNCODE = dr["HSN_CODE"].ToString();
+                        string style = inrdr["MAT_GRP"].ToString() + inrdr["MAT_GRP"].ToString().Split('-')[0];
+                        string grpnm = inrdr["MAT_DESCRI"].ToString();
+                        string HSNCODE = inrdr["HSN_CODE"].ToString();
                         ItemDet ItemDet = CreateItem(style, "MTR", grpnm, HSNCODE);
                         TTXNDTL.ITCD = ItemDet.ITCD;
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
                         TTXNDTL.HSNCODE = HSNCODE;
                         //TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
-                        TTXNDTL.BATCHNO = dr["BATCH"].ToString();
-                        TTXNDTL.BALENO = dr["BALENO"].ToString();
+                        TTXNDTL.BATCHNO = inrdr["BATCH"].ToString();
+                        TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.GOCD = "TR";
-                        TTXNDTL.QNTY = dr["NET_QTY"].retDbl();
+                        TTXNDTL.QNTY = inrdr["NET_QTY"].retDbl();
                         TTXNDTL.NOS = 1;
-                        TTXNDTL.RATE = dr["RATE"].retDbl();
-                        TTXNDTL.AMT = dr["GROSS_AMT"].retDbl();
-                        TTXNDTL.FLAGMTR = dr["W_FLG_Q"].retDbl();
-                        string grade = dr["GRADATION"].ToString();
-                        string foc = dr["FOC"].ToString();
+                        TTXNDTL.RATE = inrdr["RATE"].retDbl();
+                        TTXNDTL.AMT = inrdr["GROSS_AMT"].retDbl();
+                        TTXNDTL.FLAGMTR = inrdr["W_FLG_Q"].retDbl();
+                        string grade = inrdr["GRADATION"].ToString();
+                        string foc = inrdr["FOC"].ToString();
                         string pCSTYPE = PCSTYPE(grade, foc);
-                        double W_FLG_Q = Math.Abs(dr["W_FLG_Q"].retDbl());
-                        double R_FLG_Q = Math.Abs(dr["R_FLG_Q"].retDbl());
-                        double discamt = Math.Abs(dr["QLTY_DISC"].retDbl());
-                        double discamt1 = Math.Abs(dr["MKTG_DISC"].retDbl());
+                        double W_FLG_Q = Math.Abs(inrdr["W_FLG_Q"].retDbl());
+                        double R_FLG_Q = Math.Abs(inrdr["R_FLG_Q"].retDbl());
+                        double discamt = Math.Abs(inrdr["QLTY_DISC"].retDbl());
+                        double discamt1 = Math.Abs(inrdr["MKTG_DISC"].retDbl());
                         double Flagamt = (W_FLG_Q + R_FLG_Q) * TTXNDTL.RATE.retDbl();
                         TTXNDTL.TOTDISCAMT = Flagamt;
                         TTXNDTL.DISCTYPE = "F";
@@ -239,22 +238,28 @@ namespace Improvar.Controllers
                         TTXNDTL.SCMDISCRATE = discamt1;
                         TTXNDTL.SCMDISCAMT = discamt1;
                         TTXNDTL.GLCD = ItemDet.PURGLCD;
-                        double NET_AMT = dr["NET_AMT"].retDbl();
-                        TTXNDTL.TXBLVAL = dr["TAX_AMT"].retDbl();
-                        TTXNDTL.IGSTPER = dr["INTEGR_TAX"].retDbl();
-                        TTXNDTL.CGSTPER = dr["CENT_TAX"].retDbl();
-                        TTXNDTL.SGSTPER = dr["STATE_TAX"].retDbl();
-                        TTXNDTL.IGSTAMT = dr["INTEGR_AMT"].retDbl();
-                        TTXNDTL.CGSTAMT = dr["CENT_AMT"].retDbl();
-                        TTXNDTL.SGSTAMT = dr["STATE_AMT"].retDbl();
+                        double NET_AMT = inrdr["NET_AMT"].retDbl();
+                        TTXNDTL.TXBLVAL = inrdr["TAX_AMT"].retDbl();
+                        TTXNDTL.IGSTPER = inrdr["INTEGR_TAX"].retDbl();
+                        TTXNDTL.CGSTPER = inrdr["CENT_TAX"].retDbl();
+                        TTXNDTL.SGSTPER = inrdr["STATE_TAX"].retDbl();
+                        TTXNDTL.IGSTAMT = inrdr["INTEGR_AMT"].retDbl();
+                        TTXNDTL.CGSTAMT = inrdr["CENT_AMT"].retDbl();
+                        TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl();
                         TTXNDTL.NETAMT = NET_AMT;
                         TTXNDTLlist.Add(TTXNDTL);
-                    }
-                    var tssaddy = TSCntlr.SAVE(TMPVE);
+                    }// inner loop of TTXNDTL
+                    TMPVE.T_TXN = TTXN;
+                    TMPVE.T_TXNTRANS = TXNTRANS;
+                    TMPVE.T_TXNOTH = TTXNOTH;
+                    TMPVE.TTXNDTL = TTXNDTLlist;
+                    TMPVE.TTXNAMT = TTXNAMTlist;
+                    string tslCont = (string)TSCntlr.SAVE(TMPVE,"PosPurchase");
+                    if(tslCont=="")
                     dupgrid.MESSAGE = "Success";
                     DUGridlist.Add(dupgrid);
-                }
-            }
+                }//outer
+            }//try
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
@@ -287,9 +292,9 @@ namespace Improvar.Controllers
                     ItemDet.PURGLCD = STYLEdt.PURGLCD;
                     return ItemDet;
                 }
+                MGROUP = CreateGroup(grpnm);
                 MSITEM.EMD_NO = 0;
                 MSITEM.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
-                MGROUP = CreateGroup(grpnm);
                 string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + MGROUP.ITGRPTYPE + MGROUP.GRPBARCODE + "%') ";
                 var tbl = masterHelp.SQLquery(sql);
                 if (tbl.Rows[0]["itcd"].ToString() == "")
@@ -330,13 +335,13 @@ namespace Improvar.Controllers
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                     dbsql = masterHelp.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                     dbsql = masterHelp.RetModeltoSql(MSITEM, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    OraTrans.Rollback();
+                    OraTrans.Commit();
                 }
             }
             catch (Exception ex)
@@ -355,7 +360,7 @@ namespace Improvar.Controllers
             try
             {
                 string DefaultAction = "A";
-                var tMGROU = DB.M_GROUP.Where(m => m.GRPNM == grpnm).FirstOrDefault();
+                var tMGROU = DB.M_GROUP.Where(m => m.ITGRPNM == grpnm).FirstOrDefault();
                 if (tMGROU != null)
                 {
                     return tMGROU;
