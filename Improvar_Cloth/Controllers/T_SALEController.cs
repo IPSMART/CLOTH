@@ -2464,7 +2464,6 @@ namespace Improvar.Controllers
         public dynamic SAVE(TransactionSaleEntry VE, string othr_para = "")
         {
             //Cn.getQueryString(VE);
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             //Oracle Queries
             OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
             OraCon.Open();
@@ -3408,7 +3407,11 @@ namespace Improvar.Controllers
                         var TCDP_DATA1 = Cn.T_CONTROL_DOC_PASS(TTXN.DOCCD, 0, TTXN.EMD_NO.Value, TTXN.AUTONO, CommVar.CurSchema(UNQSNO), docpassrem);
                         if (TCDP_DATA1.Item1.Count != 0)
                         {
-                            DB.T_CNTRL_DOC_PASS.AddRange(TCDP_DATA1.Item1);
+                            for (int tr = 0; tr <= TCDP_DATA1.Item1.Count - 1; tr++)
+                            {
+                                dbsql = masterHelp.RetModeltoSql(TCDP_DATA1.Item1[tr]);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
                         }
                     }
                     else
@@ -3416,7 +3419,11 @@ namespace Improvar.Controllers
                         var TCDP_DATA = Cn.T_CONTROL_DOC_PASS(TTXN.DOCCD, TRAN_AMT, TTXN.EMD_NO.Value, TTXN.AUTONO, CommVar.CurSchema(UNQSNO));
                         if (TCDP_DATA.Item1.Count != 0)
                         {
-                            DB.T_CNTRL_DOC_PASS.AddRange(TCDP_DATA.Item1);
+                            for (int tr = 0; tr <= TCDP_DATA.Item1.Count - 1; tr++)
+                            {
+                                dbsql = masterHelp.RetModeltoSql(TCDP_DATA.Item1[tr]);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
                         }
                     }
                     #endregion
