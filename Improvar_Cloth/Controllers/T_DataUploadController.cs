@@ -137,53 +137,6 @@ namespace Improvar.Controllers
 
                     TMPVE.T_TXN = TTXN;//adding to Viewmodel
 
-                    TTXNAMT TTXNAMT = new TTXNAMT();
-                    double igstper = oudr["INTEGR_TAX"].retDbl();
-                    double cgstper = oudr["CENT_AMT"].retDbl();
-                    if (oudr["FREIGHT"].retDbl() != 0)
-                    {
-                        TTXNAMT.SLNO = 1;
-                        TTXNAMT.AMTCD = "";
-                        TTXNAMT.AMTDESC = "";
-                        TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
-                        TTXNAMT.HSNCODE = "";
-                        TTXNAMT.AMT = TTXNAMT.AMTRATE;
-                        if (igstper > 0)
-                        {
-                            TTXNAMT.IGSTAMT = oudr["FREIGHT"].retDbl() * igstper / 100;
-                        }
-                        else
-                        {
-                            TTXNAMT.CGSTPER = cgstper;
-                            TTXNAMT.CGSTAMT = oudr["FREIGHT"].retDbl() * cgstper / 100;
-                            TTXNAMT.SGSTPER = cgstper;
-                            TTXNAMT.SGSTAMT = oudr["FREIGHT"].retDbl() * cgstper / 100;
-                        }
-                        TTXNAMTlist.Add(TTXNAMT);
-                    }
-                    if (oudr["INSURANCE"].retDbl() != 0)
-                    {
-                        TTXNAMT.SLNO = 2;
-                        TTXNAMT.AMTCD = "0002";
-                        TTXNAMT.AMTDESC = "";
-                        TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
-                        TTXNAMT.HSNCODE = "";
-                        TTXNAMT.AMT = TTXNAMT.AMTRATE;
-                        if (igstper > 0)
-                        {
-                            TTXNAMT.IGSTAMT = oudr["INSURANCE"].retDbl() * igstper / 100;
-                        }
-                        else
-                        {
-                            TTXNAMT.CGSTPER = cgstper;
-                            TTXNAMT.CGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
-                            TTXNAMT.SGSTPER = cgstper;
-                            TTXNAMT.SGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
-                        }
-                        TTXNAMTlist.Add(TTXNAMT);
-                    }
-                    TMPVE.TTXNAMT = TTXNAMTlist;//adding to Viewmodel
-
                     //-------------------------Transport--------------------------//
 
                     if (oudr["CARR_NO"].ToString() != "")
@@ -200,6 +153,7 @@ namespace Improvar.Controllers
                     TXNTRANS.LRNO = oudr["LR_NO"].ToString();
                     TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
                     //----------------------------------------------------------//
+                    string PURGLCD = "";
 
                     DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
                     foreach (DataRow inrdr in innerDt.Rows)
@@ -211,7 +165,7 @@ namespace Improvar.Controllers
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
                         ItemDet ItemDet = CreateItem(style, "MTR", grpnm, HSNCODE);
-                        TTXNDTL.ITCD = ItemDet.ITCD;
+                        TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
                         TTXNDTL.HSNCODE = HSNCODE;
@@ -239,7 +193,7 @@ namespace Improvar.Controllers
                         TTXNDTL.SCMDISCTYPE = "F";
                         TTXNDTL.SCMDISCRATE = discamt1;
                         TTXNDTL.SCMDISCAMT = discamt1;
-                        TTXNDTL.GLCD = ItemDet.PURGLCD;
+                        TTXNDTL.GLCD = PURGLCD;
                         double NET_AMT = inrdr["NET_AMT"].retDbl();
                         TTXNDTL.TXBLVAL = inrdr["TAX_AMT"].retDbl();
                         TTXNDTL.IGSTPER = inrdr["INTEGR_TAX"].retDbl();
@@ -300,6 +254,59 @@ namespace Improvar.Controllers
 
 
                     }// inner loop of TTXNDTL
+
+
+                    double igstper = oudr["INTEGR_TAX"].retDbl();
+                    double cgstper = oudr["CENT_AMT"].retDbl();
+                    if (oudr["FREIGHT"].retDbl() != 0)
+                    {
+                        TTXNAMT TTXNAMT = new TTXNAMT();
+                        TTXNAMT.SLNO = 1;
+                        TTXNAMT.GLCD = PURGLCD;
+                        TTXNAMT.AMTCD = "0001";
+                        TTXNAMT.AMTDESC = "";
+                        TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
+                        TTXNAMT.HSNCODE = "";
+                        TTXNAMT.AMT = TTXNAMT.AMTRATE;
+                        if (igstper > 0)
+                        {
+                            TTXNAMT.IGSTAMT = oudr["FREIGHT"].retDbl() * igstper / 100;
+                        }
+                        else
+                        {
+                            TTXNAMT.CGSTPER = cgstper;
+                            TTXNAMT.CGSTAMT = oudr["FREIGHT"].retDbl() * cgstper / 100;
+                            TTXNAMT.SGSTPER = cgstper;
+                            TTXNAMT.SGSTAMT = oudr["FREIGHT"].retDbl() * cgstper / 100;
+                        }
+                        TTXNAMTlist.Add(TTXNAMT);
+                    }
+                    if (oudr["INSURANCE"].retDbl() != 0)
+                    {
+                        TTXNAMT TTXNAMT = new TTXNAMT();
+                        TTXNAMT.SLNO = 2;
+                        TTXNAMT.GLCD = PURGLCD;
+                        TTXNAMT.AMTCD = "0002";
+                        TTXNAMT.AMTDESC = "";
+                        TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
+                        TTXNAMT.HSNCODE = "";
+                        TTXNAMT.AMT = TTXNAMT.AMTRATE;
+                        if (igstper > 0)
+                        {
+                            TTXNAMT.IGSTAMT = oudr["INSURANCE"].retDbl() * igstper / 100;
+                        }
+                        else
+                        {
+                            TTXNAMT.CGSTPER = cgstper;
+                            TTXNAMT.CGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
+                            TTXNAMT.SGSTPER = cgstper;
+                            TTXNAMT.SGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
+                        }
+                        TTXNAMTlist.Add(TTXNAMT);
+                    }
+                    TMPVE.TTXNAMT = TTXNAMTlist;//adding to Viewmodel
+
+
                     TMPVE.T_TXN = TTXN;
                     TMPVE.T_TXNTRANS = TXNTRANS;
                     TMPVE.T_TXNOTH = TTXNOTH;
