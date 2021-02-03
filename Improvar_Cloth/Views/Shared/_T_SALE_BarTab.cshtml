@@ -155,6 +155,34 @@
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].PAGENO, new { id = "B_PAGENO_" + i })
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].PAGESLNO, new { id = "B_PAGESLNO_" + i })
                                             }
+                                            @if (Model.M_SYSCNFG.MNTNSHADE != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i })
+                                            }
+                                            @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNWPRPPER != "Y")
+                                            {
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].WPRATE, new { id = "B_WPRATE_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].WPPRICEGEN, new { id = "B_WPPRICEGEN_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].RPPRICEGEN, new { id = "B_RPPRICEGEN_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].RPRATE, new { id = "B_RPRATE_" + i })
+                                            }
+                                            @if (Model.MENU_PARA == "OP")
+                                            {
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].GSTPER, new { id = "B_GSTPER_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].PRODGRPGSTPER, new { id = "B_PRODGRPGSTPER_" + i })
+                                            }
+                                            @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
+                                            {
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCRATE, new { id = "B_TDDISCRATE" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i })
+                                            }
+                                            @if (Model.M_SYSCNFG.MNTNDISC2 != "Y")
+                                            {
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCRATE, new { id = "B_DISCRATE" + i })
+                                            }
                                         </td>
                                         <td class="sticky-cell" style="left:17px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
@@ -225,10 +253,7 @@
                                                 @Html.TextBoxFor(model => Model.TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             </td>
                                         }
-                                        else
-                                        {
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].SHADE, new { id = "B_SHADE_" + i })
-                                        }
+                                      
                                         <td class="">
                                             @Html.EditorFor(model => Model.TBATCHDTL[i].BALSTOCK, new { htmlAttributes = new { id = "B_BALSTOCK_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly" } })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].NEGSTOCK, new { id = "B_NEGSTOCK_" + i })
@@ -278,13 +303,7 @@
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].RPRATE, new { htmlAttributes = new { id = "B_RPRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
                                             </td>
                                         }
-                                        else
-                                        {
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].WPRATE, new { id = "B_WPRATE_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].WPPRICEGEN, new { id = "B_WPPRICEGEN_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].RPPRICEGEN, new { id = "B_RPPRICEGEN_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].RPRATE, new { id = "B_RPRATE_" + i })
-                                        }
+                                       
                                         @if (Model.MENU_PARA != "OP")
                                         {
                                             <td class="">
@@ -292,11 +311,7 @@
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].PRODGRPGSTPER, new { id = "B_PRODGRPGSTPER_" + i })
                                             </td>
                                         }
-                                        else
-                                        {
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].GSTPER, new { id = "B_GSTPER_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].PRODGRPGSTPER, new { id = "B_PRODGRPGSTPER_" + i })
-                                        }
+                                      
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SCMDISCTYPE_DESC, new { id = "B_SCMDISCTYPE_DESC_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].SCMDISCTYPE, new { id = "B_SCMDISCTYPE_" + i })
@@ -314,12 +329,7 @@
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
                                             </td>
                                         }
-                                        else
-                                        {
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCRATE, new { id = "B_TDDISCRATE" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i })
-                                        }
+                                      
                                         @if (Model.M_SYSCNFG.MNTNDISC2 == "Y")
                                         {
                                             <td class="">
@@ -330,12 +340,7 @@
                                                 @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
                                             </td>
                                         }
-                                        else
-                                        {
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCRATE, new { id = "B_DISCRATE" + i })
-                                        }
+                                       
                                         @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "PB" || Model.MENU_PARA == "OP")
                                         {
                                             <td class="">

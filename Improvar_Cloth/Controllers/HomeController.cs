@@ -362,10 +362,10 @@ namespace Improvar.Controllers
                     sql = "select listagg('a.'||a.column_name,', ') within group(order by a.COLUMN_ID) colnm from all_tab_cols a ";
                     sql += "where table_name = 'M_SYSCNFG' and owner = '" + DatabaseSchemaName + "'";
                     DataTable rstmp = masterHelp.SQLquery(sql);
-                    if (rstmp.Rows.Count > 0)
+                    if (rstmp.Rows.Count > 0 && rstmp.Rows[0]["colnm"].retStr() != "" )
                     {
                         sql = "";
-                        sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a ";
+                        sql = "select " + rstmp.Rows[0]["colnm"] + " from " + DatabaseSchemaName + ".m_syscnfg a";
                         rstmp = masterHelp.SQLquery(sql);
 
                         Session.Add("M_SYSCNFG", rstmp);
