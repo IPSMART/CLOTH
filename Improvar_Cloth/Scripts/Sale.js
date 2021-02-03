@@ -2870,6 +2870,7 @@ function GetItcd(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var MENU_PARA = $("#MENU_PARA").val();
+    var ModuleCode = $("#ModuleCode").val();
     if (id == "") {
         ClearAllTextBoxes("ITCD,ITSTYLE,UOM,STYLENO,ITGRPCD,ITGRPNM,HSNCODE,PRODGRPGSTPER,GSTPER,BarImages,GLCD");
     }
@@ -2912,6 +2913,14 @@ function GetItcd(id) {
                         var value = modify_check();
                         if (value == "true") {
                             RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                        }
+                        if (ModuleCode.indexOf("SALESCLOTH") != -1) {
+                            if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                                $("#NOS").focus();
+                            }
+                            else {
+                                $("#CUTLENGTH").focus();
+                            }
                         }
                     }
                     else {
@@ -3110,6 +3119,32 @@ function modify_check() {
     }
 
 }
+function Sale_GetTTXNDTLDetails() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var FDT = $("#FDT").val();
+    var FDT = $("#TDT").val();
+    var R_DOCNO = $("#R_DOCNO").val();
+    var R_BARNO = $("#R_BARNO").val();
+    var R_DOCCD = $("#DOCCD").val();
+    $.ajax({
+        type: 'POST',
+        url: $("#UrlTTXNDTLDetails").val(),//"@Url.Action("GetTTXNDTLDetails", PageControllerName )"
+        beforesend: $("#WaitingMode").show(),
+        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO + "&R_DOCCD=" + R_DOCCD,
+        success: function (result) {
+            $("#popup").animate({ marginTop: '-10px' }, 50);
+            $("#popup").html(result);
+            $("#WaitingMode").hide();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+
 
 
 

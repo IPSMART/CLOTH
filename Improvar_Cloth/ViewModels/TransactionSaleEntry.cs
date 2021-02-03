@@ -223,5 +223,9 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
         public double? CUTLENGTH { get; set; }
         public string Last_ITCD { get; set; }
+        public string FDT { get; set; }
+        public string TDT { get; set; }
+        public string R_DOCNO { get; set; }
+
     }
 }
