@@ -3378,7 +3378,7 @@ namespace Improvar.Controllers
                                     string adrcr = cr;
                                     if (VE.TTXNAMT[i].ADDLESS == "L") adrcr = dr;
                                     dbsql = masterHelp.InsVch_Det(TTXN.AUTONO, TTXN.DOCCD, TTXN.DOCNO, TTXN.DOCDT.ToString(), TTXN.EMD_NO.Value, TTXN.DTAG, Convert.ToSByte(isl), adrcr, VE.TTXNAMT[i].GLCD, sslcd,
-                                            Convert.ToDouble(VE.TTXNAMT[i].AMT), strrem, parglcd, TTXN.SLCD, 0, 0, Convert.ToDouble(VE.TTXNAMT[i].CURR_AMT));
+                                            Convert.ToDouble(VE.TTXNAMT[i].AMT), strrem, parglcd, TTXN.SLCD, 0, 0, VE.TTXNAMT[i].CURR_AMT.retDbl());
                                     OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                                     if (adrcr == "D") dbDrAmt = dbDrAmt + Convert.ToDouble(VE.TTXNAMT[i].AMT);
                                     else dbCrAmt = dbCrAmt + Convert.ToDouble(VE.TTXNAMT[i].AMT);
@@ -3445,7 +3445,7 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-                    if (VE.T_CNTRL_HDR_REM.DOCREM != null)// add REMARKS
+                    if (VE.T_CNTRL_HDR_REM != null && VE.T_CNTRL_HDR_REM.DOCREM != null)// add REMARKS
                     {
                         var NOTE = Cn.SAVETRANSACTIONREMARKS(VE.T_CNTRL_HDR_REM, TTXN.AUTONO, TTXN.CLCD, TTXN.EMD_NO.Value);
                         if (NOTE.Item1.Count != 0)
@@ -3982,7 +3982,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-           
+
         }
         public ActionResult Print(TransactionSaleEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
         {
