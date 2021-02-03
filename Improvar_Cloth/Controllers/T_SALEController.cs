@@ -3960,16 +3960,22 @@ namespace Improvar.Controllers
             }
             dbsave:
             {
+                OraCon.Dispose();
+                if (othr_para == "")
+                    return Content(ContentFlg);
+                else
+                    return ContentFlg;
             }
             dbnotsave:
             {
                 OraTrans.Rollback();
+                OraCon.Dispose();
+                if (othr_para == "")
+                    return Content(ContentFlg);
+                else
+                    return ContentFlg;
             }
-            OraCon.Dispose();
-            if (othr_para == "")
-                return Content(ContentFlg);
-            else
-                return ContentFlg;
+           
         }
         public ActionResult Print(TransactionSaleEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
         {
