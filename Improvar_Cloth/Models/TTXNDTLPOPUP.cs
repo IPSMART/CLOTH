@@ -28,6 +28,6 @@ namespace Improvar.Models
         public double? CESSPER { get; set; }
         public string STKTYP { get; set; }
         public string UOM { get; set; }
-
+        public string PRODGRPGSTPER { get; set; }
     }
 }
