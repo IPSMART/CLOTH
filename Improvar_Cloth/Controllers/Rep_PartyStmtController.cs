@@ -156,7 +156,7 @@ namespace Improvar.Controllers
                     }
                     sql += "select a.autono, a.doctag, a.doccd, a.docdt, to_char(a.docdt, 'MON-YYYY') docmonth, a.itgrpcd, ";
                     if (FC["SalPur"].ToString() == "S") sql += "a.docno, ";
-                    else sql += "a.pblno docno, ";
+                    else sql += "a.prefno docno, ";
                     if (repon == "P")
                     {
                         sql += "a.slcd cd, a.slnm nm, a.shortnm snm,a.conslcd,a.conslnm conslnm, ";
