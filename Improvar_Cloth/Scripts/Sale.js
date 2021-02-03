@@ -3126,12 +3126,11 @@ function Sale_GetTTXNDTLDetails() {
     var FDT = $("#TDT").val();
     var R_DOCNO = $("#R_DOCNO").val();
     var R_BARNO = $("#R_BARNO").val();
-    var R_DOCCD = $("#DOCCD").val();
     $.ajax({
         type: 'POST',
         url: $("#UrlTTXNDTLDetails").val(),//"@Url.Action("GetTTXNDTLDetails", PageControllerName )"
         beforesend: $("#WaitingMode").show(),
-        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO + "&R_DOCCD=" + R_DOCCD,
+        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO ,
         success: function (result) {
             $("#popup").animate({ marginTop: '-10px' }, 50);
             $("#popup").html(result);

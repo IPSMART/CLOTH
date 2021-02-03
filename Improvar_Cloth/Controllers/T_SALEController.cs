@@ -2461,6 +2461,134 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
+        public ActionResult GetTTXNDTLDetails(TransactionSalePosEntry VE, string FDT, string TDT, string R_DOCNO, string R_BARNO)
+        {
+            Cn.getQueryString(VE); string scm = CommVar.CurSchema(UNQSNO);
+            string doctag = VE.MENU_PARA.retStr() == "SR" ? "SB" : "PB";
+            string sql = "select a.autono,a.docno,a.docdt,d.itcd,e.itnm,e.styleno,e.itgrpcd,f.itgrpnm,d.qnty,e.uomcd,d.stktype, ";
+            sql += "d.barno,d.TXBLVAL,d.IGSTPER,d.CGSTPER,d.SGSTPER,d.CESSPER from  " + scm + ".T_TXN a, ";
+            sql += "" + scm + ".T_TXNDTL b," + scm + ".T_CNTRL_HDR c, " + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f ";
+            sql += "where a.autono = c.autono(+) and a.autono = b.autono(+) and b.autono = d.autono(+) ";
+            sql += "and b.slno = d.txnslno(+)and b.itcd = e.itcd(+) and e.itgrpcd = f.itgrpcd(+) and a.doctag in('" + doctag + "')  ";
+            if (R_DOCNO.retStr() != "") sql += " and a.docno in('" + R_DOCNO + "') ";
+            if (FDT.retDateStr() != "") sql += "and a.docdt >= to_date('" + FDT + "', 'dd/mm/yyyy') ";
+            if (TDT.retDateStr() != "") sql += " and a.docdt <= to_date('" + TDT + "', 'dd/mm/yyyy')  ";
+            if (R_BARNO.retStr() != "") sql += "and d.barno = '" + R_BARNO + "' ";
+            sql += "order by a.docdt, a.docno ";
+            DataTable dt = masterHelp.SQLquery(sql);
+            DataTable PRODGRPDATA = new DataTable();
+            if (dt != null && dt.Rows.Count > 0)
+            {
+
+                VE.TTXNDTLPOPUP = (from DataRow dr in dt.Rows
+                                   select new TTXNDTLPOPUP
+                                   {
+                                       AUTONO = dr["autono"].retStr(),
+                                       ITCD = dr["itcd"].retStr(),
+                                       BARNO = dr["barno"].retStr(),
+                                       ITSTYLE = dr["styleno"].retStr() + " " + dr["itnm"].retStr(),
+                                       QNTY = dr["qnty"].retDbl(),
+                                       AGDOCNO = dr["docno"].retStr(),
+                                       AGDOCDT = dr["docdt"].retDateStr(),
+                                       ITGRPCD = dr["itgrpcd"].retStr(),
+                                       ITGRPNM = dr["itgrpnm"].retStr(),
+                                       IGSTPER = dr["IGSTPER"].retDbl(),
+                                       CGSTPER = dr["CGSTPER"].retDbl(),
+                                       SGSTPER = dr["SGSTPER"].retDbl(),
+                                       CESSPER = dr["CESSPER"].retDbl(),
+                                       STKTYP = dr["stktype"].retStr(),
+                                       UOM = dr["uomcd"].retStr()
+
+                                   }).ToList();
+                int slno = 0;
+                for (int p = 0; p <= VE.TTXNDTLPOPUP.Count - 1; p++)
+                {
+                    slno++;
+                    VE.TTXNDTLPOPUP[p].SLNO = slno.retShort();
+                }
+
+            }
+
+
+            VE.DefaultView = true;
+            return PartialView("_T_SALE_POS_RETURN_POPUP", VE);
+        }
+        public ActionResult SelectTTXNDTLDetails(TransactionSalePosEntry VE)
+        {
+            try
+            {
+                Cn.getQueryString(VE); ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                var _TTXNDTLPOPUP = VE.TTXNDTLPOPUP.Where(r => r.P_Checked == true).ToList(); int slno = 0, SERIAL = 0;
+                List<TsalePos_TBATCHDTL_RETURN> tsalePosReturnList = new List<TsalePos_TBATCHDTL_RETURN>();
+
+                foreach (var row in _TTXNDTLPOPUP)
+                {
+                    TsalePos_TBATCHDTL_RETURN tsalePos_TBATCHDTL_RETURN = new TsalePos_TBATCHDTL_RETURN();
+                    //tsalePos_TBATCHDTL_RETURN.SLNO = (SERIAL + 1).retShort();
+                    tsalePos_TBATCHDTL_RETURN.AUTONO = row.AUTONO.retStr();
+                    tsalePos_TBATCHDTL_RETURN.AGDOCNO = row.AGDOCNO.retStr();
+                    tsalePos_TBATCHDTL_RETURN.AGDOCDT = row.AGDOCDT.retDateStr();
+                    tsalePos_TBATCHDTL_RETURN.BARNO = row.BARNO.retStr();
+                    tsalePos_TBATCHDTL_RETURN.ITCD = row.ITCD.retStr();
+                    tsalePos_TBATCHDTL_RETURN.ITSTYLE = row.ITSTYLE.retStr();
+                    tsalePos_TBATCHDTL_RETURN.QNTY = row.QNTY.retDbl();
+                    tsalePos_TBATCHDTL_RETURN.UOM = row.UOM.retStr();
+                    tsalePos_TBATCHDTL_RETURN.STKTYPE = row.STKTYP.retStr();
+                    tsalePos_TBATCHDTL_RETURN.ITGRPCD = row.ITGRPCD.retStr();
+                    tsalePos_TBATCHDTL_RETURN.ITGRPNM = row.ITGRPNM.retStr();
+                    tsalePos_TBATCHDTL_RETURN.IGSTPER = row.IGSTPER.retDbl();
+                    tsalePos_TBATCHDTL_RETURN.CGSTPER = row.CGSTPER.retDbl();
+                    tsalePos_TBATCHDTL_RETURN.SGSTPER = row.SGSTPER.retDbl();
+                    tsalePos_TBATCHDTL_RETURN.CESSPER = row.CESSPER.retDbl();
+                    //tsalePos_TBATCHDTL_RETURN.TXBLVAL = row.TXBLVAL.retDbl();
+                    if (VE.TsalePos_TBATCHDTL_RETURN == null) VE.TsalePos_TBATCHDTL_RETURN = new List<TsalePos_TBATCHDTL_RETURN>();
+                    VE.TsalePos_TBATCHDTL_RETURN.Add(tsalePos_TBATCHDTL_RETURN);
+                }
+                if (VE.TsalePos_TBATCHDTL_RETURN != null)
+                {
+                    for (int i = 0; i < VE.TsalePos_TBATCHDTL_RETURN.Count; i++)
+                    {
+                        var itcd = VE.TsalePos_TBATCHDTL_RETURN[i].ITCD.retStr();
+                        var autono = VE.TsalePos_TBATCHDTL_RETURN[i].AUTONO.retStr();
+                        VE.TsalePos_TBATCHDTL_RETURN[i].SLNO = (1001 + i).retShort();
+                        var gstper = (VE.TsalePos_TBATCHDTL_RETURN[i].IGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].CGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].SGSTPER.retDbl() + VE.TsalePos_TBATCHDTL_RETURN[i].CESSPER.retDbl());
+                        VE.TsalePos_TBATCHDTL_RETURN[i].GSTPER = gstper.retDbl();
+                        //VE.TsalePos_TBATCHDTL_RETURN[i].DISC_TYPE = masterHelp.DISC_TYPE();
+                        //VE.TsalePos_TBATCHDTL_RETURN[i].PCSActionList = masterHelp.PCSAction();
+                        VE.TsalePos_TBATCHDTL_RETURN[i].COLRNM = (from j in DB.T_TXNDTL
+                                                                  join k in DB.M_COLOR on j.COLRCD equals k.COLRCD
+                                                                  where j.ITCD == itcd && j.AUTONO == autono
+                                                                  select k.COLRNM).FirstOrDefault();
+                        VE.TsalePos_TBATCHDTL_RETURN[i].SIZECD = (from j in DB.T_TXNDTL
+                                                                  join k in DB.M_SIZE on j.SIZECD equals k.SIZECD
+                                                                  where j.ITCD == itcd && j.AUTONO == autono
+                                                                  select k.SIZECD).FirstOrDefault();
+                        VE.TsalePos_TBATCHDTL_RETURN[i].PARTCD = (from j in DB.T_TXNDTL
+                                                                  join k in DB.M_PARTS on j.PARTCD equals k.PARTCD
+                                                                  where j.ITCD == itcd && j.AUTONO == autono
+                                                                  select k.PARTCD).FirstOrDefault();
+                        if (autono != "")
+                        {
+                            VE.TsalePos_TBATCHDTL_RETURN[i].MTRLJOBCD = (from j in DB.T_TXNDTL
+                                                                         where j.AUTONO == autono && j.ITCD == itcd
+                                                                         select j.MTRLJOBCD).FirstOrDefault();
+                        }
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+            VE.DISC_TYPE = masterHelp.DISC_TYPE();
+            VE.PCSActionList = masterHelp.PCSAction();
+            VE.DefaultView = true;
+            ModelState.Clear();
+            return PartialView("_T_SALE_POS_RETURN", VE);
+
+        }
         public dynamic SAVE(TransactionSaleEntry VE, string othr_para = "")
         {
             //Cn.getQueryString(VE);
