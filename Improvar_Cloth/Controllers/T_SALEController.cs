@@ -2460,13 +2460,10 @@ namespace Improvar.Controllers
             {
                 return Content("0");
             }
-
         }
-        public ActionResult SAVE(TransactionSaleEntry VE)
+        public dynamic SAVE(TransactionSaleEntry VE, string othr_para = "")
         {
-            Cn.getQueryString(VE);
-            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            //Cn.getQueryString(VE);
             //Oracle Queries
             OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
             OraCon.Open();
@@ -2474,7 +2471,7 @@ namespace Improvar.Controllers
             OracleTransaction OraTrans;
             string dbsql = "";
             string[] dbsql1;
-            string dberrmsg = "";
+            string ContentFlg = "";
 
             OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted);
             OraCmd.Transaction = OraTrans;
@@ -2482,7 +2479,7 @@ namespace Improvar.Controllers
             {
                 OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-                string ContentFlg = "";
+
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
@@ -2510,7 +2507,8 @@ namespace Improvar.Controllers
                         string diffitcd = difList.Select(a => a.ITCD).Distinct().ToArray().retSqlfromStrarray();
                         OraTrans.Rollback();
                         OraCon.Dispose();
-                        return Content("Barcode grid & Detail grid itcd [" + diffitcd + "] wise qnty, nos should match !!");
+                        ContentFlg = "Barcode grid & Detail grid itcd [" + diffitcd + "] wise qnty, nos should match !!";
+                        goto dbnotsave;
                     }
 
                     T_TXN TTXN = new T_TXN();
@@ -2575,7 +2573,7 @@ namespace Improvar.Controllers
                     DataTable tblsys = masterHelp.SQLquery(sql);
                     if (tblsys.Rows.Count == 0)
                     {
-                        dberrmsg = "Debtor/Creditor code not setup"; goto dbnotsave;
+                        ContentFlg = "Debtor/Creditor code not setup"; goto dbnotsave;
                     }
 
                     sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, nvl(c.crlimit,0) crlimit, nvl(c.crdays,0) crdays, ";
@@ -2629,7 +2627,7 @@ namespace Improvar.Controllers
                         DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TTXN.DOCNO), TTXN.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
                         if (DOCPATTERN.retStr().Length > 16)
                         {
-                            dberrmsg = "Document No. length should be less than 16.change from Document type master "; goto dbnotsave;
+                            ContentFlg = "Document No. length should be less than 16.change from Document type master "; goto dbnotsave;
                         }
                         auto_no = Cn.Autonumber_Transaction(CommVar.Compcd(UNQSNO), CommVar.Loccd(UNQSNO), TTXN.DOCNO, TTXN.DOCCD, Ddate);
                         TTXN.AUTONO = auto_no.Split(Convert.ToChar(Cn.GCS()))[0].ToString();
@@ -3093,7 +3091,7 @@ namespace Improvar.Controllers
                                     dt = masterHelp.SQLquery(sql);
                                     if (dt.Rows.Count == 0)
                                     {
-                                        dberrmsg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TBATCHDTL[i].SLNO + " and itcd=" + VE.TBATCHDTL[i].ITCD; goto dbnotsave;
+                                        ContentFlg = "Barno:" + barno + " not found at Item master at rowno:" + VE.TBATCHDTL[i].SLNO + " and itcd=" + VE.TBATCHDTL[i].ITCD; goto dbnotsave;
                                     }
                                     sql = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
                                     OraCmd.CommandText = sql; var OraReco = OraCmd.ExecuteReader();
@@ -3331,15 +3329,15 @@ namespace Improvar.Controllers
                     }
                     if (newbarnogen == true && docbarcode.retStr() == "")
                     {
-                        dberrmsg = "Please add doccd in M_DOCTYPE_BAR table"; goto dbnotsave;
+                        ContentFlg = "Please add doccd in M_DOCTYPE_BAR table"; goto dbnotsave;
                     }
                     if (dbqty == 0)
                     {
-                        dberrmsg = "Quantity not entered"; goto dbnotsave;
+                        ContentFlg = "Quantity not entered"; goto dbnotsave;
                     }
                     if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") && VE.T_TXN.PREFNO == null)
                     {
-                        dberrmsg = "Purchase Bill No not entered"; goto dbnotsave;
+                        ContentFlg = "Purchase Bill No not entered"; goto dbnotsave;
                     }
                     isl = 1;
 
@@ -3409,7 +3407,11 @@ namespace Improvar.Controllers
                         var TCDP_DATA1 = Cn.T_CONTROL_DOC_PASS(TTXN.DOCCD, 0, TTXN.EMD_NO.Value, TTXN.AUTONO, CommVar.CurSchema(UNQSNO), docpassrem);
                         if (TCDP_DATA1.Item1.Count != 0)
                         {
-                            DB.T_CNTRL_DOC_PASS.AddRange(TCDP_DATA1.Item1);
+                            for (int tr = 0; tr <= TCDP_DATA1.Item1.Count - 1; tr++)
+                            {
+                                dbsql = masterHelp.RetModeltoSql(TCDP_DATA1.Item1[tr]);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
                         }
                     }
                     else
@@ -3417,7 +3419,11 @@ namespace Improvar.Controllers
                         var TCDP_DATA = Cn.T_CONTROL_DOC_PASS(TTXN.DOCCD, TRAN_AMT, TTXN.EMD_NO.Value, TTXN.AUTONO, CommVar.CurSchema(UNQSNO));
                         if (TCDP_DATA.Item1.Count != 0)
                         {
-                            DB.T_CNTRL_DOC_PASS.AddRange(TCDP_DATA.Item1);
+                            for (int tr = 0; tr <= TCDP_DATA.Item1.Count - 1; tr++)
+                            {
+                                dbsql = masterHelp.RetModeltoSql(TCDP_DATA.Item1[tr]);
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                            }
                         }
                     }
                     #endregion
@@ -3827,27 +3833,26 @@ namespace Improvar.Controllers
 
                     if ((igst != 0 && (cgst + sgst) != 0) || (igst + cgst + sgst == 0))
                     {
-                        dberrmsg = "We can't add igst+cgst+sgst for the same party.";
+                        ContentFlg = "We can't add igst+cgst+sgst for the same party.";
                         goto dbnotsave;
                     }
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
                     {
-                        dberrmsg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
+                        ContentFlg = "Debit " + Math.Round(dbDrAmt, 2) + " & Credit " + Math.Round(dbCrAmt, 2) + " not matching please click on rounded off...";
                         goto dbnotsave;
                     }
 
                     #endregion
                     if (VE.DefaultAction == "A")
                     {
-                        ContentFlg = "1" + " (Voucher No. " + DOCPATTERN + ")~" + TTXN.AUTONO;
+                        ContentFlg = "1" + " (Bill No. " + DOCPATTERN + ")~" + TTXN.AUTONO;
                     }
                     else if (VE.DefaultAction == "E")
                     {
                         ContentFlg = "2";
                     }
                     OraTrans.Commit();
-                    OraCon.Dispose();
-                    return Content(ContentFlg);
+                    goto dbsave;
                 }
                 else if (VE.DefaultAction == "V")
                 {
@@ -3860,7 +3865,7 @@ namespace Improvar.Controllers
                             var IsTransactionFound = salesfunc.IsTransactionFound("", v.BARNO.retSqlformat(), VE.T_TXN.AUTONO.retSqlformat());
                             if (IsTransactionFound != "")
                             {
-                                dberrmsg = "We cant delete this Bill. Transaction found at " + IsTransactionFound; goto dbnotsave;
+                                ContentFlg = "We cant delete this Bill. Transaction found at " + IsTransactionFound; goto dbnotsave;
                             }
                             else if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") && IsTransactionFound == "")
                             {
@@ -3899,11 +3904,11 @@ namespace Improvar.Controllers
                     }
                     //if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP")
                     //{
-                        dbsql = masterHelp.TblUpdt("T_BALE", VE.T_TXN.AUTONO, "D");
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("T_BALE", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
-                        dbsql = masterHelp.TblUpdt("T_BALE_HDR", VE.T_TXN.AUTONO, "D");
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                    dbsql = masterHelp.TblUpdt("T_BALE_HDR", VE.T_TXN.AUTONO, "D");
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     //}
                     dbsql = masterHelp.TblUpdt("t_txndtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -3947,26 +3952,37 @@ namespace Improvar.Controllers
                     ModelState.Clear();
                     OraTrans.Commit();
                     OraCon.Dispose();
-                    return Content("3");
+                    goto dbsave;
                 }
                 else
                 {
-                    OraTrans.Rollback();
-                    OraCon.Dispose();
-                    return Content("");
+                    goto dbnotsave;
                 }
-            dbnotsave:;
-                OraTrans.Rollback();
-                OraCon.Dispose();
-                return Content(dberrmsg);
+
             }
             catch (Exception ex)
             {
-                Cn.SaveException(ex, "");
+                Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
+                goto dbnotsave;
+            }
+            dbsave:
+            {
+                OraCon.Dispose();
+                if (othr_para == "")
+                    return Content(ContentFlg);
+                else
+                    return ContentFlg;
+            }
+            dbnotsave:
+            {
                 OraTrans.Rollback();
                 OraCon.Dispose();
-                return Content(ex.Message + ex.InnerException);
+                if (othr_para == "")
+                    return Content(ContentFlg);
+                else
+                    return ContentFlg;
             }
+           
         }
         public ActionResult Print(TransactionSaleEntry VE, FormCollection FC, string DOCNO, string DOC_CD, string DOCDT)
         {

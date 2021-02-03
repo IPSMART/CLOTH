@@ -33,7 +33,10 @@
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;">Bale No</th>
-                                <th class="sticky-cell" style="width: 27px;">LR No</th>
+                                @if (Model.MENU_PARA == "KHSR")
+                                {
+                                    <th class="sticky-cell" style="width: 27px;">LR No</th>
+                                }
                                 <th class="" style="width: 27px;">SL No.</th>
                                 <th class="" style="width:100px;">LR No</th>
                                 <th class="" style="width:100px;">LR Date</th>
@@ -54,8 +57,12 @@
                                             @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BLAUTONO, new { id = "BLAUTONO_K_POPUP_" + i })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BALEYR, new { id = "BALEY_K_POPUP_" + i })
                                         </td>
-                                        <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked_LRNO, new { id = "Checked_LRNO_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'Checked_LRNO_', 'LRNO_POPUP_', 'T_Bilty_Khasra_PopUp');" })
+                                        @if (Model.MENU_PARA == "KHSR")
+                                        {
+                                            <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked_LRNO, new { id = "Checked_LRNO_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'Checked_LRNO_', 'LRNO_POPUP_', 'T_Bilty_Khasra_PopUp');" })
+                                            </td>
+                                        }
                                         <td class="">
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA_POPUP[i].SLNO, new { id = "SLNO_POPUP_" + i, @class = " atextBoxFor ", maxlength = 2, @readonly = "readonly" })
                                         </td>
