@@ -110,6 +110,8 @@ namespace Improvar.Controllers
                 short slno = 0;
                 foreach (DataRow oudr in outerDT.Rows)
                 {
+
+                    List<TBATCHDTL> TBATCHDTLlist = new List<Models.TBATCHDTL>();
                     List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
                     List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
                     DUpGrid dupgrid = new DUpGrid();
@@ -248,15 +250,64 @@ namespace Improvar.Controllers
                         TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl();
                         TTXNDTL.NETAMT = NET_AMT;
                         TTXNDTLlist.Add(TTXNDTL);
+
+
+                        TBATCHDTL TBATCHDTL = new TBATCHDTL();
+                        TBATCHDTL.TXNSLNO = TTXNDTL.SLNO;
+                        TBATCHDTL.SLNO = TTXNDTL.SLNO;  //COUNTER.retShort();
+                        //TBATCHDTL.GOCD = VE.T_TXN.GOCD;
+                        //TBATCHDTL.BARNO = barno;
+                        TBATCHDTL.MTRLJOBCD = TTXNDTL.MTRLJOBCD;
+                        TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
+                        TBATCHDTL.HSNCODE = TTXNDTL.HSNCODE;
+                        TBATCHDTL.STKDRCR = TTXNDTL.STKDRCR;
+                        TBATCHDTL.NOS = TTXNDTL.NOS;
+                        TBATCHDTL.QNTY = TTXNDTL.QNTY;
+                        TBATCHDTL.BLQNTY = TTXNDTL.BLQNTY;
+                        TBATCHDTL.FLAGMTR = TTXNDTL.FLAGMTR;
+                        TBATCHDTL.ITREM = TTXNDTL.ITREM;
+                        TBATCHDTL.RATE = TTXNDTL.RATE;
+                        TBATCHDTL.DISCRATE = TTXNDTL.DISCRATE;
+                        TBATCHDTL.DISCTYPE = TTXNDTL.DISCTYPE;
+                        TBATCHDTL.SCMDISCRATE = TTXNDTL.SCMDISCRATE;
+                        TBATCHDTL.SCMDISCTYPE = TTXNDTL.SCMDISCTYPE;
+                        TBATCHDTL.TDDISCRATE = TTXNDTL.TDDISCRATE;
+                        TBATCHDTL.TDDISCTYPE = TTXNDTL.TDDISCTYPE;
+                        //TBATCHDTL.DIA = TTXNDTL.DIA;
+                        //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
+                        //TBATCHDTL.LOCABIN = TTXNDTL.LOCABIN;
+                        //TBATCHDTL.SHADE = TTXNDTL.SHADE;
+                        //TBATCHDTL.MILLNM = TTXNDTL.MILLNM;
+                        TBATCHDTL.BATCHNO = TTXNDTL.BATCHNO;
+                        TBATCHDTL.BALEYR = TTXNDTL.BALENO.retStr() == "" ? "" : TTXNDTL.BALEYR;
+                        TBATCHDTL.BALENO = TTXNDTL.BALENO;
+                        //if (VE.MENU_PARA == "SBPCK")
+                        //{
+                        //    TBATCHDTL.ORDAUTONO = TTXNDTL.ORDAUTONO;
+                        //    TBATCHDTL.ORDSLNO = TTXNDTL.ORDSLNO;
+                        //}
+                        TBATCHDTL.LISTPRICE = TTXNDTL.LISTPRICE;
+                        TBATCHDTL.LISTDISCPER = TTXNDTL.LISTDISCPER;
+                        //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
+                        TBATCHDTL.STKTYPE = TTXNDTL.STKTYPE;
+
+                        //if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") && VE.M_SYSCNFG.MNTNPCSTYPE == "Y")
+                        //{
+                        //    TBATCHDTL.PCSTYPE = TTXNDTL.PCSTYPE;
+                        //}
+                        TBATCHDTLlist.Add(TBATCHDTL);
+
+
                     }// inner loop of TTXNDTL
                     TMPVE.T_TXN = TTXN;
                     TMPVE.T_TXNTRANS = TXNTRANS;
                     TMPVE.T_TXNOTH = TTXNOTH;
                     TMPVE.TTXNDTL = TTXNDTLlist;
+                    TMPVE.TBATCHDTL = TBATCHDTLlist;
                     TMPVE.TTXNAMT = TTXNAMTlist;
-                    string tslCont = (string)TSCntlr.SAVE(TMPVE,"PosPurchase");
-                    if(tslCont=="")
-                    dupgrid.MESSAGE = "Success";
+                    string tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
+                    if (tslCont == "1") dupgrid.MESSAGE = "Success";
+                    else dupgrid.MESSAGE = tslCont;
                     DUGridlist.Add(dupgrid);
                 }//outer
             }//try
