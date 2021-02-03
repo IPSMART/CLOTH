@@ -8,7 +8,7 @@
             @Html.ValidationSummary(true)
             <div class="grid_title">
                 @*<img src="~/Image/Plus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnAddPART" title="Add Row" onclick="AddRowPARTS()" />*@
-                @*<img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeletePART" title="Delete Row" onclick="DeleteRow()" />*@
+                <img src="~/Image/Minus.png" width="20px" height="20px" class="Help_image_buttonAddRemove" id="btnDeletePART" title="Delete Row" onclick="DeleteRow()" />
 
                 <div class="col-md-10">
                     <input type="text" id="search_part" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'T_Bilty_Khasra_Main');" />
@@ -17,7 +17,7 @@
                 <center style="font-size: 11px;color: darkmagenta; border: 1px inset;"><b>Bilty Details</b></center>
             </div>
             <div class="sticky-table sticky-ltr-cells">
-                <div style="height:auto;overflow-y:scroll;max-height:235px;">
+                <div style="height:auto;overflow-y:scroll;max-height:360px;">
                     <table id="T_Bilty_Khasra_Main" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
@@ -48,7 +48,7 @@
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].Checked, new { htmlAttributes = new { id = "chkid_" + i } })
+                                            @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].Checked, new { id = "chkid_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_', 'BLAUTONO_/BALENO_', 'T_Bilty_Khasra_Main');" } )
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].BLAUTONO, new { id = "BLAUTONO_" + i })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].BALEYR, new { id = "BALEYR_" + i })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].BLSLNO, new { id = "BLSLNO_" + i })
@@ -57,31 +57,31 @@
                                             @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].SLNO, new { id = "SLNO_" + i, @title = "Only Numeric", maxlength = 2, @class = " atextBoxFor ", @readonly = "readonly", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].ITCD, new { id = "ITCD_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].ITCD, new { id = "ITCD_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].ITNM, new { id = "ITNM_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].ITNM, new { id = "ITNM_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].NOS, new { id = "ITNM_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].NOS, new { id = "NOS_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor text-right", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].QNTY, new { id = "QNTY_" + i, maxlength = 15, @title = "Only For Display", style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].QNTY, new { id = "QNTY_" + i, maxlength = 15,  style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].RATE, new { id = "QNTY_" + i, maxlength = 15, @title = "Only For Display", style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].RATE, new { id = "RATE_" + i, maxlength = 15,  style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].UOMCD, new { id = "UOMCD_" + i, maxlength = 10, @title = "Only For Display", style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].UOMCD, new { id = "UOMCD_" + i, maxlength = 10,  style = "text-align:right;", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].SHADE, new { id = "SHADE_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].SHADE, new { id = "SHADE_" + i, maxlength = 10,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].BALENO, new { id = "BALENO_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].BALENO, new { id = "BALENO_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PAGENO, new { id = "PAGENO_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PAGENO, new { id = "PAGENO_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
                                             @*@Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GOCD, new { id = "GOCD_" + i, maxlength = 6, onkeydown = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0/" + "FLAG1_" + i + "=FLAG1');", onblur = "GetHelpBlur('" + @Url.Action("GetGodownDetails", "T_Bilty_Khasra") + "','Godown Details','" + "GOCD_" + i + "','" + "GOCD_" + i + "=GOCD=1/" + "GONM_" + i + "=GONM=0');GodownBaleopenFill(" + i + ");", @placeholder = "GOCD", @class = " atextBoxFor textbox_image" })
@@ -90,23 +90,23 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetGodownDetails", "T_Bilty_Khasra")','Godown Details','GOCD_@i','GOCD_@i=GOCD=1/GONM_@i=GONM=0/FLAG1_@i=FLAG1','GOCD')" />
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GONM, new { id = "GONM_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].GONM, new { id = "GONM_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA[i].FLAG1, new { id = "FLAG1_" + i })
                                         </td>
                                         <td class="grid_td" style="padding-left:11px;padding-right:11px;">
                                             @Html.CheckBoxFor(model => model.TBILTYKHASRA[i].CheckedBALEOPEN, new { id = "CheckedBALEOPEN_" + i, Onclick = "GodownBaleopenFill(" + i + ");" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PBLNO, new { id = "PBLNO_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PBLNO, new { id = "PBLNO_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PBLDT, new { id = "PBLDT_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].PBLDT, new { id = "PBLDT_" + i, maxlength = 10,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].LRNO, new { id = "LRNO_" + i, maxlength = 15, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].LRNO, new { id = "LRNO_" + i, maxlength = 15,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].LRDT, new { id = "LRDT_" + i, maxlength = 10, @title = "Only For Display", @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
+                                            @Html.TextBoxFor(model => Model.TBILTYKHASRA[i].LRDT, new { id = "LRDT_" + i, maxlength = 10,  @readonly = "readonly", @class = " atextBoxFor ", @TabIndex = -1 })
                                         </td>
                                     </tr>
                                 }

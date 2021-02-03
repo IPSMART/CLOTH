@@ -81,16 +81,16 @@
                 }
             }
         }
-        else if ("@Model.MENU_PARA" == "KHSR") {
-            for (var i = 0; i < GridRowMain; i++) {
-                var grgocd = $("#GOCD_" + i).val();
-                if (grgocd == "") {
-                    msgInfo("GOCD enter in the grid");
-                    message_value = "GOCD_" + i;
-                    return false;
-                }
+
+        for (var i = 0; i < GridRowMain; i++) {
+            var grgocd = $("#GOCD_" + i).val();
+            if (grgocd == "") {
+                msgInfo("GOCD enter in the grid");
+                message_value = "GOCD_" + i;
+                return false;
             }
         }
+
         if ("@Model.MENU_PARA" == "TRWB") {
             if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
         }
@@ -477,9 +477,9 @@
                     <div class="editor-field">
                         @Html.EditorFor(model => model.T_CNTRL_HDR.DOCONLYNO, new { htmlAttributes = new { @class = "form-control", id = "DOCONLYNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                         @*@if (Model.MENU_PARA != "TRFB")
-                    {
-                            @Html.HiddenFor(a => a.T_TXN.GOCD, new { id = "GOCD" })
-                        }*@
+                            {
+                                    @Html.HiddenFor(a => a.T_TXN.GOCD, new { id = "GOCD" })
+                                }*@
                     </div>
                 </div>
                 @if (Model.DefaultAction != "V")
