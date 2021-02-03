@@ -3122,18 +3122,21 @@ function modify_check() {
 function Sale_GetTTXNDTLDetails() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    if ($("#TAXGRPCD").val() == "") { msgInfo("TaxGrp. Code not available.Please Select / Enter another Party Code to get TaxGrp. Code"); message_value = "SLCD"; return false; }
     var FDT = $("#FDT").val();
     var FDT = $("#TDT").val();
     var R_DOCNO = $("#R_DOCNO").val();
     var R_BARNO = $("#R_BARNO").val();
+    var TAXGRPCD = $("#TAXGRPCD").val();
+    var SLCD = $("#SLCD").val();
     $.ajax({
         type: 'POST',
         url: $("#UrlTTXNDTLDetails").val(),//"@Url.Action("GetTTXNDTLDetails", PageControllerName )"
         beforesend: $("#WaitingMode").show(),
-        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO ,
+        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO + "&TAXGRPCD=" + TAXGRPCD + "&SLCD=" + SLCD,
         success: function (result) {
-            $("#popup").animate({ marginTop: '-10px' }, 50);
-            $("#popup").html(result);
+            $("#popup_agdocno").animate({ marginTop: '-10px' }, 50);
+            $("#popup_agdocno").html(result);
             $("#WaitingMode").hide();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -3147,7 +3150,7 @@ function Sale_SelectTTXNDTLDetails() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var Count = 0;
-    var GridRow = $("#_T_SALE_POS_RETURN_POPUP_GRID > tbody > tr").length;
+    var GridRow = $("#T_SALE_POPUP_GRID > tbody > tr").length;
     for (var i = 0; i <= GridRow - 1; i++) {
         var Check = document.getElementById("P_Checked_" + i).checked;
         if (Check == true) {
@@ -3155,34 +3158,20 @@ function Sale_SelectTTXNDTLDetails() {
         }
     }
     if (Count == 0) {
-        msgInfo("Please select a Bar No. !");
+        msgInfo("Please select a Against Docno. !");
         return false;
     }
     $.ajax({
         type: 'post',
         beforesend: $("#WaitingMode").show(),
-        url: $("#UrlSelectTTXNDTLDetails").val(),//"@Url.Action("SelectPendOrder", PageControllerName)",
+        url: $("#UrlSelectTTXNDTLDetails").val(),//"@Url.Action("SelectTTXNDTLDetails", PageControllerName)",
         data: $('form').serialize(),
         success: function (result) {
-            if (result == "0") {
-                //$("#hiddenpendordJSON").val(result);
-                //$("#Pending_Order").hide();
-                //if (Count > 0) {
-                //    $("#show_order").show();
-                //}
-                //msgInfo("Order Data selected ");
+            if (result.indexOf("_T_SALE_PRODUCT_GRID") >= 0) {
+                $("#partialdivBarCodeTab").html(result);
+                CalculateTotal_Barno();
             }
-            else {
-                $("#partialdivReturn").html(result);
-                var GridRow = $("#_T_SALE_POS_RETURN > tbody > tr").length;
-                for (var i = 0; i <= GridRow - 1; i++) {
-                    //Sale_GetGstPer(i, '#B_');
-                    //RateUpdate(i);
-                }
-                CalculateTotal();
-
-            }
-            $("#popup").html("");
+            $("#popup_agdocno").html("");
             $("#WaitingMode").hide();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -3196,14 +3185,14 @@ function Sale_SelectTTXNDTLDetails() {
 function Sale_CloseTTXNDTLDetails() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    //$("#popup").html("");
     var KeyID = (window.event) ? event.keyCode : e.keyCode;
     if (KeyID == 27) {
-        $("#popup").html("");
+        $("#popup_agdocno").html("");
     }
     else if (KeyID == undefined) {
-        $("#popup").html("");
-  
+        $("#popup_agdocno").html("");
+    }
+}
 
 
 

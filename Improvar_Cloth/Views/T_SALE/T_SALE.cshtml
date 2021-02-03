@@ -303,6 +303,8 @@
             $("#SHIPDOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             if ("@Model.MENU_PARA" == "SR" || "@Model.MENU_PARA" == "PR") {
                 $("#AGDOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+                $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+                $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
             }
         }
     });
@@ -413,6 +415,7 @@
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="UrlCheckBillNumber" value="@Url.Action("CheckBillNumber", PageControllerName)" />
         <input type="hidden" id="UrlTTXNDTLDetails" value="@Url.Action("GetTTXNDTLDetails", PageControllerName )" />
+        <input type="hidden" id="UrlSelectTTXNDTLDetails" value="@Url.Action("SelectTTXNDTLDetails", PageControllerName )" />
         <input type="hidden" id="partylinkcd" value="D" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -1137,7 +1140,7 @@
                                             <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Search" title="Click to Get Barno" onclick="Sale_GetTTXNDTLDetails()" />
                                         </div>
                                         <div class="row">
-                                            <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
+                                            <div id="popup_agdocno" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;">
                                             </div>
                                         </div>
                                     }
