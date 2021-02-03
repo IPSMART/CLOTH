@@ -3143,6 +3143,67 @@ function Sale_GetTTXNDTLDetails() {
         }
     });
 }
+function Sale_SelectTTXNDTLDetails() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var Count = 0;
+    var GridRow = $("#_T_SALE_POS_RETURN_POPUP_GRID > tbody > tr").length;
+    for (var i = 0; i <= GridRow - 1; i++) {
+        var Check = document.getElementById("P_Checked_" + i).checked;
+        if (Check == true) {
+            Count = Count + 1;
+        }
+    }
+    if (Count == 0) {
+        msgInfo("Please select a Bar No. !");
+        return false;
+    }
+    $.ajax({
+        type: 'post',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlSelectTTXNDTLDetails").val(),//"@Url.Action("SelectPendOrder", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            if (result == "0") {
+                //$("#hiddenpendordJSON").val(result);
+                //$("#Pending_Order").hide();
+                //if (Count > 0) {
+                //    $("#show_order").show();
+                //}
+                //msgInfo("Order Data selected ");
+            }
+            else {
+                $("#partialdivReturn").html(result);
+                var GridRow = $("#_T_SALE_POS_RETURN > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    //Sale_GetGstPer(i, '#B_');
+                    //RateUpdate(i);
+                }
+                CalculateTotal();
+
+            }
+            $("#popup").html("");
+            $("#WaitingMode").hide();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+
+}
+function Sale_CloseTTXNDTLDetails() {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    //$("#popup").html("");
+    var KeyID = (window.event) ? event.keyCode : e.keyCode;
+    if (KeyID == 27) {
+        $("#popup").html("");
+    }
+    else if (KeyID == undefined) {
+        $("#popup").html("");
+  
 
 
 
