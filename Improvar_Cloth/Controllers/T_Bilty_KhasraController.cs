@@ -199,7 +199,7 @@ namespace Improvar.Controllers
                 TXNTRN = DB.T_TXNTRANS.Find(aa[0].Trim());
                 TCH = DB.T_CNTRL_HDR.Find(TBH.AUTONO);
                 TXN = DB.T_TXN.Find(TBH.AUTONO);
-                if(VE.MENU_PARA == "TRWB")
+                if (VE.MENU_PARA == "TRWB")
                 {
                     string slcd = TBH.MUTSLCD;
                     var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM }).FirstOrDefault();
@@ -213,7 +213,7 @@ namespace Improvar.Controllers
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
                 str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm,b.flag1,  ";
-                str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.rate,c.pageno,d.itnm||' '||d.styleno itstyle,e.prefno,e.prefdt,a.baleopen  ";
+                str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.rate,c.pageno,c.pageslno,d.styleno||' '||d.itnm itstyle,e.prefno,e.prefdt,a.baleopen  ";
                 str += " from " + Scm + ".T_BALE a," + scmf + ".M_GODOWN b, " + Scm + ".T_TXNDTL c," + Scm + ".M_SITEM d," + Scm + ".T_TXN e  ";
                 str += " where a.blautono=c.autono(+) and c.itcd=d.itcd(+) and a.blautono=e.autono(+) and a.gocd=b.gocd(+)  and ";
                 str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000 ";
@@ -238,7 +238,7 @@ namespace Improvar.Controllers
                                        NOS = dr["nos"].retStr(),
                                        QNTY = dr["qnty"].retStr(),
                                        RATE = dr["RATE"].retStr(),
-                                       PAGENO = dr["pageno"].retStr(),
+                                       PAGENO = (dr["pageno"].retStr() == "" && dr["pageslno"].retStr() == "") ? "" : dr["pageno"].retStr() + "/" + dr["pageslno"].retStr(),
                                        PBLNO = dr["prefno"].retStr(),
                                        PBLDT = dr["prefdt"].retDateStr(),
                                        BALEOPEN = dr["BALEOPEN"].retStr(),
@@ -337,14 +337,14 @@ namespace Improvar.Controllers
                 DataTable dt = new DataTable();
                 if (VE.MENU_PARA == "KHSR")
                 {
-                    var GetPendig_Data = salesfunc.getPendKhasra(VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", VE.T_BALE_HDR.AUTONO.retSqlformat());
+                    var GetPendig_Data = salesfunc.getPendKhasra(VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", (VE.T_BALE_HDR.AUTONO.retStr() == "" ? "" : VE.T_BALE_HDR.AUTONO.retSqlformat()));
                     DataView dv = new DataView(GetPendig_Data);
                     string[] COL = new string[] { "blautono", "lrno", "lrdt", "baleno", "prefno", "prefdt" };
                     dt = dv.ToTable(true, COL);
                 }
                 else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB")
                 {
-                    dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retSqlformat());
+                    dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr());
                 }
 
                 VE.TBILTYKHASRA_POPUP = (from DataRow dr in dt.Rows
@@ -387,7 +387,6 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-
         public ActionResult SelectPendingLRNO(TransactionKhasraEntry VE, string DOCDT)
         {
             Cn.getQueryString(VE);
@@ -396,6 +395,7 @@ namespace Improvar.Controllers
                 string GC = Cn.GCS();
                 List<string> baleno = new List<string>();
                 List<string> blautonos = new List<string>();
+                List<string> existingbale = new List<string>();
                 foreach (var i in VE.TBILTYKHASRA_POPUP)
                 {
                     if (i.Checked == true)
@@ -408,39 +408,52 @@ namespace Improvar.Controllers
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
                 if (VE.MENU_PARA == "KHSR")
                 {
-                    var GetPendig_Data = salesfunc.getPendKhasra(DOCDT, sqlbillautonos, VE.T_BALE_HDR.AUTONO.retSqlformat());
+                    var GetPendig_Data = salesfunc.getPendKhasra(DOCDT, sqlbillautonos, (VE.T_BALE_HDR.AUTONO.retStr() == "" ? "" : VE.T_BALE_HDR.AUTONO.retSqlformat()));
                     DataView dv = new DataView(GetPendig_Data);
                     dt = dv.ToTable(true);
                 }
                 else if (VE.MENU_PARA == "TRFB" || VE.MENU_PARA == "TRWB")
                 {
-                    var GetPendig_Data = salesfunc.GetBaleStock(DOCDT, VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.retSqlformat());
+                    var GetPendig_Data = salesfunc.GetBaleStock(DOCDT, VE.T_TXN.GOCD.retSqlformat(), "", "", "", VE.T_BALE_HDR.AUTONO.retStr());
                     DataView dv = new DataView(GetPendig_Data);
                     dt = dv.ToTable(true);
                 }
-                VE.TBILTYKHASRA = (from DataRow dr in dt.Rows
-                                   where baleno.Contains(dr["baleno"].retStr())
-                                   && blautonos.Contains(dr["blautono"].retStr())
-                                   select new TBILTYKHASRA
-                                   {
-                                       BLAUTONO = dr["blautono"].retStr(),
-                                       ITCD = dr["itcd"].retStr(),
-                                       ITNM = dr["itstyle"].retStr(),
-                                       NOS = dr["nos"].retStr(),
-                                       QNTY = dr["qnty"].retStr(),
-                                       RATE = dr["RATE"].retStr(),
-                                       UOMCD = dr["uomcd"].retStr(),
-                                       SHADE = dr["shade"].retStr(),
-                                       BALENO = dr["baleno"].retStr(),
-                                       PAGENO = dr["pageno"].retStr() + "/" + dr["pageslno"].retStr(),
-                                       LRNO = dr["lrno"].retStr(),
-                                       LRDT = dr["lrdt"].retDateStr(),
-                                       BALEYR = dr["baleyr"].retStr(),
-                                       BLSLNO = dr["blslno"].retShort(),
-                                       PBLNO = dr["prefno"].retStr(),
-                                       PBLDT = dr["prefdt"].retDateStr()
-                                   }).Distinct().ToList();
-
+                var existingdata = VE.TBILTYKHASRA;
+                if (VE.TBILTYKHASRA != null)
+                {
+                    existingbale = VE.TBILTYKHASRA.Select(a => a.BLAUTONO + a.BALENO).ToList();
+                }
+                var newdata = (from DataRow dr in dt.Rows
+                               where !existingbale.Contains(dr["blautono"].retStr() + dr["baleno"].retStr())
+                               && baleno.Contains(dr["baleno"].retStr())
+                               && blautonos.Contains(dr["blautono"].retStr())
+                               select new TBILTYKHASRA
+                               {
+                                   BLAUTONO = dr["blautono"].retStr(),
+                                   ITCD = dr["itcd"].retStr(),
+                                   ITNM = dr["itstyle"].retStr(),
+                                   NOS = dr["nos"].retStr(),
+                                   QNTY = dr["qnty"].retStr(),
+                                   RATE = dr["RATE"].retStr(),
+                                   UOMCD = dr["uomcd"].retStr(),
+                                   SHADE = dr["shade"].retStr(),
+                                   BALENO = dr["baleno"].retStr(),
+                                   PAGENO = (dr["pageno"].retStr() == "" && dr["pageslno"].retStr() == "") ? "" : dr["pageno"].retStr() + "/" + dr["pageslno"].retStr(),
+                                   LRNO = dr["lrno"].retStr(),
+                                   LRDT = dr["lrdt"].retDateStr(),
+                                   BALEYR = dr["baleyr"].retStr(),
+                                   BLSLNO = dr["blslno"].retShort(),
+                                   PBLNO = dr["prefno"].retStr(),
+                                   PBLDT = dr["prefdt"].retDateStr()
+                               }).Distinct().ToList();
+                if (VE.TBILTYKHASRA == null)
+                {
+                    VE.TBILTYKHASRA = newdata;
+                }
+                else
+                {
+                    VE.TBILTYKHASRA.AddRange(newdata);
+                }
                 for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
                 {
                     VE.TBILTYKHASRA[i].SLNO = Convert.ToInt16(i + 1);

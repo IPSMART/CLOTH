@@ -2100,6 +2100,7 @@ namespace Improvar
             sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
             if (mergeloca == false) sql += "d.loccd='" + LOC + "' and ";
             sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
+            if (skipautono.retStr() != "") sql += "and b.autono not in ('" + skipautono + "') ";
             sql += "group by c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno ";
 
             sql += ") a, ";
