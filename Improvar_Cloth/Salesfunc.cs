@@ -2087,7 +2087,7 @@ namespace Improvar
             //sql += "a.gocd=g.gocd(+) ";
             //sql += "order by baleyr, baleno, styleno ";
 
-            sql += "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr BaleNoBaleYrcd, e.lrno, e.lrdt, ";
+            sql += "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr BaleNoBaleYrcd, e.lrno,to_char(e.lrdt,'dd/mm/yyyy') lrdt,  ";
             sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
             sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
             sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";

@@ -185,24 +185,18 @@ namespace Improvar.Controllers
                     var CLCD = CommVar.ClientCode(UNQSNO);
                     if (VE.TEXTBOX1 == "Change Style")
                     {
-                        string sql1 = "select * from " + schnm + ". M_SITEM where STYLENO='" + VE.OLDSTYLENO + "' ";
-                        DataTable dt = MasterHelp.SQLquery(sql1);
-                        var itcd = (from DataRow dr in dt.Rows select new { itcd = dr["itcd"]    
-                        }).FirstOrDefault();
-                
-                     
-
+                      
                         sql = "update " + schnm + ". T_TXNDTL set  ITCD= '" + VE.ITCD2 + "' "
                         + " where AUTONO='" + VE.BLAUTONO1 + "' and  ITCD= '" + VE.ITCD1 + "'  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-
                  
                     }
                     else
                     {
                         sql = "update " + schnm + ". T_TXNDTL set PAGENO='" + VE.NEWPAGENO + "',PAGESLNO='" + VE.NEWPAGESLNO + "' "
-                        + " where AUTONO='" + VE.BLAUTONO2 + "' and PAGENO='" + VE.OLDPAGENO + "' and PAGESLNO='" + VE.OLDPAGESLNO + "'   ";
+                       + " where AUTONO='" + VE.BLAUTONO2 + "' and PAGENO='" + VE.OLDPAGENO.retStr() + "' and PAGESLNO='" + VE.OLDPAGESLNO.retStr() + "'   ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
                     }
                     ModelState.Clear();
                     transaction.Commit();
