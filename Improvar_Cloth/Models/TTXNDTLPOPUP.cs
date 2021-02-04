@@ -9,6 +9,7 @@ namespace Improvar.Models
     public class TTXNDTLPOPUP
     {
         public string AUTONO { get; set; }
+        public string AGAUTOSLNO { get; set; }
         public string AGDOCNO { get; set; }
         public string AGDOCDT { get; set; }
         public string ITNM { get; set; }
