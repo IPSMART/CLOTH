@@ -16,7 +16,11 @@ namespace Improvar.ViewModels
         public string TEXTBOX1 { get; set; }
         public string LRNO1 { get; set; }
         public string LRNO2 { get; set; }
+
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string LRDT1 { get; set; }
+       
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public string LRDT2 { get; set; }
         public string PBLNO2 { get; set; }
         public string BLAUTONO1 { get; set; }
@@ -40,7 +44,9 @@ namespace Improvar.ViewModels
         public string TAXGRPCD { get; set; }
         public string PRCCD { get; set; }
         public string ALLMTRLJOBCD { get; set; }
-        
+        public string ITCD3 { get; set; }
+        public string ITCD4 { get; set; }
+
 
     }
 }

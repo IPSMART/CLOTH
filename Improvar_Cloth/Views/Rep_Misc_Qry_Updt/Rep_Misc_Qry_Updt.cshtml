@@ -160,7 +160,7 @@
         else { $("#1stdiv").hide(); $("#2nddiv").show(); }
     }
 </script>
-
+<script></script>
 
 @using (Html.BeginForm("", PageControllerName, FormMethod.Post, new { id = "form1", enctype = "multipart/form-data" }))
 {
@@ -189,8 +189,11 @@
                     </div>
                     <div class="col-md-6" style="margin-top: 10px;">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.BALENO1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO1", @placeholder = "Bale No.", maxlength = 34, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO1/BALEYR1/LRNO1/LRDT1/OLDSTYLENO/BLAUTONO1/BLSLNO1','0/1/4/5/2/7/8','Bale No. Details','BALENO1');", onblur = "SelectBaleNo(this.value,BALENO1,BALEYR1,LRNO1,LRDT1,OLDSTYLENO,BLAUTONO1,BLSLNO1);" } })
-                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO1/BALEYR1/LRNO1/LRDT1/OLDSTYLENO/BLAUTONO1/BLSLNO1','0/1/4/5/2/7/8','Bale No. Details','BALENO1')" />
+                            @*@Html.EditorFor(model => model.BALENO1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO1", @placeholder = "Bale No.", maxlength = 34, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO1/BALEYR1/LRNO1/LRDT1/OLDSTYLENO/BLAUTONO1/BLSLNO1','0/1/4/5/2/7/8','Bale No. Details','BALENO1');", onblur = "SelectBaleNo(this.value,BALENO1,BALEYR1,LRNO1,LRDT1,OLDSTYLENO,BLAUTONO1,BLSLNO1);" } })
+                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO1/BALEYR1/LRNO1/LRDT1/OLDSTYLENO/BLAUTONO1/BLSLNO1','0/1/4/5/2/7/8','Bale No. Details','BALENO1')" />*@
+
+                            @Html.EditorFor(model => model.BALENO1, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO1", onkeydown = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO1','BALENO1=baleno=0/BALEYR1=baleyr=1/LRNO1=lrno=4/LRDT1=lrdt=5/OLDSTYLENO=styleno=2/NEWSTYLENO=styleno=2/BLAUTONO1=blautono=7/GOCD1=gocd=6/OLDITCD=itcd/NEWITCD=itcd','GOCD1/OLDITCD')", onblur = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO1','BALENO1=baleno=0/BALEYR1=baleyr=1/LRNO1=lrno=4/LRDT1=lrdt=5/OLDSTYLENO=styleno=2/NEWSTYLENO=styleno=2/BLAUTONO1=blautono=7/GOCD1=gocd=6/OLDITCD=itcd/NEWITCD=itcd','GOCD1/OLDITCD');", @placeholder = "Bale No", maxlength = 4, @title = "Bale No" } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBaleNoDetails", PageControllerName)','Bale No. Details','BALENO1','BALENO1=baleno=0/BALEYR1=baleyr=1/LRNO1=lrno=4/LRDT1=lrdt=5/OLDSTYLENO=styleno=2/NEWSTYLENO=styleno=2/BLAUTONO1=blautono=7/GOCD1=gocd=6/OLDITCD=itcd/NEWITCD=itcd','GOCD1/OLDITCD')" />
 
                         </div>
                     </div>
@@ -211,7 +214,6 @@
                             @Html.EditorFor(model => model.LRDT1, new { htmlAttributes = new { @class = "form-control", id = "LRDT1", maxlength = 10, @title = "Only for View", @placeholder = "LR Date", @readonly = "readonly" } })
                             @Html.HiddenFor(model => model.BLAUTONO1, new { id = "BLAUTONO1" })
                             @Html.HiddenFor(model => model.BLSLNO1, new { id = "BLSLNO1" })
-                            @Html.HiddenFor(model => model.ITCD1, new { id = "ITCD1" })
                             @Html.HiddenFor(model => model.GOCD1, new { id = "GOCD1" })
                             @Html.HiddenFor(model => model.M_BARCODE, new { id = "M_BARCODE" })
                             @Html.HiddenFor(model => model.MTRLJOBCD, new { id = "MTRLJOBCD" })
@@ -234,6 +236,8 @@
                     <div class="col-md-8">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.OLDSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "OLDSTYLENO", maxlength = 30, @placeholder = "old Style No", @TabIndex = -1, @readonly = "readonly" } })
+                        
+                            @Html.HiddenFor(model => model.ITCD1, new { id = "OLDITCD" })
                         </div>
                     </div>
                 </div>
@@ -248,9 +252,9 @@
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "NEWSTYLENO", maxlength = 30, @placeholder = "New Style No" } })*@
 
-                            @Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "NEWSTYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", @placeholder = "Design No", maxlength = 25 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')" />
-
+                            @Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "NEWSTYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/NEWITCD=itcd','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/NEWITCD=itcd','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", @placeholder = "Design No", maxlength = 25 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8/NEWITCD=itcd','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')" />
+                            @Html.HiddenFor(model => model.ITCD2, new { id = "NEWITCD" })
 
                         </div>
                     </div>
@@ -267,8 +271,11 @@
                     </div>
                     <div class="col-md-6" style="margin-top: 10px;">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.BALENO2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO2", @placeholder = "Bale No", maxlength = 34, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO2/BALEYR2/LRNO2/LRDT2/BLAUTONO2/BLSLNO2','0/1/4/5/7/8','Bale No. Details','BALENO2');", onblur = "SelectBaleNo(this.value,BALENO2,BALEYR2,LRNO2,LRDT2,OLDPAGENO,BLAUTONO2,BLSLNO2);" } })
-                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO2/BALEYR2/LRNO2/LRDT2/BLAUTONO2/BLSLNO2','0/1/4/5/7/8','Bale No. Details','BALENO2')" />
+                            @*@Html.EditorFor(model => model.BALENO2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO2", @placeholder = "Bale No", maxlength = 34, onkeyup = "GetHelp('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','BALENO2/BALEYR2/LRNO2/LRDT2/BLAUTONO2/BLSLNO2','0/1/4/5/7/8','Bale No. Details','BALENO2');", onblur = "SelectBaleNo(this.value,BALENO2,BALEYR2,LRNO2,LRDT2,OLDPAGENO,BLAUTONO2,BLSLNO2);" } })
+                            <img src="~/Image/search.png" width="20px" class="Help_image_button" height="20px" title="Help" onclick="GetHelp('@Url.Action("GetBaleNoDetails", PageControllerName)','BALENO2/BALEYR2/LRNO2/LRDT2/BLAUTONO2/BLSLNO2','0/1/4/5/7/8','Bale No. Details','BALENO2')" />*@
+
+                            @Html.EditorFor(model => model.BALENO2, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BALENO2", onkeydown = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO2','BALENO2=baleno=0/BALEYR2=baleyr=1/LRNO2=lrno=4/LRDT2=lrdt=5/OLDPAGENO=pageno/OLDPAGESLNO=pageslno/NEWPAGENO=pageno/NEWPAGESLNO=pageslno/BLAUTONO2=blautono=7/GOCD2=gocd=6/ITCD3=itcd','GOCD2/ITCD3')", onblur = "GetHelpBlur('" + @Url.Action("GetBaleNoDetails", PageControllerName) + "','Bale No. Details','BALENO2','BALENO2=baleno=0/BALEYR2=baleyr=1/LRNO2=lrno=4/LRDT2=lrdt=5/OLDPAGENO=pageno/OLDPAGESLNO=pageslno/NEWPAGENO=pageno/NEWPAGESLNO=pageslno/BLAUTONO2=blautono=7/GOCD2=gocd=6/ITCD3=itcd','GOCD2/ITCD3');", @placeholder = "Bale No", maxlength = 4, @title = "Bale No" } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBaleNoDetails", PageControllerName)','Bale No. Details','BALENO2','BALENO2=baleno=0/BALEYR2=baleyr=1/LRNO2=lrno=4/LRDT2=lrdt=5/OLDPAGENO=pageno/OLDPAGESLNO=pageslno/NEWPAGENO=pageno/NEWPAGESLNO=pageslno/BLAUTONO2=blautono=7/GOCD2=gocd=6/ITCD3=itcd','GOCD2/ITCD3')" />
                         </div>
                     </div>
                     <div class="col-md-4" style="margin-top: 10px;">
@@ -288,7 +295,7 @@
                             @Html.EditorFor(model => model.LRDT2, new { htmlAttributes = new { @class = "form-control", id = "LRDT2", maxlength = 10, @title = "Only for View", @placeholder = "LR Date", @readonly = "readonly" } })
                             @Html.HiddenFor(model => model.BLAUTONO2, new { id = "BLAUTONO2" })
                             @Html.HiddenFor(model => model.BLSLNO2, new { id = "BLSLNO2" })
-                            @Html.HiddenFor(model => model.ITCD2, new { id = "ITCD2" })
+                         
                             @Html.HiddenFor(model => model.GOCD2, new { id = "GOCD2" })
 
                         </div>
@@ -303,6 +310,7 @@
                     <div class="col-md-6">
                         <div class="editor-field">
                             @Html.EditorFor(model => model.OLDPAGENO, new { htmlAttributes = new { @class = "form-control", id = "OLDPAGENO", maxlength = 15, @placeholder = "Old Page No", @TabIndex = -1, @readonly = "readonly" } })
+                            @Html.HiddenFor(model => model.ITCD3, new { id = "ITCD3" })
                         </div>
                     </div>
                     <div class="col-md-1" style="width:auto">

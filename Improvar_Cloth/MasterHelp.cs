@@ -2855,68 +2855,103 @@ namespace Improvar
             }
 
         }
-        public string BaleNo_help(string val, string tdt,string BLSLNO = "")
-        {
-            var UNQSNO = Cn.getQueryStringUNQSNO();
-            using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
-            {
+        //public string BaleNo_help(string val, string tdt,string BLSLNO = "")
+        //{
+        //    var UNQSNO = Cn.getQueryStringUNQSNO();
+        //    using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
+        //    {
               
-                DataTable tbl = salesfunc.GetBaleStock(tdt, "", val.retSqlformat());
-                DataView dv = new DataView(tbl);
-                tbl = dv.ToTable(true);
-                string slash = "";
+        //        DataTable tbl = salesfunc.GetBaleStock(tdt, "", val.retSqlformat());
+        //        DataView dv = new DataView(tbl);
+        //        tbl = dv.ToTable(true);
+        //        string slash = "";
               
-                if (val == null)
-                {
-                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
-                    {if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") slash = "/"; else slash = "";
-                        SB.Append("<tr><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["baleyr"] + " </td><td>" + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["pageno"] + slash + tbl.Rows[i]["pageslno"]+" </td><td>" + tbl.Rows[i]["lrno"] + " </td><td>" + tbl.Rows[i]["lrdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["gonm"] + " </td><td>" + tbl.Rows[i]["blautono"] + " </td><td>" + tbl.Rows[i]["blslno"] + " </td></tr>");
-                    }
-                    var hdr = "Bale No." + Cn.GCS() + "Bale year" + Cn.GCS() + "Style No." + Cn.GCS() + "Page No." + Cn.GCS() + "LR No." + Cn.GCS() + "LR Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Bill Autono" + Cn.GCS() + "Bill Serial No.";
-                    return Generate_help(hdr, SB.ToString(),"7");
+        //        if (val == null)
+        //        {
+        //            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+        //            for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+        //            {if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") slash = "/"; else slash = "";
+        //                SB.Append("<tr><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["baleyr"] + " </td><td>" + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["pageno"] + slash + tbl.Rows[i]["pageslno"]+" </td><td>" + tbl.Rows[i]["lrno"] + " </td><td>" + tbl.Rows[i]["lrdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["gonm"] + " </td><td>" + tbl.Rows[i]["blautono"] + " </td><td>" + tbl.Rows[i]["blslno"] + " </td></tr>");
+        //            }
+        //            var hdr = "Bale No." + Cn.GCS() + "Bale year" + Cn.GCS() + "Style No." + Cn.GCS() + "Page No." + Cn.GCS() + "LR No." + Cn.GCS() + "LR Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Bill Autono" + Cn.GCS() + "Bill Serial No.";
+        //            return Generate_help(hdr, SB.ToString(),"7");
 
+        //        }
+        //        else
+        //        {
+        //            var query = (from DataRow dr in tbl.Rows where dr["blslno"].retStr()== BLSLNO
+        //                         select new 
+        //                         {
+        //                             BLAUTONO = dr["blautono"].retStr(),
+        //                             ITCD = dr["itcd"].retStr(),
+        //                             ITNM = dr["itstyle"].retStr(),
+        //                             NOS = dr["nos"].retStr(),
+        //                             QNTY = dr["qnty"].retStr(),
+        //                             RATE = dr["RATE"].retStr(),
+        //                             UOMCD = dr["uomcd"].retStr(),
+        //                             SHADE = dr["shade"].retStr(),
+        //                             BALENO = dr["baleno"].retStr(),
+        //                             PAGENO = dr["pageno"].retStr() + "/" + dr["pageslno"].retStr(),
+        //                             LRNO = dr["lrno"].retStr(),
+        //                             LRDT = dr["lrdt"].retDateStr(),
+        //                             BALEYR = dr["baleyr"].retStr(),
+        //                             BLSLNO = dr["blslno"].retShort(),
+        //                             PBLNO = dr["prefno"].retStr(),
+        //                             PBLDT = dr["prefdt"].retDateStr(),
+        //                             STYLENO = dr["styleno"].retStr(),
+        //                             GOCD = dr["gocd"].retStr()
+        //                         }).Distinct().ToList();
+        //            if (query.Any())
+        //            {
+        //                string str = "";
+        //                foreach (var i in query)
+        //                {
+        //                    str = i.BALENO + Cn.GCS() + i.BALEYR + Cn.GCS() + i.STYLENO + Cn.GCS() + i.PAGENO + Cn.GCS() + i.LRNO + Cn.GCS() + i.LRDT + Cn.GCS() + i.BLAUTONO+Cn.GCS()+i.BLSLNO + Cn.GCS() + i.ITCD + Cn.GCS() + i.GOCD;
+        //                }
+        //                return str;
+        //            }
+        //            else
+        //            {
+        //                return "Invalid Bale No. ! Please Enter a Valid Bale No. !!";
+        //            }
+        //        }
+        //    }
+        //}
+
+        public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "")
+        {
+            val = val.retStr() == "" ? "" : val.retStr().retSqlformat();
+            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val,itcd);
+            DataView dv = new DataView(tbl);
+         //   string[] a = "baleno,baleyr,styleno,pageno,pageslno,lrno,lrdt,gocd,gonm,blautono,itcd";
+            tbl = dv.ToTable(true);
+            string slash = "";
+            if (val.retStr() == "" || tbl.Rows.Count > 1)
+            {
+                System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                {
+                    if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") slash = "/"; else slash = "";
+                    SB.Append("<tr><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["baleyr"] + " </td><td>" + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["pageno"] + slash + tbl.Rows[i]["pageslno"] + " </td><td>" + tbl.Rows[i]["lrno"] + " </td><td>" + tbl.Rows[i]["lrdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["gocd"] + " </td><td>" + tbl.Rows[i]["blautono"] + " </td></tr>");
+                }
+                var hdr = "Bale No." + Cn.GCS() + "Bale year" + Cn.GCS() + "Style No." + Cn.GCS() + "Page No." + Cn.GCS() + "LR No." + Cn.GCS() + "LR Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Bill Autono";
+                return Generate_help(hdr, SB.ToString(),"7");
+            }
+            else
+            {
+
+                if (tbl.Rows.Count > 0)
+                {
+                   
+                    string str = ToReturnFieldValues("", tbl);
+                    return str;
                 }
                 else
                 {
-                    var query = (from DataRow dr in tbl.Rows where dr["blslno"].retStr()== BLSLNO
-                                 select new 
-                                 {
-                                     BLAUTONO = dr["blautono"].retStr(),
-                                     ITCD = dr["itcd"].retStr(),
-                                     ITNM = dr["itstyle"].retStr(),
-                                     NOS = dr["nos"].retStr(),
-                                     QNTY = dr["qnty"].retStr(),
-                                     RATE = dr["RATE"].retStr(),
-                                     UOMCD = dr["uomcd"].retStr(),
-                                     SHADE = dr["shade"].retStr(),
-                                     BALENO = dr["baleno"].retStr(),
-                                     PAGENO = dr["pageno"].retStr() + "/" + dr["pageslno"].retStr(),
-                                     LRNO = dr["lrno"].retStr(),
-                                     LRDT = dr["lrdt"].retDateStr(),
-                                     BALEYR = dr["baleyr"].retStr(),
-                                     BLSLNO = dr["blslno"].retShort(),
-                                     PBLNO = dr["prefno"].retStr(),
-                                     PBLDT = dr["prefdt"].retDateStr(),
-                                     STYLENO = dr["styleno"].retStr(),
-                                     GOCD = dr["gocd"].retStr()
-                                 }).Distinct().ToList();
-                    if (query.Any())
-                    {
-                        string str = "";
-                        foreach (var i in query)
-                        {
-                            str = i.BALENO + Cn.GCS() + i.BALEYR + Cn.GCS() + i.STYLENO + Cn.GCS() + i.PAGENO + Cn.GCS() + i.LRNO + Cn.GCS() + i.LRDT + Cn.GCS() + i.BLAUTONO+Cn.GCS()+i.BLSLNO + Cn.GCS() + i.ITCD + Cn.GCS() + i.GOCD;
-                        }
-                        return str;
-                    }
-                    else
-                    {
-                        return "Invalid Bale No. ! Please Enter a Valid Bale No. !!";
-                    }
+                    return "Invalid Bale No.! Please Enter a Valid Bale No. !!";
                 }
             }
         }
-       
+
     }
 }
