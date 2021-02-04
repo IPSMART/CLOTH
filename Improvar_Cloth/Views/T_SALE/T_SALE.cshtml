@@ -337,8 +337,9 @@
 <script>
     //focuc on first element of tab 
     $(document).keyup(function (event) {
+        debugger;
         var KeyID = (window.event) ? event.keyCode : e.keyCode;
-        if (KeyID == 77) {//for Alt+M (main code tab)
+        if (event.altKey && KeyID == 77) {//for Alt+M (main code tab)
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:first-child").addClass('active');
             $(".tab-content div").removeClass("active");
@@ -350,7 +351,7 @@
                 $("#CONSLCD").focus();
             }
         }
-        if (KeyID == 66) {//for Alt+B (bar code tab)
+        if (event.altKey && KeyID == 66) {//for Alt+B (bar code tab)
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:nth-child(2)").addClass('active');
             //below set the  child sequence
@@ -358,7 +359,7 @@
             $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             $("#BARCODE").focus();
         }
-        if (KeyID == 84) {//for Alt+T (transport code tab)
+        if (event.altKey && KeyID == 84) {//for Alt+T (transport code tab)
             $("li").removeClass("active").addClass("");
             $(".nav-tabs li:nth-child(5)").addClass('active');
             //below set the  child sequence
@@ -1061,7 +1062,8 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8/STYLENO=STYLENO=3','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultbar/BARCODE')" />
                                             @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur_T_Sale('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetHelpBlur_T_Sale('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD');", @placeholder = "Bar Code", maxlength = 25 } })
                                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur_T_Sale('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />*@
-                                            @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
+                                            @Html.HiddenFor(model => model.Last_BARCODE, new { id = "Last_BARCODE" })
+                                             @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
                                             {
                                                 @Html.HiddenFor(model => model.TDDISCTYPE, new { id = "TDDISCTYPE" })
                                                 @Html.HiddenFor(model => model.TDDISCRATE, new { id = "TDDISCRATE" })
@@ -1092,6 +1094,7 @@
                                         <div class="editor-field">
                                             @Html.EditorFor(model => model.STYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "STYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/BARCODE=BARNO=0','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/BARCODE'),FillBarcodeArea('', 'COPYLROW');", onblur = "GetBarnoDetails(this.value,Defaultstyle.value);", @placeholder = "Design No", maxlength = 25 } })
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','STYLENO','STYLENO=STYLENO=3/PARTCD=PARTCD=8/BARCODE=BARNO=0','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/BARCODE')" />
+                                            @Html.HiddenFor(model => model.Last_STYLENO, new { id = "Last_STYLENO" })
                                         </div>
                                     </div>
 

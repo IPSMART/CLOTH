@@ -232,5 +232,7 @@ namespace Improvar.ViewModels
         public string Last_TDT { get; set; }
         public string Last_R_DOCNO { get; set; }
         public string Last_BARNO { get; set; }
+        public string Last_BARCODE { get; set; }
+        public string Last_STYLENO { get; set; }
     }
 }
