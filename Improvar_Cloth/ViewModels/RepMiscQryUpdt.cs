@@ -29,7 +29,18 @@ namespace Improvar.ViewModels
         public string OLDPAGESLNO { get; set; }
         public string BLSLNO1 { get; set; }
         public string BLSLNO2 { get; set; }
-
+        public string ITCD1 { get; set; }
+        public string GOCD1 { get; set; }
+        public string ITCD2 { get; set; }
+        public string GOCD2 { get; set; }
+        public string M_BARCODE { get; set; }
+        public string MTRLJOBCD { get; set; }
+        public string PARTCD { get; set; }
+        public string DOCDT { get; set; }
+        public string TAXGRPCD { get; set; }
+        public string PRCCD { get; set; }
+        public string ALLMTRLJOBCD { get; set; }
+        
 
     }
 }

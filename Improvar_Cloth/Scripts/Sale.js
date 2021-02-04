@@ -3129,11 +3129,16 @@ function Sale_GetTTXNDTLDetails() {
     var R_BARNO = $("#R_BARNO").val();
     var TAXGRPCD = $("#TAXGRPCD").val();
     var SLCD = $("#SLCD").val();
+    var datachng = "";
+    var value = agdocnomodify_check();
+    if (value == "true") {
+        datachng = "Y";
+    }
     $.ajax({
         type: 'POST',
         url: $("#UrlTTXNDTLDetails").val(),//"@Url.Action("GetTTXNDTLDetails", PageControllerName )"
         beforesend: $("#WaitingMode").show(),
-        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO + "&TAXGRPCD=" + TAXGRPCD + "&SLCD=" + SLCD,
+        data: $('form').serialize() + "&FDT=" + FDT + "&FDT=" + FDT + "&R_DOCNO=" + R_DOCNO + "&R_BARNO=" + R_BARNO + "&TAXGRPCD=" + TAXGRPCD + "&SLCD=" + SLCD + "&datachng=" + datachng,
         success: function (result) {
             $("#popup_agdocno").animate({ marginTop: '-10px' }, 50);
             $("#popup_agdocno").html(result);
@@ -3192,6 +3197,32 @@ function Sale_CloseTTXNDTLDetails() {
     else if (KeyID == undefined) {
         $("#popup_agdocno").html("");
     }
+}
+function agdocnomodify_check() {
+    debugger;
+    var SLCD = $("#SLCD").val();
+    var FDT = $("#FDT").val();
+    var TDT = $("#TDT").val();
+    var R_DOCNO = $("#R_DOCNO").val();
+    var BARNO = $("#BARNO").val();
+    var Last_SLCD = $("#Last_SLCD").val();
+    var Last_FDT = $("#Last_FDT").val();
+    var Last_TDT = $("#Last_TDT").val();
+    var Last_R_DOCNO = $("#Last_R_DOCNO").val();
+    var Last_BARNO = $("#Last_BARNO").val();
+    
+    if (Last_SLCD != SLCD || Last_FDT != FDT || Last_TDT != TDT || Last_R_DOCNO != R_DOCNO || Last_BARNO != BARNO) {
+        $("#Last_SLCD").val(SLCD);
+        $("#Last_FDT").val(FDT);
+        $("#Last_TDT").val(TDT);
+        $("#Last_R_DOCNO").val(R_DOCNO);
+        $("#Last_BARNO").val(BARNO);
+        return "true";
+    }
+    else {
+        return "false";
+    }
+
 }
 
 

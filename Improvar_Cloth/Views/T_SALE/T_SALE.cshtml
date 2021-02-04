@@ -529,6 +529,7 @@
                             @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Party Name", @placeholder = "Party Name", @readonly = "readonly", tabindex = "-1" } })
                             @Html.HiddenFor(model => Model.PSLCD, new { @class = "form-control", id = "PSLCD" })
                             @Html.HiddenFor(model => Model.PARTYCD, new { @class = "form-control", id = "PARTYCD" })
+                            @Html.HiddenFor(model => Model.Last_SLCD, new { @class = "form-control", id = "Last_SLCD" })
                         </div>
                     </div>
                     <div class="col-md-7">
@@ -1104,7 +1105,8 @@
                                         <div class="col-md-3">
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
-                                            </div>
+                                                @Html.HiddenFor(model => model.Last_FDT, new { id = "Last_FDT" })
+                                             </div>
                                         </div>
                                         <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
@@ -1114,6 +1116,7 @@
                                         <div class="col-md-3">
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.TDT, new { htmlAttributes = new { @class = "form-control", id = "TDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                                @Html.HiddenFor(model => model.Last_TDT, new { id = "Last_TDT" })
                                             </div>
                                         </div>
                                         <div class="col-md-1" style="width:auto;">
@@ -1124,7 +1127,8 @@
                                         <div class="col-md-3">
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 6 } })
-                                            </div>
+                                                @Html.HiddenFor(model => model.Last_R_DOCNO, new { id = "Last_R_DOCNO" })
+                                             </div>
                                         </div>
                                         <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
@@ -1134,6 +1138,7 @@
                                         <div class="col-md-3">
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.BARNO, new { htmlAttributes = new { @class = "form-control", id = "R_BARNO", @placeholder = "BARNO", maxlength = 25 } })
+                                                @Html.HiddenFor(model => model.Last_BARNO, new { id = "Last_BARNO" })
                                             </div>
                                         </div>
                                         <div class="col-md-1" style="width:auto;">
