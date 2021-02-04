@@ -385,6 +385,11 @@ namespace Improvar.Controllers
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
 
+                var party_data = salesfunc.GetSlcdDetails(TXN.SLCD.retStr(), TXN.DOCDT.retStr().Remove(10));
+                if (party_data != null && party_data.Rows.Count > 0)
+                {
+                    TXNOTH.TAXGRPCD = party_data.Rows[0]["TAXGRPCD"].retStr();
+                }
                 //tcsdata
                 string TDSCODE = TXN.TDSCODE.retStr() == "" ? "" : TXN.TDSCODE.retStr().retSqlformat();
                 var tdsdt = getTDS(TXN.DOCDT.retStr().Remove(10), TXN.SLCD, TDSCODE);
@@ -2461,7 +2466,7 @@ namespace Improvar.Controllers
                 return Content("0");
             }
         }
-        public ActionResult GetTTXNDTLDetails(TransactionSaleEntry VE, string FDT, string TDT, string R_DOCNO, string R_BARNO, string TAXGRPCD, string SLCD,string datachng)
+        public ActionResult GetTTXNDTLDetails(TransactionSaleEntry VE, string FDT, string TDT, string R_DOCNO, string R_BARNO, string TAXGRPCD, string SLCD, string datachng)
         {
             DataTable dt = new DataTable();
 
@@ -2962,7 +2967,7 @@ namespace Improvar.Controllers
                     TTXNOTH.SELBY = VE.T_TXNOTH.SELBY;
                     TTXNOTH.DEALBY = VE.T_TXNOTH.DEALBY;
                     TTXNOTH.DESPBY = VE.T_TXNOTH.DESPBY;
-                    TTXNOTH.TAXGRPCD = VE.T_TXNOTH.TAXGRPCD;
+                    //TTXNOTH.TAXGRPCD = VE.T_TXNOTH.TAXGRPCD;
                     TTXNOTH.TDSHD = VE.T_TXNOTH.TDSHD;
                     TTXNOTH.TDSON = VE.T_TXNOTH.TDSON;
                     TTXNOTH.TDSPER = VE.T_TXNOTH.TDSPER;
