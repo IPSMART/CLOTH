@@ -101,19 +101,14 @@ namespace Improvar.Controllers
                 string barnoOrStyle = val.retStr();
                 string MTRLJOBCD = data[0].retSqlformat();
                 string PARTCD = data[1].retStr();
-                string DOCDT = data[2].retStr();
+                string DOCDT = CommVar.CurrDate(UNQSNO); /*data[2].retStr()*/
                 string TAXGRPCD = data[3].retStr();
-                string GOCD = data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();
+                string GOCD = DOCDT.retDateStr() == "" ? "" : data[4].retStr().retSqlformat();   /*data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();*/
                 string PRCCD = data[5].retStr();
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().retSqlformat();
-                bool exactbarno = data[7].retStr() == "Bar" ? true : false;
-
-                if (GOCD == "")
-                {
-                    return Content("Please fill Godown");
-                }
-                string str = MasterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, PARTCD, BARNO);
+              
+                string str = MasterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", false, PARTCD, BARNO);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -121,10 +116,6 @@ namespace Improvar.Controllers
                 else
                 {
                     if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
-                    string glcd = "";
-                    glcd = str.retCompValue("SALGLCD");
-
-                    str += "^GLCD=^" + glcd + Cn.GCS();
                     return Content(str);
                 }
             }
@@ -166,11 +157,11 @@ namespace Improvar.Controllers
                     + " where ITCD='" + itcd.itcd + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". T_TXNDTL set  BALENO= '" + VE.BALENO1 + "',BALEYR= '" + VE.BALEYR1 + "', CLCD='" + CLCD + "' "
+                        sql = "update " + schnm + ". T_TXNDTL set  BALENO= '" + VE.BALENO1 + "',BALEYR= '" + VE.BALEYR1 + "', CLCD='" + CLCD + "',ITCD='" + VE.ITCD1 + "',PARTCD='" + VE.PARTCD + "',GOCD='" + VE.GOCD1 + "',PRCCD='" + VE.PRCCD + "',BARNO='" + VE.M_BARCODE + "',MTRLJOBCD ='" + VE.MTRLJOBCD + "' "
                         + " where AUTONO='" + VE.BLAUTONO1 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". T_BATCHDTL set  BALENO= '" + VE.BALENO1 + "',BALEYR= '" + VE.BALEYR1 + "', CLCD='" + CLCD + "' "
+                        sql = "update " + schnm + ". T_BATCHDTL set  BALENO= '" + VE.BALENO1 + "',BALEYR= '" + VE.BALEYR1 + "', CLCD='" + CLCD + "',GOCD ='" + VE.GOCD1 + "',BARNO  ='" + VE.M_BARCODE + "',MTRLJOBCD ='" + VE.MTRLJOBCD + "',PARTCD ='" + VE.PARTCD + "' "
                             + " where AUTONO='" + VE.BLAUTONO1 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
@@ -179,15 +170,13 @@ namespace Improvar.Controllers
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
 
-                        sql = "update " + schnm + ". T_BALE set BALENO='" + VE.BALENO1 + "', BALEYR= '" + VE.BALEYR1 + "',BLSLNO= '" + VE.BLSLNO1 + "',LRDT= to_date('" + VE.LRDT1 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO1 + "', CLCD='" + CLCD + "' "
+                        sql = "update " + schnm + ". T_BALE set BALENO='" + VE.BALENO1 + "', BALEYR= '" + VE.BALEYR1 + "',BLSLNO= '" + VE.BLSLNO1 + "',LRDT= to_date('" + VE.LRDT1 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO1 + "', CLCD='" + CLCD + "',GOCD='" + VE.GOCD1 + "' "
                           + " where BLAUTONO= '" + VE.BLAUTONO1 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-                        
-
                     }
                     else
                     {
-                        sql = "update " + schnm + ". T_BALE set  BALENO='" + VE.BALENO2 + "',BALEYR= '" + VE.BALEYR2 + "',BLSLNO= '" + VE.BLSLNO2 + "',LRDT= to_date('" + VE.LRDT2 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO2 + "', CLCD='" + CLCD + "' "
+                        sql = "update " + schnm + ". T_BALE set  BALENO='" + VE.BALENO2 + "',BALEYR= '" + VE.BALEYR2 + "',BLSLNO= '" + VE.BLSLNO2 + "',LRDT= to_date('" + VE.LRDT2 + "','dd/mm/yyyy'),LRNO= '" + VE.LRNO2 + "', CLCD='" + CLCD + "',GOCD='" + VE.GOCD2 + "' "
                         + " where BLAUTONO= '" + VE.BLAUTONO2 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
@@ -195,11 +184,11 @@ namespace Improvar.Controllers
                               + " where BLAUTONO= '" + VE.BLAUTONO2 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". T_BATCHDTL set BALENO='" + VE.BALENO2 + "', BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "' "
+                        sql = "update " + schnm + ". T_BATCHDTL set BALENO='" + VE.BALENO2 + "', BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "',GOCD='" + VE.GOCD2 + "' "
                               + " where  AUTONO= '" + VE.BLAUTONO2 + "' ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                        sql = "update " + schnm + ". T_TXNDTL set BALENO='" + VE.BALENO2 + "', BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "',PAGENO='" + VE.NEWPAGENO + "',PAGESLNO='" + VE.NEWPAGESLNO + "'  "
+                        sql = "update " + schnm + ". T_TXNDTL set BALENO='" + VE.BALENO2 + "', BALEYR= '" + VE.BALEYR2 + "', CLCD='" + CLCD + "',PAGENO='" + VE.NEWPAGENO + "',PAGESLNO='" + VE.NEWPAGESLNO + "',ITCD='" + VE.ITCD2 + "',GOCD='" + VE.GOCD2 + "'  "
                         + " where AUTONO='" + VE.BLAUTONO2 + "'  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     }

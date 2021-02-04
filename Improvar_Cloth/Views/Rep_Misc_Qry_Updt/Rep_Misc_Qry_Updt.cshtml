@@ -100,6 +100,8 @@
                             $("#" + OLDSTYLENO.id).val(str[2].toString());
                             $("#NEWSTYLENO").val(str[2].toString());
                             $("#BLSLNO1").val(str[7].toString());
+                            $("#ITCD1").val(str[8].toString());
+                            $("#GOCD1").val(str[9].toString());
                         }
                         else {
                             var pgnoslno = str[3].toString().split('/');
@@ -108,6 +110,8 @@
                             $("#NEWPAGENO").val(pgnoslno[0]);
                             $("#NEWPAGESLNO").val(pgnoslno[1]);
                             $("#BLSLNO2").val(str[7].toString());
+                            $("#ITCD2").val(str[8].toString());
+                            $("#GOCD2").val(str[9].toString());
                         }
                         $("#" + BLAUTONO1.id).val(str[6].toString());
                         
@@ -165,7 +169,11 @@
         <div class="form-horizontal">
             @Html.HiddenFor(s => s.DefaultAction)
             <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetSLCDhelp", PageControllerName)" />
-
+            <div class="col-md-5">
+                <div class="editor-label" style="margin-top: 10px;">
+                    @Html.Label("", "Update In")
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-7">
                     @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1", onchange = "ChangeStylePageNo(TEXTBOX1);" })
@@ -203,6 +211,16 @@
                             @Html.EditorFor(model => model.LRDT1, new { htmlAttributes = new { @class = "form-control", id = "LRDT1", maxlength = 10, @title = "Only for View", @placeholder = "LR Date", @readonly = "readonly" } })
                             @Html.HiddenFor(model => model.BLAUTONO1, new { id = "BLAUTONO1" })
                             @Html.HiddenFor(model => model.BLSLNO1, new { id = "BLSLNO1" })
+                            @Html.HiddenFor(model => model.ITCD1, new { id = "ITCD1" })
+                            @Html.HiddenFor(model => model.GOCD1, new { id = "GOCD1" })
+                            @Html.HiddenFor(model => model.M_BARCODE, new { id = "M_BARCODE" })
+                            @Html.HiddenFor(model => model.MTRLJOBCD, new { id = "MTRLJOBCD" })
+                            @Html.HiddenFor(model => model.PARTCD, new { id = "PARTCD" })
+                            @Html.HiddenFor(model => model.DOCDT, new { id = "DOCDT" })
+                            @Html.HiddenFor(model => model.TAXGRPCD, new { id = "TAXGRPCD" })
+                            @Html.HiddenFor(model => model.PRCCD, new { id = "PRCCD" })
+                            @Html.HiddenFor(model => model.ALLMTRLJOBCD, new { id = "ALLMTRLJOBCD" })
+                            <input type="hidden" id="Defaultstyle" value="Style" />
 
                         </div>
                     </div>
@@ -228,10 +246,10 @@
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "NEWSTYLENO", maxlength = 30, @placeholder = "New Style No" } })
+                            @*@Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control", id = "NEWSTYLENO", maxlength = 30, @placeholder = "New Style No" } })*@
 
-                            @*@Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "NEWSTYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", @placeholder = "Design No", maxlength = 25 } })
-                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')" />*@
+                            @Html.EditorFor(model => model.NEWSTYLENO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "NEWSTYLENO", onkeydown = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')", @placeholder = "Design No", maxlength = 25 } })
+                            <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Design No Details','NEWSTYLENO','NEWSTYLENO=STYLENO=3/M_BARCODE=BARNO=0/MTRLJOBCD=MTRLJOBCD=2/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD1/PRCCD/ALLMTRLJOBCD/Defaultstyle/M_BARCODE')" />
 
 
                         </div>
@@ -270,6 +288,8 @@
                             @Html.EditorFor(model => model.LRDT2, new { htmlAttributes = new { @class = "form-control", id = "LRDT2", maxlength = 10, @title = "Only for View", @placeholder = "LR Date", @readonly = "readonly" } })
                             @Html.HiddenFor(model => model.BLAUTONO2, new { id = "BLAUTONO2" })
                             @Html.HiddenFor(model => model.BLSLNO2, new { id = "BLSLNO2" })
+                            @Html.HiddenFor(model => model.ITCD2, new { id = "ITCD2" })
+                            @Html.HiddenFor(model => model.GOCD2, new { id = "GOCD2" })
 
                         </div>
                     </div>

@@ -2898,14 +2898,15 @@ namespace Improvar
                                      BLSLNO = dr["blslno"].retShort(),
                                      PBLNO = dr["prefno"].retStr(),
                                      PBLDT = dr["prefdt"].retDateStr(),
-                                     STYLENO = dr["styleno"].retStr()
+                                     STYLENO = dr["styleno"].retStr(),
+                                     GOCD = dr["gocd"].retStr()
                                  }).Distinct().ToList();
                     if (query.Any())
                     {
                         string str = "";
                         foreach (var i in query)
                         {
-                            str = i.BALENO + Cn.GCS() + i.BALEYR + Cn.GCS() + i.STYLENO + Cn.GCS() + i.PAGENO + Cn.GCS() + i.LRNO + Cn.GCS() + i.LRDT + Cn.GCS() + i.BLAUTONO+Cn.GCS()+i.BLSLNO;
+                            str = i.BALENO + Cn.GCS() + i.BALEYR + Cn.GCS() + i.STYLENO + Cn.GCS() + i.PAGENO + Cn.GCS() + i.LRNO + Cn.GCS() + i.LRDT + Cn.GCS() + i.BLAUTONO+Cn.GCS()+i.BLSLNO + Cn.GCS() + i.ITCD + Cn.GCS() + i.GOCD;
                         }
                         return str;
                     }
