@@ -227,6 +227,10 @@ namespace Improvar.ViewModels
         public string FDT { get; set; }
         public string TDT { get; set; }
         public string R_DOCNO { get; set; }
-
+        public string Last_SLCD { get; set; }
+        public string Last_FDT { get; set; }
+        public string Last_TDT { get; set; }
+        public string Last_R_DOCNO { get; set; }
+        public string Last_BARNO { get; set; }
     }
 }

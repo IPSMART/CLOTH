@@ -111,7 +111,6 @@ namespace Improvar.Controllers
                 short slno = 0;
                 foreach (DataRow oudr in outerDT.Rows)
                 {
-
                     List<TBATCHDTL> TBATCHDTLlist = new List<Models.TBATCHDTL>();
                     List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
                     List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
@@ -139,15 +138,29 @@ namespace Improvar.Controllers
                     double gstper = igstper == 0 ? (cgstper * 2) : igstper;
                     double blINV_VALUE = oudr["INV_VALUE"].retDbl();
                     double bltaxable = oudr["TAX_AMT"].retDbl();
-                    double calcultednet = ((bltaxable * (100 + gstper)) / 100);//.toRound(2);
-                    var roffamt = (blINV_VALUE - calcultednet).toRound(2); 
-                    double blTAX_AMT = oudr["TAX_AMT"].retDbl(); 
+                    double calculatedTax = Math.Round(((bltaxable * gstper) / 100), 2);
+                    double calcultednet = (bltaxable + calculatedTax);//.toRound(2);
+                    var roffamt = (blINV_VALUE - calcultednet).toRound(2);
+                    double blTAX_AMT = oudr["TAX_AMT"].retDbl();
                     double tcsamt = (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
-                    double FinalblValue = blINV_VALUE + tcsamt;
-                    TTXN.BLAMT = FinalblValue;
-                    TTXN.TCSAMT = tcsamt;
-                    TTXN.ROAMT = roffamt;
-
+                    TTXN.BLAMT = blINV_VALUE + tcsamt;
+                    TTXN.TDSCODE = "X";
+                    TTXN.ROYN = "Y";
+                    TTXN.TCSON = calcultednet;
+                    TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
+                    sql = "";
+                    sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
+                    sql += " where   a.autono=b.autono and a.PREFNO='" + TTXN.PREFNO + "' and a.slcd='" + TTXN.SLCD + "' ";
+                    var dt = masterHelp.SQLquery(sql);
+                    if (dt.Rows.Count > 0)
+                    {
+                        dupgrid.MESSAGE = "Allready Added " + dt.Rows[0]["docno"].ToString();
+                        dupgrid.BLNO = dt.Rows[0]["docno"].ToString();
+                        dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
+                        dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
+                        DUGridlist.Add(dupgrid);
+                        continue;
+                    }
 
                     //-------------------------Transport--------------------------//
 
@@ -168,10 +181,10 @@ namespace Improvar.Controllers
                     string PURGLCD = "";
 
                     DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
+                    double txable = 0, gstamt = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
                         double amttabigstamt = 0; double amttabcgstamt = 0;
-                       
                         //Amount tab start
                         if (inrdr["FREIGHT"].retDbl() != 0)
                         {
@@ -195,7 +208,6 @@ namespace Improvar.Controllers
                                 amttabcgstamt += (inrdr["INSURANCE"].retDbl() * cgstper / 100).toRound(2);
                             }
                         }
-
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MAT_GRP"].ToString().Split('-')[0];
@@ -205,12 +217,12 @@ namespace Improvar.Controllers
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.SLNO = ++slno;
                         TTXNDTL.MTRLJOBCD = "FS";
-                  
+
                         TTXNDTL.STKDRCR = "D";
                         TTXNDTL.STKTYPE = "F";
                         TTXNDTL.HSNCODE = HSNCODE;
                         //TTXNDTL.ITREM = VE.TTXNDTL[i].ITREM;
-                        TTXNDTL.BATCHNO = inrdr["BATCH"].ToString();
+                        //TTXNDTL.BATCHNO = inrdr["BATCH"].ToString();
                         TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.GOCD = "TR";
                         TTXNDTL.QNTY = inrdr["NET_QTY"].retDbl();
@@ -234,7 +246,7 @@ namespace Improvar.Controllers
                         TTXNDTL.SCMDISCRATE = discamt1;
                         TTXNDTL.SCMDISCAMT = discamt1;
                         TTXNDTL.GLCD = PURGLCD;
-                        TTXNDTL.TXBLVAL = inrdr["NET_AMT"].retDbl();
+                        TTXNDTL.TXBLVAL = inrdr["NET_AMT"].retDbl(); txable += TTXNDTL.TXBLVAL.retDbl();
 
                         double NET_AMT = ((TTXNDTL.TXBLVAL * (100 + gstper)) / 100).retDbl();
                         TTXNDTL.IGSTPER = inrdr["INTEGR_TAX"].retDbl();
@@ -242,9 +254,9 @@ namespace Improvar.Controllers
                         TTXNDTL.SGSTPER = inrdr["STATE_TAX"].retDbl();
                         TTXNDTL.GSTPER = TTXNDTL.IGSTPER.retDbl() + TTXNDTL.CGSTPER.retDbl() + TTXNDTL.SGSTPER.retDbl();
 
-                        TTXNDTL.IGSTAMT = inrdr["INTEGR_AMT"].retDbl() - amttabigstamt;
-                        TTXNDTL.CGSTAMT = inrdr["CENT_AMT"].retDbl() - amttabcgstamt;
-                        TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() - amttabcgstamt;
+                        TTXNDTL.IGSTAMT = inrdr["INTEGR_AMT"].retDbl() - amttabigstamt; gstamt += TTXNDTL.IGSTAMT.retDbl();
+                        TTXNDTL.CGSTAMT = inrdr["CENT_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.CGSTAMT.retDbl();
+                        TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.SGSTAMT.retDbl();
                         TTXNDTL.NETAMT = NET_AMT.toRound(2);
                         TTXNDTLlist.Add(TTXNDTL);
 
@@ -276,7 +288,7 @@ namespace Improvar.Controllers
                         //TBATCHDTL.LOCABIN = TTXNDTL.LOCABIN;
                         //TBATCHDTL.SHADE = TTXNDTL.SHADE;
                         //TBATCHDTL.MILLNM = TTXNDTL.MILLNM;
-                        TBATCHDTL.BATCHNO = TTXNDTL.BATCHNO;
+                        TBATCHDTL.BATCHNO = inrdr["BATCH"].ToString();
                         TBATCHDTL.BALEYR = TTXNDTL.BALENO.retStr() == "" ? "" : TTXNDTL.BALEYR;
                         TBATCHDTL.BALENO = TTXNDTL.BALENO;
                         //if (VE.MENU_PARA == "SBPCK")
@@ -294,8 +306,6 @@ namespace Improvar.Controllers
                         //    TBATCHDTL.PCSTYPE = TTXNDTL.PCSTYPE;
                         //}
                         TBATCHDTLlist.Add(TBATCHDTL);
-
-
                     }// inner loop of TTXNDTL
                      //Amount tab start
                     if (oudr["FREIGHT"].retDbl() != 0)
@@ -307,17 +317,18 @@ namespace Improvar.Controllers
                         TTXNAMT.AMTDESC = "";
                         TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
                         TTXNAMT.HSNCODE = "";
-                        TTXNAMT.AMT = TTXNAMT.AMTRATE;
+                        TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
                         if (igstper > 0)
                         {
-                            TTXNAMT.IGSTAMT = (oudr["FREIGHT"].retDbl() * igstper / 100).toRound(2);
+                            TTXNAMT.IGSTPER = igstper;
+                            TTXNAMT.IGSTAMT = (oudr["FREIGHT"].retDbl() * igstper / 100).toRound(2); gstamt += TTXNAMT.IGSTAMT.retDbl();
                         }
                         else
                         {
                             TTXNAMT.CGSTPER = cgstper;
-                            TTXNAMT.CGSTAMT = (oudr["FREIGHT"].retDbl() * cgstper / 100).toRound(2);
+                            TTXNAMT.CGSTAMT = (oudr["FREIGHT"].retDbl() * cgstper / 100).toRound(2); gstamt += TTXNAMT.CGSTAMT.retDbl();
                             TTXNAMT.SGSTPER = cgstper;
-                            TTXNAMT.SGSTAMT = (oudr["FREIGHT"].retDbl() * cgstper / 100).toRound(2);
+                            TTXNAMT.SGSTAMT = (oudr["FREIGHT"].retDbl() * cgstper / 100).toRound(2); gstamt += TTXNAMT.SGSTAMT.retDbl();
                         }
                         TTXNAMTlist.Add(TTXNAMT);
                     }
@@ -330,21 +341,22 @@ namespace Improvar.Controllers
                         TTXNAMT.AMTDESC = "";
                         TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
                         TTXNAMT.HSNCODE = "";
-                        TTXNAMT.AMT = TTXNAMT.AMTRATE;
+                        TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
                         if (igstper > 0)
                         {
-                            TTXNAMT.IGSTAMT = oudr["INSURANCE"].retDbl() * igstper / 100;
+                            TTXNAMT.IGSTAMT = (oudr["INSURANCE"].retDbl() * igstper / 100).toRound(2); gstamt += TTXNAMT.IGSTAMT.retDbl();
                         }
                         else
                         {
                             TTXNAMT.CGSTPER = cgstper;
-                            TTXNAMT.CGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
+                            TTXNAMT.CGSTAMT = (oudr["INSURANCE"].retDbl() * cgstper / 100).toRound(2); gstamt += TTXNAMT.CGSTAMT.retDbl();
                             TTXNAMT.SGSTPER = cgstper;
-                            TTXNAMT.SGSTAMT = oudr["INSURANCE"].retDbl() * cgstper / 100;
+                            TTXNAMT.SGSTAMT = (oudr["INSURANCE"].retDbl() * cgstper / 100).toRound(2); gstamt += TTXNAMT.SGSTAMT.retDbl();
                         }
                         TTXNAMTlist.Add(TTXNAMT);
                     }
                     //           //Amount tab end
+                    TTXN.ROAMT = (TTXN.BLAMT.retDbl() - (txable + gstamt + tcsamt)).toRound(2);
 
                     TMPVE.T_TXN = TTXN;
                     TMPVE.T_TXNTRANS = TXNTRANS;
@@ -354,7 +366,8 @@ namespace Improvar.Controllers
                     TMPVE.TTXNAMT = TTXNAMTlist;
                     TMPVE.T_VCH_GST = new T_VCH_GST();
                     string tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
-                    if (tslCont == "1") dupgrid.MESSAGE = "Success";
+                    tslCont = tslCont.retStr().Split('~')[0];
+                    if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
                     else dupgrid.MESSAGE = tslCont;
                     DUGridlist.Add(dupgrid);
                 }//outer
