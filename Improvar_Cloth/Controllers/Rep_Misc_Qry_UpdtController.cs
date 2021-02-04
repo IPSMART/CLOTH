@@ -97,25 +97,26 @@ namespace Improvar.Controllers
                 var data = code.Split(Convert.ToChar(Cn.GCS()));
                 string gocd = data[0].retSqlformat()==""?"": data[0].retSqlformat();
                 string itcd = data[1].retSqlformat() == "" ? "" : data[1].retSqlformat();
-                val = val + data[2].retStr();
                 var tdt = CommVar.CurrDate(UNQSNO);
-                //if (val != "") {
-                //    string sql = "select distinct BALENO,BALEYR,BLSLNO from " + CommVar.CurSchema(UNQSNO) + ".T_BALE where BALENO='" + val + "' ";
-                //    //if (BLSLNO.retStr() != "") sql += "and BLSLNO='" + BLSLNO + "' ";
-                //    DataTable dt = MasterHelp.SQLquery(sql);
-                //    if (dt.Rows.Count > 0)
-                //    {
-                //        var balenoyr = (from DataRow dr in dt.Rows
-                //                        select new
-                //                        {
-                //                            BALENO = dr["BALENO"].retStr() + dr["BALEYR"].retStr(),
-                //                            BALESLNO = dr["BLSLNO"].retStr()
-                //                        }).FirstOrDefault();
-                //        val = balenoyr.BALENO;
-                //    }
-                
-                //   // BLSLNO = balenoyr.BALESLNO;
-                //}
+                if (val != "")
+                {
+                    string sql = "select distinct BALENO,BALEYR,BLSLNO from " + CommVar.CurSchema(UNQSNO) + ".T_BALE where BALENO='" + val + "' ";
+                    //if (BLSLNO.retStr() != "") sql += "and BLSLNO='" + BLSLNO + "' ";
+                    DataTable dt = MasterHelp.SQLquery(sql);
+                    if (dt.Rows.Count > 0)
+                    {
+                        var balenoyr = (from DataRow dr in dt.Rows
+                                        select new
+                                        {
+                                            BALENO = dr["BALENO"].retStr() + dr["BALEYR"].retStr(),
+                                            BALESLNO = dr["BLSLNO"].retStr()
+                                        }).FirstOrDefault();
+                        val = balenoyr.BALENO;
+                }
+
+
+                    // BLSLNO = balenoyr.BALESLNO;
+                }
                 var str = MasterHelp.BaleNo_help(val,tdt, gocd,itcd);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
