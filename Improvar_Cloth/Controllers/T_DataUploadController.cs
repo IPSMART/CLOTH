@@ -146,7 +146,7 @@ namespace Improvar.Controllers
                     TTXN.BLAMT = blINV_VALUE + tcsamt;
                     TTXN.TDSCODE = "X";
                     TTXN.ROYN = "Y";
-                    TTXN.TCSON = blINV_VALUE;
+                    TTXN.TCSON = calcultednet;
                     TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
                     sql = "";
                     sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
