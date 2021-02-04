@@ -74,12 +74,31 @@ function GetBarnoDetails(id, HelpFrom) {
                     else {
                         var MSG = result.indexOf(String.fromCharCode(181));
                         if (MSG >= 0) {
-                            FillBarcodeArea(result);
-                            changeBARGENTYPE();
-                            var value = modify_check();
-                            if (value == "true") {
-                                RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                            var value1 = modify_check_stylebarno();
+                            if (value1 == "true") {
+                                FillBarcodeArea(result);
+                                changeBARGENTYPE();
+                                var value = modify_check();
+                                if (value == "true") {
+                                    RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
+                                }
                             }
+                            else {
+                                if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                                    $("#WPPRICEGEN").val(returncolvalue(result, "WPPRICEGEN"));
+                                    $("#RPPRICEGEN").val(returncolvalue(result, "RPPRICEGEN"));
+                                }
+                                if (MENU_PARA != "PB" && MENU_PARA != "SB" && MENU_PARA != "OP") {
+                                    $("#MTBARCODE").val(returncolvalue(result, "MTBARCODE"));
+                                }
+                                $("#PRTBARCODE").val(returncolvalue(result, "PRTBARCODE"));
+                                $("#CLRBARCODE").val(returncolvalue(result, "CLRBARCODE"));
+                                $("#SZBARCODE").val(returncolvalue(result, "SZBARCODE"));
+                                $("#NEGSTOCK").val(returncolvalue(result, "NEGSTOCK"));
+                                $("#PRODGRPGSTPER").val(returncolvalue(result, "PRODGRPGSTPER"));
+                                $("#GLCD").val(returncolvalue(result, "GLCD"));
+                            }
+
                         }
                         else {
                             $('#helpDIV').html("");
@@ -242,6 +261,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#NEGSTOCK").val($(FieldidStarting + "NEGSTOCK_" + i).val());
 
         $("#BARCODE").val($(FieldidStarting + "BARNO_" + i).val());
+        $("#Last_BARCODE").val($(FieldidStarting + "BARNO_" + i).val());
         $("#ITGRPCD").val($(FieldidStarting + "ITGRPCD_" + i).val());
         $("#ITGRPNM").val($(FieldidStarting + "ITGRPNM_" + i).val());
         $("#MTRLJOBCD").val($(FieldidStarting + "MTRLJOBCD_" + i).val());
@@ -250,6 +270,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#ITCD").val($(FieldidStarting + "ITCD_" + i).val());
         $("#ITSTYLE").val($(FieldidStarting + "ITSTYLE_" + i).val().trim());
         $("#STYLENO").val($(FieldidStarting + "STYLENO_" + i).val());
+        $("#Last_STYLENO").val($(FieldidStarting + "STYLENO_" + i).val());
         $("#STKTYPE").val($(FieldidStarting + "STKTYPE_" + i).val());
         $("#PARTCD").val($(FieldidStarting + "PARTCD_" + i).val());
         $("#PRTBARCODE").val($(FieldidStarting + "PRTBARCODE_" + i).val());
@@ -3210,13 +3231,30 @@ function agdocnomodify_check() {
     var Last_TDT = $("#Last_TDT").val();
     var Last_R_DOCNO = $("#Last_R_DOCNO").val();
     var Last_BARNO = $("#Last_BARNO").val();
-    
+
     if (Last_SLCD != SLCD || Last_FDT != FDT || Last_TDT != TDT || Last_R_DOCNO != R_DOCNO || Last_BARNO != BARNO) {
         $("#Last_SLCD").val(SLCD);
         $("#Last_FDT").val(FDT);
         $("#Last_TDT").val(TDT);
         $("#Last_R_DOCNO").val(R_DOCNO);
         $("#Last_BARNO").val(BARNO);
+        return "true";
+    }
+    else {
+        return "false";
+    }
+
+}
+function modify_check_stylebarno() {
+    debugger;
+    var BARCODE = $("#BARCODE").val();
+    var Last_BARCODE = $("#Last_BARCODE").val();
+    var STYLENO = $("#STYLENO").val();
+    var Last_STYLENO = $("#Last_STYLENO").val();
+
+    if (Last_BARCODE != BARCODE || STYLENO != Last_STYLENO) {
+        $("#Last_BARCODE").val(BARCODE);
+        $("#Last_STYLENO").val(STYLENO);
         return "true";
     }
     else {
