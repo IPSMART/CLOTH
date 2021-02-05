@@ -80,7 +80,7 @@
             </div>
             <div class="row">
                 <div class="col-md-7">
-                    @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1", onchange = "ChangeStylePageNo(TEXTBOX1);" })
+                    @Html.DropDownListFor(model => Model.TEXTBOX1, new SelectList(Model.DropDown_list1, "Value", "Text", Model.TEXTBOX1), new { @class = "form-control", id = "TEXTBOX1", onchange = "ChangeStylePageNo();" })
                 </div>
             </div>
             <div id="1stdiv">
