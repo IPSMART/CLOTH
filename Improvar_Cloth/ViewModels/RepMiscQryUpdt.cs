@@ -48,7 +48,8 @@ namespace Improvar.ViewModels
         public string ALLMTRLJOBCD { get; set; }
         public string ITCD3 { get; set; }
         public string ITCD4 { get; set; }
-
-
+        public string OLDPAGENOSLNO { get; set; }
+        public string OLDBARNO { get; set; }
+        public string NEWBARNO { get; set; }
     }
 }

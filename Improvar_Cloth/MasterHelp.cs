@@ -2918,23 +2918,30 @@ namespace Improvar
         //    }
         //}
 
-        public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "")
+        public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "", bool skipstyleno = false, bool skippageno = false,string pagenoslno="")
         {
-            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd);
+            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'","","","","","",false,"",pagenoslno);
             DataView dv = new DataView(tbl);
-            string[] a = { "baleno", "baleyr", "styleno", "pageno", "pageslno", "lrno", "lrdt", "gocd", "gonm", "blautono", "itcd" };
+            string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono";
+            colnm += skipstyleno == true ? "" : ",itcd,styleno";
+            colnm += skippageno == true ? "" : ",pageno,pageslno,pagenoslno";
+            string[] a = colnm.Split(',');
             tbl = dv.ToTable(true, a);
             string slash = "";
+            string HiddenSeq = (skipstyleno == true && skippageno == true) ? "5" : (skipstyleno == false && skippageno == false) ? "7" + Cn.GCS() + "8" : (skipstyleno == false && skippageno == true)? "6" + Cn.GCS() + "7":"6";
             if (val.retStr() == "" || tbl.Rows.Count > 1)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
-                    if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") slash = "/"; else slash = "";
-                    SB.Append("<tr><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["baleyr"] + " </td><td>" + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["pageno"] + slash + tbl.Rows[i]["pageslno"] + " </td><td>" + tbl.Rows[i]["lrno"] + " </td><td>" + tbl.Rows[i]["lrdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["gocd"] + " </td><td>" + tbl.Rows[i]["blautono"] + " </td><td>" + tbl.Rows[i]["itcd"] + " </td></tr>");
+                    if (skippageno == false)
+                    {
+                        if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") slash = "/"; else slash = "";
+                    }
+                    SB.Append("<tr><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["baleyr"] + " </td>" + (skipstyleno == true ? "" : "<td>" + tbl.Rows[i]["styleno"] + " </td>") + (skippageno == true ? "" : "<td>" + tbl.Rows[i]["pageno"] + slash + tbl.Rows[i]["pageslno"] + " </td>") + "<td>" + tbl.Rows[i]["lrno"] + " </td><td>" + tbl.Rows[i]["lrdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["gocd"] + " </td><td>" + tbl.Rows[i]["blautono"] + " </td>" + (skipstyleno == true ? "" : "<td>" + tbl.Rows[i]["itcd"] + " </td>") + "</tr>");
                 }
-                var hdr = "Bale No." + Cn.GCS() + "Bale year" + Cn.GCS() + "Style No." + Cn.GCS() + "Page No." + Cn.GCS() + "LR No." + Cn.GCS() + "LR Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Bill Autono" + Cn.GCS() + "Item Code";
-                return Generate_help(hdr, SB.ToString(), "7" + Cn.GCS() + "8");
+                var hdr = "Bale No." + Cn.GCS() + "Bale year" + Cn.GCS() + (skipstyleno == true ? "" : "Style No." + Cn.GCS()) + (skippageno == true ? "" : "Page No." + Cn.GCS()) + "LR No." + Cn.GCS() + "LR Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Bill Autono" + (skipstyleno == true ? "" : Cn.GCS() + "Item Code");
+                return Generate_help(hdr, SB.ToString(), HiddenSeq);
             }
             else
             {

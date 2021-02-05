@@ -2053,7 +2053,7 @@ namespace Improvar
                 return "";
             }
         }
-        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false, string schema = "")
+        public DataTable GetBaleStock(string tdt, string gocd = "", string baleno = "", string itcd = "", string mtrljobcd = "'FS'", string skipautono = "", string itgrpcd = "", string stylelike = "", string curschema = "", string finschema = "", bool mergeloca = false, string schema = "", string pagenoslno = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
 
@@ -2090,7 +2090,7 @@ namespace Improvar
             sql += "select a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr BaleNoBaleYrcd, e.lrno,to_char(e.lrdt,'dd/mm/yyyy') lrdt,  ";
             sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
             sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
-            sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";
+            sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,g.pageno||'/'||g.pageslno pagenoslno ";
             sql += "from  ( ";
             sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
             sql += "sum(case c.stkdrcr when 'D' then c.qnty when 'C' then c.qnty*-1 end) qnty ";
@@ -2111,9 +2111,10 @@ namespace Improvar
             if (itcd != "") sql += "g.itcd in (" + itcd + ") and ";
             if (baleno != "") sql += "a.baleno||a.baleyr in (" + baleno + ") and ";
             if (gocd != "") sql += "a.gocd in (" + gocd + ") and ";
+            if (pagenoslno.retStr() != "") sql += "g.pageno||'/'||g.pageslno in (" + pagenoslno + ") and ";
             sql += "h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+) and nvl(a.qnty, 0) > 0 ";
             sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
-            sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt ";
+            sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,g.pageno||'/'||g.pageslno ";
             sql += "order by baleyr, baleno, styleno ";
             DataTable tbl = MasterHelpFa.SQLquery(sql);
             return tbl;
