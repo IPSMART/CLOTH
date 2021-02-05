@@ -173,15 +173,15 @@
                                             }
                                             @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
                                             {
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCRATE, new { id = "B_TDDISCRATE" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCRATE, new { id = "B_TDDISCRATE_" + i })
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE_DESC, new { id = "B_TDDISCTYPE_DESC_" + i })
                                             }
                                             @if (Model.M_SYSCNFG.MNTNDISC2 != "Y")
                                             {
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE_DESC, new { id = "B_DISCTYPE_DESC_" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE" + i })
-                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCRATE, new { id = "B_DISCRATE" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
+                                            @Html.HiddenFor(model => model.TBATCHDTL[i].DISCRATE, new { id = "B_DISCRATE_" + i })
                                             }
                                         </td>
                                         <td class="sticky-cell" style="left:17px;">
