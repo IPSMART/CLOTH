@@ -2641,6 +2641,13 @@ namespace Improvar.Controllers
             OraCmd.Transaction = OraTrans;
             try
             {
+                int balenocount = VE.TTXNDTL.Where(a => a.BALENO.retStr() != "").Count();
+                List<string> baledata = new List<string>();
+                if((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR") && balenocount > 0)
+                {
+                    var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToList();
+                    //string str = "select rslno,blautono,blslno,lrdt,lrno,baleyr,gocd,baleopen from  ";
+                }
                 OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
 
@@ -3068,7 +3075,7 @@ namespace Improvar.Controllers
                     {
                         VE.BALEYR = (VE.BALEYR.retInt() - 1).retStr();
                     }
-                    int balenocount = VE.TTXNDTL.Where(a => a.BALENO.retStr() != "").Count();
+                   
                     //if (balenocount > 0 && (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP"))
                     if (balenocount > 0)
                     {
