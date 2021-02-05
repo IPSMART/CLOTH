@@ -46,6 +46,9 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
+            $("#update_page_slno").hide();
+            $("#cancel_page_slno").hide();
+
         }
         else if ("@Model.DefaultAction" == "E") {
             var BARGENTYPE = $("#BARGENTYPE").val();
@@ -152,7 +155,8 @@
                 }
             }
             if (rateblank == true) {
-                msgInfo("Please enter rate at Sl No. (" + (i + 1) + ")  in Bar Code Tab!!");
+                var slno = $("#B_SLNO_" + i).val();
+                msgInfo("Please enter rate at Sl No. (" + slno + ")  in Bar Code Tab!!");
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:nth-child(2)").addClass('active');
                 //below set the  child sequence
@@ -208,7 +212,8 @@
                 return false;
             }
             if (glcdblank == true) {
-                msgInfo("Glcd blank in Barcode Grid at slno " + (i + 1) + " !!Please add glcd in Group Master");
+                var slno = $("#B_SLNO_" + i).val();
+                msgInfo("Glcd blank in Barcode Grid at slno " + slno + " !!Please add glcd in Group Master");
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:nth-child(2)").addClass('active');
                 //below set the  child sequence
@@ -218,7 +223,8 @@
                 return false;
             }
             if (qntyblank == true) {
-                msgInfo("Please Fill Quantity in Barcode Grid at slno " + (i + 1) + " !!");
+                var slno = $("#B_SLNO_" + i).val();
+                msgInfo("Please Fill Quantity in Barcode Grid at slno " + slno + " !!");
                 $("li").removeClass("active").addClass("");
                 $(".nav-tabs li:nth-child(2)").addClass('active');
                 //below set the  child sequence
@@ -335,7 +341,7 @@
     }
 </script>
 <script>
-    //focuc on first element of tab 
+    //focuc on first element of tab
     $(document).keyup(function (event) {
         debugger;
         var KeyID = (window.event) ? event.keyCode : e.keyCode;
@@ -390,6 +396,47 @@
         }
     </script>
 }
+<script>
+    function Edit_Pageno_slno() {
+        var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+        if (GridRow != 0) {
+            for (var i = 0; i <= GridRow - 1; i++) {
+                $("#D_PAGENO_" + i).attr("readonly", false);
+                $("#D_PAGESLNO_" + i).attr("readonly", false);
+                if(i==0)$("#D_PAGENO_" + i).focus();
+            }
+        }
+        $("#edit_page_slno").hide();
+        $("#Update_page_slno").show();
+        $("#cancel_page_slno").show();
+    }
+
+    function Cancel_Pageno_slno() {
+    location.reload();
+    }
+</script>
+<script>
+    function Update_Pageno_slno() {
+        debugger;
+        
+        $.ajax({
+            type: 'post',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("Update_PagenoSlno", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result == "1")
+                { msgSuccess1("Update Successfully !"); }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -605,11 +652,11 @@
             </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" >Main(M)</a></li>
+                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main(M)</a></li>
                     <li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab">Bar Code(B)</a></li>
                     <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="OpenAmount();" accesskey="F">Freight & Others(F)</a></li>
-                    <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" >Transport(T)</a></li>
+                    <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport">Transport(T)</a></li>
                     <li id="OtherAddress_LI" class=""><a data-toggle="tab" href="#OtherAddress">Other Address</a></li>
                     @if (Model.MENU_PARA == "SO" || Model.MENU_PARA == "SI")
                     {
@@ -1063,7 +1110,7 @@
                                             @*@Html.EditorFor(model => model.BARCODE, new { htmlAttributes = new { @class = "form-control textbox_image", id = "BARCODE", onkeydown = "GetHelpBlur_T_Sale('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')", onblur = "GetHelpBlur_T_Sale('" + @Url.Action("GetBarCodeDetails", PageControllerName) + "','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD');", @placeholder = "Bar Code", maxlength = 25 } })
                                                 <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur_T_Sale('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0/PARTCD=PARTCD=8','MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD')" />*@
                                             @Html.HiddenFor(model => model.Last_BARCODE, new { id = "Last_BARCODE" })
-                                             @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
+                                            @if (Model.M_SYSCNFG.MNTNDISC1 != "Y")
                                             {
                                                 @Html.HiddenFor(model => model.TDDISCTYPE, new { id = "TDDISCTYPE" })
                                                 @Html.HiddenFor(model => model.TDDISCRATE, new { id = "TDDISCRATE" })
@@ -1109,7 +1156,7 @@
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.FDT, new { htmlAttributes = new { @class = "form-control", id = "FDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
                                                 @Html.HiddenFor(model => model.Last_FDT, new { id = "Last_FDT" })
-                                             </div>
+                                            </div>
                                         </div>
                                         <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
@@ -1131,7 +1178,7 @@
                                             <div class="editor-field">
                                                 @Html.EditorFor(model => model.R_DOCNO, new { htmlAttributes = new { @class = "form-control", id = "R_DOCNO", @placeholder = "DOCNO", maxlength = 6 } })
                                                 @Html.HiddenFor(model => model.Last_R_DOCNO, new { id = "Last_R_DOCNO" })
-                                             </div>
+                                            </div>
                                         </div>
                                         <div class="col-md-1" style="width:auto;">
                                             <div class="editor-label" style="margin-top: 6px;">
@@ -1600,6 +1647,19 @@
                                 </div>
                             </div>
                         </div>
+                        @if (Model.DefaultAction == "V")
+                        {
+                       if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1)
+                       {<div class="row">
+                            <div class="col-md-1" style="width:auto;">
+                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update pageno/slno" id="edit_page_slno" value="Update Page No./Slno" title="Click to page no/page slno button for edit page no/page slno fields in Details Tab" onclick="Edit_Pageno_slno()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update" title="Click to Update page no/page slno in Details Tab" onclick="Update_Pageno_slno()" />
+                                <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="cancel" id="cancel_page_slno" value="Cancel" title="Click to Cancel for unchane page no/page slno in Details Tab" onclick="Cancel_Pageno_slno()" />
+                            </div>
+                        </div>
+                        }
+                        }
+                       
                     </div>
                     <div id="FreightOthers" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;">

@@ -635,6 +635,7 @@ function ClearBarcodeArea(TAG) {
     }
 }
 function Fill_DetailData() {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
@@ -680,7 +681,8 @@ function Fill_DetailData() {
         return false;
     }
     if (glcdblank == true) {
-        msgInfo("Glcd blank in Barcode Grid at slno " + (i + 1) + " !!Please add glcd in Group Master ");
+        var slno = $("#B_SLNO_" + i).val();
+        msgInfo("Glcd blank in Barcode Grid at slno " + slno + " !!Please add glcd in Group Master ");
         $("li").removeClass("active").addClass("");
         $(".nav-tabs li:nth-child(2)").addClass('active');
         //below set the  child sequence
@@ -690,7 +692,8 @@ function Fill_DetailData() {
         return false;
     }
     if (qntyblank == true) {
-        msgInfo("Please Fill Quantity in Barcode Grid at slno " + (i + 1) + " !!");
+        var slno = $("#B_SLNO_" + i).val();
+        msgInfo("Please Fill Quantity in Barcode Grid at slno " + slno + " !!");
         $("li").removeClass("active").addClass("");
         $(".nav-tabs li:nth-child(2)").addClass('active');
         //below set the  child sequence
