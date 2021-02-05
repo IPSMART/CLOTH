@@ -54,7 +54,7 @@ namespace Improvar
                     System.Text.StringBuilder SB = new System.Text.StringBuilder();
                     for (int i = 0; i <= rsTmp.Rows.Count - 1; i++)
                     {
-                        SB.Append("<tr><td>" + rsTmp.Rows[i]["styleno"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["itgrpnm"] + "</td><td>" + rsTmp.Rows[i]["itgrpcd"] + "</td><td>" + rsTmp.Rows[i]["fabitnm"] + "</td><td>" + rsTmp.Rows[i]["fabitcd"] + "</td></tr>");
+                        SB.Append("<tr><td>" + rsTmp.Rows[i]["itstyle"] + "</td><td>" + rsTmp.Rows[i]["itnm"] + "</td><td>" + rsTmp.Rows[i]["itcd"] + "</td><td>" + rsTmp.Rows[i]["uomcd"] + "</td><td>" + rsTmp.Rows[i]["itgrpnm"] + "</td><td>" + rsTmp.Rows[i]["itgrpcd"] + "</td><td>" + rsTmp.Rows[i]["fabitnm"] + "</td><td>" + rsTmp.Rows[i]["fabitcd"] + "</td></tr>");
                     }
                     var hdr = "Design No." + Cn.GCS() + "Item Name" + Cn.GCS() + "Item Code" + Cn.GCS() + "UOM" + Cn.GCS() + "Item Group Name" + Cn.GCS() + "Item Group Code" + Cn.GCS() + "Fabric Item Name" + Cn.GCS() + "Fabric Item Code";
                     return Generate_help(hdr, SB.ToString());
@@ -2860,12 +2860,12 @@ namespace Improvar
         //    var UNQSNO = Cn.getQueryStringUNQSNO();
         //    using (ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO)))
         //    {
-              
+
         //        DataTable tbl = salesfunc.GetBaleStock(tdt, "", val.retSqlformat());
         //        DataView dv = new DataView(tbl);
         //        tbl = dv.ToTable(true);
         //        string slash = "";
-              
+
         //        if (val == null)
         //        {
         //            System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -2920,11 +2920,10 @@ namespace Improvar
 
         public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "")
         {
-            val = val.retStr() == "" ? "" : val.retStr().retSqlformat();
-            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val,itcd);
+            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd);
             DataView dv = new DataView(tbl);
-            string[] a = { "baleno","baleyr","styleno","pageno","pageslno","lrno","lrdt","gocd","gonm","blautono","itcd" };
-            tbl = dv.ToTable(true,a);
+            string[] a = { "baleno", "baleyr", "styleno", "pageno", "pageslno", "lrno", "lrdt", "gocd", "gonm", "blautono", "itcd" };
+            tbl = dv.ToTable(true, a);
             string slash = "";
             if (val.retStr() == "" || tbl.Rows.Count > 1)
             {
@@ -2935,14 +2934,14 @@ namespace Improvar
                     SB.Append("<tr><td>" + tbl.Rows[i]["baleno"] + "</td><td>" + tbl.Rows[i]["baleyr"] + " </td><td>" + tbl.Rows[i]["styleno"] + " </td><td>" + tbl.Rows[i]["pageno"] + slash + tbl.Rows[i]["pageslno"] + " </td><td>" + tbl.Rows[i]["lrno"] + " </td><td>" + tbl.Rows[i]["lrdt"].retDateStr() + " </td><td>" + tbl.Rows[i]["gocd"] + " </td><td>" + tbl.Rows[i]["blautono"] + " </td><td>" + tbl.Rows[i]["itcd"] + " </td></tr>");
                 }
                 var hdr = "Bale No." + Cn.GCS() + "Bale year" + Cn.GCS() + "Style No." + Cn.GCS() + "Page No." + Cn.GCS() + "LR No." + Cn.GCS() + "LR Date" + Cn.GCS() + "Godown" + Cn.GCS() + "Bill Autono" + Cn.GCS() + "Item Code";
-                return Generate_help(hdr, SB.ToString(),"7"+Cn.GCS()+"8");
+                return Generate_help(hdr, SB.ToString(), "7" + Cn.GCS() + "8");
             }
             else
             {
 
                 if (tbl.Rows.Count > 0)
                 {
-                   
+
                     string str = ToReturnFieldValues("", tbl);
                     return str;
                 }
