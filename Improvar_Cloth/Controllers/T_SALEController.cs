@@ -2643,7 +2643,7 @@ namespace Improvar.Controllers
             {
                 int balenocount = VE.TTXNDTL.Where(a => a.BALENO.retStr() != "").Count();
                 List<string> baledata = new List<string>();
-                if((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR") && balenocount > 0)
+                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR") && balenocount > 0)
                 {
                     var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToList();
                     //string str = "select rslno,blautono,blslno,lrdt,lrno,baleyr,gocd,baleopen from  ";
@@ -3075,7 +3075,7 @@ namespace Improvar.Controllers
                     {
                         VE.BALEYR = (VE.BALEYR.retInt() - 1).retStr();
                     }
-                   
+
                     //if (balenocount > 0 && (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP"))
                     if (balenocount > 0)
                     {
@@ -4080,6 +4080,7 @@ namespace Improvar.Controllers
                     dbsql = masterHelp.TblUpdt("T_BALE_HDR", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     //}
+
                     dbsql = masterHelp.TblUpdt("t_txndtl", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("t_txn", VE.T_TXN.AUTONO, "D");
@@ -4135,7 +4136,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -4143,7 +4144,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
@@ -4232,6 +4233,47 @@ namespace Improvar.Controllers
             }
             var result = Tuple.Create(doc);
             return result;
+        }
+        public ActionResult Update_PagenoSlno(TransactionSaleEntry VE)
+        {
+            Cn.getQueryString(VE);
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string sql = "";
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                OraCmd.Transaction = OraTrans;
+                try
+                {
+                    string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
+                    string ContentFlg = "";
+                    var schnm = CommVar.CurSchema(UNQSNO);
+                    var CLCD = CommVar.ClientCode(UNQSNO);
+
+                    for (int i = 0; i <= VE.TTXNDTL.Count - 1; i++)
+                    {
+                        sql = "update " + schnm + ". T_TXNDTL set PAGENO='" + VE.TTXNDTL[i].PAGENO + "',PAGESLNO='" + VE.TTXNDTL[i].PAGESLNO + "' "
+                                 + " where AUTONO='" + VE.T_TXN.AUTONO + "' and SLNO='" + VE.TTXNDTL[i].SLNO.retStr() + "'  ";
+                        OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+                    }
+                    
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    ContentFlg = "1";
+                    return Content(ContentFlg);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
+            }
         }
 
     }
