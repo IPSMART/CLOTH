@@ -373,6 +373,35 @@
             $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             $("#TRANSLCD").focus();
         }
+        if (event.altKey && KeyID == 71) {//for Alt+G (In Detail tab update pageno/slno code)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(3)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+          
+            var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+            if (GridRow != 0) {
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    $("#D_PAGENO_" + i).attr("readonly", false);
+                    $("#D_PAGESLNO_" + i).attr("readonly", false);
+                    //if (i == 0) $("#D_PAGENO_" + i).focus();
+                }
+            }
+            $("#D_PAGENO_0").focus();
+            $("#edit_page_slno").hide();
+            $("#update_page_slno").show();
+            $("#cancel_page_slno").show();
+        }
+        if (event.altKey && KeyID == 115) {//for Alt+S (In Detail tab Update(Save) pageno/slno code)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(3)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            Update_Pageno_slno();
+        }
+        
     });
 </script>
 @section Scripts {
@@ -398,16 +427,18 @@
 }
 <script>
     function Edit_Pageno_slno() {
+        debugger;
         var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
         if (GridRow != 0) {
             for (var i = 0; i <= GridRow - 1; i++) {
                 $("#D_PAGENO_" + i).attr("readonly", false);
                 $("#D_PAGESLNO_" + i).attr("readonly", false);
-                if(i==0)$("#D_PAGENO_" + i).focus();
+                if (i == 0) $("#D_PAGENO_" + i).focus();
             }
         }
+      
         $("#edit_page_slno").hide();
-        $("#Update_page_slno").show();
+        $("#update_page_slno").show();
         $("#cancel_page_slno").show();
     }
 
@@ -418,7 +449,6 @@
 <script>
     function Update_Pageno_slno() {
         debugger;
-        
         $.ajax({
             type: 'post',
             beforesend: $("#WaitingMode").show(),
@@ -654,7 +684,7 @@
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main(M)</a></li>
                     <li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab">Bar Code(B)</a></li>
-                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
+                    <li id="Detail_LI4" class=""><a data-toggle="tab" href="#DetailTab" accesskey="L">Detail(L)</a></li>
                     <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" onclick="OpenAmount();" accesskey="F">Freight & Others(F)</a></li>
                     <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport">Transport(T)</a></li>
                     <li id="OtherAddress_LI" class=""><a data-toggle="tab" href="#OtherAddress">Other Address</a></li>
@@ -1652,8 +1682,8 @@
                        if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1)
                        {<div class="row">
                             <div class="col-md-1" style="width:auto;">
-                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update pageno/slno" id="edit_page_slno" value="Update Page No./Slno" title="Click to page no/page slno button for edit page no/page slno fields in Details Tab" onclick="Edit_Pageno_slno()" />
-                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update" title="Click to Update page no/page slno in Details Tab" onclick="Update_Pageno_slno()" />
+                                <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update pageno/slno" id="edit_page_slno" value="Update Page No./Slno(Alt+G)" title="Click to page no/page slno button for edit page no/page slno fields in Details Tab" onclick="Edit_Pageno_slno()" />
+                                <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="update" id="update_page_slno" value="Update" title="Click to Update page no/page slno in Details Tab(Alt+S)" onclick="Update_Pageno_slno()" />
                                 <input type="button" class="btn btn-danger" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="cancel" id="cancel_page_slno" value="Cancel" title="Click to Cancel for unchane page no/page slno in Details Tab" onclick="Cancel_Pageno_slno()" />
                             </div>
                         </div>
