@@ -72,6 +72,9 @@ namespace Improvar.Controllers
                         string style = workSheet.Cells[row, 3].Value.ToString() + workSheet.Cells[row, 4].Value.ToString();
                         string HSNCODE = workSheet.Cells[row, 5].Value.ToString();
                         ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);
+                      sql="SELECT * FROM "++""
+
+
                         double CP = workSheet.Cells[row, 5].Value.retDbl();
                         double WP = workSheet.Cells[row, 5].Value.retDbl();
                         double RP = workSheet.Cells[row, 5].Value.retDbl();
@@ -124,9 +127,10 @@ namespace Improvar.Controllers
                 OraCon.Dispose();
                 return "ok";
             }
-            catch
+            catch(Exception ex)
             {
-                return "fail";
+                Cn.SaveException(ex, BARNO);
+                return ex.Message;
             }
         }
     }
