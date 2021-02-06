@@ -228,9 +228,9 @@ namespace Improvar.Controllers
                 query1 += "   b.slno, b.itcd, ";
                 //--b.prodgrpcd,  ";
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
-                query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL,b.gocd, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
+                query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 query1 += " e.slnm trslnm, f.lrno,f.lrdt, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
-                query1 += " b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt, b.batchno,b.blqnty from ( ";
+                query1 += " b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt,b.blqnty from ( ";
                 query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
                 query1 += "b.docdt, ";
                 //query1 += "--a.itgrpcd, ";
@@ -261,7 +261,7 @@ namespace Improvar.Controllers
                 query1 += " select distinct a.autono, a.slno, a.itcd, a.itrem, ";
                 //--i.prodgrpcd,  ";
                 query1 += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, ";
-                query1 += "  a.nos, a.qnty, a.rate, a.amt,  listagg(e.batchno, ',') within group (order by d.autono, d.slno) batchno,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.gocd,   ";
+                query1 += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,   ";
                 query1 += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty from " + scm1 + ".t_txndtl a, ";
                 query1 += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e ";
                 //query1 += " --," + scm1 + ".m_group i ";
@@ -270,12 +270,12 @@ namespace Improvar.Controllers
                 query1 += " a.autono, a.slno, a.itcd, a.itrem, ";
                 //--i.prodgrpcd, ";
                 query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  ";
-                query1 += " a.tddiscamt, a.discamt,a.TXBLVAL,a.gocd, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
+                query1 += " a.tddiscamt, a.discamt,a.TXBLVAL, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
                 //query1 += " --,a.bluomcd ";
                 query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,''itstyle ";
                 //--'' prodgrpcd ";
                 query1 += " , b.amtnm itnm, a.hsncode,  ";
-                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, 0 rate, a.amt,  '' batchno,0 scmdiscamt, 0 tddiscamt, 0 discamt,0 TXBLVAL,'' gocd, a.igstper, a.igstamt, ";
+                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, 0 rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,0 TXBLVAL, a.igstper, a.igstamt, ";
                 query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty ";
                 query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
                 query1 += " where a.amtcd = b.amtcd ";
@@ -403,7 +403,7 @@ namespace Improvar.Controllers
                     if (transprint == true) HC.GetPrintHeader(IR, "lrdt", "string", "d,10:dd/mm/yy", "Lr. ;Date");
                     if (orddetprint == true) HC.GetPrintHeader(IR, "ordno", "string", "c,50", "Order; No");
                     if (orddetprint == true) HC.GetPrintHeader(IR, "orddt", "string", "d,10:dd/mm/yy", "Order ;Date");
-                    if (batchdtl == true && itmdtl == true) HC.GetPrintHeader(IR, "batchno", "string", "c,20", ";Batch nos");
+                    //if (batchdtl == true && itmdtl == true) HC.GetPrintHeader(IR, "batchno", "string", "c,20", ";Batch nos");
                     if (VE.Checkbox5 == true) HC.GetPrintHeader(IR, "saprem", "string", "c,20", "SAP;Details");
                     while (i <= maxR)
                     {
@@ -577,7 +577,7 @@ namespace Improvar.Controllers
                                     dr["sgstper"] = tbl.Rows[i]["sgstper"];
                                     dr["sgstamt"] = tbl.Rows[i]["sgstamt"];
                                 }
-                                if (batchdtl == true && itmdtl == true) dr["batchno"] = tbl.Rows[i]["batchno"].ToString();
+                               // if (batchdtl == true && itmdtl == true) dr["batchno"] = tbl.Rows[i]["batchno"].ToString();
                                 if (dr["celldesign"].ToString() != "") dr["celldesign"] = dr["celldesign"] + "^";
                                 dr["celldesign"] = dr["celldesign"] + "qnty=~n,12," + tbl.Rows[i]["decimals"].retInt();
                                 i += 1;
