@@ -209,8 +209,8 @@ namespace Improvar.Controllers
                             }
                         }
                         //detail tab start
-                        TTXNDTL TTXNDTL = new TTXNDTL();
-                        string style = inrdr["MAT_GRP"].ToString() + inrdr["MAT_GRP"].ToString().Split('-')[0];
+                        TTXNDTL TTXNDTL = new TTXNDTL(); 
+                        string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
                         ItemDet ItemDet = CreateItem(style, "MTR", grpnm, HSNCODE);
@@ -344,6 +344,7 @@ namespace Improvar.Controllers
                         TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
                         if (igstper > 0)
                         {
+                            TTXNAMT.IGSTPER = igstper;
                             TTXNAMT.IGSTAMT = (oudr["INSURANCE"].retDbl() * igstper / 100).toRound(2); gstamt += TTXNAMT.IGSTAMT.retDbl();
                         }
                         else
@@ -515,6 +516,7 @@ namespace Improvar.Controllers
                 MGROUP.ITGRPTYPE = "F";
                 MGROUP.PRODGRPCD = "G001";
                 MGROUP.BARGENTYPE = "C";
+                MGROUP.NEGSTOCK = "Y";
                 OraCon.Open();
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
