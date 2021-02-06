@@ -3389,8 +3389,8 @@ namespace Improvar.Controllers
                                                select a.UOM).FirstOrDefault();
                                     double DECIMAL = 0; string umnm = "";
                                     var uomdata = DBF.M_UOM.Find(uom);
-                                    DECIMAL = Convert.ToDouble(uomdata.DECIMALS);
-                                    umnm = uomdata.UOMNM;
+                                   if(uomdata!=null) DECIMAL = Convert.ToDouble(uomdata.DECIMALS);
+                                    if (uomdata != null) umnm = uomdata.UOMNM;
                                     if (k.TIGSTAMT > 0) flagi = true;
                                     if (k.TCGSTAMT > 0) flagc = true;
 

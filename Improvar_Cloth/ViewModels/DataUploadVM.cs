@@ -15,6 +15,7 @@ namespace Improvar.ViewModels
     public class ItemDet
     {
         public string ITCD { get; set; }
+        public string BARNO { get; set; }
         public string PURGLCD { get; set; }
     }
     public class DUpGrid

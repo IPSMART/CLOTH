@@ -4,14 +4,16 @@ using System.Linq;
 using Improvar.Models;
 using System.Data;
 using System.Text.RegularExpressions;
+using Oracle.ManagedDataAccess.Client;
+using Improvar.ViewModels;
 
 namespace Improvar
 {
     public class Salesfunc : MasterHelpFa
     {
         Connection Cn = new Connection();
-        MasterHelpFa MasterHelpFa = new MasterHelpFa();
-        string UNQSNO = CommVar.getQueryStringUNQSNO();
+        MasterHelpFa masterHelpFa = new MasterHelpFa();
+        string UNQSNO = CommVar.getQueryStringUNQSNO();//
         public DataTable GetSlcdDetails(string slcd, string docdt, string linkcd = "")
         {
             string UNQSNO = CommVar.getQueryStringUNQSNO();
@@ -458,7 +460,7 @@ namespace Improvar
             //if (selitgrpcd != "") sql += "a.itgrpcd in (" + selitgrpcd + ") and ";
             //sql += "c.itgrpcd=d.itgrpcd(+) "; // c.mixsize='M' ";
             //sql += "order by itgrpcd,e.print_seq ";
-            DataTable tbl = MasterHelpFa.SQLquery(sql);
+            DataTable tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
         public DataTable GetPendChallansPurchase(string slcd = "", string chlnpupto = "", string blautono = "", string txnupto = "", string skipautono = "", bool OnlyBal = true, bool shortallowadj = false, string curschema = "", string finschema = "")
@@ -601,7 +603,7 @@ namespace Improvar
             string sqld = "select autono, slcd, gstno, itgrpcd, itgrpnm, partcd, uomcd, qnty, docno, docdt, doccd ";
             sqld += "from ( " + sql + ") where doctag = 'JC' ";
             sqld += "order by slcd, uomcd, docdt, docno ";
-            DataTable fifotbl = MasterHelpFa.SQLquery(sqld);
+            DataTable fifotbl = masterHelpFa.SQLquery(sqld);
             Int32 f = 0, rNo = 0, oldf = 0;
             maxR = fifotbl.Rows.Count - 1;
             while (f <= maxR)
@@ -628,7 +630,7 @@ namespace Improvar
             sqld += "from ( " + sql + ") where doctag <> 'JC' ";
             //and docdt >= to_date('" + CommVar.FinStartDate(UNQSNO) + "','dd/mm/yyyy') ";
             sqld += "order by slcd, docdt, docno, partcd ";
-            DataTable fiforec = MasterHelpFa.SQLquery(sqld);
+            DataTable fiforec = masterHelpFa.SQLquery(sqld);
             f = 0; maxR = fiforec.Rows.Count - 1; rNo = 0;
             while (f <= maxR)
             {
@@ -1054,7 +1056,7 @@ namespace Improvar
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+)and a.sizecd=l.sizecd(+) and a.gocd=m.gocd(+)  ";
             if (partcd.retStr() != "") sql += "and a.partcd='" + partcd + "'  ";
-            tbl = MasterHelpFa.SQLquery(sql);
+            tbl = masterHelpFa.SQLquery(sql);
             return tbl;
 
         }
@@ -1268,7 +1270,7 @@ namespace Improvar
             if (partcd.retStr() != "") sql += "a.partcd='" + partcd + "' and ";
             sql += "a.colrcd=f.colrcd(+) and c.autono=h.autono(+) and c.slcd=g.slcd(+) and ";
             sql += "a.mtrljobcd=i.mtrljobcd(+) and a.partcd=j.partcd(+) and a.stktype=k.stktype(+) and a.sizecd=l.sizecd(+)  and d.uomcd=m.uomcd(+) ";
-            tbl = MasterHelpFa.SQLquery(sql);
+            tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
         public DataTable getPendBiltytoIssue(string docdt, string blautono = "", string skipautono = "", string schema = "")
@@ -1305,7 +1307,7 @@ namespace Improvar
             sql += "a.autono = c.autono(+) and a.autono = d.autono(+) and c.lrno is not null  ";
             if (blautono.retStr() != "") sql += " and a.autono in(" + blautono + ")  ";
             sql += " and 1 - nvl(b.bnos, 0) > 0 ";
-            tbl = MasterHelpFa.SQLquery(sql);
+            tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
 
@@ -1325,7 +1327,7 @@ namespace Improvar
             sql += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and nvl(c.cancel,'N')='N' and ";
             sql += "c.docdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
             if (slcd.retStr() != "") sql += "and c.slcd = '" + slcd + "' ";
-            tbl = MasterHelpFa.SQLquery(sql);
+            tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
         public DataTable getPendRecfromMutia(string docdt, string mutslcd = "", string blautono = "", string skipautono = "", string schema = "")
@@ -1374,7 +1376,7 @@ namespace Improvar
             if (mutslcd.retStr() != "") sql += " and a.mutslcd in ('" + mutslcd + "')  ";
             if (blautono.retStr() != "") sql += " and a.blautono in(" + blautono + ")";
             sql += " and nvl(b.bnos, 0)-nvl(c.bnos,0) > 0 ";
-            tbl = MasterHelpFa.SQLquery(sql);
+            tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
         public DataTable getPendKhasra(string docdt, string blautono = "", string skipautono = "", string schema = "")
@@ -1417,7 +1419,7 @@ namespace Improvar
             sql += "group by a.autono, a.docno, a.docdt, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, ";
             sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, g.nos, g.qnty, h.styleno||' '||h.itnm, ";
             sql += "g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt, nvl(b.bnos, 0) ";
-            tbl = MasterHelpFa.SQLquery(sql);
+            tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
         public string IsTransactionFound(string ITCD, string BARNO, string skipautono)
@@ -1429,7 +1431,7 @@ namespace Improvar
             if (BARNO.retStr() != "") sql += "and  a.BARNO in(" + BARNO + ")  ";
             if (skipautono.retStr() != "") sql += "and b.autono not in(" + skipautono + ") and  a.autono in(" + skipautono + ")  ";
             sql += "and ROWNUM = 1 ";
-            DataTable dt = MasterHelpFa.SQLquery(sql);
+            DataTable dt = masterHelpFa.SQLquery(sql);
             if (dt.Rows.Count > 0)
             {
                 return "</br>" + "DOCNO : " + dt.Rows[0]["docno"].retStr() + "</br>" + "DOCDATE : " + dt.Rows[0]["docdt"].retStr().Remove(10) + "</br>" +
@@ -1565,7 +1567,7 @@ namespace Improvar
             str += Scm + ".m_syscnfg b ";
             str += "where a.m_autono = b.m_autono(+) and a.rn = 1 ";
 
-            DataTable dt = MasterHelpFa.SQLquery(str);
+            DataTable dt = masterHelpFa.SQLquery(str);
             return dt;
 
         }
@@ -1681,7 +1683,7 @@ namespace Improvar
             if (partycd.retStr() != "") sql += "or e.partycd='" + partycd + "' ";
             sql += ") and c.doctype in (" + doctype + ") ";
             sql += "order by d.docdt,d.docno desc ";
-            var dt = MasterHelpFa.SQLquery(sql);
+            var dt = masterHelpFa.SQLquery(sql);
             return dt;
         }
         public bool IsValidBarno(string barno)
@@ -1692,7 +1694,7 @@ namespace Improvar
             //sql += " from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
             //sql += " where a.autono=b.autono and a.autono=d.autono and a.doccd=c.DOCCD and a.slcd=e.slcd  and d.compcd='" + COM + "' and d.loccd='" + LOC + "' and itcd='" + itcd + "' and c.doctype='" + doctype + "' ";
             //sql += " order by d.docdt,d.docno desc ";
-            var dt = MasterHelpFa.SQLquery(sql);
+            var dt = masterHelpFa.SQLquery(sql);
             return true;
         }
         public string TranBarcodeGenerate(string doccd, string lbatchini, string docbarcode, string UNIQNO, int slno)
@@ -1953,7 +1955,7 @@ namespace Improvar
                             if (szfld == "")
                             {
                                 var sql1 = "select * from " + CommVar.CurSchema(UNQSNO) + ".t_txndtl where sizecd='" + rsDtl[j]["sizecd"].ToString() + "' and stktype='" + stktype + "'  and rownum=1";
-                                var dt = MasterHelpFa.SQLquery(sql1);
+                                var dt = masterHelpFa.SQLquery(sql1);
                                 if (dt.Rows.Count > 0)
                                 {
                                     return "Sizecd:" + rsDtl[j]["sizecd"].ToString() + " not found in the Item master( article no:" + rsDtl[j]["styleno"].ToString() + ") "
@@ -2116,8 +2118,166 @@ namespace Improvar
             sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleno||a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
             sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,g.pageno||'/'||g.pageslno ";
             sql += "order by baleyr, baleno, styleno ";
-            DataTable tbl = MasterHelpFa.SQLquery(sql);
+            DataTable tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
+
+        public M_GROUP CreateGroup(string grpnm)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            M_GROUP MGROUP = new M_GROUP();
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            try
+            {
+                string DefaultAction = "A";
+                var tMGROU = DB.M_GROUP.Where(m => m.ITGRPNM == grpnm).FirstOrDefault();
+                if (tMGROU != null)
+                {
+                    return tMGROU;
+                }
+                MGROUP.CLCD = CommVar.ClientCode(UNQSNO);
+                MGROUP.EMD_NO = 0;
+                MGROUP.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
+
+                string txtst = grpnm.Substring(0, 1).Trim().ToUpper();
+                MGROUP.ITGRPNM = grpnm.ToUpper();
+                string sql = " select max(SUBSTR(ITGRPCD, 2)) ITGRPCD FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
+                string sql1 = " select max(GRPBARCODE) GRPBARCODE FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
+                var tbl = masterHelpFa.SQLquery(sql);
+                if (tbl.Rows[0]["ITGRPCD"].ToString() != "")
+                {
+                    MGROUP.ITGRPCD = txtst + ((tbl.Rows[0]["ITGRPCD"]).retInt() + 1).ToString("D3");
+                }
+                else
+                {
+                    MGROUP.ITGRPCD = txtst + (10).ToString("D3");
+                }
+                var tb1l = masterHelpFa.SQLquery(sql1);
+                if (tb1l.Rows[0]["GRPBARCODE"].ToString() != "")
+                {
+                    MGROUP.GRPBARCODE = ((tb1l.Rows[0]["GRPBARCODE"]).retInt() + 1).ToString("D2");
+                }
+                else
+                {
+                    MGROUP.GRPBARCODE = (10).ToString("D2");
+                }
+                MGROUP.SALGLCD = "10000001";
+                MGROUP.PURGLCD = "25999991";
+                MGROUP.ITGRPTYPE = "F";
+                MGROUP.PRODGRPCD = "G001";
+                MGROUP.BARGENTYPE = "C";
+                MGROUP.NEGSTOCK = "Y";
+                OraCon.Open();
+                OracleCommand OraCmd = OraCon.CreateCommand();
+                using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+                {
+                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                    var dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
+                    var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    dbsql = masterHelpFa.RetModeltoSql(MGROUP, "A", CommVar.CurSchema(UNQSNO));
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    OraTrans.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+            }
+            OraCon.Dispose();
+            return MGROUP;
+        }
+        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+
+            string DefaultAction = "A";
+            ItemDet ItemDet = new ItemDet();
+            M_SITEM MSITEM = new M_SITEM(); M_GROUP MGROUP = new M_GROUP();
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            try
+            {
+                OraCon.Open();
+                MSITEM.CLCD = CommVar.ClientCode(UNQSNO);
+                var STYLEdt = (from g in DB.M_SITEM
+                               join h in DB.M_GROUP on g.ITGRPCD equals h.ITGRPCD
+                               where g.STYLENO == style
+                               select new
+                               {
+                                   ITCD = g.ITCD,
+                                   PURGLCD = h.PURGLCD,
+                               }).FirstOrDefault();
+                if (STYLEdt != null)
+                {
+                    ItemDet.ITCD = STYLEdt.ITCD;
+                    ItemDet.PURGLCD = STYLEdt.PURGLCD;
+                    return ItemDet;
+                }
+                MGROUP = CreateGroup(grpnm);
+                MSITEM.EMD_NO = 0;
+                MSITEM.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
+                string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + MGROUP.ITGRPTYPE + MGROUP.GRPBARCODE + "%') ";
+                var tbl = masterHelpFa.SQLquery(sql);
+                if (tbl.Rows[0]["itcd"].ToString() == "")
+                {
+                    MSITEM.ITCD = MGROUP.ITGRPTYPE + MGROUP.GRPBARCODE + "00001";
+                }
+                else
+                {
+                    string s = tbl.Rows[0]["itcd"].ToString();
+                    string digits = new string(s.Where(char.IsDigit).ToArray());
+                    string letters = new string(s.Where(char.IsLetter).ToArray());
+                    int number;
+                    if (!int.TryParse(digits, out number))                   //int.Parse would do the job since only digits are selected
+                    {
+                        Console.WriteLine("Something weired happened");
+                    }
+                    MSITEM.ITCD = letters + (++number).ToString("D7");
+                }
+                MSITEM.ITGRPCD = MGROUP.ITGRPCD;
+                MSITEM.ITNM = "";
+                MSITEM.STYLENO = style.Trim();
+                MSITEM.UOMCD = UOM;
+                MSITEM.HSNCODE = HSNCODE;
+                MSITEM.NEGSTOCK = "Y";
+                var MPRODGRP = DB.M_PRODGRP.FirstOrDefault();
+                MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;
+
+
+                M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
+                MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
+                MSITEMBARCODE1.CLCD = MSITEM.CLCD;
+                MSITEMBARCODE1.ITCD = MSITEM.ITCD;
+                MSITEMBARCODE1.BARNO = GenerateBARNO(MSITEM.ITCD, "", "");
+                ItemDet.BARNO = MSITEMBARCODE1.BARNO;
+                DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
+
+                OracleCommand OraCmd = OraCon.CreateCommand();
+                using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+                {
+                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
+                    var dbsql = masterHelpFa.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
+                    var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    dbsql = masterHelpFa.RetModeltoSql(MSITEM, "A", CommVar.CurSchema(UNQSNO));
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    dbsql = masterHelpFa.RetModeltoSql(MSITEMBARCODE1, "A", CommVar.CurSchema(UNQSNO));
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+
+                    OraTrans.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+            }
+            OraCon.Dispose();
+            ItemDet.ITCD = MSITEM.ITCD;
+            ItemDet.PURGLCD = MGROUP.PURGLCD;
+            return ItemDet;
+        }
+
     }
 }
