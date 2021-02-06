@@ -26,59 +26,60 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Registers";
                     ReportViewinHtml VE = new ReportViewinHtml();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
+                    ViewBag.formname = "Registers";
+                    switch (VE.MENU_PARA)
+                    {
+                        case "SB":
+                            ViewBag.formname = "Sales Registers"; break;
+                        case "PB":
+                            ViewBag.formname = "Purchase Registers"; break;
+                        default: ViewBag.formname = ""; break;
+                    }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
-                    //string selgrp = MasterHelp.GetUserITGrpCd().Replace("','", ",");
-                    //string[] selgrpcd = selgrp.Split(',');
                     string com = CommVar.Compcd(UNQSNO);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
-
-                    //VE.DropDown_list = (from i in DB.M_GROUP select new DropDown_list() { value = i.ITGRPCD, text = i.ITGRPNM }).OrderBy(s => s.text).ToList();
-                    //VE.Itgrpnm = MasterHelp.ComboFill("ITGRPCD", VE.DropDown_list, 0, 1);
+                    VE.FDT = CommVar.FinStartDate(UNQSNO); VE.TDT = CommVar.CurrDate(UNQSNO);                    
                     //=========For Report Type===========//
                     List<DropDown_list1> RT = new List<DropDown_list1>();
-                    DropDown_list1 RT1 = new DropDown_list1();
-                    RT1.value = "Sales";
-                    RT1.text = "Sales";
-                    RT.Add(RT1);
-                    DropDown_list1 RT2 = new DropDown_list1();
-                    RT2.value = "Sales Return";
-                    RT2.text = "Sales Return";
-                    RT.Add(RT2);
-                    DropDown_list1 RT3 = new DropDown_list1();
-                    RT3.value = "Purchase";
-                    RT3.text = "Purchase";
-                    RT.Add(RT3);
-                    DropDown_list1 RT4 = new DropDown_list1();
-                    RT4.value = "Purchase Return";
-                    RT4.text = "Purchase Return";
-                    RT.Add(RT4);
-                    DropDown_list1 RT5 = new DropDown_list1();
-                    RT5.value = "Opening Stock";
-                    RT5.text = "Opening Stock";
-                    RT.Add(RT5);
-
-                    DropDown_list1 RT6 = new DropDown_list1();
-                    RT6.value = "Stock Transfer";
-                    RT6.text = "Stock Transfer";
-                    RT.Add(RT6);
-                    DropDown_list1 RT7 = new DropDown_list1();
-                    RT7.value = "Stock Conversion";
-                    RT7.text = "Stock Conversion";
-                    RT.Add(RT7);
-                    DropDown_list1 RT8 = new DropDown_list1();
-                    RT8.value = "Stock Adjustment";
-                    RT8.text = "Stock Adjustment";
-                    RT.Add(RT8);
-                    RT.Add(new DropDown_list1 { value = "SDWOQ", text = "Sales Debit Note (W/O Qnty)" });
-                    RT.Add(new DropDown_list1 { value = "SCWOQ", text = "Sales Credit Note (W/O Qnty)" });
-                    RT.Add(new DropDown_list1 { value = "PDWOQ", text = "Purchase Debit Note (W/O Qnty)" });
-                    RT.Add(new DropDown_list1 { value = "PCWOQ", text = "Purchase Credit Note (W/O Qnty)" });
-                    VE.DropDown_list1 = RT;
+                    if (VE.MENU_PARA=="SB")
+                    {
+                    
+                        DropDown_list1 RT1 = new DropDown_list1();
+                        RT1.value = "Sales";
+                        RT1.text = "Sales";
+                        RT.Add(RT1);
+                        DropDown_list1 RT2 = new DropDown_list1();
+                        RT2.value = "Sales Return";
+                        RT2.text = "Sales Return";
+                        RT.Add(RT2);
+                        RT.Add(new DropDown_list1 { value = "SDWOQ", text = "Sales Debit Note (W/O Qnty)" });
+                        RT.Add(new DropDown_list1 { value = "SCWOQ", text = "Sales Credit Note (W/O Qnty)" });
+                        VE.DropDown_list1 = RT;
+                    }
+                    else
+                    {
+                        DropDown_list1 RT3 = new DropDown_list1();
+                        RT3.value = "Purchase";
+                        RT3.text = "Purchase";
+                        RT.Add(RT3);
+                        DropDown_list1 RT4 = new DropDown_list1();
+                        RT4.value = "Purchase Return";
+                        RT4.text = "Purchase Return";
+                        RT.Add(RT4);
+                        DropDown_list1 RT5 = new DropDown_list1();
+                        RT5.value = "Opening Stock";
+                        RT5.text = "Opening Stock";
+                        RT.Add(RT5);
+                        RT.Add(new DropDown_list1 { value = "PDWOQ", text = "Purchase Debit Note (W/O Qnty)" });
+                        RT.Add(new DropDown_list1 { value = "PCWOQ", text = "Purchase Credit Note (W/O Qnty)" });
+                        VE.DropDown_list1 = RT;
+                    }
+                
+                    
                     //=========End Report Type===========//
 
                     //=========For Report Type===========//
@@ -163,7 +164,7 @@ namespace Improvar.Controllers
 
                 string itgrpcd = "";
 
-                string reptype = FC["reptype"].ToString();
+                //string reptype = FC["reptype"].ToString();
                 string selslcd = "", unselslcd = "", selloccd = "";
                 if (FC.AllKeys.Contains("slcdvalue")) selslcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
                 if (FC.AllKeys.Contains("slcdunselvalue")) unselslcd = CommFunc.retSqlformat(FC["slcdunselvalue"].ToString());
@@ -183,113 +184,40 @@ namespace Improvar.Controllers
 
                 string repsorton = FC["RepSortOn"].ToString();
                 bool plistprint = VE.Checkbox4;
-                bool con_transprint = VE.Checkbox3;
+                bool transprint = VE.Checkbox3;
+                bool con_print = VE.Checkbox9;
                 //bool saprefnoprint = VE.Checkbox5;
                 bool orddetprint = VE.Checkbox7;
                 bool SeparateAchead = VE.Checkbox8;
-                //if (VE.TEXTBOX7.retStr() != "")
-                //{
-                //    switch (VE.TEXTBOX7)
-                //    {
-                //        case "All Sales":
-                //            txntag = "'SB','SR','SD','SC'"; break;
-                //        case "All Purchase":
-                //            txntag = "'PB','PR','PD','PC'"; break;
-                //        default: txntag = ""; break;
-                //    }
-                //}
-                //else
-                //{
-                //    switch (VE.TEXTBOX1)
-                //    {
-                //        case "Sales":
-                //            txntag = "'SB'"; break;
-                //        case "Purchase":
-                //            txntag = "'PB'"; break;
-                //        case "Sales Return":
-                //            txntag = "'SR'"; break;
-                //        case "Purchase Return":
-                //            txntag = "'PR'"; break;
-                //        case "Opening Stock":
-                //            txntag = "'OP'"; break;
-                //        case "Proforma":
-                //            txntag = "'PI'"; break;
-                //        case "SDWOQ":
-                //            txntag = "'SD'"; break;
-                //        case "SCWOQ":
-                //            txntag = "'SC'"; break;
-                //        case "PDWOQ":
-                //            txntag = "'PD'"; break;
-                //        case "PCWOQ":
-                //            txntag = "'PC'"; break;
-                //        default: txntag = ""; break;
-                //    }
-                //}
+                switch (VE.TEXTBOX1)
+                {
+                    case "Sales":
+                        txntag = "'SB'"; break;
+                    case "Purchase":
+                        txntag = "'PB'"; break;
+                    case "Sales Return":
+                        txntag = "'SR'"; break;
+                    case "Purchase Return":
+                        txntag = "'PR'"; break;
+                    case "Opening Stock":
+                        txntag = "'OP'"; break;
+                    case "Proforma":
+                        txntag = "'PI'"; break;
+                    case "SDWOQ":
+                        txntag = "'SD'"; break;
+                    case "SCWOQ":
+                        txntag = "'SC'"; break;
+                    case "PDWOQ":
+                        txntag = "'PD'"; break;
+                    case "PCWOQ":
+                        txntag = "'PC'"; break;
+                    default: txntag = ""; break;
+                }
+                // }
 
 
                 string query = "";
                 query = "";
-                //query += "select a.autono, a.doccd, a.docno, a.cancel, a.docdt, a.itgrpcd, a.pblno, a.pbldt, ";
-                //query += "a.slcd, c.slnm, c.gstno, c.district, nvl(a.roamt,0) roamt, nvl(a.tcsamt,0) tcsamt, a.blamt, a.prcdesc, ";
-                //query += "b.slno, b.itcd, b.prodcd, b.itnm, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.packsize, b.nos, b.qnty, ";
-                //query += "b.rate, b.basamt, b.stddiscamt, b.discamt, g.conslcd, d.slnm cslnm, d.gstno cgstno, h.sapblno, ";
-                //query += "d.district cdistrict, e.slnm trslnm,f.lrno,f.lrdt, g.ordrefno, to_char(nvl(g.ordrefdt,''),'dd/mm/yyyy') ordrefdt, ";
-                //query += "b.igstper, b.igstamt, b.cgstper, b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt, b.batchno,b.blqnty,b.bluomcd from ";
-                //query += "( select a.autono, b.doccd, b.docno, b.cancel, b.docdt, a.itgrpcd, a.pblno, a.pbldt,  ";
-                //query += "a.slcd, a.roamt, a.tcsamt, a.blamt, d.prcdesc ";
-                //query += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm1 + ".m_itemplist d ";
-                //query += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and a.itmprccd=d.itmprccd(+) and  ";
-                //query += "b.compcd='" + COM + "' and ";
-                //if (selloccd == "") query += "b.loccd='" + LOC + "' and "; else query += "b.loccd in (" + selloccd + ") and ";
-                //if (VE.FDOCNO.retStr() != "") query += "b.doconlyno >= '" + VE.FDOCNO + "' and ";
-                //if (VE.TDOCNO.retStr() != "") query += "b.doconlyno <= '" + VE.TDOCNO + "' and ";
-                //if (GODOWN != "") query += " a.GOCD in('" + GODOWN + "') and ";
-                //if (repsorton == "bldt")
-                //{
-                //    if (fdt != "") query += "a.pbldt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
-                //    if (tdt != "") query += "a.pbldt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
-                //}
-                //else
-                //{
-                //    if (fdt != "") query += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and ";
-                //    if (tdt != "") query += "b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
-                //}
-                ////query += "a.itgrpcd in (" + itgrpcd + ") and a.doctag in ( " + txntag + ")  ";
-                //query += "a.itgrpcd in (" + itgrpcd + ")  ";
-                //query += ") a, ( ";
-                //query += "select a.autono, a.slno, a.itcd, a.itrem, b.prodcd, b.itnm, b.hsnsaccd hsncode, b.uomcd, c.uomnm, c.decimals, b.packsize, a.nos, a.qnty, a.rate, a.basamt,  ";
-                //query += "listagg(e.batchno,',') within group (order by d.autono, d.slno) batchno,  ";
-                //query += "a.stddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd  ";
-                //query += "from " + scm1 + ".t_txndtl a, " + scm1 + ".m_sitem b, " + scmf + ".m_uom c, ";
-                //query += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e, " + scm1 + ".m_itemplist f  ";
-                //query += "where a.itcd=b.itcd(+) and b.uomcd=c.uomcd(+) and a.autono=d.autono(+) and a.slno=d.slno(+) and  ";
-                //query += "d.batchautono=e.batchautono(+) and e.itmprccd=f.itmprccd(+) ";
-                //query += "group by a.autono, a.slno, a.itcd, a.itrem, b.prodcd, b.itnm, b.hsnsaccd, b.uomcd, c.uomnm, c.decimals, b.packsize, a.nos, a.qnty, a.rate, a.basamt,  ";
-                //query += "a.stddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.bluomcd  ";
-                //query += "union ";
-                //query += "select a.autono, a.slno+1000 slno, a.amtcd itcd, '' itrem, '' prodcd, b.amtnm||a.amtdesc itnm, a.hsncode, 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 packsize, 0 nos, 0 qnty, 0 rate, a.amt basamt,  ";
-                //query += "'' batchno,  ";
-                //query += "0 stddiscamt, 0 discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,'OTH' bluomcd  ";
-                //query += "from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b  ";
-                //query += "where a.amtcd=b.amtcd(+) ";
-                //query += ") b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, " + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ";
-                //query += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and g.conslcd=d.slcd(+) and a.autono=f.autono(+) and ";
-                //query += "f.translcd=e.slcd(+) and a.autono=f.autono(+) and a.autono=g.autono(+) and a.autono=h.autono(+) ";
-                //if (selslcd != "") query += " and a.slcd in (" + selslcd + ") ";
-                //if (unselslcd != "") query += " and a.slcd not in (" + unselslcd + ") ";
-                ////if (INSBY != "") query += " and h.insby='" + INSBY + "' ";
-                //query += "order by ";
-                //if (repsorton == "partywise") query += "slcd,pbldt,pblno,docdt,docno";
-                //else if (repsorton == "bldt") query += "pbldt,pblno";
-                //else query += "docdt";
-                //if (itmdtl == true || reptype == "Product")
-                //{
-                //    query += " , itgrpcd, docno, slno ";
-                //}
-                //else
-                //{
-                //    query += " , itgrpcd, docno, igstper, cgstper, sgstper ";
-                //}
 
                 string query1 = "";
                 query1 += " select a.autono, a.doccd, a.docno, a.cancel, a.docdt, ";
@@ -300,7 +228,7 @@ namespace Improvar.Controllers
                 query1 += "   b.slno, b.itcd, ";
                 //--b.prodgrpcd,  ";
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
-                query1 += " b.qnty, b.rate, b.amt, b.tddiscamt, b.discamt, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
+                query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL,b.gocd, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 query1 += " e.slnm trslnm, f.lrno,f.lrdt, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
                 query1 += " b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt, b.batchno,b.blqnty from ( ";
                 query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
@@ -328,12 +256,12 @@ namespace Improvar.Controllers
                 }
 
                 //query1 += "--and  a.itgrpcd in (" + itgrpcd + ") ";
-
+                query1 += "and a.doctag in (" + txntag + ") ";
                 query1 += " ) a, ( ";
                 query1 += " select distinct a.autono, a.slno, a.itcd, a.itrem, ";
                 //--i.prodgrpcd,  ";
                 query1 += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, ";
-                query1 += "  a.nos, a.qnty, a.rate, a.amt,  listagg(e.batchno, ',') within group (order by d.autono, d.slno) batchno,  a.tddiscamt, a.discamt,  ";
+                query1 += "  a.nos, a.qnty, a.rate, a.amt,  listagg(e.batchno, ',') within group (order by d.autono, d.slno) batchno,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.gocd,   ";
                 query1 += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty from " + scm1 + ".t_txndtl a, ";
                 query1 += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e ";
                 //query1 += " --," + scm1 + ".m_group i ";
@@ -341,13 +269,13 @@ namespace Improvar.Controllers
                 query1 += " group by ";
                 query1 += " a.autono, a.slno, a.itcd, a.itrem, ";
                 //--i.prodgrpcd, ";
-                query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,  ";
-                query1 += " a.tddiscamt, a.discamt, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
+                query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  ";
+                query1 += " a.tddiscamt, a.discamt,a.TXBLVAL,a.gocd, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
                 //query1 += " --,a.bluomcd ";
                 query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,''itstyle ";
                 //--'' prodgrpcd ";
                 query1 += " , b.amtnm itnm, a.hsncode,  ";
-                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, 0 rate, a.amt,  '' batchno,  0 tddiscamt, 0 discamt, a.igstper, a.igstamt, ";
+                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, 0 rate, a.amt,  '' batchno,0 scmdiscamt, 0 tddiscamt, 0 discamt,0 TXBLVAL,'' gocd, a.igstper, a.igstamt, ";
                 query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty ";
                 query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
                 query1 += " where a.amtcd = b.amtcd ";
@@ -361,7 +289,7 @@ namespace Improvar.Controllers
                 if (repsorton == "partywise") query1 += "slcd,prefdt,prefno,docdt,docno";
                 else if (repsorton == "bldt") query1 += "prefdt,prefno";
                 else query1 += "docdt";
-                if (itmdtl == true || reptype == "Product")
+                if (itmdtl == true)
                 {
                     query1 += " , docno, slno ";
                 }
@@ -414,10 +342,8 @@ namespace Improvar.Controllers
                 amtDT.Columns.Add("AmtItcdtotAmt", typeof(double));
 
                 Int32 i = 0, istore = 0, rNo = 0, maxR = tbl.Rows.Count - 1;
-                if (((VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return") && (VE.TEXTBOX7.retStr() == "")) || (VE.TEXTBOX7 == "All Purchase")) showpbill = true;
-                #region Normal Report
-                if (reptype == "Normal")
-                {
+                if (((VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Opening Stock" || VE.TEXTBOX1 == "PDWOQ"|| VE.TEXTBOX7 == "PCWOQ"))) showpbill = true;
+                #region Normal Report               
                     HC.RepStart(IR, 3);
                     HC.GetPrintHeader(IR, "doccd", "string", "c,5", "Doc;Code");
                     HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yy", ";Doc Date");
@@ -471,10 +397,10 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
                     HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
                     if (plistprint == true) HC.GetPrintHeader(IR, "prcdesc", "string", "c,10", "Price;List");
-                    if (con_transprint == true) HC.GetPrintHeader(IR, "cslnm", "string", "c,40", "Consignee;Name");
-                    if (con_transprint == true) HC.GetPrintHeader(IR, "trslnm", "string", "c,40", "Transporter;Name");
-                    if (con_transprint == true) HC.GetPrintHeader(IR, "lrno", "string", "c,15", "Lr. ;No");
-                    if (con_transprint == true) HC.GetPrintHeader(IR, "lrdt", "string", "d,10:dd/mm/yy", "Lr. ;Date");
+                    if (con_print == true) HC.GetPrintHeader(IR, "cslnm", "string", "c,40", "Consignee;Name");
+                    if (transprint == true) HC.GetPrintHeader(IR, "trslnm", "string", "c,40", "Transporter;Name");
+                    if (transprint == true) HC.GetPrintHeader(IR, "lrno", "string", "c,15", "Lr. ;No");
+                    if (transprint == true) HC.GetPrintHeader(IR, "lrdt", "string", "d,10:dd/mm/yy", "Lr. ;Date");
                     if (orddetprint == true) HC.GetPrintHeader(IR, "ordno", "string", "c,50", "Order; No");
                     if (orddetprint == true) HC.GetPrintHeader(IR, "orddt", "string", "d,10:dd/mm/yy", "Order ;Date");
                     if (batchdtl == true && itmdtl == true) HC.GetPrintHeader(IR, "batchno", "string", "c,20", ";Batch nos");
@@ -517,9 +443,9 @@ namespace Improvar.Controllers
                                     {
                                         bbasamt = bbasamt + tbl.Rows[i]["amt"].retDbl();
                                     }
-                                    bdisc1 = bdisc1 + tbl.Rows[i]["tddiscamt"].retDbl();
-                                    bdisc2 = bdisc2 + tbl.Rows[i]["discamt"].retDbl();
-                                    btaxable = btaxable + tbl.Rows[i]["amt"].retDbl() - tbl.Rows[i]["tddiscamt"].retDbl() - tbl.Rows[i]["discamt"].retDbl();
+                                    bdisc1 = bdisc1 + tbl.Rows[i]["scmdiscamt"].retDbl();
+                                    bdisc2 = bdisc2 + tbl.Rows[i]["tddiscamt"].retDbl()+ tbl.Rows[i]["discamt"].retDbl();
+                                    btaxable = btaxable + tbl.Rows[i]["TXBLVAL"].retDbl();
                                     bigstamt = bigstamt + tbl.Rows[i]["igstamt"].retDbl();
                                     bcgstamt = bcgstamt + tbl.Rows[i]["cgstamt"].retDbl();
                                     bsgstamt = bsgstamt + tbl.Rows[i]["sgstamt"].retDbl();
@@ -545,9 +471,12 @@ namespace Improvar.Controllers
                                 //if (plistprint == true) dr["prcdesc"] = tbl.Rows[i]["prcdesc"].ToString();
                                 if (VE.Checkbox5 == true) dr["saprem"] = (tbl.Rows[i]["sapblno"].ToString() == "" ? "" : "BL# " + tbl.Rows[i]["sapblno"].ToString());
                                 if (showpbill == true) dr["prefdt"] = tbl.Rows[i]["prefdt"] == DBNull.Value ? "" : tbl.Rows[i]["prefdt"].ToString().Substring(0, 10).ToString();
-                                if (con_transprint == true)
+                                if (con_print == true)
                                 {
                                     dr["cslnm"] = tbl.Rows[i]["cslnm"].ToString();
+                                }
+                                if (transprint == true)
+                                {
                                     dr["trslnm"] = tbl.Rows[i]["trslnm"].ToString();
                                     dr["lrno"] = tbl.Rows[i]["lrno"].ToString();
                                     dr["lrdt"] = tbl.Rows[i]["lrdt"].retDateStr();
@@ -698,7 +627,7 @@ namespace Improvar.Controllers
                         //IR.Columns.Remove("pblno");
                         //IR.Columns.Remove("pbldt");
                     }
-                }
+               
                 #endregion
                 //#region Report Product wise
                 //else if (reptype == "Product")//Product Report for Godown
