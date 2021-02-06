@@ -3814,24 +3814,24 @@ namespace Improvar.Controllers
                                     pcsdesc += pcsdesc == "" ? "" : ",";
                                     pcsdesc += batch_data[a]["SHADE"].retStr() == "" ? "" : batch_data[a]["SHADE"].retStr() + "/";
 
-                                    if (batch_data[a]["nos"].retDbl() == 1)
-                                    {
-                                        pcsdesc += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr();
-                                    }
-                                    else {
-                                        if (VE.Checkbox9 == true)
-                                        {
-                                            for (int v = 0; v < batch_data[a]["nos"].retDbl(); v++)
-                                            {
+                                    //if (batch_data[a]["nos"].retDbl() == 1)
+                                    //{
+                                    //    pcsdesc += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr();
+                                    //}
+                                    //else {
+                                    //    if (VE.Checkbox9 == true)
+                                    //    {
+                                    //        for (int v = 0; v < batch_data[a]["nos"].retDbl(); v++)
+                                    //        {
 
-                                                pcsdesc += batch_data[a]["cutlength"].retStr() + "+";
-                                            }
-                                        }
-                                        else
-                                        {
-                                            pcsdesc += batch_data[a]["cutlength"].retStr() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
-                                        }
-                                    }
+                                    //            pcsdesc += batch_data[a]["cutlength"].retStr() + "+";
+                                    //        }
+                                    //    }
+                                    //    else
+                                    //    {
+                                    //        pcsdesc += batch_data[a]["cutlength"].retStr() + (batch_data[a]["nos"].retDbl() > 0 ? "x" + batch_data[a]["nos"].retDbl() : "");
+                                    //    }
+                                    //}
                                     if (batch_data[a]["flagmtr"].retStr() != "")
                                     {
                                         double flagmtr = batch_data[a]["flagmtr"].retDbl() - Math.Truncate(batch_data[a]["flagmtr"].retDbl());
