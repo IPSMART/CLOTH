@@ -190,6 +190,10 @@ namespace Improvar.Controllers
                             {
                                 T_TXN TTXN = new T_TXN();
                                 TTXN.DOCDT = Cn.getCurrentDate(VE.mindate);
+                                if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP")
+                                {
+                                    TTXN.PREFDT = Cn.getCurrentDate(VE.mindate);
+                                }
                                 TTXN.GOCD = TempData["LASTGOCD" + VE.MENU_PARA].retStr();
                                 string ROUNDOFF = TempData["LASTROUNDOFF" + VE.MENU_PARA].retStr();
                                 TempData.Keep();
@@ -372,6 +376,7 @@ namespace Improvar.Controllers
                     VE.PARTYCD = subleg.PARTYCD;
                     VE.TCSAPPL = subleg.TCSAPPL;
                     if (VE.MENU_PARA == "SR" || VE.MENU_PARA == "PR") VE.TCSAPPL = "N";
+                    VE.TCSAUTOCAL = VE.TCSAPPL.retStr() == "Y" ? true : false;
                     panno = subleg.PANNO;
                 }
 
@@ -807,7 +812,8 @@ namespace Improvar.Controllers
                 VE.TOTQNTY = VE.T_QNTY.retDbl();
                 VE.TOTTAXVAL = VE.T_GROSS_AMT.retDbl() + VE.A_T_AMOUNT.retDbl();
                 VE.TOTTAX = VE.T_CGST_AMT.retDbl() + VE.A_T_CGST.retDbl() + VE.T_SGST_AMT.retDbl() + VE.A_T_SGST.retDbl() + VE.T_IGST_AMT.retDbl() + VE.A_T_IGST.retDbl();
-
+                VE.DISPBLAMT = TXN.BLAMT;
+                VE.DISPTCSAMT = TXN.TCSAMT;
 
             }
             //Cn.DateLock_Entry(VE, DB, TCH.DOCDT.Value);
@@ -4136,7 +4142,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -4144,7 +4150,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
@@ -4259,7 +4265,7 @@ namespace Improvar.Controllers
                                  + " where AUTONO='" + VE.T_TXN.AUTONO + "' and SLNO='" + VE.TTXNDTL[i].SLNO.retStr() + "'  ";
                         OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
                     }
-                    
+
                     ModelState.Clear();
                     OraTrans.Commit();
                     OraTrans.Dispose();

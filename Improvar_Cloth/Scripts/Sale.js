@@ -24,6 +24,7 @@ function GetBarnoDetails(id, HelpFrom) {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
     if (id == "") {
         ClearBarcodeArea();
     }
@@ -1365,9 +1366,9 @@ function BillAmountCalculate(TAG) {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    if (event.key != "F8" && TAG == "TCSON" && event.key != undefined) {
-        return true;
-    }
+    //if (event.key != "F8" && TAG == "TCSON" && event.key != undefined) {
+    //    return true;
+    //}
     var R_TOTAL_BILL_AMOUNT = 0;
     var TOTAL_ROUND = 0;
     var netamt = 0;
@@ -1431,7 +1432,12 @@ function BillAmountCalculate(TAG) {
         if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
         document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
         //if (MENU_PARA == "OP") {
-        if ((MENU_PARA == "PB" || MENU_PARA == "OP") && event.key != "F8") {
+        //if ((MENU_PARA == "PB" || MENU_PARA == "OP") && event.key != "F8") {
+        var TCSAUTOCAL = true;
+        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+            TCSAUTOCAL = document.getElementById("TCSAUTOCAL").checked;
+        }
+        if ((MENU_PARA == "PB" || MENU_PARA == "OP") && TCSAUTOCAL == false) {
             TCSON = $("#TCSON").val();
             if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON); }
         }
@@ -1467,6 +1473,7 @@ function BillAmountCalculate(TAG) {
             document.getElementById("TCSAMT").value = parseFloat(TCSAMT).toFixed(2);
 
         }
+        $("#DISPTCSAMT").val(parseFloat($("#TCSAMT").val()).toFixed(2));
     }
     //
     totalbillamt = parseFloat(totalbillamt) + parseFloat(TCSAMT);
@@ -1478,11 +1485,13 @@ function BillAmountCalculate(TAG) {
         R_TOTAL_BILL_AMOUNT = Math.round(totalbillamt);
         TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
         document.getElementById("BLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
+        document.getElementById("DISPBLAMT").value = parseFloat(R_TOTAL_BILL_AMOUNT).toFixed(2);
         document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
     }
     else {
         TOTAL_ROUND = 0;
         document.getElementById("BLAMT").value = parseFloat(totalbillamt).toFixed(2);
+        document.getElementById("DISPBLAMT").value = parseFloat(totalbillamt).toFixed(2);
         document.getElementById("ROAMT").value = parseFloat(TOTAL_ROUND).toFixed(2);
     }
 
@@ -2337,6 +2346,14 @@ function GetPartyDetails(id) {
                         $("#AMT").val(returncolvalue(result, "AMT"));
                         $("#TCSAPPL").val(returncolvalue(result, "TCSAPPL"));
                         $("#TDSROUNDCAL").val(returncolvalue(result, "TDSROUNDCAL"));
+                        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                            if (retStr(returncolvalue(result, "TCSAPPL")) == "Y") {
+                                document.getElementById("TCSAUTOCAL").checked = true;
+                            }
+                            else {
+                                document.getElementById("TCSAUTOCAL").checked = false;
+                            }
+                        }
                         BillAmountCalculate();//fill value of tcson
                         //
                     }
@@ -3263,8 +3280,54 @@ function modify_check_stylebarno() {
     else {
         return "false";
     }
-
 }
+function DocdtChange(docdtfld) {
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
+    DocumentDateCHK(docdtfld);
+    if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+        $("#PREFDT").val($("#DOCDT").val());
+    }
+}
+function Edit_Pageno_slno() {
+    debugger;
+    var GridRow = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+    if (GridRow != 0) {
+        for (var i = 0; i <= GridRow - 1; i++) {
+            $("#D_PAGENO_" + i).attr("readonly", false);
+            $("#D_PAGESLNO_" + i).attr("readonly", false);
+            if (i == 0) $("#D_PAGENO_" + i).focus();
+        }
+    }
+    $("#edit_page_slno").hide();
+    $("#update_page_slno").show();
+    $("#cancel_page_slno").show();
+}
+
+function Cancel_Pageno_slno() {
+    location.reload();
+}
+function Update_Pageno_slno() {
+    debugger;
+    $.ajax({
+        type: 'post',
+        beforesend: $("#WaitingMode").show(),
+        url: $("#UrlUpdatePagenoSlno").val(),//"@Url.Action("Update_PagenoSlno", PageControllerName)",
+        data: $('form').serialize(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            if (result == "1")
+            { msgSuccess1("Update Successfully !"); }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
+
 
 
 

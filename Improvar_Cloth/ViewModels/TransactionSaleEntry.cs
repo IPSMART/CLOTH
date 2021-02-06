@@ -234,5 +234,10 @@ namespace Improvar.ViewModels
         public string Last_BARNO { get; set; }
         public string Last_BARCODE { get; set; }
         public string Last_STYLENO { get; set; }
+        public bool TCSAUTOCAL { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? DISPBLAMT { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? DISPTCSAMT { get; set; }
     }
 }

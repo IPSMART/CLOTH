@@ -100,5 +100,7 @@ namespace Improvar.Models
         public string MNTNBALE { get; set; }
         [StringLength(1)]
         public string MNTNPCSTYPE { get; set; }
+        [StringLength(1)]
+        public string MNTNBARNO { get; set; }
     }
 }
