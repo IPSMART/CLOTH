@@ -72,7 +72,7 @@ namespace Improvar.Controllers
                         string style = workSheet.Cells[row, 3].Value.ToString() + workSheet.Cells[row, 4].Value.ToString();
                         string HSNCODE = workSheet.Cells[row, 5].Value.ToString();
                         ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);
-                      sql="SELECT * FROM "++""
+                        sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL";
 
 
                         double CP = workSheet.Cells[row, 5].Value.retDbl();
