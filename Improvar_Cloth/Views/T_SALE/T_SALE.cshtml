@@ -66,11 +66,13 @@
             if ('@Model.MENU_PARA' == "PB" || '@Model.MENU_PARA' == "PR") {
                 changeBARGENTYPE();
             }
-            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "OP") {
+            @*if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "OP") {*@
+            if ('@Model.MENU_PARA' != "SB") {
                 $('#barfirstrow input').attr('readonly', 'readonly');
                 $('#barfirstrow input').removeAttr("onblur");
                 $('#barfirstrow').find(".Help_image_button").hide();
                 $('#barfirstrow input').removeAttr("onkeydown");
+                $('#barfirstrow input').attr('TabIndex', '-1');
             }
         }
         else if ("@Model.DefaultAction" == "A") {
@@ -78,11 +80,13 @@
             if ('@Model.MENU_PARA' != "SB") {
                 GetAllMtrljobcd();
             }
-            if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "OP") {
+            @*if ('@Model.MENU_PARA' != "PB" && '@Model.MENU_PARA' != "SB" && '@Model.MENU_PARA' != "OP") {*@
+            if ('@Model.MENU_PARA' != "SB") {
                 $('#barfirstrow input').attr('readonly', 'readonly');
                 $('#barfirstrow input').removeAttr("onblur");
                 $('#barfirstrow').find(".Help_image_button").hide();
                 $('#barfirstrow input').removeAttr("onkeydown");
+                $('#barfirstrow input').attr('TabIndex', '-1');
             }
         }
         if ("@Model.LINKDOCNO" != "") {
@@ -242,6 +246,11 @@
                     if (result == "0") {
                         msgInfo("Bill Sl# duplicate in barcode tab!");
                         $("#WaitingMode").hide();
+                        $("li").removeClass("active").addClass("");
+                        $(".nav-tabs li:nth-child(2)").addClass('active');
+                        //below set the  child sequence
+                        $(".tab-content div").removeClass("active");
+                        $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                         message_value = "FillDetail";
                         return false;
                     }
@@ -487,6 +496,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBALE, new { id = "MNTNBALE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPCSTYPE, new { id = "MNTNPCSTYPE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBARNO, new { id = "MNTNBARNO" })
+        @Html.HiddenFor(a => a.SHOWMTRLJOBCD, new { id = "SHOWMTRLJOBCD" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -1102,6 +1112,12 @@
                                                 @Html.HiddenFor(model => model.BARCODE, new { id = "BARCODE" })
                                                 @Html.HiddenFor(model => model.Last_BARCODE, new { id = "Last_BARCODE" })
                                             }
+@if (Model.SHOWMTRLJOBCD != "Y")
+{
+    @Html.HiddenFor(model => model.MTRLJOBCD, new { id = "MTRLJOBCD" })
+    @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
+    @Html.HiddenFor(model => model.MTBARCODE, new { id = "MTBARCODE" })
+}
                                         </div>
                                     </div>
 
@@ -1213,6 +1229,8 @@
 
                                                 </div>
                                             </div>
+@if (Model.SHOWMTRLJOBCD == "Y")
+{
                                             <div class="col-md-1">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.MTRLJOBCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MTRLJOBCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE')", onblur = "GetHelpBlur('" + @Url.Action("GetMaterialJobDetails", PageControllerName) + "','Material Job Details','MTRLJOBCD','MTRLJOBCD=MTRLJOBCD=1/MTRLJOBNM=MTRLJOBNM=0/MTBARCODE=MTBARCODE');GetAllMtrljobcd();", @placeholder = "Material Job Code", maxlength = 2, @title = "Material Job Code" } })
@@ -1221,6 +1239,7 @@
                                                     @Html.HiddenFor(model => model.MTBARCODE, new { id = "MTBARCODE" })
                                                 </div>
                                             </div>
+}
                                             <div class="col-md-4">
                                                 <div class="editor-field">
                                                     @Html.EditorFor(model => model.ITCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "ITCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetItemDetails", PageControllerName) + "','Item Details','ITCD','ITCD=itcd=2/ITSTYLE=ITSTYLE=1/UOM=uomcd=3/STYLENO=styleno=0/ITGRPCD=itgrpcd=5/ITGRPNM=itgrpnm=4/HSNCODE=hsncode/PRODGRPGSTPER=PRODGRPGSTPER/ALL_GSTPER=ALL_GSTPER/GSTPER=GSTPER/BarImages=BARIMAGE','ITGRPCD/DOCDT/TAXGRPCD/GOCD/PRCCD/MTRLJOBCD/BARCODE/RATE'),FillBarcodeArea('', 'COPYLROW')", onblur = "GetItcd(this.value);", @placeholder = "Item Code", maxlength = 8, @title = "Item Code" } })

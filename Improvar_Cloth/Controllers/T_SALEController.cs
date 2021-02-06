@@ -267,19 +267,26 @@ namespace Improvar.Controllers
                         }
                         var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
                         VE.M_SYSCNFG = MSYSCNFG;
-
+                        var mtrljobcd = (from a in DB.M_MTRLJOBMST
+                                         join b in DB.M_CNTRL_HDR on a.M_AUTONO equals b.M_AUTONO
+                                         where b.INACTIVE_TAG == "N"
+                                         select new { a.MTRLJOBCD, a.MTRLJOBNM, a.MTBARCODE }).ToList();
                         if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "OP")
                         {
-                            var mtrljobcd = (from a in DB.M_MTRLJOBMST
-                                             join b in DB.M_CNTRL_HDR on a.M_AUTONO equals b.M_AUTONO
-                                             where b.INACTIVE_TAG == "N"
-                                             select new { a.MTRLJOBCD, a.MTRLJOBNM, a.MTBARCODE }).ToList();
                             if (mtrljobcd.Count() == 1)
                             {
                                 VE.MTRLJOBCD = mtrljobcd[0].MTRLJOBCD;
                                 VE.MTRLJOBNM = mtrljobcd[0].MTRLJOBNM;
                                 VE.MTBARCODE = mtrljobcd[0].MTBARCODE;
                             }
+                        }
+                        if (mtrljobcd.Count() == 1)
+                        {
+                            VE.SHOWMTRLJOBCD = "N";
+                        }
+                        else
+                        {
+                            VE.SHOWMTRLJOBCD = "Y";
                         }
                     }
                     else
