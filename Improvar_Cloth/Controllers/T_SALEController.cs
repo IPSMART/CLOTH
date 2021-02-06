@@ -4129,6 +4129,7 @@ namespace Improvar.Controllers
                     ModelState.Clear();
                     OraTrans.Commit();
                     OraCon.Dispose();
+                    ContentFlg = "3";
                     goto dbsave;
                 }
                 else

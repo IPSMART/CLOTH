@@ -1666,6 +1666,7 @@ function AddBarCodeGrid() {
     var MNTNDISC1 = $("#MNTNDISC1").val();
     var MNTNDISC2 = $("#MNTNDISC2").val();
     var MNTNWPRPPER = $("#MNTNWPRPPER").val();
+    var MNTNBALE = $("#MNTNBALE").val();
     if ($("#ITGRPCD").val() == "") {
         msgInfo("Please enter/select Item Group Code !");
         message_value = "ITGRPCD";
@@ -1889,7 +1890,9 @@ function AddBarCodeGrid() {
     tr += '        <input data-val="true" data-val-length="The field BARNO must be a string with a maximum length of 25." data-val-length-max="25" data-val-required="The BARNO field is required." id="B_BARNO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BARNO" type="hidden" value="' + BARCODE + '">';
     tr += '        <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="B_FLAGMTR_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].FLAGMTR" type="hidden" value="' + FLAGMTR + '">';
     tr += '        <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="B_HSNCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
-    tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
+    if (MNTNBALE != "Y") {
+        tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" type="hidden" value="' + BALENO + '">';
+    }
     if (MENU_PARA == "PB" || MENU_PARA == "OP") {
         tr += '        <input data-val="true" data-val-length="The field OURDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_OURDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].OURDESIGN" type="hidden" value="' + OURDESIGN + '">';
         tr += '        <input data-val="true" data-val-length="The field PDESIGN must be a string with a maximum length of 30." data-val-length-max="30" id="B_PDESIGN_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].PDESIGN" type="hidden" value="' + PDESIGN + '">';
@@ -1956,6 +1959,11 @@ function AddBarCodeGrid() {
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITSTYLE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITSTYLE" readonly="readonly" type="text" value="' + ITSTYLE + '">';
     tr += '        <input id="B_STYLENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STYLENO" type="hidden" value="' + STYLENO + '">';
     tr += '    </td>         ';
+    if (MNTNBALE == "Y") {
+        tr += '    <td class="" title="' + BALENO + '">';
+        tr += '        <input data-val="true" data-val-length="The field BALENO must be a string with a maximum length of 30." data-val-length-max="30" id="B_BALENO_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BALENO" onblur="HasChangeBarSale();" value="' + BALENO + '">';
+        tr += '     </td>';
+    }
     tr += '    <td class="" title="' + STKTYPE + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field STKTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_STKTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].STKTYPE" readonly="readonly" type="text" value="' + STKTYPE + '">';
     tr += '     </td>';
@@ -2300,6 +2308,7 @@ function T_Sale_FillImageModal(index) {
 function GetPartyDetails(id) {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var MENU_PARA = $("#MENU_PARA").val();
     if (id == "") {
         ClearAllTextBoxes("SLCD,SLNM,SLAREA,GSTNO,TAXGRPCD,PRCCD,PRCNM,AGSLCD,AGSLNM,DUEDAYS,PSLCD,TCSPER,TDSLIMIT,TDSCALCON,AMT,TCSAPPL,TDSROUNDCAL,TCSCODE,TCSNM,PARTYCD");
     }
@@ -2356,6 +2365,23 @@ function GetPartyDetails(id) {
                         }
                         BillAmountCalculate();//fill value of tcson
                         //
+                        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                            $("#PREFNO").focus();
+                        }
+                        else {
+                            $("li").removeClass("active").addClass("");
+                            $(".nav-tabs li:nth-child(2)").addClass('active');
+                            //below set the  child sequence
+                            $(".tab-content div").removeClass("active");
+                            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                            if ($("#MNTNBARNO").val() == "Y") {
+                                $("#BARCODE").focus();
+                            }
+                            else {
+                                $("#STYLENO").focus();
+                            }
+                           
+                        }
                     }
                     else {
                         $('#helpDIV').html("");
