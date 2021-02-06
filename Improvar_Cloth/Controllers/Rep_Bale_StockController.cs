@@ -135,14 +135,14 @@ namespace Improvar.Controllers
                         bool balefirst = true;
                         gonm = tbl.Rows[i]["gonm"].ToString();
                         chkval = tbl.Rows[i]["BaleNoBaleYrcd"].ToString();
-                        while (tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval)
+                        while (tbl.Rows[i]["gocd"].ToString() == chkval1 && tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval)
                         {
                            
                             bool itemfirst = true;
                             baleno = tbl.Rows[i]["baleno"].ToString();
                             chkval2 = tbl.Rows[i]["itcd"].ToString();
                           
-                            while (tbl.Rows[i]["itcd"].ToString() == chkval2)
+                            while (tbl.Rows[i]["gocd"].ToString() == chkval1 && tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval && tbl.Rows[i]["itcd"].ToString() == chkval2)
                             {
                                 if (tbl.Rows[i]["pageno"].retStr() != "" && tbl.Rows[i]["pageslno"].retStr() != "") cncat = "/";
                                 tnos = tnos + tbl.Rows[i]["nos"].retDbl();
