@@ -361,7 +361,12 @@
             //below set the  child sequence
             $(".tab-content div").removeClass("active");
             $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            $("#BARCODE").focus();
+            if ($("#MNTNBARNO").val() == "Y") {
+                $("#BARCODE").focus();
+            }
+            else {
+                $("#STYLENO").focus();
+            }
         }
         if (event.altKey && KeyID == 84) {//for Alt+T (transport code tab)
             $("li").removeClass("active").addClass("");
@@ -481,6 +486,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNOURDESIGN, new { id = "MNTNOURDESIGN" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBALE, new { id = "MNTNBALE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPCSTYPE, new { id = "MNTNPCSTYPE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBARNO, new { id = "MNTNBARNO" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
