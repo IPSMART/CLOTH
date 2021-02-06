@@ -60,7 +60,7 @@ namespace Improvar.Controllers
                 Path = "C:\\IPSMART\\Temp\\Raymond.dbf";
                 if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
                 GC.Collect();
-                Request.Files["FileUpload"].SaveAs(Path);
+                Request.Files["RaymondPurchaseDBF"].SaveAs(Path);
 
                 System.Data.Odbc.OdbcConnection obdcconn = new System.Data.Odbc.OdbcConnection();
                 obdcconn.ConnectionString = "Driver={Microsoft dBase Driver (*.dbf)};SourceType=DBF;SourceDB=" + Path + ";Exclusive=No; NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
@@ -209,11 +209,11 @@ namespace Improvar.Controllers
                             }
                         }
                         //detail tab start
-                        TTXNDTL TTXNDTL = new TTXNDTL(); 
+                        TTXNDTL TTXNDTL = new TTXNDTL();
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
-                        ItemDet ItemDet = CreateItem(style, "MTR", grpnm, HSNCODE);
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.SLNO = ++slno;
                         TTXNDTL.MTRLJOBCD = "FS";
@@ -225,6 +225,7 @@ namespace Improvar.Controllers
                         //TTXNDTL.BATCHNO = inrdr["BATCH"].ToString();
                         TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.GOCD = "TR";
+                        TTXNDTL.UOM = "MTR";
                         TTXNDTL.QNTY = inrdr["NET_QTY"].retDbl();
                         TTXNDTL.NOS = 1;
                         TTXNDTL.RATE = inrdr["RATE"].retDbl();
@@ -276,6 +277,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.BLQNTY = TTXNDTL.BLQNTY;
                         TBATCHDTL.FLAGMTR = TTXNDTL.FLAGMTR;
                         TBATCHDTL.ITREM = TTXNDTL.ITREM;
+                        TBATCHDTL.UOM = "MTR";
                         TBATCHDTL.RATE = TTXNDTL.RATE;
                         TBATCHDTL.DISCRATE = TTXNDTL.DISCRATE;
                         TBATCHDTL.DISCTYPE = TTXNDTL.DISCTYPE;
@@ -383,160 +385,6 @@ namespace Improvar.Controllers
             VE.DUpGrid = DUGridlist;
             return VE;
         }
-
-        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE)
-        {
-            string DefaultAction = "A"; ItemDet ItemDet = new ItemDet();
-            M_SITEM MSITEM = new M_SITEM(); M_GROUP MGROUP = new M_GROUP();
-            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
-            try
-            {
-                OraCon.Open();
-                MSITEM.CLCD = CommVar.ClientCode(UNQSNO);
-                var STYLEdt = (from g in DB.M_SITEM
-                               join h in DB.M_GROUP on g.ITGRPCD equals h.ITGRPCD
-                               where g.STYLENO == style
-                               select new
-                               {
-                                   ITCD = g.ITCD,
-                                   PURGLCD = h.PURGLCD,
-                               }).FirstOrDefault();
-                if (STYLEdt != null)
-                {
-                    ItemDet.ITCD = STYLEdt.ITCD;
-                    ItemDet.PURGLCD = STYLEdt.PURGLCD;
-                    return ItemDet;
-                }
-                MGROUP = CreateGroup(grpnm);
-                MSITEM.EMD_NO = 0;
-                MSITEM.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
-                string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + MGROUP.ITGRPTYPE + MGROUP.GRPBARCODE + "%') ";
-                var tbl = masterHelp.SQLquery(sql);
-                if (tbl.Rows[0]["itcd"].ToString() == "")
-                {
-                    MSITEM.ITCD = MGROUP.ITGRPTYPE + MGROUP.GRPBARCODE + "00001";
-                }
-                else
-                {
-                    string s = tbl.Rows[0]["itcd"].ToString();
-                    string digits = new string(s.Where(char.IsDigit).ToArray());
-                    string letters = new string(s.Where(char.IsLetter).ToArray());
-                    int number;
-                    if (!int.TryParse(digits, out number))                   //int.Parse would do the job since only digits are selected
-                    {
-                        Console.WriteLine("Something weired happened");
-                    }
-                    MSITEM.ITCD = letters + (++number).ToString("D7");
-                }
-                MSITEM.ITGRPCD = MGROUP.ITGRPCD;
-                MSITEM.ITNM = "";
-                MSITEM.STYLENO = style.Trim();
-                MSITEM.UOMCD = UOM;
-                MSITEM.HSNCODE = HSNCODE;
-                MSITEM.NEGSTOCK = "Y";
-                var MPRODGRP = DB.M_PRODGRP.FirstOrDefault();
-                MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;
-
-
-                M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
-                MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
-                MSITEMBARCODE1.CLCD = MSITEM.CLCD;
-                MSITEMBARCODE1.ITCD = MSITEM.ITCD;
-                MSITEMBARCODE1.BARNO = Salesfunc.GenerateBARNO(MSITEM.ITCD, "", "");
-
-                DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
-
-
-                OracleCommand OraCmd = OraCon.CreateCommand();
-                using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
-                {
-                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_SITEM", MSITEM.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-                    dbsql = masterHelp.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                    dbsql = masterHelp.RetModeltoSql(MSITEM, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                    dbsql = masterHelp.RetModeltoSql(MSITEMBARCODE1, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-
-                    OraTrans.Commit();
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-            }
-            OraCon.Dispose();
-            ItemDet.ITCD = MSITEM.ITCD;
-            ItemDet.PURGLCD = MGROUP.PURGLCD;
-            return ItemDet;
-        }
-        public M_GROUP CreateGroup(string grpnm)
-        {
-            M_GROUP MGROUP = new M_GROUP();
-            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
-            try
-            {
-                string DefaultAction = "A";
-                var tMGROU = DB.M_GROUP.Where(m => m.ITGRPNM == grpnm).FirstOrDefault();
-                if (tMGROU != null)
-                {
-                    return tMGROU;
-                }
-                MGROUP.CLCD = CommVar.ClientCode(UNQSNO);
-                MGROUP.EMD_NO = 0;
-                MGROUP.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
-
-                string txtst = grpnm.Substring(0, 1).Trim().ToUpper();
-                MGROUP.ITGRPNM = grpnm.ToUpper();
-                string sql = " select max(SUBSTR(ITGRPCD, 2)) ITGRPCD FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
-                string sql1 = " select max(GRPBARCODE) GRPBARCODE FROM " + CommVar.CurSchema(UNQSNO) + ".M_GROUP";
-                var tbl = masterHelp.SQLquery(sql);
-                if (tbl.Rows[0]["ITGRPCD"].ToString() != "")
-                {
-                    MGROUP.ITGRPCD = txtst + ((tbl.Rows[0]["ITGRPCD"]).retInt() + 1).ToString("D3");
-                }
-                else
-                {
-                    MGROUP.ITGRPCD = txtst + (10).ToString("D3");
-                }
-                var tb1l = masterHelp.SQLquery(sql1);
-                if (tb1l.Rows[0]["GRPBARCODE"].ToString() != "")
-                {
-                    MGROUP.GRPBARCODE = ((tb1l.Rows[0]["GRPBARCODE"]).retInt() + 1).ToString("D2");
-                }
-                else
-                {
-                    MGROUP.GRPBARCODE = (10).ToString("D2");
-                }
-                MGROUP.SALGLCD = "10000001";
-                MGROUP.PURGLCD = "25999991";
-                MGROUP.ITGRPTYPE = "F";
-                MGROUP.PRODGRPCD = "G001";
-                MGROUP.BARGENTYPE = "C";
-                MGROUP.NEGSTOCK = "Y";
-                OraCon.Open();
-                OracleCommand OraCmd = OraCon.CreateCommand();
-                using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
-                {
-                    M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(false, "M_GROUP", MGROUP.M_AUTONO, DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
-                    dbsql = masterHelp.RetModeltoSql(MCH, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                    dbsql = masterHelp.RetModeltoSql(MGROUP, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    OraTrans.Commit();
-                }
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-            }
-            OraCon.Dispose();
-            return MGROUP;
-        }
         public string PCSTYPE(string grade, string foc)
         {
             string pcstype = "";
@@ -577,7 +425,6 @@ namespace Improvar.Controllers
             }
             return pcstype;
         }
-
         private string getSLCD(string sapcode)
         {
             sql = "select slcd from " + CommVar.CurSchema(UNQSNO) + ".m_subleg_com where sapcode='" + sapcode + "'";
