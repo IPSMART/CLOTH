@@ -358,7 +358,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "hsncode", "string", "c,8", "HSN/SAC");
                         HC.GetPrintHeader(IR, "uomcd", "string", "c,4", "Uom");
                         HC.GetPrintHeader(IR, "nos", "double", "n,5", "Cases");
-                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,6", "Qnty");
+                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
                         HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Rate");
                         //if (cnt_bluom.Count() > 0)
                         //{
@@ -374,7 +374,7 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
                         HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
                         HC.GetPrintHeader(IR, "nos", "double", "n,5", "Cases");
-                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,5", "Qnty");
+                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
                     }
                     HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
                     if (SeparateAchead)
