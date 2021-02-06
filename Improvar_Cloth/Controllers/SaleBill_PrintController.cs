@@ -3409,21 +3409,21 @@ namespace Improvar.Controllers
                                         hsngstper1 += "~";
                                         hsngstamt1 += "~";
                                     }
-                                    if (k.TCGSTAMT + k.TCGSTAMT != 0)
+                                    if (k.TCGSTAMT.retDbl() + k.TCGSTAMT.retDbl() != 0)
                                     {
-                                        if (k.CGSTPER != 0) hsngstper2 += Cn.Indian_Number_format(k.CGSTPER.ToString(), "0.00") + " %~";
-                                        if (k.TCGSTAMT != 0) hsngstamt2 += Convert.ToDouble(k.TCGSTAMT).ToINRFormat() + "~";
+                                        if (k.CGSTPER.retDbl() != 0) hsngstper2 += Cn.Indian_Number_format(k.CGSTPER.ToString(), "0.00") + " %~";
+                                        if (k.TCGSTAMT.retDbl() != 0) hsngstamt2 += Convert.ToDouble(k.TCGSTAMT).ToINRFormat() + "~";
                                     }
                                     else
                                     {
                                         hsngstper2 += "~";
                                         hsngstamt2 += "~";
                                     }
-                                    if (k.TSGSTAMT != 0)
+                                    if (k.TSGSTAMT.retDbl() != 0)
                                     {
                                         flags = true;
-                                        if (k.SGSTPER != 0) hsngstper3 += Cn.Indian_Number_format(k.SGSTPER.ToString(), "0.00") + " %~";
-                                        if (k.TSGSTAMT != 0) hsngstamt3 += Convert.ToDouble(k.TSGSTAMT).ToINRFormat() + "~";
+                                        if (k.SGSTPER.retDbl() != 0) hsngstper3 += Cn.Indian_Number_format(k.SGSTPER.ToString(), "0.00") + " %~";
+                                        if (k.TSGSTAMT.retDbl() != 0) hsngstamt3 += Convert.ToDouble(k.TSGSTAMT).ToINRFormat() + "~";
                                     }
                                     else
                                     {
