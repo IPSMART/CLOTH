@@ -149,17 +149,23 @@ namespace Improvar.Controllers
                     TTXN.TCSON = calcultednet;
                     TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
                     sql = "";
-                    sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
+                    sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
                     sql += " where   a.autono=b.autono and a.PREFNO='" + TTXN.PREFNO + "' and a.slcd='" + TTXN.SLCD + "' ";
                     var dt = masterHelp.SQLquery(sql);
                     if (dt.Rows.Count > 0)
                     {
-                        dupgrid.MESSAGE = "Allready Added " + dt.Rows[0]["docno"].ToString();
-                        dupgrid.BLNO = dt.Rows[0]["docno"].ToString();
+                        dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
+                        dupgrid.BLNO = TTXN.PREFNO ;
                         dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
                         dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
+                        dupgrid.ROAMT = dt.Rows[0]["ROAMT"].ToString();
                         DUGridlist.Add(dupgrid);
                         continue;
+                    }
+                    else
+                    {
+                        dupgrid.TCSAMT = TTXN.TCSAMT.retStr();
+                        dupgrid.BLAMT = TTXN.BLAMT.retStr();
                     }
 
                     //-------------------------Transport--------------------------//
@@ -369,7 +375,7 @@ namespace Improvar.Controllers
                     }
                     //           //Amount tab end
                     TTXN.ROAMT = (TTXN.BLAMT.retDbl() - (txable + gstamt + tcsamt)).toRound(2);
-
+                    dupgrid.ROAMT = TTXN.ROAMT.retStr();
                     TMPVE.T_TXN = TTXN;
                     TMPVE.T_TXNTRANS = TXNTRANS;
                     TMPVE.T_TXNOTH = TTXNOTH;
