@@ -280,14 +280,8 @@ namespace Improvar.Controllers
                                 VE.MTBARCODE = mtrljobcd[0].MTBARCODE;
                             }
                         }
-                        if (mtrljobcd.Count() == 1)
-                        {
-                            VE.SHOWMTRLJOBCD = "N";
-                        }
-                        else
-                        {
-                            VE.SHOWMTRLJOBCD = "Y";
-                        }
+                        VE.SHOWMTRLJOBCD = mtrljobcd.Count() > 1 ? "Y" : "N";
+                        VE.SHOWBLTYPE = VE.BL_TYPE.Count > 1 ? "Y" : "N";
                     }
                     else
                     {
@@ -2657,16 +2651,18 @@ namespace Improvar.Controllers
             OraCmd.Transaction = OraTrans;
             try
             {
-                int balenocount = VE.TTXNDTL.Where(a => a.BALENO.retStr() != "").Count();
-                List<string> baledata = new List<string>();
-                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR") && balenocount > 0)
-                {
-                    var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToList();
-                    //string str = "select rslno,blautono,blslno,lrdt,lrno,baleyr,gocd,baleopen from  ";
-                }
+
                 OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
 
+                int balenocount = VE.TTXNDTL.Where(a => a.BALENO.retStr() != "").Count();
+                DataTable baledata = new DataTable();
+                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR") && balenocount > 0)
+                {
+                    var baleno = VE.TTXNDTL.Select(a => a.BALENO).Distinct().ToArray().retSqlfromStrarray();
+                    string str = "select rslno,blautono,blslno,lrdt,lrno,baleyr,gocd,baleopen,baleno from " + scm1 + ".t_bale where baleno in (" + baleno + ") ";
+                    baledata = masterHelp.SQLquery(str);
+                }
                 if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                 {
                     //checking barcode & txndtl pge itcd wise qnty, nos should match
@@ -3212,16 +3208,33 @@ namespace Improvar.Controllers
                                 TBALE.TTAG = TTXN.TTAG;
                                 TBALE.AUTONO = TTXN.AUTONO;
                                 TBALE.SLNO = TTXNDTL.SLNO;
-                                TBALE.RSLNO = TTXNDTL.SLNO;
                                 TBALE.DRCR = TTXNDTL.STKDRCR;
-                                TBALE.BLAUTONO = TTXN.AUTONO;
-                                TBALE.BLSLNO = TTXNDTL.SLNO;
-                                TBALE.LRDT = TXNTRANS.LRDT;
-                                TBALE.LRNO = TXNTRANS.LRNO;
-                                TBALE.BALEYR = TTXNDTL.BALEYR;
-                                TBALE.BALENO = TTXNDTL.BALENO;
                                 TBALE.GOCD = TTXN.GOCD;
-                                //TBALE.BALEOPEN = ;
+                                TBALE.BALENO = TTXNDTL.BALENO;
+                                if ((VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SBEXP" || VE.MENU_PARA == "PR") && baledata.Rows.Count > 0)
+                                {
+                                    string baleno = VE.TTXNDTL[i].BALENO.retStr();
+                                    var data = baledata.Select("baleno = '" + baleno + "'");
+                                    if (data.Count() > 0)
+                                    {
+                                        TBALE.RSLNO = data[0]["RSLNO"].retShort();
+                                        TBALE.BLAUTONO = data[0]["BLAUTONO"].retStr();
+                                        TBALE.BLSLNO = data[0]["BLSLNO"].retShort();
+                                        TBALE.LRDT = data[0]["LRDT"].retStr() == "" ? (DateTime?)null : Convert.ToDateTime(data[0]["LRDT"].retStr());
+                                        TBALE.LRNO = data[0]["LRNO"].retStr();
+                                        TBALE.BALEYR = data[0]["BALEYR"].retStr();
+                                        TBALE.BALEOPEN = data[0]["BALEOPEN"].retStr();
+                                    }
+                                }
+                                else
+                                {
+                                    TBALE.RSLNO = TTXNDTL.SLNO;
+                                    TBALE.BLAUTONO = TTXN.AUTONO;
+                                    TBALE.BLSLNO = TTXNDTL.SLNO;
+                                    TBALE.LRDT = TXNTRANS.LRDT;
+                                    TBALE.LRNO = TXNTRANS.LRNO;
+                                    TBALE.BALEYR = TTXNDTL.BALEYR;
+                                }
 
                                 dbsql = masterHelp.RetModeltoSql(TBALE);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();

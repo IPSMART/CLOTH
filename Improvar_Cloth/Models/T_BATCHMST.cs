@@ -29,7 +29,7 @@ namespace Improvar.Models
         [StringLength(30)]
         public string AUTONO { get; set; }
 
-        public int SLNO { get; set; }
+        public int? SLNO { get; set; }
 
         [StringLength(8)]
         public string SLCD { get; set; }
