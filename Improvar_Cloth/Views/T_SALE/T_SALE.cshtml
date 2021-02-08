@@ -45,6 +45,13 @@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
+        if ("@Model.SHOWMTRLJOBCD" != "Y") {
+            $("#divmtrljobcd").hide();
+        }
+        if ("@Model.SHOWBLTYPE" != "Y") {
+            $(".divbltype").hide();
+        }
+       
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#update_page_slno").hide();
@@ -544,12 +551,12 @@
                             @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly" } })
                         </div>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-1 divbltype">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Bill Type")
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 divbltype">
                         <div class="editor-field">
                             @Html.DropDownListFor(model => model.T_TXNOTH.BLTYPE, new SelectList(Model.BL_TYPE, "Value", "Text"), " ", new { @class = "form-control", id = "BLTYPE" })
                         </div>
@@ -1479,7 +1486,7 @@
 
                                         </div>
                                     </div>
-                                    <div class="col-lg-1">
+                                    <div class="col-lg-1" id="divmtrljobcd">
                                         <div class="editor-field" style="margin-top:5px;width:auto;height:60px; overflow:auto;border:5px groove;overflow-x: hidden;">
                                             <table id="exampleLT" border="1" style="width: auto;">
                                                 @for (int i = 0; i < Model.DropDown_list_MTRLJOBCD.Count; i++)

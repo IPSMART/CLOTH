@@ -240,5 +240,6 @@ namespace Improvar.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? DISPTCSAMT { get; set; }
         public string SHOWMTRLJOBCD { get; set; }
+        public string SHOWBLTYPE { get; set; }
     }
 }
