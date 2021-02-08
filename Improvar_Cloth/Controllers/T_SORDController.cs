@@ -38,7 +38,7 @@ namespace Improvar.Controllers
                     {
                         case "SORD": ViewBag.formname = "Sales Order Entry"; break;
                         case "PORD": ViewBag.formname = "Purchase Order Entry"; break;
-                        case "SBCM": ViewBag.formname = "Sales Order Retail"; break;
+                        case "SORDC": ViewBag.formname = "Sales Order Retail"; break;
                         default: ViewBag.formname = "Menupara not found in appl_menu"; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -246,7 +246,7 @@ namespace Improvar.Controllers
                                         string sql1 = "";
                                         sql1 += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,a.retdebslcd,b.city,b.add1,b.add2,b.add3,effdt ";
                                         sql1 += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b";
-                                        sql1 += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) where a.rtdebcd='" + sl.RTDEBCD + "' ";
+                                        sql1 += " where a.RTDEBCD=b.RTDEBCD and a.rtdebcd='" + sl.RTDEBCD + "' and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG)  ";
                                         DataTable syscnfgdt = Master_Help.SQLquery(sql1);
                                         if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                                         {
@@ -1100,13 +1100,6 @@ namespace Improvar.Controllers
                         {
                             //dbsql = MasterHelpFa.TblUpdt("t_sord_scheme", VE.T_SORD.AUTONO, "D");
                             //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
-                            dbsql = MasterHelpFa.TblUpdt("t_sorddtl", VE.T_SORD.AUTONO, "D");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
-                            dbsql = MasterHelpFa.TblUpdt("t_sord", VE.T_SORD.AUTONO, "D");
-                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
                             dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_rem", VE.T_SORD.AUTONO, "D");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
@@ -1115,6 +1108,12 @@ namespace Improvar.Controllers
 
                             dbsql = MasterHelpFa.TblUpdt("t_cntrl_hdr_doc_dtl", VE.T_SORD.AUTONO, "D");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            dbsql = MasterHelpFa.TblUpdt("t_sorddtl", VE.T_SORD.AUTONO, "D");
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+                            dbsql = MasterHelpFa.TblUpdt("t_sord", VE.T_SORD.AUTONO, "D");
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            
 
                             dbsql = MasterHelpFa.T_Cntrl_Hdr_Updt_Ins(VE.T_SORD.AUTONO, "D", "S", null, null, null, VE.T_SORD.DOCDT.retStr(), null, null, null);
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }

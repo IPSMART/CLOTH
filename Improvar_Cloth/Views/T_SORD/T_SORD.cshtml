@@ -16,7 +16,7 @@
             ViewBag.Title = "Sales Order Entry"; break;
         case "PORD":
             ViewBag.Title = "Purchase Order Entry"; break;
-        case "SBCM":
+        case "SORDC":
             ViewBag.Title = "Sales Order Retail"; break;
         default: ViewBag.Title = "Sales Order Entry"; break;
     }
@@ -1567,7 +1567,7 @@
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDEBNM", maxlength = 15,@title=Model.Add, @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDEBNM", maxlength = 15,@title=Model.ADDR, @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
                         </div>
                     </div>
                     <div class="col-md-8">
