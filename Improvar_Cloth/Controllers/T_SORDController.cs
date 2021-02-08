@@ -38,6 +38,7 @@ namespace Improvar.Controllers
                     {
                         case "SORD": ViewBag.formname = "Sales Order Entry"; break;
                         case "PORD": ViewBag.formname = "Purchase Order Entry"; break;
+                        case "SBCM": ViewBag.formname = "Sales Order Retail"; break;
                         default: ViewBag.formname = "Menupara not found in appl_menu"; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -224,6 +225,7 @@ namespace Improvar.Controllers
                                     {
                                         VE.SAGSLNM = DBF.M_SUBLEG.Find(sl.SAGSLCD).SLNM;
                                     }
+                                    VE.RTDEBNM = VE.T_SORD.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_SORD.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
                                     if (VE.DefaultAction == "V")
                                     {
                                         string str = "";
@@ -937,7 +939,8 @@ namespace Improvar.Controllers
                             TSORD.ORDBY = VE.T_SORD.ORDBY;
                             TSORD.SELBY = VE.T_SORD.SELBY;
                             TSORD.PAYTRMS = VE.T_SORD.PAYTRMS;
-
+                           if(VE.MENU_PARA=="SBCM") TSORD.RTDEBCD = VE.T_SORD.RTDEBCD;
+                            
                             if (VE.DefaultAction == "E")
                             {
                                 TSORD.DTAG = "E";
@@ -1344,6 +1347,34 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetRefRetailDetails(string val, string Code)
+        {
+            try
+            {
+                var str = Master_Help.RTDEBCD_help(val);
+
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    //var MSG = str.IndexOf(Cn.GCS());
+                    //if (MSG >= 0)
+                    //{
+                    //    DataTable Taxgrpcd = salesfunc.GetSlcdDetails(Code, "");
+                    //    str += "^TAXGRPCD=^" + Taxgrpcd.Rows[0]["taxgrpcd"] + Cn.GCS();
+                    //}
+
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
         }

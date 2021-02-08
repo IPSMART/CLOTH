@@ -123,5 +123,8 @@ namespace Improvar.ViewModels
         public string ALL_SIZE { get; set; }
         public string RATE_DISPLAY { get; set; }
         public string MESSAGE { get; set; }
+        public string RTDEBNM { get; set; }
+        
+
     }
 }
