@@ -481,16 +481,16 @@ namespace Improvar.Controllers
                             }
                             else
                             {
-                                MGROUP.ITGRPCD = txtst + (10).ToString("D3");
+                                MGROUP.ITGRPCD = txtst + (100).ToString("D3");
                             }
                             var tb1l = Master_Help.SQLquery(sql1);
                             if (tb1l.Rows[0]["GRPBARCODE"].ToString() != "")
                             {
-                                MGROUP.GRPBARCODE = ((tb1l.Rows[0]["GRPBARCODE"]).retInt() + 1).ToString("D2");
+                                MGROUP.GRPBARCODE = ((tb1l.Rows[0]["GRPBARCODE"]).retInt() + 1).ToString("D3");
                             }
                             else
                             {
-                                MGROUP.GRPBARCODE = (10).ToString("D2");
+                                MGROUP.GRPBARCODE = (100).ToString("D3");
                             }
                             //MGROUP.GRPBARCODE = Cn.GenMasterCode("M_GROUP", "GRPBARCODE", "", 2);
                         }

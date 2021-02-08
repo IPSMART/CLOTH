@@ -66,31 +66,32 @@ namespace Improvar.Controllers
                     var noOfCol = workSheet.Dimension.End.Column;
                     var noOfRow = workSheet.Dimension.End.Row;
                     int row = 2;
-                    while (row <= noOfRow)
+                    for (row = 2; row <= noOfRow; row++)
                     {
                         string grpnm = workSheet.Cells[row, 2].Value.ToString();
                         string style = workSheet.Cells[row, 3].Value.ToString() + workSheet.Cells[row, 4].Value.ToString();
                         string HSNCODE = workSheet.Cells[row, 5].Value.ToString();
                         ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);
-                        sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL";
-
-
+                        sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where barno='" + ItemDet.BARNO + "' and EFFDT=to_date('" + VE.TDT + "','dd/mm/yyyy') ";
+                        var dt = masterHelp.SQLquery(sql);
+                        if (dt.Rows.Count > 0) continue;
                         double CP = workSheet.Cells[row, 5].Value.retDbl();
                         double WP = workSheet.Cells[row, 5].Value.retDbl();
                         double RP = workSheet.Cells[row, 5].Value.retDbl();
                         msg = CreatePricelist(ItemDet.BARNO, VE.TDT, CP, WP, RP);
                         if (msg != "ok")
                         {
-                            break;
+                            return "Failed because of row:" + row + ",  " + msg;
                         }
                         msg = row.ToString();
+                        row++;
                     }
                 }
                 return "Uploaded Successfully ! ";
             }
             catch (Exception ex)
             {
-                Cn.SaveException(ex, "");
+                Cn.SaveException(ex, msg);
             }
             return "Failed because of row:" + msg;
         }
@@ -127,7 +128,7 @@ namespace Improvar.Controllers
                 OraCon.Dispose();
                 return "ok";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Cn.SaveException(ex, BARNO);
                 return ex.Message;

@@ -50,7 +50,7 @@ namespace Improvar.Models
         public string STKTYPE { get; set; }
 
         [Required]
-        [StringLength(8)]
+        [StringLength(10)]
         public string ITCD { get; set; }
 
         [StringLength(4)]

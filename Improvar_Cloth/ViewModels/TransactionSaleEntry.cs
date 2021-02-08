@@ -88,7 +88,7 @@ namespace Improvar.ViewModels
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }
-        [StringLength(8)]
+        [StringLength(10)]
         public string ITCD { get; set; }
         public string ITNM { get; set; }
         public string ITSTYLE { get; set; }
@@ -239,5 +239,6 @@ namespace Improvar.ViewModels
         public double? DISPBLAMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? DISPTCSAMT { get; set; }
+        public string SHOWMTRLJOBCD { get; set; }
     }
 }

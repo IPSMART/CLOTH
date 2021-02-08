@@ -75,7 +75,7 @@ namespace Improvar.ViewModels
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
         public string MTRLJOBNM { get; set; }
-        [StringLength(8)]
+        [StringLength(10)]
         public string ITCD { get; set; }
         public string ITNM { get; set; }
         public string STYLENO { get; set; }

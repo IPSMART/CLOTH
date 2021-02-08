@@ -9,7 +9,7 @@ namespace Improvar.Models
     [Table("T_BATCHMST")]
     public partial class T_BATCHMST
     {
-        
+
         public short? EMD_NO { get; set; }
 
         [Required]
@@ -26,7 +26,6 @@ namespace Improvar.Models
         [StringLength(25)]
         public string BARNO { get; set; }
 
-        [Required]
         [StringLength(30)]
         public string AUTONO { get; set; }
 
@@ -35,7 +34,6 @@ namespace Improvar.Models
         [StringLength(8)]
         public string SLCD { get; set; }
 
-        [Required]
         [StringLength(2)]
         public string MTRLJOBCD { get; set; }
 
@@ -47,7 +45,7 @@ namespace Improvar.Models
         public string JOBCD { get; set; }
 
         [Required]
-        [StringLength(8)]
+        [StringLength(10)]
         public string ITCD { get; set; }
 
         [StringLength(4)]
@@ -59,19 +57,19 @@ namespace Improvar.Models
         [StringLength(4)]
         public string COLRCD { get; set; }
 
-         public double? NOS { get; set; }
+        public double? NOS { get; set; }
 
-         public double? QNTY { get; set; }
+        public double? QNTY { get; set; }
 
-         public double? RATE { get; set; }
+        public double? RATE { get; set; }
 
-         public double? AMT { get; set; }
+        public double? AMT { get; set; }
 
-         public double? FLAGMTR { get; set; }
+        public double? FLAGMTR { get; set; }
 
-         public double? MTRL_COST { get; set; }
+        public double? MTRL_COST { get; set; }
 
-         public double? OTH_COST { get; set; }
+        public double? OTH_COST { get; set; }
 
         [StringLength(100)]
         public string ITREM { get; set; }
@@ -90,9 +88,9 @@ namespace Improvar.Models
 
         public short? ORGBATCHSLNO { get; set; }
 
-         public double? DIA { get; set; }
+        public double? DIA { get; set; }
 
-         public double? CUTLENGTH { get; set; }
+        public double? CUTLENGTH { get; set; }
 
         [StringLength(10)]
         public string LOCABIN { get; set; }

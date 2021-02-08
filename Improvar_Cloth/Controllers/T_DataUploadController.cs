@@ -149,17 +149,23 @@ namespace Improvar.Controllers
                     TTXN.TCSON = calcultednet;
                     TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
                     sql = "";
-                    sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
+                    sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
                     sql += " where   a.autono=b.autono and a.PREFNO='" + TTXN.PREFNO + "' and a.slcd='" + TTXN.SLCD + "' ";
                     var dt = masterHelp.SQLquery(sql);
                     if (dt.Rows.Count > 0)
                     {
-                        dupgrid.MESSAGE = "Allready Added " + dt.Rows[0]["docno"].ToString();
-                        dupgrid.BLNO = dt.Rows[0]["docno"].ToString();
+                        dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
+                        dupgrid.BLNO = TTXN.PREFNO ;
                         dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
                         dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
+                        dupgrid.ROAMT = dt.Rows[0]["ROAMT"].ToString();
                         DUGridlist.Add(dupgrid);
                         continue;
+                    }
+                    else
+                    {
+                        dupgrid.TCSAMT = TTXN.TCSAMT.retStr();
+                        dupgrid.BLAMT = TTXN.BLAMT.retStr();
                     }
 
                     //-------------------------Transport--------------------------//
@@ -179,6 +185,8 @@ namespace Improvar.Controllers
                     TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
                     //----------------------------------------------------------//
                     string PURGLCD = "";
+
+
 
                     DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
                     double txable = 0, gstamt = 0;
@@ -213,8 +221,9 @@ namespace Improvar.Controllers
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);                    
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
+                        TTXNDTL.ITNM = style;
                         TTXNDTL.SLNO = ++slno;
                         TTXNDTL.MTRLJOBCD = "FS";
 
@@ -259,7 +268,13 @@ namespace Improvar.Controllers
                         TTXNDTL.CGSTAMT = inrdr["CENT_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.CGSTAMT.retDbl();
                         TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.SGSTAMT.retDbl();
                         TTXNDTL.NETAMT = NET_AMT.toRound(2);
-                        TTXNDTLlist.Add(TTXNDTL);
+                        TTXNDTL tmpTTXNDTL = TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE).FirstOrDefault();
+                       if (tmpTTXNDTL!= null)
+                        {
+                            TTXNDTL.NOS = tmpTTXNDTL.NOS + TTXNDTL.NOS;
+                            TTXNDTL.QNTY = tmpTTXNDTL.NOS + TTXNDTL.QNTY;
+                        }
+                            TTXNDTLlist.Add(TTXNDTL);
 
 
                         TBATCHDTL TBATCHDTL = new TBATCHDTL();
@@ -316,7 +331,7 @@ namespace Improvar.Controllers
                         TTXNAMT.SLNO = 1;
                         TTXNAMT.GLCD = PURGLCD;
                         TTXNAMT.AMTCD = "0001";
-                        TTXNAMT.AMTDESC = "";
+                        TTXNAMT.AMTDESC = "FREIGHT";
                         TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
                         TTXNAMT.HSNCODE = "";
                         TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
@@ -340,7 +355,7 @@ namespace Improvar.Controllers
                         TTXNAMT.SLNO = 2;
                         TTXNAMT.GLCD = PURGLCD;
                         TTXNAMT.AMTCD = "0002";
-                        TTXNAMT.AMTDESC = "";
+                        TTXNAMT.AMTDESC = "INSURANCE";
                         TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
                         TTXNAMT.HSNCODE = "";
                         TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
@@ -360,7 +375,7 @@ namespace Improvar.Controllers
                     }
                     //           //Amount tab end
                     TTXN.ROAMT = (TTXN.BLAMT.retDbl() - (txable + gstamt + tcsamt)).toRound(2);
-
+                    dupgrid.ROAMT = TTXN.ROAMT.retStr();
                     TMPVE.T_TXN = TTXN;
                     TMPVE.T_TXNTRANS = TXNTRANS;
                     TMPVE.T_TXNOTH = TTXNOTH;
@@ -374,7 +389,7 @@ namespace Improvar.Controllers
                     else dupgrid.MESSAGE = tslCont;
                     DUGridlist.Add(dupgrid);
                 }//outer
-
+                VE.STATUS = "Data Uploaded Successfully";
 
             }//try
             catch (Exception ex)

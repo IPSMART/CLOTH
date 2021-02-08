@@ -533,30 +533,64 @@ namespace Improvar.Controllers
 
             return VE;
         }
+        //public ActionResult SearchPannelData()
+        //{
+        //    try
+        //    {
+        //        ItemMasterEntry VE = new ItemMasterEntry();
+        //        Cn.getQueryString(VE);
+        //        ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+        //        var MDT = (from j in DB.M_SITEM
+        //                   join p in DB.M_CNTRL_HDR on j.M_AUTONO equals (p.M_AUTONO)
+        //                   join q in DB.M_GROUP on j.ITGRPCD equals (q.ITGRPCD)
+        //                   where (j.M_AUTONO == p.M_AUTONO && q.ITGRPTYPE == VE.MENU_PARA)
+        //                   select new
+        //                   {
+        //                       ITCD = j.ITCD,
+        //                       STYLENO = j.STYLENO,
+        //                       ITNM = j.ITNM,
+        //                       ITGRPCD = j.ITGRPCD,
+        //                       ITGRPNM = q.ITGRPNM
+        //                   }).OrderBy(s => s.ITCD).ToList();
+        //        System.Text.StringBuilder SB = new System.Text.StringBuilder();
+        //        var hdr = "Design No" + Cn.GCS() + "Item Name" + Cn.GCS() + "ItemCd" + Cn.GCS() + "Group Name" + Cn.GCS() + "Group";
+        //        for (int j = 0; j <= MDT.Count - 1; j++)
+        //        {
+        //            SB.Append("<tr><td>" + MDT[j].STYLENO + "</td><td>" + MDT[j].ITNM + "</td><td>" + MDT[j].ITCD + "</td><td>" + MDT[j].ITGRPNM + "</td><td>" + MDT[j].ITGRPCD + "</td></tr>");
+        //        }
+        //        return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "2"));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cn.SaveException(ex, "");
+        //        return Content(ex.Message + ex.InnerException);
+        //    }
+        //}
         public ActionResult SearchPannelData()
         {
             try
             {
-                ItemMasterEntry VE = new ItemMasterEntry();
-                Cn.getQueryString(VE);
-                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                var MDT = (from j in DB.M_SITEM
-                           join p in DB.M_CNTRL_HDR on j.M_AUTONO equals (p.M_AUTONO)
-                           join q in DB.M_GROUP on j.ITGRPCD equals (q.ITGRPCD)
-                           where (j.M_AUTONO == p.M_AUTONO && q.ITGRPTYPE == VE.MENU_PARA)
-                           select new
-                           {
-                               ITCD = j.ITCD,
-                               STYLENO = j.STYLENO,
-                               ITNM = j.ITNM,
-                               ITGRPCD = j.ITGRPCD,
-                               ITGRPNM = q.ITGRPNM
-                           }).OrderBy(s => s.ITCD).ToList();
+                string scm = CommVar.CurSchema(UNQSNO);
+                string str = "select distinct a.itcd, a.barno, d.itnm, d.styleno, d.itgrpcd, e.itgrpnm, d.uomcd, nvl(b.rate, 0) wprate from ";
+                str += "(select a.itcd, b.barno ";
+                str += "from " + scm + ".m_sitem a, " + scm + ".m_sitem_barcode b ";
+                str += "where a.itcd = b.itcd(+) ) a, ";
+
+                str += "(select barno, rate from ( ";
+                str += "select a.barno, a.effdt, a.rate, ";
+                str += "row_number() over(partition by a.barno, a.effdt order by a.effdt desc) as rn ";
+                str += "from " + scm + ".m_itemplistdtl a ";
+                str += "where a.prccd = 'WP' ) where rn = 1 ) b, ";
+                str += "" + scm + ".m_sitem d, " + scm + ".m_group e ";
+                str += "where a.barno = b.barno(+) and a.itcd = d.itcd(+) and d.itgrpcd = e.itgrpcd(+) ";
+
+                DataTable MDT = masterHelp.SQLquery(str);
+
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                var hdr = "Design No" + Cn.GCS() + "Item Name" + Cn.GCS() + "ItemCd" + Cn.GCS() + "Group Name" + Cn.GCS() + "Group";
-                for (int j = 0; j <= MDT.Count - 1; j++)
+                var hdr = "Design No" + Cn.GCS() + "Item Name" + Cn.GCS() + "ItemCd" + Cn.GCS() + "Group Name" + Cn.GCS() + "Group" + Cn.GCS() + "Rate";
+                for (int j = 0; j <= MDT.Rows.Count - 1; j++)
                 {
-                    SB.Append("<tr><td>" + MDT[j].STYLENO + "</td><td>" + MDT[j].ITNM + "</td><td>" + MDT[j].ITCD + "</td><td>" + MDT[j].ITGRPNM + "</td><td>" + MDT[j].ITGRPCD + "</td></tr>");
+                    SB.Append("<tr><td>" + MDT.Rows[j]["STYLENO"].retStr() + "</td><td>" + MDT.Rows[j]["ITNM"].retStr() + " </td><td> " + MDT.Rows[j]["ITCD"].retStr() + "</td><td>" + MDT.Rows[j]["ITGRPNM"].retStr() + " </td><td> " + MDT.Rows[j]["ITGRPCD"].retStr() + "</td><td> " + MDT.Rows[j]["wprate"].retStr() + "</td></tr>");
                 }
                 return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "2"));
             }
@@ -748,7 +782,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    string prodgrpcd = "", prodgrpnm="";
+                    string prodgrpcd = "", prodgrpnm = "";
                     prodgrpcd = str.retCompValue("PRODGRPCD");
                     prodgrpnm = DB.M_PRODGRP.Where(a => a.PRODGRPCD == prodgrpcd).Select(b => b.PRODGRPNM).FirstOrDefault();
                     str += "^PRODGRPNM=^" + prodgrpnm + Cn.GCS();
@@ -1508,22 +1542,14 @@ namespace Improvar.Controllers
                             //auto code with first leter
 
                             string txtITGRPCD = VE.M_SITEM.ITGRPCD;
-                            var grptype = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select new { ITGRPTYPE = p.ITGRPTYPE }).ToList();
-                            string h = grptype[0].ITGRPTYPE;
-                            string txtst = h.Substring(0, 1);
-                            var grpbarcd = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select new { GRPBARCODE = p.GRPBARCODE }).ToList();
-                            string h3 = grpbarcd[0].GRPBARCODE;
-                            string txtst3 = h3;
+                            var txtst = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select p.ITGRPTYPE.Substring(0, 1)).FirstOrDefault();
+                            var txtst3 = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select p.GRPBARCODE).FirstOrDefault();
 
-                            //var MAXJOBCD = DB.M_SITEM.Where(a => a.ITCD.Substring(0, 1) == txtst).Max(a => a.ITCD);
-
-                            string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + h + txtst3 + "%') ";
+                            string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + txtst + txtst3 + "%') ";
                             var tbl = masterHelp.SQLquery(sql);
                             if (tbl.Rows[0]["itcd"].ToString() == "")
                             {
-                                string txt = txtst;
-                                string stxt = txt;
-                                string R = stxt + txtst3 + "00001";
+                                string R = txtst + txtst3 + "00001";
                                 MSITEM.ITCD = R.ToString();
                             }
 
@@ -1553,9 +1579,7 @@ namespace Improvar.Controllers
                                 }
                                 else
                                 {
-                                    string txt = txtst;
-                                    string stxt = txt.Substring(0, 1);
-                                    string R = stxt + txtst3 + "00001";
+                                    string R = txtst + txtst3 + "00001";
                                     MSITEM.ITCD = R.ToString();
                                 }
                             }
@@ -1609,6 +1633,8 @@ namespace Improvar.Controllers
 
                             MSITEM.ITCD = VE.M_SITEM.ITCD;
 
+                          
+
                             DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.SaveChanges();
                             DB.M_SITEM_SLCD.RemoveRange(DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD));
@@ -1627,6 +1653,9 @@ namespace Improvar.Controllers
                             DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
 
                             string sbarno = getbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
+                            DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)));
+                            DB.SaveChanges();
                             if (VE.PRICES_EFFDT.retStr() != "")
                             {
                                 DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
@@ -1733,6 +1762,18 @@ namespace Improvar.Controllers
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                                 barnos.Add(MSITEMBARCODE1.BARNO);
                                 if (i == 0) BARNO = MSITEMBARCODE1.BARNO;
+
+                                T_BATCHMST TBATCHMST = new T_BATCHMST();
+                                TBATCHMST.EMD_NO = MSITEM.EMD_NO;
+                                TBATCHMST.CLCD = MSITEM.CLCD;
+                                TBATCHMST.DTAG = MSITEM.DTAG;
+                                TBATCHMST.TTAG = MSITEM.TTAG;
+                                TBATCHMST.BARNO = MSITEMBARCODE1.BARNO;
+                                TBATCHMST.ITCD = MSITEM.ITCD;
+                                TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
+                                TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
+                                DB.T_BATCHMST.Add(TBATCHMST);
+
                             }
                         }
                         for (int i = 0; i <= VE.MSITEMMEASURE.Count - 1; i++)
@@ -1854,6 +1895,7 @@ namespace Improvar.Controllers
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         string sbarno = getbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
+                        DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
@@ -1880,6 +1922,7 @@ namespace Improvar.Controllers
                                 System.IO.File.Delete(path); //Delete file if it  exist  
                             }
                         }
+                        DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));

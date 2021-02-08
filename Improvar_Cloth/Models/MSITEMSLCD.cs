@@ -24,7 +24,7 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 0)]
-        [StringLength(8)]
+        [StringLength(10)]
         public string ITCD { get; set; }
 
         [Key]

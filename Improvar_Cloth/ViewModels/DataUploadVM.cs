@@ -24,7 +24,8 @@ namespace Improvar.ViewModels
         public string BLNO { get; set; }
         public string BLDT { get; set; }
         public string TCSAMT { get; set; }
-        public string BLAMT { get; set; }
+        public string BLAMT { get; set; }        
         public string MESSAGE { get; set; }
+        public string ROAMT { get; set; }
     }
 }

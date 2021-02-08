@@ -327,7 +327,12 @@ function FillBarcodeArea(str, Table, i) {
             if (MENU_PARA == "PB" || MENU_PARA == "OP") {
                 $("#ITCD").focus();
             } else {
-                $("#BARCODE").focus();
+                if ($("#MNTNBARNO").val() == "Y") {
+                    $("#BARCODE").focus();
+                }
+                else {
+                    $("#STYLENO").focus();
+                }
             }
         }
 
@@ -369,6 +374,7 @@ function UpdateBarCodeRow() {
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
+    var MNTNOURDESIGN = $("#MNTNOURDESIGN").val();
     if ($("#ITGRPCD").val() == "") {
         msgInfo("Please enter/select Item Group Code !");
         message_value = "ITGRPCD";
@@ -592,10 +598,25 @@ function UpdateBarCodeRow() {
     //$("#SCMDISCTYPE").val("P");*@
     $("#AddRow_Barcode").show();
     $("#UpdateRow_Barcode").hide();
-    if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-        $("#ITCD").focus();
-    } else {
-        $("#BARCODE").focus();
+    if (MNTNOURDESIGN != "Y") {
+        if ($("#MNTNBARNO").val() == "Y") {
+            $("#BARCODE").focus();
+        }
+        else {
+            $("#STYLENO").focus();
+        }
+    }
+    else {
+        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+            $("#ITCD").focus();
+        } else {
+            if ($("#MNTNBARNO").val() == "Y") {
+                $("#BARCODE").focus();
+            }
+            else {
+                $("#STYLENO").focus();
+            }
+        }
     }
     $("#bardatachng").val("Y");
 }
@@ -622,7 +643,12 @@ function ClearBarcodeArea(TAG) {
         if (MENU_PARA == "PB" || MENU_PARA == "OP") {
             $("#ITCD").focus();
         } else {
-            $("#BARCODE").focus();
+            if ($("#MNTNBARNO").val() == "Y") {
+                $("#BARCODE").focus();
+            }
+            else {
+                $("#STYLENO").focus();
+            }
         }
     }
     if (MENU_PARA == "SR" || MENU_PARA == "PR") {
@@ -1667,6 +1693,8 @@ function AddBarCodeGrid() {
     var MNTNDISC2 = $("#MNTNDISC2").val();
     var MNTNWPRPPER = $("#MNTNWPRPPER").val();
     var MNTNBALE = $("#MNTNBALE").val();
+    var MNTNOURDESIGN = $("#MNTNOURDESIGN").val();
+    var SHOWMTRLJOBCD = $("#SHOWMTRLJOBCD").val();
     if ($("#ITGRPCD").val() == "") {
         msgInfo("Please enter/select Item Group Code !");
         message_value = "ITGRPCD";
@@ -1926,6 +1954,11 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_DISCRATE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCRATE" type="hidden" value="' + DISCRATE + '">';
 
     }
+    if (SHOWMTRLJOBCD != "Y") {
+        tr += '        <input id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
+        tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
+        tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
+    }
 
     tr += '    </td>';
     tr += '    <td class="sticky-cell" style="left:17px;" title="' + SLNO + '">';
@@ -1947,11 +1980,13 @@ function AddBarCodeGrid() {
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITGRPNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPNM" readonly="readonly" type="text" value="' + ITGRPNM + '">';
     tr += '        <input id="B_ITGRPCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITGRPCD" type="hidden" value="' + ITGRPCD + '">';
     tr += '    </td>';
-    tr += '    <td class="" title="' + MTRLJOBCD + '">';
-    tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="' + MTRLJOBCD + '">';
-    tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
-    tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
-    tr += '    </td>';
+    if (SHOWMTRLJOBCD == "Y") {
+        tr += '    <td class="" title="' + MTRLJOBCD + '">';
+        tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="B_MTRLJOBCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBCD" readonly="readonly" type="text" value="' + MTRLJOBCD + '">';
+        tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
+        tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
+        tr += '    </td>';
+    }
     tr += '    <td class="" title="' + ITCD + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " id="B_ITCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].ITCD" readonly="readonly" type="text" value="' + ITCD + '">';
     tr += '    </td>';
@@ -2141,11 +2176,27 @@ function AddBarCodeGrid() {
     }
 
     ClearBarcodeArea();
-    if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-        $("#ITCD").focus();
-    } else {
-        $("#BARCODE").focus();
+    if (MNTNOURDESIGN != "Y") {
+        if ($("#MNTNBARNO").val() == "Y") {
+            $("#BARCODE").focus();
+        }
+        else {
+            $("#STYLENO").focus();
+        }
     }
+    else {
+        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+            $("#ITCD").focus();
+        } else {
+            if ($("#MNTNBARNO").val() == "Y") {
+                $("#BARCODE").focus();
+            }
+            else {
+                $("#STYLENO").focus();
+            }
+        }
+    }
+   
     $("#bardatachng").val("Y");
 }
 function RateUpdate(index, strid) {
@@ -2316,6 +2367,19 @@ function GetPartyDetails(id) {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
         var AUTONO = $("#AUTONO").val();
         var TDSCODE = $("#TDSCODE").val();
+        var Partycaption="";
+         if (MENU_PARA == "PB" || MENU_PARA == "PR")
+        {
+             Partycaption="Supplier";
+        }
+        else if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP")
+        {
+            Partycaption="Buyer";
+        }
+        else
+        {
+            Partycaption="Party";
+        }
         $.ajax({
             type: 'POST',
             beforesend: $("#WaitingMode").show(),
@@ -2329,7 +2393,7 @@ function GetPartyDetails(id) {
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
                     $('#ReferanceColumn').val("1/0/3/2");
-                    $('#helpDIV_Header').html("Party Details");
+                    $('#helpDIV_Header').html(Partycaption + " Details");
                 }
                 else {
                     var MSG = result.indexOf(String.fromCharCode(181));
@@ -2366,6 +2430,10 @@ function GetPartyDetails(id) {
                         BillAmountCalculate();//fill value of tcson
                         //
                         if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+                            $("li").removeClass("active").addClass("");
+                            $(".nav-tabs li:first-child").addClass('active');
+                            $(".tab-content div").removeClass("active");
+                            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                             $("#PREFNO").focus();
                         }
                         else {

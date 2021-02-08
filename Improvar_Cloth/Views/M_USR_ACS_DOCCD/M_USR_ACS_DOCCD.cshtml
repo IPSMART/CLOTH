@@ -63,7 +63,10 @@
           string mldauto = "";
           if (@Model.M_USR_ACS_DOCCD != null)
           {
-              mldauto = Model.M_USR_ACS_DOCCD.USER_ID.retStr();
+              if (@Model.M_USR_ACS_DOCCD.USER_ID != null)
+              {
+                  mldauto = Model.M_USR_ACS_DOCCD.USER_ID.retStr();
+              }
           }
           else
           {
