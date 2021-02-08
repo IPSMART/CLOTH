@@ -29,7 +29,6 @@ namespace Improvar.Models
         public string TaxSch { get { return "GST"; } }
         public string SupTyp { get { return "B2B"; } }
         public string RegRev { get; set; }
-        //public string RegRev { get { return "Y"; } }
         public object EcmGstin { get; set; }
         public string IgstOndoublera { get { return "N"; } }
     }
@@ -354,10 +353,10 @@ namespace Improvar.Models
         public string SignedInvoice { get; set; }
         public string SignedQRCode { get; set; }
         public string Status { get; set; }
-        public long EwbNo { get; set; }
+        public long? EwbNo { get; set; }
         public string EwbDt { get; set; }
         public string EwbValidTill { get; set; }
-        public object Remarks { get; set; }
+        public string Remarks { get; set; }
     }
 
     public class AdqrRespInvoiceByIRN

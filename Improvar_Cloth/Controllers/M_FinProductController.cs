@@ -1633,7 +1633,23 @@ namespace Improvar.Controllers
 
                             MSITEM.ITCD = VE.M_SITEM.ITCD;
 
-                          
+                            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                            string sbarno = getbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
+                            var comp = DB1.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)).OrderBy(s => s.BARNO).ToList();
+                            foreach (var v in comp)
+                            {
+                                if (!VE.MSITEMBARCODE.Where(s => s.BARNO == v.BARNO).Any())
+                                {
+                                    DB.T_BATCHMST.Where(x => x.BARNO == v.BARNO).ToList().ForEach(x => { x.DTAG = "E"; });
+                                    DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => x.BARNO == v.BARNO));
+                                    DB.SaveChanges();
+
+                                    DB.M_SITEM_BARCODE.Where(x => x.BARNO == v.BARNO).ToList().ForEach(x => { x.DTAG = "E"; });
+                                    DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.BARNO == v.BARNO));
+                                    DB.SaveChanges();
+                                }
+                            }
+
 
                             DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.SaveChanges();
@@ -1652,10 +1668,8 @@ namespace Improvar.Controllers
                             DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
 
-                            string sbarno = getbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
-                            DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)));
-                            DB.SaveChanges();
+
+
                             if (VE.PRICES_EFFDT.retStr() != "")
                             {
                                 DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
@@ -1669,9 +1683,7 @@ namespace Improvar.Controllers
                             DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                             DB.SaveChanges();
-                            DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
-                            DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
-
+                           
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
 
@@ -1741,39 +1753,57 @@ namespace Improvar.Controllers
                         //}
                         //DB.M_SITEM_BARCODE.Add(MSITEMBARCODE);
                         List<string> barnos = new List<string>(); string BARNO = "";
+                        string sql1 = "";
+                        DataTable recoexist = new DataTable();
                         for (int i = 0; i <= VE.MSITEMBARCODE.Count - 1; i++)
                         {
                             if (VE.MSITEMBARCODE[i].SIZECD != null || VE.MSITEMBARCODE[i].COLRCD != null || i == 0)
                             {
-                                M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
-                                MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
-                                MSITEMBARCODE1.CLCD = MSITEM.CLCD;
-                                MSITEMBARCODE1.ITCD = MSITEM.ITCD;
-                                MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
-                                MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
+
+                                string barno = "";
                                 if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
                                 {
-                                    MSITEMBARCODE1.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
+                                    barno = VE.MSITEMBARCODE[i].BARNO.retStr();
                                 }
                                 else
                                 {
-                                    MSITEMBARCODE1.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
+                                    barno = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
                                 }
-                                DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
-                                barnos.Add(MSITEMBARCODE1.BARNO);
-                                if (i == 0) BARNO = MSITEMBARCODE1.BARNO;
+                                if (i == 0) BARNO = barno;
+                                sql1 = "Select * from " + CommVar.CurSchema(UNQSNO) + ".t_batchmst where barno='" + barno + "'";
+                                recoexist = masterHelp.SQLquery(sql1);
+                                if (recoexist.Rows.Count == 0)
+                                {
+                                    M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
+                                    MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
+                                    MSITEMBARCODE1.CLCD = MSITEM.CLCD;
+                                    MSITEMBARCODE1.ITCD = MSITEM.ITCD;
+                                    MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
+                                    MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
+                                    MSITEMBARCODE1.BARNO = barno.retStr();
+                                    //if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
+                                    //{
+                                    //    MSITEMBARCODE1.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
+                                    //}
+                                    //else
+                                    //{
+                                    //    MSITEMBARCODE1.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
+                                    //}
+                                    DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
+                                    barnos.Add(MSITEMBARCODE1.BARNO);
+                                    //if (i == 0) BARNO = MSITEMBARCODE1.BARNO;
 
-                                T_BATCHMST TBATCHMST = new T_BATCHMST();
-                                TBATCHMST.EMD_NO = MSITEM.EMD_NO;
-                                TBATCHMST.CLCD = MSITEM.CLCD;
-                                TBATCHMST.DTAG = MSITEM.DTAG;
-                                TBATCHMST.TTAG = MSITEM.TTAG;
-                                TBATCHMST.BARNO = MSITEMBARCODE1.BARNO;
-                                TBATCHMST.ITCD = MSITEM.ITCD;
-                                TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
-                                TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
-                                DB.T_BATCHMST.Add(TBATCHMST);
-
+                                    T_BATCHMST TBATCHMST = new T_BATCHMST();
+                                    TBATCHMST.EMD_NO = MSITEM.EMD_NO;
+                                    TBATCHMST.CLCD = MSITEM.CLCD;
+                                    TBATCHMST.DTAG = MSITEM.DTAG;
+                                    TBATCHMST.TTAG = MSITEM.TTAG;
+                                    TBATCHMST.BARNO = MSITEMBARCODE1.BARNO;
+                                    TBATCHMST.ITCD = MSITEM.ITCD;
+                                    TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
+                                    TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
+                                    DB.T_BATCHMST.Add(TBATCHMST);
+                                }
                             }
                         }
                         for (int i = 0; i <= VE.MSITEMMEASURE.Count - 1; i++)

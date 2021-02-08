@@ -1472,8 +1472,8 @@ function BillAmountCalculate(TAG) {
             TCSON = $("#TCSON").val();
             if (TCSON == "") { TCSON = parseFloat(0); } else { TCSON = parseFloat(TCSON) }
         }
-        TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100);
-        TCSAMT = CalculateTcsAmt(TCSAMT);
+        TCSAMT = parseFloat(parseFloat(TCSON) * parseFloat(TCSPER) / 100).toFixed(2);
+        TCSAMT = parseFloat(CalculateTcsAmt(TCSAMT)).toFixed(2);
         if (MENU_PARA == "PB" || MENU_PARA == "OP") {
             var NEW_TCSAMT = $("#TCSAMT").val();
             if (NEW_TCSAMT == "") { NEW_TCSAMT = parseFloat(0); } else { NEW_TCSAMT = parseFloat(NEW_TCSAMT) }
