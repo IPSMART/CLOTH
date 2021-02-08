@@ -38,6 +38,7 @@ namespace Improvar.Controllers
                     {
                         case "SORD": ViewBag.formname = "Sales Order Entry"; break;
                         case "PORD": ViewBag.formname = "Purchase Order Entry"; break;
+                        case "SBCM": ViewBag.formname = "Sales Order Retail"; break;
                         default: ViewBag.formname = "Menupara not found in appl_menu"; break;
                     }
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -140,6 +141,21 @@ namespace Improvar.Controllers
                                 //List<TSORDDTL_SEARCHPANEL> TSORDDTL_SEARCHPANEL = new List<TSORDDTL_SEARCHPANEL>(); for (int i = 0; i < 10; i++) { TSORDDTL_SEARCHPANEL SEARCHPANEL = new TSORDDTL_SEARCHPANEL(); SEARCHPANEL.SLNO = Convert.ToInt16(i + 1); TSORDDTL_SEARCHPANEL.Add(SEARCHPANEL); }
                                 //VE.TSORDDTL_SEARCHPANEL = TSORDDTL_SEARCHPANEL;
                                 T_SORD aaa = new Models.T_SORD(); aaa.DOCDT = System.DateTime.Now.Date; if (VE.DocumentType.Count > 0) { aaa.DOCCD = VE.DocumentType.First().value; }
+                                string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                                string sql1 = "";
+                                sql1 += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,a.retdebslcd,b.city,b.add1,b.add2,b.add3,effdt ";
+                                sql1 += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b";
+                                sql1 += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) ";
+                                DataTable syscnfgdt = Master_Help.SQLquery(sql1);
+                                if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                                {
+                                    aaa.RTDEBCD = syscnfgdt.Rows[0]["rtdebcd"].retStr();
+                                    VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                    var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                                    VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
+                                    VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                    VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                                }
                                 VE.T_SORD = aaa;
                             }
                             else
@@ -224,6 +240,24 @@ namespace Improvar.Controllers
                                     {
                                         VE.SAGSLNM = DBF.M_SUBLEG.Find(sl.SAGSLCD).SLNM;
                                     }
+                                    string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                                    if (VE.MENU_PARA == "SBCM" && sl.RTDEBCD!=null)
+                                    {
+                                        string sql1 = "";
+                                        sql1 += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,a.retdebslcd,b.city,b.add1,b.add2,b.add3,effdt ";
+                                        sql1 += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b";
+                                        sql1 += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) where a.rtdebcd='" + sl.RTDEBCD + "' ";
+                                        DataTable syscnfgdt = Master_Help.SQLquery(sql1);
+                                        if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                                        {
+                                            VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                            var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                                            VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
+                                            VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                            VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                                        }
+                                    }
+                                       
                                     if (VE.DefaultAction == "V")
                                     {
                                         string str = "";
@@ -937,7 +971,8 @@ namespace Improvar.Controllers
                             TSORD.ORDBY = VE.T_SORD.ORDBY;
                             TSORD.SELBY = VE.T_SORD.SELBY;
                             TSORD.PAYTRMS = VE.T_SORD.PAYTRMS;
-
+                           if(VE.MENU_PARA=="SBCM") TSORD.RTDEBCD = VE.T_SORD.RTDEBCD;
+                            
                             if (VE.DefaultAction == "E")
                             {
                                 TSORD.DTAG = "E";
@@ -1344,6 +1379,34 @@ namespace Improvar.Controllers
             }
             catch (Exception ex)
             {
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetRefRetailDetails(string val, string Code)
+        {
+            try
+            {
+                var str = Master_Help.RTDEBCD_help(val);
+
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    //var MSG = str.IndexOf(Cn.GCS());
+                    //if (MSG >= 0)
+                    //{
+                    //    DataTable Taxgrpcd = salesfunc.GetSlcdDetails(Code, "");
+                    //    str += "^TAXGRPCD=^" + Taxgrpcd.Rows[0]["taxgrpcd"] + Cn.GCS();
+                    //}
+
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
         }

@@ -110,6 +110,11 @@ namespace Improvar.ViewModels
         public string TDT { get; set; }
         public string CONSLNM { get; set; }
         public string SAGSLNM { get; set; }
+        public string RTDEBNM { get; set; }
+        public string MOBILE { get; set; }
+        public string ADDR { get; set; }
+        public string RETDEBSLCD { get; set; }
+        
     }
     public class SalesOrderEntry_MAINGRID
     {
@@ -123,5 +128,8 @@ namespace Improvar.ViewModels
         public string ALL_SIZE { get; set; }
         public string RATE_DISPLAY { get; set; }
         public string MESSAGE { get; set; }
+     
+        
+
     }
 }

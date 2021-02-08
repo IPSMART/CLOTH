@@ -88,6 +88,8 @@ namespace Improvar.Models
         public string SPLNOTE { get; set; }
 
          public double? RATEPER { get; set; }
+        [StringLength(8)]
+        public string RTDEBCD { get; set; }
 
     }
 }
