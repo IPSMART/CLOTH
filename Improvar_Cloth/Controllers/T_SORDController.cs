@@ -141,6 +141,21 @@ namespace Improvar.Controllers
                                 //List<TSORDDTL_SEARCHPANEL> TSORDDTL_SEARCHPANEL = new List<TSORDDTL_SEARCHPANEL>(); for (int i = 0; i < 10; i++) { TSORDDTL_SEARCHPANEL SEARCHPANEL = new TSORDDTL_SEARCHPANEL(); SEARCHPANEL.SLNO = Convert.ToInt16(i + 1); TSORDDTL_SEARCHPANEL.Add(SEARCHPANEL); }
                                 //VE.TSORDDTL_SEARCHPANEL = TSORDDTL_SEARCHPANEL;
                                 T_SORD aaa = new Models.T_SORD(); aaa.DOCDT = System.DateTime.Now.Date; if (VE.DocumentType.Count > 0) { aaa.DOCCD = VE.DocumentType.First().value; }
+                                string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                                string sql1 = "";
+                                sql1 += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,a.retdebslcd,b.city,b.add1,b.add2,b.add3,effdt ";
+                                sql1 += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b";
+                                sql1 += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) ";
+                                DataTable syscnfgdt = Master_Help.SQLquery(sql1);
+                                if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                                {
+                                    aaa.RTDEBCD = syscnfgdt.Rows[0]["rtdebcd"].retStr();
+                                    VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                    var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                                    VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
+                                    VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                    VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                                }
                                 VE.T_SORD = aaa;
                             }
                             else
@@ -225,7 +240,24 @@ namespace Improvar.Controllers
                                     {
                                         VE.SAGSLNM = DBF.M_SUBLEG.Find(sl.SAGSLCD).SLNM;
                                     }
-                                    VE.RTDEBNM = VE.T_SORD.RTDEBCD.retStr() == "" ? "" : DBF.M_RETDEB.Where(a => a.RTDEBCD == VE.T_SORD.RTDEBCD).Select(b => b.RTDEBNM).FirstOrDefault();
+                                    string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                                    if (VE.MENU_PARA == "SBCM" && sl.RTDEBCD!=null)
+                                    {
+                                        string sql1 = "";
+                                        sql1 += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,a.retdebslcd,b.city,b.add1,b.add2,b.add3,effdt ";
+                                        sql1 += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b";
+                                        sql1 += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) where a.rtdebcd='" + sl.RTDEBCD + "' ";
+                                        DataTable syscnfgdt = Master_Help.SQLquery(sql1);
+                                        if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                                        {
+                                            VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                            var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                                            VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
+                                            VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                            VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                                        }
+                                    }
+                                       
                                     if (VE.DefaultAction == "V")
                                     {
                                         string str = "";

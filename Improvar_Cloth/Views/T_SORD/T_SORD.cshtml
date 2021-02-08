@@ -1567,15 +1567,14 @@
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDEBNM", maxlength = 15, @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
+                            @Html.EditorFor(model => model.RTDEBNM, new { htmlAttributes = new { @class = "form-control", id = "RTDEBNM", maxlength = 15,@title=Model.Add, @placeholder = "Ref Retail Name", @TabIndex = -1, @readonly = "readonly" } })
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @*@Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @placeholder = "Mobile No.", @readonly = "readonly" } })
-                            @Html.HiddenFor(model => model.ADDR, new { @class = "form-control", id = "ADDR", maxlength = 15 })*@
-                            @Html.HiddenFor(model => model.M_SYSCNFG.RETDEBSLCD, new { @class = "form-control", id = "RETDEBSLCD", maxlength = 15 })
-                            @*@Html.HiddenFor(model => model.EFFDT, new { @class = "form-control", id = "EFFDT", maxlength = 10 })*@
+                            @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBILE", maxlength = 10, @title = "Only for View", @placeholder = "Mobile No.", @readonly = "readonly" } })
+                            @Html.HiddenFor(model => model.ADDR, new { @class = "form-control", id = "ADDR", maxlength = 15 })
+                            @Html.HiddenFor(model => model.RETDEBSLCD, new { @class = "form-control", id = "RETDEBSLCD", maxlength = 15 })
                         </div>
                     </div>
                 </div>
