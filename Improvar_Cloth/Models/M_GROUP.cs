@@ -72,7 +72,7 @@ namespace Improvar.Models
         [StringLength(5)]
         public string RPPRICEGEN { get; set; }
 
-        [StringLength(2)]
+        [StringLength(3)]
         public string GRPBARCODE { get; set; }
         [StringLength(20)]
         public string SAPCODE { get; set; }

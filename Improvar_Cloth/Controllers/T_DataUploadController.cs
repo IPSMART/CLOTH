@@ -374,7 +374,7 @@ namespace Improvar.Controllers
                     else dupgrid.MESSAGE = tslCont;
                     DUGridlist.Add(dupgrid);
                 }//outer
-
+                VE.STATUS = "Data Uploaded Successfully";
 
             }//try
             catch (Exception ex)
