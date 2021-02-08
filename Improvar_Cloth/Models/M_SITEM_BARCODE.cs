@@ -22,7 +22,7 @@ namespace Improvar.Models
         [StringLength(1)]
         public string TTAG { get; set; }
 
-        [StringLength(8)]
+        [StringLength(10)]
         public string ITCD { get; set; }
 
         [Key]

@@ -111,7 +111,7 @@ namespace Improvar.Models
         public bool Checked { get; set; }
         public string ITGRPCD { get; set; }
         public string ITGRPNM { get; set; }
-        [StringLength(8)]
+        [StringLength(10)]
         public string ITCD { get; set; }
         public string ITNM { get; set; }
         public string ITSTYLE { get; set; }

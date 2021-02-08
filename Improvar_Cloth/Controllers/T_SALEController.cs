@@ -321,15 +321,16 @@ namespace Improvar.Controllers
             dt.Columns.Add("sds4", typeof(string));
             dt.Columns.Add("sds5", typeof(string));
             dt.Columns.Add("sds6", typeof(string));
-            dt.Rows.Add("SBPCK", "Packing Slip", "SALGLCD", "", "", "", "", "");
-            dt.Rows.Add("SB", "Sales Bill (Agst Packing Slip)", "SALGLCD", "", "", "", "", "");
-            dt.Rows.Add("SBDIR", "Sales Bill", "SALGLCD", "", "", "", "", "");
-            dt.Rows.Add("SR", "Sales Return (SRM)", "SALRETGLCD", "", "", "", "", "");
-            dt.Rows.Add("SBEXP", "Sales Bill (Export)", "SALGLCD", "", "", "", "", "");
-            dt.Rows.Add("PI", "Proforma Invoice", "SALGLCD", "", "", "", "", "");
-            dt.Rows.Add("PB", "Purchase Bill", "PURGLCD", "", "", "", "", "");
-            dt.Rows.Add("PR", "Purchase Return (PRM)", "PURRETGLCD", "", "", "", "", "");
-            dt.Rows.Add("OP", "Opening Stock", "PURGLCD", "", "", "", "", "");
+            dt.Columns.Add("PARTYLINKCD", typeof(string));
+            dt.Rows.Add("SBPCK", "Packing Slip", "SALGLCD", "", "", "", "", "", "D");
+            dt.Rows.Add("SB", "Sales Bill (Agst Packing Slip)", "SALGLCD", "", "", "", "", "", "D");
+            dt.Rows.Add("SBDIR", "Sales Bill", "SALGLCD", "", "", "", "", "", "D");
+            dt.Rows.Add("SR", "Sales Return (SRM)", "SALRETGLCD", "", "", "", "", "", "D");
+            dt.Rows.Add("SBEXP", "Sales Bill (Export)", "SALGLCD", "", "", "", "", "", "D");
+            dt.Rows.Add("PI", "Proforma Invoice", "SALGLCD", "", "", "", "", "", "");
+            dt.Rows.Add("PB", "Purchase Bill", "PURGLCD", "", "", "", "", "", "C");
+            dt.Rows.Add("PR", "Purchase Return (PRM)", "PURRETGLCD", "", "", "", "", "", "C");
+            dt.Rows.Add("OP", "Opening Stock", "PURGLCD", "", "", "", "", "", "");
             var dr = dt.Select("MENUPARA='" + MENU_PARA + "'");
             if (dr != null) return dr.CopyToDataTable(); else return dt;
         }
@@ -937,6 +938,7 @@ namespace Improvar.Controllers
                 TransactionSaleEntry VE = new TransactionSaleEntry();
                 Cn.getQueryString(VE);
                 var code_data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string caption = "";
                 if (code_data.Count() > 1)
                 {
                     if (code_data[0].retStr() == "Party")
@@ -947,7 +949,8 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            Code = "";
+                            Code = MenuDescription(VE.MENU_PARA).Rows[0]["PARTYLINKCD"].ToString();
+                            caption = Code.retStr() == "D" ? "Buyer" : Code.retStr() == "C" ? "Supplier" : "Party";
                         }
                     }
                     else
@@ -965,7 +968,7 @@ namespace Improvar.Controllers
 
                 }
 
-                var str = masterHelp.SLCD_help(val, Code);
+                var str = masterHelp.SLCD_help(val, Code, caption);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);

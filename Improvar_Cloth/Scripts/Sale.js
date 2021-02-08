@@ -2367,6 +2367,19 @@ function GetPartyDetails(id) {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
         var AUTONO = $("#AUTONO").val();
         var TDSCODE = $("#TDSCODE").val();
+        var Partycaption="";
+         if (MENU_PARA == "PB" || MENU_PARA == "PR")
+        {
+             Partycaption="Supplier";
+        }
+        else if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP")
+        {
+            Partycaption="Buyer";
+        }
+        else
+        {
+            Partycaption="Party";
+        }
         $.ajax({
             type: 'POST',
             beforesend: $("#WaitingMode").show(),
@@ -2380,7 +2393,7 @@ function GetPartyDetails(id) {
                     $('#helpDIV').html(result);
                     $('#ReferanceFieldID').val("SLCD/SLNM/SLAREA/GSTNO");
                     $('#ReferanceColumn').val("1/0/3/2");
-                    $('#helpDIV_Header').html("Party Details");
+                    $('#helpDIV_Header').html(Partycaption + " Details");
                 }
                 else {
                     var MSG = result.indexOf(String.fromCharCode(181));

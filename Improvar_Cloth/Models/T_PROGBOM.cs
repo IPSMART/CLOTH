@@ -36,7 +36,7 @@ namespace Improvar.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public short RSLNO { get; set; }
 
-        [StringLength(8)]
+        [StringLength(10)]
         public string ITCD { get; set; }
 
         [StringLength(4)]

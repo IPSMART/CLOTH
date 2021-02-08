@@ -23,7 +23,7 @@ namespace Improvar.Models
 
         [Key]
         [Column(Order = 0)]
-        [StringLength(12)]
+        [StringLength(10)]
         public string ITCD { get; set; }
         public byte? SLNO { get; set; }
 

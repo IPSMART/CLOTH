@@ -42,7 +42,7 @@ namespace Improvar.Models
         public short SLNO { get; set; }
 
         [Required]
-        [StringLength(12)]
+        [StringLength(10)]
         public string ITCD { get; set; }
 
         [StringLength(4)]
