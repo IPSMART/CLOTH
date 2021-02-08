@@ -1551,7 +1551,7 @@ namespace Improvar
             if (barno == null)
             {
                 //barno = ITCD.retStr().Substring(1, 8) + CLRBARCODE.retStr() + SZBARCODE.retStr();
-                barno = ITCD.retStr().Substring(1, ITCD.Length-1) + CLRBARCODE.retStr() + SZBARCODE.retStr();
+                barno = ITCD.retStr().Substring(1, ITCD.Length - 1) + CLRBARCODE.retStr() + SZBARCODE.retStr();
             }
             return barno;
         }
@@ -2130,7 +2130,7 @@ namespace Improvar
             OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
             try
             {
-                string DefaultAction = "A";
+                string DefaultAction = "A"; grpnm = grpnm.ToUpper();
                 var tMGROU = DB.M_GROUP.Where(m => m.ITGRPNM == grpnm).FirstOrDefault();
                 if (tMGROU != null)
                 {
@@ -2291,7 +2291,7 @@ namespace Improvar
                 Cn.SaveException(ex, "");
                 OraCon.Dispose();
                 return ItemDet;
-            } 
+            }
         }
     }
 }
