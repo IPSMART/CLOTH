@@ -259,7 +259,7 @@ namespace Improvar.Controllers
                 query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  ";
                 query1 += " a.tddiscamt, a.discamt,a.TXBLVAL, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
                 query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,''itstyle ";                query1 += " , b.amtnm itnm, a.hsncode,  ";
-                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL, a.igstper, a.igstamt, ";
+                query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL, a.igstper, a.igstamt, ";
                 query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty ";
                 query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
                 query1 += " where a.amtcd = b.amtcd ";
