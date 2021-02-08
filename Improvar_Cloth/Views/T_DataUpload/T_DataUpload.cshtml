@@ -35,7 +35,7 @@
                 <table class="table table-bordered table-condensed">
                     <caption><h2>Upload Status</h2></caption>
                     <thead>
-                        <tr><th>CUSTOMERNO</th><th>BLNO</th><th>BLDT</th><th>MESSAGE</th></tr>
+                        <tr><th>CUSTOMERNO</th><th>BLNO</th><th>BLDT</th><th>TCSAMT</th><th>ROAMT</th><th>BLAMT</th><th>MESSAGE</th></tr>
                     </thead>
                     <tbody>
                         @for (int i = 0; i < Model.DUpGrid.Count; i++)
@@ -44,6 +44,9 @@
                                 <td>@Model.DUpGrid[i].CUSTOMERNO </td>
                                 <td> @Model.DUpGrid[i].BLNO</td>
                                 <td> @Model.DUpGrid[i].BLDT</td>
+                                <td> @Model.DUpGrid[i].TCSAMT</td>
+                                <td> @Model.DUpGrid[i].ROAMT</td>
+                                <td> @Model.DUpGrid[i].BLAMT</td>
                                 <td>@Model.DUpGrid[i].MESSAGE</td>
                             </tr>
                         }
