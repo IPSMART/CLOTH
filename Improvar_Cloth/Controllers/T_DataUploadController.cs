@@ -180,6 +180,8 @@ namespace Improvar.Controllers
                     //----------------------------------------------------------//
                     string PURGLCD = "";
 
+
+
                     DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
                     double txable = 0, gstamt = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
@@ -213,8 +215,9 @@ namespace Improvar.Controllers
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);                    
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
+                        TTXNDTL.ITNM = style;
                         TTXNDTL.SLNO = ++slno;
                         TTXNDTL.MTRLJOBCD = "FS";
 
@@ -259,7 +262,13 @@ namespace Improvar.Controllers
                         TTXNDTL.CGSTAMT = inrdr["CENT_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.CGSTAMT.retDbl();
                         TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.SGSTAMT.retDbl();
                         TTXNDTL.NETAMT = NET_AMT.toRound(2);
-                        TTXNDTLlist.Add(TTXNDTL);
+                        TTXNDTL tmpTTXNDTL = TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE).FirstOrDefault();
+                       if (tmpTTXNDTL!= null)
+                        {
+                            TTXNDTL.NOS = tmpTTXNDTL.NOS + TTXNDTL.NOS;
+                            TTXNDTL.QNTY = tmpTTXNDTL.NOS + TTXNDTL.QNTY;
+                        }
+                            TTXNDTLlist.Add(TTXNDTL);
 
 
                         TBATCHDTL TBATCHDTL = new TBATCHDTL();
@@ -316,7 +325,7 @@ namespace Improvar.Controllers
                         TTXNAMT.SLNO = 1;
                         TTXNAMT.GLCD = PURGLCD;
                         TTXNAMT.AMTCD = "0001";
-                        TTXNAMT.AMTDESC = "";
+                        TTXNAMT.AMTDESC = "FREIGHT";
                         TTXNAMT.AMTRATE = oudr["FREIGHT"].retDbl();
                         TTXNAMT.HSNCODE = "";
                         TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
@@ -340,7 +349,7 @@ namespace Improvar.Controllers
                         TTXNAMT.SLNO = 2;
                         TTXNAMT.GLCD = PURGLCD;
                         TTXNAMT.AMTCD = "0002";
-                        TTXNAMT.AMTDESC = "";
+                        TTXNAMT.AMTDESC = "INSURANCE";
                         TTXNAMT.AMTRATE = oudr["INSURANCE"].retDbl();
                         TTXNAMT.HSNCODE = "";
                         TTXNAMT.AMT = TTXNAMT.AMTRATE; txable += TTXNAMT.AMT.retDbl();
