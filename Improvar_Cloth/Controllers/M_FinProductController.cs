@@ -748,7 +748,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    string prodgrpcd = "", prodgrpnm="";
+                    string prodgrpcd = "", prodgrpnm = "";
                     prodgrpcd = str.retCompValue("PRODGRPCD");
                     prodgrpnm = DB.M_PRODGRP.Where(a => a.PRODGRPCD == prodgrpcd).Select(b => b.PRODGRPNM).FirstOrDefault();
                     str += "^PRODGRPNM=^" + prodgrpnm + Cn.GCS();
@@ -1508,22 +1508,14 @@ namespace Improvar.Controllers
                             //auto code with first leter
 
                             string txtITGRPCD = VE.M_SITEM.ITGRPCD;
-                            var grptype = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select new { ITGRPTYPE = p.ITGRPTYPE }).ToList();
-                            string h = grptype[0].ITGRPTYPE;
-                            string txtst = h.Substring(0, 1);
-                            var grpbarcd = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select new { GRPBARCODE = p.GRPBARCODE }).ToList();
-                            string h3 = grpbarcd[0].GRPBARCODE;
-                            string txtst3 = h3;
+                            var txtst = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select p.ITGRPTYPE.Substring(0, 1)).FirstOrDefault();
+                            var txtst3 = (from p in DB.M_GROUP where p.ITGRPCD == txtITGRPCD select p.GRPBARCODE).FirstOrDefault();
 
-                            //var MAXJOBCD = DB.M_SITEM.Where(a => a.ITCD.Substring(0, 1) == txtst).Max(a => a.ITCD);
-
-                            string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + h + txtst3 + "%') ";
+                            string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + txtst + txtst3 + "%') ";
                             var tbl = masterHelp.SQLquery(sql);
                             if (tbl.Rows[0]["itcd"].ToString() == "")
                             {
-                                string txt = txtst;
-                                string stxt = txt;
-                                string R = stxt + txtst3 + "00001";
+                                string R = txtst + txtst3 + "00001";
                                 MSITEM.ITCD = R.ToString();
                             }
 
@@ -1553,9 +1545,7 @@ namespace Improvar.Controllers
                                 }
                                 else
                                 {
-                                    string txt = txtst;
-                                    string stxt = txt.Substring(0, 1);
-                                    string R = stxt + txtst3 + "00001";
+                                    string R = txtst + txtst3 + "00001";
                                     MSITEM.ITCD = R.ToString();
                                 }
                             }
@@ -1608,6 +1598,10 @@ namespace Improvar.Controllers
                             MSITEM.M_AUTONO = VE.M_SITEM.M_AUTONO;
 
                             MSITEM.ITCD = VE.M_SITEM.ITCD;
+
+                            DB.T_BATCHMST.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
+                            DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+                            DB.SaveChanges();
 
                             DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.SaveChanges();
@@ -1733,6 +1727,18 @@ namespace Improvar.Controllers
                                 DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                                 barnos.Add(MSITEMBARCODE1.BARNO);
                                 if (i == 0) BARNO = MSITEMBARCODE1.BARNO;
+
+                                T_BATCHMST TBATCHMST = new T_BATCHMST();
+                                TBATCHMST.EMD_NO = MSITEM.EMD_NO;
+                                TBATCHMST.CLCD = MSITEM.CLCD;
+                                TBATCHMST.DTAG = MSITEM.DTAG;
+                                TBATCHMST.TTAG = MSITEM.TTAG;
+                                TBATCHMST.BARNO = MSITEMBARCODE1.BARNO;
+                                TBATCHMST.ITCD = MSITEM.ITCD;
+                                TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
+                                TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
+                                DB.T_BATCHMST.Add(TBATCHMST);
+
                             }
                         }
                         for (int i = 0; i <= VE.MSITEMMEASURE.Count - 1; i++)
@@ -1854,6 +1860,7 @@ namespace Improvar.Controllers
                         DB.Entry(MCH).State = System.Data.Entity.EntityState.Modified;
                         DB.SaveChanges();
                         string sbarno = getbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
+                        DB.T_BATCHMST.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
@@ -1880,6 +1887,7 @@ namespace Improvar.Controllers
                                 System.IO.File.Delete(path); //Delete file if it  exist  
                             }
                         }
+                        DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));

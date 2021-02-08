@@ -3151,18 +3151,6 @@ namespace Improvar.Controllers
                                 "", "", "");
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
 
-                        // -------------------------T_VCH_BL_EXTRA-------------------------// 
-                        T_VCH_BL_EXTRA TVCHBLEXTRA = new T_VCH_BL_EXTRA();
-                        TVCHBLEXTRA.EMD_NO = TTXN.EMD_NO;
-                        TVCHBLEXTRA.CLCD = TTXN.CLCD;
-                        TVCHBLEXTRA.DTAG = TTXN.DTAG;
-                        TVCHBLEXTRA.TTAG = TTXN.TTAG;
-                        TVCHBLEXTRA.AUTONO = TTXN.AUTONO;
-                        TVCHBLEXTRA.SLNO = Convert.ToSByte(isl);
-                        TVCHBLEXTRA.RTDEBCD = VE.T_TXNMEMO.RTDEBCD;
-                        dbsql = masterHelp.RetModeltoSql(TVCHBLEXTRA);
-                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                        //----------------------------------------------------------//
                     }
 
                     if (blgstpost == true)
