@@ -192,7 +192,6 @@ namespace Improvar.Models
         public virtual DbSet<T_TXNEWB> T_TXNEWB { get; set; }
         public virtual DbSet<T_TXNEINV> T_TXNEINV { get; set; }
         public virtual DbSet<T_PHYSTK_HDR> T_PHYSTK_HDR { get; set; }
-        public virtual DbSet<T_VCH_BL_EXTRA> T_VCH_BL_EXTRA { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             if (SchemaDBO != null)
