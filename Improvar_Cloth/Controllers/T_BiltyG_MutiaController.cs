@@ -292,7 +292,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT);
+                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT,"","","", MUTSLCD.retSqlformat());
                   DataView dv = new DataView(GetPendig_Data);
                     string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM" };
                     GetPendig_Data = dv.ToTable(true, COL);
@@ -327,7 +327,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT)
+        public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT, string MUTSLCD)
         {
             Cn.getQueryString(VE);
             try
@@ -342,7 +342,7 @@ namespace Improvar.Controllers
                     }
                 }
                 var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
-                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos);
+                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos,"","", MUTSLCD.retSqlformat());
                 if (VE.TBILTY == null)
                 {
                     VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows

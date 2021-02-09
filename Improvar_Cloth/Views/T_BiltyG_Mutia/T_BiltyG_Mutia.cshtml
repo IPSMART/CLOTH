@@ -77,10 +77,12 @@
         if ("@Model.DefaultAction" != "V") {
             if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
             var docdt = $("#DOCDT").val();
+            var mutslcd = $("#MUTSLCD").val();
+
             $.ajax({
                 type: 'POST',
                 url: "@Url.Action("GetPendingData", PageControllerName)",
-                data: "&DOCDT=" + docdt ,
+                data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     if (result == 0) { return msgWarning("Record not Found! Please enter valid Document date."); }
                     $("#popup").animate({ marginTop: '-10px' }, 50);
@@ -229,6 +231,7 @@
         debugger;
         var mutslcd = "";
         var docdt = $("#DOCDT").val();
+        var mutslcd = $("#MUTSLCD").val();
         var Count = 0;
         var GridPendingPO = $("#T_BiltyG_Mutia_PopUp > tbody > tr").length;
         for (var i = 0; i <= GridPendingPO - 1; i++) {
@@ -242,7 +245,7 @@
                 type: 'post',
                 url: "@Url.Action("SelectPendingLRNO", PageControllerName )",
                 beforesend: $("#WaitingMode").show(),
-                data: $('form').serialize() + "&DOCDT=" + docdt ,
+                data: $('form').serialize() + "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
 
@@ -354,7 +357,6 @@
                     <div class="col-md-1">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Mutia")
-                            <b style="color:Red;">*</b>
                         </div>
                     </div>
                     <div class="col-md-3">

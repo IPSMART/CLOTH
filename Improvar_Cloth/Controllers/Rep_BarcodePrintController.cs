@@ -109,7 +109,7 @@ namespace Improvar.Controllers
             string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
             string sql = "";
             bool tblmst = false;
-            if (barno != "") tblmst = true;
+            if (barno.retStr() != "") tblmst = true;
             sql = "";
 
             sql += "select a.autono, x.barno, x.txnslno, x.qnty, x.barnos, b.uomcd, nvl(b.itnm,e.itnm) itnm, b.itgrpcd, f.grpnm, f.itgrpnm,f.shortnm ,j.sizenm , ";
