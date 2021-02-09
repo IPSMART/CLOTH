@@ -2386,5 +2386,38 @@ namespace Improvar
                 }
             }
         }
+        public void insT_TXNSTATUS(string Auto_Number, string ststype, string stsrem)
+        {
+
+            Connection Cn = new Connection();
+            var UNQSNO = Cn.getQueryStringUNQSNO();
+            Improvar.Models.ImprovarDB DB = new Models.ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Models.T_TXNSTATUS TCH = new Models.T_TXNSTATUS();
+
+            var data = (from p in DB.T_TXNSTATUS where (p.AUTONO == Auto_Number && p.STSTYPE == ststype) select new { p.EMD_NO, p.FLAG1 }).ToList();
+            var MAXEMDNO = data.Select(a => a.EMD_NO).Max();
+            var FLAG1 = data.Select(a => a.FLAG1).Max();
+            short emdno = 0;
+            if (MAXEMDNO == null) emdno = 0; else emdno = Convert.ToByte(MAXEMDNO + 1);
+            string flag1 = FLAG1 == null ? "1" : (FLAG1.retDbl() + 1).retStr();
+          
+            TCH.AUTONO = Auto_Number;
+            TCH.STSTYPE = ststype;
+            TCH.FLAG1 = flag1;
+            TCH.CLCD = CommVar.ClientCode(UNQSNO);
+            TCH.STSREM = stsrem;
+            TCH.USR_ID = System.Web.HttpContext.Current.Session["UR_ID"].ToString();
+            TCH.USR_ENTDT = System.DateTime.Now;
+            TCH.USR_LIP = Cn.GetIp();
+            TCH.USR_SIP = Cn.GetStaticIp();
+            TCH.USR_OS = null;
+            TCH.USR_MNM = Cn.DetermineCompName(Cn.GetIp());  //GetMachin;
+            TCH.DTAG = "";
+            TCH.EMD_NO = emdno;
+
+            DB.T_TXNSTATUS.Add(TCH);
+            DB.SaveChanges();
+            return;
+        }
     }
 }
