@@ -1378,6 +1378,7 @@ namespace Improvar.Controllers
         {
             try
             {
+                string menupara = VE.MENU_PARA;
                 ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
@@ -2064,6 +2065,8 @@ namespace Improvar.Controllers
                                 default: copymode = ""; break;
                             }
 
+                            string negamt = (menupara == "SBCM" && tbl.Rows[i]["slno"].retDbl() > 1000) ? "Y" : "N";
+
                             DataRow dr1 = IR.NewRow();
                         docstart:
                             double duedays = 0;
@@ -2470,7 +2473,7 @@ namespace Improvar.Controllers
                                 dr1["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
                                 //dr1["packsize"] = tbl.Rows[i]["packsize"] == DBNull.Value ? 0 : (tbl.Rows[i]["packsize"]).retDbl();
                                 dr1["nos"] = tbl.Rows[i]["nos"] == DBNull.Value ? 0 : (tbl.Rows[i]["nos"]).retDbl();
-                                dr1["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : (tbl.Rows[i]["qnty"]).retDbl();
+                                dr1["qnty"] = negamt == "Y" ? tbl.Rows[i]["qnty"].retDbl() * -1 : tbl.Rows[i]["qnty"].retDbl();
                                 uomdecimal = tbl.Rows[i]["qdecimal"] == DBNull.Value ? 0 : Convert.ToInt16(tbl.Rows[i]["qdecimal"]);
                                 string dbqtyu = string.Format("{0:N6}", (dr1["qnty"]).retDbl());
                                 if (dbqtyu.Substring(dbqtyu.Length - 2, 2) == "00")
@@ -2526,19 +2529,21 @@ namespace Improvar.Controllers
                                 }
                                 dr1["disc"] = strdsc;
                                 dr1["titdiscamt"] = (tbl.Rows[i]["discamt"]).retDbl() + (tbl.Rows[i]["tddiscamt"]).retDbl();
-                                dr1["discamt"] = (tbl.Rows[i]["discamt"]).retDbl();
-                                dr1["txblval"] = ((tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl()).ToINRFormat();
+                                dr1["discamt"] = negamt == "Y" ? tbl.Rows[i]["discamt"].retDbl() * -1 : tbl.Rows[i]["discamt"].retDbl();
+                                double txblval = (tbl.Rows[i]["amt"]).retDbl() - (tbl.Rows[i]["tddiscamt"]).retDbl() - (tbl.Rows[i]["discamt"]).retDbl();
+                                dr1["txblval"] = (negamt == "Y" ? txblval.retDbl() * -1 : txblval.retDbl()).ToINRFormat();
 
                                 dr1["cgstdsp"] = flagi == true ? "IGST" : "CGST";
                                 dr1["sgstdsp"] = flagc == true ? "SGST" : "";
                                 dr1["cgstper"] = (tbl.Rows[i]["cgstper"]).retDbl() + (tbl.Rows[i]["igstper"]).retDbl();
-                                dr1["cgstamt"] = (tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl();
+                                dr1["cgstamt"] = negamt == "Y" ? (((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()) * -1) : ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl());
                                 dr1["sgstper"] = (tbl.Rows[i]["sgstper"]).retDbl();
-                                dr1["sgstamt"] = (tbl.Rows[i]["sgstamt"]).retDbl();
+                                dr1["sgstamt"] = negamt == "Y" ? (tbl.Rows[i]["sgstamt"]).retDbl() * -1 : (tbl.Rows[i]["sgstamt"]).retDbl();
                                 dr1["cessper"] = (tbl.Rows[i]["cessper"]).retDbl();
                                 dr1["cessamt"] = (tbl.Rows[i]["cessamt"]).retDbl();
                                 dr1["gstper"] = (tbl.Rows[i]["gstper"]).retDbl();
-                                dr1["netamt"] = (dr1["txblval"].ToString()).retDbl() + (dr1["cgstamt"].ToString()).retDbl() + (dr1["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
+                                var netamt= (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
+                                dr1["netamt"] = negamt == "Y" ? netamt * -1 : netamt;
                                 //totals
                                 dnos = dnos + (dr1["nos"].ToString()).retDbl();
                                 dqnty = dqnty + (dr1["qnty"].ToString()).retDbl();
@@ -3389,7 +3394,7 @@ namespace Improvar.Controllers
                                                select a.UOM).FirstOrDefault();
                                     double DECIMAL = 0; string umnm = "";
                                     var uomdata = DBF.M_UOM.Find(uom);
-                                   if(uomdata!=null) DECIMAL = Convert.ToDouble(uomdata.DECIMALS);
+                                    if (uomdata != null) DECIMAL = Convert.ToDouble(uomdata.DECIMALS);
                                     if (uomdata != null) umnm = uomdata.UOMNM;
                                     if (k.TIGSTAMT > 0) flagi = true;
                                     if (k.TCGSTAMT > 0) flagc = true;
@@ -3664,7 +3669,7 @@ namespace Improvar.Controllers
 
                             dr1["revchrg"] = "N";
                             dr1["roamt"] = tbl.Rows[i]["roamt"] == DBNull.Value ? 0 : tbl.Rows[i]["roamt"].retDbl();
-                            dr1["tcsper"] = tbl.Rows[i]["tcsper"].ToString().retDbl().ToINRFormat();
+                            dr1["tcsper"] = tbl.Rows[i]["tcsper"].retDbl();
                             dr1["tcsamt"] = tbl.Rows[i]["tcsamt"].ToString().retDbl().ToINRFormat(); // == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["tcsamt"]);
                             dr1["blamt"] = tbl.Rows[i]["blamt"].ToString().retDbl().ToINRFormat(); // == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["blamt"]);
 
