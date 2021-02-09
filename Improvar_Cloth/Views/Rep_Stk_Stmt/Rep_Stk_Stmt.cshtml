@@ -13,7 +13,7 @@
 <script src="~/Scripts/jquery.min.js"></script>
 <script>
     $(function () {
-        $("#FDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
+        $("#TDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
         $("#TextBox5").change(function () {
             $("#rowd1").hide();
             $("#rowd2").hide();
