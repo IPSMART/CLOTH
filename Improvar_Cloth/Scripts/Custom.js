@@ -1581,3 +1581,7 @@ function retFloat(val) {
     if (val == null || retStr(val) == "") return 0;
     else return parseFloat(val);
 }
+function scrollToEnd(Id) {
+    var chatList = document.getElementById(Id);
+    chatList.scrollTop = chatList.scrollHeight;
+}

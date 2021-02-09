@@ -190,10 +190,10 @@ namespace Improvar.Controllers
 
 
                     DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
-                    double txable = 0, gstamt = 0;
+                    double txable = 0, gstamt = 0; short batchslno = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
-                        double amttabigstamt = 0; double amttabcgstamt = 0;short batchslno = 0;
+                        double amttabigstamt = 0; double amttabcgstamt = 0;
                         //Amount tab start
                         if (inrdr["FREIGHT"].retDbl() != 0)
                         {

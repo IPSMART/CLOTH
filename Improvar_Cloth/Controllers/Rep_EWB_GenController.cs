@@ -38,7 +38,7 @@ namespace Improvar.Controllers
                 ImprovarDB DBI = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
                 EWayBillReport VE = new EWayBillReport();
                 Cn.getQueryString(VE);
-                if (VE.DOC_CODE == "") VE.DOC_CODE = "SRET,PRET,SBILL,PBILL,STRFO,SOTH";
+                if (VE.DOC_CODE == "") VE.DOC_CODE = "SRET,PRET,SBILL,PBILL,STRFO,SOTH,SBILD,TRWB";
                 VE.DocumentType = Cn.DOCTYPE1(VE.DOC_CODE);
                 string[] dt = CommVar.FinPeriod(UNQSNO).Split('-');
                 VE.DATEFROM = (DateTime.Now.ToString().Remove(10));
@@ -92,7 +92,7 @@ namespace Improvar.Controllers
                 query += "(b.loccd=g.loccd or g.loccd is null) and (b.compcd=g.compcd or g.compcd is null) and d.slcd=g.slcd(+) and a.autono=i.AUTONO(+) and ";
                 if (doccd != "") query += "b.doccd in (" + doccd + ") and ";
                 query += "b.docdt >= to_date('" + VE.DATEFROM + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "','dd/mm/yyyy') ";
-                query += " and a.doccd=h.doccd and h.dOCTYPE in('SRET','PRET','SBILL','PBILL','TRFR','STRFO') ";
+                query += " and a.doccd=h.doccd and h.dOCTYPE in('SRET','PRET','SBILL','PBILL','TRFR','STRFO','SBILD','TRWB') ";
                 query += "order by b.docdt, c.lrno, b.docno ";
                 tbl = masterHelp.SQLquery(query);
                 VE.EWAYBILL = (from DataRow dr in tbl.Rows
@@ -185,9 +185,9 @@ namespace Improvar.Controllers
                 rsComp = masterHelp.SQLquery(query);
 
                 query = "";
-                query += "select a.autono, b.doccd, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno, d.add1||' '||d.add2 add1, ";
-                query += "d.add3||' '||d.add4 add2, d.district, d.pin,d.statecd, upper(k.statenm) statenm, ";
-                query += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno, p.add1||' '||p.add2 badd1, ";
+                query += "select a.autono, b.doccd, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' ') slnm, d.gstno,";
+                query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) add1, decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) add2, d.district, nvl(d.othaddpin,d.pin) pin, ";
+                query += "d.statecd, upper(k.statenm) statenm, translate(nvl(p.fullname,p.slnm),'+[#./()]^',' ') bslnm, p.gstno bgstno, p.add1||' '||p.add2 badd1, ";
                 query += "p.add3||' '||p.add4 badd2, p.district bdistrict, p.pin bpin, p.statecd bstatecd, upper(q.statenm) bstatenm, ";
                 query += "e.slnm trslnm, e.gstno trgst, replace(translate(c.lorryno,'/-',' '),' ','') lorryno, c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
                 if (VE.Checkbox2 == true) query += "translate(a.itnm,'+[#/()]^',' ') itnm, a.slno, "; else query += "'' itnm, 1 slno, ";
@@ -199,14 +199,15 @@ namespace Improvar.Controllers
                 query += "sum(a.igstamt) igstamt, sum(a.cgstamt) cgstamt, sum(a.sgstamt) sgstamt, sum(a.cessamt) cessamt ,sum(a.othramt) othramt ";
                 query += "from " + fdbnm + ".t_vch_gst a, " + dbnm + ".t_cntrl_hdr b, " + dbnm + ".t_txntrans c, " + fdbnm + ".m_subleg d, ";
                 query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, " + fdbnm + ".m_uom j, improvar.ms_state k, improvar.ms_gstuom l, ";
-                query += fdbnm + ".m_subleg_locoth m, " + dbnm + ".t_txn n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q ";
+                query += fdbnm + ".m_subleg_locoth m, " + dbnm + ".t_txn n, " + dbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q ";
                 query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c.crslcd)=e.slcd(+) and ";
                 query += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and a.autono=n.autono(+) and n.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and ";
                 query += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and (b.loccd=m.loccd or m.loccd is null) and (b.compcd=m.compcd or m.compcd is null) and d.slcd=m.slcd(+) and ";
                 query += "nvl(b.cancel,'N')='N' and b.compcd='" + comp + "' and b.loccd='" + loc + "' and b.compcd||b.loccd=f.compcd||f.loccd and trim(c.ewaybillno) is null and ";
                 if (aauto != "") query += "a.autono in(" + aauto + ") and ";
                 query += "b.docdt >= to_date('" + VE.DATEFROM + "','dd/mm/yyyy') and b.docdt <= to_date('" + VE.DATETO + "','dd/mm/yyyy') ";
-                query += "group by a.autono, b.doccd, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' '), d.gstno, d.add1||' '||d.add2, d.add3||' '||d.add4, d.district, d.pin,d.statecd, upper(k.statenm), ";
+                query += "group by a.autono, b.doccd, a.blno, a.bldt, translate(nvl(d.fullname,d.slnm),'+[#./()]^',' '), d.gstno, d.district,d.statecd, upper(k.statenm), ";
+                query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) , decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) , nvl(d.othaddpin,d.pin) , ";
                 query += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' '), p.gstno, p.add1||' '||p.add2, ";
                 query += "p.add3||' '||p.add4, p.district, p.pin, p.statecd, upper(q.statenm), ";
                 query += "e.slnm, e.gstno, replace(translate(c.lorryno,'/-',' '),' ',''), c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
@@ -263,12 +264,12 @@ namespace Improvar.Controllers
                     prejson.disptchfrmstatecd = rsComp.Rows[0]["statecd"].ToString();//n
                     prejson.slnm = (bltoshipto == true ? tbl.Rows[i]["bslnm"].ToString() : tbl.Rows[i]["slnm"].ToString());//o
                     prejson.togstno = tbl.Rows[i]["bgstno"].ToString(); //p
-                                                                        //prejson.toadd1 = (bltoshipto == true? tbl.Rows[i]["badd1"].ToString() : tbl.Rows[i]["add1"].ToString());
-                                                                        //prejson.toadd2 = (bltoshipto == true ? tbl.Rows[i]["badd2"].ToString() : tbl.Rows[i]["add2"].ToString());
-                                                                        //prejson.todistrict = (bltoshipto == true ? tbl.Rows[i]["bdistrict"].ToString(): tbl.Rows[i]["district"].ToString());//s
-                    prejson.toadd1 = (bltoshipto == true ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["add1"].ToString());
-                    prejson.toadd2 = (bltoshipto == true ? tbl.Rows[i]["add1"].ToString() + tbl.Rows[i]["add2"].ToString() : tbl.Rows[i]["add2"].ToString());
-                    prejson.todistrict = (bltoshipto == true ? tbl.Rows[i]["district"].ToString() : tbl.Rows[i]["district"].ToString());//s
+                    prejson.toadd1 = (bltoshipto == true ? tbl.Rows[i]["badd1"].ToString() : tbl.Rows[i]["add1"].ToString());
+                    prejson.toadd2 = (bltoshipto == true ? tbl.Rows[i]["badd2"].ToString() : tbl.Rows[i]["add2"].ToString());
+                    prejson.todistrict = (bltoshipto == true ? tbl.Rows[i]["bdistrict"].ToString() : tbl.Rows[i]["district"].ToString());//s
+                    //prejson.toadd1 = (bltoshipto == true ? tbl.Rows[i]["slnm"].ToString() : tbl.Rows[i]["add1"].ToString());
+                    //prejson.toadd2 = (bltoshipto == true ? tbl.Rows[i]["add1"].ToString() + tbl.Rows[i]["add2"].ToString() : tbl.Rows[i]["add2"].ToString());
+                    //prejson.todistrict = (bltoshipto == true ? tbl.Rows[i]["district"].ToString() : tbl.Rows[i]["district"].ToString());//s
                     prejson.shiptopin = tbl.Rows[i]["pin"].ToString();//t
                     prejson.billtostcd = tbl.Rows[i]["bstatecd"].ToString();//u
                     prejson.shiptostcd = tbl.Rows[i]["statecd"].ToString();//v
@@ -276,7 +277,7 @@ namespace Improvar.Controllers
                     prejson.itdscp = tbl.Rows[i]["itnm"].ToString();//x
                     prejson.hsncode = tbl.Rows[i]["hsncode"].ToString();//y
                     prejson.guomcd = tbl.Rows[i]["guomcd"].ToString();//z
-                    prejson.qnty =tbl.Rows[i]["qnty"].retDbl();//aa
+                    prejson.qnty = tbl.Rows[i]["qnty"].retDbl();//aa
                     prejson.amt = double.Parse(tbl.Rows[i]["amt"].ToString());//ab
                     prejson.TtlTax = TtlTax;//ac
                     prejson.sgstper = double.Parse(tbl.Rows[i]["sgstper"].ToString());//json
