@@ -389,9 +389,8 @@ function AddMainRow(hlpstr) {
     tr += ' </td>';
     tr += '</tr>';
     $("#_T_SALE_POS_PRODUCT_GRID tbody").append(tr);
-   
-    CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
     CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
+   // CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
     $("#M_BARCODE").val('');
     $("#M_BARCODE").focus();
 }
@@ -608,7 +607,7 @@ function AddReturnRow(hlpstr) {
     tr += '</tr>';
     $("#_T_SALE_POS_RETURN_GRID tbody").append(tr);
     CalculateInclusiveRate(rowindex, '_T_SALE_POS_RETURN_GRID')
-    CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
+   // CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
     $("#R_BARCODE").val('');
     $("#R_BARCODE").focus();
     $("#R_AGDOCDT_" + rowindex).datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });

@@ -639,7 +639,7 @@ namespace Improvar.Controllers
                 string R_MTRLJOBCD = (from a in VE.TsalePos_TBATCHDTL select a.MTRLJOBCD).ToArray().retSqlfromStrarray();
                 string R_ITGRPCD = (from a in VE.TsalePos_TBATCHDTL_RETURN select a.ITGRPCD).ToArray().retSqlfromStrarray();
 
-                R_allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), R_BARNO.retStr(), R_ITCD.retStr(), R_MTRLJOBCD.retStr(), VE.T_CNTRL_HDR_REM.AUTONO.retSqlformat(), R_ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr());
+                R_allprodgrpgstper_data = salesfunc.GetStock(VE.T_TXN.DOCDT.retStr().Remove(10), VE.T_TXN.GOCD.retSqlformat(), R_BARNO.retStr(), R_ITCD.retStr(), R_MTRLJOBCD.retStr(), VE.T_CNTRL_HDR_REM.AUTONO.retSqlformat(), R_ITGRPCD, "", VE.T_TXNOTH.PRCCD.retStr(), VE.T_TXNOTH.TAXGRPCD.retStr(),"","",true,true,"","",false,false,true,"",true);
 
                 foreach (var v in VE.TsalePos_TBATCHDTL_RETURN)
                 {
@@ -1244,7 +1244,7 @@ namespace Improvar.Controllers
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
                 string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().retSqlformat();
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
-
+               
                 if (GOCD == "")
                 {
                     return Content("Please fill Godown");
