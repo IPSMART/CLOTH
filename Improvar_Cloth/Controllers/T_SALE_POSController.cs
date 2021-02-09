@@ -475,6 +475,7 @@ namespace Improvar.Controllers
                                                     TXNSLNO = dr["TXNSLNO"].retShort(),
                                                     ITGRPCD = dr["ITGRPCD"].retStr(),
                                                     ITGRPNM = dr["ITGRPNM"].retStr(),
+                                                    NEGSTOCK = dr["NEGSTOCK"].retStr(),
                                                     MTRLJOBCD = dr["MTRLJOBCD"].retStr(),
                                                     MTRLJOBNM = dr["MTRLJOBNM"].retStr(),
                                                     MTBARCODE = dr["MTBARCODE"].retStr(),
@@ -587,8 +588,11 @@ namespace Improvar.Controllers
                     {
                         var q = (from DataRow dr in allprodgrpgstper_data.Rows
                                  select new
-                                 { BALSTOCK = dr["BALQNTY"].retDbl() }).FirstOrDefault();
+                                 { BALSTOCK = dr["BALQNTY"].retDbl(),
+                                     NEGSTOCK = dr["negstock"].retStr()
+                                 }).FirstOrDefault();
                         v.BALSTOCK = q.BALSTOCK;
+                        v.NEGSTOCK = q.NEGSTOCK;
                         var DATA = allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
                         if (DATA.Count() > 0)
                         {
@@ -648,8 +652,11 @@ namespace Improvar.Controllers
                     {
                         var q = (from DataRow dr in R_allprodgrpgstper_data.Rows
                                  select new
-                                 { BALSTOCK = dr["BALQNTY"].retDbl() }).FirstOrDefault();
+                                 { BALSTOCK = dr["BALQNTY"].retDbl(),
+                                   NEGSTOCK = dr["negstock"].retStr()
+                                 }).FirstOrDefault();
                         v.BALSTOCK = q.BALSTOCK;
+                        v.NEGSTOCK = q.NEGSTOCK;
                         var R_DATA = R_allprodgrpgstper_data.Select("barno = '" + v.BARNO + "' and itcd= '" + v.ITCD + "' and itgrpcd = '" + v.ITGRPCD + "' ");
                         if (R_DATA.Count() > 0)
                         {
