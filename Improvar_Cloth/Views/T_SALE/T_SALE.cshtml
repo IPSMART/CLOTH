@@ -402,7 +402,9 @@
             $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
             var GridRowMain = $("#AMOUNT_GRID > tbody > tr").length;
             if (GridRowMain > 0) {
-                $("#AMTRATE_0").focus();
+                UpdateTaxPer();
+                $("#AMTRATE_0").select().focus();
+               
             }
         }
         if (event.altKey && KeyID == 71) {//for Alt+G (In Detail tab update pageno/slno code)
