@@ -296,10 +296,10 @@ function AddMainRow(hlpstr) {
     tr += '     <input id="B_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="'+QNTY+'" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -309,12 +309,12 @@ function AddMainRow(hlpstr) {
         tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].INCLRATE" onchange = "CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_PRODUCT_GRID\');CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,2);" style="font-weight:bold;background-color: bisque;" type="text" value="' + INCLRATE + '">';
         tr += '     </td>';
         tr += ' <td class="" title="">';
-        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" readonly="readonly" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" readonly="readonly" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
         tr += ' </td>';
     }
     else {
  tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+ tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="B_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL[' + rowindex + '].RATE" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
     tr += ' </td>';
 }
    
@@ -389,8 +389,9 @@ function AddMainRow(hlpstr) {
     tr += ' </td>';
     tr += '</tr>';
     $("#_T_SALE_POS_PRODUCT_GRID tbody").append(tr);
-    CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
+   
     CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
+    CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
     $("#M_BARCODE").val('');
     $("#M_BARCODE").focus();
 }
@@ -510,7 +511,7 @@ function AddReturnRow(hlpstr) {
     //tr += '     <input id="R_NEGSTOCK_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NEGSTOCK" type="hidden" value="">';
     //tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="R_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="R_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="R_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" >';
@@ -526,12 +527,12 @@ function AddReturnRow(hlpstr) {
         tr += '         <input class="atextBoxFor text-right" data-val="true" data-val-number="The field INCLRATE must be a number." id="R_INCLRATE_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].INCLRATE" onchange = "CalculateInclusiveRate(' + rowindex + ',\'_T_SALE_POS_RETURN_GRID\');CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,2);" style="font-weight:bold;background-color: bisque;" type="text" value="' + INCLRATE + '">';
         tr += '     </td>';
  tr += ' <td class="" title="">';
- tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="R_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].RATE" readonly="readonly" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+ tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="R_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].RATE" readonly="readonly" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
     tr += ' </td>';
     }
     else {
         tr += ' <td class="" title="">';
-        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="R_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].RATE" onchange="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+        tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field RATE must be a number." id="R_RATE_' + rowindex + '" maxlength="14" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].RATE" onchange="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="' + RATE + '">';
         tr += ' </td>';
 }
    
