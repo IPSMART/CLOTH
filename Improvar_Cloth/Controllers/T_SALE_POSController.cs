@@ -786,8 +786,9 @@ namespace Improvar.Controllers
                 VE.T_PYMT_AMT = T_PYMT_AMT;
                 VE.PAYAMT = T_PYMT_AMT.toRound(2);
 
-                VE.RETAMT = VE.RETAMT.retStr() == "" ? 0 : VE.RETAMT.retDbl().toRound(2);
-                VE.RETAMT = VE.R_T_NET + VE.A_T_NET;
+                //VE.RETAMT = VE.RETAMT.retStr() == "" ? 0 : VE.RETAMT.retDbl().toRound(2);
+                //VE.RETAMT = VE.R_T_NET + VE.A_T_NET;
+                VE.RETAMT = VE.TsalePos_TBATCHDTL_RETURN.Sum(a => a.NETAMT).retDbl();
                 VE.MEMOAMT = VE.TsalePos_TBATCHDTL.Sum(a => a.NETAMT).retDbl();
                 VE.NETDUE = (VE.T_TXN.BLAMT - VE.PAYAMT).retDbl().toRound(2);
 
