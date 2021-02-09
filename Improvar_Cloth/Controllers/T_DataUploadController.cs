@@ -108,9 +108,10 @@ namespace Improvar.Controllers
                 TTXN.EMD_NO = 0;
                 TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "SPBL").FirstOrDefault()?.DOCCD;
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
-                short slno = 0;
+         
                 foreach (DataRow oudr in outerDT.Rows)
                 {
+                    short txnslno = 0;
                     List<TBATCHDTL> TBATCHDTLlist = new List<Models.TBATCHDTL>();
                     List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
                     List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
@@ -192,7 +193,7 @@ namespace Improvar.Controllers
                     double txable = 0, gstamt = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
-                        double amttabigstamt = 0; double amttabcgstamt = 0;
+                        double amttabigstamt = 0; double amttabcgstamt = 0;short batchslno = 0;
                         //Amount tab start
                         if (inrdr["FREIGHT"].retDbl() != 0)
                         {
@@ -224,7 +225,7 @@ namespace Improvar.Controllers
                         ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);                    
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITNM = style;
-                        TTXNDTL.SLNO = ++slno;
+                        TTXNDTL.SLNO = ++txnslno;
                         TTXNDTL.MTRLJOBCD = "FS";
 
                         TTXNDTL.STKDRCR = "D";
@@ -279,7 +280,7 @@ namespace Improvar.Controllers
 
                         TBATCHDTL TBATCHDTL = new TBATCHDTL();
                         TBATCHDTL.TXNSLNO = TTXNDTL.SLNO;
-                        TBATCHDTL.SLNO = TTXNDTL.SLNO;  //COUNTER.retShort();
+                        TBATCHDTL.SLNO = ++batchslno;  //COUNTER.retShort();
                         //TBATCHDTL.GOCD = VE.T_TXN.GOCD;
                         //TBATCHDTL.BARNO = barno;
                         TBATCHDTL.ITCD = TTXNDTL.ITCD;
