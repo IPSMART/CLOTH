@@ -1268,7 +1268,7 @@ function AmountCalculateTotal() {
     BillAmountCalculate();
 
 }
-function OpenAmount() {
+function UpdateTaxPer() {
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0; var DUTY_PER = 0;
