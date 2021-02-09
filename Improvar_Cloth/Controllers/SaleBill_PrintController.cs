@@ -67,6 +67,9 @@ namespace Improvar.Controllers
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
+                    VE.Checkbox1 = true;
+                    VE.Checkbox10 = true;
+                    VE.Checkbox11 = true;
                     return View(VE);
                 }
             }
@@ -2542,7 +2545,7 @@ namespace Improvar.Controllers
                                 dr1["cessper"] = (tbl.Rows[i]["cessper"]).retDbl();
                                 dr1["cessamt"] = (tbl.Rows[i]["cessamt"]).retDbl();
                                 dr1["gstper"] = (tbl.Rows[i]["gstper"]).retDbl();
-                                var netamt= (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
+                                var netamt = (txblval).retDbl() + ((tbl.Rows[i]["cgstamt"]).retDbl() + (tbl.Rows[i]["igstamt"]).retDbl()).retDbl() + (tbl.Rows[i]["sgstamt"].ToString()).retDbl() + (dr1["cessamt"].ToString()).retDbl();
                                 dr1["netamt"] = negamt == "Y" ? netamt * -1 : netamt;
                                 //totals
                                 dnos = dnos + (dr1["nos"].ToString()).retDbl();
@@ -2970,6 +2973,11 @@ namespace Improvar.Controllers
                 if (slcd != null) sql += " b.slcd ='" + slcd + "' and ";
                 sql += " a.autono not in (select a.autono from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c  ";
                 sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and c.autono is null and b.doccd = '" + doccd + "' )   ";
+                if (VE.Checkbox11 == true)
+                {
+                    sql += "and a.autono not in (select a.autono from " + Scm1 + ".t_txnstatus a, " + Scm1 + ".t_cntrl_hdr b  ";
+                    sql += " where a.autono = b.autono(+) and a.ststype='P' and b.doccd = '" + doccd + "' )   ";
+                }
                 sql += " order by docno,autono,slno  ";
                 DataTable tbl = new DataTable();
                 tbl = masterHelp.SQLquery(sql);
@@ -3273,7 +3281,7 @@ namespace Improvar.Controllers
                 }
 
                 Int16 maxCopy = 5;
-
+                string[] totalautono = tbl.AsEnumerable().Select(a => a.Field<string>("autono")).Distinct().ToArray();
                 while (i <= maxR)
                 {
 
@@ -4178,7 +4186,15 @@ namespace Improvar.Controllers
                             if (VE.TEXTBOX5 != null)
                             {
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "", "", emlaryBody, attchmail, grpemailid);
-                                if (emailsent == true) sendemailids = sendemailids + VE.TEXTBOX5 + ";"; else sendemailids = " not able to send on " + VE.TEXTBOX5 + ";";
+                                if (emailsent == true)
+                                {
+                                    sendemailids = sendemailids + VE.TEXTBOX5 + ";";
+                                    masterHelp.insT_TXNSTATUS(rsemailid1.Rows[iz]["autono"].retStr(), "E", rsemailid[z].email.ToString());
+                                }
+                                else
+                                {
+                                    sendemailids = " not able to send on " + VE.TEXTBOX5 + ";";
+                                }
                             }
                             else
                             {
@@ -4190,7 +4206,15 @@ namespace Improvar.Controllers
                                 emlaryBody[5, 0] = "{complogo}"; emlaryBody[5, 1] = complogosrc;
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
                                 bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy of " + docnm, "Salebill.htm", emlaryBody, attchmail, grpemailid);
-                                if (emailsent == true) sendemailids = sendemailids + rsemailid[z].email.ToString() + ";"; else sendemailids = sendemailids + " not able to send on " + rsemailid[z].email.ToString();
+                                if (emailsent == true)
+                                {
+                                    sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
+                                    masterHelp.insT_TXNSTATUS(rsemailid1.Rows[iz]["autono"].retStr(), "E", rsemailid[z].email.ToString());
+                                }
+                                else
+                                {
+                                    sendemailids = sendemailids + " not able to send on " + rsemailid[z].email.ToString();
+                                }
                             }
                             System.IO.File.Delete(path_Save);
                             //eof email sending
@@ -4249,6 +4273,14 @@ namespace Improvar.Controllers
                         Stream stream = reportdocument.ExportToStream(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat);
                         reportdocument.Close(); reportdocument.Dispose(); GC.Collect();
                         stream.Seek(0, SeekOrigin.Begin);
+                        if (VE.Checkbox10 == true)
+                        {
+                            foreach (var autono in totalautono)
+                            {
+                                masterHelp.insT_TXNSTATUS(autono, "P", "");
+                            }
+                        }
+
                         return new FileStreamResult(stream, "application/pdf");
                     }
                 }

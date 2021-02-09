@@ -174,7 +174,8 @@ namespace Improvar
                     string[] msgretval = msgresult.Split('=');
                     if (msgretval[1].ToString().Substring(0, 1) == "0")
                     {
-                        insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", "SALE", msgresult);
+                        //insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S", "SALE", msgresult);
+                      MasterHelpFa.insT_TXNSTATUS(tbl.Rows[i]["autono"].ToString(), "S",  msgresult);
                     }
                 }
             }
