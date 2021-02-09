@@ -39,6 +39,7 @@
         height: 190px;
     }
 </style>
+<link rel="stylesheet" href="~/Content/bootstrap-float-label.min.css" />
 <script src="~/Scripts/jquery.min.js"></script>
 <script src="~/Scripts/Cloth.js?Ver=@System.DateTime.Now"></script>
 <script src="~/Scripts/Sale.js?Ver=@System.DateTime.Now"></script>
@@ -51,7 +52,7 @@
         if ("@Model.SHOWBLTYPE" != "Y") {
             $(".divbltype").hide();
         }
-       
+
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             $("#update_page_slno").hide();
@@ -591,13 +592,13 @@
                         <div class="editor-field">
                             @*@Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT');", @placeholder = "Code", maxlength = 8 } })
                                 <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Party Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD','slcd_tag/DOCDT')" />*@
-                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','"+@ViewBag.Partycaption+" Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD/PARTYCD=PARTYCD','slcd_tag/DOCDT')", onblur = "GetPartyDetails(this.value);", @placeholder = "Code", maxlength = 8 } })
+                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','" + @ViewBag.Partycaption + " Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD/PARTYCD=PARTYCD','slcd_tag/DOCDT')", onblur = "GetPartyDetails(this.value);", @placeholder = "Code", maxlength = 8 } })
                             <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)',' @ViewBag.Partycaption Details','SLCD','SLCD=slcd=1/SLNM=slnm=0/SLAREA=slarea=3/GSTNO=gstno=2/TAXGRPCD=TAXGRPCD/PRCCD=PRCCD/PRCNM=PRCNM/AGSLCD=AGSLCD/AGSLNM=AGSLNM/DUEDAYS=crdays/PSLCD=PSLCD/PARTYCD=PARTYCD','slcd_tag/DOCDT')" />
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="editor-field">
-                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = @ViewBag.Partycaption+" Name", @placeholder = @ViewBag.Partycaption + " Name", @readonly = "readonly", tabindex = "-1" } })
+                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = @ViewBag.Partycaption + " Name", @placeholder = @ViewBag.Partycaption + " Name", @readonly = "readonly", tabindex = "-1" } })
                             @Html.HiddenFor(model => Model.PSLCD, new { @class = "form-control", id = "PSLCD" })
                             @Html.HiddenFor(model => Model.PARTYCD, new { @class = "form-control", id = "PARTYCD" })
                             @Html.HiddenFor(model => Model.Last_SLCD, new { @class = "form-control", id = "Last_SLCD" })
@@ -1227,10 +1228,13 @@
                                     <div class="col-lg-11">
                                         <div class="row" id="barfirstrow">
                                             <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
-                                                    @Html.EditorFor(model => model.TXNSLNO, new { htmlAttributes = new { @class = "form-control", id = "TXNSLNO", maxlength = 4, @onkeypress = "return numericOnly(this);", onkeydown = "FillBarcodeArea('', 'COPYLROW')", @placeholder = "Bill Sl", @title = "Bill Sl" } })
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.TXNSLNO, new { htmlAttributes = new { @class = "form-control", id = "TXNSLNO", maxlength = 4, @onkeypress = "return numericOnly(this);", onkeydown = "FillBarcodeArea('', 'COPYLROW')", @placeholder = "Bill Sl", @title = "Bill Sl" } })
+                                                        <label for="TXNSLNO" style="font-size: 87%;color: darkgreen;">Bill Sl</label>
+                                                    </span>
                                                 </div>
+                                                @Html.HiddenFor(model => model.SLNO, new { id = "SLNO" })
                                             </div>
                                             <div class="col-md-1">
                                                 <div class="editor-field">
@@ -1241,12 +1245,14 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Item Group Name", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
-                                                    @Html.HiddenFor(model => model.WPPRICEGEN, new { id = "WPPRICEGEN" })
-                                                    @Html.HiddenFor(model => model.RPPRICEGEN, new { id = "RPPRICEGEN" })
-
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.ITGRPNM, new { htmlAttributes = new { @class = "form-control", id = "ITGRPNM", @title = "Item Group Name", @placeholder = "Item Group Name", @readonly = "readonly", @TabIndex = -1 } })
+                                                        <label for="ITGRPNM" style="font-size: 87%;color: darkgreen;">Group Name</label>
+                                                    </span>
                                                 </div>
+                                                @Html.HiddenFor(model => model.WPPRICEGEN, new { id = "WPPRICEGEN" })
+                                                @Html.HiddenFor(model => model.RPPRICEGEN, new { id = "RPPRICEGEN" })
                                             </div>
                                             @if (Model.SHOWMTRLJOBCD == "Y")
                                             {
@@ -1275,9 +1281,12 @@
                                                     </div>
                                                 </div>*@
                                             <div class="col-md-7">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.ITSTYLE, new { htmlAttributes = new { @class = "form-control", id = "ITSTYLE", maxlength = 30, @title = "Design", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
-                                                    @Html.HiddenFor(model => model.Last_ITCD, new { id = "Last_ITCD" })
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.ITSTYLE, new { htmlAttributes = new { @class = "form-control", id = "ITSTYLE", maxlength = 30, @title = "Design", @placeholder = "Design", @readonly = "readonly", @TabIndex = -1 } })
+                                                        <label for="ITSTYLE" style="font-size: 87%;color: darkgreen;">Design</label>
+                                                    </span>
+                                                         @Html.HiddenFor(model => model.Last_ITCD, new { id = "Last_ITCD" })
                                                 </div>
                                             </div>
 
@@ -1315,9 +1324,12 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="editor-field">
-                                                        @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @title = "Color Name", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
-                                                        @Html.HiddenFor(model => model.CLRBARCODE, new { id = "CLRBARCODE" })
+                                                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                        <span class="has-float-label">
+                                                            @Html.EditorFor(model => model.COLRNM, new { htmlAttributes = new { @class = "form-control", id = "COLRNM", @title = "Color Name", @placeholder = "Color Name", @readonly = "readonly", @TabIndex = -1 } })
+                                                            <label for="COLRNM" style="font-size: 87%;color: darkgreen;">Color Name</label>
+                                                        </span>
+                                                             @Html.HiddenFor(model => model.CLRBARCODE, new { id = "CLRBARCODE" })
                                                     </div>
                                                 </div>
                                             }
@@ -1336,9 +1348,12 @@
                                             {
                                                 <div class="col-md-4">
 
-                                                    <div class="editor-field">
-                                                        @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
-                                                    </div>
+                                                    <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                        <span class="has-float-label">
+                                                            @Html.EditorFor(model => model.PDESIGN, new { htmlAttributes = new { @class = "form-control", id = "PDESIGN", @placeholder = "pdesign", @title = "Pdesign" } })
+                                                            <label for="PDESIGN" style="font-size: 87%;color: darkgreen;">Pdesign</label>
+                                                        </span>
+                                                            </div>
 
                                                 </div>
                                             }
@@ -1349,30 +1364,45 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.BALSTOCK, new { htmlAttributes = new { @class = "form-control", id = "BALSTOCK", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Stock", @readonly = "readonly", @TabIndex = -1, @title = "Stock" } })
-                                                    @Html.HiddenFor(model => model.NEGSTOCK, new { id = "NEGSTOCK" })
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.BALSTOCK, new { htmlAttributes = new { @class = "form-control", id = "BALSTOCK", @onkeypress = "return numericOnly(this,2);", maxlength = 12, @placeholder = "Stock", @readonly = "readonly", @TabIndex = -1, @title = "Stock" } })
+                                                        <label for="BALSTOCK" style="font-size: 87%;color: darkgreen;">Stock</label>
+                                                    </span>
+                                                         @Html.HiddenFor(model => model.NEGSTOCK, new { id = "NEGSTOCK" })
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.CUTLENGTH, new { htmlAttributes = new { @class = "form-control", id = "CUTLENGTH", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Length", @title = "Length", @onchange = "CalculateBargridQnty();" } })
-                                                </div>
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.CUTLENGTH, new { htmlAttributes = new { @class = "form-control", id = "CUTLENGTH", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Length", @title = "Length", @onchange = "CalculateBargridQnty();" } })
+                                                        <label for="CUTLENGTH" style="font-size: 87%;color: darkgreen;">Length</label>
+                                                    </span>
+                                                         </div>
                                             </div>
                                             <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos", @title = "Nos", @onchange = "CalculateBargridQnty();" } })
-                                                </div>
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.NOS, new { htmlAttributes = new { @class = "form-control", id = "NOS", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Nos", @title = "Nos", @onchange = "CalculateBargridQnty();" } })
+                                                        <label for="NOS" style="font-size: 87%;color: darkgreen;">Nos</label>
+                                                    </span>
+                                                         </div>
                                             </div>
                                             <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onblur = "CalculateBargridQnty();" } })
-                                                </div>
+                                                <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                    <span class="has-float-label">
+                                                        @Html.EditorFor(model => model.QNTY, new { htmlAttributes = new { @class = "form-control", id = "QNTY", @onkeypress = "return numericOnly(this,3);", maxlength = 12, @placeholder = "Quantity", @title = "Quantity", @onblur = "CalculateBargridQnty();" } })
+                                                        <label for="QNTY" style="font-size: 87%;color: darkgreen;">Quantity</label>
+                                                    </span>
+                                                         </div>
                                             </div>
                                             <div class="col-md-1">
-                                                <div class="editor-field">
-                                                    @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "UOM", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
-                                                </div>
+                                               <div class="editor-field input-group" style="width:-webkit-fill-available;">
+                                                   <span class="has-float-label">
+                                                       @Html.EditorFor(model => model.UOM, new { htmlAttributes = new { @class = "form-control", id = "UOM", maxlength = 30, @title = "UOM", @placeholder = "UOM", @readonly = "readonly", @TabIndex = -1 } })
+                                                       <label for="UOM" style="font-size: 87%;color: darkgreen;">UOM</label>
+                                                   </span>
+                                                         </div>
                                             </div>
                                             @if (Model.M_SYSCNFG.MNTNFLAGMTR == "Y")
                                             {
