@@ -105,9 +105,9 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "Shade", "string", "c,10", "Shade");
                 HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale No");
                 HC.GetPrintHeader(IR, "nos", "double", "c,7", "Nos");
-                HC.GetPrintHeader(IR, "qnty", "double", "c,16,2", "Qnty");
+                HC.GetPrintHeader(IR, "qnty", "double", "c,16,3", "Qnty");
                 HC.GetPrintHeader(IR, "rate", "double", "c,10,2", "Rate");
-                HC.GetPrintHeader(IR, "value", "double", "c,16,3", "Value");
+                HC.GetPrintHeader(IR, "value", "double", "c,16,2", "Value");
                 HC.GetPrintHeader(IR, "lrno", "string", "c,14", "LR No");
                 HC.GetPrintHeader(IR, "pageno", "string", "c,10", "Page No.");
 
@@ -148,7 +148,7 @@ namespace Improvar.Controllers
                                 tnos = tnos + tbl.Rows[i]["nos"].retDbl();
                                 tqty = tqty + tbl.Rows[i]["qnty"].retDbl();
                                 gdtqty = gdtqty + tbl.Rows[i]["qnty"].retDbl();
-                                var value = tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["rate"].retDbl();
+                                double value = tbl.Rows[i]["txblval"].retDbl() + tbl.Rows[i]["othramt"].retDbl(); //tbl.Rows[i]["qnty"].retDbl() * tbl.Rows[i]["rate"].retDbl();
                                 tval = tval + value;
                                 gdtval = gdtval + value;
                                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;

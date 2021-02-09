@@ -129,7 +129,7 @@ namespace Improvar.Controllers
                 sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt, a.prefno, a.prefdt, a.slnm, a.gstno,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
                 sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.nos, a.qnty, nvl(a.netamt,0) netamt, b.batchnos from ";
                 sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd, ";
-                sql += " sum(nvl(a.netamt,0)) netamt, ";
+                sql += " sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt, ";
                 sql += "sum(nvl(a.nos,0)) nos, sum(nvl(a.qnty,0)) qnty ";
                 sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c, ";
                 sql += scmf + ".m_subleg i ";
