@@ -2973,7 +2973,7 @@ namespace Improvar.Controllers
                 if (slcd != null) sql += " b.slcd ='" + slcd + "' and ";
                 sql += " a.autono not in (select a.autono from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c  ";
                 sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and c.autono is null and b.doccd = '" + doccd + "' )   ";
-                if (VE.Checkbox11 == true)
+                if (VE.Checkbox11 == true && printemail == "Print")
                 {
                     sql += "and a.autono not in (select a.autono from " + Scm1 + ".t_txnstatus a, " + Scm1 + ".t_cntrl_hdr b  ";
                     sql += " where a.autono = b.autono(+) and a.ststype='P' and b.doccd = '" + doccd + "' )   ";
@@ -4185,11 +4185,17 @@ namespace Improvar.Controllers
                             string[,] emlaryBody = new string[7, 2];
                             if (VE.TEXTBOX5 != null)
                             {
-                                bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "", "", emlaryBody, attchmail, grpemailid);
+                                bool emailsent = EmailControl.SendHtmlFormattedEmail(VE.TEXTBOX5, "Sales Bill copy", "", emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
                                     sendemailids = sendemailids + VE.TEXTBOX5 + ";";
-                                    masterHelp.insT_TXNSTATUS(rsemailid1.Rows[iz]["autono"].retStr(), "E", rsemailid[z].email.ToString());
+                                    if (VE.Checkbox10 == true)
+                                    {
+                                        foreach (var autono in totalautono)
+                                        {
+                                            masterHelp.insT_TXNSTATUS(autono, "E", VE.TEXTBOX5);
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -4205,11 +4211,14 @@ namespace Improvar.Controllers
                                 emlaryBody[4, 0] = "{usermobno}"; emlaryBody[4, 1] = MOBILE;
                                 emlaryBody[5, 0] = "{complogo}"; emlaryBody[5, 1] = complogosrc;
                                 emlaryBody[6, 0] = "{compfixlogo}"; emlaryBody[6, 1] = compfixlogosrc;
-                                bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy of " + docnm, "Salebill.htm", emlaryBody, attchmail, grpemailid);
+                                bool emailsent = EmailControl.SendHtmlFormattedEmail(rsemailid[z].email.ToString() + ccemailid, "Sales Bill copy", "Salebill.htm", emlaryBody, attchmail, grpemailid);
                                 if (emailsent == true)
                                 {
                                     sendemailids = sendemailids + rsemailid[z].email.ToString() + ";";
-                                    masterHelp.insT_TXNSTATUS(rsemailid1.Rows[iz]["autono"].retStr(), "E", rsemailid[z].email.ToString());
+                                    if (VE.Checkbox10 == true)
+                                    {
+                                        masterHelp.insT_TXNSTATUS(rsemailid1.Rows[z]["autono"].retStr().Substring(0, rsemailid1.Rows[z]["autono"].ToString().Length - 1), "E", rsemailid[z].email.ToString());
+                                    }
                                 }
                                 else
                                 {

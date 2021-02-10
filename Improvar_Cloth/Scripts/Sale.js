@@ -640,16 +640,16 @@ function ClearBarcodeArea(TAG) {
     if (TAG == "Y") {
         $("#AddRow_Barcode").show();
         $("#UpdateRow_Barcode").hide();
-        if (MENU_PARA == "PB" || MENU_PARA == "OP") {
-            $("#ITCD").focus();
-        } else {
+        //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
+        //    $("#ITCD").focus();
+        //} else {
             if ($("#MNTNBARNO").val() == "Y") {
                 $("#BARCODE").focus();
             }
             else {
                 $("#STYLENO").focus();
             }
-        }
+        //}
     }
     if (MENU_PARA == "SR" || MENU_PARA == "PR") {
         ClearAllTextBoxes("AGDOCNO,AGDOCDT");
@@ -2198,6 +2198,7 @@ function AddBarCodeGrid() {
     }
    
     $("#bardatachng").val("Y");
+    scrollToEnd('BARGRID');
 }
 function RateUpdate(index, strid) {
     debugger;

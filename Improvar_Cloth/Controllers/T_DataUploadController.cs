@@ -108,7 +108,7 @@ namespace Improvar.Controllers
                 TTXN.EMD_NO = 0;
                 TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "SPBL").FirstOrDefault()?.DOCCD;
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
-         
+
                 foreach (DataRow oudr in outerDT.Rows)
                 {
                     short txnslno = 0;
@@ -135,6 +135,8 @@ namespace Improvar.Controllers
                         break;
                     }
                     double igstper = oudr["INTEGR_TAX"].retDbl();
+                    if (igstper == 0) { TTXNOTH.TAXGRPCD = "C001"; } else { TTXNOTH.TAXGRPCD = "I001"; }
+                    TTXNOTH.PRCCD = "CP";
                     double cgstper = oudr["CENT_AMT"].retDbl();
                     double gstper = igstper == 0 ? (cgstper * 2) : igstper;
                     double blINV_VALUE = oudr["INV_VALUE"].retDbl();
@@ -156,7 +158,7 @@ namespace Improvar.Controllers
                     if (dt.Rows.Count > 0)
                     {
                         dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
-                        dupgrid.BLNO = TTXN.PREFNO ;
+                        dupgrid.BLNO = TTXN.PREFNO;
                         dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
                         dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
                         dupgrid.ROAMT = dt.Rows[0]["ROAMT"].ToString();
@@ -190,10 +192,10 @@ namespace Improvar.Controllers
 
 
                     DataTable innerDt = dbfdt.Select("INV_NO='" + TTXN.PREFNO + "'").CopyToDataTable();
-                    double txable = 0, gstamt = 0;
+                    double txable = 0, gstamt = 0; short batchslno = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
-                        double amttabigstamt = 0; double amttabcgstamt = 0;short batchslno = 0;
+                        double amttabigstamt = 0; double amttabcgstamt = 0;
                         //Amount tab start
                         if (inrdr["FREIGHT"].retDbl() != 0)
                         {
@@ -222,7 +224,7 @@ namespace Improvar.Controllers
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);                    
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITNM = style;
                         TTXNDTL.SLNO = ++txnslno;
@@ -270,12 +272,12 @@ namespace Improvar.Controllers
                         TTXNDTL.SGSTAMT = inrdr["STATE_AMT"].retDbl() - amttabcgstamt; gstamt += TTXNDTL.SGSTAMT.retDbl();
                         TTXNDTL.NETAMT = NET_AMT.toRound(2);
                         TTXNDTL tmpTTXNDTL = TTXNDTLlist.Where(r => r.BALENO == TTXNDTL.BALENO && r.HSNCODE == TTXNDTL.HSNCODE && r.ITCD == TTXNDTL.ITCD && r.STKTYPE == TTXNDTL.STKTYPE && r.RATE == TTXNDTL.RATE).FirstOrDefault();
-                       if (tmpTTXNDTL!= null)
+                        if (tmpTTXNDTL != null)
                         {
                             TTXNDTL.NOS = tmpTTXNDTL.NOS + TTXNDTL.NOS;
                             TTXNDTL.QNTY = tmpTTXNDTL.NOS + TTXNDTL.QNTY;
                         }
-                            TTXNDTLlist.Add(TTXNDTL);
+                        TTXNDTLlist.Add(TTXNDTL);
 
 
                         TBATCHDTL TBATCHDTL = new TBATCHDTL();
