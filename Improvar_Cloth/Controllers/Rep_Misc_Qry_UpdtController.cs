@@ -99,52 +99,26 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        //public ActionResult GetBarCodeDetails(string val, string Code)
-        //{
-        //    try
-        //    {
-        //        TransactionSalePosEntry VE = new TransactionSalePosEntry();
-        //        //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
-        //        Cn.getQueryString(VE);
-        //        var data = Code.Split(Convert.ToChar(Cn.GCS()));
-        //        string barnoOrStyle = val.retStr();
-        //        string MTRLJOBCD = data[0].retSqlformat();
-        //        string PARTCD = data[1].retStr();
-        //        string DOCDT = CommVar.CurrDate(UNQSNO); /*data[2].retStr()*/
-        //        string TAXGRPCD = data[3].retStr();
-        //        string GOCD = data[4].retStr() == "" ? "" : data[4].retStr().retSqlformat();   /*data[2].retStr() == "" ? "" : data[4].retStr().retSqlformat();*/
-        //        string PRCCD = data[5].retStr();
-        //        if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-        //        string BARNO = data[7].retStr() == "" || val.retStr() == "" ? "" : data[7].retStr().retSqlformat();
-
-        //        string str = MasterHelp.T_TXN_BARNO_help(barnoOrStyle, "PB", DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", false, PARTCD, BARNO);
-        //        if (str.IndexOf("='helpmnu'") >= 0)
-        //        {
-        //            return PartialView("_Help2", str);
-        //        }
-        //        else
-        //        {
-        //            if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
-        //            return Content(str);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Cn.SaveException(ex, "");
-        //        return Content(ex.Message + ex.InnerException);
-        //    }
-        //}
-        public ActionResult GetItemDetails(string val)
+        public ActionResult GetBarCodeDetails(string val, string Code)
         {
             try
             {
-                var str = MasterHelp.ITCD_help(val, "");
+                TransactionSalePosEntry VE = new TransactionSalePosEntry();
+                //sequence MTRLJOBCD/PARTCD/DOCDT/TAXGRPCD/GOCD/PRCCD/ALLMTRLJOBCD
+                Cn.getQueryString(VE);
+                var data = Code.Split(Convert.ToChar(Cn.GCS()));
+                string barnoOrStyle = val.retStr();
+                string DOCDT = CommVar.CurrDate(UNQSNO); /*data[2].retStr()*/
+                string BARNO = data[0].retStr() == "" || val.retStr() == "" ? "" : data[0].retStr().retSqlformat();
+
+                string str = MasterHelp.T_TXN_BARNO_help(barnoOrStyle, "PB", DOCDT, "", "", "", "", "", false, "", BARNO);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
                 }
                 else
                 {
+                    if (str.IndexOf(Cn.GCS()) == -1) return Content(str);
                     return Content(str);
                 }
             }
@@ -177,11 +151,11 @@ namespace Improvar.Controllers
                     sql = "update " + schnm + ". T_TXNDTL set  ITCD= '" + VE.ITCD2 + "',BARNO= '" + VE.NEWBARNO + "' "
                     + " where AUTONO='" + VE.BLAUTONO1 + "' and  ITCD= '" + VE.ITCD1 + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "'and BARNO='" + VE.OLDBARNO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-                    
+
                     sql = "update " + schnm + ".T_BATCHMST set  ITCD= '" + VE.ITCD2 + "',BARNO= '" + VE.NEWBARNO + "' "
-                  + " where AUTONO='" + VE.BLAUTONO1 + "' and  ITCD= '" + VE.ITCD1 + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "' and BARNO='" + VE.OLDBARNO + "'  ";
+                  + " where AUTONO='" + VE.BLAUTONO1 + "' and  ITCD= '" + VE.ITCD1 + "'  and BARNO='" + VE.OLDBARNO + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
-                                      
+
                 }
                 else
                 {
@@ -192,7 +166,7 @@ namespace Improvar.Controllers
                 ModelState.Clear();
                 OraTrans.Commit();
                 OraTrans.Dispose();
-                ContentFlg = "1";
+                ContentFlg = "Update Successfully";
                 return Content(ContentFlg);
             }
             catch (Exception ex)

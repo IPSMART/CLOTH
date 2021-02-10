@@ -3850,28 +3850,34 @@ namespace Improvar.Controllers
                                         double flagmtr = batch_data[a]["flagmtr"].retDbl() - Math.Truncate(batch_data[a]["flagmtr"].retDbl());
                                         if (flagmtr.retDbl() > 0)
                                         {
+                                            pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                             pcsdesc += "(F" + flagmtr + ")";
                                         }
                                     }
 
                                     if (batch_data[a]["scmdiscrate"].retDbl() > 0)
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["tddiscrate"].retDbl() > 0)
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += batch_data[a]["tddiscrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["discrate"].retDbl() > 0)
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += batch_data[a]["discrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["itrem"].retStr() != "")
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
                                     }
                                     if (batch_data[a]["baleno"].retStr() != "")
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += "Bale No. " + batch_data[a]["baleno"].retStr();
                                     }
                                 }

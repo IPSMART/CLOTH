@@ -858,7 +858,7 @@ namespace Improvar.Controllers
                                 {
                                     stkdrcr = lp == 0 ? "D" : "C";
                                     if (lp == 0) gocd = VE.TBILTYKHASRA[i].GOCD; else gocd = (VE.MENU_PARA == "KHSR" ? "TR" : VE.T_TXN.GOCD);
-                                    bool baleflag = (VE.TBILTYKHASRA[i].CheckedBALEOPEN == true && stkdrcr == "C") ? false : true;
+                                    bool baleflag = (VE.TBILTYKHASRA[i].CheckedBALEOPEN == true && stkdrcr == "D") ? false : true;
 
                                     if (baleflag == true)
                                     {
