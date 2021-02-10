@@ -212,17 +212,26 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
+                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,decode(a.baleopen,'Y',b.gocd,a.gocd)gocd,decode(a.baleopen,'Y',b.gonm,a.gonm)gonm,a.flag1,  ";
+                str += "a.itcd, a.styleno, a.itnm,a.uomcd,a.nos,a.qnty,a.rate,a.pageno,a.pageslno,a.itstyle,a.prefno,a.prefdt,a.baleopen from ( ";
+
                 str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm,b.flag1,  ";
                 str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.rate,c.pageno,c.pageslno,d.styleno||' '||d.itnm itstyle,e.prefno,e.prefdt,a.baleopen  ";
                 str += " from " + Scm + ".T_BALE a," + scmf + ".M_GODOWN b, " + Scm + ".T_TXNDTL c," + Scm + ".M_SITEM d," + Scm + ".T_TXN e  ";
                 str += " where a.blautono=c.autono(+) and c.itcd=d.itcd(+) and a.blautono=e.autono(+) and a.gocd=b.gocd(+)  and ";
-                str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000 ";
-                str += "order by a.slno ";
+                //str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000 ";
+                str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' ";
+                str += "order by a.slno ) a, ";
+
+                str += "(select a.gocd,b.gonm,a.slno+1000  slno,a.autono from " + Scm + ".T_TXNDTL a," + scmf + ".M_GODOWN b where a.gocd=b.gocd and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000)b ";
+                str += "where a.autono=b.autono(+) and a.slno=b.slno(+)  ";
+
                 DataTable TBILTYKHASRAtbl = masterHelp.SQLquery(str);
                 VE.TBILTYKHASRA = (from DataRow dr in TBILTYKHASRAtbl.Rows
+                                   where (dr["BALEOPEN"].retStr() == "Y" ? dr["slno"].retDbl() >= 1000 : dr["slno"].retDbl() <= 1000)
                                    select new TBILTYKHASRA()
                                    {
-                                       SLNO = Convert.ToInt16(dr["slno"]),
+                                       SLNO = dr["BALEOPEN"].retStr() == "Y"? (dr["slno"].retDbl()-1000).retShort():Convert.ToInt16(dr["slno"]),
                                        BLAUTONO = dr["blautono"].retStr(),
                                        LRDT = dr["lrdt"].retDateStr(),
                                        LRNO = dr["lrno"].retStr(),

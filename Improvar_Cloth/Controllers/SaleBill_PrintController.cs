@@ -69,7 +69,7 @@ namespace Improvar.Controllers
                     VE.DefaultDay = 0;
                     VE.Checkbox1 = true;
                     VE.Checkbox10 = true;
-                    VE.Checkbox11 = true;
+                    //VE.Checkbox11 = true;
                     return View(VE);
                 }
             }
@@ -3836,8 +3836,8 @@ namespace Improvar.Controllers
                                         {
                                             for (int v = 0; v < batch_data[a]["nos"].retDbl(); v++)
                                             {
-
-                                                pcsdesc += batch_data[a]["cutlength"].retStr() + "+";
+                                                pcsdesc += v == 0 ? "" : "+";
+                                                pcsdesc += batch_data[a]["cutlength"].retStr();
                                             }
                                         }
                                         else
