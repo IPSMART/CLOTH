@@ -93,7 +93,7 @@ namespace Improvar.Controllers
                 string fdt = VE.FDT.retDateStr();
                 string tdt = VE.TDT.retDateStr();
 
-                string itgrpcd = VE.TEXTBOX1;
+                string itgrpcd = "";
                 string rateqntybag = "B";
                 //if (FC["RATEQNTYBAG"].ToString() == "BAGS") rateqntybag = "B";
                 //else rateqntybag = "Q";
@@ -123,6 +123,7 @@ namespace Improvar.Controllers
                     selitcd = CommFunc.retSqlformat(FC["itcdvalue"].ToString());
                 }
                 if (FC.AllKeys.Contains("loccdvalue")) LOCCD = CommFunc.retSqlformat(FC["loccdvalue"].ToString());
+                if (FC.AllKeys.Contains("itgrpcdvalue")) itgrpcd = CommFunc.retSqlformat(FC["itgrpcdvalue"].retSqlformat());
                 bool showbatch = true;
 
                 string sql = "";
@@ -150,7 +151,7 @@ namespace Improvar.Controllers
 
                 sql += scm1 + ".m_sitem c, " + scmf + ".m_uom d ";
                 sql += "where a.autoslno=b.autoslno(+) and a.itcd=c.itcd(+) and c.uomcd=d.uomcd(+) ";
-                if (itgrpcd.retStr() != "") sql += "and b.itgrpcd in('" + itgrpcd + "') ";
+                if (itgrpcd.retStr() != "") sql += "and c.itgrpcd in(" + itgrpcd + ") ";
 
                 sql += "order by itnm, itcd, docdt, stkdrcr desc, autono ";
                 DataTable tbl = MasterHelp.SQLquery(sql);
