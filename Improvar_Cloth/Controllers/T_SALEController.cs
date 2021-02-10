@@ -1570,7 +1570,11 @@ namespace Improvar.Controllers
                 {
                     //checking
                     //DataTable tbl = ListToDatatable.LINQResultToDataTable(VE.TTXNDTL);
-                    return Content("0");
+                    string slno = string.Join(",", (VE.TTXNDTL.GroupBy(x => x.SLNO)
+              .Where(g => g.Count() > 1)
+              .Select(y => y.Key)
+              .ToList()));
+                    return Content(slno);
                 }
 
                 for (int p = 0; p <= VE.TTXNDTL.Count - 1; p++)
@@ -4030,9 +4034,14 @@ namespace Improvar.Controllers
                         #endregion
                     }
 
-                    if ((igst != 0 && (cgst + sgst) != 0) || (igst + cgst + sgst == 0))
+                    if (igst != 0 && (cgst + sgst) != 0)
                     {
                         ContentFlg = "We can't add igst+cgst+sgst for the same party.";
+                        goto dbnotsave;
+                    }
+                    else if (igst + cgst + sgst == 0)
+                    {
+                        ContentFlg = "Please add tax % from 'Tax Rates linkup (Prod.Grp)' master";
                         goto dbnotsave;
                     }
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))

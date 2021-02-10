@@ -735,8 +735,14 @@ function Fill_DetailData() {
         url: $("#UrlFillDetailData").val(),//"@Url.Action("FillDetailData", PageControllerName)",
         data: $('form').serialize(),
         success: function (result) {
-            if (result == "0") {
-                msgInfo("Bill Sl# duplicate in barcode tab!");
+            if (result.indexOf("_T_SALE_DETAIL_GRID") == -1) {
+                msgInfo("Bill Sl (" + result + ") duplicate in barcode tab!");
+                $("#WaitingMode").hide();
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 message_value = "FillDetail";
                 return false;
             }
@@ -1275,8 +1281,13 @@ function UpdateTaxPer() {
     var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0; var DUTY_PER = 0;
     var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     for (i = 0; i <= GridRowMain - 1; i++) {
-        var tax = $("#B_GSTPER_" + i).val().split(',');
-
+        var rate = retFloat($("#B_RATE_" + i).val());
+        var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
+        var allgst = retGstPerstr(prodgrpgstper, rate);
+        var tax=null;
+        if (allgst != "") {
+             tax = allgst.split(',');
+        }
         var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
         if (tax.length > 0) {
             IGST = parseFloat(tax[0]).toFixed(2);

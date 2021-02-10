@@ -40,8 +40,8 @@
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 20px;"></th>
-                                <th class="sticky-cell" style="width: 20px;text-align:center;left:17px">SL No</th>
-                                <th class="sticky-cell" style="width: 40px;text-align:center;left:40px">Bill Sl #</th>
+                                <th class="sticky-cell" style="width: 40px;text-align:center;left:20px">SL No</th>
+                                <th class="sticky-cell" style="width: 40px;text-align:center;left:60px">Bill Sl #</th>
                                 @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                 {
                                     <th class="" style="width: 150px;">Against Doc No.</th>
@@ -200,10 +200,10 @@
     @Html.HiddenFor(model => model.TBATCHDTL[i].MTBARCODE, new { id = "B_MTBARCODE_" + i })
 }
                                         </td>
-                                        <td class="sticky-cell" style="left:17px;">
+                                        <td class="sticky-cell" style="left:20px;">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].SLNO, new { id = "B_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
-                                        <td class="sticky-cell" style="left:40px">
+                                        <td class="sticky-cell" style="left:60px">
                                             @Html.TextBoxFor(model => Model.TBATCHDTL[i].TXNSLNO, new { id = "B_TXNSLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 4, @onkeypress = "return numericOnly(this);", @onchange = "HasChangeBarSale();" })
                                         </td>
                                         @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
@@ -424,8 +424,8 @@
                         <tfoot>
                             <tr class="sticky-footer">
                                 <td class="sticky-cell" style="width:20px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
-                                <td class="sticky-cell" style="left:17px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td class="sticky-cell" style="left:40px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td class="sticky-cell" style="left:20px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                <td class="sticky-cell" style="left:60px;"><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 @if (Model.MENU_PARA == "SR" || Model.MENU_PARA == "PR")
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
