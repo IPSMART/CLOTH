@@ -69,7 +69,7 @@ namespace Improvar.Controllers
                     VE.DefaultDay = 0;
                     VE.Checkbox1 = true;
                     VE.Checkbox10 = true;
-                    VE.Checkbox11 = true;
+                    //VE.Checkbox11 = true;
                     return View(VE);
                 }
             }
@@ -3836,8 +3836,8 @@ namespace Improvar.Controllers
                                         {
                                             for (int v = 0; v < batch_data[a]["nos"].retDbl(); v++)
                                             {
-
-                                                pcsdesc += batch_data[a]["cutlength"].retStr() + "+";
+                                                pcsdesc += v == 0 ? "" : "+";
+                                                pcsdesc += batch_data[a]["cutlength"].retStr();
                                             }
                                         }
                                         else
@@ -3850,28 +3850,34 @@ namespace Improvar.Controllers
                                         double flagmtr = batch_data[a]["flagmtr"].retDbl() - Math.Truncate(batch_data[a]["flagmtr"].retDbl());
                                         if (flagmtr.retDbl() > 0)
                                         {
+                                            pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                             pcsdesc += "(F" + flagmtr + ")";
                                         }
                                     }
 
                                     if (batch_data[a]["scmdiscrate"].retDbl() > 0)
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += batch_data[a]["scmdiscrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["tddiscrate"].retDbl() > 0)
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += batch_data[a]["tddiscrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["discrate"].retDbl() > 0)
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += batch_data[a]["discrate"].retStr() + "% ";
                                     }
                                     if (batch_data[a]["itrem"].retStr() != "")
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += "[" + batch_data[a]["itrem"].retStr() + "]";
                                     }
                                     if (batch_data[a]["baleno"].retStr() != "")
                                     {
+                                        pcsdesc += pcsdesc.retStr() == "" ? "" : " ";
                                         pcsdesc += "Bale No. " + batch_data[a]["baleno"].retStr();
                                     }
                                 }

@@ -643,12 +643,12 @@ function ClearBarcodeArea(TAG) {
         //if (MENU_PARA == "PB" || MENU_PARA == "OP") {
         //    $("#ITCD").focus();
         //} else {
-            if ($("#MNTNBARNO").val() == "Y") {
-                $("#BARCODE").focus();
-            }
-            else {
-                $("#STYLENO").focus();
-            }
+        if ($("#MNTNBARNO").val() == "Y") {
+            $("#BARCODE").focus();
+        }
+        else {
+            $("#STYLENO").focus();
+        }
         //}
     }
     if (MENU_PARA == "SR" || MENU_PARA == "PR") {
@@ -735,8 +735,14 @@ function Fill_DetailData() {
         url: $("#UrlFillDetailData").val(),//"@Url.Action("FillDetailData", PageControllerName)",
         data: $('form').serialize(),
         success: function (result) {
-            if (result == "0") {
-                msgInfo("Bill Sl# duplicate in barcode tab!");
+            if (result.indexOf("_T_SALE_DETAIL_GRID") == -1) {
+                msgInfo("Bill Sl (" + result + ") duplicate in barcode tab!");
+                $("#WaitingMode").hide();
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
                 message_value = "FillDetail";
                 return false;
             }
@@ -1269,16 +1275,26 @@ function AmountCalculateTotal() {
 
 }
 function UpdateTaxPer() {
+    debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
     var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0; var DUTY_PER = 0;
-    var GridRowMain = $("#_T_SALE_DETAIL_GRID > tbody > tr").length;
+    var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     for (i = 0; i <= GridRowMain - 1; i++) {
-        var IGST = parseFloat(document.getElementById("D_IGSTPER_" + i).value);
-        var CGST = parseFloat(document.getElementById("D_CGSTPER_" + i).value);
-        var SGST = parseFloat(document.getElementById("D_SGSTPER_" + i).value);
-        var CESS = parseFloat(document.getElementById("D_CESSPER_" + i).value);
-        var DUTY = 0;//parseFloat(document.getElementById("DUTYPER_" + i).value);
+        var rate = retFloat($("#B_RATE_" + i).val());
+        var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
+        var allgst = retGstPerstr(prodgrpgstper, rate);
+        var tax=null;
+        if (allgst != "") {
+             tax = allgst.split(',');
+        }
+        var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
+        if (tax.length > 0) {
+            IGST = parseFloat(tax[0]).toFixed(2);
+            CGST = parseFloat(tax[1]).toFixed(2);
+            SGST = parseFloat(tax[2]).toFixed(2);
+        }
+
         if (IGST > IGST_PER) {
             IGST_PER = IGST;
         }
@@ -2196,7 +2212,7 @@ function AddBarCodeGrid() {
             }
         }
     }
-   
+
     $("#bardatachng").val("Y");
     scrollToEnd('BARGRID');
 }
@@ -2368,18 +2384,15 @@ function GetPartyDetails(id) {
         var code = $("#slcd_tag").val() + String.fromCharCode(181) + $("#DOCDT").val();
         var AUTONO = $("#AUTONO").val();
         var TDSCODE = $("#TDSCODE").val();
-        var Partycaption="";
-         if (MENU_PARA == "PB" || MENU_PARA == "PR")
-        {
-             Partycaption="Supplier";
+        var Partycaption = "";
+        if (MENU_PARA == "PB" || MENU_PARA == "PR") {
+            Partycaption = "Supplier";
         }
-        else if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP")
-        {
-            Partycaption="Buyer";
+        else if (MENU_PARA == "SBPCK" || MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP") {
+            Partycaption = "Buyer";
         }
-        else
-        {
-            Partycaption="Party";
+        else {
+            Partycaption = "Party";
         }
         $.ajax({
             type: 'POST',
@@ -2449,7 +2462,7 @@ function GetPartyDetails(id) {
                             else {
                                 $("#STYLENO").focus();
                             }
-                           
+
                         }
                     }
                     else {

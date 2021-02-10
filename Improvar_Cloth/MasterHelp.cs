@@ -2918,17 +2918,17 @@ namespace Improvar
         //    }
         //}
 
-        public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "", bool skipstyleno = false, bool skippageno = false,string pagenoslno="")
+        public string BaleNo_help(string val, string tdt, string gocd = "", string itcd = "", bool skipstyleno = false, bool skippageno = false, string pagenoslno = "")
         {
-            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'","","","","","",false,"",pagenoslno);
+            DataTable tbl = salesfunc.GetBaleStock(tdt, gocd, val, itcd, "'FS'", "", "", "", "", "", false, "", pagenoslno);
             DataView dv = new DataView(tbl);
             string colnm = "baleno,baleyr,lrno,lrdt,gocd,gonm,blautono";
-            colnm += skipstyleno == true ? "" : ",itcd,styleno";
+            colnm += skipstyleno == true ? "" : ",itcd,styleno,blslno";
             colnm += skippageno == true ? "" : ",pageno,pageslno,pagenoslno";
             string[] a = colnm.Split(',');
             tbl = dv.ToTable(true, a);
             string slash = "";
-            string HiddenSeq = (skipstyleno == true && skippageno == true) ? "5" : (skipstyleno == false && skippageno == false) ? "7" + Cn.GCS() + "8" : (skipstyleno == false && skippageno == true)? "6" + Cn.GCS() + "7":"6";
+            string HiddenSeq = (skipstyleno == true && skippageno == true) ? "5" : (skipstyleno == false && skippageno == false) ? "7" + Cn.GCS() + "8" : (skipstyleno == false && skippageno == true) ? "6" + Cn.GCS() + "7" : "6";
             if (val.retStr() == "" || tbl.Rows.Count > 1)
             {
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
@@ -2948,8 +2948,21 @@ namespace Improvar
 
                 if (tbl.Rows.Count > 0)
                 {
-
                     string str = ToReturnFieldValues("", tbl);
+                    if(skipstyleno == false)
+                    {
+                        string sql = "select distinct barno from  " + CommVar.CurSchema(UNQSNO) + ".t_batchdtl where autono='" + tbl.Rows[0]["blautono"].retStr() + "' and slno='" + tbl.Rows[0]["blslno"].retStr() + "' ";
+                        DataTable dt = SQLquery(sql);
+                        if (dt != null)
+                        {
+                            str += "^BARNO=^" + dt.Rows[0]["barno"] + Cn.GCS();
+                        }
+                        else
+                        {
+                            str += "^BARNO=^" + Cn.GCS();
+                        }
+                    }
+                    
                     return str;
                 }
                 else
