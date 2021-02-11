@@ -56,6 +56,10 @@ namespace Improvar.Controllers
                         RT2.value = "Sales Return";
                         RT2.text = "Sales Return";
                         RT.Add(RT2);
+                        DropDown_list1 RT3 = new DropDown_list1();
+                        RT3.value = "Sales Cash Memo";
+                        RT3.text = "Sales Cash Memo";
+                        RT.Add(RT3);
                         RT.Add(new DropDown_list1 { value = "SDWOQ", text = "Sales Debit Note (W/O Qnty)" });
                         RT.Add(new DropDown_list1 { value = "SCWOQ", text = "Sales Credit Note (W/O Qnty)" });
                         VE.DropDown_list1 = RT;
@@ -197,6 +201,8 @@ namespace Improvar.Controllers
                         txntag = "'PB'"; break;
                     case "Sales Return":
                         txntag = "'SR'"; break;
+                    case "Sales Cash Memo":
+                        txntag = "'SBCM'"; break;
                     case "Purchase Return":
                         txntag = "'PR'"; break;
                     case "Opening Stock":
