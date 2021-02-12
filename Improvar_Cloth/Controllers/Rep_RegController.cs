@@ -42,12 +42,12 @@ namespace Improvar.Controllers
                     string com = CommVar.Compcd(UNQSNO);
                     VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
                     VE.Slnm = MasterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
-                    VE.FDT = CommVar.FinStartDate(UNQSNO); VE.TDT = CommVar.CurrDate(UNQSNO);                    
+                    VE.FDT = CommVar.FinStartDate(UNQSNO); VE.TDT = CommVar.CurrDate(UNQSNO);
                     //=========For Report Type===========//
                     List<DropDown_list1> RT = new List<DropDown_list1>();
-                    if (VE.MENU_PARA=="SB")
+                    if (VE.MENU_PARA == "SB")
                     {
-                    
+
                         DropDown_list1 RT1 = new DropDown_list1();
                         RT1.value = "Sales";
                         RT1.text = "Sales";
@@ -82,8 +82,8 @@ namespace Improvar.Controllers
                         RT.Add(new DropDown_list1 { value = "PCWOQ", text = "Purchase Credit Note (W/O Qnty)" });
                         VE.DropDown_list1 = RT;
                     }
-                
-                    
+
+
                     //=========End Report Type===========//
 
                     //=========For Report Type===========//
@@ -202,7 +202,7 @@ namespace Improvar.Controllers
                     case "Sales Return":
                         txntag = "'SR'"; break;
                     case "Sales Cash Memo":
-                        txntag = "'SBCM'"; break;
+                        txntag = "'SB'"; break;
                     case "Purchase Return":
                         txntag = "'PR'"; break;
                     case "Opening Stock":
@@ -227,46 +227,68 @@ namespace Improvar.Controllers
 
                 string query1 = "";
                 query1 += " select a.autono, a.doccd, a.docno, a.cancel, a.docdt, ";
-                query1 += "  a.prefno, a.prefdt, a.slcd, c.slnm, c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
+                query1 += "  a.prefno, a.prefdt, a.slcd, c.slnm,a.rtdebcd,a.rtdebnm,a.mobile,a.amt payamt,c.gstno, c.district, nvl(a.roamt, 0) roamt, ";
                 query1 += " nvl(a.tcsamt, 0) tcsamt, a.blamt, ";
                 query1 += "   b.slno, b.itcd, ";
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
                 query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
-                query1 += " e.slnm trslnm, f.lrno,f.lrdt, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
-                query1 += " b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt,b.blqnty from ( ";
-                query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
-                query1 += "b.docdt, ";
-                query1 += "a.prefno, a.prefdt, a.slcd, a.roamt, a.tcsamt, a.blamt ";
-                query1 += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, ";
-                query1 += " " + scmf + ".m_subleg c ";
-                query1 += "  where a.autono = b.autono and a.slcd = c.slcd(+) ";
-                query1 += "  and  b.compcd = '" + COM + "' ";
-                if (selloccd == "") query1 += " and b.loccd = '" + LOC + "'  "; else query1 += " and b.loccd in (" + selloccd + ")  ";
-                if (GODOWN.retStr() != "") query1 += "and  a.GOCD in('" + GODOWN + "')  ";
-                if (repsorton == "bldt")
+                query1 += " e.slnm trslnm, f.lrno,f.lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
+                query1 += " b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT  ";
+                if (VE.TEXTBOX1 != "Sales Cash Memo")
                 {
-                    if (fdt != "") query1 += "and a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
-                    if (tdt != "") query1 += "and a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                    query1 += " from ( ";
+                    query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
+                    query1 += "b.docdt, ";
+                    query1 += "a.prefno, a.prefdt, a.slcd, a.roamt, a.tcsamt, a.blamt ,0 amt,''rtdebcd,''mobile,''rtdebnm  ";
+
+                    query1 += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, ";
+                    query1 += " " + scmf + ".m_subleg c ";
+                    query1 += "  where a.autono = b.autono and a.slcd = c.slcd(+) ";
+                    query1 += "  and  b.compcd = '" + COM + "' ";
+                    if (selloccd == "") query1 += " and b.loccd = '" + LOC + "'  "; else query1 += " and b.loccd in (" + selloccd + ")  ";
+                    if (GODOWN.retStr() != "") query1 += "and  a.GOCD in('" + GODOWN + "')  ";
+                    if (repsorton == "bldt")
+                    {
+                        if (fdt != "") query1 += "and a.prefdt >= to_date('" + fdt + "','dd/mm/yyyy')  ";
+                        if (tdt != "") query1 += "and a.prefdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                    }
+                    else
+                    {
+                        if (fdt != "") query1 += "and b.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
+                        if (tdt != "") query1 += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                    }
+                    query1 += "and a.doctag in (" + txntag + ") ";
+                    query1 += " ) a,  ";
                 }
                 else
                 {
-                    if (fdt != "") query1 += "and b.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
-                    if (tdt != "") query1 += "and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy')   ";
+                    query1 += "from(select a.autono, b.doccd, b.docno, b.cancel, ";
+                    query1 += " b.docdt, a.prefno, a.prefdt, a.slcd, d.rtdebcd, e.rtdebnm, e.mobile, f.amt, a.roamt, a.tcsamt, a.blamt from " + scm1 + ".t_txn a, ";
+                    query1 += " " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm1 + ".t_txnmemo d, ";
+                    query1 += " " + scmf + ".M_RETDEB e, " + scm1 + ".t_txnpymt f ";
+                    query1 += " where a.autono = b.autono and a.slcd = c.slcd(+) and a.autono = d.autono and  d.rtdebcd = e.rtdebcd(+) and d.autono = f.autono(+) ";
+                    query1 += " and b.compcd = '" + COM + "' ";
+                    if (selloccd == "") query1 += " and b.loccd = '" + LOC + "' "; else query1 += " and b.loccd in (" + selloccd + ")  ";
+
+                    if (fdt != "") query1 += "  and b.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') ";
+                    query1 += "  and b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') ";
+                    query1 += "  and a.doctag in (" + txntag + ")) a, ";
                 }
-                query1 += "and a.doctag in (" + txntag + ") ";
-                query1 += " ) a, ( ";
-                query1 += " select distinct a.autono, a.slno, a.itcd, a.itrem, ";                query1 += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, ";
-                query1 += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,   ";
+
+
+                query1 += "(select distinct a.autono, a.slno, a.itcd, a.itrem, ";
+                query1 += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, ";
+                query1 += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   ";
                 query1 += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty from " + scm1 + ".t_txndtl a, ";
                 query1 += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e ";
                 query1 += "   where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = e.autono(+) and e.autono = d.autono(+) ";
                 query1 += " group by ";
                 query1 += " a.autono, a.slno, a.itcd, a.itrem, ";
                 query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  ";
-                query1 += " a.tddiscamt, a.discamt,a.TXBLVAL, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
-                query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,''itstyle ";                query1 += " , b.amtnm itnm, a.hsncode,  ";
+                query1 += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
+                query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,''itstyle "; query1 += " , b.amtnm itnm, a.hsncode,  ";
                 query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL, a.igstper, a.igstamt, ";
-                query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty ";
+                query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,0 NETAMT ";
                 query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
                 query1 += " where a.amtcd = b.amtcd ";
                 query1 += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, ";
@@ -314,7 +336,7 @@ namespace Improvar.Controllers
                 string pghdr1 = "";
 
                 double tnos = 0; double tqnty = 0; double tbasamt = 0; double tdisc1 = 0; double tdisc2 = 0; double ttaxable = 0, tbqnty = 0;
-                double tigstamt = 0; double tcgstamt = 0; double tsgstamt = 0; double troamt = 0; double ttcsamt = 0; double tblamt = 0;
+                double tigstamt = 0; double tcgstamt = 0; double tsgstamt = 0; double troamt = 0; double ttcsamt = 0; double tblamt = 0; double tpayamt = 0;
                 string auto1 = "";
                 double dsc1 = 0; double dsc2 = 0;
                 bool bldtl = true, showpbill = false;
@@ -331,275 +353,332 @@ namespace Improvar.Controllers
                 amtDT.Columns.Add("AmtItcdtotAmt", typeof(double));
 
                 Int32 i = 0, istore = 0, rNo = 0, maxR = tbl.Rows.Count - 1;
-                if (((VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Opening Stock" || VE.TEXTBOX1 == "PDWOQ"|| VE.TEXTBOX7 == "PCWOQ"))) showpbill = true;
+                if (((VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Opening Stock" || VE.TEXTBOX1 == "PDWOQ" || VE.TEXTBOX7 == "PCWOQ"))) showpbill = true;
                 #region Normal Report               
-                    HC.RepStart(IR, 3);
-                    HC.GetPrintHeader(IR, "doccd", "string", "c,5", "Doc;Code");
-                    HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yy", ";Doc Date");
-                    HC.GetPrintHeader(IR, "docno", "string", "c,18", ";Doc No");
-                    if (showpbill == true) HC.GetPrintHeader(IR, "prefdt", "string", "d,10:dd/mm/yy", "Party;Bill Date");
-                    if (showpbill == true) HC.GetPrintHeader(IR, "prefno", "string", "c,16", "Party;Bill No");
-                    if (itmdtl == true)
-                    {
-                        HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name;Item Name");
-                        if (itemrem == true) HC.GetPrintHeader(IR, "itrem", "string", "c,20", ";Item Remarks");
-                        HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.;Prod Code");
-                        HC.GetPrintHeader(IR, "hsncode", "string", "c,8", "HSN/SAC");
-                        HC.GetPrintHeader(IR, "uomcd", "string", "c,4", "Uom");
-                        HC.GetPrintHeader(IR, "nos", "double", "n,5", "Cases");
-                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
-                        HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Rate");
-                      
-                        if (cnt_blqnty.Count() > 0)
-                        {
-                            HC.GetPrintHeader(IR, "blqnty", "double", "n,12,3", "BL Qnty");
-                        }
-                    }
+                HC.RepStart(IR, 3);
+                HC.GetPrintHeader(IR, "doccd", "string", "c,5", "Doc;Code");
+                HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yy", ";Doc Date");
+                HC.GetPrintHeader(IR, "docno", "string", "c,18", ";Doc No");
+                if (showpbill == true) HC.GetPrintHeader(IR, "prefdt", "string", "d,10:dd/mm/yy", "Party;Bill Date");
+                if (showpbill == true) HC.GetPrintHeader(IR, "prefno", "string", "c,16", "Party;Bill No");
+                if (itmdtl == true)
+                {
+                    if (VE.TEXTBOX1 != "Sales Cash Memo") HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name;Item Name");
                     else
                     {
-                        HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
-                        HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
-                        HC.GetPrintHeader(IR, "nos", "double", "n,5", "Cases");
-                        HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
+                        HC.GetPrintHeader(IR, "rtdebnm", "string", "c,35", "Retail Name;Item Name");
+                        HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
                     }
-                    HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
-                    if (SeparateAchead)
+                    if (itemrem == true) HC.GetPrintHeader(IR, "itrem", "string", "c,20", ";Item Remarks");
+                    HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.;Prod Code");
+                    HC.GetPrintHeader(IR, "hsncode", "string", "c,8", "HSN/SAC");
+                    HC.GetPrintHeader(IR, "uomcd", "string", "c,4", "Uom");
+                    HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
+                    HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
+                    HC.GetPrintHeader(IR, "rate", "double", "n,10,2", "Rate");
+
+                    if (cnt_blqnty.Count() > 0)
                     {
-                        foreach (DataRow dr in amtDT.Rows)
-                        {
-                            HC.GetPrintHeader(IR, dr["itcd"].ToString(), "string", "c,10", dr["itnm"].ToString());
-                        }
+                        HC.GetPrintHeader(IR, "blqnty", "double", "n,12,3", "BL Qnty");
                     }
-                    HC.GetPrintHeader(IR, "disc1", "double", "n,10,2", "Disc1;Amount");
-                    HC.GetPrintHeader(IR, "disc2", "double", "n,10,2", "Disc2;Amount");
-                    HC.GetPrintHeader(IR, "taxableval", "double", "n,12,2", "Taxable;Value");
-                    HC.GetPrintHeader(IR, "igstper", "double", "n,5,3", "IGST;%");
-                    HC.GetPrintHeader(IR, "igstamt", "double", "n,10,2", "IGST;Amt");
-                    HC.GetPrintHeader(IR, "cgstper", "double", "n,5,3", "CGST;%");
-                    HC.GetPrintHeader(IR, "cgstamt", "double", "n,10,2", "CGST;Amt");
-                    HC.GetPrintHeader(IR, "sgstper", "double", "n,5,3", "SGST;%");
-                    HC.GetPrintHeader(IR, "sgstamt", "double", "n,10,2", "SGST;Amt");
-                    HC.GetPrintHeader(IR, "tcsamt", "double", "n,10,2", "TCS;Amt");
-                    HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
-                    HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
-                    if (plistprint == true) HC.GetPrintHeader(IR, "prcdesc", "string", "c,10", "Price;List");
-                    if (con_print == true) HC.GetPrintHeader(IR, "cslnm", "string", "c,40", "Consignee;Name");
-                    if (transprint == true) HC.GetPrintHeader(IR, "trslnm", "string", "c,40", "Transporter;Name");
-                    if (transprint == true) HC.GetPrintHeader(IR, "lrno", "string", "c,15", "Lr. ;No");
-                    if (transprint == true) HC.GetPrintHeader(IR, "lrdt", "string", "d,10:dd/mm/yy", "Lr. ;Date");
-                    if (orddetprint == true) HC.GetPrintHeader(IR, "ordno", "string", "c,50", "Order; No");
-                    if (orddetprint == true) HC.GetPrintHeader(IR, "orddt", "string", "d,10:dd/mm/yy", "Order ;Date");
-                    if (VE.Checkbox5 == true) HC.GetPrintHeader(IR, "saprem", "string", "c,20", "SAP;Details");
-                    while (i <= maxR)
+                }
+                else
+                {
+                    if (VE.TEXTBOX1 != "Sales Cash Memo") HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
+                    else
                     {
-                        auto1 = tbl.Rows[i]["autono"].ToString();
-                        istore = i;
-                        bldtl = true;
+                        HC.GetPrintHeader(IR, "rtdebnm", "string", "c,35", "Retail Name");
+                        HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
+                    }
+                    HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
+                    HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
+                    HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
+                }
+                HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
+                if (SeparateAchead)
+                {
+                    foreach (DataRow dr in amtDT.Rows)
+                    {
+                        HC.GetPrintHeader(IR, dr["itcd"].ToString(), "string", "c,10", dr["itnm"].ToString());
+                    }
+                }
+                HC.GetPrintHeader(IR, "disc1", "double", "n,10,2", "Disc1;Amount");
+                HC.GetPrintHeader(IR, "disc2", "double", "n,10,2", "Disc2;Amount");
+                HC.GetPrintHeader(IR, "taxableval", "double", "n,12,2", "Taxable;Value");
+                HC.GetPrintHeader(IR, "igstper", "double", "n,5,3", "IGST;%");
+                HC.GetPrintHeader(IR, "igstamt", "double", "n,10,2", "IGST;Amt");
+                HC.GetPrintHeader(IR, "cgstper", "double", "n,5,3", "CGST;%");
+                HC.GetPrintHeader(IR, "cgstamt", "double", "n,10,2", "CGST;Amt");
+                HC.GetPrintHeader(IR, "sgstper", "double", "n,5,3", "SGST;%");
+                HC.GetPrintHeader(IR, "sgstamt", "double", "n,10,2", "SGST;Amt");
+                HC.GetPrintHeader(IR, "tcsamt", "double", "n,10,2", "TCS;Amt");
+                HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
+                if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "payamt", "double", "n,12,2", ";Payment");
+                HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
+                if (plistprint == true) HC.GetPrintHeader(IR, "prcdesc", "string", "c,10", "Price;List");
+                if (con_print == true) HC.GetPrintHeader(IR, "cslnm", "string", "c,40", "Consignee;Name");
+                if (transprint == true) HC.GetPrintHeader(IR, "trslnm", "string", "c,40", "Transporter;Name");
+                if (transprint == true) HC.GetPrintHeader(IR, "lrno", "string", "c,15", "Lr. ;No");
+                if (transprint == true) HC.GetPrintHeader(IR, "lrdt", "string", "d,10:dd/mm/yy", "Lr. ;Date");
+                if (transprint == true) HC.GetPrintHeader(IR, "GRWT", "double", "n,12,2", "Gross;Weight");
+                if (transprint == true) HC.GetPrintHeader(IR, "NTWT", "double", "n,12,2", "Net;Weight");
+                if (transprint == true) HC.GetPrintHeader(IR, "TRWT", "double", "n,12,2", "Tare;Weight");
+                if (orddetprint == true) HC.GetPrintHeader(IR, "ordno", "string", "c,50", "Order; No");
+                if (orddetprint == true) HC.GetPrintHeader(IR, "orddt", "string", "d,10:dd/mm/yy", "Order ;Date");
+                if (VE.Checkbox5 == true) HC.GetPrintHeader(IR, "saprem", "string", "c,20", "SAP;Details");
+                while (i <= maxR)
+                {
+                    auto1 = tbl.Rows[i]["autono"].ToString();
+                    istore = i;
+                    bldtl = true;
+                    while (auto1 == tbl.Rows[i]["autono"].ToString())
+                    {
+                        string itcd = tbl.Rows[i]["itcd"].ToString();
+                        double bnos = 0; double bqnty = 0; double bbasamt = 0; double bdisc1 = 0; double bdisc2 = 0; double btaxable = 0, blqnty = 0;
+                        double bigstamt = 0; double bcgstamt = 0; double bsgstamt = 0;
+                        double bigstper = 0; double bcgstper = 0; double bsgstper = 0;
+                        foreach (DataRow amtdr in amtDT.Rows) amtdr["AmtItcdRate"] = 0;
+
+                        bigstper = tbl.Rows[i]["igstper"].retDbl();
+                        bcgstper = tbl.Rows[i]["cgstper"].retDbl();
+                        bsgstper = tbl.Rows[i]["sgstper"].retDbl();
+
                         while (auto1 == tbl.Rows[i]["autono"].ToString())
                         {
-                            string itcd = tbl.Rows[i]["itcd"].ToString();
-                            double bnos = 0; double bqnty = 0; double bbasamt = 0; double bdisc1 = 0; double bdisc2 = 0; double btaxable = 0, blqnty = 0;
-                            double bigstamt = 0; double bcgstamt = 0; double bsgstamt = 0;
-                            double bigstper = 0; double bcgstper = 0; double bsgstper = 0;
-                            foreach (DataRow amtdr in amtDT.Rows) amtdr["AmtItcdRate"] = 0;
-
-                            bigstper = tbl.Rows[i]["igstper"].retDbl();
-                            bcgstper = tbl.Rows[i]["cgstper"].retDbl();
-                            bsgstper = tbl.Rows[i]["sgstper"].retDbl();
-
-                            while (auto1 == tbl.Rows[i]["autono"].ToString())
-                            {
-                                if (tbl.Rows[i]["cancel"].ToString() != "Y")
-                                {
-                                    bnos = bnos + tbl.Rows[i]["nos"].retDbl();
-                                    bqnty = bqnty + tbl.Rows[i]["qnty"].retDbl();
-                                    if (SeparateAchead == true && tbl.Rows[i]["slno"].retInt() > 1000)
-                                    {
-                                        foreach (DataRow amtdr in amtDT.Rows)
-                                        {
-                                            if (itcd == amtdr["itcd"].retStr())
-                                            {
-                                                amtdr["AmtItcdRate"] = amtdr["AmtItcdRate"].retDbl() + tbl.Rows[i]["amt"].retDbl();
-                                                amtdr["AmtItcdtotAmt"] = amtdr["AmtItcdtotAmt"].retDbl() + tbl.Rows[i]["amt"].retDbl();
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        bbasamt = bbasamt + tbl.Rows[i]["amt"].retDbl();
-                                    }
-                                    bdisc1 = bdisc1 + tbl.Rows[i]["scmdiscamt"].retDbl();
-                                    bdisc2 = bdisc2 + tbl.Rows[i]["tddiscamt"].retDbl()+ tbl.Rows[i]["discamt"].retDbl();
-                                    btaxable = btaxable + tbl.Rows[i]["TXBLVAL"].retDbl();
-                                    bigstamt = bigstamt + tbl.Rows[i]["igstamt"].retDbl();
-                                    bcgstamt = bcgstamt + tbl.Rows[i]["cgstamt"].retDbl();
-                                    bsgstamt = bsgstamt + tbl.Rows[i]["sgstamt"].retDbl();
-                                    blqnty = blqnty + tbl.Rows[i]["blqnty"].retDbl();
-                                }
-                                i = i + 1;
-                                if (i > maxR) break;
-                                if (tbl.Rows[i]["igstper"].retDbl() + tbl.Rows[i]["cgstper"].retDbl() + tbl.Rows[i]["sgstper"].retDbl() != bigstper + bcgstper + bsgstper) break;
-                            }
-                            i = i - 1;
-                            DataRow dr = IR.NewRow();
-                            if (bldtl == true)
-                            {
-                                string cancrem = "";
-                                if (tbl.Rows[i]["cancel"].ToString() == "Y") cancrem = "  (CANCELLED)";
-
-                                dr["doccd"] = tbl.Rows[i]["doccd"].ToString();
-                                dr["docdt"] = tbl.Rows[i]["docdt"] == DBNull.Value ? "" : tbl.Rows[i]["docdt"].ToString().Substring(0, 10).ToString();
-                                dr["docno"] = tbl.Rows[i]["docno"].ToString() + cancrem;
-                                dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
-                                dr["gstno"] = tbl.Rows[i]["gstno"].ToString();
-                                if (showpbill == true) dr["prefno"] = tbl.Rows[i]["prefno"].ToString();
-                                if (VE.Checkbox5 == true) dr["saprem"] = (tbl.Rows[i]["sapblno"].ToString() == "" ? "" : "BL# " + tbl.Rows[i]["sapblno"].ToString());
-                                if (showpbill == true) dr["prefdt"] = tbl.Rows[i]["prefdt"] == DBNull.Value ? "" : tbl.Rows[i]["prefdt"].ToString().Substring(0, 10).ToString();
-                                if (con_print == true)
-                                {
-                                    dr["cslnm"] = tbl.Rows[i]["cslnm"].ToString();
-                                }
-                                if (transprint == true)
-                                {
-                                    dr["trslnm"] = tbl.Rows[i]["trslnm"].ToString();
-                                    dr["lrno"] = tbl.Rows[i]["lrno"].ToString();
-                                    dr["lrdt"] = tbl.Rows[i]["lrdt"].retDateStr();
-                                }
-                                if (orddetprint == true)
-                                {
-                                    dr["ordno"] = tbl.Rows[i]["ordrefno"].ToString();
-                                    dr["orddt"] = tbl.Rows[i]["ordrefdt"].ToString();
-                                }
-                                if (tbl.Rows[i]["cancel"].ToString() != "Y")
-                                {
-                                    dr["tcsamt"] = tbl.Rows[i]["tcsamt"].retDbl();
-                                    dr["roamt"] = tbl.Rows[i]["roamt"].retDbl();
-                                    dr["blamt"] = tbl.Rows[i]["blamt"].retDbl();
-                                    ttcsamt = ttcsamt + tbl.Rows[i]["tcsamt"].retDbl();
-                                    troamt = troamt + tbl.Rows[i]["roamt"].retDbl();
-                                    tblamt = tblamt + tbl.Rows[i]["blamt"].retDbl();
-                                }
-
-                                bldtl = false;
-                            }
                             if (tbl.Rows[i]["cancel"].ToString() != "Y")
                             {
-                                dr["nos"] = bnos;
-                                dr["qnty"] = bqnty;
-                                if (SeparateAchead == true)
+                                bnos = bnos + tbl.Rows[i]["nos"].retDbl();
+                                bqnty = bqnty + tbl.Rows[i]["qnty"].retDbl();
+                                if (SeparateAchead == true && tbl.Rows[i]["slno"].retInt() > 1000)
                                 {
                                     foreach (DataRow amtdr in amtDT.Rows)
                                     {
-                                        dr[amtdr["itcd"].ToString()] = amtdr["AmtItcdRate"].retDbl();
+                                        if (itcd == amtdr["itcd"].retStr())
+                                        {
+                                            amtdr["AmtItcdRate"] = amtdr["AmtItcdRate"].retDbl() + tbl.Rows[i]["amt"].retDbl();
+                                            amtdr["AmtItcdtotAmt"] = amtdr["AmtItcdtotAmt"].retDbl() + tbl.Rows[i]["amt"].retDbl();
+                                        }
                                     }
                                 }
-                                dr["amt"] = bbasamt;
-                                dr["disc1"] = bdisc1;
-                                dr["disc2"] = bdisc2;
-                                dr["taxableval"] = btaxable;
-                                dr["igstper"] = bigstper;
-                                dr["cgstper"] = bcgstper;
-                                dr["sgstper"] = bsgstper;
-                                dr["igstamt"] = bigstamt;
-                                dr["cgstamt"] = bcgstamt;
-                                dr["sgstamt"] = bsgstamt;
-
-                                tnos = tnos + bnos;
-                                tqnty = tqnty + bqnty;
-                                tbasamt = tbasamt + bbasamt;
-                                tdisc1 = tdisc1 + bdisc1;
-                                tdisc2 = tdisc2 + bdisc2;
-                                ttaxable = ttaxable + btaxable;
-                                tigstamt = tigstamt + bigstamt;
-                                tcgstamt = tcgstamt + bcgstamt;
-                                tsgstamt = tsgstamt + bsgstamt;
-                                tbqnty = tbqnty + blqnty;
+                                else
+                                {
+                                    bbasamt = bbasamt + tbl.Rows[i]["amt"].retDbl();
+                                }
+                                bdisc1 = bdisc1 + tbl.Rows[i]["scmdiscamt"].retDbl();
+                                bdisc2 = bdisc2 + tbl.Rows[i]["tddiscamt"].retDbl() + tbl.Rows[i]["discamt"].retDbl();
+                                btaxable = btaxable + tbl.Rows[i]["TXBLVAL"].retDbl();
+                                bigstamt = bigstamt + tbl.Rows[i]["igstamt"].retDbl();
+                                bcgstamt = bcgstamt + tbl.Rows[i]["cgstamt"].retDbl();
+                                bsgstamt = bsgstamt + tbl.Rows[i]["sgstamt"].retDbl();
+                                blqnty = blqnty + tbl.Rows[i]["blqnty"].retDbl();
                             }
-
-                            if (itmdtl == true) dr["Flag"] = "font-weight:bold";
-                            IR.Rows.Add(dr);
                             i = i + 1;
                             if (i > maxR) break;
+                            if (tbl.Rows[i]["igstper"].retDbl() + tbl.Rows[i]["cgstper"].retDbl() + tbl.Rows[i]["sgstper"].retDbl() != bigstper + bcgstper + bsgstper) break;
                         }
-
-                        if (itmdtl == true)
+                        i = i - 1;
+                        DataRow dr = IR.NewRow();
+                        if (bldtl == true)
                         {
-                            i = istore;
-                            int ino = 0;
-                            while (auto1 == tbl.Rows[i]["autono"].ToString())
-                            {
-                                ino = ino + 1;
-                                DataRow dr = IR.NewRow();
-                                dr["slnm"] = tbl.Rows[i]["itstyle"].ToString();
-                                if (itemrem == true && itmdtl == true) dr["itrem"] = tbl.Rows[i]["itrem"].ToString();
-                                dr["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
-                                dr["uomcd"] = tbl.Rows[i]["uomcd"].ToString();
-                                if (cnt_blqnty.Count() > 0)
-                                {
-                                    dr["blqnty"] = tbl.Rows[i]["blqnty"];
-                                }
-                                if (tbl.Rows[i]["cancel"].ToString() != "Y")
-                                {
-                                    dr["nos"] = tbl.Rows[i]["nos"];
-                                    dr["qnty"] = tbl.Rows[i]["qnty"];
-                                    dr["rate"] = tbl.Rows[i]["rate"];
-                                    dr["amt"] = tbl.Rows[i]["amt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["amt"]);
-                                    dr["disc1"] = tbl.Rows[i]["tddiscamt"];
-                                    dr["disc2"] = tbl.Rows[i]["discamt"];
-                                    dsc1 = tbl.Rows[i]["tddiscamt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["tddiscamt"]);
-                                    dsc2 = tbl.Rows[i]["discamt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["discamt"]);
-                                    dr["taxableval"] = Convert.ToDouble(tbl.Rows[i]["amt"]) - dsc1 - dsc2;
-                                    dr["igstper"] = tbl.Rows[i]["igstper"];
-                                    dr["igstamt"] = tbl.Rows[i]["igstamt"];
-                                    dr["cgstper"] = tbl.Rows[i]["cgstper"];
-                                    dr["cgstamt"] = tbl.Rows[i]["cgstamt"];
-                                    dr["sgstper"] = tbl.Rows[i]["sgstper"];
-                                    dr["sgstamt"] = tbl.Rows[i]["sgstamt"];
-                                }
-                                if (dr["celldesign"].ToString() != "") dr["celldesign"] = dr["celldesign"] + "^";
-                                dr["celldesign"] = dr["celldesign"] + "qnty=~n,12," + tbl.Rows[i]["decimals"].retInt();
-                                i += 1;
+                            string cancrem = "";
+                            if (tbl.Rows[i]["cancel"].ToString() == "Y") cancrem = "  (CANCELLED)";
 
-                                IR.Rows.Add(dr);
-                                if (i > maxR) break;
+                            dr["doccd"] = tbl.Rows[i]["doccd"].ToString();
+                            dr["docdt"] = tbl.Rows[i]["docdt"] == DBNull.Value ? "" : tbl.Rows[i]["docdt"].ToString().Substring(0, 10).ToString();
+                            dr["docno"] = tbl.Rows[i]["docno"].ToString() + cancrem;
+                            if (VE.TEXTBOX1 != "Sales Cash Memo") dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
+                            else {
+                                dr["rtdebnm"] = tbl.Rows[i]["rtdebnm"].ToString();
+                                dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                             }
+                            dr["gstno"] = tbl.Rows[i]["gstno"].ToString();
+                            if (showpbill == true) dr["prefno"] = tbl.Rows[i]["prefno"].ToString();
+                            if (VE.Checkbox5 == true) dr["saprem"] = (tbl.Rows[i]["sapblno"].ToString() == "" ? "" : "BL# " + tbl.Rows[i]["sapblno"].ToString());
+                            if (showpbill == true) dr["prefdt"] = tbl.Rows[i]["prefdt"] == DBNull.Value ? "" : tbl.Rows[i]["prefdt"].ToString().Substring(0, 10).ToString();
+                            if (con_print == true)
+                            {
+                                dr["cslnm"] = tbl.Rows[i]["cslnm"].ToString();
+                            }
+                            if (transprint == true)
+                            {
+                                dr["trslnm"] = tbl.Rows[i]["trslnm"].ToString();
+                                dr["lrno"] = tbl.Rows[i]["lrno"].retStr();
+                                dr["lrdt"] = tbl.Rows[i]["lrdt"].retDateStr();
+                                dr["GRWT"] = tbl.Rows[i]["GRWT"].retDbl();
+                                dr["NTWT"] = tbl.Rows[i]["NTWT"].retDbl();
+                                dr["TRWT"] = tbl.Rows[i]["TRWT"].retDbl();
+                            }
+                            if (orddetprint == true)
+                            {
+                                dr["ordno"] = tbl.Rows[i]["ordrefno"].ToString();
+                                dr["orddt"] = tbl.Rows[i]["ordrefdt"].ToString();
+                            }
+                            if (tbl.Rows[i]["cancel"].ToString() != "Y")
+                            {
+                                dr["tcsamt"] = tbl.Rows[i]["tcsamt"].retDbl();
+                                dr["roamt"] = tbl.Rows[i]["roamt"].retDbl();
+                                if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = tbl.Rows[i]["payamt"].retDbl();
+                                dr["blamt"] = tbl.Rows[i]["blamt"].retDbl();
+                                ttcsamt = ttcsamt + tbl.Rows[i]["tcsamt"].retDbl();
+                                troamt = troamt + tbl.Rows[i]["roamt"].retDbl();
+                                tblamt = tblamt + tbl.Rows[i]["blamt"].retDbl();
+                                if (VE.TEXTBOX1 == "Sales Cash Memo") tpayamt = tpayamt + tbl.Rows[i]["payamt"].retDbl();
+                            }
+
+                            bldtl = false;
                         }
-                    }
-                    DataRow dr3 = IR.NewRow();
-                    dr3["dammy"] = "";
-                    dr3["slnm"] = "Grand Totals";
-                    dr3["nos"] = tnos;
-                    dr3["qnty"] = tqnty;
-                    dr3["amt"] = tbasamt;
-                    if (SeparateAchead == true)
-                    {
-                        foreach (DataRow amtdr in amtDT.Rows)
+                        if (tbl.Rows[i]["cancel"].ToString() != "Y")
                         {
-                            dr3[amtdr["itcd"].ToString()] = amtdr["AmtItcdtotAmt"].retDbl();
+                            dr["nos"] = bnos;
+                            dr["qnty"] = bqnty;
+                            if (SeparateAchead == true)
+                            {
+                                foreach (DataRow amtdr in amtDT.Rows)
+                                {
+                                    dr[amtdr["itcd"].ToString()] = amtdr["AmtItcdRate"].retDbl();
+                                }
+                            }
+                            dr["amt"] = bbasamt;
+                            dr["disc1"] = bdisc1;
+                            dr["disc2"] = bdisc2;
+                            dr["taxableval"] = btaxable;
+                            dr["igstper"] = bigstper;
+                            dr["cgstper"] = bcgstper;
+                            dr["sgstper"] = bsgstper;
+                            dr["igstamt"] = bigstamt;
+                            dr["cgstamt"] = bcgstamt;
+                            dr["sgstamt"] = bsgstamt;
+
+                            tnos = tnos + bnos;
+                            tqnty = tqnty + bqnty;
+                            tbasamt = tbasamt + bbasamt;
+                            tdisc1 = tdisc1 + bdisc1;
+                            tdisc2 = tdisc2 + bdisc2;
+                            ttaxable = ttaxable + btaxable;
+                            tigstamt = tigstamt + bigstamt;
+                            tcgstamt = tcgstamt + bcgstamt;
+                            tsgstamt = tsgstamt + bsgstamt;
+                            tbqnty = tbqnty + blqnty;
+                        }
+
+                        if (itmdtl == true) dr["Flag"] = "font-weight:bold";
+                        IR.Rows.Add(dr);
+                        i = i + 1;
+                        if (i > maxR) break;
+                    }
+
+                    if (itmdtl == true)
+                    {
+                        i = istore;
+                        int ino = 0;
+                        while (auto1 == tbl.Rows[i]["autono"].ToString())
+                        {
+                            ino = ino + 1;
+                            DataRow dr = IR.NewRow();
+                            if (VE.TEXTBOX1 != "Sales Cash Memo") dr["slnm"] = tbl.Rows[i]["itstyle"].ToString();
+                            else {
+                                dr["rtdebnm"] = tbl.Rows[i]["itstyle"].ToString();
+                                //dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
+                            }
+                            if (itemrem == true && itmdtl == true) dr["itrem"] = tbl.Rows[i]["itrem"].ToString();
+                            dr["hsncode"] = tbl.Rows[i]["hsncode"].ToString();
+                            dr["uomcd"] = tbl.Rows[i]["uomcd"].ToString();
+                            if (cnt_blqnty.Count() > 0)
+                            {
+                                dr["blqnty"] = tbl.Rows[i]["blqnty"].retDbl();
+                            }
+                            if (tbl.Rows[i]["cancel"].ToString() != "Y")
+                            {
+                                dr["nos"] = tbl.Rows[i]["nos"].retDbl();
+                                dr["qnty"] = tbl.Rows[i]["qnty"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                                dr["rate"] = tbl.Rows[i]["rate"].retDbl();
+                                dr["amt"] = tbl.Rows[i]["amt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["amt"]);
+                                dr["disc1"] = tbl.Rows[i]["scmdiscamt"].retDbl();
+                                dr["disc2"] = tbl.Rows[i]["discamt"].retDbl();
+                                dsc1 = tbl.Rows[i]["tddiscamt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["tddiscamt"]);
+                                dsc2 = tbl.Rows[i]["discamt"] == DBNull.Value ? 0 : Convert.ToDouble(tbl.Rows[i]["discamt"]);
+                                dr["taxableval"] = tbl.Rows[i]["TXBLVAL"].retDbl();      /*Convert.ToDouble(tbl.Rows[i]["amt"]) - dsc1 - dsc2;*/
+                                dr["igstper"] = tbl.Rows[i]["igstper"].retDbl();
+                                dr["igstamt"] = tbl.Rows[i]["igstamt"].retDbl();
+                                dr["cgstper"] = tbl.Rows[i]["cgstper"].retDbl();
+                                dr["cgstamt"] = tbl.Rows[i]["cgstamt"].retDbl();
+                                dr["sgstper"] = tbl.Rows[i]["sgstper"].retDbl();
+                                dr["sgstamt"] = tbl.Rows[i]["sgstamt"].retDbl();
+                                dr["blamt"] = tbl.Rows[i]["NETAMT"].retDbl();
+                                
+                            }
+                            if (dr["celldesign"].ToString() != "") dr["celldesign"] = dr["celldesign"] + "^";
+                            dr["celldesign"] = dr["celldesign"] + "qnty=~n,12," + tbl.Rows[i]["decimals"].retInt();
+                            i += 1;
+
+                            IR.Rows.Add(dr);
+                            if (i > maxR) break;
                         }
                     }
-                    dr3["disc1"] = tdisc1;
-                    dr3["disc2"] = tdisc2;
-                    dr3["taxableval"] = ttaxable;
-                    dr3["igstamt"] = tigstamt;
-                    dr3["cgstamt"] = tcgstamt;
-                    dr3["sgstamt"] = tsgstamt;
-                    dr3["tcsamt"] = ttcsamt;
-                    dr3["roamt"] = troamt;
-                    dr3["blamt"] = tblamt;
-                    if (itmdtl == true && tbqnty != 0)
+                }
+                DataRow dr3 = IR.NewRow();
+                dr3["dammy"] = "";
+                if (VE.TEXTBOX1 != "Sales Cash Memo") dr3["slnm"] = "Grand Totals"; else dr3["rtdebnm"] = "Grand Totals";
+                dr3["nos"] = tnos;
+                dr3["qnty"] = tqnty;
+                dr3["amt"] = tbasamt;
+                if (SeparateAchead == true)
+                {
+                    foreach (DataRow amtdr in amtDT.Rows)
                     {
-                        dr3["blqnty"] = tbqnty;
+                        dr3[amtdr["itcd"].ToString()] = amtdr["AmtItcdtotAmt"].retDbl();
                     }
-                    dr3["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 3px solid;";
-                    IR.Rows.Add(dr3);
-                    if (i <= maxR)
-                    {
-                        DataRow dr21 = IR.NewRow();
-                        dr21["dammy"] = " ";
-                        dr21["flag"] = " height:14px; ";
-                        IR.Rows.Add(dr21);
+                }
+                dr3["disc1"] = tdisc1;
+                dr3["disc2"] = tdisc2;
+                dr3["taxableval"] = ttaxable;
+                dr3["igstamt"] = tigstamt;
+                dr3["cgstamt"] = tcgstamt;
+                dr3["sgstamt"] = tsgstamt;
+                dr3["tcsamt"] = ttcsamt;
+                dr3["roamt"] = troamt;
+                dr3["blamt"] = tblamt;
+                if (VE.TEXTBOX1 == "Sales Cash Memo") dr3["payamt"] = tpayamt;
+                if (itmdtl == true && tbqnty != 0)
+                {
+                    dr3["blqnty"] = tbqnty;
+                }
+                dr3["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 3px solid;";
+                IR.Rows.Add(dr3);
+                if (itmdtl == true)
+                {
+                    var grptbl = IR.AsEnumerable().Where(g=>g.Field<string>("uomcd").retStr()!="")
+                                    .GroupBy(g => g.Field<string>("uomcd"))
+                                    .Select(g =>
+                                    {
+                                        var row = IR.NewRow();
+                                        row["uomcd"] = g.Key;
+                                        row["qnty"] = g.Sum(r => r.Field<double>("qnty").retDbl());
+                                        return row;
+                                    }).CopyToDataTable();
+
+                    foreach (DataRow drgrp in grptbl.Rows)
+                    {if(drgrp["qnty"].retDbl()!=0)
+                        {
+                            DataRow dr4 = IR.NewRow();
+                            dr4["dammy"] = "";
+                            dr4["uomcd"] = drgrp["uomcd"];
+                            dr4["qnty"] = drgrp["qnty"];
+                            dr4["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 3px solid;";
+                            IR.Rows.Add(dr4);
+                        }
+                       
                     }
+                }
+
+                if (i <= maxR)
+                {
+                   
+                    DataRow dr21 = IR.NewRow();
+                    dr21["dammy"] = " ";
+                    dr21["flag"] = " height:14px; ";
+                    IR.Rows.Add(dr21);
+                }
                 #endregion
                 pghdr1 = regdsp + " from " + fdt + " to " + tdt;
                 string repname = regdsp + " Register";

@@ -236,14 +236,19 @@ namespace Improvar.Controllers
                 else {
                     sql += "select a.gocd, c.gonm, a.doccd, b.docnm, a.dttag, ";
                     sql += "sum((case a.drcr when 'D' then 1 when 'C' then - 1 end)) qty from ";
-                    sql += " (select distinct b.doccd, a.drcr, a.gocd, a.baleno, a.baleyr, ";
+                    sql += " (select distinct b.doccd, a.drcr, a.gocd, a.baleno, a.baleyr,c.itcd,d.itgrpcd, ";
                     sql += " (case when b.docdt < to_date('" + fdt + "', 'dd/mm/yyyy') then 'OP' else 'CR' end) dttag ";
-                    sql += "  from " + scm + ".t_bale a, " + scm + ".t_cntrl_hdr b ";
-                    sql += "where a.autono = b.autono(+) and a.gocd is not null and ";
+                    sql += "  from " + scm + ".t_bale a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_txndtl c," + scm + ".m_sitem d ";
+                    sql += "where a.autono = b.autono(+) and a.autono = c.autono and c.itcd = d.itcd and a.gocd is not null and ";
                     sql += "b.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and ";
                     sql += "b.compcd = '" + COM + "' and nvl(b.cancel, 'N')= 'N' ) a, ";
                     sql += "" + scm + ".m_doctype b, " + scmf + ".m_godown c ";
                     sql += "where a.doccd = b.doccd(+) and a.gocd = c.gocd(+) ";
+                    if (selbalenoyr.retStr() != "") sql += "and a.baleno||a.baleyr in (" + selbalenoyr + ") ";
+                    if (unselbalenoyr.retStr() != "") sql += "and a.baleno||a.baleyr not in (" + unselbalenoyr + ") ";
+                    if (selitcd.retStr() != "") sql += "and a.itcd in(" + selitcd + ") ";
+                    if (unselitcd.retStr() != "") sql += "and a.itcd not in (" + unselitcd + ") ";
+                    if (selitgrpcd.retStr() != "") sql += "and a.itgrpcd in(" + selitgrpcd + ") ";
                     sql += "group by a.gocd, c.gocd, c.gonm, a.doccd, b.docnm, a.dttag ";
                     sql += "order by gonm, gocd, docnm, doccd ";
                     DataTable tbl = MasterHelp.SQLquery(sql);
@@ -327,7 +332,9 @@ namespace Improvar.Controllers
 
                     string pghdr1 = " Bale History Movement " + (fdt != "" ? " from " + fdt + " to " : "as on ") + tdt;
                     string repname = "Bale Report";
-                    PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
+                 
+
+                    PV = HC.ShowReport(IR, repname, pghdr1,"Bale No: "+ selbalenoyr, true, true, "L", false);
 
                     TempData[repname] = PV;
                     TempData[repname + "xxx"] = IR;
