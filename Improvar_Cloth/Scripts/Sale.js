@@ -172,6 +172,7 @@ function FillBarcodeArea(str, Table, i) {
     }
     if (str != "") {
         $("#BARCODE").val(returncolvalue(str, "BARNO"));
+        $("#Last_BARCODE").val(returncolvalue(str, "BARNO"));
         $("#TXNSLNO").val(returncolvalue(str, "TXNSLNO"));
         $("#ITGRPCD").val(returncolvalue(str, "ITGRPCD"));
         $("#ITGRPNM").val(returncolvalue(str, "ITGRPNM"));
@@ -183,6 +184,7 @@ function FillBarcodeArea(str, Table, i) {
         $("#ITCD").val(returncolvalue(str, "ITCD"));
         $("#ITSTYLE").val(returncolvalue(str, "STYLENO") + "" + returncolvalue(str, "ITNM"));
         $("#STYLENO").val(returncolvalue(str, "STYLENO"));
+        $("#Last_STYLENO").val(returncolvalue(str, "STYLENO"));
         //$("#STKTYPE").val(returncolvalue(str, "STKTYPE"));
         $("#PARTCD").val(returncolvalue(str, "PARTCD"));
         $("#PARTNM").val(returncolvalue(str, "PARTNM"));

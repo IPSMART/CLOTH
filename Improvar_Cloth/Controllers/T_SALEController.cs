@@ -2491,7 +2491,7 @@ namespace Improvar.Controllers
 
                 sql += "select x.SLNO,x.TXNSLNO,x.ITGRPCD,x.ITGRPNM,x.BARGENTYPE,x.MTRLJOBCD,x.MTRLJOBNM,x.MTBARCODE,x.ITCD,x.ITNM,x.UOMCD,x.STYLENO,x.PARTCD,x.PARTNM, ";
                 sql += "x.PRTBARCODE,x.STKTYPE,x.STKNAME,x.BARNO,x.COLRCD,x.COLRNM,x.CLRBARCODE,x.SIZECD,x.SIZENM,x.SZBARCODE,x.SHADE,x.QNTY,x.NOS,x.RATE,x.DISCRATE, ";
-                sql += "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,x.SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
+                sql += "x.DISCTYPE,x.TDDISCRATE,x.TDDISCTYPE,x.SCMDISCTYPE,nvl(x.SCMDISCRATE,0)SCMDISCRATE,x.HSNCODE,x.BALENO,x.PDESIGN,x.OURDESIGN,x.FLAGMTR,x.LOCABIN,x.BALEYR ";
                 sql += ",x.SALGLCD,x.PURGLCD,x.SALRETGLCD,x.PURRETGLCD,x.WPRATE,x.RPRATE,x.ITREM,x.RPPRICEGEN,X.DOCNO,X.DOCDT, ";
                 sql += "x.WPPRICEGEN,x.LISTPRICE,x.LISTDISCPER,x.CUTLENGTH,x.PAGENO,x.PAGESLNO,x.PCSTYPE,x.AUTONO,x.PREFNO,x.GLCD,x.GSTPER,y.prodgrpgstper,z.barimage,z.barimagecount from";
 
@@ -2562,6 +2562,8 @@ namespace Improvar.Controllers
 
             if (dt != null && dt.Rows.Count > 0)
             {
+                var aa = dt.Rows[0]["rate"].GetType();
+                var aa1 = dt.Rows[0]["scmdiscrate"].GetType();
                 VE.TTXNDTLPOPUP = (from r1 in dt.AsEnumerable()
                                    group r1 by new
                                    {
@@ -2571,6 +2573,9 @@ namespace Improvar.Controllers
                                        BARNO = r1.Field<string>("barno").retStr(),
                                        ITCD = r1.Field<string>("itcd").retStr(),
                                        ITSTYLE = r1.Field<string>("styleno").retStr() + " " + r1.Field<string>("itnm").retStr(),
+                                       RATE = r1.Field<double>("rate").retDbl(),
+                                       SCMDISCTYPE_DESC = r1.Field<string>("scmdisctype").retStr(),
+                                       SCMDISCRATE = r1.Field<decimal>("scmdiscrate").retDbl(),
                                    } into g
                                    select new TTXNDTLPOPUP
                                    {
@@ -2581,6 +2586,9 @@ namespace Improvar.Controllers
                                        ITCD = g.Key.ITCD,
                                        ITSTYLE = g.Key.ITSTYLE,
                                        QNTY = g.Sum(x => x.Field<double>("QNTY")),
+                                       RATE = g.Key.RATE,
+                                       SCMDISCTYPE_DESC = g.Key.SCMDISCTYPE_DESC.retStr() == "P" ? "%" : g.Key.SCMDISCTYPE_DESC.retStr() == "N" ? "Nos" : g.Key.SCMDISCTYPE_DESC.retStr() == "Q" ? "Qnty" : "Fixed",
+                                       SCMDISCRATE = g.Key.SCMDISCRATE,
                                    }).ToList();
 
                 int slno = 0;
