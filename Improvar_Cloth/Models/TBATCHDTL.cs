@@ -189,5 +189,8 @@ namespace Improvar.Models
         public int? PAGESLNO { get; set; }
         [StringLength(15)]
         public string PCSTYPE { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? OTHRAMT { get; set; }
+        public double? TXBLVAL { get; set; }
     }
 }

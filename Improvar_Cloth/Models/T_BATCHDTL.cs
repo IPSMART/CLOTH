@@ -131,5 +131,7 @@ namespace Improvar.Models
         public string STKTYPE { get; set; }
         [StringLength(15)]
         public string PCSTYPE { get; set; }
+        public double? OTHRAMT { get; set; }
+        public double? TXBLVAL { get; set; }
     }
 }

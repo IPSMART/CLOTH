@@ -2780,6 +2780,9 @@ namespace Improvar.Controllers
                     double _amtdistq = 0, _baldistq = 0, _rpldistq = 0;
                     double titamt = 0, titqty = 0;
                     int lastitemno = 0;
+
+                    double _baldist_b = 0, _baldistq_b = 0, _rpldist_b = 0, _rpldistq_b = 0, _baldisttxblval_b = 0, _rpldisttxblval_b = 0, _amtdisttxblval = 0, othamt = 0;
+                    int lastitemno_b = 0;
                     if (VE.TTXNAMT != null)
                     {
                         for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
@@ -2803,6 +2806,7 @@ namespace Improvar.Controllers
                     }
                     //
                     _baldist = _amtdist; _baldistq = _amtdistq;
+
                     #endregion
                     if (VE.DefaultAction == "A")
                     {
@@ -3168,6 +3172,7 @@ namespace Improvar.Controllers
                             TTXNDTL.DUTYAMT = VE.TTXNDTL[i].DUTYAMT;
                             TTXNDTL.NETAMT = VE.TTXNDTL[i].NETAMT;
                             TTXNDTL.OTHRAMT = _rpldist + _rpldistq;
+                            VE.TTXNDTL[i].OTH_COST = _rpldist + _rpldistq;
                             TTXNDTL.SHORTQNTY = VE.TTXNDTL[i].SHORTQNTY;
                             TTXNDTL.DISCTYPE = VE.TTXNDTL[i].DISCTYPE;
                             TTXNDTL.DISCRATE = VE.TTXNDTL[i].DISCRATE;
@@ -3247,25 +3252,67 @@ namespace Improvar.Controllers
                     }
 
                     COUNTER = 0; int COUNTERBATCH = 0; bool recoexist = false; bool newbarnogen = false;
+                    VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
+                    _baldistq_b = 0; _baldist_b = 0; _baldisttxblval_b = 0;
                     if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
                     {
-                        for (int i = 0; i <= VE.TBATCHDTL.Count - 1; i++)
+
+                        int i = 0;
+                        while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() != "" && VE.TBATCHDTL[i].QNTY.retDbl() != 0)
                             {
-                                //double batchamt = (VE.TBATCHDTL[i].QNTY * VE.TBATCHDTL[i].RATE).retDbl().toRound(2);
-                                //double batchdsic = (batchamt * VE.TBATCHDTL[i].DISC)xxxxx
-                                //if (i == lastitemno) { _rpldist = _baldist; _rpldistq = _baldistq; }
-                                //else
-                                //{
-                                //    if (_amtdist + _amtdistq == 0) { _rpldist = 0; _rpldistq = 0; }
-                                //    else
-                                //    {
-                                //        _rpldist = ((_amtdist / titamt) * VE.TTXNDTL[i].AMT).retDbl().toRound();
-                                //        _rpldistq = ((_amtdistq / titqty) * Convert.ToDouble(VE.TBATCHDTL[i].QNTY)).toRound();
-                                //    }
-                                //}
-                                //_baldist = _baldist - _rpldist; _baldistq = _baldistq - _rpldistq;
+                                int j = i;
+
+                                #region calculate othamt,taxblval
+                                int txnslno = VE.TBATCHDTL[i].TXNSLNO.retInt();
+                                if (i > lastitemno_b || i == 0)
+                                {
+                                    _baldisttxblval_b = VE.TTXNDTL.Where(a => a.SLNO == txnslno).Select(b => b.TXBLVAL).FirstOrDefault().retDbl();
+                                    othamt = VE.TTXNDTL.Where(a => a.SLNO == txnslno).Select(b => b.OTH_COST).FirstOrDefault().retDbl();
+                                    _amtdisttxblval = _baldisttxblval_b;
+                                    if (_amtdistq != 0)
+                                    {
+                                        _baldistq_b = VE.TTXNDTL.Where(a => a.SLNO == txnslno).Select(b => b.QNTY).FirstOrDefault().retDbl();
+                                    }
+                                    if (_amtdist != 0)
+                                    {
+                                        _baldist_b = othamt;
+                                    }
+                                    while (VE.TBATCHDTL[i].TXNSLNO == txnslno)
+                                    {
+                                        if (VE.TBATCHDTL[i].SLNO != 0 && VE.TBATCHDTL[i].ITCD != null)
+                                        {
+                                            lastitemno_b = i;
+                                            i++;
+                                            if (i > VE.TBATCHDTL.Count - 1) break;
+                                        }
+                                    }
+                                }
+
+                                i = j;
+
+
+                                if (i == lastitemno_b)
+                                {
+                                    _rpldist_b = _baldist_b; _rpldistq_b = _baldistq_b; _rpldisttxblval_b = _baldisttxblval_b;
+                                }
+                                else
+                                {
+                                    if (_amtdist + _amtdistq == 0) { _rpldist_b = 0; _rpldistq_b = 0; }
+                                    else
+                                    {
+                                        _rpldist_b = ((_amtdist / titamt) * (VE.TBATCHDTL[i].QNTY * VE.TBATCHDTL[i].RATE)).retDbl().toRound();
+                                        _rpldistq_b = ((_amtdistq / titqty) * Convert.ToDouble(VE.TBATCHDTL[i].QNTY)).toRound();
+                                    }
+                                    //_rpldisttxblval_b = ((((_amtdisttxblval + othamt) / othamt) * (_rpldist_b + _rpldistq_b)) - (_rpldist_b - _rpldistq_b)).toRound();
+                                    _rpldisttxblval_b = ((((_amtdisttxblval + othamt) / (_amtdisttxblval + othamt)) * (VE.TBATCHDTL[i].QNTY.retDbl() * VE.TBATCHDTL[i].RATE.retDbl()))).toRound();
+
+
+                                }
+                                _baldist_b = _baldist_b - _rpldist_b; _baldistq_b = _baldistq_b - _rpldistq_b; _baldisttxblval_b = _baldisttxblval_b - _rpldisttxblval_b;
+
+                                #endregion
 
                                 var TTXNDTLmp = (from x in VE.TTXNDTL
                                                  where x.SLNO == VE.TBATCHDTL[i].TXNSLNO
@@ -3464,6 +3511,9 @@ namespace Improvar.Controllers
                                 {
                                     TBATCHDTL.PCSTYPE = VE.TBATCHDTL[i].PCSTYPE;
                                 }
+                                TBATCHDTL.OTHRAMT = _rpldist_b + _rpldistq_b;
+                                TBATCHDTL.TXBLVAL = _rpldisttxblval_b;
+                                TBATCHDTL.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -3528,6 +3578,8 @@ namespace Improvar.Controllers
                                     }
                                 }
                             }
+                            i++;
+                            if (i > VE.TBATCHDTL.Count - 1) break;
                         }
                     }
                     if (newbarnogen == true && docbarcode.retStr() == "")
