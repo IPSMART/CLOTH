@@ -197,7 +197,7 @@ namespace Improvar.Controllers
                 {
                     case "Sales":
                         txntag = "'SB'";
-                        doctype = "'SBILD'"; break;
+                        doctype = "'SBILD','SPSLP'"; break;
                     case "Purchase":
                         txntag = "'PB'"; 
                         doctype = "'SPBL'"; break;
