@@ -1,0 +1,281 @@
+﻿@model Improvar.ViewModels.Trans_document_Attach
+@{
+    ViewBag.Title = "Document Attached";
+    Layout = "~/Views/Shared/_ReportLayout.cshtml";
+}
+<script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-select.css" />
+@Scripts.Render("~/Scripts/Multiple-Select-min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.js")
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    function gotoentry(autono)
+    {
+        var url = $("#urlpopup1").val();
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: {
+                autono: autono
+            },
+            success: function (result) {
+                window.open("../" + result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError("Error: " + textStatus + "," + errorThrown);
+            }
+        });
+    }
+    function GETBACKTRAN()
+    {
+        $("#GETTRAN").show();       
+        $("#STVATTCH").hide();
+        $("#STVATTCHCAN").hide();
+        $("#pertialgrid").html("");
+    }
+</script>
+<script>
+    function inputhelp(id, id1) {
+        var str = $("#tempHDD").val().split(String.fromCharCode(181));
+        $("#" + id.id).val(str[0]);
+        $("#" + id1.id).val(str[1].toString());
+    }
+    function SelectDOCUMENTCode(valu, fld1, fld2) {
+        if (valu == "") {
+            $("#" + fld1.id).val("");
+            $("#" + fld2.id).val("");
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                url: $("#urlSLCDHLP").val(),
+                data: {
+                    val: valu
+                },
+                success: function (result) {
+                    if (result == "0") {
+                        msgInfo(" Invalid Document Code !! ");
+                        $("#" + fld1.id).val("");
+                        $("#" + fld2.id).val("");
+                        message_value = fld1.id;
+                    }
+                    else {
+                        $("#tempHDD").val(result);
+                        inputhelp(fld1, fld2);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+        }
+    }
+    function GetTransaction() {
+        var docct = $("#DOCCT").val();        
+        if (docct == null) {
+            msgInfo(" Select Document Category !! ");
+            message_value = "DOCCT";
+            return false;
+        }
+        var docty = $("#docTypeID").val();
+        var docnm = $("#docTypeName").val();
+        if (docty == "" && docnm == "") {
+            msgInfo(" Select Document Type !! ");
+            message_value = "docTypeID";
+            return false;
+        }
+        var fdt = $("#FDT").val();
+        var tdt = $("#TDT").val();
+        if (fdt == "") {
+            msgInfo(" Enter Entry From Date !! ");
+            message_value = "FDT";
+            return false;
+        }
+        if (tdt == "") {
+            msgInfo(" Enter Entry To Date !! ");
+            message_value = "TDT";
+            return false;
+        }
+        var fddt = $("#FDDT").val();
+        var tddt = $("#TDDT").val();
+        if (fddt == "") {
+            msgInfo(" Enter Document From Date !! ");
+            message_value = "FDDT";
+            return false;
+        }
+        if (tddt == "") {
+            msgInfo(" Enter Document To Date !! ");
+            message_value = "TDDT";
+            return false;
+        }
+        var userid = $("#USERID").val();
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: $("#urlgettransaction").val(),
+            data: {
+                category: docct.toString(),
+                dtype: docty,
+                fdt: fdt,
+                tdt: tdt,
+                fddt: fddt,
+                tddt:tddt,
+                userid: userid
+            },
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#pertialgrid").html(result);               
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script></script>
+@{
+    var PageControllerName = "M_Doc_Attached";
+}
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
+    {
+        <input type="hidden" id="urlSLCDHLP" value="@Url.Action("GetDOCUhelp", PageControllerName)" />
+        <input type="hidden" id="urlgettransaction" value="@Url.Action("GetTransaction", PageControllerName)" />
+        <input type="hidden" id="urlpopup1" value="@Url.Action("POPUPSCREEN1", PageControllerName)" />
+        <div class="row">
+            <div class="col-md-5">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "Document Category")
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="editor-field">
+                    <div class="col-md-8">
+                        <select id="DOCCT" name="DOCCT" class="selectpicker " multiple data-live-search="true" data-live-search-placeholder="Search" data-actions-box="true" required style="font-size: small;">
+                            <optgroup label="Group">
+                                @foreach (var i in Model.DocumentType)
+                                {
+                                    <option value="@i.value">
+                                        @i.text
+                                    </option>
+                                }
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "Document Type")
+                </div>
+            </div>
+            <div class="col-lg-1" style="margin-left:4px">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.docTypeID, new { htmlAttributes = new { @class = "form-control textbox_image", id = "docTypeID", onkeyup = "GetHelp('" + @Url.Action("GetDOCUhelp", PageControllerName) + "','docTypeID/docTypeName','0/1','Select Document Type','docTypeName');", onblur = "SelectDOCUMENTCode(this.value,docTypeID,docTypeName);", @placeholder = "Code", maxlength = 8, autocomplete = "off" } })
+                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOCUhelp", PageControllerName)','docTypeID/docTypeName','0/1','Select Document Type','docTypeName')" />
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.docTypeName, new { htmlAttributes = new { @class = "form-control", id = "docTypeName", @TabIndex = -1, @placeholder = "Document Type Name", maxlength = 45, @readonly = "readonly" } })
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="editor-field" style="margin-top: 6px;">
+                    @Html.Label("", "User ID")
+                </div>
+            </div>
+            <div class="col-md-8" style="margin-left:4px">
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.USERID, new { htmlAttributes = new { @class = "form-control", id = "USERID", @placeholder = "User ID", maxlength = 40, autocomplete = "off" } })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "From Entry Date")
+                </div>
+            </div>
+            <div class="col-md-7" style="margin-left:4px">
+                <div class="editor-field">
+                    <input type="date" name="FDT" id="FDT" required class="form-control" style="background-color:#fbfabc" />
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "To Entry Date")
+                </div>
+            </div>
+            <div class="col-md-7" style="margin-left:4px">
+                <div class="editor-field">
+                    <input type="date" name="TDT" required id="TDT" class="form-control" style="background-color:#fbfabc" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "From Document Date")
+                </div>
+            </div>
+            <div class="col-md-7" style="margin-left:4px">
+                <div class="editor-field">
+                    <input type="date" name="FDDT" id="FDDT" required class="form-control" style="background-color:#dcf8ea" />
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="editor-label" style="margin-top: 6px;">
+                    @Html.Label("", "To Document Date")
+                </div>
+            </div>
+            <div class="col-md-7" style="margin-left:4px">
+                <div class="editor-field">
+                    <input type="date" name="TDDT" required id="TDDT" class="form-control" style="background-color:#dcf8ea" />
+                </div>
+            </div>
+            <div class="col-md-6" style="margin-top:-19px">
+                <input id="GETTRAN" type="button" value="Get Transaction" class="btn btn-info" title="Get Transaction" onclick="GetTransaction();" />              
+            </div>
+            <div class="col-md-6" style="margin-top:-19px">               
+                <input id="STVATTCH" type="submit" value="Save Attachment" class="btn btn-info" style="display:none" title="Save Attachment"/>
+            </div>
+            <div class="col-md-1" style="margin-top:-19px">
+                <input id="STVATTCHCAN" type="button" value="Cancel Attachment" class="btn btn-info" style="display:none" onclick="GETBACKTRAN();" title="Cancel Attachment"/>
+            </div>
+        </div>
+        <div id="prow" class="row" style="padding-top:5px">
+            <div id="pertialgrid">
+                @if (Model.msg != null)
+                {
+                    if (Model.msg.Length > 0)
+                    {
+                        <div style="height:100px;width:100%;font-style:italic;font-weight:bold;font-size:x-large;color:orangered;text-align:center;padding-top:2%">
+                            @Model.msg
+                        </div>
+                    }
+                }                
+            </div>
+        </div>
+    }
+    else
+    {       
+        <span>
+            @Model.msg
+        </span>       
+    }
+    <div class="container">
+        <div id="helpDIV" style="z-index: 2;">
+
+        </div>
+    </div>
+}
+
+

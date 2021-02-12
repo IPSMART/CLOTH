@@ -12,6 +12,7 @@ using System.Linq;
 using System.Web.Mvc;
 using iTextSharp.text.html;
 using iTextSharp.text.html.simpleparser;
+using Oracle.ManagedDataAccess.Client;
 
 namespace Improvar.Controllers
 {
@@ -630,30 +631,47 @@ namespace Improvar.Controllers
         }
         public ActionResult DeletePrices(ItemMasterEntry VE)
         {
-            try
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string sql = "";
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                string sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
-                masterHelp.SQLNonQuery(sql);
-
-                sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where itcd ='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
-                masterHelp.SQLNonQuery(sql);
-
-                VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
-                if (VE.DropDown_list1.Count > 0)
+                OraCmd.Transaction = OraTrans;
+                try
                 {
-                    VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
-                    VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
-                    VE.DTPRICES = GetPrices(VE);
-                }
+                    DataTable DTPRICES = (DataTable)TempData["DTPRICES"]; TempData.Keep();
+                    string barno = DTPRICES.AsEnumerable().Select(a => a.Field<string>("barno")).ToArray().retSqlfromStrarray();
+                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                ModelState.Clear();
-                VE.DefaultView = true;
-                return PartialView("_M_FinProduct_Prices", VE);
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
+                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    string barnosql = getbarno(VE.M_SITEM.ITCD).retSqlformat();
+                    VE.DropDown_list1 = Price_Effdt(VE, barnosql);
+                    if (VE.DropDown_list1.Count > 0)
+                    {
+                        VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
+                        VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
+                        VE.DTPRICES = GetPrices(VE);
+                    }
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    VE.DefaultView = true;
+                    return PartialView("_M_FinProduct_Prices", VE);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
             }
 
         }

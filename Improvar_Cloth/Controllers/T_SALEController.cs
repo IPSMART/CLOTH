@@ -2655,7 +2655,6 @@ namespace Improvar.Controllers
             OraCmd.Transaction = OraTrans;
             try
             {
-
                 OraCmd.CommandText = "lock table " + CommVar.CurSchema(UNQSNO) + ".T_CNTRL_HDR in  row share mode"; OraCmd.ExecuteNonQuery();
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
 
@@ -3256,75 +3255,48 @@ namespace Improvar.Controllers
                     _baldistq_b = 0; _baldist_b = 0; _baldisttxblval_b = 0;
                     if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
                     {
-
                         int i = 0;
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
-                            if (VE.TBATCHDTL[i].ITCD.retStr() != "" && VE.TBATCHDTL[i].QNTY.retDbl() != 0)
+                            if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
+                            int txnsln = VE.TBATCHDTL[i].TXNSLNO;
+
+                            while (VE.TBATCHDTL[i].TXNSLNO == txnsln)
                             {
+                                if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
                                 int j = i;
-
-                                #region calculate othamt,taxblval
-                                int txnslno = VE.TBATCHDTL[i].TXNSLNO.retInt();
-                                if (i > lastitemno_b || i == 0)
-                                {
-                                    _baldisttxblval_b = VE.TTXNDTL.Where(a => a.SLNO == txnslno).Select(b => b.TXBLVAL).FirstOrDefault().retDbl();
-                                    othamt = VE.TTXNDTL.Where(a => a.SLNO == txnslno).Select(b => b.OTH_COST).FirstOrDefault().retDbl();
-                                    _amtdisttxblval = _baldisttxblval_b;
-                                    if (_amtdistq != 0)
-                                    {
-                                        _baldistq_b = VE.TTXNDTL.Where(a => a.SLNO == txnslno).Select(b => b.QNTY).FirstOrDefault().retDbl();
-                                    }
-                                    if (_amtdist != 0)
-                                    {
-                                        _baldist_b = othamt;
-                                    }
-                                    while (VE.TBATCHDTL[i].TXNSLNO == txnslno)
-                                    {
-                                        if (VE.TBATCHDTL[i].SLNO != 0 && VE.TBATCHDTL[i].ITCD != null)
-                                        {
-                                            lastitemno_b = i;
-                                            i++;
-                                            if (i > VE.TBATCHDTL.Count - 1) break;
-                                        }
-                                    }
-                                }
-
-                                i = j;
-
-
-                                if (i == lastitemno_b)
-                                {
-                                    _rpldist_b = _baldist_b; _rpldistq_b = _baldistq_b; _rpldisttxblval_b = _baldisttxblval_b;
-                                }
-                                else
-                                {
-                                    if (_amtdist + _amtdistq == 0) { _rpldist_b = 0; _rpldistq_b = 0; }
-                                    else
-                                    {
-                                        _rpldist_b = ((_amtdist / titamt) * (VE.TBATCHDTL[i].QNTY * VE.TBATCHDTL[i].RATE)).retDbl().toRound();
-                                        _rpldistq_b = ((_amtdistq / titqty) * Convert.ToDouble(VE.TBATCHDTL[i].QNTY)).toRound();
-                                    }
-                                    //_rpldisttxblval_b = ((((_amtdisttxblval + othamt) / othamt) * (_rpldist_b + _rpldistq_b)) - (_rpldist_b - _rpldistq_b)).toRound();
-                                    _rpldisttxblval_b = ((((_amtdisttxblval + othamt) / (_amtdisttxblval + othamt)) * (VE.TBATCHDTL[i].QNTY.retDbl() * VE.TBATCHDTL[i].RATE.retDbl()))).toRound();
-
-
-                                }
-                                _baldist_b = _baldist_b - _rpldist_b; _baldistq_b = _baldistq_b - _rpldistq_b; _baldisttxblval_b = _baldisttxblval_b - _rpldisttxblval_b;
-
-                                #endregion
 
                                 var TTXNDTLmp = (from x in VE.TTXNDTL
                                                  where x.SLNO == VE.TBATCHDTL[i].TXNSLNO
                                                  select new TTXNDTL
                                                  {
                                                      TXBLVAL = x.TXBLVAL,
+                                                     OTHRAMT = x.OTHRAMT,
                                                      QNTY = x.QNTY,
-                                                     //FLAGMTR = P.Sum(A => A.FLAGMTR),
-                                                     //BLQNTY = P.Sum(A => A.BLQNTY)
                                                  }).FirstOrDefault();
+
+                                int bi = 1, maxBi = 0;
+                                while (VE.TBATCHDTL[i].TXNSLNO == txnsln)
+                                {
+                                    maxBi++;
+                                    i++;
+                                    if (i > VE.TBATCHDTL.Count) break;
+                                }
+                                i = j;
+
+                                if (bi == maxBi)
+                                {
+                                    _rpldisttxblval_b = _baldisttxblval_b; _rpldist_b = _baldist_b;
+                                }
+                                else
+                                {
+                                    _rpldisttxblval_b = ((TTXNDTLmp.TXBLVAL / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound();
+                                    _rpldist_b = ((TTXNDTLmp.TXBLVAL / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound();
+                                    _baldisttxblval_b = _baldisttxblval_b - _rpldisttxblval_b; _baldist_b = _baldist_b - _rpldist_b;
+                                }
+
                                 double mtrlcost = (((TTXNDTLmp.TXBLVAL + _amtdist) / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound(2);
-                                double batchamt = (((TTXNDTLmp.TXBLVAL) / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound();
                                 bool flagbatch = false;
                                 string barno = "";
                                 if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
@@ -3395,10 +3367,10 @@ namespace Improvar.Controllers
                                     TBATCHMST.NOS = VE.TBATCHDTL[i].NOS;
                                     TBATCHMST.QNTY = VE.TBATCHDTL[i].QNTY;
                                     TBATCHMST.RATE = VE.TBATCHDTL[i].RATE;
-                                    TBATCHMST.AMT = batchamt;
+                                    TBATCHMST.AMT = (VE.TBATCHDTL[i].QNTY.retDbl() * VE.TBATCHDTL[i].RATE.retDbl()).toRound();
                                     TBATCHMST.FLAGMTR = VE.TBATCHDTL[i].FLAGMTR;
-                                    TBATCHMST.MTRL_COST = mtrlcost;
-                                    //TBATCHMST.OTH_COST = VE.TBATCHDTL[i].OTH_COST;
+                                    TBATCHMST.MTRL_COST = VE.TBATCHDTL[i].TXBLVAL;
+                                    TBATCHMST.OTH_COST = VE.TBATCHDTL[i].OTHRAMT;
                                     TBATCHMST.ITREM = VE.TBATCHDTL[i].ITREM;
                                     TBATCHMST.PDESIGN = VE.TBATCHDTL[i].PDESIGN;
                                     if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP")
@@ -3421,6 +3393,7 @@ namespace Improvar.Controllers
                                         TBATCHMST.RPRATE = VE.TBATCHDTL[i].RPRATE;
                                     }
                                     //dbsql = masterHelp.RetModeltoSql(TBATCHMST);
+                                    TBATCHMST.COMMONUIQBAR = (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E") ? "E" : "";
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
@@ -3511,7 +3484,7 @@ namespace Improvar.Controllers
                                 {
                                     TBATCHDTL.PCSTYPE = VE.TBATCHDTL[i].PCSTYPE;
                                 }
-                                TBATCHDTL.OTHRAMT = _rpldist_b + _rpldistq_b;
+                                TBATCHDTL.OTHRAMT = _rpldist_b;
                                 TBATCHDTL.TXBLVAL = _rpldisttxblval_b;
                                 TBATCHDTL.STKTYPE = VE.TBATCHDTL[i].STKTYPE;
                                 dbsql = masterHelp.RetModeltoSql(TBATCHDTL);

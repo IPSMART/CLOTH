@@ -33,10 +33,9 @@ namespace Improvar.Models
 
         public DateTime? EFFDT { get; set; }
 
-        [Required]
         [StringLength(30)]
         public string AUTONO { get; set; }
 
-         public double? RATE { get; set; }
+        public double? RATE { get; set; }
     }
 }

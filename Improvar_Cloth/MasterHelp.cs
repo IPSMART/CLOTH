@@ -2971,6 +2971,16 @@ namespace Improvar
                 }
             }
         }
-
+        public string DocumentTypeCollection(ImprovarDB DBI)
+        {
+            var query = (from i in DBI.M_DOCTYPE select new DOCTYPE() { DOCCD = i.DOCCD, DOCNM = i.DOCNM }).OrderBy(s => s.DOCNM).ToList();
+            System.Text.StringBuilder SB = new System.Text.StringBuilder();
+            for (int i = 0; i <= query.Count - 1; i++)
+            {
+                SB.Append("<tr ><td>" + query[i].DOCCD + "</td><td>" + query[i].DOCNM + "</td></tr>");
+            }
+            var hdr = "Document Code" + Cn.GCS() + "Document Name";
+            return Generate_help(hdr, SB.ToString());
+        }
     }
 }

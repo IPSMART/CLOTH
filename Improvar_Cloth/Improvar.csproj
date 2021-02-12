@@ -261,6 +261,7 @@
     <Compile Include="Controllers\M_BrandController.cs" />
     <Compile Include="Controllers\M_CollectionController.cs" />
     <Compile Include="Controllers\M_ColorController.cs" />
+    <Compile Include="Controllers\M_Doc_AttachedController.cs" />
     <Compile Include="Controllers\M_FinProductController.cs" />
     <Compile Include="Controllers\M_FloorController.cs" />
     <Compile Include="Controllers\M_GrpMastController.cs" />
@@ -344,6 +345,7 @@
     <Compile Include="Models\BARCODEPRICE.cs" />
     <Compile Include="Models\BarcodePrint.cs" />
     <Compile Include="Models\BOM.cs" />
+    <Compile Include="Models\BulkDocumentAttached.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\ControlHeader.cs" />
     <Compile Include="Models\DateLockRight.cs" />
@@ -764,6 +766,7 @@
     <Compile Include="ViewModels\TransactionPhyStockEntry.cs" />
     <Compile Include="ViewModels\TransactionSaleEntry.cs" />
     <Compile Include="ViewModels\TransactionSalePosEntry.cs" />
+    <Compile Include="ViewModels\Trans_document_Attach.cs" />
     <Compile Include="ViewModels\TTxnAckEntry.cs" />
     <Compile Include="ViewModels\UOMMasterEntry.cs" />
     <Compile Include="ViewModels\UserGroupLinkDetails.cs" />
@@ -1278,6 +1281,7 @@
     <Content Include="Views\Rep_Misc_Qry_Updt\Rep_Misc_Qry_Updt.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POPUP.cshtml" />
     <Content Include="Views\Sys_PriceList_Upload\Sys_PriceList_Upload.cshtml" />
+    <Content Include="Views\M_Doc_Attached\M_Doc_Attached.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
