@@ -89,6 +89,7 @@ namespace Improvar.Controllers
         {
             try
             {
+                ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string fdt = VE.FDT.retDateStr();
                 string tdt = VE.TDT.retDateStr();
@@ -106,7 +107,7 @@ namespace Improvar.Controllers
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "";
-                string selitcd = "", plist = "", selgocd = "", LOCCD = "";
+                string selitcd = "", plist = "", selgocd = "", selgonm="", LOCCD = "";
 
                 if (FC.AllKeys.Contains("Godown"))
                 {
@@ -128,23 +129,24 @@ namespace Improvar.Controllers
 
                 string sql = "";
                 sql += "select a.autono, a.slno, a.autoslno, a.stkdrcr, a.docno, a.docdt, a.prefno, a.prefdt, a.slnm, a.gstno,a.itcd itcd1 , a.itcd||nvl(c.styleno,' ') itcd, c.styleno, ";
-                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.nos, a.qnty, nvl(a.netamt,0) netamt, b.batchnos from ";
+                sql += "c.itnm,c.styleno||' '||c.itnm itstyle,c.uomcd, d.uomnm, a.nos, a.qnty, nvl(a.netamt,0) netamt,a.txblval, b.batchnos from ";
                 sql += "(select a.autono, a.slno, a.autono||a.slno autoslno, a.stkdrcr, c.docno, c.docdt, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd, ";
-                sql += " sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt, ";
+                sql += " sum(nvl(a.txblval,0)+nvl(a.othramt,0)) netamt,a.txblval, ";
                 sql += "sum(nvl(a.nos,0)) nos, sum(nvl(a.qnty,0)) qnty ";
                 sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".t_txn b, " + scm1 + ".t_cntrl_hdr c, ";
                 sql += scmf + ".m_subleg i ";
                 sql += "where a.autono=b.autono(+) and a.autono=c.autono(+) and b.slcd=i.slcd(+) and ";
                 sql += "a.stkdrcr in ('D','C') and  nvl(c.cancel,'N') = 'N' and c.compcd='" + COM + "'  and ";
                 if (selitcd.retStr() != "") sql += "a.itcd in (" + selitcd + ") and ";
-                if (LOCCD != "") { sql += " c.loccd in(" + LOCCD + ") and "; } else { sql += " c.loccd='" + LOC + "' and "; }
+                if (LOCCD != "") { sql += " c.loccd in(" + LOCCD + ") and "; } else { sql += " c.loccd='" + LOC + "' "; }
                 if (plist.retStr() != "")
                 {
                     //sql += "k.itmprccd in (" + plist + ") and ";
                 }
-                if (selgocd.retStr() != "") sql += "b.gocd in (" + selgocd + ") and ";
-                sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-                sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd ) a, ";
+                if (selgocd.retStr() != "") sql += "and b.gocd in (" + selgocd + ") ";
+                if (fdt != "") sql += "and c.docdt >= to_date('" + fdt + "','dd/mm/yyyy')   ";
+                if (tdt != "") sql += "and c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
+                sql += "group by a.autono, a.slno, a.autono||a.slno, a.stkdrcr, c.docno, c.docdt, b.prefno, b.prefdt, i.slnm, i.gstno, a.itcd,a.txblval ) a, ";
 
                 sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, listagg(b.batchno,',') within group (order by a.autono,a.slno) batchnos ";
                 sql += "from " + scm1 + ".t_batchdtl a, " + scm1 + ".t_batchmst b where a.autono=b.autono(+) group by a.autono, a.slno, a.autono||a.slno ) b, ";
@@ -245,7 +247,7 @@ namespace Improvar.Controllers
                         {
                             //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
                              dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
-                            dbamt = Convert.ToDouble(tbl.Rows[i]["netamt"]);
+                            dbamt = Convert.ToDouble(tbl.Rows[i]["txblval"]);
 
                             //string pdocno = tbl.Rows[i]["pblno"].ToString();
                             //if (pdocno == "") pdocno = tbl.Rows[i]["docno"].ToString();
@@ -295,7 +297,10 @@ namespace Improvar.Controllers
                 string pghdr1 = "";
                 string repname = "Stk_Leg";
                 pghdr1 = "Stock Ledger from " + fdt + " to " + tdt;
-                PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
+                if(selgocd!="")
+                { selgonm = "Godown: " + string.Join(",", (from a in DBF.M_GODOWN where (selgocd.Contains(a.GOCD)) select a.GONM).ToList()).retSqlformat();
+                }
+                PV = HC.ShowReport(IR, repname, pghdr1,selgonm, true, true, "L", false);
 
                 TempData[repname] = PV;
                 TempData[repname + "xxx"] = IR;
