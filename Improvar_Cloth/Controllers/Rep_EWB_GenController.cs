@@ -199,7 +199,7 @@ namespace Improvar.Controllers
                 query += "sum(a.igstamt) igstamt, sum(a.cgstamt) cgstamt, sum(a.sgstamt) sgstamt, sum(a.cessamt) cessamt ,sum(a.othramt) othramt ";
                 query += "from " + fdbnm + ".t_vch_gst a, " + dbnm + ".t_cntrl_hdr b, " + dbnm + ".t_txntrans c, " + fdbnm + ".m_subleg d, ";
                 query += "" + fdbnm + ".m_subleg e, " + fdbnm + ".m_loca f, " + fdbnm + ".m_uom j, improvar.ms_state k, improvar.ms_gstuom l, ";
-                query += fdbnm + ".m_subleg_locoth m, " + dbnm + ".t_txn n, " + dbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q ";
+                query += fdbnm + ".m_subleg_locoth m, " + dbnm + ".t_txn n, " + fdbnm + ".m_godown o, " + fdbnm + ".m_subleg p, " + "improvar.ms_state q ";
                 query += "where a.autono=b.autono and a.autono=c.autono(+) and nvl(a.conslcd, a.pcode)=d.slcd(+) and nvl(c.translcd,c.crslcd)=e.slcd(+) and ";
                 query += "d.statecd=k.statecd(+) and a.uom=j.uomcd(+) and a.autono=n.autono(+) and n.gocd=o.gocd(+) and a.pcode=p.slcd(+) and p.statecd=q.statecd(+) and ";
                 query += "nvl(j.gst_uomcd,j.uomcd)=l.guomcd(+) and (b.loccd=m.loccd or m.loccd is null) and (b.compcd=m.compcd or m.compcd is null) and d.slcd=m.slcd(+) and ";
@@ -278,18 +278,18 @@ namespace Improvar.Controllers
                     prejson.hsncode = tbl.Rows[i]["hsncode"].ToString();//y
                     prejson.guomcd = tbl.Rows[i]["guomcd"].ToString();//z
                     prejson.qnty = tbl.Rows[i]["qnty"].retDbl();//aa
-                    prejson.amt = double.Parse(tbl.Rows[i]["amt"].ToString());//ab
+                    prejson.amt = tbl.Rows[i]["amt"].retDbl();//ab
                     prejson.TtlTax = TtlTax;//ac
-                    prejson.sgstper = double.Parse(tbl.Rows[i]["sgstper"].ToString());//json
-                    prejson.cgstper = double.Parse(tbl.Rows[i]["cgstper"].ToString());//json
-                    prejson.igstper = double.Parse(tbl.Rows[i]["igstper"].ToString());//json
-                    prejson.cessper = double.Parse(tbl.Rows[i]["cessper"].ToString());//json
-                    prejson.cgstamt = double.Parse(tbl.Rows[i]["cgstamt"].ToString());//ad
-                    prejson.sgstamt = double.Parse(tbl.Rows[i]["sgstamt"].ToString());//ae
-                    prejson.igstamt = double.Parse(tbl.Rows[i]["igstamt"].ToString());//af
-                    prejson.cessamt = double.Parse(tbl.Rows[i]["cessamt"].ToString());//ag                           
+                    prejson.sgstper = tbl.Rows[i]["sgstper"].retDbl();//json
+                    prejson.cgstper = tbl.Rows[i]["cgstper"].retDbl();//json
+                    prejson.igstper = tbl.Rows[i]["igstper"].retDbl();//json
+                    prejson.cessper = tbl.Rows[i]["cessper"].retDbl();//json
+                    prejson.cgstamt = tbl.Rows[i]["cgstamt"].retDbl();//ad
+                    prejson.sgstamt = tbl.Rows[i]["sgstamt"].retDbl();//ae
+                    prejson.igstamt = tbl.Rows[i]["igstamt"].retDbl();//af
+                    prejson.cessamt = tbl.Rows[i]["cessamt"].retDbl();//ag                           
                     prejson.cess_non_advol = 0;//ah cess non advol
-                    prejson.othramt = double.Parse(tbl.Rows[i]["othramt"].ToString());//ah others
+                    prejson.othramt = tbl.Rows[i]["othramt"].retDbl();//ah others
                     prejson.transMode = "1";//ah                       
                                             //if ((crntblno == "") || (crntblno != tbl.Rows[i]["blno"].ToString()))
                                             //{
@@ -332,7 +332,6 @@ namespace Improvar.Controllers
             }
             return PJSON;
         }
-
         [HttpPost]
         public ActionResult Rep_EWB_Gen(FormCollection FC, EWayBillReport VE, string Command)
         {
