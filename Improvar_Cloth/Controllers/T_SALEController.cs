@@ -2491,11 +2491,11 @@ namespace Improvar.Controllers
 
                 string sql = "select x.autono,x.docno,x.PREFNO,x.docdt,x.itcd,x.itnm,x.hsncode,x.styleno,x.itgrpcd,x.itgrpnm,x.qnty,x.uomcd,x.stktype, ";
                 sql += "x.barno,x.TXBLVAL,x.IGSTPER,x.CGSTPER,x.SGSTPER,x.CESSPER,y.prodgrpgstper,x.txnslno,x.partcd,x.partnm,x.prtbarcode,x.colrcd,x.colrnm, ";
-                sql += "x.clrbarcode,x.sizecd,x.sizenm,x.szbarcode from ";
+                sql += "x.clrbarcode,x.sizecd,x.sizenm,x.szbarcode,x.slno from ";
 
                 sql += "(select a.autono,c.docno,a.PREFNO,a.docdt,b.itcd,e.itnm,e.hsncode,e.styleno,e.itgrpcd,f.itgrpnm,d.qnty,e.uomcd,d.stktype, ";
                 sql += "d.barno,b.TXBLVAL,b.IGSTPER,b.CGSTPER,b.SGSTPER,b.CESSPER,e.prodgrpcd,d.txnslno,b.partcd,g.partnm,g.prtbarcode,b.colrcd,h.colrnm, ";
-                sql += "h.clrbarcode,b.sizecd,i.sizenm,i.szbarcode  ";
+                sql += "h.clrbarcode,b.sizecd,i.sizenm,i.szbarcode,d.slno  ";
                 sql += "from  " + scm + ".T_TXN a," + scm + ".T_TXNDTL b," + scm + ".T_CNTRL_HDR c, " + scm + ".T_BATCHDTL d ," + scm + ".M_SITEM e ," + scm + ".M_GROUP f, ";
                 sql += scm + ".m_parts g," + scm + ".m_color h, " + scm + ".m_size i ";
                 sql += "where a.autono = c.autono(+) and a.autono = b.autono(+) and b.autono = d.autono(+) ";
@@ -3171,7 +3171,7 @@ namespace Improvar.Controllers
                             TTXNDTL.DUTYAMT = VE.TTXNDTL[i].DUTYAMT;
                             TTXNDTL.NETAMT = VE.TTXNDTL[i].NETAMT;
                             TTXNDTL.OTHRAMT = _rpldist + _rpldistq;
-                            VE.TTXNDTL[i].OTH_COST = _rpldist + _rpldistq;
+                            VE.TTXNDTL[i].OTHRAMT = _rpldist + _rpldistq;
                             TTXNDTL.SHORTQNTY = VE.TTXNDTL[i].SHORTQNTY;
                             TTXNDTL.DISCTYPE = VE.TTXNDTL[i].DISCTYPE;
                             TTXNDTL.DISCRATE = VE.TTXNDTL[i].DISCRATE;
@@ -3261,27 +3261,27 @@ namespace Improvar.Controllers
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
                             int txnsln = VE.TBATCHDTL[i].TXNSLNO;
+                            var TTXNDTLmp = (from x in VE.TTXNDTL
+                                             where x.SLNO == VE.TBATCHDTL[i].TXNSLNO
+                                             select new TTXNDTL
+                                             {
+                                                 TXBLVAL = x.TXBLVAL,
+                                                 OTHRAMT = x.OTHRAMT,
+                                                 QNTY = x.QNTY,
+                                             }).FirstOrDefault();
 
+                            _baldisttxblval_b = TTXNDTLmp.TXBLVAL.retDbl(); _baldist_b = TTXNDTLmp.OTHRAMT.retDbl();
                             while (VE.TBATCHDTL[i].TXNSLNO == txnsln)
                             {
                                 if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
                                 int j = i;
-
-                                var TTXNDTLmp = (from x in VE.TTXNDTL
-                                                 where x.SLNO == VE.TBATCHDTL[i].TXNSLNO
-                                                 select new TTXNDTL
-                                                 {
-                                                     TXBLVAL = x.TXBLVAL,
-                                                     OTHRAMT = x.OTHRAMT,
-                                                     QNTY = x.QNTY,
-                                                 }).FirstOrDefault();
 
                                 int bi = 1, maxBi = 0;
                                 while (VE.TBATCHDTL[i].TXNSLNO == txnsln)
                                 {
                                     maxBi++;
                                     i++;
-                                    if (i > VE.TBATCHDTL.Count) break;
+                                    if (i > VE.TBATCHDTL.Count - 1) break;
                                 }
                                 i = j;
 
@@ -3292,7 +3292,7 @@ namespace Improvar.Controllers
                                 else
                                 {
                                     _rpldisttxblval_b = ((TTXNDTLmp.TXBLVAL / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound();
-                                    _rpldist_b = ((TTXNDTLmp.TXBLVAL / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound();
+                                    _rpldist_b = ((TTXNDTLmp.OTHRAMT / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound();
                                     _baldisttxblval_b = _baldisttxblval_b - _rpldisttxblval_b; _baldist_b = _baldist_b - _rpldist_b;
                                 }
 
@@ -3550,8 +3550,10 @@ namespace Improvar.Controllers
 
                                     }
                                 }
+                                i++;
+                                if (i > VE.TBATCHDTL.Count - 1) break;
                             }
-                            i++;
+                            //i++;
                             if (i > VE.TBATCHDTL.Count - 1) break;
                         }
                     }
