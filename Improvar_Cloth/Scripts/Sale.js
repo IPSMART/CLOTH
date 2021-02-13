@@ -83,6 +83,9 @@ function GetBarnoDetails(id, HelpFrom) {
                                 if (value == "true") {
                                     RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
                                 }
+                                if (HelpFrom == "Bar" && (MENU_PARA == "SBDIR" || MENU_PARA == "SBPCK" || MENU_PARA == "PR")) {
+                                    AddBarCodeGrid();
+                                }
                             }
                             else {
                                 if (MENU_PARA == "PB" || MENU_PARA == "OP") {
@@ -196,9 +199,15 @@ function FillBarcodeArea(str, Table, i) {
         $("#SIZENM").val(returncolvalue(str, "SIZENM"));
         $("#SZBARCODE").val(returncolvalue(str, "SZBARCODE"));
         $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
-        $("#QNTY").val(returncolvalue(str, "QNTY"));
+        if ((MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK") && (retStr(returncolvalue(str, "uomcd")) == "PCS")) {
+            $("#QNTY").val(1.000);
+            $("#NOS").val(1);
+        }
+        else {
+            $("#QNTY").val(returncolvalue(str, "QNTY"));
+            $("#NOS").val(returncolvalue(str, "NOS"));
+        }
         $("#UOM").val(returncolvalue(str, "uomcd"));
-        $("#NOS").val(returncolvalue(str, "NOS"));
         $("#CUTLENGTH").val(returncolvalue(str, "CUTLENGTH"));
         $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
         var RATE = returncolvalue(str, "RATE");
@@ -1286,9 +1295,9 @@ function UpdateTaxPer() {
         var rate = retFloat($("#B_RATE_" + i).val());
         var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
         var allgst = retGstPerstr(prodgrpgstper, rate);
-        var tax=null;
+        var tax = null;
         if (allgst != "") {
-             tax = allgst.split(',');
+            tax = allgst.split(',');
         }
         var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
         if (tax.length > 0) {
