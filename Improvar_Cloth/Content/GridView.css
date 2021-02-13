@@ -154,3 +154,8 @@ table#t01 th {
     padding-right: 4px;
     /*background-color: transparent;*/
 }
+.atextBoxFor[readonly] {
+    cursor: not-allowed;
+    background-color: #eeeeee;
+}
+
