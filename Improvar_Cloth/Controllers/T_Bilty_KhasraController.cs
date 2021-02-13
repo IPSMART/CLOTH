@@ -675,6 +675,63 @@ namespace Improvar.Controllers
                     string ContentFlg = "";
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
+                        #region datatable create
+                        double BLAMT = 0, ROAMT = 0;
+                        if (VE.MENU_PARA.retStr() == "TRWB")
+                        {
+                            var itcdarr = VE.TBILTYKHASRA.Select(a => a.ITCD).Distinct().ToArray();
+                            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                            var tax_data = salesfunc.GetBarHelp(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retStr(), "", itcdarr.retSqlfromStrarray(), "", "", "", "", "", "C001", "", "", true, true);
+                            var itemdata = (from a in DB.M_SITEM where itcdarr.Contains(a.ITCD) select new { a.ITCD, a.ITNM, a.STYLENO, a.HSNCODE }).ToList();
+                            DTNEW();
+                            for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
+                            {
+                                if (VE.TBILTYKHASRA[i].SLNO != 0 && VE.TBILTYKHASRA[i].ITCD.retStr() != "")
+                                {
+                                    string itcd = VE.TBILTYKHASRA[i].ITCD.retStr();
+                                    string PRODGRPGSTPER = tax_data.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("PRODGRPGSTPER")).FirstOrDefault();
+                                    string[] gst = new string[3];
+                                    if (PRODGRPGSTPER != "")
+                                    {
+                                        string ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, VE.TBILTYKHASRA[i].RATE.retDbl());
+                                        if (ALL_GSTPER.retStr() != "")
+                                        {
+                                            gst = ALL_GSTPER.Split(',');
+                                        }
+                                    }
+
+                                    var item = itemdata.Where(a => a.ITCD == itcd).FirstOrDefault();
+
+                                    double basamt = (VE.TBILTYKHASRA[i].QNTY.retDbl() * VE.TBILTYKHASRA[i].RATE.retDbl()).toRound(2);
+                                    double igstamt = ((basamt * gst[0].retDbl()) / 100).toRound(2);
+                                    double cgstamt = ((basamt * gst[1].retDbl()) / 100).toRound(2);
+                                    double sgstamt = ((basamt * gst[2].retDbl()) / 100).toRound(2);
+
+
+                                    DataRow dr1 = DT.NewRow();
+                                    dr1["SLNO"] = VE.TBILTYKHASRA[i].SLNO;
+                                    dr1["ITCD"] = VE.TBILTYKHASRA[i].ITCD;
+                                    dr1["ITSTYLE"] = item.STYLENO + "" + item.ITNM;
+                                    dr1["HSNCODE"] = item.HSNCODE;
+                                    dr1["BASAMT"] = basamt;
+                                    dr1["IGSTPER"] = gst[0].retDbl();
+                                    dr1["IGSTAMT"] = igstamt;
+                                    dr1["CGSTPER"] = gst[1].retDbl();
+                                    dr1["CGSTAMT"] = cgstamt;
+                                    dr1["SGSTPER"] = gst[2].retDbl();
+                                    dr1["SGSTAMT"] = sgstamt;
+                                    dr1["NETAMT"] = (basamt + igstamt + cgstamt + sgstamt).toRound(2);
+                                    DT.Rows.Add(dr1);
+                                }
+                            }
+                            double totalbillamt = DT.AsEnumerable().Sum(a => a.Field<double>("NETAMT"));
+                            double R_TOTAL_BILL_AMOUNT = Math.Round(totalbillamt);
+                            double TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
+                            BLAMT = (R_TOTAL_BILL_AMOUNT).toRound(2);
+                            ROAMT = (TOTAL_ROUND).toRound(2);
+                        }
+                        #endregion
+
                         T_TXN TTXN = new T_TXN();
                         T_BALE_HDR TBHDR = new T_BALE_HDR();
                         T_TXNTRANS TXNTRANS = new T_TXNTRANS();
@@ -721,7 +778,7 @@ namespace Improvar.Controllers
                         TTXN.EMD_NO = TBHDR.EMD_NO;
                         TTXN.DTAG = "E";
                         TTXN.DOCTAG = doctag;
-                        TTXN.SLCD = VE.T_TXN.SLCD;
+                        TTXN.SLCD = VE.T_BALE_HDR.MUTSLCD;
                         TTXN.CONSLCD = VE.T_TXN.CONSLCD;
                         TTXN.BLAMT = VE.T_TXN.BLAMT;
                         TTXN.PREFDT = VE.T_TXN.PREFDT;
@@ -736,6 +793,8 @@ namespace Improvar.Controllers
                         }
                         TTXN.BARGENTYPE = VE.T_TXN.BARGENTYPE;
                         TTXN.MENU_PARA = VE.T_TXN.MENU_PARA;
+                        TTXN.BLAMT = BLAMT;
+                        TTXN.ROAMT = ROAMT;
                         if (VE.DefaultAction == "E")
                         {
                             dbsql = MasterHelpFa.TblUpdt("T_BALE", TBHDR.AUTONO, "E");
@@ -796,62 +855,7 @@ namespace Improvar.Controllers
                         }
                         #endregion
 
-                        #region datatable create
-                        double BLAMT = 0, ROAMT = 0;
-                        if (VE.MENU_PARA.retStr() == "TRWB")
-                        {
-                            var itcdarr = VE.TBILTYKHASRA.Select(a => a.ITCD).Distinct().ToArray();
-                            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                            var tax_data = salesfunc.GetBarHelp(TTXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retStr(), "", itcdarr.retSqlfromStrarray(), "", "", "", "", "", "C001", "", "", true, true);
-                            var itemdata = (from a in DB.M_SITEM where itcdarr.Contains(a.ITCD) select new { a.ITCD, a.ITNM, a.STYLENO, a.HSNCODE }).ToList();
-                            DTNEW();
-                            for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
-                            {
-                                if (VE.TBILTYKHASRA[i].SLNO != 0 && VE.TBILTYKHASRA[i].ITCD.retStr() != "")
-                                {
-                                    string itcd = VE.TBILTYKHASRA[i].ITCD.retStr();
-                                    string PRODGRPGSTPER = tax_data.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("PRODGRPGSTPER")).FirstOrDefault();
-                                    string[] gst = new string[3];
-                                    if (PRODGRPGSTPER != "")
-                                    {
-                                        string ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, VE.TBILTYKHASRA[i].RATE.retDbl());
-                                        if (ALL_GSTPER.retStr() != "")
-                                        {
-                                            gst = ALL_GSTPER.Split(',');
-                                        }
-                                    }
-
-                                    var item = itemdata.Where(a => a.ITCD == itcd).FirstOrDefault();
-
-                                    double basamt = (VE.TBILTYKHASRA[i].QNTY.retDbl() * VE.TBILTYKHASRA[i].RATE.retDbl()).toRound(2);
-                                    double igstamt = ((basamt * gst[0].retDbl()) / 100).toRound(2);
-                                    double cgstamt = ((basamt * gst[1].retDbl()) / 100).toRound(2);
-                                    double sgstamt = ((basamt * gst[2].retDbl()) / 100).toRound(2);
-
-
-                                    DataRow dr1 = DT.NewRow();
-                                    dr1["SLNO"] = VE.TBILTYKHASRA[i].SLNO;
-                                    dr1["ITCD"] = VE.TBILTYKHASRA[i].ITCD;
-                                    dr1["ITSTYLE"] = item.STYLENO + "" + item.ITNM;
-                                    dr1["HSNCODE"] = item.HSNCODE;
-                                    dr1["BASAMT"] = basamt;
-                                    dr1["IGSTPER"] = gst[0].retDbl();
-                                    dr1["IGSTAMT"] = igstamt;
-                                    dr1["CGSTPER"] = gst[1].retDbl();
-                                    dr1["CGSTAMT"] = cgstamt;
-                                    dr1["SGSTPER"] = gst[2].retDbl();
-                                    dr1["SGSTAMT"] = sgstamt;
-                                    dr1["NETAMT"] = (basamt + igstamt + cgstamt + sgstamt).toRound(2);
-                                    DT.Rows.Add(dr1);
-                                }
-                            }
-                            double totalbillamt = DT.AsEnumerable().Sum(a => a.Field<double>("NETAMT"));
-                            double R_TOTAL_BILL_AMOUNT = Math.Round(totalbillamt);
-                            double TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
-                            BLAMT = (R_TOTAL_BILL_AMOUNT).toRound(2);
-                            ROAMT = (TOTAL_ROUND).toRound(2);
-                        }
-                        #endregion
+                        
 
                         int gs = 0; string strblno = "", strbldt = "", exemptype = "";
                         strbldt = TTXN.DOCDT.ToString();

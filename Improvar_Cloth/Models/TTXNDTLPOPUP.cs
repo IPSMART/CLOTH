@@ -30,5 +30,10 @@ namespace Improvar.Models
         public string STKTYP { get; set; }
         public string UOM { get; set; }
         public string PRODGRPGSTPER { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.000}", ApplyFormatInEditMode = true)]
+        public double? RATE { get; set; }
+        public string SCMDISCTYPE_DESC { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? SCMDISCRATE { get; set; }
     }
 }
