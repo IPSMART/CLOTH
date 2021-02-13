@@ -43,7 +43,7 @@
                                 <th class="sticky-cell" style="width: 140px;text-align:center;left:340px">Barno</th>
                                 <th class="" style="width: 70px;">ItmGrp</th>
                                 <th class="" style="width:71px;text-align:right;">Item Code</th>
-                                <th class="" style="">Item Design</th>
+                                <th class="" style="width: 160px;">Item Design</th>
                                 @if (Model.M_SYSCNFG.MNTNCOLOR == "Y")
                                 {
                                     <th class="" style="width: 50px;">Color Name</th>
@@ -92,6 +92,7 @@
                                 }
                                 @*<th class="" style="width:30px; text-align:center">Img</th>*@
                                 <th class="" style="width:109px;text-align:right;">Net AMt</th>
+                                <th class="">Item Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -277,6 +278,9 @@
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].NETAMT, new { htmlAttributes = new { id = "R_NETAMT_" + i, @style = "text-align: right;", @class = " atextBoxFor", @readonly = "readonly" } })
                                         </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].ITREM, new { id = "R_ITREM_" + i, @class = " atextBoxFor ", maxlength = 100, onclick = "OpenZoomTextBoxModal(this.id)", @data_toggle = "modal", @data_target = "#ZoomTextBoxModal" })
+                                        </td>
                                     </tr>
                                 }
                             }
@@ -355,6 +359,7 @@
                                     @Html.HiddenFor(model => Model.R_T_CESS_AMT, new { id = "R_T_CESS_AMT" })
                                     @Html.HiddenFor(model => Model.R_T_NET_AMT, new { id = "R_T_NET_AMT" })
                                 </td>
+                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                             </tr>
                         </tfoot>
                     </table>

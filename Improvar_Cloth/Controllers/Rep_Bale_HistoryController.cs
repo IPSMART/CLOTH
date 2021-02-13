@@ -334,7 +334,7 @@ namespace Improvar.Controllers
                     string repname = "Bale Report";
                  
 
-                    PV = HC.ShowReport(IR, repname, pghdr1,"Bale No: "+ selbalenoyr, true, true, "L", false);
+                    PV = HC.ShowReport(IR, repname, pghdr1,"", true, true, "L", false);
 
                     TempData[repname] = PV;
                     TempData[repname + "xxx"] = IR;
