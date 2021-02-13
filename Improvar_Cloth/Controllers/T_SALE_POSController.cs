@@ -2485,12 +2485,54 @@ namespace Improvar.Controllers
                     #endregion
 
                     COUNTER = 0; int COUNTERBATCH = 0; bool recoexist = false;
+                    VE.TsalePos_TBATCHDTL.OrderBy(a => a.TXNSLNO);
+                    double _baldist_b = 0, _baldistq_b = 0, _rpldist_b = 0, _rpldistq_b = 0, _baldisttxblval_b = 0, _rpldisttxblval_b = 0, _amtdisttxblval = 0, othamt = 0;
+
+                    _baldistq_b = 0; _baldist_b = 0; _baldisttxblval_b = 0;
+
                     if (VE.TsalePos_TBATCHDTL != null && VE.TsalePos_TBATCHDTL.Count > 0)
                     {
-                        for (int i = 0; i <= VE.TsalePos_TBATCHDTL.Count - 1; i++)
+                        int i = 0;
+                    batchdtlstart:
+                        while (i <= VE.TsalePos_TBATCHDTL.Count - 1)
                         {
-                            if (VE.TsalePos_TBATCHDTL[i].ITCD != null && VE.TsalePos_TBATCHDTL[i].QNTY != 0)
+                            if (VE.TsalePos_TBATCHDTL[i].ITCD.retStr() == "" || VE.TsalePos_TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
+                            int txnsln = VE.TsalePos_TBATCHDTL[i].TXNSLNO;
+                            var TTXNDTLmp = (from x in VE.TTXNDTL
+                                             where x.SLNO == VE.TsalePos_TBATCHDTL[i].TXNSLNO
+                                             select new TTXNDTL
+                                             {
+                                                 TXBLVAL = x.TXBLVAL,
+                                                 OTHRAMT = x.OTHRAMT,
+                                                 QNTY = x.QNTY,
+                                             }).FirstOrDefault();
+
+                            _baldisttxblval_b = TTXNDTLmp.TXBLVAL.retDbl(); _baldist_b = TTXNDTLmp.OTHRAMT.retDbl();
+                            while (VE.TsalePos_TBATCHDTL[i].TXNSLNO == txnsln)
                             {
+                                if (VE.TsalePos_TBATCHDTL[i].ITCD.retStr() == "" || VE.TsalePos_TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
+                                int j = i;
+
+                                int bi = 1, maxBi = 0;
+                                while (VE.TsalePos_TBATCHDTL[i].TXNSLNO == txnsln)
+                                {
+                                    maxBi++;
+                                    i++;
+                                    if (i > VE.TsalePos_TBATCHDTL.Count - 1) break;
+                                }
+                                i = j;
+
+                                if (bi == maxBi)
+                                {
+                                    _rpldisttxblval_b = _baldisttxblval_b; _rpldist_b = _baldist_b;
+                                }
+                                else
+                                {
+                                    _rpldisttxblval_b = ((TTXNDTLmp.TXBLVAL / TTXNDTLmp.QNTY) * VE.TsalePos_TBATCHDTL[i].QNTY).retDbl().toRound();
+                                    _rpldist_b = ((TTXNDTLmp.OTHRAMT / TTXNDTLmp.QNTY) * VE.TsalePos_TBATCHDTL[i].QNTY).retDbl().toRound();
+                                    _baldisttxblval_b = _baldisttxblval_b - _rpldisttxblval_b; _baldist_b = _baldist_b - _rpldist_b;
+                                }
+
                                 double mtrlcost = (((VE.TsalePos_TBATCHDTL[i].TXBLVAL + _amtdist) / VE.TsalePos_TBATCHDTL[i].QNTY) * VE.TsalePos_TBATCHDTL[i].QNTY).retDbl().toRound(2);
                                 double batchamt = (((VE.TsalePos_TBATCHDTL[i].TXBLVAL) / VE.TsalePos_TBATCHDTL[i].QNTY) * VE.TsalePos_TBATCHDTL[i].QNTY).retDbl().toRound();
 
@@ -2624,17 +2666,60 @@ namespace Improvar.Controllers
                                 dbsql = masterHelp.RetModeltoSql(TsalePos_TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
+                                i++;
+                                if (i > VE.TsalePos_TBATCHDTL.Count - 1) break;
                             }
+                            //i++;
+                            if (i > VE.TsalePos_TBATCHDTL.Count - 1) break;
                         }
                     }
                     #region Return tab
                     COUNTER = 0; int RCOUNTERBATCH = 0; bool Rrecoexist = false;
+                    VE.TsalePos_TBATCHDTL_RETURN.OrderBy(a => a.TXNSLNO);
+                    _baldistq_b = 0; _baldist_b = 0; _baldisttxblval_b = 0;
+
                     if (VE.TsalePos_TBATCHDTL_RETURN != null && VE.TsalePos_TBATCHDTL_RETURN.Count > 0)
                     {
-                        for (int i = 0; i <= VE.TsalePos_TBATCHDTL_RETURN.Count - 1; i++)
+                        int i = 0;
+                    batchdtlstart:
+                        while (i <= VE.TsalePos_TBATCHDTL_RETURN.Count - 1)
                         {
-                            if (VE.TsalePos_TBATCHDTL_RETURN[i].ITCD != null && VE.TsalePos_TBATCHDTL_RETURN[i].QNTY != 0)
+                            if (VE.TsalePos_TBATCHDTL_RETURN[i].ITCD.retStr() == "" || VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
+                            int txnsln = VE.TsalePos_TBATCHDTL_RETURN[i].TXNSLNO;
+                            var TTXNDTLmp = (from x in VE.TTXNDTL
+                                             where x.SLNO == VE.TsalePos_TBATCHDTL_RETURN[i].TXNSLNO
+                                             select new TTXNDTL
+                                             {
+                                                 TXBLVAL = x.TXBLVAL,
+                                                 OTHRAMT = x.OTHRAMT,
+                                                 QNTY = x.QNTY,
+                                             }).FirstOrDefault();
+
+                            _baldisttxblval_b = TTXNDTLmp.TXBLVAL.retDbl(); _baldist_b = TTXNDTLmp.OTHRAMT.retDbl();
+                            while (VE.TsalePos_TBATCHDTL_RETURN[i].TXNSLNO == txnsln)
                             {
+                                if (VE.TsalePos_TBATCHDTL_RETURN[i].ITCD.retStr() == "" || VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
+                                int j = i;
+
+                                int bi = 1, maxBi = 0;
+                                while (VE.TsalePos_TBATCHDTL_RETURN[i].TXNSLNO == txnsln)
+                                {
+                                    maxBi++;
+                                    i++;
+                                    if (i > VE.TsalePos_TBATCHDTL_RETURN.Count - 1) break;
+                                }
+                                i = j;
+
+                                if (bi == maxBi)
+                                {
+                                    _rpldisttxblval_b = _baldisttxblval_b; _rpldist_b = _baldist_b;
+                                }
+                                else
+                                {
+                                    _rpldisttxblval_b = ((TTXNDTLmp.TXBLVAL / TTXNDTLmp.QNTY) * VE.TsalePos_TBATCHDTL_RETURN[i].QNTY).retDbl().toRound();
+                                    _rpldist_b = ((TTXNDTLmp.OTHRAMT / TTXNDTLmp.QNTY) * VE.TsalePos_TBATCHDTL_RETURN[i].QNTY).retDbl().toRound();
+                                    _baldisttxblval_b = _baldisttxblval_b - _rpldisttxblval_b; _baldist_b = _baldist_b - _rpldist_b;
+                                }
                                 double mtrlcost = (((VE.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL + _amtdist) / VE.TsalePos_TBATCHDTL_RETURN[i].QNTY) * VE.TsalePos_TBATCHDTL_RETURN[i].QNTY).retDbl().toRound(2);
                                 double batchamt = (((VE.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL) / VE.TsalePos_TBATCHDTL_RETURN[i].QNTY) * VE.TsalePos_TBATCHDTL_RETURN[i].QNTY).retDbl().toRound();
 
@@ -2768,7 +2853,11 @@ namespace Improvar.Controllers
                                 dbsql = masterHelp.RetModeltoSql(TsalePos_TBATCHDTL_RETURN);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
+                                i++;
+                                if (i > VE.TsalePos_TBATCHDTL_RETURN.Count - 1) break;
                             }
+                            //i++;
+                            if (i > VE.TsalePos_TBATCHDTL_RETURN.Count - 1) break;
                         }
                     }
 
