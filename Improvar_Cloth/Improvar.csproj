@@ -679,6 +679,12 @@
       <DependentUpon>SaleBill_Cloth.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\SaleBill_Cloth_Snc.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SaleBill_Cloth_Snc.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Salesfunc.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="Controllers\MS_DOCTYPEController.cs" />
@@ -1343,6 +1349,10 @@
     <EmbeddedResource Include="Report\Khasra_BaleTrnf.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Khasra_BaleTrnf.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\SaleBill_Cloth_Snc.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>SaleBill_Cloth_Snc.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
