@@ -82,17 +82,8 @@ namespace Improvar.Controllers
                         RT.Add(new DropDown_list1 { value = "PCWOQ", text = "Purchase Credit Note (W/O Qnty)" });
                         VE.DropDown_list1 = RT;
                     }
-
-
                     //=========End Report Type===========//
-
-                    //=========For Report Type===========//
-                    List<DropDown_list> ALLRT = new List<DropDown_list>();
-                    ALLRT.Add(new DropDown_list { value = "", text = "--SELECT--" });
-                    ALLRT.Add(new DropDown_list { value = "All Sales", text = "All Sales" });
-                    ALLRT.Add(new DropDown_list { value = "All Purchase", text = "All Purchase" });
-                    VE.DropDown_list = ALLRT;
-                    //=========End Report Type===========//
+                    
 
                     VE.DropDown_list3 = (from i in DBF.M_LOCA
                                          where i.COMPCD == com
@@ -155,14 +146,13 @@ namespace Improvar.Controllers
             try
             {
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
-
+                string dtlsumm = "";
                 string fdt = VE.FDT.retDateStr(), tdt = VE.TDT.retDateStr();
 
                 string GODOWN = VE.TEXTBOX3.retStr();
-                string INSBY = VE.TEXTBOX6.retStr();
-
                 bool itmdtl = false, batchdtl = false, itemrem = false;
-                if (VE.Checkbox1 == true) itmdtl = true;
+                dtlsumm = FC["DtlSumm"].ToString();
+                if (dtlsumm == "ID") itmdtl = true;   //if (VE.Checkbox1 == true) itmdtl = true;
                 if (VE.Checkbox2 == true) batchdtl = true;
                 if (VE.Checkbox6 == true) itemrem = true;
 
@@ -239,7 +229,7 @@ namespace Improvar.Controllers
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
                 query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 query1 += " e.slnm trslnm, f.lrno,f.lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
-                query1 += " b.cgstamt, b.sgstper, b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT  ";
+                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,k.ackdt  ";
                 
                     query1 += " from ( ";
                     query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
@@ -281,9 +271,9 @@ namespace Improvar.Controllers
                 query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
                 query1 += " where a.amtcd = b.amtcd ";
                 query1 += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, ";
-                query1 += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j  ";
+                query1 += "" + scm1 + ".t_txn g, " + scm1 + ".t_txnoth h ," + scm1 + ".t_txnmemo i ," + scmf + ".m_doctype j," + scmf + ".t_txneinv k  ";
                 query1 += "where a.autono = b.autono(+) and a.slcd = c.slcd and g.conslcd = d.slcd(+) and a.autono = f.autono(+) ";
-                query1 += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+)  ";
+                query1 += "and f.translcd = e.slcd(+) and a.autono = f.autono(+) and a.autono = g.autono(+) and a.autono = h.autono(+) and  g.autono = i.autono(+) and a.doccd = j.doccd(+) and a.autono = k.autono(+)  ";
                 if (selslcd != "") query1 += " and a.slcd in (" + selslcd + ") ";
                 if (unselslcd != "") query1 += " and a.slcd not in (" + unselslcd + ") ";
                 if (doctype != "") query1 += " and j.doctype in(" + doctype + ") ";
@@ -328,7 +318,7 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
                 string pghdr1 = "";
 
-                double tnos = 0; double tqnty = 0; double tbasamt = 0; double tdisc1 = 0; double tdisc2 = 0; double ttaxable = 0, tbqnty = 0;
+                double tnos = 0; double tqnty = 0; double tbasamt = 0; double tdisc1 = 0; double tdisc2 = 0; double ttaxable = 0; double tgstamt = 0, tbqnty = 0;
                 double tigstamt = 0; double tcgstamt = 0; double tsgstamt = 0; double troamt = 0; double ttcsamt = 0; double tblamt = 0; double tpayamt = 0;
                 string auto1 = "";
                 double dsc1 = 0; double dsc2 = 0;
@@ -349,9 +339,17 @@ namespace Improvar.Controllers
                 if (((VE.TEXTBOX1 == "Purchase" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Purchase Return" || VE.TEXTBOX1 == "Opening Stock" || VE.TEXTBOX1 == "PDWOQ" || VE.TEXTBOX7 == "PCWOQ"))) showpbill = true;
                 #region Normal Report               
                 HC.RepStart(IR, 3);
-                HC.GetPrintHeader(IR, "doccd", "string", "c,5", "Doc;Code");
-                HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yy", ";Doc Date");
-                HC.GetPrintHeader(IR, "docno", "string", "c,18", ";Doc No");
+                if (dtlsumm != "C")
+                {
+                    HC.GetPrintHeader(IR, "doccd", "string", "c,5", "Doc;Code");
+                    HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yy", ";Doc Date");
+                    HC.GetPrintHeader(IR, "docno", "string", "c,18", ";Doc No");
+                }
+                else
+                {
+                    HC.GetPrintHeader(IR, "docno", "string", "c,18", ";Doc No");
+                    HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yy", ";Doc Date");
+                }
                 if (showpbill == true) HC.GetPrintHeader(IR, "prefdt", "string", "d,10:dd/mm/yy", "Party;Bill Date");
                 if (showpbill == true) HC.GetPrintHeader(IR, "prefno", "string", "c,16", "Party;Bill No");
                 if (itmdtl == true)
@@ -375,15 +373,16 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                   HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
+                   if (dtlsumm == "C") HC.GetPrintHeader(IR, "localcentral", "string", "c,5", "Local/;Central");
+                    HC.GetPrintHeader(IR, "slnm", "string", "c,35", "Party Name");
                   
                  if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "mobile", "string", "c,12", "Mobile Number");
-                  
-                    HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
-                    HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
-                    HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
+
+                    if (dtlsumm != "C") HC.GetPrintHeader(IR, "gstno", "string", "c,15", "GST No.");
+                    if (dtlsumm != "C") HC.GetPrintHeader(IR, "nos", "double", "n,5", "Nos");
+                    if (dtlsumm != "C") HC.GetPrintHeader(IR, "qnty", "double", "n,12,3", "Qnty");
                 }
-                HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "amt", "double", "n,12,2", "Basic;Amount");
                 if (SeparateAchead)
                 {
                     foreach (DataRow dr in amtDT.Rows)
@@ -391,19 +390,23 @@ namespace Improvar.Controllers
                         HC.GetPrintHeader(IR, dr["itcd"].ToString(), "string", "c,10", dr["itnm"].ToString());
                     }
                 }
-                HC.GetPrintHeader(IR, "disc1", "double", "n,10,2", "Disc1;Amount");
-                HC.GetPrintHeader(IR, "disc2", "double", "n,10,2", "Disc2;Amount");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "disc1", "double", "n,10,2", "Disc1;Amount");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "disc2", "double", "n,10,2", "Disc2;Amount");
                 HC.GetPrintHeader(IR, "taxableval", "double", "n,12,2", "Taxable;Value");
-                HC.GetPrintHeader(IR, "igstper", "double", "n,5,3", "IGST;%");
-                HC.GetPrintHeader(IR, "igstamt", "double", "n,10,2", "IGST;Amt");
-                HC.GetPrintHeader(IR, "cgstper", "double", "n,5,3", "CGST;%");
-                HC.GetPrintHeader(IR, "cgstamt", "double", "n,10,2", "CGST;Amt");
-                HC.GetPrintHeader(IR, "sgstper", "double", "n,5,3", "SGST;%");
-                HC.GetPrintHeader(IR, "sgstamt", "double", "n,10,2", "SGST;Amt");
+                if (dtlsumm == "C") HC.GetPrintHeader(IR, "gstper", "double", "n,5,2", ";GST %");
+                if (dtlsumm == "C") HC.GetPrintHeader(IR, "gstamt", "double", "n,15,2:#####,##,##0.00", "GST;Amount");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "igstper", "double", "n,5,3", "IGST;%");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "igstamt", "double", "n,10,2", "IGST;Amt");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "cgstper", "double", "n,5,3", "CGST;%");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "cgstamt", "double", "n,10,2", "CGST;Amt");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "sgstper", "double", "n,5,3", "SGST;%");
+                if (dtlsumm != "C") HC.GetPrintHeader(IR, "sgstamt", "double", "n,10,2", "SGST;Amt");
                 HC.GetPrintHeader(IR, "tcsamt", "double", "n,10,2", "TCS;Amt");
                 HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
                 if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "payamt", "double", "n,12,2", ";Payment");
                 HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
+                HC.GetPrintHeader(IR, "ackno", "string", "c,15", "ACK. ;No");
+                HC.GetPrintHeader(IR, "ackdt", "string", "d,10:dd/mm/yy", "ACK. ;Date");
                 if (plistprint == true) HC.GetPrintHeader(IR, "prcdesc", "string", "c,10", "Price;List");
                 if (con_print == true) HC.GetPrintHeader(IR, "cslnm", "string", "c,40", "Consignee;Name");
                 if (transprint == true) HC.GetPrintHeader(IR, "trslnm", "string", "c,40", "Transporter;Name");
@@ -471,16 +474,24 @@ namespace Improvar.Controllers
                         {
                             string cancrem = "";
                             if (tbl.Rows[i]["cancel"].ToString() == "Y") cancrem = "  (CANCELLED)";
-
-                            dr["doccd"] = tbl.Rows[i]["doccd"].ToString();
-                            dr["docdt"] = tbl.Rows[i]["docdt"] == DBNull.Value ? "" : tbl.Rows[i]["docdt"].ToString().Substring(0, 10).ToString();
-                            dr["docno"] = tbl.Rows[i]["docno"].ToString() + cancrem;
+                            if (dtlsumm != "C")
+                            {
+                                dr["doccd"] = tbl.Rows[i]["doccd"].ToString();
+                                dr["docdt"] = tbl.Rows[i]["docdt"] == DBNull.Value ? "" : tbl.Rows[i]["docdt"].ToString().Substring(0, 10).ToString();
+                                dr["docno"] = tbl.Rows[i]["docno"].ToString() + cancrem;
+                            }
+                            else { dr["docno"] = tbl.Rows[i]["docno"].ToString() + cancrem;
+                                dr["docdt"] = tbl.Rows[i]["docdt"] == DBNull.Value ? "" : tbl.Rows[i]["docdt"].ToString().Substring(0, 10).ToString();
+                            }
+                            string locacent = "Local";
+                            if (bigstamt != 0) locacent = "Central";
+                            if (dtlsumm == "C") dr["localcentral"] = locacent;
                             if (VE.TEXTBOX1 != "Sales Cash Memo") dr["slnm"] = tbl.Rows[i]["slnm"].ToString();
                             else {
                                 dr["slnm"] = tbl.Rows[i]["nm"].ToString();
                                 dr["mobile"] = tbl.Rows[i]["mobile"].ToString();
                             }
-                            dr["gstno"] = tbl.Rows[i]["gstno"].ToString();
+                            if (dtlsumm != "C") dr["gstno"] = tbl.Rows[i]["gstno"].ToString();
                             if (showpbill == true) dr["prefno"] = tbl.Rows[i]["prefno"].ToString();
                             if (VE.Checkbox5 == true) dr["saprem"] = (tbl.Rows[i]["sapblno"].ToString() == "" ? "" : "BL# " + tbl.Rows[i]["sapblno"].ToString());
                             if (showpbill == true) dr["prefdt"] = tbl.Rows[i]["prefdt"] == DBNull.Value ? "" : tbl.Rows[i]["prefdt"].ToString().Substring(0, 10).ToString();
@@ -513,6 +524,8 @@ namespace Improvar.Controllers
                                 // { if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = c.payamt; }  //tbl.Rows[i]["payamt"].retDbl();
                                 if (VE.TEXTBOX1 == "Sales Cash Memo") dr["payamt"] = a.Sum(b => b.payamt).retDbl();
                                 dr["blamt"] = tbl.Rows[i]["blamt"].retDbl();
+                                dr["ackno"] = tbl.Rows[i]["ackno"].retStr();
+                                dr["ackdt"] = tbl.Rows[i]["ackdt"].retDateStr();
                                 ttcsamt = ttcsamt + tbl.Rows[i]["tcsamt"].retDbl();
                                 troamt = troamt + tbl.Rows[i]["roamt"].retDbl();
                                 tblamt = tblamt + tbl.Rows[i]["blamt"].retDbl();
@@ -524,8 +537,8 @@ namespace Improvar.Controllers
                         }
                         if (tbl.Rows[i]["cancel"].ToString() != "Y")
                         {
-                            dr["nos"] = bnos;
-                            dr["qnty"] = bqnty;
+                            if (dtlsumm != "C") dr["nos"] = bnos;
+                            if (dtlsumm != "C") dr["qnty"] = bqnty;
                             if (SeparateAchead == true)
                             {
                                 foreach (DataRow amtdr in amtDT.Rows)
@@ -533,16 +546,18 @@ namespace Improvar.Controllers
                                     dr[amtdr["itcd"].ToString()] = amtdr["AmtItcdRate"].retDbl();
                                 }
                             }
-                            dr["amt"] = bbasamt;
-                            dr["disc1"] = bdisc1;
-                            dr["disc2"] = bdisc2;
+                            if (dtlsumm != "C") dr["amt"] = bbasamt;
+                            if (dtlsumm != "C") dr["disc1"] = bdisc1;
+                            if (dtlsumm != "C") dr["disc2"] = bdisc2;
                             dr["taxableval"] = btaxable;
-                            dr["igstper"] = bigstper;
-                            dr["cgstper"] = bcgstper;
-                            dr["sgstper"] = bsgstper;
-                            dr["igstamt"] = bigstamt;
-                            dr["cgstamt"] = bcgstamt;
-                            dr["sgstamt"] = bsgstamt;
+                            if (dtlsumm == "C") dr["gstper"] = tbl.Rows[i]["gstper"].retDbl();
+                            if (dtlsumm == "C") dr["gstamt"] = tbl.Rows[i]["gstamt"].retDbl();
+                            if (dtlsumm != "C") dr["igstper"] = bigstper;
+                            if (dtlsumm != "C") dr["cgstper"] = bcgstper;
+                            if (dtlsumm != "C") dr["sgstper"] = bsgstper;
+                            if (dtlsumm != "C") dr["igstamt"] = bigstamt;
+                            if (dtlsumm != "C") dr["cgstamt"] = bcgstamt;
+                            if (dtlsumm != "C") dr["sgstamt"] = bsgstamt;
 
                             tnos = tnos + bnos;
                             tqnty = tqnty + bqnty;
@@ -550,6 +565,7 @@ namespace Improvar.Controllers
                             tdisc1 = tdisc1 + bdisc1;
                             tdisc2 = tdisc2 + bdisc2;
                             ttaxable = ttaxable + btaxable;
+                            if (dtlsumm == "C") tgstamt = tgstamt + dr["gstamt"].retDbl();
                             tigstamt = tigstamt + bigstamt;
                             tcgstamt = tcgstamt + bcgstamt;
                             tsgstamt = tsgstamt + bsgstamt;
@@ -597,7 +613,9 @@ namespace Improvar.Controllers
                                 dr["sgstper"] = tbl.Rows[i]["sgstper"].retDbl();
                                 dr["sgstamt"] = tbl.Rows[i]["sgstamt"].retDbl();
                                 dr["blamt"] = tbl.Rows[i]["NETAMT"].retDbl();
-                                
+                                dr["ackno"] = tbl.Rows[i]["ackno"].retStr();
+                                dr["ackdt"] = tbl.Rows[i]["ackdt"].retDateStr();
+
                             }
                             if (dr["celldesign"].ToString() != "") dr["celldesign"] = dr["celldesign"] + "^";
                             dr["celldesign"] = dr["celldesign"] + "qnty=~n,12," + tbl.Rows[i]["decimals"].retInt();
@@ -615,15 +633,16 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["slnm"] = "Grand Totals";
                 if (itmdtl == true) { IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;"; }
                 else { IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 3px solid;"; }
-                if (itmdtl == false) IR.Rows[rNo]["nos"] = tnos;
-                if (itmdtl == false) IR.Rows[rNo]["qnty"] = tqnty;
-                IR.Rows[rNo]["amt"] = tbasamt;
-                IR.Rows[rNo]["disc1"] = tdisc1;
-                IR.Rows[rNo]["disc2"] = tdisc2;
+                if (itmdtl == false && dtlsumm != "C") IR.Rows[rNo]["nos"] = tnos;
+                if (itmdtl == false && dtlsumm != "C") IR.Rows[rNo]["qnty"] = tqnty;
+                if (dtlsumm != "C") IR.Rows[rNo]["amt"] = tbasamt;
+                if (dtlsumm != "C") IR.Rows[rNo]["disc1"] = tdisc1;
+                if (dtlsumm != "C") IR.Rows[rNo]["disc2"] = tdisc2;
                 IR.Rows[rNo]["taxableval"] = ttaxable;
-                IR.Rows[rNo]["igstamt"] = tigstamt;
-                IR.Rows[rNo]["cgstamt"] = tcgstamt;
-                IR.Rows[rNo]["sgstamt"] = tsgstamt;
+                if (dtlsumm == "C") IR.Rows[rNo]["gstamt"] = tgstamt;
+                if (dtlsumm != "C") IR.Rows[rNo]["igstamt"] = tigstamt;
+                if (dtlsumm != "C") IR.Rows[rNo]["cgstamt"] = tcgstamt;
+                if (dtlsumm != "C") IR.Rows[rNo]["sgstamt"] = tsgstamt;
                 IR.Rows[rNo]["tcsamt"] = ttcsamt;
                 IR.Rows[rNo]["roamt"] = troamt;
                 IR.Rows[rNo]["blamt"] = tblamt;
