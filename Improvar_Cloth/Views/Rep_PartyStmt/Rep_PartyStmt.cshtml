@@ -8,6 +8,18 @@
 @Scripts.Render("~/Scripts/Multiple-Select-min.js")
 @Scripts.Render("~/Scripts/bootstrap-select.js")
 <script src="~/Scripts/jquery.min.js"></script>
+<script type="text/javascript">
+    $("#WaitingMode").show();
+    $(document).ready(function () {
+        if ('@Model.MENU_PARA' == "PB") {
+            $("#P").prop("checked", true);
+        }
+        else {
+            $("#S").prop("checked", true);
+        }
+        $("#WaitingMode").hide();
+    });
+    </script>
 <script>
     function inputhelp(id, id1, id2) {
         var str = $("#tempHDD").val().split(String.fromCharCode(181));
@@ -50,8 +62,8 @@
                         </div>
                     </div>
                     <div class="col-lg-10">
-                        <input type="radio" name="SalPur" value="S" checked />Sales
-                        <input type="radio" name="SalPur" value="P" />Purchase
+                        <input type="radio" name="SalPur" id="S" value="S" checked />Sales
+                        <input type="radio" name="SalPur" id="P" value="P" />Purchase
                     </div>
                 </div>
                 <div class="row" style="margin-top:6px">
