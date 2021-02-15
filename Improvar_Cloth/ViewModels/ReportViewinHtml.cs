@@ -88,7 +88,8 @@ namespace Improvar.ViewModels
         public string Empnm { get; set; }
         public string Locnm { get; set; }
         public string Gonm { get; set; }
-
+        public string PRCCD { get; set; }
+        public string PRCNM { get; set; }
 
     }
 }

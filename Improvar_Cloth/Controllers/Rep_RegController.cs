@@ -145,6 +145,7 @@ namespace Improvar.Controllers
         {
             try
             {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string dtlsumm = "";
                 string fdt = VE.FDT.retDateStr(), tdt = VE.TDT.retDateStr();
@@ -175,6 +176,7 @@ namespace Improvar.Controllers
                 {
                     regdsp = VE.TEXTBOX1.ToString() + " Register";
                 }
+                var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
 
                 string repsorton = FC["RepSortOn"].ToString();
                 bool plistprint = VE.Checkbox4;
@@ -229,7 +231,7 @@ namespace Improvar.Controllers
                 query1 += "   b.itnm,b.itstyle, b.itrem, b.hsncode, b.uomcd, b.uomnm, b.decimals, b.nos, ";
                 query1 += " b.qnty, b.rate, b.amt,b.scmdiscamt, b.tddiscamt, b.discamt,b.TXBLVAL, g.conslcd, d.slnm cslnm, d.gstno cgstno, d.district cdistrict, ";
                 query1 += " e.slnm trslnm, f.lrno,f.lrdt,f.GRWT,f.TRWT,f.NTWT, '' ordrefno, to_char(nvl('', ''), 'dd/mm/yyyy') ordrefdt, b.igstper, b.igstamt, b.cgstper, ";
-                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,k.ackdt  ";
+                query1 += " b.cgstamt,b.sgstamt, b.cessper, b.cessamt,b.blqnty,b.NETAMT,b.sgstper,b.igstper+b.cgstper+b.sgstper gstper,b.igstamt + b.cgstamt + b.sgstamt gstamt,k.ackno,k.ackdt,b.pageno,b.PAGESLNO,b.baleno  ";
                 
                     query1 += " from ( ";
                     query1 += " select a.autono, b.doccd, b.docno, b.cancel, ";
@@ -258,16 +260,16 @@ namespace Improvar.Controllers
                 query1 += "(select distinct a.autono, a.slno, a.itcd, a.itrem, ";
                 query1 += " b.itnm,b.styleno||' '||b.itnm itstyle, b.hsncode hsncode, b.uomcd, c.uomnm, c.decimals, ";
                 query1 += "  a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,a.tddiscamt,a.discamt,a.TXBLVAL,a.NETAMT,   ";
-                query1 += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty from " + scm1 + ".t_txndtl a, ";
+                query1 += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,a.pageno,a.pageslno,a.baleno  from " + scm1 + ".t_txndtl a, ";
                 query1 += "" + scm1 + ".m_sitem b, " + scmf + ".m_uom c, " + scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e ";
                 query1 += "   where a.itcd = b.itcd  and b.uomcd = c.uomcd and a.autono = e.autono(+) and e.autono = d.autono(+) ";
                 query1 += " group by ";
                 query1 += " a.autono, a.slno, a.itcd, a.itrem, ";
                 query1 += "  b.itnm, b.hsncode, b.uomcd, c.uomnm, c.decimals, a.nos, a.qnty, a.rate, a.amt,a.scmdiscamt,  ";
-                query1 += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm ";
+                query1 += " a.tddiscamt, a.discamt,a.TXBLVAL,a.NETAMT, a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,a.blqnty,b.styleno||' '||b.itnm,a.pageno,a.PAGESLNO,a.baleno ";
                 query1 += " union select a.autono, a.slno + 1000 slno, a.amtcd itcd, '' itrem ,''itstyle "; query1 += " , b.amtnm itnm, a.hsncode,  ";
                 query1 += " 'OTH' uomcd, 'OTH' uomnm, 0 decimals, 0 nos, 0 qnty, a.amtrate rate, a.amt,0 scmdiscamt, 0 tddiscamt, 0 discamt,a.amt TXBLVAL, a.igstper, a.igstamt, ";
-                query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,0 NETAMT ";
+                query1 += " a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.cessper, a.cessamt,0 blqnty,0 NETAMT,0 pageno,0 PAGESLNO,''baleno ";
                 query1 += " from " + scm1 + ".t_txnamt a, " + scm1 + ".m_amttype b ";
                 query1 += " where a.amtcd = b.amtcd ";
                 query1 += " ) b, " + scmf + ".m_subleg c, " + scmf + ".m_subleg d, " + scmf + ".m_subleg e, " + scm1 + ".t_txntrans f, ";
@@ -405,6 +407,8 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "roamt", "double", "n,6,2", "R/Off;Amt");
                 if (VE.TEXTBOX1 == "Sales Cash Memo") HC.GetPrintHeader(IR, "payamt", "double", "n,12,2", ";Payment");
                 HC.GetPrintHeader(IR, "blamt", "double", "n,12,2", ";Bill Value");
+                if (itmdtl == true && MSYSCNFG.MNTNBALE=="Y") HC.GetPrintHeader(IR, "baleno", "string", "c,15", "Bale. ;No");
+                if (itmdtl == true) HC.GetPrintHeader(IR, "pagenoslno", "string", "c,15", "Page No. /;Page Slno.");
                 HC.GetPrintHeader(IR, "ackno", "string", "c,15", "ACK. ;No");
                 HC.GetPrintHeader(IR, "ackdt", "string", "d,10:dd/mm/yy", "ACK. ;Date");
                 if (plistprint == true) HC.GetPrintHeader(IR, "prcdesc", "string", "c,10", "Price;List");
@@ -580,6 +584,7 @@ namespace Improvar.Controllers
 
                     if (itmdtl == true)
                     {
+                        string slash = "";
                         i = istore;
                         int ino = 0;
                         while (auto1 == tbl.Rows[i]["autono"].ToString())
@@ -613,6 +618,8 @@ namespace Improvar.Controllers
                                 dr["sgstper"] = tbl.Rows[i]["sgstper"].retDbl();
                                 dr["sgstamt"] = tbl.Rows[i]["sgstamt"].retDbl();
                                 dr["blamt"] = tbl.Rows[i]["NETAMT"].retDbl();
+                                if(MSYSCNFG.MNTNBALE == "Y") dr["baleno"] = tbl.Rows[i]["baleno"].retStr();
+                                dr["pagenoslno"] = tbl.Rows[i]["pageno"].retInt() + "/" + tbl.Rows[i]["pageslno"].retInt();
                                 dr["ackno"] = tbl.Rows[i]["ackno"].retStr();
                                 dr["ackdt"] = tbl.Rows[i]["ackdt"].retDateStr();
 
