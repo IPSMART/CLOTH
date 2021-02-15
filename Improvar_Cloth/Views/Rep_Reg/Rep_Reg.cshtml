@@ -230,15 +230,29 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Detailed")
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <div class="editor-field">
+                            <input type="radio" name="DtlSumm" value="D" checked />Details
+                            <input type="radio" name="DtlSumm" value="ID" />Item details
+                            <input type="radio" name="DtlSumm" value="C" />Compact Format (Detail)
+                        </div>
+                    </div>
+                </div>
                 <div class="row" style="margin-top:10px;">
                     <div class="col-lg-2"></div>
-                    <div class="col-md-7">
+                    @*<div class="col-md-7">
                         <div class="editor-field" style="margin-top: 4px;">
                             @Html.Label("", "Item details")
 
                             @Html.CheckBoxFor(model => model.Checkbox1, true)
                         </div>
-                    </div>
+                    </div>*@
                     <div class="col-md-7">
                         <div class="editor-field" style="margin-top: 4px;">
                             @Html.Label("", "Item Remarks")
@@ -345,7 +359,7 @@
                         </div>
                         <div class="col-lg-10">
                             <input type="radio" name="RepSortOn" value="docdt" checked />Doc Date
-                            <input type="radio" name="RepSortOn" value="bldt" />Purchase Bill Date[Mother Invoice]
+                           <input type="radio" name="RepSortOn" value="bldt" />Purchase Bill Date[Mother Invoice]; 
                             <input type="radio" name="RepSortOn" value="partywise" />Party-wise
                         </div>
                     </div>}
@@ -362,18 +376,7 @@
                     </div>
                 </div>
 
-                @*<div class="row">
-                        <div class="col-lg-2">
-                            <div class="editor-label" style="margin-top: 6px;">
-                                @Html.Label("", "Insurance By")
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="editor-field">
-                                @Html.DropDownListFor(model => model.TEXTBOX6, new SelectList(Model.DropDown_list2, "Value", "Text"), new { @class = "form-control", id = "TEXTBOX6" })
-                            </div>
-                        </div>
-                    </div>*@
+                 
                 <div class="row" style="margin-top:10PX">
                     <div class="col-lg-2">
                     </div>

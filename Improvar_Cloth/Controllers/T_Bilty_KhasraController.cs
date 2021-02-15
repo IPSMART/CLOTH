@@ -212,17 +212,26 @@ namespace Improvar.Controllers
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string scmf = CommVar.FinSchema(UNQSNO);
                 string str = "";
+                str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,decode(a.baleopen,'Y',b.gocd,a.gocd)gocd,decode(a.baleopen,'Y',b.gonm,a.gonm)gonm,a.flag1,  ";
+                str += "a.itcd, a.styleno, a.itnm,a.uomcd,a.nos,a.qnty,a.rate,a.pageno,a.pageslno,a.itstyle,a.prefno,a.prefdt,a.baleopen from ( ";
+
                 str += "select a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.gocd,b.gonm,b.flag1,  ";
                 str += "c.itcd, d.styleno, d.itnm,d.uomcd,c.nos,c.qnty,c.rate,c.pageno,c.pageslno,d.styleno||' '||d.itnm itstyle,e.prefno,e.prefdt,a.baleopen  ";
                 str += " from " + Scm + ".T_BALE a," + scmf + ".M_GODOWN b, " + Scm + ".T_TXNDTL c," + Scm + ".M_SITEM d," + Scm + ".T_TXN e  ";
                 str += " where a.blautono=c.autono(+) and c.itcd=d.itcd(+) and a.blautono=e.autono(+) and a.gocd=b.gocd(+)  and ";
-                str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000 ";
-                str += "order by a.slno ";
+                //str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000 ";
+                str += "A.BLSLNO=c.slno and a.autono='" + TBH.AUTONO + "' ";
+                str += "order by a.slno ) a, ";
+
+                str += "(select a.gocd,b.gonm,a.slno+1000  slno,a.autono from " + Scm + ".T_TXNDTL a," + scmf + ".M_GODOWN b where a.gocd=b.gocd and a.autono='" + TBH.AUTONO + "' and a.slno <= 1000)b ";
+                str += "where a.autono=b.autono(+) and a.slno=b.slno(+)  ";
+
                 DataTable TBILTYKHASRAtbl = masterHelp.SQLquery(str);
                 VE.TBILTYKHASRA = (from DataRow dr in TBILTYKHASRAtbl.Rows
+                                   where (dr["BALEOPEN"].retStr() == "Y" ? dr["slno"].retDbl() >= 1000 : dr["slno"].retDbl() <= 1000)
                                    select new TBILTYKHASRA()
                                    {
-                                       SLNO = Convert.ToInt16(dr["slno"]),
+                                       SLNO = dr["BALEOPEN"].retStr() == "Y"? (dr["slno"].retDbl()-1000).retShort():Convert.ToInt16(dr["slno"]),
                                        BLAUTONO = dr["blautono"].retStr(),
                                        LRDT = dr["lrdt"].retDateStr(),
                                        LRNO = dr["lrno"].retStr(),
@@ -666,6 +675,63 @@ namespace Improvar.Controllers
                     string ContentFlg = "";
                     if (VE.DefaultAction == "A" || VE.DefaultAction == "E")
                     {
+                        #region datatable create
+                        double BLAMT = 0, ROAMT = 0;
+                        if (VE.MENU_PARA.retStr() == "TRWB")
+                        {
+                            var itcdarr = VE.TBILTYKHASRA.Select(a => a.ITCD).Distinct().ToArray();
+                            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                            var tax_data = salesfunc.GetBarHelp(VE.T_CNTRL_HDR.DOCDT.retDateStr(), VE.T_TXN.GOCD.retStr(), "", itcdarr.retSqlfromStrarray(), "", "", "", "", "", "C001", "", "", true, true);
+                            var itemdata = (from a in DB.M_SITEM where itcdarr.Contains(a.ITCD) select new { a.ITCD, a.ITNM, a.STYLENO, a.HSNCODE }).ToList();
+                            DTNEW();
+                            for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
+                            {
+                                if (VE.TBILTYKHASRA[i].SLNO != 0 && VE.TBILTYKHASRA[i].ITCD.retStr() != "")
+                                {
+                                    string itcd = VE.TBILTYKHASRA[i].ITCD.retStr();
+                                    string PRODGRPGSTPER = tax_data.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("PRODGRPGSTPER")).FirstOrDefault();
+                                    string[] gst = new string[3];
+                                    if (PRODGRPGSTPER != "")
+                                    {
+                                        string ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, VE.TBILTYKHASRA[i].RATE.retDbl());
+                                        if (ALL_GSTPER.retStr() != "")
+                                        {
+                                            gst = ALL_GSTPER.Split(',');
+                                        }
+                                    }
+
+                                    var item = itemdata.Where(a => a.ITCD == itcd).FirstOrDefault();
+
+                                    double basamt = (VE.TBILTYKHASRA[i].QNTY.retDbl() * VE.TBILTYKHASRA[i].RATE.retDbl()).toRound(2);
+                                    double igstamt = ((basamt * gst[0].retDbl()) / 100).toRound(2);
+                                    double cgstamt = ((basamt * gst[1].retDbl()) / 100).toRound(2);
+                                    double sgstamt = ((basamt * gst[2].retDbl()) / 100).toRound(2);
+
+
+                                    DataRow dr1 = DT.NewRow();
+                                    dr1["SLNO"] = VE.TBILTYKHASRA[i].SLNO;
+                                    dr1["ITCD"] = VE.TBILTYKHASRA[i].ITCD;
+                                    dr1["ITSTYLE"] = item.STYLENO + "" + item.ITNM;
+                                    dr1["HSNCODE"] = item.HSNCODE;
+                                    dr1["BASAMT"] = basamt;
+                                    dr1["IGSTPER"] = gst[0].retDbl();
+                                    dr1["IGSTAMT"] = igstamt;
+                                    dr1["CGSTPER"] = gst[1].retDbl();
+                                    dr1["CGSTAMT"] = cgstamt;
+                                    dr1["SGSTPER"] = gst[2].retDbl();
+                                    dr1["SGSTAMT"] = sgstamt;
+                                    dr1["NETAMT"] = (basamt + igstamt + cgstamt + sgstamt).toRound(2);
+                                    DT.Rows.Add(dr1);
+                                }
+                            }
+                            double totalbillamt = DT.AsEnumerable().Sum(a => a.Field<double>("NETAMT"));
+                            double R_TOTAL_BILL_AMOUNT = Math.Round(totalbillamt);
+                            double TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
+                            BLAMT = (R_TOTAL_BILL_AMOUNT).toRound(2);
+                            ROAMT = (TOTAL_ROUND).toRound(2);
+                        }
+                        #endregion
+
                         T_TXN TTXN = new T_TXN();
                         T_BALE_HDR TBHDR = new T_BALE_HDR();
                         T_TXNTRANS TXNTRANS = new T_TXNTRANS();
@@ -712,7 +778,7 @@ namespace Improvar.Controllers
                         TTXN.EMD_NO = TBHDR.EMD_NO;
                         TTXN.DTAG = "E";
                         TTXN.DOCTAG = doctag;
-                        TTXN.SLCD = VE.T_TXN.SLCD;
+                        TTXN.SLCD = VE.T_BALE_HDR.MUTSLCD;
                         TTXN.CONSLCD = VE.T_TXN.CONSLCD;
                         TTXN.BLAMT = VE.T_TXN.BLAMT;
                         TTXN.PREFDT = VE.T_TXN.PREFDT;
@@ -727,6 +793,8 @@ namespace Improvar.Controllers
                         }
                         TTXN.BARGENTYPE = VE.T_TXN.BARGENTYPE;
                         TTXN.MENU_PARA = VE.T_TXN.MENU_PARA;
+                        TTXN.BLAMT = BLAMT;
+                        TTXN.ROAMT = ROAMT;
                         if (VE.DefaultAction == "E")
                         {
                             dbsql = MasterHelpFa.TblUpdt("T_BALE", TBHDR.AUTONO, "E");
@@ -787,62 +855,7 @@ namespace Improvar.Controllers
                         }
                         #endregion
 
-                        #region datatable create
-                        double BLAMT = 0, ROAMT = 0;
-                        if (VE.MENU_PARA.retStr() == "TRWB")
-                        {
-                            var itcdarr = VE.TBILTYKHASRA.Select(a => a.ITCD).Distinct().ToArray();
-                            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-                            var tax_data = salesfunc.GetBarHelp(TTXN.DOCDT.retDateStr(), VE.T_TXN.GOCD.retStr(), "", itcdarr.retSqlfromStrarray(), "", "", "", "", "", "C001", "", "", true, true);
-                            var itemdata = (from a in DB.M_SITEM where itcdarr.Contains(a.ITCD) select new { a.ITCD, a.ITNM, a.STYLENO, a.HSNCODE }).ToList();
-                            DTNEW();
-                            for (int i = 0; i <= VE.TBILTYKHASRA.Count - 1; i++)
-                            {
-                                if (VE.TBILTYKHASRA[i].SLNO != 0 && VE.TBILTYKHASRA[i].ITCD.retStr() != "")
-                                {
-                                    string itcd = VE.TBILTYKHASRA[i].ITCD.retStr();
-                                    string PRODGRPGSTPER = tax_data.AsEnumerable().Where(a => a.Field<string>("itcd") == itcd).Select(b => b.Field<string>("PRODGRPGSTPER")).FirstOrDefault();
-                                    string[] gst = new string[3];
-                                    if (PRODGRPGSTPER != "")
-                                    {
-                                        string ALL_GSTPER = salesfunc.retGstPer(PRODGRPGSTPER, VE.TBILTYKHASRA[i].RATE.retDbl());
-                                        if (ALL_GSTPER.retStr() != "")
-                                        {
-                                            gst = ALL_GSTPER.Split(',');
-                                        }
-                                    }
-
-                                    var item = itemdata.Where(a => a.ITCD == itcd).FirstOrDefault();
-
-                                    double basamt = (VE.TBILTYKHASRA[i].QNTY.retDbl() * VE.TBILTYKHASRA[i].RATE.retDbl()).toRound(2);
-                                    double igstamt = ((basamt * gst[0].retDbl()) / 100).toRound(2);
-                                    double cgstamt = ((basamt * gst[1].retDbl()) / 100).toRound(2);
-                                    double sgstamt = ((basamt * gst[2].retDbl()) / 100).toRound(2);
-
-
-                                    DataRow dr1 = DT.NewRow();
-                                    dr1["SLNO"] = VE.TBILTYKHASRA[i].SLNO;
-                                    dr1["ITCD"] = VE.TBILTYKHASRA[i].ITCD;
-                                    dr1["ITSTYLE"] = item.STYLENO + "" + item.ITNM;
-                                    dr1["HSNCODE"] = item.HSNCODE;
-                                    dr1["BASAMT"] = basamt;
-                                    dr1["IGSTPER"] = gst[0].retDbl();
-                                    dr1["IGSTAMT"] = igstamt;
-                                    dr1["CGSTPER"] = gst[1].retDbl();
-                                    dr1["CGSTAMT"] = cgstamt;
-                                    dr1["SGSTPER"] = gst[2].retDbl();
-                                    dr1["SGSTAMT"] = sgstamt;
-                                    dr1["NETAMT"] = (basamt + igstamt + cgstamt + sgstamt).toRound(2);
-                                    DT.Rows.Add(dr1);
-                                }
-                            }
-                            double totalbillamt = DT.AsEnumerable().Sum(a => a.Field<double>("NETAMT"));
-                            double R_TOTAL_BILL_AMOUNT = Math.Round(totalbillamt);
-                            double TOTAL_ROUND = R_TOTAL_BILL_AMOUNT - totalbillamt;
-                            BLAMT = (R_TOTAL_BILL_AMOUNT).toRound(2);
-                            ROAMT = (TOTAL_ROUND).toRound(2);
-                        }
-                        #endregion
+                        
 
                         int gs = 0; string strblno = "", strbldt = "", exemptype = "";
                         strbldt = TTXN.DOCDT.ToString();
@@ -858,25 +871,32 @@ namespace Improvar.Controllers
                                 {
                                     stkdrcr = lp == 0 ? "D" : "C";
                                     if (lp == 0) gocd = VE.TBILTYKHASRA[i].GOCD; else gocd = (VE.MENU_PARA == "KHSR" ? "TR" : VE.T_TXN.GOCD);
+                                    bool baleflag = (VE.TBILTYKHASRA[i].CheckedBALEOPEN == true && stkdrcr == "D") ? false : true;
 
-                                    T_BALE TBILTYKHASRA = new T_BALE();
-                                    TBILTYKHASRA.CLCD = TBHDR.CLCD;
-                                    TBILTYKHASRA.AUTONO = TBHDR.AUTONO;
-                                    TBILTYKHASRA.SLNO = (VE.TBILTYKHASRA[i].SLNO + (lp == 0 ? 0 : 1000)).retShort();
-                                    TBILTYKHASRA.BLAUTONO = VE.TBILTYKHASRA[i].BLAUTONO;
-                                    TBILTYKHASRA.DRCR = stkdrcr;
-                                    TBILTYKHASRA.LRDT = Convert.ToDateTime(VE.TBILTYKHASRA[i].LRDT);
-                                    TBILTYKHASRA.LRNO = VE.TBILTYKHASRA[i].LRNO;
-                                    TBILTYKHASRA.BALEYR = VE.TBILTYKHASRA[i].BALEYR;
-                                    TBILTYKHASRA.BALENO = VE.TBILTYKHASRA[i].BALENO;
-                                    TBILTYKHASRA.BLSLNO = VE.TBILTYKHASRA[i].BLSLNO;
-                                    TBILTYKHASRA.GOCD = gocd;
-                                    TBILTYKHASRA.BALEOPEN = VE.TBILTYKHASRA[i].CheckedBALEOPEN == true ? "Y" : null;
+                                    if (baleflag == true)
+                                    {
+                                        T_BALE TBILTYKHASRA = new T_BALE();
+                                        TBILTYKHASRA.CLCD = TBHDR.CLCD;
+                                        TBILTYKHASRA.AUTONO = TBHDR.AUTONO;
+                                        TBILTYKHASRA.SLNO = (VE.TBILTYKHASRA[i].SLNO + (lp == 0 ? 0 : 1000)).retShort();
+                                        TBILTYKHASRA.BLAUTONO = VE.TBILTYKHASRA[i].BLAUTONO;
+                                        TBILTYKHASRA.DRCR = stkdrcr;
+                                        TBILTYKHASRA.LRDT = Convert.ToDateTime(VE.TBILTYKHASRA[i].LRDT);
+                                        TBILTYKHASRA.LRNO = VE.TBILTYKHASRA[i].LRNO;
+                                        TBILTYKHASRA.BALEYR = VE.TBILTYKHASRA[i].BALEYR;
+                                        TBILTYKHASRA.BALENO = VE.TBILTYKHASRA[i].BALENO;
+                                        TBILTYKHASRA.BLSLNO = VE.TBILTYKHASRA[i].BLSLNO;
+                                        TBILTYKHASRA.GOCD = gocd;
+                                        TBILTYKHASRA.BALEOPEN = VE.TBILTYKHASRA[i].CheckedBALEOPEN == true ? "Y" : null;
 
-                                    dbsql = MasterHelpFa.RetModeltoSql(TBILTYKHASRA);
-                                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        dbsql = MasterHelpFa.RetModeltoSql(TBILTYKHASRA);
+                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    }
 
-                                    T_TXNDTL TTXNDTL = DBb.T_TXNDTL.Where(r => r.AUTONO == TBILTYKHASRA.BLAUTONO && r.SLNO == TBILTYKHASRA.BLSLNO).FirstOrDefault();
+                                    //T_TXNDTL TTXNDTL = DBb.T_TXNDTL.Where(r => r.AUTONO == TBILTYKHASRA.BLAUTONO && r.SLNO == TBILTYKHASRA.BLSLNO).FirstOrDefault();
+                                    string BLAUTONO = VE.TBILTYKHASRA[i].BLAUTONO;
+                                    short BLSLNO = VE.TBILTYKHASRA[i].BLSLNO;
+                                    T_TXNDTL TTXNDTL = DBb.T_TXNDTL.Where(r => r.AUTONO == BLAUTONO && r.SLNO == BLSLNO).FirstOrDefault();
                                     TTXNDTL.AUTONO = TBHDR.AUTONO;
                                     TTXNDTL.SLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 1000)).retShort();
                                     TTXNDTL.STKDRCR = stkdrcr;
@@ -889,7 +909,8 @@ namespace Improvar.Controllers
                                     dbsql = MasterHelpFa.RetModeltoSql(TTXNDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                                    var TBATCHDTlst = DBb.T_BATCHDTL.Where(r => r.AUTONO == TBILTYKHASRA.BLAUTONO && r.TXNSLNO == TBILTYKHASRA.BLSLNO).ToList();
+                                    //var TBATCHDTlst = DBb.T_BATCHDTL.Where(r => r.AUTONO == TBILTYKHASRA.BLAUTONO && r.TXNSLNO == TBILTYKHASRA.BLSLNO).ToList();
+                                    var TBATCHDTlst = DBb.T_BATCHDTL.Where(r => r.AUTONO == BLAUTONO && r.TXNSLNO == BLSLNO).ToList();
                                     for (var dtl = 0; dtl < TBATCHDTlst.Count; dtl++)
                                     {
                                         bslno++;

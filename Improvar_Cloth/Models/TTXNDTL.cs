@@ -208,5 +208,7 @@ namespace Improvar.Models
         public string BARGENTYPE { get; set; }
         public int? PAGENO { get; set; }
         public int? PAGESLNO { get; set; }
+        [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
+        public double? OTHRAMT { get; set; }
     }
 }

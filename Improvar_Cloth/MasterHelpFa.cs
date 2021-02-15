@@ -2395,12 +2395,17 @@ namespace Improvar
             Models.T_TXNSTATUS TCH = new Models.T_TXNSTATUS();
 
             var data = (from p in DB.T_TXNSTATUS where (p.AUTONO == Auto_Number && p.STSTYPE == ststype) select new { p.EMD_NO, p.FLAG1 }).ToList();
-            var MAXEMDNO = data.Select(a => a.EMD_NO).Max();
-            var FLAG1 = data.Select(a => a.FLAG1).Max();
+            double FLAG1 = 0; short MAXEMDNO = 0;
+            if (data.Count > 0)
+            {
+                MAXEMDNO = data.Select(a => a.EMD_NO).Max().retShort();
+                FLAG1 = data.Select(a => a.FLAG1.retDbl()).Max();
+            }
+
             short emdno = 0;
-            if (MAXEMDNO == null) emdno = 0; else emdno = Convert.ToByte(MAXEMDNO + 1);
-            string flag1 = FLAG1 == null ? "1" : (FLAG1.retDbl() + 1).retStr();
-          
+            if (MAXEMDNO == 0) emdno = 0; else emdno = Convert.ToByte(MAXEMDNO + 1);
+            string flag1 = FLAG1.retDbl() == 0 ? "1" : (FLAG1.retDbl() + 1).retStr();
+
             TCH.AUTONO = Auto_Number;
             TCH.STSTYPE = ststype;
             TCH.FLAG1 = flag1;

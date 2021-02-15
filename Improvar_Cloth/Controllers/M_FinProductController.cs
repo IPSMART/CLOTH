@@ -12,6 +12,7 @@ using System.Linq;
 using System.Web.Mvc;
 using iTextSharp.text.html;
 using iTextSharp.text.html.simpleparser;
+using Oracle.ManagedDataAccess.Client;
 
 namespace Improvar.Controllers
 {
@@ -630,27 +631,47 @@ namespace Improvar.Controllers
         }
         public ActionResult DeletePrices(ItemMasterEntry VE)
         {
-            try
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+            ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+            string sql = "";
+            OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+            OraCon.Open();
+            OracleCommand OraCmd = OraCon.CreateCommand();
+            using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                string sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where itcd='" + VE.M_SITEM.ITCD + "' and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
-                masterHelp.SQLNonQuery(sql);
-
-                VE.DropDown_list1 = Price_Effdt(VE, VE.M_SITEM.ITCD);
-                if (VE.DropDown_list1.Count > 0)
+                OraCmd.Transaction = OraTrans;
+                try
                 {
-                    VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
-                    VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
-                    VE.DTPRICES = GetPrices(VE);
-                }
+                    DataTable DTPRICES = (DataTable)TempData["DTPRICES"]; TempData.Keep();
+                    string barno = DTPRICES.AsEnumerable().Select(a => a.Field<string>("barno")).ToArray().retSqlfromStrarray();
+                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
-                ModelState.Clear();
-                VE.DefaultView = true;
-                return PartialView("_M_FinProduct_Prices", VE);
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, "");
-                return Content(ex.Message + ex.InnerException);
+                    sql = "delete from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE where barno in (" + barno + ") and effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy') ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    string barnosql = getbarno(VE.M_SITEM.ITCD).retSqlformat();
+                    VE.DropDown_list1 = Price_Effdt(VE, barnosql);
+                    if (VE.DropDown_list1.Count > 0)
+                    {
+                        VE.PRICES_EFFDT = VE.DropDown_list1.First().value;
+                        VE.PRICES_EFFDTDROP = VE.DropDown_list1.First().value;
+                        VE.DTPRICES = GetPrices(VE);
+                    }
+
+                    ModelState.Clear();
+                    OraTrans.Commit();
+                    OraTrans.Dispose();
+                    VE.DefaultView = true;
+                    return PartialView("_M_FinProduct_Prices", VE);
+                }
+                catch (Exception ex)
+                {
+                    OraTrans.Rollback();
+                    OraTrans.Dispose();
+                    Cn.SaveException(ex, "");
+                    return Content(ex.Message + ex.InnerException);
+                }
             }
 
         }
@@ -1675,6 +1696,9 @@ namespace Improvar.Controllers
                                 DateTime PRICES_EFFDT = Convert.ToDateTime(VE.PRICES_EFFDT);
                                 DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                                 DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
+
+                                DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
+                                DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => x.EFFDT == PRICES_EFFDT && arrbarno.Contains(x.BARNO)));
                             }
                             DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_BATCH_IMG_HDR_LINK.RemoveRange(DB.M_BATCH_IMG_HDR_LINK.Where(x => arrbarno.Contains(x.BARNO)));
@@ -1683,7 +1707,7 @@ namespace Improvar.Controllers
                             DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                             DB.SaveChanges();
-                           
+
                             DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "E"; });
                             DB.M_CNTRL_HDR_DOC.RemoveRange(DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));
 
@@ -1802,6 +1826,7 @@ namespace Improvar.Controllers
                                     TBATCHMST.ITCD = MSITEM.ITCD;
                                     TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                     TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
+                                    TBATCHMST.COMMONUIQBAR = "C";
                                     DB.T_BATCHMST.Add(TBATCHMST);
                                 }
                             }
@@ -1860,6 +1885,7 @@ namespace Improvar.Controllers
                             }
                         }
                         DB.SaveChanges();
+
                         #region Price list Save
                         DataTable DTPRICES = (DataTable)TempData["DTPRICES"]; TempData.Keep();
                         var prcRows = VE.STRPRICES.retStr().Split('~');
@@ -1903,6 +1929,19 @@ namespace Improvar.Controllers
                                 //}
                                 MIP.RATE = prcCols[j].retDbl();
                                 DB.M_ITEMPLISTDTL.Add(MIP);
+
+                                //RATE
+                                T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+                                TBATCHMSTPRICE.EMD_NO = MSITEM.EMD_NO;
+                                TBATCHMSTPRICE.CLCD = MSITEM.CLCD;
+                                TBATCHMSTPRICE.DTAG = MSITEM.DTAG;
+                                TBATCHMSTPRICE.TTAG = MSITEM.TTAG;
+                                TBATCHMSTPRICE.BARNO = MIP.BARNO;
+                                TBATCHMSTPRICE.PRCCD = MIP.PRCCD;
+                                TBATCHMSTPRICE.EFFDT = MIP.EFFDT;
+                                TBATCHMSTPRICE.RATE = MIP.RATE;
+
+                                DB.T_BATCHMST_PRICE.Add(TBATCHMSTPRICE);
                             }
                         }
                         #endregion
@@ -1926,6 +1965,7 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
                         string sbarno = getbarno(VE.M_SITEM.ITCD); var arrbarno = sbarno.Split(',');
                         DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
+                        DB.T_BATCHMST_PRICE.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
@@ -1953,6 +1993,8 @@ namespace Improvar.Controllers
                             }
                         }
                         DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB.T_BATCHMST_PRICE.RemoveRange(DB.T_BATCHMST_PRICE.Where(x => arrbarno.Contains(x.BARNO)));
+                        DB.SaveChanges();
                         DB.M_BATCH_IMG_HDR.RemoveRange(DB.M_BATCH_IMG_HDR.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
                         DB.M_CNTRL_HDR_DOC_DTL.RemoveRange(DB.M_CNTRL_HDR_DOC_DTL.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO));

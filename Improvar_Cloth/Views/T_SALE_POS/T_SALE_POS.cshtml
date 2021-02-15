@@ -192,6 +192,7 @@
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNFLAGMTR, new { id = "MNTNFLAGMTR" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSHADE, new { id = "MNTNSHADE" })
+        @Html.HiddenFor(a => a.M_SYSCNFG.MNTNBARNO, new { id = "MNTNBARNO" })
         <div class="form-horizontal">
             @if (Model.DefaultAction == "V")
             {
@@ -554,7 +555,7 @@
                 }
                 @*<li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab" accesskey="B">Bar Code(B)</a></li>*@
                 <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab" accesskey="J">Return(J)</a></li>
-                <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" accesskey="H">Amount(H)</a></li>
+                <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" accesskey="H" onclick="UpdateTaxPer();">Amount(H)</a></li>
                 <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment" accesskey="T">Payment(T)</a></li>
                 <li id="Party_LI" class=""><a data-toggle="tab" href="#Party" accesskey="K">Party(K)</a></li>
                 <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
@@ -569,6 +570,8 @@
                         <div class="row">
                             @if (Model.DefaultAction != "V")
                             {
+                                //if (Model.M_SYSCNFG.MNTNBARNO == "Y")
+                                //{
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Bar Code")
@@ -584,6 +587,7 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                                     </div>
                                 </div>
+                             //   }
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Design No.")
@@ -636,6 +640,8 @@
                         <div class="row">
                             @if (Model.DefaultAction != "V")
                             {
+                                //if (Model.M_SYSCNFG.MNTNBARNO == "Y")
+                                //{
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Bar Code")
@@ -651,6 +657,7 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                                     </div>
                                 </div>
+                              //  }
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Design No.")
