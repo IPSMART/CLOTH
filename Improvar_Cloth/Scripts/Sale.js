@@ -83,6 +83,9 @@ function GetBarnoDetails(id, HelpFrom) {
                                 if (value == "true") {
                                     RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
                                 }
+                                if ((HelpFrom == "Bar") && (MENU_PARA == "SBDIR" || MENU_PARA == "SBPCK" || MENU_PARA == "PR") && ($("#QNTY").val() != "")) {
+                                    AddBarCodeGrid();
+                                }
                             }
                             else {
                                 if (MENU_PARA == "PB" || MENU_PARA == "OP") {
@@ -118,10 +121,10 @@ function GetBarnoDetails(id, HelpFrom) {
             });
         }
         else {
+            $("#Barnohelpopen").val("Y");
             var value = modify_check();
             if (value == "true") {
                 RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
-                $("#Barnohelpopen").val("Y");
             }
         }
     }
@@ -196,16 +199,30 @@ function FillBarcodeArea(str, Table, i) {
         $("#SIZENM").val(returncolvalue(str, "SIZENM"));
         $("#SZBARCODE").val(returncolvalue(str, "SZBARCODE"));
         $("#BALSTOCK").val(returncolvalue(str, "BALQNTY"));
-        $("#QNTY").val(returncolvalue(str, "QNTY"));
+        if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK") {
+            if (retStr(returncolvalue(str, "uomcd")) == "PCS") {
+                $("#QNTY").val(1.000);
+                $("#NOS").val(returncolvalue(str, "NOS"));
+            }
+            else {
+                $("#QNTY").val(returncolvalue(str, "QNTY"));
+                $("#NOS").val(1);
+            }
+        }
+        else {
+            $("#QNTY").val(returncolvalue(str, "QNTY"));
+            $("#NOS").val(returncolvalue(str, "NOS"));
+        }
         $("#UOM").val(returncolvalue(str, "uomcd"));
-        $("#NOS").val(returncolvalue(str, "NOS"));
         $("#CUTLENGTH").val(returncolvalue(str, "CUTLENGTH"));
         $("#FLAGMTR").val(returncolvalue(str, "FLAGMTR"));
         var RATE = returncolvalue(str, "RATE");
         var PRODGRPGSTPER = returncolvalue(str, "PRODGRPGSTPER");
         var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
         var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0;
-        $.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; });
+        $.each(GSTPERarr, function () {
+            GSTPER += parseFloat(this) || 0;
+        });
 
         $("#RATE").val(RATE);
         $("#GSTPER").val(GSTPER);
@@ -566,7 +583,9 @@ function UpdateBarCodeRow() {
                     BarImages = "";
                 }
                 var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
-                if (BarImages == '') { NoOfBarImages = ''; }
+                if (BarImages == '') {
+                    NoOfBarImages = '';
+                }
                 $("#BarImagesCount_" + j).val(NoOfBarImages);
                 $("#B_BarImages_" + j).val(BarImages);
 
@@ -628,7 +647,7 @@ function ClearBarcodeArea(TAG) {
     var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
     var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
-    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO");
+    ClearAllTextBoxes("BARCODE,TXNSLNO,ITGRPCD,ITGRPNM,ITCD,ITSTYLE,STYLENO,STKTYPE,PARTCD,PARTNM,PRTBARCODE,COLRCD,COLRNM,CLRBARCODE,SIZECD,SIZENM,SZBARCODE,BALSTOCK,QNTY,UOM,GLCD,NOS,CUTLENGTH,FLAGMTR,RATE,DISCRATE,HSNCODE,GSTPER,PRODGRPGSTPER,SHADE,TDDISCRATE,SCMDISCRATE,LOCABIN,BARGENTYPETEMP,NEGSTOCK,BALENO,Last_STYLENO,Last_BARCODE");
     if (MENU_PARA == "PB" || MENU_PARA == "OP") {
         ClearAllTextBoxes("OURDESIGN,PDESIGN,WPPRICEGEN,RPPRICEGEN");
     }
@@ -1139,9 +1158,15 @@ function AmountCalculation(i) {
     var CALC_FORMULA = document.getElementById("CALCFORMULA_" + i).value;
     if (A_NOS == "") { A_NOS = parseFloat(0); }
     if (B_QNTY == "") { B_QNTY = parseFloat(0); }
-    if (D_GROSS_AMT == "") { D_GROSS_AMT = parseFloat(0); }
-    if (E_NET_AMT == "") { E_NET_AMT = parseFloat(0); }
-    if (RT == "") { RT = parseFloat(0); }
+    if (D_GROSS_AMT == "") {
+        D_GROSS_AMT = parseFloat(0);
+    }
+    if (E_NET_AMT == "") {
+        E_NET_AMT = parseFloat(0);
+    }
+    if (RT == "") {
+        RT = parseFloat(0);
+    }
     var AMOUNT = 0;
     if (CALC_TYPE == "F") { AMOUNT = parseFloat(RT); }
     else if (CALC_TYPE == "P") {
@@ -1286,9 +1311,9 @@ function UpdateTaxPer() {
         var rate = retFloat($("#B_RATE_" + i).val());
         var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
         var allgst = retGstPerstr(prodgrpgstper, rate);
-        var tax=null;
+        var tax = null;
         if (allgst != "") {
-             tax = allgst.split(',');
+            tax = allgst.split(',');
         }
         var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
         if (tax.length > 0) {
@@ -1651,12 +1676,12 @@ function SelectTDSCode(id, TDSHD, TDSNM, TCSPER) {
             type: 'GET',
             url: $("#UrlSelectTDSCode").val(),//"@Url.Action("GetTDSDetails", PageControllerName)",
             data:
-        {
-            val: id,
-            PARTY: PARTY,
-            TAG: DOCDT,
-            AUTONO: autono
-        },
+            {
+                val: id,
+                PARTY: PARTY,
+                TAG: DOCDT,
+                AUTONO: autono
+            },
             success: function (result) {
                 var MSG = result.indexOf(String.fromCharCode(181));
                 if (MSG >= 0) {
@@ -1837,7 +1862,9 @@ function AddBarCodeGrid() {
         BarImages = "";
     }
     var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
-    if (BarImages == '') { NoOfBarImages = ''; }
+    if (BarImages == '') {
+        NoOfBarImages = '';
+    }
     var rowindex = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
     var SLNO = 1;
     if (retInt(rowindex) != 0) {
@@ -2365,7 +2392,9 @@ function T_Sale_FillImageModal(index) {
         var imgname = (value.split('~')[0]);
         var id = (imgname).split('.')[0];
         var ImageDesc = (value.split('~')[1]);
-        var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+        var htm = ''; if (index == 0) { actt = "active"; } else {
+            actt = "";
+        }
         htm += '<div id="' + id + '" class="item ' + actt + '">';
         htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
         htm += '    <span class="carousel-caption">';
@@ -2785,27 +2814,49 @@ function CalculateOutIssProcessAmt_Details(i) {
     else if (DISCTYPE == "N") { DISCAMT = DISCRATE * NOS; }
     else if (DISCTYPE == "P") { DISCAMT = (amount * DISCRATE) / 100; }
     else if (DISCTYPE == "F") { DISCAMT = DISCRATE; }
-    else { DISCAMT = 0; }
+    else {
+        DISCAMT = 0;
+    }
     DISCAMT = parseFloat(DISCAMT).toFixed(2);
     $("#D_DISCAMT_" + i).val(DISCAMT);
 
     //TDDISCOUNT AMOUNT CALCULATION
     var TDDISCAMT = 0;
-    if (TDDISCTYPE == "Q") { TDDISCAMT = TDDISCRATE * QNTY; }
-    else if (TDDISCTYPE == "N") { TDDISCAMT = TDDISCRATE * NOS; }
-    else if (TDDISCTYPE == "P") { TDDISCAMT = (amount * TDDISCRATE) / 100; }
-    else if (TDDISCTYPE == "F") { TDDISCAMT = TDDISCRATE; }
-    else { TDDISCAMT = 0; }
+    if (TDDISCTYPE == "Q") {
+        TDDISCAMT = TDDISCRATE * QNTY;
+    }
+    else if (TDDISCTYPE == "N") {
+        TDDISCAMT = TDDISCRATE * NOS;
+    }
+    else if (TDDISCTYPE == "P") {
+        TDDISCAMT = (amount * TDDISCRATE) / 100;
+    }
+    else if (TDDISCTYPE == "F") {
+        TDDISCAMT = TDDISCRATE;
+    }
+    else {
+        TDDISCAMT = 0;
+    }
     TDDISCAMT = parseFloat(TDDISCAMT).toFixed(2);
     $("#D_TDDISCAMT_" + i).val(TDDISCAMT);
 
     //SCMDISCOUNT AMOUNT CALCULATION
     var SCMDISCAMT = 0;
-    if (SCMDISCTYPE == "Q") { SCMDISCAMT = SCMDISCRATE * QNTY; }
-    else if (SCMDISCTYPE == "N") { SCMDISCAMT = SCMDISCRATE * NOS; }
-    else if (SCMDISCTYPE == "P") { SCMDISCAMT = (amount * SCMDISCRATE) / 100; }
-    else if (SCMDISCTYPE == "F") { SCMDISCAMT = SCMDISCRATE; }
-    else { SCMDISCAMT = 0; }
+    if (SCMDISCTYPE == "Q") {
+        SCMDISCAMT = SCMDISCRATE * QNTY;
+    }
+    else if (SCMDISCTYPE == "N") {
+        SCMDISCAMT = SCMDISCRATE * NOS;
+    }
+    else if (SCMDISCTYPE == "P") {
+        SCMDISCAMT = (amount * SCMDISCRATE) / 100;
+    }
+    else if (SCMDISCTYPE == "F") {
+        SCMDISCAMT = SCMDISCRATE;
+    }
+    else {
+        SCMDISCAMT = 0;
+    }
     SCMDISCAMT = parseFloat(SCMDISCAMT).toFixed(2);
     $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
 
@@ -3237,9 +3288,9 @@ function CheckBillNumber() {
             type: 'GET',
             url: $("#UrlCheckBillNumber").val(), //"@Url.Action("CheckBillNumber", PageControllerName)",
             data:
-        {
-            BILL_NO: BILL_NO, SUPPLIER: SUPPLIER, AUTO_NO: AUTO_NO,
-        },
+            {
+                BILL_NO: BILL_NO, SUPPLIER: SUPPLIER, AUTO_NO: AUTO_NO,
+            },
             success: function (result) {
                 if (result == "1") {
                     msgInfo("Bill Number Already Exists, for Particular Sub Code : Please Enter a Different Bill Number !! ");
@@ -3446,8 +3497,9 @@ function Update_Pageno_slno() {
         data: $('form').serialize(),
         success: function (result) {
             $("#WaitingMode").hide();
-            if (result == "1")
-            { msgSuccess1("Update Successfully !"); }
+            if (result == "1") {
+                msgSuccess1("Update Successfully !");
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $("#WaitingMode").hide();

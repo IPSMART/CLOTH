@@ -1445,3 +1445,50 @@ function CloseTTXNDTLDetails() {
         $("#popup").html("");
     }
 }
+function UpdateTaxPer() {
+    debugger;
+    var DefaultAction = $("#DefaultAction").val();
+    if (DefaultAction == "V") return true;
+    var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0; var DUTY_PER = 0;
+    var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
+    for (i = 0; i <= GridRowMain - 1; i++) {
+        var rate = retFloat($("#B_RATE_" + i).val());
+        var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
+        var allgst = retGstPerstr(prodgrpgstper, rate);
+        var tax = null;
+        if (allgst != "") {
+            tax = allgst.split(',');
+        }
+        var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
+        if (tax.length > 0) {
+            IGST = parseFloat(tax[0]).toFixed(2);
+            CGST = parseFloat(tax[1]).toFixed(2);
+            SGST = parseFloat(tax[2]).toFixed(2);
+        }
+
+        if (IGST > IGST_PER) {
+            IGST_PER = IGST;
+        }
+        if (CGST > CGST_PER) {
+            CGST_PER = CGST;
+        }
+        if (SGST > SGST_PER) {
+            SGST_PER = SGST;
+        }
+        if (CESS > CESS_PER) {
+            CESS_PER = CESS;
+        }
+        if (DUTY > DUTY_PER) {
+            DUTY_PER = DUTY;
+        }
+    }
+    var GridRowMain = $("#_T_SALE_POS_AMOUNT_GRID > tbody > tr").length;
+    for (i = 0; i <= GridRowMain - 1; i++) {
+        document.getElementById("AIGSTPER_" + i).value = IGST_PER;
+        document.getElementById("ACGSTPER_" + i).value = CGST_PER;
+        document.getElementById("ASGSTPER_" + i).value = SGST_PER;
+        document.getElementById("ACESSPER_" + i).value = CESS_PER;
+        document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
+    }
+
+}
