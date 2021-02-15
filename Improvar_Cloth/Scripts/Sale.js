@@ -121,10 +121,10 @@ function GetBarnoDetails(id, HelpFrom) {
             });
         }
         else {
+            $("#Barnohelpopen").val("Y");
             var value = modify_check();
             if (value == "true") {
                 RateHistoryDetails('ITCD', 'ITSTYLE', 'GRID');
-                $("#Barnohelpopen").val("Y");
             }
         }
     }
