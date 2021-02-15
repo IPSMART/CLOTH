@@ -2878,7 +2878,7 @@ namespace Improvar.Controllers
                         TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
                         //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
                         DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TTXN.DOCNO), TTXN.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
-                        if (DOCPATTERN.retStr().Length > 16)
+                        if (DOCPATTERN.retStr().Length > 16 && (VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR"))
                         {
                             ContentFlg = "Document No. length should be less than 16.change from Document type master "; goto dbnotsave;
                         }

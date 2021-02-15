@@ -111,7 +111,7 @@ namespace Improvar.Controllers
                 string DOCDT = CommVar.CurrDate(UNQSNO); /*data[2].retStr()*/
                 string BARNO = data[0].retStr() == "" || val.retStr() == "" ? "" : data[0].retStr().retSqlformat();
 
-                string str = MasterHelp.T_TXN_BARNO_help(barnoOrStyle, "PB", DOCDT, "", "", "", "", "", false, "", BARNO);
+                string str = MasterHelp.T_TXN_BARNO_help(barnoOrStyle, "PB", DOCDT, "C001", "", "WP", "", "", false, "", BARNO);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -148,12 +148,27 @@ namespace Improvar.Controllers
                 var CLCD = CommVar.ClientCode(UNQSNO);
                 if (VE.TEXTBOX1 == "Change Style")
                 {
-                    sql = "update " + schnm + ". T_TXNDTL set  ITCD= '" + VE.ITCD2 + "',BARNO= '" + VE.NEWBARNO + "' "
-                    + " where AUTONO='" + VE.BLAUTONO1 + "' and  ITCD= '" + VE.ITCD1 + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "'and BARNO='" + VE.OLDBARNO + "'  ";
+                    ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                    string autono = VE.BLAUTONO1;
+                    var dt = DB.T_BALE.Where(a => a.BLAUTONO == autono).Select(a => a.AUTONO).Distinct().ToArray();
+                    if (dt.Count() > 0)
+                    {
+                        autono = autono.retSqlformat() +","+ dt.retSqlfromStrarray();
+                    }
+                    else
+                    {
+                        autono = autono.retSqlformat();
+                    }
+                    sql = "update " + schnm + ". T_TXNDTL set  ITCD= '" + VE.ITCD2 + "' "
+                    + " where AUTONO in(" + autono + ") and  ITCD= '" + VE.ITCD1 + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "'  ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                     sql = "update " + schnm + ".T_BATCHMST set  ITCD= '" + VE.ITCD2 + "',BARNO= '" + VE.NEWBARNO + "' "
                   + " where AUTONO='" + VE.BLAUTONO1 + "' and  ITCD= '" + VE.ITCD1 + "'  and BARNO='" + VE.OLDBARNO + "'  ";
+                    OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
+
+                    sql = "update " + schnm + ".T_BATCHDTL set BARNO= '" + VE.NEWBARNO + "' "
+                + " where AUTONO in (" + autono + ")  and BARNO='" + VE.OLDBARNO + "' and BALENO='" + VE.BALENO1 + "' and BALEYR='" + VE.BALEYR1 + "' ";
                     OraCmd.CommandText = sql; OraCmd.ExecuteNonQuery();
 
                 }
