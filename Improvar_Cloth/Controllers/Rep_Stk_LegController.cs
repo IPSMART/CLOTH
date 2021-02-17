@@ -26,11 +26,13 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Stock Ledger";
+
                     ReportViewinHtml VE = new ReportViewinHtml();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                     ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
+                    string jobnm = DB.M_JOBMST.Find(VE.MENU_PARA)?.JOBNM;
+                    ViewBag.formname = jobnm + " Stock Ledger";
                     //VE.DropDown_list = (from i in DB.M_GROUP where (selgrpcd.Contains(i.ITGRPCD)) select new DropDown_list() { value = i.ITGRPCD, text = i.ITGRPNM }).OrderBy(s => s.text).ToList();
                     //VE.DropDown_list1 = (from i in DB.M_ITEMPLIST
                     //                     join j in DB.T_BATCHMST on i.ITMPRCCD equals j.ITMPRCCD
@@ -50,7 +52,7 @@ namespace Improvar.Controllers
                     VE.DropDown_list_ITEM = DropDownHelp.GetItcdforSelection();
                     VE.Itnm = MasterHelp.ComboFill("itcd", VE.DropDown_list_ITEM, 0, 1);
 
-                
+
                     var locnmlist = (from a in DBF.M_LOCA
                                      select new DropDown_list2()
                                      {
@@ -89,6 +91,7 @@ namespace Improvar.Controllers
         {
             try
             {
+                Cn.getQueryString(VE);
                 ImprovarDB DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
                 string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO), scm1 = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
                 string fdt = VE.FDT.retDateStr();
@@ -107,7 +110,7 @@ namespace Improvar.Controllers
                 Int32 i = 0;
                 Int32 maxR = 0;
                 string chkval, chkval1 = "";
-                string selitcd = "", plist = "", selgocd = "", selgonm="", LOCCD = "";
+                string selitcd = "", plist = "", selgocd = "", selgonm = "", LOCCD = "";
 
                 if (FC.AllKeys.Contains("Godown"))
                 {
@@ -172,7 +175,7 @@ namespace Improvar.Controllers
                 HtmlConverter HC = new HtmlConverter();
                 string qdsp = "";
                 //if (rateqntybag == "B") qdsp = "n,12";
-                 qdsp = "n,12,4";
+                qdsp = "n,12,4";
 
                 HC.RepStart(IR, 3);
                 HC.GetPrintHeader(IR, "docdt", "string", "d,10:dd/mm/yyyy", "Doc Date");
@@ -203,7 +206,7 @@ namespace Improvar.Controllers
                     iop = 0; idr = 0; icr = 0; icls = 0; idramt = 0; icramt = 0;
 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["itcd1"].ToString() + "  " + " </span>" + tbl.Rows[i]["itstyle"].ToString() ;
+                    IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["itcd1"].ToString() + "  " + " </span>" + tbl.Rows[i]["itstyle"].ToString();
                     IR.Rows[rNo]["Dammy"] = IR.Rows[rNo]["Dammy"] + " </span>" + " [" + tbl.Rows[i]["uomcd"] + "]";
                     IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
                     while (tbl.Rows[i]["itcd"].ToString() == chkval)
@@ -212,7 +215,7 @@ namespace Improvar.Controllers
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) < Convert.ToDateTime(fdt))
                         {
                             //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
-                             dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                            dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
 
                             if (tbl.Rows[i]["stkdrcr"].ToString() == "D")
                             {
@@ -246,7 +249,7 @@ namespace Improvar.Controllers
                         while (tbl.Rows[i]["itcd"].ToString() == chkval && Convert.ToDateTime(tbl.Rows[i]["docdt"]) <= Convert.ToDateTime(tdt))
                         {
                             //if (rateqntybag == "B") dbqty = Convert.ToDouble(tbl.Rows[i]["nos"]);
-                             dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
+                            dbqty = Convert.ToDouble(tbl.Rows[i]["qnty"]);
                             dbamt = Convert.ToDouble(tbl.Rows[i]["txblval"]);
 
                             //string pdocno = tbl.Rows[i]["pblno"].ToString();
@@ -277,7 +280,7 @@ namespace Improvar.Controllers
 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     IR.Rows[rNo]["dammy"] = "";
-                    IR.Rows[rNo]["slnm"] = "Totals (" + tbl.Rows[i - 1]["styleno"] + tbl.Rows[i - 1]["itnm"] +")";
+                    IR.Rows[rNo]["slnm"] = "Totals (" + tbl.Rows[i - 1]["styleno"] + tbl.Rows[i - 1]["itnm"] + ")";
                     IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
                     IR.Rows[rNo]["qntyin"] = idr; IR.Rows[rNo]["amtin"] = idramt;
                     IR.Rows[rNo]["qntyout"] = icr; IR.Rows[rNo]["amtout"] = icramt;
@@ -293,14 +296,16 @@ namespace Improvar.Controllers
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["dammy"] = " ";
                 IR.Rows[rNo]["flag"] = " height:14px; ";
-
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                string jobnm = DB.M_JOBMST.Find(VE.MENU_PARA)?.JOBNM;
                 string pghdr1 = "";
-                string repname = "Stk_Leg";
-                pghdr1 = "Stock Ledger from " + fdt + " to " + tdt;
-                if(selgocd!="")
-                { selgonm = "Godown: " + string.Join(",", (from a in DBF.M_GODOWN where (selgocd.Contains(a.GOCD)) select a.GONM).ToList()).retSqlformat();
+                string repname = jobnm+"_Stk_Leg";
+                pghdr1 = jobnm + " Stock Ledger from " + fdt + " to " + tdt;
+                if (selgocd != "")
+                {
+                    selgonm = "Godown: " + string.Join(",", (from a in DBF.M_GODOWN where (selgocd.Contains(a.GOCD)) select a.GONM).ToList()).retSqlformat();
                 }
-                PV = HC.ShowReport(IR, repname, pghdr1,selgonm, true, true, "L", false);
+                PV = HC.ShowReport(IR, repname, pghdr1, selgonm, true, true, "L", false);
 
                 TempData[repname] = PV;
                 TempData[repname + "xxx"] = IR;
