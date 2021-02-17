@@ -1151,6 +1151,12 @@
                                                 @Html.HiddenFor(model => model.MTRLJOBNM, new { id = "MTRLJOBNM" })
                                                 @Html.HiddenFor(model => model.MTBARCODE, new { id = "MTBARCODE" })
                                             }
+                                            @if (Model.M_SYSCNFG.MNTNPART != "Y")
+                                            {
+                                                @Html.HiddenFor(model => model.PARTCD, new { id = "PARTCD" })
+                                                @Html.HiddenFor(model => model.PARTNM, new { id = "PARTNM" })
+                                                @Html.HiddenFor(model => model.PRTBARCODE, new { id = "PRTBARCODE" })
+                                            }
                                         </div>
                                     </div>
 
