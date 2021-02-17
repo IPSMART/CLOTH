@@ -3508,6 +3508,9 @@ function Update_Pageno_slno() {
         }
     });
 }
+function RemoveStyleBarno(RemoveFldId){
+    $("#" + RemoveFldId).val("");
+}
 
 
 
