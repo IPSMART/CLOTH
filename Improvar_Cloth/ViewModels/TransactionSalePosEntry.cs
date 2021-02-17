@@ -39,8 +39,6 @@ namespace Improvar.ViewModels
         public List<DropDown_list_StkType> DropDown_list_StkType { get; set; }
         public List<BARGEN_TYPE> BARGEN_TYPE { get; set; }
         public List<DropDown_list_MTRLJOBCD> DropDown_list_MTRLJOBCD { get; set; }
-       
-        public string RTDEBCD { get; set; }
         public string RTDEBNM { get; set; }
         public string MOBILE { get; set; }
         public string NM { get; set; }
