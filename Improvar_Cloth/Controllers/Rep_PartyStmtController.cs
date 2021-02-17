@@ -154,25 +154,25 @@ namespace Improvar.Controllers
                         sql += "union all ";
                         scm1 = CommVar.LastYearSchema(UNQSNO);
                     }
-                    sql += "select a.autono, a.doctag, a.doccd, a.docdt, to_char(a.docdt, 'MON-YYYY') docmonth, a.itgrpcd, ";
+                    sql += "select a.autono, a.doctag, a.doccd, a.docdt, to_char(a.docdt, 'MON-YYYY') docmonth, b.itgrpcd, ";
                     if (FC["SalPur"].ToString() == "S") sql += "a.docno, ";
                     else sql += "a.prefno docno, ";
                     if (repon == "P")
                     {
                         sql += "a.slcd cd, a.slnm nm, a.shortnm snm,a.conslcd,a.conslnm conslnm, ";
-                        sql += "b.itcd ocd, b.itnm onm, b.prodgrpcd osnm, ";
+                        sql += "b.itcd ocd, nvl(b.styleno,b.itnm) onm, b.styleno osnm, ";
                     }
                     else
                     {
                         sql += "a.slcd ocd, a.slnm onm, a.shortnm osnm,a.conslcd,a.conslnm conslnm, ";
-                        sql += "b.itcd cd, b.itnm nm, b.prodgrpcd snm, ";
+                        sql += "b.itcd cd, nvl(b.styleno,b.itnm) nm, b.prodgrpcd snm, ";
                     }
                     sql += "b.stkdrcr,b.styleno, b.uomnm, b.decimals, nvl(b.nos,0) nos, nvl(b.qnty,0) qnty, nvl(b.basamt,0) basamt, b.othramt, ";
-                    sql += "b.batchno from ";
-                    sql += "( select a.autono, a.doctag, b.doccd, b.docno, b.docdt, e.itgrpcd, e.class1cd, ";
-                    sql += "a.slcd||nvl(e.class1cd,' ') slcdclass1cd, a.prefno, a.prefdt, ";
+                    sql += "b.batchno,b.stktype from ";
+                    sql += "( select a.autono, a.doctag, b.doccd, b.docno, b.docdt, ";
+                    sql += " a.prefno, a.prefdt, ";
                     sql += "a.slcd, c.slnm,a.conslcd,f.slnm conslnm,c.shortnm ";
-                    sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c, " + scm1 + ".m_group e," + scmf + ".m_subleg f " ;
+                    sql += "from " + scm1 + ".t_txn a, " + scm1 + ".t_cntrl_hdr b, " + scmf + ".m_subleg c," + scmf + ".m_subleg f " ;
                     sql += "where a.autono=b.autono(+) and a.slcd=c.slcd(+) and a.conslcd=f.slcd(+) and ";
                         //a.itgrpcd=e.itgrpcd(+) and ";
                     sql += "b.compcd='" + COM + "' and ";
@@ -180,7 +180,7 @@ namespace Improvar.Controllers
                     else sql = sql + "b.loccd in (" + selloccd + ") and ";
                     sql +=" nvl(b.cancel,'N') = 'N' and ";
                     sql += "b.docdt >= to_date('" + fdt + "','dd/mm/yyyy') and b.docdt <= to_date('" + tdt + "','dd/mm/yyyy') and  ";
-                    if (selitgrpcd.retStr() != "") sql += "e.itgrpcd in (" + selitgrpcd + ") and ";
+                   
                     sql += "a.doctag in ( " + txntag + ") ";
                     sql += ") a, ( ";
                     sql += "select a.autono, a.slno, a.itcd,b.prodgrpcd, b.itgrpcd, b.itnm, a.prccd, a.stkdrcr,b.styleno, c.uomnm, c.decimals, ";
@@ -190,12 +190,12 @@ namespace Improvar.Controllers
                     //sql += "sum(decode(nvl(d.rslno,0),1,a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0),0)) basamt, ";
                     //sql += "sum(decode(nvl(d.rslno,0),1,nvl(a.othramt,0),0)) othramt ";
                     sql += "sum((case nvl(d.txnslno,0) when 0 then a.amt-nvl(a.scmdiscamt,0)-nvl(a.tddiscamt,0)-nvl(a.discamt,0)" + taxfld + " when 1 then a.amt-nvl(a.scmdiscamt,0)-nvl(a.tddiscamt,0)-nvl(a.discamt,0)" + taxfld + " end)) basamt, ";
-                    sql += "sum((case nvl(d.txnslno,0) when 0 then nvl(a.othramt,0) when 1 then nvl(a.othramt,0) end )) othramt ";
+                    sql += "sum((case nvl(d.txnslno,0) when 0 then nvl(a.othramt,0) when 1 then nvl(a.othramt,0) end )) othramt,a.stktype, f.class1cd,g.slcd||nvl(f.class1cd,' ') slcdclass1cd ";
                     sql += "from " + scm1 + ".t_txndtl a, " + scm1 + ".m_sitem b, " + scmf + ".m_uom c, ";
-                    sql += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e  ";
+                    sql += scm1 + ".t_batchdtl d, " + scm1 + ".t_batchmst e , " + scm1 + ".m_group f," + scm1 + ".t_txn g ";
                     sql += "where a.itcd=b.itcd(+) and b.uomcd=c.uomcd(+) and a.autono=d.autono(+) and a.slno=d.txnslno(+) and  ";
-                    sql += "d.autono=e.autono(+) ";
-                    sql += "group by a.autono, a.slno, a.itcd, b.prodgrpcd,b.itgrpcd, b.itnm, a.prccd, a.stkdrcr,b.styleno, c.uomnm, c.decimals ";
+                    sql += "d.autono=e.autono(+) and b.itgrpcd=f.itgrpcd(+) and a.autono=g.autono(+) ";
+                    sql += "group by a.autono, a.slno, a.itcd, b.prodgrpcd,b.itgrpcd, b.itnm, a.prccd, a.stkdrcr,b.styleno, c.uomnm, c.decimals,a.stktype, f.class1cd,g.slcd||nvl(f.class1cd,' ') ";
                     //sql += "a.basamt-nvl(a.stddiscamt,0)-nvl(a.discamt,0) , nvl(a.othramt,0) ";
                     sql += ") b, ";
 
@@ -215,7 +215,9 @@ namespace Improvar.Controllers
 
                     sql += "where a.rootcd = c.slcdgrpcd(+) and a.parentcd=b.slcdgrpcd(+) ) s ";
 
-                    sql += "where a.autono=b.autono(+) and a.slcdclass1cd = s.slcdclass1cd(+) ";
+                    sql += "where a.autono=b.autono(+) and b.slcdclass1cd = s.slcdclass1cd(+) ";
+                    if (selitgrpcd.retStr() != "") sql += "and b.itgrpcd in (" + selitgrpcd + ") ";
+
                     if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") ";
                     if (unselitcd.retStr() != "") sql += "and b.itcd not in (" + unselitcd + ") ";
                     if (selitcd.retStr() != "") sql += "and b.itcd in (" + selitcd + ") ";
@@ -653,14 +655,16 @@ namespace Improvar.Controllers
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 string Sql = "";
                 Sql += " select slcdgrpcd,slcdgrpnm,grpcdfull,nvl(parentcd,'0') parentcd,0 rowindex from " + CommVar.FinSchema(UNQSNO) + ".m_subleg_grp";
-                Sql += " where GRPCD='" + GRPCD + "' and slcd is null";
+                Sql += " where slcd is null";
+                if(GRPCD.retStr() != "") Sql += " and GRPCD='" + GRPCD + "' ";
                 Sql += " order by grpcdfull,grpslno";
                 DataTable tblgrouphierarchy = MasterHelp.SQLquery(Sql);
                 Sql = "";
                 Sql += " select grpcd,slcdgrpcd,slcdgrpnm,grpcdfull,nvl(parentcd,'0') parentcd,user_id,grpslno,slcdgrpnmdesc,a.slcd, ";
                 Sql += "  (b.add1||' '||b.ADD2||' '||  b.ADD3||' '||b.ADD6) as sladd,b.REGMOBILE as slmob  ";
                 Sql += " from " + CommVar.FinSchema(UNQSNO) + ".m_subleg_grp a, " + CommVar.FinSchema(UNQSNO) + ".m_subleg b ";
-                Sql += " where a.slcd=b.slcd(+) and GRPCD='" + GRPCD + "' ";
+                Sql += " where a.slcd=b.slcd(+)  ";
+                if (GRPCD.retStr() != "") Sql += " and GRPCD='" + GRPCD + "' ";
                 Sql += " order by grpcdfull,grpslno";
                 DataTable tblmain = MasterHelp.SQLquery(Sql);
                 if (tblmain.Rows.Count == 0)
@@ -668,7 +672,8 @@ namespace Improvar.Controllers
                     return Content("No group Found. Please Create Sub ledger grouping from finance module.");
                 }
                 //create a datatable for excelno
-                DataRow[] rows = tbl.Select("DAMSTOCK ='F'");
+                //DataRow[] rows = tbl.Select("DAMSTOCK ='F'");
+                DataRow[] rows = tbl.Select("stktype ='A'");
                 foreach (DataRow row in rows)
                 {   //REMOVE FREE ITEM FROM TABLE FOR SANATAN COMPANY
                     tbl.Rows.Remove(row);
@@ -1089,7 +1094,12 @@ namespace Improvar.Controllers
                 wsSheet1.Row(rowindex).Style.Font.Bold = true;
                 wsSheet1.Row(rowindex).Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                 wsSheet1.Row(rowindex).Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.DeepSkyBlue);
-                tblgrouphierarchy = tblgrouphierarchy.Select("parentcd='0'").CopyToDataTable();
+                var data = tblgrouphierarchy.Select("parentcd='0'");
+                if (data.Count() > 0)
+                {
+                    tblgrouphierarchy = tblgrouphierarchy.Select("parentcd='0'").CopyToDataTable();
+                }
+                
                 double totqnty = 0, totamt = 0;
                 foreach (string strgh in GroupHeaderlist)
                 {
