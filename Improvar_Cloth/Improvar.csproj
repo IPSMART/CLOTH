@@ -537,6 +537,7 @@
     <Compile Include="Models\Searching.cs" />
     <Compile Include="Models\Server.cs" />
     <Compile Include="Models\SignAuthority.cs" />
+    <Compile Include="Models\SLPYMTADJ.cs" />
     <Compile Include="Models\SubLedgerDetails.cs" />
     <Compile Include="Models\SubLedgerMaster.cs" />
     <Compile Include="Models\TBATCHDTL.cs" />
@@ -1291,6 +1292,9 @@
     <Content Include="Views\Sys_PriceList_Upload\Sys_PriceList_Upload.cshtml" />
     <Content Include="Views\M_Doc_Attached\M_Doc_Attached.cshtml" />
     <Content Include="Views\T_SALE_PYMT\T_SALE_PYMT.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_PYMT_PAYMENT.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_PYMT_SALESMAN.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_PYMT_Main.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
