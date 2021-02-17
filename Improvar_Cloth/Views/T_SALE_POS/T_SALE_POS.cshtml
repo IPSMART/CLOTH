@@ -50,6 +50,64 @@
     });
 </script>
 <script>
+    //focuc on first element of tab
+    $(document).keyup(function (event) {
+        debugger;
+        var KeyID = (window.event) ? event.keyCode : e.keyCode;
+        if (event.altKey && KeyID == 77) {//for Alt+M (main code tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:first-child").addClass('active');
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:first-child").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+              $("#M_BARCODE").focus();
+           
+        }
+        if (event.altKey && KeyID == 74) {//for Alt+J (return tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(2)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            $("#R_BARCODE").focus();
+
+        }
+    
+        if (event.altKey && KeyID == 84) {//for Alt+T (Payment tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(4)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            var GridRowMain = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+            if (GridRowMain > 0) {
+               $("#SLMSLCD_0").select().focus();
+            }
+        }
+        if (event.altKey && KeyID == 72) {//for Alt+H (amount tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(3)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            var GridRowMain = $("#_T_SALE_POS_AMOUNT_GRID > tbody > tr").length;
+            if (GridRowMain > 0) {
+                UpdateTaxPer();
+                $("#AMTRATE_0").select().focus();
+
+            }
+        }
+        if (event.altKey && KeyID == 75) {//for Alt+K (party tab)
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(5)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(5)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            $("#GSTNO").focus();
+        }
+
+    });
+</script>
+<script>
     //$(".agdocdt").on('focus', function () {
     //    var $this = $(this);
     //    if (!$this.data('datepicker')) {
@@ -551,13 +609,13 @@
             <ul class="nav nav-tabs">
                 @if (Model.MENU_PARA != "SBCMR")
                 {
-                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
+                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main">Main(M)</a></li>
                 }
                 @*<li id="BarCodeTab_LI4" class=""><a data-toggle="tab" href="#BarCodeTab" accesskey="B">Bar Code(B)</a></li>*@
-                <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab" accesskey="J">Return(J)</a></li>
-                <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" accesskey="H" onclick="UpdateTaxPer();">Amount(H)</a></li>
-                <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment" accesskey="T">Payment(T)</a></li>
-                <li id="Party_LI" class=""><a data-toggle="tab" href="#Party" accesskey="K">Party(K)</a></li>
+                <li id="Return_LI4" class=""><a data-toggle="tab" href="#ReturnTab">Return(J)</a></li>
+                <li id="Amounts_LI" class=""><a data-toggle="tab" href="#Amount" onclick="UpdateTaxPer();">Amount(H)</a></li>
+                <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
+                <li id="Party_LI" class=""><a data-toggle="tab" href="#Party">Party(K)</a></li>
                 <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks (R)</a></li>
                 <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
             </ul>
@@ -570,8 +628,8 @@
                         <div class="row">
                             @if (Model.DefaultAction != "V")
                             {
-                                //if (Model.M_SYSCNFG.MNTNBARNO == "Y")
-                                //{
+                                if (Model.M_SYSCNFG.MNTNBARNO == "Y")
+                                {
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Bar Code")
@@ -587,7 +645,7 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                                     </div>
                                 </div>
-                             //   }
+                                }
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Design No.")
@@ -640,8 +698,8 @@
                         <div class="row">
                             @if (Model.DefaultAction != "V")
                             {
-                                //if (Model.M_SYSCNFG.MNTNBARNO == "Y")
-                                //{
+                                if (Model.M_SYSCNFG.MNTNBARNO == "Y")
+                                {
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Bar Code")
@@ -657,7 +715,7 @@
                                             <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetBarCodeDetails", PageControllerName)','Bar Code Details','BARCODE','BARCODE=BARNO=0','DOCDT')" />*@
                                     </div>
                                 </div>
-                              //  }
+                                }
                                 <div class="col-md-1">
                                     <div class="editor-label" style="margin-top: 6px;">
                                         @Html.Label("", "Design No.")

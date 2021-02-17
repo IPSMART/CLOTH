@@ -64,7 +64,7 @@
                                 {
                                     <th class="" style="width:109px;text-align:right;font-weight: 900;">Incl.Rate</th>
                                 }
-                                <th class="" style="width:80px;text-align:right;">Rate</th>
+                                else {<th class="" style="width:80px;text-align:right;">Rate</th>}
                                 <th class="" style="width:50px;">Disc Type</th>
                                 <th class="" style="width:42px;text-align:right;">Disc Rate</th>
                                 <th class="" style="width:86px;text-align:right;">Taxable Value</th>
@@ -198,9 +198,10 @@
                                             <td class="">
                                                 @Html.TextBoxFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].INCLRATE, "{0:0.00}", new { id = "R_INCLRATE_" + i, onchange = "CalculateInclusiveRate(" + i + ",'_T_SALE_POS_RETURN_GRID');CalculateRowAmt('_T_SALE_POS_RETURN_GRID'," + i + ");", @onkeypress = "return numericOnly(this,2);", maxlength = 12, style = "font-weight:bold;background-color: bisque;", @class = "atextBoxFor text-right" })
                                             </td>
-                                            <td class="">
+                                            @*<td class="">
                                                 @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].RATE, new { htmlAttributes = new { id = "R_RATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 14, @TabIndex = -1, @readonly = "readonly" } })
-                                            </td>
+                                            </td>*@
+                                            @Html.HiddenFor(model => model.TsalePos_TBATCHDTL_RETURN[i].RATE, new { id = "R_RATE_" + i })
                                         }
                                         else
                                         {
@@ -323,7 +324,7 @@
                                 {
                                     <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 }
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
+                                else { <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>}
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
                                 <td>
