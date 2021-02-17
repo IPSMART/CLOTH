@@ -34,5 +34,9 @@ namespace Improvar.ViewModels
 
         [StringLength(200)]
         public string ADDR { get; set; }
+        public string RTDEBNM { get; set; }
+        public string MOBNO { get; set; }
+        public bool INC_RATE { get; set; }
+        public string RETDEBSLCD { get; set; }
     }
 }
