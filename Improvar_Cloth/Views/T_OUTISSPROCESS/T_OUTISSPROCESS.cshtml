@@ -1415,7 +1415,7 @@
         }
 
         var QNTY = retFloat(document.getElementById(QNTY_Id.id).value);
-        var NEGSTOCK = retFloat(document.getElementById(NEGSTOCK_Id.id).value);
+        var NEGSTOCK = document.getElementById(NEGSTOCK_Id.id).value;
         var SLNO = retFloat(document.getElementById(SLNO_Id.id).value);
         var TQNTY = 0, balqnty = 0;
         var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
@@ -2016,7 +2016,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-1" style="width:auto;">
-                                            <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" value="Refresh Detail Data" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
+                                            <input type="button" class="btn btn-info" style="margin-top: 2px;padding: 2px 7px 1px 7px;" name="FillDetail" accesskey="K" value="Finalise Detail Data(Alt+K)" title="Click to Refresh Data in Details Tab" onclick="Fill_DetailData()" />
                                         </div>
                                     </div>
                                 </div>

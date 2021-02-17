@@ -2441,7 +2441,7 @@ namespace Improvar.Controllers
                             TPROGBOM.COLRCD = VE.TPROGBOM[i].COLRCD;
                             TPROGBOM.BOMQNTY = VE.TPROGBOM[i].BOMQNTY.retDcml();
                             TPROGBOM.EXTRAQNTY = VE.TPROGBOM[i].EXTRAQNTY.retDcml();
-                            TPROGBOM.QNTY = VE.TPROGBOM[i].QNTY.retDcml();
+                            TPROGBOM.QNTY = VE.TPROGBOM[i].QQNTY.retDcml();
                             TPROGBOM.MTRLJOBCD = VE.TPROGBOM[i].MTRLJOBCD;
                             if (VE.TPROGBOM[i].Q_CheckedSample == true) TPROGBOM.SAMPLE = "Y"; else TPROGBOM.SAMPLE = "N";
                             dbsql = masterHelp.RetModeltoSql(TPROGBOM);
