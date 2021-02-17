@@ -1,19 +1,13 @@
-﻿
-@model Improvar.ViewModels.SalePymtEntry
+﻿@model Improvar.ViewModels.SalePymtEntry
 @{
-    string PageControllerName = "T_Bilty_Khasra";
+    string PageControllerName = "T_SALE_PYMT";
     switch (Model.MENU_PARA)
     {
-        case "KHSR":
-            ViewBag.Title = "Khasra"; break;
-        case "TRFB":
-            ViewBag.Title = "Sotck Transfer Bale"; break;
-        case "TRWB":
-            ViewBag.Title = "Stk Trnf with Waybill (Bale)"; break;
+        case "PYMT":
+            ViewBag.Title = "Pymt Recd from Retail Debtor"; break;
         default: ViewBag.Title = ""; break;
     }
     Layout = "~/Views/Shared/_Layout.cshtml";
-
 }
 
 <style>
@@ -182,7 +176,34 @@
         });
     }
 </script>
-
+<script>
+    function GetInvoice() {
+        //const keyName = event.key;
+        //if (keyName == undefined || keyName == "F7") {
+        //var slno = $("#GetInvoice" + i).val();
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("GetInvoice", PageControllerName)",
+            data: $('form').serialize() + "&slno=" + slno,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                if (result.indexOf("_T_Mrcpt_MAIN_GRID") != -1) {
+                    $('.PopUp_Backround').show();
+                    $('#popupADJ').html(result);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                $('.PopUp_Backround').hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+        //            msgInfo("Ledger Head Code Not Available ! Please Select / Enter a Ledger Head For BillWise Adjustment !! ");
+        //            message_value = GLCD_.id;
+    }
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -285,11 +306,38 @@
                     </div>*@
 
             </div>
-
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Name")
+                        @*<b style="color:Red;">*</b>*@
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.NM, new { htmlAttributes = new { @class = "form-control", id = "NM", maxlength = 15, @placeholder = "Name",onblur= "GetInvoice()" } })
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.MOBILE, new { htmlAttributes = new { @class = "form-control", id = "MOBNO", @onkeypress = "return event.charCode > 47 && event.charCode < 58;", @placeholder = "Mobile No.", maxlength = 10 } })
+                    </div>
+                </div>
+                <div class="col-md-5" style="width: auto;">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Inclusive Rate")
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="editor-field" style="margin-top: 6px;">
+                        @Html.CheckBoxFor(model => model.INC_RATE, new { htmlAttributes = new { @class = "form-control", id = "INC_RATE" } })
+                    </div>
+                </div>
+            </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
                     <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
-                    <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment">Payment(T)</a></li>
+                    <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment" accesskey="T">Payment(T)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#ss" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
@@ -315,7 +363,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div id="Remarks" class="tab-pane fade">
                         <div class="row">
                             <div>

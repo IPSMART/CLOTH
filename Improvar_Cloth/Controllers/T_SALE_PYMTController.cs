@@ -18,7 +18,7 @@ namespace Improvar.Controllers
         Connection Cn = new Connection(); MasterHelp masterHelp = new MasterHelp(); MasterHelpFa MasterHelpFa = new MasterHelpFa(); SchemeCal Scheme_Cal = new SchemeCal(); Salesfunc salesfunc = new Salesfunc(); DataTable DT = new DataTable();
         EmailControl EmailControl = new EmailControl();
         T_TXNPYMT_HDR TBH; T_CNTRL_HDR TCH; T_CNTRL_HDR_REM SLR; T_TXNTRANS TXNTRN; T_TXN TXN;
-        SMS SMS = new SMS();
+        SMS SMS = new SMS(); string sql = "";
         string UNQSNO = CommVar.getQueryStringUNQSNO();
 
         public ActionResult T_SALE_PYMT(string op = "", string key = "", int Nindex = 0, string searchValue = "", string parkID = "", string ThirdParty = "no")
@@ -137,7 +137,32 @@ namespace Improvar.Controllers
                                 UPL.DocumentType = Cn.DOC_TYPE();
                                 UploadDOC1.Add(UPL);
                                 VE.UploadDOC = UploadDOC1;
+                                T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNPYMT_HDR TXNMEMO = new T_TXNPYMT_HDR();
+                                string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                                string sql = "";
+                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm ";
+                                sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
+                                sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=d.slcd(+) and ";
+                                sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
 
+                                DataTable syscnfgdt = masterHelp.SQLquery(sql);
+                                if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
+                                {
+                                    TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
+                                    VE.RTDEBNM = syscnfgdt.Rows[0]["RTDEBNM"].retStr();
+                                    var addrs = syscnfgdt.Rows[0]["add1"].retStr() + " " + syscnfgdt.Rows[0]["add2"].retStr() + " " + syscnfgdt.Rows[0]["add3"].retStr();
+                                    VE.ADDR = addrs + "/" + syscnfgdt.Rows[0]["city"].retStr();
+                                    VE.MOBILE = syscnfgdt.Rows[0]["MOBILE"].retStr();
+                                    VE.INC_RATE = syscnfgdt.Rows[0]["INC_RATE"].retStr() == "Y" ? true : false;
+                                    //VE.INCLRATEASK = syscnfgdt.Rows[0]["INC_RATE"].retStr();
+                                    VE.RETDEBSLCD = syscnfgdt.Rows[0]["retdebslcd"].retStr();
+                                    TXNOTH.TAXGRPCD = syscnfgdt.Rows[0]["TAXGRPCD"].retStr();
+                                    TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
+                                    //VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
+                                    //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
+                                }
+                                VE.T_TXNPYMT_HDR = TXNMEMO;
+                                //VE.T_TXNOTH = TXNOTH;
                             }
                             else
                             {
@@ -322,6 +347,71 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, "");
                 return Content(ex.Message + ex.InnerException);
             }
+        }
+        public ActionResult GetInvoice(SalePymtEntry VE)
+        {
+            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+            try
+            {
+                Cn.getQueryString(VE);
+                //VE.PARENT_SLNO = slno.retInt();
+                string glcd = "";// VE.T_PYTHDR.GLCD;
+                string slcd = VE.RETDEBSLCD;
+                string autono = "";// VE.T_PYTHDR?.AUTONO;
+                var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.ToString(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
+                var RTR = OSDATA.Rows[0]["slno"].GetType();
+                var OSList = (from customer in OSDATA.AsEnumerable()
+                              where (customer.Field<string>("VCHTYPE") != "BL" && customer.Field<string>("VCHTYPE") != "DN")
+                              select new SLPYMTADJ
+                              {
+                                  VCHTYPE = customer.Field<string>("VCHTYPE"),
+                                  VAUTONO = customer.Field<string>("AUTONO"),
+                                  VSLNO = customer.Field<Int16>("SLNO"),
+                                  VBLREM = customer.Field<string>("BLREM"),
+                                  VDOCNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
+                                  VDOCDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
+                                  VAMOUNT = customer.Field<decimal>("AMT") * -1,
+                                  VPRVADJAMT = customer.Field<decimal>("PRV_ADJ") * -1,
+                                  VBALAMT = customer.Field<decimal>("bal_amt") * -1,
+                              }).ToList();
+            }
+            catch
+            {
+
+            }
+            //var doctP = (from i in DB1.MS_DOCCTG
+            //             select new DocumentType()
+            //             {
+            //                 value = i.DOC_CTG,
+            //                 text = i.DOC_CTG
+            //             }).OrderBy(s => s.text).ToList();
+            //if (VE.UploadDOC == null)
+            //{
+            //    List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
+            //    UploadDOC MLI = new UploadDOC();
+            //    MLI.DocumentType = doctP;
+            //    MLocIFSC1.Add(MLI);
+            //    VE.UploadDOC = MLocIFSC1;
+            //}
+            //else
+            //{
+            //    List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
+            //    for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
+            //    {
+            //        UploadDOC MLI = new UploadDOC();
+            //        MLI = VE.UploadDOC[i];
+            //        MLI.DocumentType = doctP;
+            //        MLocIFSC1.Add(MLI);
+            //    }
+            //    UploadDOC MLI1 = new UploadDOC();
+            //    MLI1.DocumentType = doctP;
+            //    MLocIFSC1.Add(MLI1);
+            //    VE.UploadDOC = MLocIFSC1;
+            //}
+            VE.DefaultView = true;
+            ModelState.Clear();
+            return PartialView("_T_SALE_PYMT_Main", VE);
+
         }
 
         public ActionResult AddDOCRow(SalePymtEntry VE)

@@ -1225,9 +1225,9 @@ namespace Improvar
             return rsTmp;
         }
         public DataTable GenOSTbl(string selglcd = "", string selslcd = "", string billupto = "", string txnupto = "", string currautono = "",
-            string billfrom = "", string selclass1cd = "", string linkcd = "", string OnlyOSBill = "Y", string selagslcd = "", string selstate = "",
-            string seldistrict = "", string scmf = "", string selflag = "", bool crbaladjauton = false, bool showconslcdasslcd = false, string unselslcd = "",
-            string selslgrpcd = "")
+        string billfrom = "", string selclass1cd = "", string linkcd = "", string OnlyOSBill = "Y", string selagslcd = "", string selstate = "",
+        string seldistrict = "", string scmf = "", string selflag = "", bool crbaladjauton = false, bool showconslcdasslcd = false, string unselslcd = "",
+        string selslgrpcd = "", bool showagent = false, string blno = "", string skipautono = "", string selrtdebcd = "")
         {
             var UNQSNO = Cn.getQueryStringUNQSNO();
             string sql = "", sqlc = "";
@@ -1237,6 +1237,7 @@ namespace Improvar
 
                 string COM = CommVar.Compcd(UNQSNO);
                 if (scmf == "") scmf = CommVar.FinSchema(UNQSNO);
+                if (crbaladjauton == false) showagent = false;
 
                 if (currautono.retStr() != "") if (currautono.IndexOf("'") < 0) currautono = "'" + currautono + "'";
                 if (billupto.retStr() != "") billupto = Convert.ToDateTime(billupto.Substring(0, 10)).ToString("dd/MM/yyyy");
@@ -1245,7 +1246,8 @@ namespace Improvar
                 if (selglcd.retStr() != "") if (selglcd.IndexOf("'") < 0) selglcd = "'" + selglcd + "'";
                 if (selslcd.retStr() != "") if (selslcd.IndexOf("'") < 0) selslcd = "'" + selslcd + "'";
                 if (selclass1cd.retStr() != "") if (selclass1cd.IndexOf("'") < 0) selclass1cd = "'" + selclass1cd + "'";
-
+                if (skipautono.retStr() != "") if (skipautono.IndexOf("'") < 0) skipautono = "'" + skipautono + "'";
+                //if (skipautono.retStr() == "") skipautono = "null";
                 string curdocautono = currautono;
                 if (curdocautono == "") curdocautono = "null";
 
@@ -1261,12 +1263,15 @@ namespace Improvar
 
                 sqlc = "";
                 sqlc += "select a.i_autono||a.i_slno autoslno, ";
-                sqlc += "max((case when a.r_autono||a.r_slno in (" + curdocautono + ") then a.pymtrem else null end)) pymtrem, ";
-                sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then a.adj_amt else 0 end) * decode(c.drcr,d.linkcd,1,-1)) cur_adj, ";
+                sqlc += "max((case when a.r_autono||a.r_slno in (" + curdocautono + ") then a.pymtrem when a.autono in (" + (skipautono.retStr() == "" ? "null" : skipautono) + ") then a.pymtrem else null end)) pymtrem, ";
+                //sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then a.adj_amt when a.autono in (" + skipautono + ") and (a.autono <> a.i_autono or a.autono <> a.r_autono) then a.adj_amt else 0 end) * decode(c.drcr,d.linkcd,1,-1)) cur_adj, ";
+                //sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then 0 when a.autono in (" + skipautono + ")  and (a.autono <> a.i_autono or a.autono <> a.r_autono) then 0 else a.adj_amt end) * decode(c.drcr,d.linkcd,1,-1)) adj_amt ";
+                //sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then a.adj_amt else 0 end) * decode(c.drcr,d.linkcd,1,-1)) cur_adj, ";
                 sqlc += "sum((case when a.r_autono||a.r_slno in (" + curdocautono + ") then 0 else a.adj_amt end) * decode(c.drcr,d.linkcd,1,-1)) adj_amt ";
                 sqlc += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b, " + scmf + ".t_vch_bl c, " + scmf + ".m_genleg d ";
                 sqlc += "where a.i_autono||a.i_slno=c.autono||c.slno and c.glcd=d.glcd and ";
                 if (txnupto.retStr() != "") sqlc += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
+                if (skipautono.retStr() != "") sqlc += "a.autono not in (" + skipautono + ") and ";
                 sqlc += "a.autono=b.autono and nvl(b.cancel,'N')='N' and b.compcd='" + COM + "' ";
                 sqlc += "group by a.i_autono||a.i_slno ";
 
@@ -1275,27 +1280,29 @@ namespace Improvar
 
                 sql = "";
                 sql += "select a.glslcd, a.glslagcd, a.glcd, a.slcd, a.slcdclass1cd, s.parentcd, s.parentnm, s.grpcdfull, a.glslagdrcr, ";
+                sql += "a.rtdebcd, l.rtdebnm, l.mobile rtdebmobile, ";
                 sql += "a.drcr, a.autono, a.autoslno, a.doccd, a.docno, a.docdt, a.slno, nvl(a.blamt,0)-nvl(a.amt,0) oprecdamt, a.amt, a.blamt, a.itamt, a.lrno, a.lrdt, a.transnm, ";
                 if (selslgrpcd.retStr() != "") sql += "s.parentcd agslcd, s.parentnm agslnm, '' agslcity, '' agphno, ";
                 else sql += "a.agslcd, i.slnm agslnm, i.district agslcity, nvl(i.regmobile,i.phno1) agphno, ";
-                sql += "a.blno, a.bldt, a.bldt1, a.ordno, a.orddt, to_char(nvl(a.duedt,a.docdt),'dd/mm/yyyy') duedt, a.crdays, a.cur_adj, a.bal_amt, a.class1cd, a.prv_adj, a.cur_adj, ";
-                sql += "g.class1nm, a.vchtype, a.loccd, a.conslcd, a.pymtrem, ";
-                sql += "e.glnm, e.linkcd, f.slnm, f.district slcity, nvl(f.regmobile,f.phno1) phno, j.slnm conslnm, nvl(j.slarea,j.district) conslarea from ";
+                sql += "a.blno, a.bldt, nvl(a.bldt1,a.docdt) bldt1, a.ordno, a.orddt, to_char(nvl(a.duedt,a.docdt),'dd/mm/yyyy') duedt, a.crdays, a.bal_amt, a.class1cd, a.prv_adj, a.cur_adj, ";
+                sql += "g.class1nm, a.vchtype, a.loccd, a.conslcd, a.pymtrem, a.blrem, b.blrem billrem, ";
+                sql += "e.glnm, e.linkcd, f.slnm, nvl(f.slarea,f.district) slcity, nvl(f.regmobile,f.phno1) phno, j.slnm conslnm, nvl(j.slarea,j.district) conslarea from ";
 
                 //single query starts
-                sql += "(select a.glcd||" + oraslcd + " glslcd, a.glcd||" + oraslcd + "||nvl(a.agslcd,'') glslagcd, a.glcd, " + oraslcd + " slcd, ";
-                sql += oraslcd + "||nvl(nvl(a.class1cd,d.class1cda),' ') slcdclass1cd, a.conslcd, a.flag, c.pymtrem, ";
-                sql += "a.glcd||" + oraslcd + "||nvl(a.agslcd,'')||(case when (a.amt-nvl(c.adj_amt,0)-nvl(c.cur_adj,0)) * decode(a.drcr,e.linkcd,1,-1) < 0 then 'C' else 'D' end) glslagdrcr, ";
-                sql += "(a.amt-nvl(c.adj_amt,0)-nvl(c.cur_adj,0)) * decode(a.drcr,e.linkcd,1,-1) bal_amt, ";
+                sql += "(select a.glcd||" + oraslcd + " glslcd, a.glcd||" + oraslcd + (showagent == true ? "||nvl(a.agslcd,'')" : "") + " glslagcd, a.glcd, " + oraslcd + " slcd, ";
+                sql += oraslcd + "||nvl(nvl(a.class1cd,d.class1cda),' ') slcdclass1cd, a.conslcd, a.flag, c.pymtrem, a.rtdebcd, ";
+                //sql += "a.glcd||" + oraslcd + "||" + (showagent == true? "nvl(a.agslcd, '')||":"") + "(case when (a.amt-nvl(c.adj_amt,0)-nvl(c.cur_adj,0)) * decode(a.drcr,e.linkcd,1,-1) < 0 then 'C' else 'D' end) glslagdrcr, ";
+                sql += "a.glcd||" + oraslcd + "||" + (showagent == true ? "nvl(a.agslcd, '')||" : "") + "(case when (a.amt-nvl(c.adj_amt,0)-nvl(f.cur_adj,0)) * decode(a.drcr,e.linkcd,1,-1) < 0 then decode(e.linkcd,'D','C','D') else decode(e.linkcd,'D','D','C') end) glslagdrcr, ";
+                sql += "(a.amt-nvl(c.adj_amt,0)-nvl(f.cur_adj,0)) * decode(a.drcr,e.linkcd,1,-1) bal_amt, ";
                 sql += "a.drcr, a.autono, a.autono||a.slno autoslno, b.doccd, a.docno, b.docdt, a.slno, nvl(a.amt,0) * decode(a.drcr,e.linkcd,1,-1) amt, ";
-                sql += "a.blamt, a.itamt, a.lrno, to_char(a.lrdt,'dd/mm/yyyy') lrdt, a.transnm, a.agslcd, ";
+                sql += "a.blamt, a.itamt, a.lrno, to_char(a.lrdt,'dd/mm/yyyy') lrdt, a.transnm, a.agslcd, a.blrem, ";
                 sql += "a.blno, to_char(a.bldt,'dd/mm/yyyy') bldt, a.bldt bldt1, a.ordno, nvl(to_char(a.orddt,'dd/mm/yyyy'),'') orddt, ";
                 sql += "nvl(a.duedt,a.bldt) duedt, nvl(a.crdays,0) crdays, ";
-                sql += "nvl(c.adj_amt,0) * decode(a.drcr,e.linkcd,1,-1) prv_adj, nvl(c.cur_adj,0) * decode(a.drcr,e.linkcd,1,-1) cur_adj, ";
+                sql += "nvl(c.adj_amt,0) * decode(a.drcr,e.linkcd,1,-1) prv_adj, nvl(f.cur_adj,0) * decode(a.drcr,e.linkcd,1,-1) cur_adj, ";
                 sql += "nvl(a.class1cd,d.class1cda) class1cd, a.vchtype, b.loccd ";
                 sql += "from " + scmf + ".t_vch_bl a, " + scmf + ".t_cntrl_hdr b, ";
                 sql += "( ";
-                sql += "select a.autoslno, a.pymtrem, sum(a.cur_adj) cur_adj, sum(a.adj_amt) adj_amt from ( ";
+                sql += "select a.autoslno, a.pymtrem, sum(a.adj_amt) adj_amt from ( ";
                 sql += sqlc;
 
                 sql += "union all ";
@@ -1307,23 +1314,50 @@ namespace Improvar
                 sql += "(select a.autono||a.dslno autoslno, max(a.class1cd) class1cda ";
                 sql += "from " + scmf + ".t_vch_class a ";
                 sql += "where a.datatag='BL' ";
-                sql += "group by a.autono||a.dslno ) d, " + scmf + ".m_genleg e, " + scmf + ".m_subleg k ";
+                sql += "group by a.autono||a.dslno ) d, ";
+
+                sql += "( select a.autoslno, a.adj_amt cur_adj from ";
+                sql += "(select a.i_autono||i_slno autoslno, sum(a.adj_amt) adj_amt from " + scmf + ".t_vch_bl_adj a where a.autono in (";
+                if (skipautono.retStr() != "") sql += skipautono; else sql += "'xx'";
+                sql += ") group by a.i_autono||i_slno ";
+                sql += "union all ";
+                sql += "select a.r_autono||r_slno autoslno, sum(a.adj_amt) adj_amt from " + scmf + ".t_vch_bl_adj a where a.autono in (";
+                if (skipautono.retStr() != "") sql += skipautono; else sql += "'xx'";
+                sql += ") group by a.r_autono||r_slno ) a ";
+                sql += " ) f, ";
+
+                sql += scmf + ".m_genleg e, " + scmf + ".m_subleg k ";
                 sql += "where a.autono=b.autono and a.autono||a.slno=c.autoslno(+) and a.glcd=e.glcd(+) and a.slcd=k.slcd(+) and ";
                 if (billfrom.retStr() != "") sql += "b.docdt >= to_date('" + billfrom + "','dd/mm/yyyy') and ";
                 if (billupto.retStr() != "") sql += "b.docdt <= to_date('" + billupto + "','dd/mm/yyyy') and ";
                 if (txnupto.retStr() != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
                 if (selglcd.retStr() != "") sql += "a.glcd in (" + selglcd + ") and ";
                 if (selslcd.retStr() != "") sql += "a.slcd in (" + selslcd + ") and ";
+                if (selrtdebcd.retStr() != "") sql += "a.rtdebcd in (" + selrtdebcd + ") and ";
                 if (unselslcd.retStr() != "") sql += "a.slcd not in (" + unselslcd + ") and ";
                 if (selclass1cd.retStr() != "") sql += "nvl(a.class1cd,d.class1cda) in (" + selclass1cd + ") and ";
                 if (selagslcd.retStr() != "") sql += "a.agslcd in (" + selagslcd + ") and ";
                 if (OnlyOSBill == "A") sql += "";
-                else if (OnlyOSBill == "N") sql += "(a.amt-nvl(c.adj_amt,0)-nvl(c.cur_adj,0) = 0 or nvl(c.cur_adj,0) <> 0) and ";
-                else sql += "(a.amt-nvl(c.adj_amt,0)-nvl(c.cur_adj,0) <> 0 or nvl(c.cur_adj,0) <> 0) and ";
+                else if (OnlyOSBill == "N") sql += "(a.amt-nvl(c.adj_amt,0)-nvl(f.cur_adj,0) = 0 or nvl(f.cur_adj,0) <> 0) and ";
+                else sql += "(a.amt-nvl(c.adj_amt,0)-nvl(f.cur_adj,0) <> 0 or nvl(f.cur_adj,0) <> 0) and ";
                 if (currautono.retStr() != "") sql += "a.autono||a.slno not in (" + currautono + ") and ";
+                if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
                 sql += "nvl(b.cancel,'N')='N' and b.compcd='" + COM + "' and ";
-                sql += "a.autono||a.slno=d.autoslno(+) ) a, ";
+                sql += "a.autono||a.slno=d.autoslno(+) and a.autono||a.slno=f.autoslno(+) ) a, ";
                 //single query end
+                //Get Bill wise Remarks
+
+                sql += "( select a.autono, a.slno, a.autoslno, nvl(b.pymtrem, a.blrem) blrem from ";
+                sql += "( select a.autono, a.slno, a.autono||a.slno autoslno, a.blrem ";
+                sql += "from " + scmf + ".t_vch_bl a, " + scmf + ".t_cntrl_hdr b ";
+                sql += "where a.autono=b.autono(+) and b.compcd='" + COM + "') a, ";
+                sql += "( select autoslno, pymtrem from ";
+                sql += "( select a.i_autono||a.i_slno autoslno, b.docdt, a.pymtrem, ";
+                sql += "row_number() over (partition by a.i_autono, a.i_slno order by b.docdt desc) as rn ";
+                sql += "from " + scmf + ".t_vch_bl_adj a, " + scmf + ".t_cntrl_hdr b ";
+                sql += "where a.autono=b.autono(+) and b.compcd='" + COM + "' and a.pymtrem is not null ) where rn=1) b ";
+                sql += "where a.autoslno=b.autoslno(+) ) b, ";
+                //
 
                 sql += "(select a.grpcd, a.parentcd, c.slcdgrpnm||'  '||b.slcdgrpnm parentnm, ";
                 sql += "a.grpcdfull, a.slcdgrpnm, a.class1cd, a.slcd, a.slcdclass1cd from ";
@@ -1347,16 +1381,18 @@ namespace Improvar
                 //sql += "where a.parentcd||a.slcdgrpcd = c.grpcdfull(+) and a.parentcd = d.grpcdfull(+) and a.grpcd=b.grpcd and a.slcd is not null ) s, ";
 
                 sql += scmf + ".m_genleg e, " + scmf + ".m_subleg f, " + scmf + ".m_class1 g, ";
-                sql += scmf + ".m_subleg i, " + scmf + ".m_subleg j, " + scmf + ".m_subleg k ";
+                sql += scmf + ".m_subleg i, " + scmf + ".m_subleg j, " + scmf + ".m_subleg k, " + scmf + ".m_retdeb l ";
                 sql += "where a.glcd=e.glcd(+) and a.slcd=f.slcd and a.class1cd=g.class1cd(+) and ";
+                sql += "a.autoslno=b.autoslno(+) and a.rtdebcd=l.rtdebcd(+) and ";
                 if (selstate.retStr() != "") sql += "f.state in (" + selstate + ") and ";
                 if (seldistrict.retStr() != "") sql += "f.district in (" + seldistrict + ") and ";
                 if (selflag.retStr() != "") sql += "a.flag in (" + selflag + ") and ";
                 if (selslgrpcd.retStr() != "") sql += "(s.parentcd in (" + selslgrpcd + ") ) and ";
                 if (linkcd.retStr() != "") sql += "e.linkcd='" + linkcd + "' and ";
                 sql += "a.agslcd=i.slcd(+) and a.conslcd=j.slcd(+) and a.slcd=k.slcd and a.slcdclass1cd=s.slcdclass1cd(+) ";
+                if (blno.retStr() != "") sql += "and a.blno='" + blno + "' ";
 
-                sql += "order by glcd,slnm,slcd,docdt,bldt1,docno";
+                sql += "order by glcd,slnm,slcd,bldt1,docdt,docno";
 
                 if (crbaladjauton == false) tbl = SQLquery(sql);
 
@@ -1410,6 +1446,12 @@ namespace Improvar
                     tbl.Columns.Add("parentcd", typeof(string));
                     tbl.Columns.Add("parentnm", typeof(string));
                     tbl.Columns.Add("pymtrem", typeof(string));
+                    tbl.Columns.Add("blrem", typeof(string));
+                    tbl.Columns.Add("billrem", typeof(string));
+                    tbl.Columns.Add("rtdebcd", typeof(string));
+                    tbl.Columns.Add("rtdebnm", typeof(string));
+                    tbl.Columns.Add("rtdebmobile", typeof(string));
+
                     #endregion
                     DataTable rstbl = new DataTable();
                     rstbl = SQLquery(sql);
@@ -1474,6 +1516,8 @@ namespace Improvar
                                 tbl.Rows[rNo]["blamt"] = Convert.ToDouble(tbldr.Rows[i]["blamt"] == DBNull.Value ? 0 : tbldr.Rows[i]["blamt"]);
                                 tbl.Rows[rNo]["oprecdamt"] = Convert.ToDouble(tbldr.Rows[i]["oprecdamt"] == DBNull.Value ? 0 : tbldr.Rows[i]["oprecdamt"]);
                                 tbl.Rows[rNo]["itamt"] = Convert.ToDouble(tbldr.Rows[i]["itamt"] == DBNull.Value ? 0 : tbldr.Rows[i]["itamt"]);
+                                tbl.Rows[rNo]["blrem"] = tbldr.Rows[i]["blrem"].ToString();
+                                tbl.Rows[rNo]["billrem"] = tbldr.Rows[i]["billrem"].ToString();
                                 tbl.Rows[rNo]["lrno"] = tbldr.Rows[i]["lrno"].ToString();
                                 tbl.Rows[rNo]["lrdt"] = tbldr.Rows[i]["lrdt"].ToString();
                                 tbl.Rows[rNo]["transnm"] = tbldr.Rows[i]["transnm"].ToString();
@@ -1507,6 +1551,9 @@ namespace Improvar
                                 tbl.Rows[rNo]["parentnm"] = tbldr.Rows[i]["parentnm"].ToString();
                                 tbl.Rows[rNo]["grpcdfull"] = tbldr.Rows[i]["grpcdfull"].ToString();
                                 tbl.Rows[rNo]["pymtrem"] = tbldr.Rows[i]["pymtrem"].ToString();
+                                tbl.Rows[rNo]["rtdebcd"] = tbldr.Rows[i]["rtdebcd"].ToString();
+                                tbl.Rows[rNo]["rtdebnm"] = tbldr.Rows[i]["rtdebnm"].ToString();
+                                tbl.Rows[rNo]["rtdebmobile"] = tbldr.Rows[i]["rtdebmobile"].ToString();
                             }
                             i++;
                         }
@@ -1578,6 +1625,9 @@ namespace Improvar
                                     tbl.Rows[rNo]["parentcd"] = tblcr.Rows[i]["parentcd"].ToString();
                                     tbl.Rows[rNo]["parentnm"] = tblcr.Rows[i]["parentnm"].ToString();
                                     tbl.Rows[rNo]["grpcdfull"] = tblcr.Rows[i]["grpcdfull"].ToString();
+                                    tbl.Rows[rNo]["rtdebcd"] = tblcr.Rows[i]["rtdebcd"].ToString();
+                                    tbl.Rows[rNo]["rtdebnm"] = tblcr.Rows[i]["rtdebnm"].ToString();
+                                    tbl.Rows[rNo]["rtdebmobile"] = tblcr.Rows[i]["rtdebmobile"].ToString();
                                 }
                                 i--;
                             }
@@ -1598,6 +1648,7 @@ namespace Improvar
                 return tbl;
             }
         }
+
         public string CheckOSTbl(DataTable tbl)
         {
             string msg = "OK";
