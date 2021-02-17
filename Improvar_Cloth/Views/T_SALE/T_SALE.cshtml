@@ -440,12 +440,13 @@
 </script>
 @section Scripts {
     <script>
-        function ReloadWithData() {
-            var searchValue = $('#AUTONO').val();
+        function ReloadWithDataPI() {
+            var searchValue = $('#PIAUTONO').val();
+            var searchValue1 = $('#DOCNO').val();
             var url = window.location.href;
             var key1 = "searchValue";
             url = updateQueryStringParameter(url, key1, searchValue);
-            url = updateQueryStringParameter(url, "loadOrder", "Y");
+            url = updateQueryStringParameter(url, "loadOrder", searchValue1);
             window.location = url;
         }
         function ReloadWithPSLIP() {
@@ -560,11 +561,30 @@
                             @Html.Label("", "Document No.")
                         </div>
                     </div>
-                    <div class="col-md-1">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly", tabindex = "-1" } })
+                    @if (Model.MENU_PARA == "SBDIR" && Model.DefaultAction == "A")
+                    {
+                        <div class="col-md-2">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control textbox_image", id = "DOCNO", onkeydown = "GetHelpBlur('" + @Url.Action("GetDOCNO_PI", PageControllerName) + "','Proforma Details','DOCNO','DOCNO=DOCNO=0/PIAUTONO=AUTONO=4')", onblur = "GetHelpBlur('" + @Url.Action("GetDOCNO_PI", PageControllerName) + "','Proforma Details','DOCNO','DOCNO=DOCNO=0/PIAUTONO=AUTONO=4');", @placeholder = "Code", maxlength = 6 } })
+                                <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetDOCNO_PI", PageControllerName)','Proforma Details','DOCNO','DOCNO=DOCNO=0/PIAUTONO=AUTONO=4')" />
+                                <input id="PIAUTONO" type="hidden" />
+                            </div>
                         </div>
-                    </div>
+                        <div class="col-md-3">
+                            <div class="editor-field" style="margin-top: 3px;">
+                                <input type="button" class="btn-sm" value="Get Proforma" style="padding:0px" onclick="ReloadWithDataPI()" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-1">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => model.T_TXN.DOCNO, new { htmlAttributes = new { @class = "form-control", id = "DOCNO", @placeholder = "Doc. No.", maxlength = 6, @readonly = "readonly", tabindex = "-1" } })
+                            </div>
+                        </div>
+                    }
+                    
                     <div class="col-md-1 divbltype">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Bill Type")
