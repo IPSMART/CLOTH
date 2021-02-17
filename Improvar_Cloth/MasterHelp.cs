@@ -2949,7 +2949,7 @@ namespace Improvar
                 if (tbl.Rows.Count > 0)
                 {
                     string str = ToReturnFieldValues("", tbl);
-                    if(skipstyleno == false)
+                    if (skipstyleno == false)
                     {
                         string sql = "select distinct barno from  " + CommVar.CurSchema(UNQSNO) + ".t_batchdtl where autono='" + tbl.Rows[0]["blautono"].retStr() + "' and slno='" + tbl.Rows[0]["blslno"].retStr() + "' ";
                         DataTable dt = SQLquery(sql);
@@ -2962,7 +2962,7 @@ namespace Improvar
                             str += "^BARNO=^" + Cn.GCS();
                         }
                     }
-                    
+
                     return str;
                 }
                 else
@@ -2981,6 +2981,52 @@ namespace Improvar
             }
             var hdr = "Document Code" + Cn.GCS() + "Document Name";
             return Generate_help(hdr, SB.ToString());
+        }
+        public string DOCNO_SALPUR_help(string val)
+        {
+            try
+            {
+                var UNQSNO = Cn.getQueryStringUNQSNO();
+                string scm = CommVar.CurSchema(UNQSNO);
+                string scmf = CommVar.FinSchema(UNQSNO);
+                var COMPCD = CommVar.Compcd(UNQSNO);
+                var LOCCD = CommVar.Loccd(UNQSNO);
+                string valsrch = val.ToUpper().Trim();
+                string sql = "";
+                sql += "select a.DOCNO,a.DOCDT,a.SLCD,b.AUTONO ,c.SLNM from " + scm + ".T_TXN a," + scm + ".T_CNTRL_HDR b,  ";
+                sql += scmf + ".M_SUBLEG c where a.AUTONO=b.AUTONO(+) and a.SLCD=c.SLCD(+)  and a.doctag ='PI' and b.compcd='" + COMPCD + "' and b.loccd='" + LOCCD + "' ";
+                if (valsrch.retStr() != "") sql += " and a.DOCNO = '" + valsrch + "' ";
+                sql += "  order by a.DOCNO,a.DOCDT ";
+                DataTable tbl = SQLquery(sql);
+                if (val.retStr() == "")
+                {
+                    System.Text.StringBuilder SB = new System.Text.StringBuilder();
+                    for (int i = 0; i <= tbl.Rows.Count - 1; i++)
+                    {
+                        SB.Append("<tr><td>" + tbl.Rows[i]["DOCNO"] + "</td><td>" + tbl.Rows[i]["DOCDT"].retDateStr() + "</td><td>" + tbl.Rows[i]["SLCD"] + "</td><td>" + tbl.Rows[i]["SLNM"] + "</td><td>" + tbl.Rows[i]["autono"] + "</td></tr>");
+                    }
+                    var hdr = "Doc No" + Cn.GCS() + "Doc Dt" + Cn.GCS() + "Party Code" + Cn.GCS() + "Party Name" + Cn.GCS() + "Autono";
+                    return Generate_help(hdr, SB.ToString(), "4");
+                }
+                else
+                {
+                    string str = "";
+                    if (tbl.Rows.Count > 0)
+                    {
+                        str = ToReturnFieldValues("", tbl);
+                    }
+                    else
+                    {
+                        str = "Invalid Document No. ! Please Select / Enter a Valid Document No. !!";
+                    }
+                    return str;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " " + ex.InnerException;
+            }
+
         }
     }
 }

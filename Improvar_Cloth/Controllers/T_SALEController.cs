@@ -181,6 +181,7 @@ namespace Improvar.Controllers
                                 if (VE.T_TXN_LINKNO == null) VE.T_TXN_LINKNO = new T_TXN_LINKNO();
                                 VE.LINKDOCNO = loadOrder.retStr();
                                 VE.T_TXN_LINKNO.LINKAUTONO = searchValue.retStr();
+                                VE.T_TXN.DOCDT = Cn.getCurrentDate(VE.mindate);
                             }
                             if (VE.T_CNTRL_HDR.DOCNO != null) ViewBag.formname = ViewBag.formname + " (" + VE.T_CNTRL_HDR.DOCNO + ")";
                         }
@@ -2701,6 +2702,18 @@ namespace Improvar.Controllers
             ModelState.Clear();
             return PartialView("_T_SALE_BarTab", VE);
 
+        }
+        public ActionResult GetDOCNO_PI(string val, string code)
+        {
+            var str = masterHelp.DOCNO_SALPUR_help(val);
+            if (str.IndexOf("='helpmnu'") >= 0)
+            {
+                return PartialView("_Help2", str);
+            }
+            else
+            {
+                return Content(str);
+            }
         }
         public dynamic SAVE(TransactionSaleEntry VE, string othr_para = "")
         {
