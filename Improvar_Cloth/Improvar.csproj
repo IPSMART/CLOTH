@@ -286,6 +286,7 @@
     <Compile Include="Controllers\M_USR_ACS_GRPDTLController.cs" />
     <Compile Include="Controllers\Prepare_JSONController.cs" />
     <Compile Include="Controllers\PrintPageController.cs" />
+    <Compile Include="Controllers\Rep_AgentController.cs" />
     <Compile Include="Controllers\Rep_Bale_HistoryController.cs" />
     <Compile Include="Controllers\Rep_Bale_StockController.cs" />
     <Compile Include="Controllers\Rep_BarcodeImageController.cs" />
@@ -1295,6 +1296,7 @@
     <Content Include="Views\Shared\_T_SALE_PYMT_PAYMENT.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PYMT_SALESMAN.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PYMT_Main.cshtml" />
+    <Content Include="Views\Rep_Agent\Rep_Agent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
