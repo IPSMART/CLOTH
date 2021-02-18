@@ -30,7 +30,7 @@ namespace Improvar.Controllers
                 }
                 else
                 {
-                    ViewBag.formname = "Bale wise Stock";
+                    ViewBag.formname = "Godown wise Stock";
                     ReportViewinHtml VE = new ReportViewinHtml();
                     Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                     ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
@@ -122,22 +122,23 @@ namespace Improvar.Controllers
                 {
                     double tqty, tnos, tval,gdtqty,gdtval;
                     tnos = 0;  gdtqty = 0;gdtval = 0;
-                   
 
                     IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     chkval1 = tbl.Rows[i]["gocd"].ToString();
                     if (RepeatAllRow == false || gonmfirst == false) IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                     if (RepeatAllRow == false || gonmfirst == false) IR.Rows[rNo]["Dammy"] = "<span style='font-weight:100;font-size:9px;'>" + " " + tbl.Rows[i]["gocd"].retStr() + "  " + " </span>" + tbl.Rows[i]["gonm"].retStr();
                     if (RepeatAllRow == false || gonmfirst == false) IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;";
+                    int gcount = 0;
                     while (tbl.Rows[i]["gocd"].ToString() == chkval1)
                     {
                         tval = 0; tqty = 0;
                         bool balefirst = true;
                         gonm = tbl.Rows[i]["gonm"].ToString();
                         chkval = tbl.Rows[i]["BaleNoBaleYrcd"].ToString();
+                        gcount++;
+                        count++;
                         while (tbl.Rows[i]["gocd"].ToString() == chkval1 && tbl.Rows[i]["BaleNoBaleYrcd"].ToString() == chkval)
-                        {
-                           
+                        {                           
                             bool itemfirst = true;
                             baleno = tbl.Rows[i]["baleno"].ToString();
                             chkval2 = tbl.Rows[i]["itcd"].ToString();
@@ -168,11 +169,8 @@ namespace Improvar.Controllers
                                 i = i + 1;
                                 if (i > maxR) break;
                             }
-
-                            count++; 
                             if (i > maxR) break;
                         }
-                        
                         if (RepeatAllRow == false)
                         {
                             IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
@@ -182,15 +180,13 @@ namespace Improvar.Controllers
                             IR.Rows[rNo]["qnty"] = tqty;
                             IR.Rows[rNo]["value"] = tval;
                         }
-                        //gdtqty = gdtqty + tqty;
-                        
                         if (i > maxR) break;
                     }
                     if (RepeatAllRow == true)
                     {
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                         IR.Rows[rNo]["dammy"] = "";
-                        IR.Rows[rNo]["prefno"] = "Total of " + gonm + " ";
+                        IR.Rows[rNo]["prefno"] = "Total (" + gcount.retStr() + ")  in " + gonm + " ";
                         IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
                         IR.Rows[rNo]["qnty"] = gdtqty;
                         IR.Rows[rNo]["value"] = gdtval;
@@ -198,12 +194,11 @@ namespace Improvar.Controllers
                     gtqty = gtqty + gdtqty;
                     gtval = gtval + gdtval;
                     flag++; gonmfirst = true;
-                    if (i > maxR) break;
-                
+                    if (i > maxR) break;                
                 }
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["dammy"] = "";
-                IR.Rows[rNo]["prefno"] = "Total " + count + " bales  ";
+                IR.Rows[rNo]["prefno"] = "Total " + count.retStr() + " bales  ";
                 IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;border-bottom: 2px solid;";
                 IR.Rows[rNo]["qnty"] = gtqty;
                 IR.Rows[rNo]["value"] = gtval;
@@ -212,8 +207,8 @@ namespace Improvar.Controllers
                 IR.Rows[rNo]["dammy"] = " ";
                 IR.Rows[rNo]["flag"] = " height:14px; ";
 
-                string pghdr1 = " Bale wise Stock from " + fdt + " to " + tdt;
-                string repname = "Bale wise Stock";
+                string pghdr1 = "Godown wise Stock as on " + tdt;
+                string repname = "Godown wise Stock";
                 PV = HC.ShowReport(IR, repname, pghdr1, "", true, true, "L", false);
 
                 TempData[repname] = PV;
