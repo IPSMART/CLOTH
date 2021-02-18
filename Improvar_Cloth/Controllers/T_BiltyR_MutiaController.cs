@@ -883,12 +883,24 @@ namespace Improvar.Controllers
                 DataTable tbl;
                 string Scm = CommVar.CurSchema(UNQSNO);
                 string str = "";
-                str += "select distinct a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno, ";
-                str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,b.pageslno,c.itnm||' '||c.styleno itstyle,d.prefno,d.prefdt  ";
-                str += " from " + Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d  ";
-                str += " where a.blautono=b.autono(+) and b.itcd=c.itcd(+) and a.blautono=d.autono(+) and a.baleno=b.baleno(+) and a.blslno=b.slno(+) and a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ";
-                str += "order by a.slno ";
+                str += "select distinct a.autono,a.blautono,a.slno,a.drcr,a.lrdt,a.lrno,a.baleyr,a.baleno,a.blslno,a.rslno, z.pcstype, ";
+                str += "b.itcd, c.styleno, c.itnm,c.uomcd,b.nos,b.qnty,b.pageno,b.pageslno,c.itnm||' '||c.styleno itstyle,d.prefno,d.prefdt from ";
+
+                str += "( select distinct a.autono, a.blautono, a.slno, a.baleno, a.blslno ";
+                str += "from " + Scm + ".T_BALE a ";
+                str += "where a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ) y, ";
+
+                str += "( select a.autono, a.txnslno, max(a.pcstype) pcstype ";
+                str += "from " + Scm + ".t_batchdtl a group by a.autono, a.txnslno) z, ";
+
+                str += Scm + ".T_BALE a," + Scm + ".T_TXNDTL b," + Scm + ".M_SITEM c," + Scm + ".T_TXN d ";
+
+                str += "where y.autono=a.autono(+) and y.slno=a.slno(+) and y.autono=z.autono(+) and y.slno=z.txnslno(+) and ";
+                str += "y.blautono=b.autono(+) and b.itcd=c.itcd(+) and y.blautono=d.autono(+) and y.baleno=b.baleno(+) and y.blslno=b.slno(+) and ";
+                str += "a.autono='" + VE.T_BALE_HDR.AUTONO + "'  ";
+                str += "order by prefno, prefdt, slno ";
                 tbl = Master_Help.SQLquery(str);
+
                 if (tbl.Rows.Count != 0)
                 {
                     DataTable IR = new DataTable("mstrep");
@@ -900,6 +912,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "prefno", "string", "c,12", "Bill No.");
                     HC.GetPrintHeader(IR, "prefdt", "string", "c,12", "Date");
                     HC.GetPrintHeader(IR, "itstyle", "string", "c,25", "Short No.");
+                    HC.GetPrintHeader(IR, "pcstype", "string", "c,10", "Ctg");
                     HC.GetPrintHeader(IR, "slno", "string", "c,7", "Slno");
                     HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale");
                     HC.GetPrintHeader(IR, "nos", "double", "c,15", "Nos");
@@ -913,19 +926,27 @@ namespace Improvar.Controllers
 
                     while (i <= maxR)
                     {
-
+                        string blautono = tbl.Rows[i]["blautono"].retStr();
+                        while (tbl.Rows[i]["blautono"].retStr() == blautono)
+                        {
+                            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                            IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].retStr();
+                            IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
+                            IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
+                            IR.Rows[rNo]["pcstype"] = tbl.Rows[i]["pcstype"].retStr();
+                            IR.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].retStr();
+                            IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
+                            IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
+                            IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
+                            IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
+                            IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
+                            IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr() + "/" + tbl.Rows[i]["pageslno"].retStr();
+                            i = i + 1;
+                            if (i > maxR) break;
+                        }
                         IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-                        IR.Rows[rNo]["prefno"] = tbl.Rows[i]["prefno"].retStr();
-                        IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
-                        IR.Rows[rNo]["itstyle"] = tbl.Rows[i]["itstyle"].retStr();
-                        IR.Rows[rNo]["slno"] = tbl.Rows[i]["slno"].retStr();
-                        IR.Rows[rNo]["baleno"] = tbl.Rows[i]["baleno"].retStr();
-                        IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
-                        IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
-                        IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
-                        IR.Rows[rNo]["lrno"] = tbl.Rows[i]["lrno"].retStr();
-                        IR.Rows[rNo]["pageno"] = tbl.Rows[i]["pageno"].retStr();
-                        i = i + 1;
+                        IR.Rows[rNo]["dammy"] = " ";
+                        IR.Rows[rNo]["flag"] = " height:14px; ";
                     }
 
                     string pghdr1 = "";
