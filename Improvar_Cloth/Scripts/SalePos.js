@@ -3,6 +3,7 @@
     var ID = $("#" + barhlpId).val();
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
+    var BARNO = "",ITCD="",duplicate="",slno=0;
     debugger;
     if (ID == "") {
         if (barhlpId == 'M_BARCODE' || barhlpId == 'M_STYLENO') {
@@ -90,7 +91,22 @@
                     if (MSG >= 0) {
                         if (barhlpId == 'M_BARCODE' || barhlpId == 'M_STYLENO') {
                             ClearAllTextBoxes("M_BARCODE,M_STYLENO,MTRLJOBCD,PARTCD");
-                            AddMainRow(result);
+                            BARNO = returncolvalue(result, "BARNO");
+                            //ITCD = returncolvalue(result, "ITCD");
+                            var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
+                            for (j = 0; j <= GridRowMain - 1; j++)
+                            {
+                                if (BARNO == $("#B_BARNO_" + j).val())
+                                {
+                                    slno = $("#B_SLNO_" + j).val();
+                                    
+                                }
+                                duplicate = false;
+                            }
+                            if (slno > 0) { UpdateBarCodeRow(result, slno); }
+
+                            else { AddMainRow(result); }
+
                         } else if (barhlpId == 'R_BARCODE' || barhlpId == 'R_STYLENO') {
                             ClearAllTextBoxes("R_BARCODE,R_STYLENO,MTRLJOBCD,PARTCD");
                             AddReturnRow(result);
@@ -299,7 +315,7 @@ function AddMainRow(hlpstr) {
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="'+QNTY+'" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + QNTY + '" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -395,8 +411,13 @@ function AddMainRow(hlpstr) {
     $("#_T_SALE_POS_PRODUCT_GRID tbody").append(tr);
     CalculateInclusiveRate(rowindex, '_T_SALE_POS_PRODUCT_GRID')
    // CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID', rowindex);
-    $("#M_BARCODE").val('');
-    $("#M_BARCODE").focus();
+    if (INCLRATEASK != "Y") {
+        $("#M_STYLENO").val('');
+        $("#M_STYLENO").focus();
+    } else {
+        $("#M_BARCODE").val('');
+        $("#M_BARCODE").focus();
+    }
 }
 function AddReturnRow(hlpstr) {
     debugger;
@@ -616,8 +637,14 @@ function AddReturnRow(hlpstr) {
     $("#_T_SALE_POS_RETURN_GRID tbody").append(tr);
     CalculateInclusiveRate(rowindex, '_T_SALE_POS_RETURN_GRID')
    // CalculateRowAmt('_T_SALE_POS_RETURN_GRID', rowindex);
-    $("#R_BARCODE").val('');
-    $("#R_BARCODE").focus();
+   
+    if (INCLRATEASK != "Y") {
+        $("#R_STYLENO").val('');
+        $("#R_STYLENO").focus();
+    } else {
+        $("#R_BARCODE").val('');
+        $("#R_BARCODE").focus();
+    }
     $("#R_AGDOCDT_" + rowindex).datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true });
 }
 function CalculateRowAmt(GridId, i) {
@@ -652,6 +679,18 @@ function CalculateRowAmt(GridId, i) {
         }
 
         var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
+        var B_RATE_ = retFloat($("#B_RATE_" + i).val());
+        var INCLRATE_ = $("#INCLRATE_" + i).val();
+        var B_RATE_ = $("#B_RATE_" + i).val();
+        var B_NETAMT_ = $("#B_NETAMT_" + i).val();
+        //if(B_NETAMT_!=0)
+        //{
+        //    if (B_NETAMT_ != INCLRATE_) {
+        //        var RateAdjust = retFloat(B_RATE_) + retFloat(0.01);
+        //        $("#B_RATE_" + i).val(RateAdjust.toFixed(2));
+        //    }
+        //}
+      
         var B_RATE_ = retFloat($("#B_RATE_" + i).val());
         var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
         $("#B_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
@@ -717,7 +756,7 @@ function CalculateRowAmt(GridId, i) {
         var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
         //$("#INCLRATE_" + i).val(rownetamt);
         $("#B_NETAMT_" + i).val(netamt);
-        CheckInclusivRateNetAmt(GridId, i);
+        //if (B_NETAMT_ != INCLRATE_) { CheckInclusivRateNetAmt(GridId, i); }
         
     }
     else if (GridId == "_T_SALE_POS_AMOUNT_GRID") {
@@ -912,7 +951,7 @@ function CalculateRowAmt(GridId, i) {
         var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
         //$("#R_INCLRATE_" + i).val(rownetamt);
         $("#R_NETAMT_" + i).val(netamt);
-        CheckInclusivRateNetAmt(GridId, i);
+        //CheckInclusivRateNetAmt(GridId, i);
     }
     CalculateTotal();
 }
@@ -1424,222 +1463,131 @@ function UpdateTaxPer() {
     }
 
 }
-function CheckInclusivRateNetAmt(GridId, i) {
+function UpdateBarCodeRow(hlpstr,slno) {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
+    var MENU_PARA = $("#MENU_PARA").val();
     if (DefaultAction == "V") return true;
-    var INCLRATEASK = $("#INCLRATEASK").val();
-    if (GridId == "_T_SALE_POS_PRODUCT_GRID") {
-        var B_NETAMT_ = $("#B_NETAMT_" + i).val();
-        if (INCLRATEASK == "Y" && B_NETAMT_!=0) {
-            var INCLRATE_ = $("#INCLRATE_" + i).val();
-            var B_RATE_ = $("#B_RATE_" + i).val();
-            var B_NETAMT_ = $("#B_NETAMT_" + i).val();
-            if (B_NETAMT_ != INCLRATE_) {
-                var RateAdjust = retFloat(B_RATE_) + retFloat(0.01);
-                $("#B_RATE_" + i).val(RateAdjust.toFixed(2));
-                var B_QNTY_ = retFloat($("#B_QNTY_" + i).val());
-                 var QNTY = retFloat($("#B_QNTY_" + i).val());
-        var IGSTPER = $("#B_IGSTPER_" + i).val();
-        if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
-
-        var CGSTPER = $("#B_CGSTPER_" + i).val();
-        if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
-
-        var SGSTPER = $("#B_SGSTPER_" + i).val();
-        if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
-
-        var CESSPER = $("#B_CESSPER_" + i).val();
-        if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
-        if (QNTY != 0) {
-            var BALSTOCK = retFloat($("#B_BALSTOCK_" + i).val());
-            var NEGSTOCK = $("#B_NEGSTOCK_" + i).val();
-            var balancestock = BALSTOCK - QNTY;
-            if (balancestock < 0) {
-                if (NEGSTOCK != "Y") {
-                    msgInfo("Quantity should not be grater than Stock !");
-                    message_value = "B_QNTY_" + i;
-                    return false;
-                }
-            }
-        }
-                var B_RATE_ = retFloat($("#B_RATE_" + i).val());
-                var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
-                $("#B_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
-                var discamt = CalculateDiscount("B_DISCTYPE_" + i, "B_DISCRATE_" + i, "B_NOS_" + i, "B_QNTY_" + i, "B_GROSSAMT_" + i, "B_DISCRATE_" + i);
-                var TXBLVAL_ = retFloat(B_GROSSAMT_ - discamt).toFixed(2);
-                var B_PRODGRPGSTPER_ = $("#B_PRODGRPGSTPER_" + i).val();
-                var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
-                $("#B_DISCAMT_" + i).val(discamt);
-                $("#B_TXBLVAL_" + i).val(TXBLVAL_);
-                $("#B_GSTPER_" + i).val(GSTPER);
-                //IGST,CGST,SGST,CESS AMOUNT CALCULATION
-
-                var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
-                //IGST
-                if (IGSTPER == 0 || IGSTPER == "") {
-                    IGSTPER = 0; IGST_AMT = 0;
-                }
-                else {
-                    IGST_AMT = parseFloat((TXBLVAL_ * IGSTPER) / 100).toFixed(2);
-                    chkAmt = $("#B_IGSTAMT_" + i).val();
-                    if (chkAmt == "") chkAmt = 0;
-                    if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
-                }
-                $("#B_IGSTAMT_" + i).val(IGST_AMT);
-                //CGST
-                if (CGSTPER == "" || CGSTPER == 0) {
-                    CGSTPER = 0; CGST_AMT = 0;
-                }
-                else {
-                    CGST_AMT = parseFloat((TXBLVAL_ * CGSTPER) / 100).toFixed(2);
-                    chkAmt = $("#B_CGSTAMT_" + i).val();
-                    if (chkAmt == "") chkAmt = 0;
-                    if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
-                }
-                $("#B_CGSTAMT_" + i).val(CGST_AMT);
-                //SGST
-                if (SGSTPER == "" || SGSTPER == 0) {
-                    SGSTPER = 0; SGST_AMT = 0;
-                }
-                else {
-                    SGST_AMT = parseFloat((TXBLVAL_ * SGSTPER) / 100).toFixed(2);
-                    chkAmt = $("#B_SGSTAMT_" + i).val();
-                    if (chkAmt == "") chkAmt = 0;
-                    if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
-                }
-                $("#B_SGSTAMT_" + i).val(SGST_AMT);
-
-                //CESS
-                if (CESSPER == "" || CESSPER == 0) {
-                    CESSPER = 0; CESS_AMT = 0;
-                }
-                else {
-                    CESS_AMT = parseFloat((TXBLVAL_ * CESSPER) / 100).toFixed(2);
-                    chkAmt = $("#B_CESSAMT_" + i).val();
-                    if (chkAmt == "") chkAmt = 0;
-                    if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
-                }
-                $("#B_CESSAMT_" + i).val(CESS_AMT);
-                var gstamt = retFloat(IGST_AMT) + retFloat(CGST_AMT) + retFloat(SGST_AMT) + retFloat(CESS_AMT);
-                $("#B_GSTAMT_" + i).val(gstamt.toFixed(2));
-
-                var rownetamt = retFloat(retFloat((TXBLVAL_ * GSTPER) / 100) + retFloat(TXBLVAL_)).toFixed(2);
-                var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
-                //$("#INCLRATE_" + i).val(rownetamt);
-                $("#B_NETAMT_" + i).val(netamt);
-            }
-        }
+    var MNTNLISTPRICE = $("#MNTNLISTPRICE").val();
+    var MNTNOURDESIGN = $("#MNTNOURDESIGN").val();
+    var INCLRATE = 0;
+    if (INCLRATEASK == "Y") {
+        INCLRATE = returncolvalue(hlpstr, "RATE");
     }
-    else if (GridId == "_T_SALE_POS_RETURN_GRID") {
-        var B_NETAMT_ = $("#R_NETAMT_" + i).val();
-        if (INCLRATEASK == "Y" && B_NETAMT_ != 0) {
-            var INCLRATE_ = $("#INCLRATE_" + i).val();
-            var B_RATE_ = $("#R_RATE_" + i).val();
-            var B_NETAMT_ = $("#R_NETAMT_" + i).val();
-            if (B_NETAMT_ != INCLRATE_) {
-                var RateAdjust = retFloat(B_RATE_) + retFloat(0.01);
-                $("#R_RATE_" + i).val(RateAdjust.toFixed(2));
-                var B_QNTY_ = retFloat($("#R_QNTY_" + i).val());
-                var QNTY = retFloat($("#R_QNTY_" + i).val());
-                var IGSTPER = $("#R_IGSTPER_" + i).val();
-                if (IGSTPER != "") { IGSTPER = parseFloat(IGSTPER); } else { IGSTPER = parseFloat(0); }
-
-                var CGSTPER = $("#R_CGSTPER_" + i).val();
-                if (CGSTPER != "") { CGSTPER = parseFloat(CGSTPER); } else { CGSTPER = parseFloat(0); }
-
-                var SGSTPER = $("#R_SGSTPER_" + i).val();
-                if (SGSTPER != "") { SGSTPER = parseFloat(SGSTPER); } else { SGSTPER = parseFloat(0); }
-
-                var CESSPER = $("#R_CESSPER_" + i).val();
-                if (CESSPER != "") { CESSPER = parseFloat(CESSPER); } else { CESSPER = parseFloat(0); }
-
-                if (QNTY != 0) {
-                    var BALSTOCK = retFloat($("#R_BALSTOCK_" + i).val());
-                    var NEGSTOCK = $("#R_NEGSTOCK_" + i).val();
-                    var balancestock = BALSTOCK - QNTY;
-                    //if (balancestock < 0) {
-                    //    if (NEGSTOCK != "Y") {
-                    //        msgInfo("Quantity should not be grater than Stock !");
-                    //        message_value = "R_QNTY_" + i;
-                    //        return false;
-                    //    }
-                    //}
-                }
-
-                var B_QNTY_ = retFloat($("#R_QNTY_" + i).val());
-                var B_RATE_ = retFloat($("#R_RATE_" + i).val());
-                var B_GROSSAMT_ = B_QNTY_ * B_RATE_;
-                $("#R_GROSSAMT_" + i).val(B_GROSSAMT_);//gross amt
-                var discamt = CalculateDiscount("R_DISCTYPE_" + i, "R_DISCRATE_" + i, "R_NOS_" + i, "R_QNTY_" + i, "R_GROSSAMT_" + i, "R_DISCRATE_" + i);
-                var TXBLVAL_ = retFloat(B_GROSSAMT_ - discamt).toFixed(2);
-                var B_PRODGRPGSTPER_ = $("#R_PRODGRPGSTPER_" + i).val();
-                var GSTPER = retGstPer(B_PRODGRPGSTPER_, B_RATE_);
-                $("#R_DISCAMT_" + i).val(discamt);
-                $("#R_TXBLVAL_" + i).val(TXBLVAL_);
-                var gstper = $("#R_GSTPER_" + i).val();
-                if (gstper != "") { $("#R_GSTPER_" + i).val(gstper); } else { $("#R_GSTPER_" + i).val(GSTPER); }
-                //  $("#R_GSTPER_" + i).val(GSTPER);
-                //IGST,CGST,SGST,CESS AMOUNT CALCULATION
-
-                var IGST_AMT = 0; var CGST_AMT = 0; var SGST_AMT = 0; var CESS_AMT = 0; var chkAmt = 0;
-                //IGST
-                if (IGSTPER == 0 || IGSTPER == "") {
-                    IGSTPER = 0; IGST_AMT = 0;
-                }
-                else {
-                    IGST_AMT = parseFloat((TXBLVAL_ * IGSTPER) / 100).toFixed(2);
-                    chkAmt = $("#R_IGSTAMT_" + i).val();
-                    if (chkAmt == "") chkAmt = 0;
-                    if (Math.abs(IGST_AMT - chkAmt) <= 1) IGST_AMT = chkAmt;
-                }
-                $("#R_IGSTAMT_" + i).val(IGST_AMT);
-                //CGST
-                if (CGSTPER == "" || CGSTPER == 0) {
-                    CGSTPER = 0; CGST_AMT = 0;
-                }
-                else {
-                    CGST_AMT = parseFloat((TXBLVAL_ * CGSTPER) / 100).toFixed(2);
-                    chkAmt = $("#R_CGSTAMT_" + i).val();
-                    if (chkAmt == "") chkAmt = 0;
-                    if (Math.abs(CGST_AMT - chkAmt) <= 1) CGST_AMT = chkAmt;
-                }
-                $("#R_CGSTAMT_" + i).val(CGST_AMT);
-                //SGST
-                if (SGSTPER == "" || SGSTPER == 0) {
-                    SGSTPER = 0; SGST_AMT = 0;
-                }
-                else {
-                    SGST_AMT = parseFloat((TXBLVAL_ * SGSTPER) / 100).toFixed(2);
-                    chkAmt = $("#R_SGSTAMT_" + i).val();
-                    if (chkAmt == "") chkAmt = 0;
-                    if (Math.abs(SGST_AMT - chkAmt) <= 1) SGST_AMT = chkAmt;
-                }
-                $("#R_SGSTAMT_" + i).val(SGST_AMT);
-
-                //CESS
-                if (CESSPER == "" || CESSPER == 0) {
-                    CESSPER = 0; CESS_AMT = 0;
-                }
-                else {
-                    CESS_AMT = parseFloat((TXBLVAL_ * CESSPER) / 100).toFixed(2);
-                    chkAmt = $("#R_CESSAMT_" + i).val();
-                    if (chkAmt == "") chkAmt = 0;
-                    if (Math.abs(CESS_AMT - chkAmt) <= 1) CESS_AMT = chkAmt;
-                }
-                $("#R_CESSAMT_" + i).val(CESS_AMT);
-                var gstamt = retFloat(IGST_AMT) + retFloat(CGST_AMT) + retFloat(SGST_AMT) + retFloat(CESS_AMT);
-                $("#R_GSTAMT_" + i).val(gstamt.toFixed(2));
-                var rownetamt = retFloat(retFloat((TXBLVAL_ * GSTPER) / 100) + retFloat(TXBLVAL_)).toFixed(2);
-                var netamt = parseFloat(parseFloat(TXBLVAL_) + parseFloat(IGST_AMT) + parseFloat(CGST_AMT) + parseFloat(SGST_AMT) + parseFloat(CESS_AMT)).toFixed(2);
-                //$("#R_INCLRATE_" + i).val(rownetamt);
-                $("#R_NETAMT_" + i).val(netamt);
+  
+    var GridRowMain = $("#_T_SALE_POS_PRODUCT_GRID > tbody > tr").length;
+    for (j = 0; j <= GridRowMain - 1; j++) {
+        if ($("#B_SLNO_" + j).val() == slno) {
+            var qnty = $("#B_QNTY_" + j).val();
+            var sumqnty = qnty + (returncolvalue(hlpstr, "QNTY"));
+            $("#B_BARNO_" + j).val($("#B_BARNO_" + j).val());
+            //$("#B_TXNSLNO_" + j).val(TXNSLNO);
+            $("#B_ITGRPCD_" + j).val($("#B_ITGRPCD_" + j).val());
+            $("#B_ITGRPNM_" + j).val($("#B_ITGRPNM_" + j).val());
+            $("#B_MTRLJOBCD_" + j).val($("#B_MTRLJOBCD_" + j).val());
+            $("#B_ITCD_" + j).val($("#B_ITCD_" + j).val());
+            $("#B_ITSTYLE_" + j).val($("#B_ITSTYLE_" + j).val());
+            $("#B_STYLENO_" + j).val($("#B_STYLENO_" + j).val());
+            $("#B_STKTYPE_" + j).val($("#B_STKTYPE_" + j).val());
+            $("#B_PARTCD_" + j).val($("#B_PARTCD_" + j).val());
+            $("#B_PARTNM_" + j).val($("#B_PARTNM_" + j).val());
+            $("#B_PRTBARCODE_" + j).val($("#B_PRTBARCODE_" + j).val());
+            $("#B_COLRNM_" + j).val($("#B_COLRNM_" + j).val());
+            $("#B_SIZECD_" + j).val($("#B_SIZECD_" + j).val());
+            $("#B_SIZENM_" + j).val($("#B_SIZENM_" + j).val());
+            $("#B_SZBARCODE_" + j).val($("#B_SZBARCODE_" + j).val());
+            $("#B_BALSTOCK_" + j).val($("#B_BALSTOCK_" + j).val());
+            $("#B_QNTY_" + j).val(sumqnty);
+            $("#B_NEGSTOCK_" + j).val($("#B_NEGSTOCK_" + j).val());
+            $("#B_UOM_" + j).val($("#B_UOM_" + j).val());
+            $("#B_NOS_" + j).val($("#B_NOS_" + j).val());
+            $("#B_FLAGMTR_" + j).val($("#B_FLAGMTR_" + j).val());
+            $("#INCLRATE_" + j).val($("#INCLRATE_" + j).val());
+            $("#B_RATE_" + j).val($("#B_RATE_" + j).val());
+            $("#B_GLCD_" + j).val($("#B_GLCD_" + j).val());
+            var RATE = returncolvalue(hlpstr, "RATE");
+            var GROSSAMT = retFloat(sumqnty) * retFloat(RATE);
+            $("#B_GROSSAMT_" + j).val(GROSSAMT); 
+            $("#B_PRODGRPGSTPER_" + j).val($("#B_PRODGRPGSTPER_" + j).val());
+            //var GSTPERstr = retGstPerstr(PRODGRPGSTPER, RATE);
+            //var GSTPERarr = GSTPERstr.split(','); var GSTPER = 0; var IGSTPER = 0; var CGSTPER = 0; var SGSTPER = 0;
+            //$.each(GSTPERarr, function () { GSTPER += parseFloat(this) || 0; IGSTPER = parseFloat(GSTPERarr[0]) || 0; CGSTPER = parseFloat(GSTPERarr[1]) || 0; SGSTPER = parseFloat(GSTPERarr[2]) || 0; });
+            //var BarImages = returncolvalue(hlpstr, "BARIMAGE");
+            //var NoOfBarImages = BarImages.split(String.fromCharCode(179)).length;
+            //if (BarImages == '') { NoOfBarImages = ''; }
+            $("#B_GSTPER_" + j).val($("#B_GSTPER_" + j).val());
+            $("#OpenImageModal_" + j).val($("#OpenImageModal_" + j).val());
+            $("#B_BarImages_" + j).val( $("#B_BarImages_" + j).val());
+          
+            var DISCTYPE = $("#B_DISCTYPE_DESC_" + j).val() == "P" ? "%" : $("#DISCTYPE").val() == "N" ? "Nos" : $("#DISCTYPE").val() == "Q" ? "Qnty" : $("#DISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
+            var TDDISCTYPE = $("#B_TDDISCTYPE_DESC_" + j).val() == "P" ? "%" : $("#TDDISCTYPE").val() == "N" ? "Nos" : $("#TDDISCTYPE").val() == "Q" ? "Qnty" : $("#TDDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
+            var SCMDISCTYPE = $("#B_SCMDISCTYPE_DESC_" + j).val() == "P" ? "%" : $("#SCMDISCTYPE").val() == "N" ? "Nos" : $("#SCMDISCTYPE").val() == "Q" ? "Qnty" : $("#SCMDISCTYPE").val() == "A" ? "AftDsc%" : "Fixed";
+            $("#B_DISCTYPE_DESC_" + j).val(DISCTYPE);
+            $("#B_TDDISCTYPE_DESC_" + j).val(TDDISCTYPE);
+            $("#B_SCMDISCTYPE_DESC_" + j).val(SCMDISCTYPE);
+            CalculateInclusiveRate(j, '_T_SALE_POS_PRODUCT_GRID')
+            
+            if (INCLRATEASK != "Y") {
+                $("#M_STYLENO").val('');
+                $("#M_STYLENO").focus();
+            } else {
+                $("#M_BARCODE").val('');
+                $("#M_BARCODE").focus();
             }
+          
         }
+
     }
-    CalculateTotal();
+   
    
 }
+
+
+//function CheckInclusivRateNetAmt(GridId, i) {
+//    debugger;
+//    var DefaultAction = $("#DefaultAction").val();
+//    if (DefaultAction == "V") return true;
+//    var INCLRATEASK = $("#INCLRATEASK").val();
+//    if (GridId == "_T_SALE_POS_PRODUCT_GRID") {
+//        var B_NETAMT_ = $("#B_NETAMT_" + i).val();
+//        if (INCLRATEASK == "Y" && B_NETAMT_!=0) {
+//            var INCLRATE_ = $("#INCLRATE_" + i).val();
+//            var B_RATE_ = $("#B_RATE_" + i).val();
+//            var B_NETAMT_ = $("#B_NETAMT_" + i).val();
+//            var diffrate = INCLRATE_ - B_NETAMT_;
+//            if (B_NETAMT_ < INCLRATE_) {
+
+//                var RateAdjust = retFloat(B_RATE_) + retFloat(diffrate);
+//                $("#B_RATE_" + i).val(RateAdjust.toFixed(2));
+//            }
+//            else {
+//                var RateAdjust = retFloat(B_RATE_) - retFloat(diffrate);
+//            $("#B_RATE_" + i).val(RateAdjust.toFixed(2));
+//        }
+               
+//        }
+//        CalculateRowAmt(GridId, i);
+//    }
+//    else if (GridId == "_T_SALE_POS_RETURN_GRID") {
+//        var B_NETAMT_ = $("#R_NETAMT_" + i).val();
+//        if (INCLRATEASK == "Y" && B_NETAMT_ != 0) {
+//            var INCLRATE_ = $("#INCLRATE_" + i).val();
+//            var B_RATE_ = $("#R_RATE_" + i).val();
+//            var B_NETAMT_ = $("#R_NETAMT_" + i).val();
+//            var diffrate = INCLRATE_ - B_NETAMT_;
+//            if (B_NETAMT_ < INCLRATE_) {
+//                var RateAdjust = retFloat(B_RATE_) + retFloat(diffrate);
+//                $("#R_RATE_" + i).val(RateAdjust.toFixed(2));
+               
+          
+//            }
+//        }
+//        CalculateRowAmt(GridId, i);
+//    }
+   
+   
+//}
+
 
 
 
