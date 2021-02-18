@@ -104,6 +104,7 @@ namespace Improvar.Controllers
                 HC.GetPrintHeader(IR, "styleno", "string", "c,25", "Style No");
                 HC.GetPrintHeader(IR, "Shade", "string", "c,10", "Shade");
                 HC.GetPrintHeader(IR, "baleno", "string", "c,12", "Bale No");
+                HC.GetPrintHeader(IR, "uomcd", "string", "c,5", "uom");
                 HC.GetPrintHeader(IR, "nos", "double", "c,7", "Nos");
                 HC.GetPrintHeader(IR, "qnty", "double", "c,16,3", "Qnty");
                 HC.GetPrintHeader(IR, "rate", "double", "c,10,2", "Rate");
@@ -160,6 +161,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["prefdt"] = tbl.Rows[i]["prefdt"].retDateStr();
                                 IR.Rows[rNo]["shade"] = tbl.Rows[i]["shade"].retStr();
                                 IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
+                                IR.Rows[rNo]["uomcd"] = tbl.Rows[i]["uomcd"].retStr();
                                 IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
                                 IR.Rows[rNo]["rate"] = tbl.Rows[i]["rate"].retDbl();
                                 IR.Rows[rNo]["value"] = value.retDbl();

@@ -953,6 +953,7 @@ namespace Improvar
                 if (barno.retStr() != "") sql += "upper(d.barno) in (" + barno + ") and ";
                 if (itcd.retStr() != "") sql += "d.itcd in (" + itcd + ") and ";
                 sql += "a.autono=c.autono(+) and ";
+                if (skipautono.retStr() != "") sql += "a.autono not in (" + skipautono + ") and ";
                 sql += "(a.barno is null ";
                 if (gocd.retStr() != "") sql += "or a.gocd not in (" + gocd + ") ";
                 sql += ") ";
