@@ -1,104 +1,169 @@
-﻿@model Improvar.ViewModels.TransactionSalePosEntry
+﻿@model Improvar.ViewModels.SalePymtEntry
 <script type="text/javascript">
     $(document).ready(function () {
-        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_POS_SALESMAN_GRID'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
-
     });
-
 </script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
+            $("#BALCLASS1CD").attr("readonly", "readonly");
+            modeView();
+        }
+        else if ("@Model.DefaultAction" == "E") {
 
-@*<div style="transform: translate(0%, 0%);z-index: 1100;background-color:#c4b9b9;border:5px groove;width: 1200px;">*@
-<div style="width: 872px;" overflow-y:auto;">
+        }
+        else if ("@Model.DefaultAction" == "A") {
+            $('form :input:enabled:visible:not([readonly]):first').focus();
+        }
+        var viewbagAmt = GlobalFormatNumber('@ViewBag.AMT', "en-IN", "2");
+        $("#viewbagAMT").html(viewbagAmt);
+        document.getElementById("main_amount").value = viewbagAmt;
+        //$("#main_amount").html(viewbagAmt);
+    });
+</script>
+<script>
+    if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
+        $("#STARTDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+        $("#ENDDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
+    }
+</script>
+@if (Model.DefaultView == true)
+{
     <div class="table-responsive">
-        @if (Model.DefaultView == true)
-        {
-            @Html.ValidationSummary(true)
-            <div class="grid_title">
-                @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
-                {
-                    <input type="text" id="AddRowsMain1" name="AddRowsMain1" placeholder="rows" style="font-size: 11px;font-weight: bold;width:40px;height:17px;float:left;padding: 2px;" maxlength="3" onkeypress="return numericOnly(this);" />
-                    <img src="~/Image/Plus.png" id="btnAdd" title="Add Row" class="Help_image_buttonAddRemove" onclick="Addrow('AddRowsMain1')" />
-                    <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRow()" />
-                }
-                <div class="col-md-8">
-                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_POS_SALESMAN_GRID');" />
-                    <img src="~/Image/search.png" title="Help" />
-                </div>
-                <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
-                    <b> Entry SalesMan Details</b>
-                </center>
+        @Html.ValidationSummary(true)
+        <div class="grid_title" style="margin-top:-7px;">
+            <div class="col-md-8">
+                <input type="text" id="FilterSearch" name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'VOUCHER_BILLADJ_GRID');" />
+                <img src="~/Image/search.png" title="Help" />
             </div>
-            <div class="sticky-table sticky-ltr-cells">
-                <div style="height:auto;overflow-y:scroll;OVERFLOW-X: hidden;max-height:291px;">
-                    <table id="_T_SALE_POS_SALESMAN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
-                        <thead>
-                            <tr class="sticky-header" style="height:30px;">
-                                <th class="sticky-cell" style="width: 27px;"></th>
-                                <th class="" style="width: 27px;text-align:center;">SL No.</th>
-                                <th class="" style="width:90px;">Salesman</th>
-                                <th class="" style="width:428px;">Salesman Name</th>
-                                <th class="" style="width:111px;text-align:right;">Percentage (%)</th>
-                                <th class="" style="width: 177px;text-align:right;">Gross Amount</th>
-                                <th class="" style="width:177px;text-align:right;">Bill Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Model.TTXNSLSMN != null)
+        </div>
+        <div class="sticky-table sticky-ltr-cells">
+            <div style="height:auto;overflow-y:scroll;max-height:260px;overflow-x:hidden;">
+                <table id="VOUCHER_BILLADJ_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:1270px;">
+                    <thead>
+                        <tr class="sticky-header" style="height:30px;">
+                            <th class="sticky-cell" style="width:30px;">
+                                All
+                                <input type="checkbox" id="ALLINVOICE" name="Test" onclick="AllCheckAdjustInvoice(this, 'VOUCHER_BILLADJ_GRID', 'I_chkid_')" />
+                            </th>
+                            <th class="" style="width:90px;">DOC No.</th>
+                            <th class="" style="width:80px;">Date</th>
+                            <th class="" style="width:150px;">Bill No.</th>
+                            <th class="" style="width:80px;">Bill Date</th>
+                            <th class="" style="text-align:right;width:110px;">Amount</th>
+                            <th class="" style="text-align:right;width:110px;">Previous Adjusted Amt</th>
+                            <th class="" style="text-align:right;width:110px;">Adj. Amt</th>
+                            <th class="" style="text-align:right;width:110px;">Bal. Amt</th>
+                            <th class="" style="width:80px;">Due Date</th>
+                            <th class="" style="width:150px;">Pymt Remarks</th>
+                            <th class="" style="width:50px;">Class 1 Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.SLPYMTADJ != null)
+                        {
+                            int abc = 0;
+                            for (int i = 0; i <= Model.SLPYMTADJ.Count - 1; i++)
                             {
-                                for (int i = 0; i <= Model.TTXNSLSMN.Count - 1; i++)
+                                if (Model.SLPYMTADJ[i].AUTONO != "NO DATA")
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
-                                            @Html.CheckBoxFor(model => model.TTXNSLSMN[i].Checked, new { id = "S_chkid_" + i, @TabIndex = -1 })
-                                           
+                                            @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
+                                            {
+                                                @Html.CheckBoxFor(model => model.SLPYMTADJ[i].Checked, new { id = "I_chkid_" + abc, onclick = "CheckAdjustInvoice('" + "I_chkid_" + abc + "','" + "BILL_AMT_" + abc + "','" + "I_PRE_ADJ_AMT_" + abc + "','" + "I_ADJ_AMT_" + abc + "','" + "I_BAL_AMT_" + abc + "','" + "I_ParentAMT_" + abc + "','" + "MainParentAMT_" + abc + "');" })
+                                            }
+                                            else
+                                            {
+                                                @Html.CheckBoxFor(model => model.SLPYMTADJ[i].Checked, new { id = "I_chkid_" + abc })
+                                            }
+                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].AUTONO, new { id = "BILL_AUTONO_" + abc })
+                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].SLNO, new { id = "BILL_SLNO_" + abc })
+                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].I_AUTONO, new { id = "I_AUTONO_" + abc })
+                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].I_SLNO, new { id = "I_SLNO_" + abc })
+                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].I_AMT, new { id = "I_AMT_" + abc })
+                                            @Html.HiddenFor(model => model.SLPYMTADJ[i].ParentSerialNo, new { id = "I_ParentSerialNo_" + abc })
+                                            @Html.HiddenFor(model => model.SLPYMTADJ[i].ParentAMT, new { id = "I_ParentAMT_" + abc })
+                                            @Html.HiddenFor(model => model.SLPYMTADJ[i].MainParentAMT, new { id = "MainParentAMT_" + abc })
+                                            @if (Model.SLPYMTADJ[0].AUTONO == "NO DATA")
+                                            {
+                                                @Html.HiddenFor(model => model.SLPYMTADJ[0].BALCLASS1CD, new { id = "BALCLASS1CD_" + abc })
+                                                @Html.HiddenFor(model => model.SLPYMTADJ[0].BALCLASS1NM, new { id = "BALCLASS1NM_" + abc })
+                                                @Html.HiddenFor(model => Model.SLPYMTADJ[0].AUTONO, new { id = "BILL_AUTONO1_" + abc })
+                                                @Html.HiddenFor(model => Model.SLPYMTADJ[0].ParentSerialNo, new { id = "ParentSerialNo1_" + abc })
+                                                @Html.HiddenFor(model => Model.SLPYMTADJ[0].ParentAMT, new { id = "ParentAMT1_" + abc })
+                                                @Html.HiddenFor(model => Model.SLPYMTADJ[0].MainParentAMT, new { id = "MainParentAMT1_" + abc })
+                                                @Html.HiddenFor(model => Model.SLPYMTADJ[0].ADJ_AMT, new { id = "ADJ_AMT1_" + abc })
+                                            }
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNSLSMN[i].SLNO, new { id = "S_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.SLPYMTADJ[i].DOCNO, new { id = "I_DOCNO_" + abc, @class = " atextBoxFor", @TabIndex = -1, maxlength = 8, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => model.TTXNSLSMN[i].SLMSLCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "SLMSLCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", "T_SALE_POS") + "','Salesman Details','" + "SLMSLCD_" + i + "','" + "SLMSLCD_" + i + "=SLCD=1/" + "S_SLMSLNM_" + i + "=SLNM=0','salesmanlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", "T_SALE_POS") + "','Salesman Details','" + "SLMSLCD_" + i + "','" + "SLMSLCD_" + i + "=SLCD=1/" + "S_SLMSLNM_" + i + "=SLNM=0','salesmanlinkcd');CalculateTotal();", @placeholder = "Code", maxlength = 8 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", "T_SALE_POS")','Salesman Details','SLMSLCD_@i','SLMSLCD_@i=SLCD=1/S_SLMSLNM_@i=SLNM=0','salesmanlinkcd')" />
-
+                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].DOC_DT, new { htmlAttributes = new { id = "I_DOCDT_" + abc, @class = "atextBoxFor", maxlength = 10, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNSLSMN[i].SLMSLNM, new { id = "S_SLMSLNM_" + i, @class = " atextBoxFor ", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.TextBoxFor(model => Model.SLPYMTADJ[i].BILLNO, new { id = "I_BILLNO_" + abc, @class = " atextBoxFor", @TabIndex = -1, maxlength = 16, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNSLSMN[i].PER, "{0:0.00}", new { id = "S_PER_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @onblur = "SalesmanPerChk();", maxlength = 15 })
+                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].BILL_DT, new { htmlAttributes = new { id = "I_BILLDT_" + abc, @class = "atextBoxFor", maxlength = 10, @TabIndex = -1, @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNSLSMN[i].ITAMT, "{0:0.00}", new { id = "S_ITAMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly", maxlength = 12 })
+                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].AMT, new { htmlAttributes = new { id = "BILL_AMT_" + abc, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                            @Html.TextBoxFor(model => Model.TTXNSLSMN[i].BLAMT, "{0:0.00}", new { id = "S_BLAMT_" + i, @class = " atextBoxFor ", @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @TabIndex = -1, @readonly = "readonly", maxlength = 15 })
+                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].PRE_ADJ_AMT, new { htmlAttributes = new { id = "I_PRE_ADJ_AMT_" + abc, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @*@Html.TextBoxFor(model => Model.SLPYMTADJ[i].ADJ_AMT, new { id = "I_ADJ_AMT_" + abc, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);" })*@
+                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].ADJ_AMT, new { htmlAttributes = new { id = "I_ADJ_AMT_" + abc, onblur = "ADJAmountCheck(" + "I_ParentSerialNo_" + abc + "," + "I_chkid_" + abc + "," + "BILL_AMT_" + abc + "," + "I_PRE_ADJ_AMT_" + abc + "," + "I_ADJ_AMT_" + abc + "," + "I_BAL_AMT_" + abc + "," + "I_ParentAMT_" + abc + "," + "MainParentAMT_" + abc + ");", @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return NumericOnlyMinus(this,2);" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].BAL_AMT, new { htmlAttributes = new { id = "I_BAL_AMT_" + abc, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].DUE_DT, new { htmlAttributes = new { id = "DUE_DT_" + abc, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].PYMTREM, new { htmlAttributes = new { id = "PYMTREM_" + abc, @class = "atextBoxFor" } })
+                                        </td>
+                                        <td class="">
+                                            @Html.TextBoxFor(model => Model.SLPYMTADJ[i].CLASS1NM, new { id = "CLASS1NM_" + abc, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
+                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].CLASS1CD, new { id = "CLASS1CD_" + abc })
                                         </td>
                                     </tr>
+                                    abc += 1;
                                 }
                             }
-                        </tbody>
-                        <tfoot>
-                            <tr class="sticky-footer">
-                                <td class="sticky-cell" style="width:27px;"> <input type="text" class="atextBoxFor" readonly="readonly" />  </td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td><input type="text" class="atextBoxFor" readonly="readonly" /></td>
-                                <td style="text-align:right;"><input type="text" value="Total:" class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" readonly="readonly" /></td>
-                               
-                                <td style="text-align:right;">
-                                    @Html.EditorFor(model => Model.T_PER, "{0:0.00}", new { htmlAttributes = new { id = "S_T_PER", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-                                </td>
-                                <td style="text-align:right;">
-                                    @Html.EditorFor(model => Model.T_ITAMT, "{0:0.00}", new { htmlAttributes = new { id = "S_T_ITAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-                                </td>
-                                <td style="text-align:right;">
-                                    @Html.EditorFor(model => Model.T_BLAMT, "{0:0.00}", new { htmlAttributes = new { id = "S_T_BLAMT", @class = "atextBoxFor text-right", style = "font-weight:bold;color:red;", @readonly = "readonly" } })
-                                </td>
-                                @*<td><input type="text" class="atextBoxFor" readonly="readonly" /></td>*@
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="sticky-footer">
+                            <td class="sticky-cell" style="width:30px;"><input type="text" class="atextBoxFor" /> </td>
+                            <td><input type="text" class="atextBoxFor" /></td>
+                            <td><input type="text" class="atextBoxFor" /></td>
+                            <td><input type="text" class="atextBoxFor" /></td>
+                            <td style="text-align:right;"><input type="text" value="Total : " class="atextBoxFor" style="font-weight:bold;color:red;text-align:right;font-variant:petite-caps;" /></td>
+                            <td style="text-align:right;">
+                                @Html.EditorFor(model => Model.TOT_AMT, new { htmlAttributes = new { id = "TOT_AMT", @class = "atextBoxFor", @style = "text-align:right;font-weight:600;color:blue;", @TabIndex = -1, @readonly = "readonly" } })
+                            </td>
+                            <td style="text-align:right;">
+                                @Html.EditorFor(model => Model.TOT_PRE_ADJ, new { htmlAttributes = new { id = "TOT_PRE_ADJ", @class = "atextBoxFor", @style = "text-align:right;font-weight:600;color:blue;", @TabIndex = -1, @readonly = "readonly" } })
+                            </td>
+                            <td style="text-align:right;">
+                                @Html.EditorFor(model => Model.TOT_ADJ, new { htmlattributes = new { id = "TOT_ADJ", @class = "atextBoxFor", @style = "text-align:right;font-weight:600;color:blue;", @TabIndex = -1, @readonly = "readonly" } })
+                            </td>
+                            <td style="text-align:right;">
+                                @Html.EditorFor(model => Model.TOT_BAL, new { htmlattributes = new { id = "TOT_BAL", @class = "atextBoxFor", @style = "text-align:right;font-weight:600;color:blue;", @TabIndex = -1, @readonly = "readonly" } })
+                            </td>
+                            <td><input type="text" class="atextBoxFor" /></td>
+                            <td><input type="text" class="atextBoxFor" /></td> @*pymtrem*@
+                            <td><input type="text" class="atextBoxFor" /></td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-        }
+        </div>
     </div>
-</div>
+}

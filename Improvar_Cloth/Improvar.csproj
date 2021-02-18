@@ -537,6 +537,7 @@
     <Compile Include="Models\Searching.cs" />
     <Compile Include="Models\Server.cs" />
     <Compile Include="Models\SignAuthority.cs" />
+    <Compile Include="Models\SLPYMTADJ.cs" />
     <Compile Include="Models\SubLedgerDetails.cs" />
     <Compile Include="Models\SubLedgerMaster.cs" />
     <Compile Include="Models\TBATCHDTL.cs" />
