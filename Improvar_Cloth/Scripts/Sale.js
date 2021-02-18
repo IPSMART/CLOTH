@@ -2175,7 +2175,7 @@ function AddBarCodeGrid() {
     }
     if ((MENU_PARA == "PB" || MENU_PARA == "PR" || MENU_PARA == "OP") && MNTNPCSTYPE == "Y") {
         tr += '    <td class="">';
-        tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
+        tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
         tr += '    </td>';
     }
     tr += '    <td class="">';

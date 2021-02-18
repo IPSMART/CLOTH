@@ -144,7 +144,6 @@ namespace Improvar.Models
         public virtual DbSet<M_SUBLEG_IFSC> M_SUBLEG_IFSC { get; set; }
         public virtual DbSet<M_SUBLEG_LINK> M_SUBLEG_LINK { get; set; }
         public virtual DbSet<M_SUBBRAND> M_SUBBRAND { get; set; }
-        public virtual DbSet<M_ITEM> M_ITEM { get; set; }
         public virtual DbSet<M_UOM> M_UOM { get; set; }
         public virtual DbSet<T_DLYTARACH> T_DLYTARACH { get; set; }
         public virtual DbSet<T_DLYTARACH_DTL> T_DLYTARACH_DTL { get; set; }
