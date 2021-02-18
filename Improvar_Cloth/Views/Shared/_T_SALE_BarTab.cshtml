@@ -382,7 +382,7 @@
                                         @if ((Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "OP") && Model.M_SYSCNFG.MNTNPCSTYPE == "Y")
                                         {
                                             <td class="">
-                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 5 })
+                                                @Html.TextBoxFor(model => Model.TBATCHDTL[i].PCSTYPE, new { id = "B_PCSTYPE_" + i, @class = " atextBoxFor ", maxlength = 15 })
                                             </td>
                                         }
                                         <td class="">

@@ -2293,9 +2293,10 @@ namespace Improvar
                 }
             }
         }
-
         public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true, string PARTCD = "", string BARNO = "")
         {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            var MSYSCNFG = DB.M_SYSCNFG.OrderByDescending(t => t.EFFDT).FirstOrDefault();
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             if (menupara == "PB" || menupara == "OP")
             {
@@ -2315,9 +2316,9 @@ namespace Improvar
                 for (int i = 0; i <= tbl.Rows.Count - 1; i++)
                 {
                     SB.Append("<tr><td>" + tbl.Rows[i]["BARNO"] + "</td><td>" + tbl.Rows[i]["ITNM"] + " [" + tbl.Rows[i]["ITCD"] + "]" + " </td><td>" + tbl.Rows[i]["MTRLJOBCD"] + " </td><td>" + tbl.Rows[i]["STYLENO"]
-                        + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["uomcd"] + " </td><td>" + tbl.Rows[i]["colrnm"] + " </td><td>" + tbl.Rows[i]["sizecd"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td></tr>");
+                        + " </td><td>" + tbl.Rows[i]["itgrpnm"] + " </td><td>" + tbl.Rows[i]["PARTCD"] + " </td>" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["colrnm"] + " </td>") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? ("<td>" + tbl.Rows[i]["sizecd"] + " </td>") : "") + "</tr>");
                 }
-                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "uom." + Cn.GCS() + "colornm." + Cn.GCS() + "sizecd." + Cn.GCS() + "PARTCD";
+                var hdr = "Bar Code" + Cn.GCS() + "Item Name" + Cn.GCS() + "MtrlJobCd" + Cn.GCS() + "Design No." + Cn.GCS() + "group name" + Cn.GCS() + "PARTCD" + (MSYSCNFG.MNTNCOLOR.retStr() == "Y" ? (Cn.GCS() + "colornm.") : "") + (MSYSCNFG.MNTNSIZE.retStr() == "Y" ? (Cn.GCS() + "sizecd.") : "");
                 return Generate_help(hdr, SB.ToString());
             }
             else
@@ -2347,6 +2348,7 @@ namespace Improvar
                 }
             }
         }
+
         public string PACKSLIPAUTONO_help(string val, string autono, string docdt, string slcd)
         {
 

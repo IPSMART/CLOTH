@@ -69,7 +69,7 @@ function GetBarnoDetails(id, HelpFrom) {
                         $('#SearchFldValue').val(hlpfieldid);
                         $('#helpDIV').html(result);
                         $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/PARTCD');
-                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/8');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/5');
                         $('#helpDIV_Header').html('Barno Details');
                     }
                     else {
@@ -1497,7 +1497,7 @@ function BillAmountCalculate(TAG) {
     var TCSPER = 0; TCSAMT = 0; TCSON = 0;
     var MENU_PARA = $("#MENU_PARA").val();
     if (MENU_PARA != "SR" || MENU_PARA != "PR") {
-        TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
+        TCSPER = retFloat(document.getElementById("TCSPER").value).toFixed(3);
         if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
         document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
         //if (MENU_PARA == "OP") {
@@ -2175,7 +2175,7 @@ function AddBarCodeGrid() {
     }
     if ((MENU_PARA == "PB" || MENU_PARA == "PR" || MENU_PARA == "OP") && MNTNPCSTYPE == "Y") {
         tr += '    <td class="">';
-        tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="5" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
+        tr += ' <input class=" atextBoxFor " data-val="true" data-val-length="The field PCSTYPE must be a string with a maximum length of 15." data-val-length-max="15" id="B_PCSTYPE_' + rowindex + '" maxlength="15" name="TBATCHDTL[' + rowindex + '].PCSTYPE" type="text" value="" placeholder="">';
         tr += '    </td>';
     }
     tr += '    <td class="">';
@@ -2861,7 +2861,7 @@ function CalculateOutIssProcessAmt_Details(i) {
     $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
 
     //TOTAL DISCOUNT AMOUNT CALCULATION
-    var TOTDISCAMT = parseFloat(DISCAMT + TDDISCAMT + SCMDISCAMT).toFixed(2);
+    var TOTDISCAMT = parseFloat(retFloat(DISCAMT) + retFloat(TDDISCAMT) + retFloat(SCMDISCAMT)).toFixed(2);
     $("#D_TOTDISCAMT_" + i).val(TOTDISCAMT);
 
     //TAXABLE CALCULATION

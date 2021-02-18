@@ -49,6 +49,20 @@
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
+
+            if ('@ViewBag.PENDPROGRAMME' == "Y") {
+                document.getElementById("PendProgramme").disabled = true;
+                $("#SLCD").attr('readonly', 'readonly');
+                $('#PARTY_HELP').hide("");
+                $("#SLCD").removeAttr("onblur");
+
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(2)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                $("#BARCODE").focus();
+            }
         }
         $("#WaitingMode").hide();
     });
@@ -304,6 +318,17 @@
     }
 
     function FillReceiveTab() {
+        var GridRow = $("#_T_OUTRECPROCESS_Programme_GRID > tbody > tr").length;
+        if (GridRow == 0) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(2)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(2)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            msgInfo("Please fill Programme Data");
+            message_value = "BARCODE";
+            return false;
+        }
         $.ajax({
             type: 'POST',
             url: "@Url.Action("FillReceiveData", PageControllerName)",
@@ -325,32 +350,42 @@
     }
     function Fill_DetailData() {
         if (!emptyFieldCheck("Please Select / Enter Job", "JOBCD")) { return false; }
+        var GridRow = $("#_T_OUTRECPROCESS_Receive_Grid > tbody > tr").length;
+        if (GridRow == 0) {
+            $("li").removeClass("active").addClass("");
+            $(".nav-tabs li:nth-child(3)").addClass('active');
+            //below set the  child sequence
+            $(".tab-content div").removeClass("active");
+            $(".tab-content div:nth-child(3)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+            msgInfo("Please fill Receive Data");
+            return false;
+        }
         $.ajax({
             type: 'POST',
             beforesend: $("#WaitingMode").show(),
             url: "@Url.Action("FillDetailData", PageControllerName)",
             data: $('form').serialize(),
-        success: function (result) {
-            //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
-            $("#partialdivDetail").html(result);
-            $("li").removeClass("active").addClass("");
-            $(".nav-tabs li:nth-child(4)").addClass('active');
-            //below set the  child sequence
-            $(".tab-content div").removeClass("active");
-            $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
-            var GridRow = $("#_T_OUTRECPROCESS_Detail_Grid > tbody > tr").length;
-            for (var i = 0; i <= GridRow - 1; i++) {
-                CalculateAmt_Details(i);
+            success: function (result) {
+                //$("#partialdivBarCodeTab").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivDetail").html(result);
+                $("li").removeClass("active").addClass("");
+                $(".nav-tabs li:nth-child(4)").addClass('active');
+                //below set the  child sequence
+                $(".tab-content div").removeClass("active");
+                $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                var GridRow = $("#_T_OUTRECPROCESS_Detail_Grid > tbody > tr").length;
+                for (var i = 0; i <= GridRow - 1; i++) {
+                    CalculateAmt_Details(i);
+                }
+                $("#bardatachng").val("N");
+                $("#WaitingMode").hide();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
             }
-            $("#bardatachng").val("N");
-            $("#WaitingMode").hide();
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $("#WaitingMode").hide();
-            msgError(XMLHttpRequest.responseText);
-            $("body span h1").remove(); $("#msgbody_error style").remove();
-        }
-    });
+        });
 
     }
 </script>
@@ -838,16 +873,16 @@
             if (TDS_ROUND == "Y") {
                 tdsamt1 = Math.round(tdsamt1); //==yes
             }
-    else
-               if (TDS_ROUND == "N") {
-                   tdsamt1 = Math.ceil(tdsamt1); //==nxt
-               }
-    else
-                   if (TDS_ROUND == "L") {
-                       tdsamt1 = Math.floor(tdsamt1); //==least
-                   }
-    }
-    $("#TDSAMT").val(tdsamt1);
+            else
+                if (TDS_ROUND == "N") {
+                    tdsamt1 = Math.ceil(tdsamt1); //==nxt
+                }
+                else
+                    if (TDS_ROUND == "L") {
+                        tdsamt1 = Math.floor(tdsamt1); //==least
+                    }
+        }
+        $("#TDSAMT").val(tdsamt1);
     }
     function BillAmountCalculate() {
         var DefaultAction = $("#DefaultAction").val();
@@ -992,73 +1027,73 @@
     }
 </script>@*maintab calculation*@
 <script>
-        function changeBARGENTYPE() {
-            debugger;
-            var BARGENTYPE = $("#BARGENTYPE").val();
-            if (BARGENTYPE == "C") {
-                $("#divImageUpload").hide();
-            }
-            else if (BARGENTYPE == "E") {
-                $("#divImageUpload").show();
-            }
-            return 0;
+    function changeBARGENTYPE() {
+        debugger;
+        var BARGENTYPE = $("#BARGENTYPE").val();
+        if (BARGENTYPE == "C") {
+            $("#divImageUpload").hide();
         }
-        function UploadBarnoImage(i) {
-            debugger;
-            var ImageDesc = $('#ImageDesc').val();
-            if (document.getElementById("ImageName").value == "") return;
-            var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
-            if (OpenImageModal == "") {
-                OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
-            } else {
-                OpenImageModal = parseInt(OpenImageModal) + 1;
-                actt = "";
-            }
-            $('#OpenImageModal_' + i).html(OpenImageModal);
-            $.ajax({
-                type: 'POST',
-                url: "@Url.Action("UploadImages", PageControllerName )",
-                beforesend: $("#WaitingMode").show(),
-                data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
-                success: function (result) {
-                    $("#WaitingMode").hide(); var newid = '';
-                    if ($("#B_BarImages_" + i).val() != "") {
-                        newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
-                    }
-                    else {
-                        newid = (result.split('/')[2] + '~' + ImageDesc);
-                    }
-                    $("#B_BarImages_" + i).val(newid);
-                    //var htm = '';
-                    //htm += '<div class="item ' + actt + '">';
-                    //htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
-                    //htm += '    <span class="carousel-caption">';
-                    //htm += '    <p> ' + ImageDesc + ' </p>';
-                    //htm += '    </span>';
-                    //htm += '</div>';
-                    //$("#div_carousel_inner").append(htm);
-
-                    //$('.carousel').carousel(); // $("#carousel").carousel();
-                    //htm += '<div class="col-lg-4" id="' + id + '">';
-                    //htm += '       <div class="thumbnail">';
-                    //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
-                    //htm += '           <a href="' + result + '" target="_blank">';
-                    //htm += '                <img src="' + result + '" alt="" style="width:100%">';
-                    //htm += '                <div class="caption">';
-                    //htm += '                   ' + ImageDesc;
-                    //htm += '          </div>';
-                    //htm += '      </a>';
-                    //htm += '  </div>';
-                    //htm += '</div>';
-                    //$("#divUploadImage").append(htm);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    $("#WaitingMode").hide();
-                    msgError(XMLHttpRequest.responseText);
-                    $("body span h1").remove(); $("#msgbody_error style").remove();
+        else if (BARGENTYPE == "E") {
+            $("#divImageUpload").show();
+        }
+        return 0;
+    }
+    function UploadBarnoImage(i) {
+        debugger;
+        var ImageDesc = $('#ImageDesc').val();
+        if (document.getElementById("ImageName").value == "") return;
+        var OpenImageModal = $('#OpenImageModal_' + i).html(); var actt = "";
+        if (OpenImageModal == "") {
+            OpenImageModal = 1; actt = "active"; $("#div_carousel_inner").html('');
+        } else {
+            OpenImageModal = parseInt(OpenImageModal) + 1;
+            actt = "";
+        }
+        $('#OpenImageModal_' + i).html(OpenImageModal);
+        $.ajax({
+            type: 'POST',
+            url: "@Url.Action("UploadImages", PageControllerName )",
+            beforesend: $("#WaitingMode").show(),
+            data: "ImageStr=" + $('#ImageStr').val() + "&ImageName=" + $('#ImageName').val() + "&ImageDesc=" + ImageDesc,
+            success: function (result) {
+                $("#WaitingMode").hide(); var newid = '';
+                if ($("#B_BarImages_" + i).val() != "") {
+                    newid = $("#B_BarImages_" + i).val() + String.fromCharCode(179) + (result.split('/')[2] + '~' + ImageDesc);
                 }
-            });
-        }
+                else {
+                    newid = (result.split('/')[2] + '~' + ImageDesc);
+                }
+                $("#B_BarImages_" + i).val(newid);
+                //var htm = '';
+                //htm += '<div class="item ' + actt + '">';
+                //htm += '    <img src="' + result + '"  alt="Img Not Found" style="width:100%;">';
+                //htm += '    <span class="carousel-caption">';
+                //htm += '    <p> ' + ImageDesc + ' </p>';
+                //htm += '    </span>';
+                //htm += '</div>';
+                //$("#div_carousel_inner").append(htm);
+
+                //$('.carousel').carousel(); // $("#carousel").carousel();
+                //htm += '<div class="col-lg-4" id="' + id + '">';
+                //htm += '       <div class="thumbnail">';
+                //htm += '           <button type="button" style="position:absolute;top:5px;right:11px;padding:0px 5px;cursor:pointer;border-radius:10px;" class="btn-danger" onclick= deleteBarImages("' + id + '")>X</button>';
+                //htm += '           <a href="' + result + '" target="_blank">';
+                //htm += '                <img src="' + result + '" alt="" style="width:100%">';
+                //htm += '                <div class="caption">';
+                //htm += '                   ' + ImageDesc;
+                //htm += '          </div>';
+                //htm += '      </a>';
+                //htm += '  </div>';
+                //htm += '</div>';
+                //$("#divUploadImage").append(htm);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
     function deleteBarImages() {
         debugger;
         var ActiveBarRowIndex = $('#ActiveBarRowIndex').val();
@@ -1077,57 +1112,100 @@
         $("#OpenImageModal_" + ActiveBarRowIndex).html(arr.length);
 
     }
-        function T_OUTRECPROCESS_FillImageModal(index) {
-            debugger;
-            //var OpenImageModal =
-            $('#ActiveBarRowIndex').val(index);
-            var actt = ""; $("#div_carousel_inner").html('');
-            var arr = $("#B_BarImages_" + index).val();
-            arr = arr.split(String.fromCharCode(179));
-            $.each(arr, function (index, value) {
-                var imgname = (value.split('~')[0]);
-                var id = (imgname).split('.')[0];
-                var ImageDesc = (value.split('~')[1]);
-                var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
-                htm += '<div id="' + id + '" class="item ' + actt + '">';
-                htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
-                htm += '    <span class="carousel-caption">';
-                htm += '    <p> ' + ImageDesc + ' </p>';
-                htm += '    </span>';
-                htm += '</div>';
-                $("#div_carousel_inner").append(htm);
-            });
+    function T_OUTRECPROCESS_FillImageModal(index) {
+        debugger;
+        //var OpenImageModal =
+        $('#ActiveBarRowIndex').val(index);
+        var actt = ""; $("#div_carousel_inner").html('');
+        var arr = $("#B_BarImages_" + index).val();
+        arr = arr.split(String.fromCharCode(179));
+        $.each(arr, function (index, value) {
+            var imgname = (value.split('~')[0]);
+            var id = (imgname).split('.')[0];
+            var ImageDesc = (value.split('~')[1]);
+            var htm = ''; if (index == 0) { actt = "active"; } else { actt = ""; }
+            htm += '<div id="' + id + '" class="item ' + actt + '">';
+            htm += '    <img src="/UploadDocuments/' + imgname + '"  alt="Img Not Found" style="width:100%;">';
+            htm += '    <span class="carousel-caption">';
+            htm += '    <p> ' + ImageDesc + ' </p>';
+            htm += '    </span>';
+            htm += '</div>';
+            $("#div_carousel_inner").append(htm);
+        });
+    }
+    function fileTypeCheck(id) {
+        var fileUpload = $(id).get(0);
+        var filesSelected = fileUpload.files;
+        if (filesSelected.length > 0) {
+            var fileToLoad = filesSelected[0];
+            document.getElementById("ImageName").value = fileToLoad.name;
+            var fileReader = new FileReader();
+            fileReader.onload = function (fileLoadedEvent) {
+                document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
+            };
+            fileReader.readAsDataURL(fileToLoad);
         }
-        function fileTypeCheck(id) {
-            var fileUpload = $(id).get(0);
-            var filesSelected = fileUpload.files;
-            if (filesSelected.length > 0) {
-                var fileToLoad = filesSelected[0];
-                document.getElementById("ImageName").value = fileToLoad.name;
-                var fileReader = new FileReader();
-                fileReader.onload = function (fileLoadedEvent) {
-                    document.getElementById("ImageStr").value = fileLoadedEvent.target.result;
-                };
-                fileReader.readAsDataURL(fileToLoad);
+    }
+</script>@*bar image*@
+<script>
+    function UpdateTaxPer() {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0; var DUTY_PER = 0;
+        var GridRowMain = $("#_T_OUTRECPROCESS_Detail_Grid > tbody > tr").length;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
+
+            IGST = parseFloat($("#D_IGSTPER_" + i).val()).toFixed(2);
+            CGST = parseFloat($("#D_CGSTPER_" + i).val()).toFixed(2);
+            SGST = parseFloat($("#D_SGSTPER_" + i).val()).toFixed(2);
+            CESS = parseFloat($("#D_CESSPER_" + i).val()).toFixed(2);
+
+
+            if (IGST > IGST_PER) {
+                IGST_PER = IGST;
+            }
+            if (CGST > CGST_PER) {
+                CGST_PER = CGST;
+            }
+            if (SGST > SGST_PER) {
+                SGST_PER = SGST;
+            }
+            if (CESS > CESS_PER) {
+                CESS_PER = CESS;
+            }
+            if (DUTY > DUTY_PER) {
+                DUTY_PER = DUTY;
             }
         }
-    </script>@*bar image*@
-    <script>
+        var GridRowMain = $("#AMOUNT_GRID > tbody > tr").length;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            document.getElementById("AIGSTPER_" + i).value = IGST_PER;
+            document.getElementById("ACGSTPER_" + i).value = CGST_PER;
+            document.getElementById("ASGSTPER_" + i).value = SGST_PER;
+            document.getElementById("ACESSPER_" + i).value = CESS_PER;
+            document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
+        }
+
+    }
+</script>
+<script>
     function DeleteRow() {
         $.ajax({
             type: 'POST',
             url: "@Url.Action("DeleteRow", PageControllerName)",
             data: $('form').serialize(),
-        success: function (result) {
-            $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
-            $("#partialdivProgramme").html(result);
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $("#WaitingMode").hide();
-            msgError(XMLHttpRequest.responseText);
-            $("body span h1").remove(); $("#msgbody_error style").remove();
-        }
-    });
+            success: function (result) {
+                $("#partialdivProgramme").animate({ marginTop: '0px' }, 50);
+                $("#partialdivProgramme").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
     }
     function AddDOCrow() {
         $.ajax({
@@ -1161,8 +1239,8 @@
             }
         });
     }
-    </script>
-    <script>
+</script>
+<script>
     function pageprinting() {
         var ty = $("#DOCCD").val();
         $.ajax({
@@ -1179,15 +1257,15 @@
             }
         });
     }
-    </script>
-    @using (Html.BeginForm())
+</script>
+@using (Html.BeginForm())
+{
+    if (Model.DefaultView == true)
     {
-        if (Model.DefaultView == true)
-        {
-            @Html.HiddenFor(a => Model.maxdate)
-            @Html.HiddenFor(a => Model.mindate)
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
+        @Html.HiddenFor(a => Model.maxdate)
+        @Html.HiddenFor(a => Model.mindate)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
             <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
             <input type="hidden" id="partylinkcd" value="D" />
             <input type="hidden" id="agentlinkcd" value="A" />
@@ -1347,8 +1425,8 @@
                         <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Main" accesskey="M">Main(M)</a></li>
                         <li id="Programme_LI" class=""><a data-toggle="tab" href="#Programme" accesskey="P">Programme(P)</a></li>
                         <li id="Receive_LI" class=""><a data-toggle="tab" href="#Receive" accesskey="V">Receive(V)</a></li>
-                        <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="D">Detail(D)</a></li>
-                        <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" accesskey="F">Freight & Others(F)</a></li>
+                        <li id="Detail_LI" class=""><a data-toggle="tab" href="#DetailTab" accesskey="L">Detail(L)</a></li>
+                        <li id="Amounts_LI" class=""><a data-toggle="tab" href="#FreightOthers" accesskey="H" onclick="UpdateTaxPer();">Amount(H)</a></li>
                         <li id="Transport_LI" class=""><a data-toggle="tab" href="#Transport" accesskey="T">Transport(T)</a></li>
                         <li id="Remarks_LI" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                         <li id="Documents_LI" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
@@ -1828,15 +1906,15 @@
                     </div>
                 </div>
             </div>
-        }
-        else
-        {
-            @ViewBag.ErrorMessage
-        }
-
-        <div class="container">
-            <div id="helpDIV">
-
-            </div>
-        </div>
     }
+    else
+    {
+        @ViewBag.ErrorMessage
+    }
+
+    <div class="container">
+        <div id="helpDIV">
+
+        </div>
+    </div>
+}

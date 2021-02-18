@@ -74,14 +74,14 @@
                         $('#SearchFldValue').val(hlpfieldid);
                         $('#helpDIV').html(result);
                         $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID +'/MTRLJOBCD/PARTCD');
-                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex +'/2/8');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex +'/2/5');
                         $('#helpDIV_Header').html('Barno Details');
                     } else if (barhlpId == 'R_BARCODE' || barhlpId == 'R_STYLENO') {
                         ClearAllTextBoxes("R_BARCODE,R_STYLENO,MTRLJOBCD,PARTCD");
                         $('#SearchFldValue').val(hlpfieldid);
                         $('#helpDIV').html(result);
                         $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID +'/MTRLJOBCD/PARTCD');
-                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex +'/2/8');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex +'/2/5');
                         $('#helpDIV_Header').html('Barno Details');
                     }
 

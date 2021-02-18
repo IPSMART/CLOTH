@@ -1459,6 +1459,7 @@ function CloseZoomTextBoxModal() {
 var hlpblurval = "";
 function GetHelpBlur(urlstring, caption, hlpfield, blurflds, dependfldIds,formdata) {
     debugger;
+    if($("#" + hlpfield).prop('readonly')) return true
     const keyName = event.key;
     const keyType = event.type;
     var blurvalue = "";

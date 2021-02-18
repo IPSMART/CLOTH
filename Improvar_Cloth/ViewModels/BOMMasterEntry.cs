@@ -9,7 +9,6 @@ namespace Improvar.ViewModels
     public class BOMMasterEntry : Permission
     {
         public string MSG { get; set; }
-        public M_ITEM M_ITEM { get; set; }
         public M_COLOR M_COLOR { get; set; }
         public M_SIZE M_SIZE { get; set; }
         public M_SITEM M_SITEM { get; set; }
