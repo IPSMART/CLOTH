@@ -58,8 +58,6 @@
                             <th class="" style="width:80px;">Due Date</th>
                             <th class="" style="width:150px;">Pymt Remarks</th>
                             <th class="" style="width:50px;">Class 1 Name</th>
-                            <th class="" style="width:55px;">Loca</th>
-                            <th class="" style="width:110px;">Consignee</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,12 +132,6 @@
                                             @Html.TextBoxFor(model => Model.SLPYMTADJ[i].CLASS1NM, new { id = "CLASS1NM_" + abc, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
                                             @Html.HiddenFor(model => Model.SLPYMTADJ[i].CLASS1CD, new { id = "CLASS1CD_" + abc })
                                         </td>
-                                        <td class="">
-                                            @Html.TextBoxFor(model => Model.SLPYMTADJ[i].LOCCD, new { id = "LOCCD_" + abc, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" })
-                                        </td>
-                                        <td class="">
-                                            @Html.EditorFor(model => Model.SLPYMTADJ[i].CONSLCD, new { htmlAttributes = new { id = "CONSLCD_" + abc, @class = " atextBoxFor", @TabIndex = -1, @readonly = "readonly" } })
-                                        </td>
                                     </tr>
                                     abc += 1;
                                 }
@@ -167,8 +159,6 @@
                             </td>
                             <td><input type="text" class="atextBoxFor" /></td>
                             <td><input type="text" class="atextBoxFor" /></td> @*pymtrem*@
-                            <td><input type="text" class="atextBoxFor" /></td>
-                            <td><input type="text" class="atextBoxFor" /></td>
                             <td><input type="text" class="atextBoxFor" /></td>
                         </tr>
                     </tfoot>

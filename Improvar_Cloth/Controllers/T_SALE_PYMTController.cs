@@ -68,7 +68,7 @@ namespace Improvar.Controllers
                     if (op.Length != 0)
                     {
                         string[] XYZ = VE.DocumentType.Select(i => i.value).ToArray();
-                        
+
 
                         VE.IndexKey = (from p in DB.T_TXNPYMT_HDR
                                        join q in DB.T_CNTRL_HDR on p.AUTONO equals (q.AUTONO)
@@ -160,6 +160,7 @@ namespace Improvar.Controllers
                                     TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
                                     //VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
                                     //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
+                                    GetOutstInvoice(VE, VE.RETDEBSLCD);
                                 }
                                 VE.T_TXNPYMT_HDR = TXNMEMO;
                                 //VE.T_TXNOTH = TXNOTH;
@@ -353,6 +354,7 @@ namespace Improvar.Controllers
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
             try
             {
+                //GetOutstInvoice(VE);
                 Cn.getQueryString(VE);
                 //VE.PARENT_SLNO = slno.retInt();
                 string glcd = "";// VE.T_PYTHDR.GLCD;
@@ -361,7 +363,7 @@ namespace Improvar.Controllers
                 var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.ToString(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
                 var RTR = OSDATA.Rows[0]["slno"].GetType();
                 var OSList = (from customer in OSDATA.AsEnumerable()
-                              where (customer.Field<string>("VCHTYPE") != "BL" && customer.Field<string>("VCHTYPE") != "DN")
+                              where (customer.Field<string>("VCHTYPE") == "BL")
                               select new SLPYMTADJ
                               {
                                   VCHTYPE = customer.Field<string>("VCHTYPE"),
@@ -412,6 +414,71 @@ namespace Improvar.Controllers
             ModelState.Clear();
             return PartialView("_T_SALE_PYMT_Main", VE);
 
+        }
+        public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd)
+        {
+            ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
+            try
+            {
+                Cn.getQueryString(VE);
+                //VE.PARENT_SLNO = slno.retInt();
+                string glcd = "";// VE.T_PYTHDR.GLCD;
+                string autono = "";// VE.T_PYTHDR?.AUTONO;
+                var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.ToString(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
+                var RTR = OSDATA.Rows[0]["slno"].GetType();
+                var OSList = (from customer in OSDATA.AsEnumerable()
+                              where (customer.Field<string>("VCHTYPE") == "BL")
+                              select new SLPYMTADJ
+                              {
+                                  VCHTYPE = customer.Field<string>("VCHTYPE"),
+                                  VAUTONO = customer.Field<string>("AUTONO"),
+                                  VSLNO = customer.Field<Int16>("SLNO"),
+                                  VBLREM = customer.Field<string>("BLREM"),
+                                  VDOCNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
+                                  VDOCDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
+                                  VAMOUNT = customer.Field<decimal>("AMT") * -1,
+                                  VPRVADJAMT = customer.Field<decimal>("PRV_ADJ") * -1,
+                                  VBALAMT = customer.Field<decimal>("bal_amt") * -1,
+                              }).ToList();
+
+            }
+            catch
+            {
+
+            }
+            //var doctP = (from i in DB1.MS_DOCCTG
+            //             select new DocumentType()
+            //             {
+            //                 value = i.DOC_CTG,
+            //                 text = i.DOC_CTG
+            //             }).OrderBy(s => s.text).ToList();
+            //if (VE.UploadDOC == null)
+            //{
+            //    List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
+            //    UploadDOC MLI = new UploadDOC();
+            //    MLI.DocumentType = doctP;
+            //    MLocIFSC1.Add(MLI);
+            //    VE.UploadDOC = MLocIFSC1;
+            //}
+            //else
+            //{
+            //    List<UploadDOC> MLocIFSC1 = new List<UploadDOC>();
+            //    for (int i = 0; i <= VE.UploadDOC.Count - 1; i++)
+            //    {
+            //        UploadDOC MLI = new UploadDOC();
+            //        MLI = VE.UploadDOC[i];
+            //        MLI.DocumentType = doctP;
+            //        MLocIFSC1.Add(MLI);
+            //    }
+            //    UploadDOC MLI1 = new UploadDOC();
+            //    MLI1.DocumentType = doctP;
+            //    MLocIFSC1.Add(MLI1);
+            //    VE.UploadDOC = MLocIFSC1;
+            //}
+            VE.DefaultView = true;
+            ModelState.Clear();
+            //return PartialView("_T_SALE_PYMT_Main", VE);
+            return VE;
         }
 
         public ActionResult AddDOCRow(SalePymtEntry VE)
