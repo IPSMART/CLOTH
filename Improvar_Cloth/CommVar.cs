@@ -1,5 +1,7 @@
 ﻿using Improvar.Models;
 using System;
+using System.Linq;
+
 namespace Improvar
 {
     public static class CommVar
@@ -455,7 +457,15 @@ namespace Improvar
         }
         public static string SaveFolderPath()
         {
-            return @"\\ipsmart-ibm\C\IPSMART";
+            string path= @"\\ipsmart-ibm\C\IPSMART";
+            if (System.IO.Directory.Exists(path))
+            {
+                return path;
+            }
+            else
+            {
+                return @"C:\Ipsmart";
+            }
         }
         public static string GSTNO(string unqsno)
         {
@@ -466,6 +476,19 @@ namespace Improvar
             catch
             {
                 return "";
+            }
+        }
+        public static M_SYSCNFG M_SYSCNFG()
+        {
+            try
+            {
+                var dtconfig = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG"];
+                M_SYSCNFG M_SYSCG = dtconfig.DataTableToListConvertion<M_SYSCNFG>().First();
+                return M_SYSCG;
+            }
+            catch
+            {
+                return new M_SYSCNFG();
             }
         }
     }
