@@ -1497,7 +1497,7 @@ function BillAmountCalculate(TAG) {
     var TCSPER = 0; TCSAMT = 0; TCSON = 0;
     var MENU_PARA = $("#MENU_PARA").val();
     if (MENU_PARA != "SR" || MENU_PARA != "PR") {
-        TCSPER = parseFloat(document.getElementById("TCSPER").value).toFixed(3);
+        TCSPER = retFloat(document.getElementById("TCSPER").value).toFixed(3);
         if (TCSPER == "" || TCSPER == "NaN") { TCSPER = parseFloat(0); }
         document.getElementById("TCSPER").value = parseFloat(TCSPER).toFixed(3);
         //if (MENU_PARA == "OP") {
@@ -2861,7 +2861,7 @@ function CalculateOutIssProcessAmt_Details(i) {
     $("#D_SCMDISCAMT_" + i).val(SCMDISCAMT);
 
     //TOTAL DISCOUNT AMOUNT CALCULATION
-    var TOTDISCAMT = parseFloat(DISCAMT + TDDISCAMT + SCMDISCAMT).toFixed(2);
+    var TOTDISCAMT = parseFloat(retFloat(DISCAMT) + retFloat(TDDISCAMT) + retFloat(SCMDISCAMT)).toFixed(2);
     $("#D_TOTDISCAMT_" + i).val(TOTDISCAMT);
 
     //TAXABLE CALCULATION
