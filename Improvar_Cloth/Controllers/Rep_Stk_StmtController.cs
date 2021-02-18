@@ -672,22 +672,22 @@ namespace Improvar.Controllers
                             summarybarcode.Rows[rNo]["itgrpnm"] = tbl1.Rows[j]["itgrpnm"].retStr();
                             summarybarcode.Rows[rNo]["fabitcd"] = tbl1.Rows[j]["fabitcd"].retStr();
                             summarybarcode.Rows[rNo]["fabitnm"] = tbl1.Rows[j]["fabitnm"].retStr();
-                           summarybarcode.Rows[rNo]["itgrpnm"] = tbl1.Rows[j]["itgrpnm"].retStr();
-                           summarybarcode.Rows[rNo]["itnm"] = tbl1.Rows[j]["itnm"].retStr();
-                           summarybarcode.Rows[rNo]["itcd"] = tbl1.Rows[j]["itcd"].retStr();
-                           summarybarcode.Rows[rNo]["styleno"] = tbl1.Rows[j]["styleno"].retStr();
-                        summarybarcode.Rows[rNo]["barno"] = tbl1.Rows[j]["barno"].retStr();
-                        summarybarcode.Rows[rNo]["uomcd"] = tbl1.Rows[j]["uomcd"].retStr();
-                        summarybarcode.Rows[rNo]["uomnm"] = tbl1.Rows[j]["uomnm"].retStr();
-                        summarybarcode.Rows[rNo]["qnty"] = tbl1.Rows[j]["qnty"].retDbl();
-                        summarybarcode.Rows[rNo]["txblval"] = tbl1.Rows[j]["txblval"].retDbl();
-                        summarybarcode.Rows[rNo]["opqty"] = (from DataRow dr in tbl1.Rows where dr["uomcd"].retStr() + dr["itgrpcd"].retStr() + dr["fabitcd"].retStr() + dr["itcd"].retStr() + styleno + barno == keyval && dr["doctag"].retStr()=="OP".retStr() select dr["qnty"].retDbl()).FirstOrDefault();
+                            summarybarcode.Rows[rNo]["itgrpnm"] = tbl1.Rows[j]["itgrpnm"].retStr();
+                            summarybarcode.Rows[rNo]["itnm"] = tbl1.Rows[j]["itnm"].retStr();
+                            summarybarcode.Rows[rNo]["itcd"] = tbl1.Rows[j]["itcd"].retStr();
+                            summarybarcode.Rows[rNo]["styleno"] = tbl1.Rows[j]["styleno"].retStr();
+                            summarybarcode.Rows[rNo]["barno"] = tbl1.Rows[j]["barno"].retStr();
+                            summarybarcode.Rows[rNo]["uomcd"] = tbl1.Rows[j]["uomcd"].retStr();
+                            summarybarcode.Rows[rNo]["uomnm"] = tbl1.Rows[j]["uomnm"].retStr();
+                            summarybarcode.Rows[rNo]["qnty"] = tbl1.Rows[j]["qnty"].retDbl();
+                            summarybarcode.Rows[rNo]["txblval"] = tbl1.Rows[j]["txblval"].retDbl();
+                            summarybarcode.Rows[rNo]["opqty"] = (from DataRow dr in tbl1.Rows where dr["uomcd"].retStr() + dr["itgrpcd"].retStr() + dr["fabitcd"].retStr() + dr["itcd"].retStr() + styleno + barno == keyval && dr["doctag"].retStr()=="OP".retStr() select dr["qnty"].retDbl()).FirstOrDefault();
                             summarybarcode.Rows[rNo]["opval"] = 0;
                             summarybarcode.Rows[rNo]["purval"] = 0;
                             summarybarcode.Rows[rNo]["netpur"] = 0;
                             summarybarcode.Rows[rNo]["purval"] = 0;
                             summarybarcode.Rows[rNo]["karqty"] = (from DataRow dr in tbl1.Rows where dr["uomcd"].retStr() + dr["itgrpcd"].retStr() + dr["fabitcd"].retStr() + dr["itcd"].retStr() + styleno + barno == keyval && (dr["doctag"].retStr() == "KR".retStr() || dr["doctag"].retStr() == "KI".retStr()) select dr["qnty"].retDbl()).FirstOrDefault();
-                        summarybarcode.Rows[rNo]["karval"] = 0;
+                            summarybarcode.Rows[rNo]["karval"] = 0;
                             summarybarcode.Rows[rNo]["netsale"] = 0;
                             summarybarcode.Rows[rNo]["salevalue"] = 0;
                             summarybarcode.Rows[rNo]["approval"] = 0;
@@ -713,7 +713,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "purval", "double", "n,14,2", "Purch Value");
                     HC.GetPrintHeader(IR, "karqty", "double", "n,14,2", "Kar Qnty");
                     HC.GetPrintHeader(IR, "karval", "double", "n,14,2", "Kar Value");
-                    HC.GetPrintHeader(IR, "netsale", "double", "n,14,2", "Net Sal");
+                    HC.GetPrintHeader(IR, "netsale", "double", "n,14,2", "Net Sale");
                     HC.GetPrintHeader(IR, "salevalue", "double", "n,14,2", "Sale Value");
                     HC.GetPrintHeader(IR, "approval", "double", "n,14,2", "Approval");
                     HC.GetPrintHeader(IR, "netstktrans", "double", "n,14,2", "Net Stk.Trnf");
@@ -734,7 +734,7 @@ namespace Improvar.Controllers
                        
                         while (summarybarcode.Rows[i]["itgrpcd"].retStr() == strbrgrpcd)
                         {
-                            double opqty = 0, oprate = 0;
+                            double opqty = 0, opamt = 0,netpurqty=0, netpuramt = 0;
                             stritcd = tbl1.Rows[i]["itcd"].retStr();
                             styleno1= tbl1.Rows[i]["styleno"].retStr();
                             barno1 = tbl1.Rows[i]["barno"].retStr();
@@ -750,11 +750,23 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["styleno"] = tbl1.Rows[i]["styleno"].ToString();
                                 IR.Rows[rNo]["uomnm"] = tbl1.Rows[i]["uomcd"].ToString();
                                 if(tbl1.Rows[i]["doctag"].retStr()=="OP")
-                                { opqty = opqty + tbl1.Rows[i]["qnty"].retDbl();
-                                  oprate= (tbl1.Rows[i]["qnty"].retDbl() * tbl1.Rows[i]["oprate"].retDbl());
+                                {
+                                    IR.Rows[rNo]["opqty"] = tbl1.Rows[i]["qnty"].retDbl();
+                                    opamt = (tbl1.Rows[i]["qnty"].retDbl() * tbl1.Rows[i]["oprate"].retDbl());
                                 }
-                                IR.Rows[rNo]["opqty"] = opqty;
-                                IR.Rows[rNo]["opval"] = oprate;
+                                if (tbl1.Rows[i]["doctag"].retStr() == "PB"|| tbl1.Rows[i]["doctag"].retStr() == "PR")
+                                {
+                                    IR.Rows[rNo]["netsale"] = tbl1.Rows[i]["qnty"].retDbl();                                   
+                                    netpuramt = tbl1.Rows[i]["txblval"].retDbl();
+                                }
+                                if (tbl1.Rows[i]["doctag"].retStr() == "PB" || tbl1.Rows[i]["doctag"].retStr() == "PR")
+                                {
+                                    netpurqty = netpurqty + tbl1.Rows[i]["qnty"].retDbl();
+                                    netpuramt = tbl1.Rows[i]["txblval"].retDbl();
+                                }
+                               
+                                IR.Rows[rNo]["opval"] = opamt;
+                                IR.Rows[rNo]["salevalue"] = netpuramt;
 
 
                                 i++;
