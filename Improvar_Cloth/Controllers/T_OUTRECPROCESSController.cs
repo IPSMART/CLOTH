@@ -237,6 +237,20 @@ namespace Improvar.Controllers
                         if (parkID == "")
                         {
                             FreightCharges(VE, VE.T_TXN.AUTONO);
+                            ViewBag.PENDPROGRAMME = "N";
+                        }
+                        else
+                        {
+                            string date = Convert.ToDateTime(VE.T_TXN.DOCDT).AddDays(1).retDateStr();
+                            string result = GetPendingProgramme(date, VE.T_TXN.JOBCD.retStr(), VE.T_TXN.SLCD.retStr(), VE.T_TXN.AUTONO.retStr(), "Y");
+                            if (result.retStr() == "1")
+                            {
+                                ViewBag.PENDPROGRAMME = "Y";
+                            }
+                            else
+                            {
+                                ViewBag.PENDPROGRAMME = "N";
+                            }
                         }
                     }
                     else
@@ -1335,7 +1349,7 @@ namespace Improvar.Controllers
                 return Content(ex.Message + ex.InnerException);
             }
         }
-        public ActionResult GetPendingProgramme(string docdt, string jobcd, string slcd, string autono)
+        public dynamic GetPendingProgramme(string docdt, string jobcd, string slcd, string autono, string flag = "")
         {
             try
             {
@@ -1352,8 +1366,10 @@ namespace Improvar.Controllers
                 }
                 else
                 {
+                    TempData["PENDPROGRAMME" + VE.MENU_PARA] = pendprg_data.Clone();
                     res = "There was no Pending Programme !! Please select another Party..";
                 }
+                if (flag == "Y") return res;
                 return Content(res);
             }
             catch (Exception ex)
@@ -1520,9 +1536,10 @@ namespace Improvar.Controllers
             {
                 Cn.getQueryString(VE);
                 var tempdata = (DataTable)TempData["PENDPROGRAMME" + VE.MENU_PARA]; TempData.Keep();
-
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
                 VE.TBATCHDTL = (from a in VE.TPROGDTL
-                                join b in tempdata.AsEnumerable() on a.PROGAUTOSLNO equals b.Field<string>("PROGAUTOSLNO") into Z
+                                    //join b in tempdata.AsEnumerable() on a.PROGAUTOSLNO equals b.Field<string>("PROGAUTOSLNO").retStr() into Z
+                                join b in DB.M_GROUP on a.ITGRPCD equals b.ITGRPCD into Z
                                 from b in Z.DefaultIfEmpty()
                                 select new TBATCHDTL
                                 {
@@ -1541,7 +1558,7 @@ namespace Improvar.Controllers
                                     UOM = a.UOM.retStr(),
                                     NOS = a.NOS.retDbl(),
                                     QNTY = a.QNTY.retDbl(),
-                                    BARGENTYPE = b.Field<string>("BARGENTYPE"),
+                                    BARGENTYPE = b.BARGENTYPE.retStr(),
                                     //RATE = dr["RATE"].retDbl(),
                                     //DISCTYPE_DESC = dr["DISCTYPE_DESC"].retStr(),
                                     //DISCTYPE = dr["DISCTYPE"].retStr(),
@@ -1593,10 +1610,11 @@ namespace Improvar.Controllers
                     VE.TBATCHDTL[p].BarImages = img;
                     VE.TBATCHDTL[p].SLNO = Convert.ToInt16(p + 1);
                     VE.TBATCHDTL[p].TXNSLNO = Convert.ToInt16(p + 1);
-                    VE.TBATCHDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
+                    //VE.TBATCHDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
                 }
                 VE.B_T_NOS = VE.TBATCHDTL.Sum(a => a.NOS).retDbl();
                 VE.B_T_QNTY = VE.TBATCHDTL.Sum(a => a.QNTY).retDbl();
+                VE.DISC_TYPE = masterHelp.DISC_TYPE();
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_OUTRECPROCESS_Receive", VE);
@@ -1659,11 +1677,11 @@ namespace Improvar.Controllers
                         VE.TTXNDTL[p].CGSTPER = Dt.Rows[0]["cgstper"].retDbl();
                         VE.TTXNDTL[p].SGSTPER = Dt.Rows[0]["sgstper"].retDbl();
                         VE.TTXNDTL[p].CESSPER = Dt.Rows[0]["cessper"].retDbl();
-                        VE.TTXNDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
+                        //VE.TTXNDTL[p].DISC_TYPE = masterHelp.DISC_TYPE();
                     }
                 }
 
-
+                VE.DISC_TYPE = masterHelp.DISC_TYPE();
                 ModelState.Clear();
                 VE.DefaultView = true;
                 return PartialView("_T_OUTRECPROCESS_Detail", VE);
@@ -2367,6 +2385,7 @@ namespace Improvar.Controllers
                     // create header record in finschema
                     if (blactpost == true || blgstpost == true)
                     {
+                        Cn.Create_DOCCD(UNQSNO, "F", TTXN.DOCCD);
                         dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TTXN.AUTONO, VE.DefaultAction, "F", Month, TTXN.DOCCD, DOCPATTERN, TTXN.DOCDT.retStr(), TTXN.EMD_NO.retShort(), TTXN.DOCNO, Convert.ToDouble(TTXN.DOCNO), null, null, null, TTXN.SLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         double currrt = 0;
