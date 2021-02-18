@@ -947,13 +947,15 @@ namespace Improvar
                 }
 
                 sql += "union all ";
-                sql += "select " + godown + " gocd, 'FS' mtrljobcd, 'F' stktype, d.barno, d.itcd, '' partcd, d.colrcd, d.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
+                sql += "select distinct " + godown + " gocd, 'FS' mtrljobcd, 'F' stktype, d.barno, d.itcd, '' partcd, d.colrcd, d.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
                 sql += "from " + scm + ".m_sitem_barcode d, " + scm + ".t_batchdtl a, " + scm + ".t_batchmst b, " + scm + ".t_cntrl_hdr c ";
                 sql += "where d.barno=a.barno(+) and a.barno=b.barno(+) and ";
                 if (barno.retStr() != "") sql += "upper(d.barno) in (" + barno + ") and ";
                 if (itcd.retStr() != "") sql += "d.itcd in (" + itcd + ") and ";
                 sql += "a.autono=c.autono(+) and ";
-                sql += "a.barno is null ";
+                sql += "(a.barno is null ";
+                if (gocd.retStr() != "") sql += "or a.gocd not in (" + gocd + ") ";
+                sql += ") ";
             }
             if (pendpslipconsider == true)
             {

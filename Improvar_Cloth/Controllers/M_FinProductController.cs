@@ -588,7 +588,7 @@ namespace Improvar.Controllers
                 DataTable MDT = masterHelp.SQLquery(str);
 
                 System.Text.StringBuilder SB = new System.Text.StringBuilder();
-                var hdr = "Design No" + Cn.GCS() + "Item Name" + Cn.GCS() + "ItemCd" + Cn.GCS() + "Group Name" + Cn.GCS() + "Group" + Cn.GCS() + "Rate";
+                var hdr = "Design No" + Cn.GCS() + "Item Name" + Cn.GCS() + "ItemCd" + Cn.GCS() + "Group Name" + Cn.GCS() + "Group" + Cn.GCS() + "WP Rate";
                 for (int j = 0; j <= MDT.Rows.Count - 1; j++)
                 {
                     SB.Append("<tr><td>" + MDT.Rows[j]["STYLENO"].retStr() + "</td><td>" + MDT.Rows[j]["ITNM"].retStr() + " </td><td> " + MDT.Rows[j]["ITCD"].retStr() + "</td><td>" + MDT.Rows[j]["ITGRPNM"].retStr() + " </td><td> " + MDT.Rows[j]["ITGRPCD"].retStr() + "</td><td> " + MDT.Rows[j]["wprate"].retStr() + "</td></tr>");
