@@ -69,7 +69,7 @@ function GetBarnoDetails(id, HelpFrom) {
                         $('#SearchFldValue').val(hlpfieldid);
                         $('#helpDIV').html(result);
                         $('#ReferanceFieldID').val(hlpfieldid + ReferanceFieldID + '/PARTCD');
-                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/8');
+                        $('#ReferanceColumn').val(hlpfieldindex + ReferanceFieldIndex + '/5');
                         $('#helpDIV_Header').html('Barno Details');
                     }
                     else {
