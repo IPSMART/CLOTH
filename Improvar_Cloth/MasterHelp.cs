@@ -2295,7 +2295,7 @@ namespace Improvar
         }
         public string T_TXN_BARNO_help(string barnoOrStyle, string menupara, string DOCDT, string TAXGRPCD = "", string GOCD = "", string PRCCD = "", string MTRLJOBCD = "", string ITCD = "", bool exactbarno = true, string PARTCD = "", string BARNO = "")
         {
-            var MSYSCNFG = CommVar.M_SYSCNFG();
+            var MSYSCNFG = salesfunc.M_SYSCNFG();
             DataTable tbl = new DataTable(); barnoOrStyle = barnoOrStyle.retStr() == "" ? "" : barnoOrStyle.retStr().retSqlformat();
             if (menupara == "PB" || menupara == "OP")
             {
