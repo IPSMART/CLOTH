@@ -478,18 +478,6 @@ namespace Improvar
                 return "";
             }
         }
-        public static M_SYSCNFG M_SYSCNFG()
-        {
-            try
-            {
-                var dtconfig = (System.Data.DataTable)System.Web.HttpContext.Current.Session["M_SYSCNFG"];
-                M_SYSCNFG M_SYSCG = dtconfig.DataTableToListConvertion<M_SYSCNFG>().First();
-                return M_SYSCG;
-            }
-            catch
-            {
-                return new M_SYSCNFG();
-            }
-        }
+       
     }
 }

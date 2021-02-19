@@ -265,6 +265,16 @@ function FillBarcodeArea(str, Table, i) {
             $("#NOS").val($(FieldidStarting + "NOS_" + i).val());
             $("#CUTLENGTH").val($(FieldidStarting + "CUTLENGTH_" + i).val());
         }
+        else {
+            if (MENU_PARA == "SB" || MENU_PARA == "SBDIR" || MENU_PARA == "SR" || MENU_PARA == "SBEXP" || MENU_PARA == "SBPCK") {
+                if (retStr($(FieldidStarting + "UOM_" + i).val()) == "PCS") {
+                    $("#QNTY").val(1.000);
+                }
+                else {
+                    $("#NOS").val(1);
+                }
+            }
+        }
         $("#DISCRATE").val($(FieldidStarting + "DISCRATE_" + i).val());
         $("#DISCTYPE").val($(FieldidStarting + "DISCTYPE_" + i).val());
         $("#TDDISCTYPE").val($(FieldidStarting + "TDDISCTYPE_" + i).val());
@@ -3508,7 +3518,7 @@ function Update_Pageno_slno() {
         }
     });
 }
-function RemoveStyleBarno(RemoveFldId){
+function RemoveStyleBarno(RemoveFldId) {
     $("#" + RemoveFldId).val("");
 }
 
