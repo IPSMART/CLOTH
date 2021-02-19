@@ -1294,7 +1294,7 @@
     <Content Include="Views\T_SALE_PYMT\T_SALE_PYMT.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PYMT_PAYMENT.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PYMT_SALESMAN.cshtml" />
-    <Content Include="Views\Shared\_T_SALE_PYMT_Main.cshtml" />
+    <Content Include="Views\Shared\_T_SALE_PYMT_Adjustment.cshtml" />
     <Content Include="Views\Rep_Agent\Rep_Agent.cshtml" />
   </ItemGroup>
   <ItemGroup>

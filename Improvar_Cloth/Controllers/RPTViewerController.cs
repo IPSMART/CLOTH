@@ -196,7 +196,24 @@ namespace Improvar.Controllers
                     {
                         var dammmyval = newdt.AsEnumerable().Where(a => a.Field<string>("dammy") != "").Select(a => a.Field<string>("dammy")).Distinct().FirstOrDefault();
                         if (dammmyval != null && dammmyval != " ")
-                        { //rename column dammy=>Group
+                        {
+                            foreach (DataRow dr in newdt.Rows)
+                            {//<span style='font-weight:100;font-size:9px;'> DA00129   </span>ANKIT JAIN.
+                                string dammy = dr["dammy"].retStr();
+                                if (dammy != "")
+                                {
+                                    int eind = dammy.IndexOf("'>");
+                                    if (eind != -1)
+                                    {
+                                        var spanstr = dammy.Substring(0, eind + 2);
+                                        dammy = dammy.Replace(spanstr, "");
+                                        dammy = dammy.Replace("</span>", "");
+                                        dr["dammy"] = dammy;
+                                    }
+                                }
+
+                            }
+                            //rename column dammy=>Group
                             newdt.Columns[0].ColumnName = "Group";
                             isdammy = true;
                         }
@@ -237,11 +254,11 @@ namespace Improvar.Controllers
                         }
                         if (isdammy)
                         {
-                            worksheet.Cells[3, i-1].Value = hdrvalue;
+                            worksheet.Cells[3, i - 1].Value = hdrvalue;
                         }
                         else
                         {
-                            worksheet.Cells[3, i-2].Value = hdrvalue;
+                            worksheet.Cells[3, i - 2].Value = hdrvalue;
                         }
                     }
                     worksheet.View.FreezePanes(4, 1);
@@ -1361,8 +1378,8 @@ namespace Improvar.Controllers
 
             PV.ColspanForPDF = PV.HeaderArray.GetLength(1) - 3;
             PV.AlternetiveRowColor = true;
-           // PV.Title = CommVar.LocName(UNQSNO);
-          //  PV.Vname = CommVar.CompName(UNQSNO); 
+            // PV.Title = CommVar.LocName(UNQSNO);
+            //  PV.Vname = CommVar.CompName(UNQSNO); 
 
             PV.Para1 = header1; PV.Para2 = header2;
 
