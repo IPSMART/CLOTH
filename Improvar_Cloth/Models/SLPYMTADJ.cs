@@ -9,19 +9,19 @@ namespace Improvar.Models
 {
     public class SLPYMTADJ
     {
-        public string VCHTYPE { get; set; }
-        public bool VChecked { get; set; }
-        public string VAUTONO { get; set; }
-        public int VSLNO { get; set; }
-        public int POPUPSL { get; set; }
-        public string VDOCNO { get; set; }
-        public string VDOCDT { get; set; }
-        public decimal VAMOUNT { get; set; }
-        public decimal VPRVADJAMT { get; set; }
-        public double VADJAMT { get; set; }
-        public decimal VBALAMT { get; set; }
-        public string VPYTREM { get; set; }
-        public string VBLREM { get; set; }
+        //public string VCHTYPE { get; set; }
+        //public bool VChecked { get; set; }
+        //public string VAUTONO { get; set; }
+        //public int VSLNO { get; set; }
+        //public int POPUPSL { get; set; }
+        //public string VDOCNO { get; set; }
+        //public string VDOCDT { get; set; }
+        //public decimal VAMOUNT { get; set; }
+        //public decimal VPRVADJAMT { get; set; }
+        //public double VADJAMT { get; set; }
+        //public decimal VBALAMT { get; set; }
+        //public string VPYTREM { get; set; }
+        //public string VBLREM { get; set; }
         public int? EMD_NO { get; set; }
 
         [Required]
@@ -61,9 +61,8 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? ADJ_AMT { get; set; }
         public string DOCNO { get; set; }
-
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime? DOCDT { get; set; }
+        
+        public string DOCDT { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? AMT { get; set; }
@@ -73,7 +72,7 @@ namespace Improvar.Models
         public string BILLNO { get; set; }
 
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime? BILLDT { get; set; }
+        public string BILLDT { get; set; }
         public bool Checked { get; set; }
         public int ParentSerialNo { get; set; }
 
@@ -85,9 +84,7 @@ namespace Improvar.Models
         public string LOCCD { get; set; }
         public string CLASS1CD { get; set; }
         public string CLASS1NM { get; set; }
-        public string BILL_DT { get; set; }
-        public string DOC_DT { get; set; }
-
+ 
         [StringLength(8)]
         public string BALCLASS1CD { get; set; }
 

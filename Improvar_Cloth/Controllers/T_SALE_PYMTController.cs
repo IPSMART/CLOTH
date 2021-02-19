@@ -400,16 +400,19 @@ namespace Improvar.Controllers
                               where (customer.Field<string>("VCHTYPE") == "BL")
                               select new SLPYMTADJ
                               {
-                                  VCHTYPE = customer.Field<string>("VCHTYPE"),
-                                  VAUTONO = customer.Field<string>("AUTONO"),
-                                  VSLNO = customer.Field<Int16>("SLNO"),
-                                  VBLREM = customer.Field<string>("BLREM"),
-                                  VDOCNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
-                                  VDOCDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
-                                  VAMOUNT = customer.Field<decimal>("AMT") * -1,
-                                  VPRVADJAMT = customer.Field<decimal>("PRV_ADJ") * -1,
-                                  VBALAMT = customer.Field<decimal>("bal_amt") * -1,
+                                  DOCNO = customer.Field<string>("VCHTYPE"),
+                                  DOCDT = customer.Field<DateTime>("docdt").retDateStr(),
+                                  BILLNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
+                                  BILLDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
+                                  I_AUTONO = customer.Field<string>("AUTONO"),
+                                  I_SLNO = customer.Field<Int16>("SLNO"),
+                                  //re = customer.Field<string>("BLREM"),                       
+                                  I_AMT = (customer.Field<decimal>("AMT") * -1).retDbl(),
+                                  PRE_ADJ_AMT = (customer.Field<decimal>("PRV_ADJ") * -1).retDbl(),
+                                  BAL_AMT = (customer.Field<decimal>("bal_amt") * -1).retDbl(),
+                                  //DUE_DT = (customer.Field<decimal>("bal_amt") * -1).retDbl(),
                               }).ToList();
+                VE.SLPYMTADJ = OSList;
             }
             catch
             {
@@ -446,7 +449,7 @@ namespace Improvar.Controllers
             //}
             VE.DefaultView = true;
             ModelState.Clear();
-            return PartialView("_T_SALE_PYMT_Main", VE);
+            return PartialView("_T_SALE_PYMT_Adjustment", VE);
 
         }
         public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd)
@@ -464,16 +467,19 @@ namespace Improvar.Controllers
                               where (customer.Field<string>("VCHTYPE") == "BL")
                               select new SLPYMTADJ
                               {
-                                  VCHTYPE = customer.Field<string>("VCHTYPE"),
-                                  VAUTONO = customer.Field<string>("AUTONO"),
-                                  VSLNO = customer.Field<Int16>("SLNO"),
-                                  VBLREM = customer.Field<string>("BLREM"),
-                                  VDOCNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
-                                  VDOCDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
-                                  VAMOUNT = customer.Field<decimal>("AMT") * -1,
-                                  VPRVADJAMT = customer.Field<decimal>("PRV_ADJ") * -1,
-                                  VBALAMT = customer.Field<decimal>("bal_amt") * -1,
+                                  DOCNO = customer.Field<string>("VCHTYPE"),
+                                  DOCDT = customer.Field<DateTime>("docdt").retDateStr(),
+                                  BILLNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
+                                  BILLDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
+                                  I_AUTONO = customer.Field<string>("AUTONO"),
+                                  I_SLNO = customer.Field<Int16>("SLNO"),
+                                  //re = customer.Field<string>("BLREM"),                       
+                                  AMT = (customer.Field<decimal>("AMT")).retDbl(),
+                                  PRE_ADJ_AMT = (customer.Field<decimal>("PRV_ADJ")).retDbl(),
+                                  BAL_AMT = (customer.Field<decimal>("bal_amt")).retDbl(),
+                                  DUE_DT = (customer.Field<string>("DUEDT")),
                               }).ToList();
+                VE.SLPYMTADJ = OSList;
 
             }
             catch
@@ -511,7 +517,7 @@ namespace Improvar.Controllers
             //}
             VE.DefaultView = true;
             ModelState.Clear();
-            //return PartialView("_T_SALE_PYMT_Main", VE);
+            //return PartialView("_T_SALE_PYMT_Adjustment", VE);
             return VE;
         }
 
