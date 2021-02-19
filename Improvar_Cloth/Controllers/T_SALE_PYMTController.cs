@@ -160,10 +160,44 @@ namespace Improvar.Controllers
                                     TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
                                     //VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
                                     //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
-                                    GetOutstInvoice(VE, VE.RETDEBSLCD);
+                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD);
                                 }
                                 VE.T_TXNPYMT_HDR = TXNMEMO;
-                                //VE.T_TXNOTH = TXNOTH;
+
+                                if (VE.TTXNSLSMN == null || VE.TTXNSLSMN.Count == 0)
+                                {
+                                    List<TTXNSLSMN> TTXNSLSMN = new List<TTXNSLSMN>();
+                                    for (int i = 0; i <= 2; i++)
+                                    {
+                                        TTXNSLSMN TTXNSLM = new TTXNSLSMN();
+                                        TTXNSLM.SLNO = Convert.ToInt16(i + 1);
+                                        if (i == 0) TTXNSLM.PER = 100;
+                                        TTXNSLSMN.Add(TTXNSLM);
+                                        VE.TTXNSLSMN = TTXNSLSMN;
+                                    }
+                                    VE.TTXNSLSMN = TTXNSLSMN;
+                                }
+                                if (VE.TTXNPYMT == null || VE.TTXNPYMT.Count == 0)
+                                {
+                                    var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD, PYMTTYPE = i.PYMTTYPE }).OrderBy(a => a.PYMTCD).ToList();
+                                    if (MPAYMENT.Count > 0)
+                                    {
+                                        VE.TTXNPYMT = (from i in MPAYMENT select new TTXNPYMT { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD, PYMTTYPE = i.PYMTTYPE }).ToList();
+                                        for (int p = 0; p <= VE.TTXNPYMT.Count - 1; p++)
+                                        {
+                                            VE.TTXNPYMT[p].SLNO = Convert.ToInt16(p + 1);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int slno = 0;
+                                        List<TTXNPYMT> TTXNPYMNT = new List<TTXNPYMT>();
+                                        TTXNPYMT TXNPYMT = new TTXNPYMT();
+                                        TXNPYMT.SLNO = Convert.ToInt16(slno + 1);
+                                        TTXNPYMNT.Add(TXNPYMT);
+                                        VE.TTXNPYMT = TTXNPYMNT;
+                                    }
+                                }
                             }
                             else
                             {
