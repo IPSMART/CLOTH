@@ -3527,6 +3527,42 @@ function RemoveStyleBarno(RemoveFldId) {
     $("#" + RemoveFldId).val("");
 }
 
+function SelectUOMCode(id, i) {
+    if (id == "") {
+        $("#D_BLUOMCD_" + i).val("");
+    }
+    else {
+        $.ajax({
+            type: 'GET',
+            url: $("#UrlGetUOMDetails").val(),//"@Url.Action("GetUOMDetails", PageControllerName)",
+            data: {
+                val: id
+            },
+            success: function (result) {
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG < 0) {
+                    $("#Msgdiv1").show();
+                    $("#info").show();
+                    $("#msgbody_info").html(" Invalid  UOM Code !! ");
+                    $("#D_BLUOMCD_" + i).val("");
+                    $("#btnok").focus();
+                    message_value = "D_BLUOMCD_" + i;
+                }
+                else {
+                    $("#tempHDD").val(result);
+                    var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                    $("#D_BLUOMCD_" +i).val(str[0]);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+}
+
 
 
 

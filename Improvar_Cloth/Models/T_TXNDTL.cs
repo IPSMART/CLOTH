@@ -174,7 +174,8 @@ namespace Improvar.Models
         public double? LISTPRICE { get; set; }
 
         public double? LISTDISCPER { get; set; }
-
+        [StringLength(3)]
+        public string BLUOMCD { get; set; }
 
     }
 }

@@ -210,5 +210,7 @@ namespace Improvar.Models
         public int? PAGESLNO { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? OTHRAMT { get; set; }
+        [StringLength(3)]
+        public string BLUOMCD { get; set; }
     }
 }
