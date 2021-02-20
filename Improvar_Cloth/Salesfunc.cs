@@ -1146,7 +1146,7 @@ namespace Improvar
             sql += "from ";
 
             sql += "( ";
-            sql += "select b.gocd, b.mtrljobcd, b.stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, b.balqnty, b.balnos from ";
+            sql += "select b.gocd, nvl(b.mtrljobcd,'FS') mtrljobcd, nvl(b.stktype,'F') stktype, a.barno, a.itcd, b.partcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia, b.balqnty, b.balnos from ";
 
             sql += "( select a.barno, a.itcd, a.colrcd, a.sizecd, a.shade, a.cutlength, a.dia from ";
             sql += scm + ".t_batchmst a ";
