@@ -425,7 +425,7 @@ namespace Improvar.Controllers
                 str1 += "p.PRTBARCODE,i.STKTYPE,q.STKNAME,i.BARNO,j.COLRCD,m.COLRNM,m.CLRBARCODE,j.SIZECD,l.SIZENM,l.SZBARCODE,i.SHADE,i.QNTY,i.NOS,i.RATE,i.DISCRATE, ";
                 str1 += "i.DISCTYPE,i.TDDISCRATE,i.TDDISCTYPE,i.SCMDISCTYPE,i.SCMDISCRATE,i.HSNCODE,i.BALENO,j.PDESIGN,j.OURDESIGN,i.FLAGMTR,i.LOCABIN,i.BALEYR ";
                 str1 += ",n.SALGLCD,n.PURGLCD,n.SALRETGLCD,n.PURRETGLCD,j.WPRATE,j.RPRATE,i.ITREM,i.ORDAUTONO,i.ORDSLNO,r.DOCNO ORDDOCNO,r.DOCDT ORDDOCDT,n.RPPRICEGEN, ";
-                str1 += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,k.NEGSTOCK ";
+                str1 += "n.WPPRICEGEN,i.LISTPRICE,i.LISTDISCPER,i.CUTLENGTH,nvl(k.NEGSTOCK,n.NEGSTOCK)NEGSTOCK ";
                 str1 += ",s.AGDOCNO,s.AGDOCDT,s.PAGENO,s.PAGESLNO,i.PCSTYPE,s.glcd ";
                 str1 += "from " + Scm + ".T_BATCHDTL i, " + Scm + ".T_BATCHMST j, " + Scm + ".M_SITEM k, " + Scm + ".M_SIZE l, " + Scm + ".M_COLOR m, ";
                 str1 += Scm + ".M_GROUP n," + Scm + ".M_MTRLJOBMST o," + Scm + ".M_PARTS p," + Scm + ".M_STKTYPE q," + Scm + ".T_CNTRL_HDR r ";
@@ -1397,7 +1397,9 @@ namespace Improvar.Controllers
                 string BARNO = data[8].retStr() == "" || val.retStr() == "" ? "" : data[8].retStr().retSqlformat();
                 bool exactbarno = data[7].retStr() == "Bar" ? true : false;
                 if (MTRLJOBCD == "" || barnoOrStyle == "") { MTRLJOBCD = data[6].retStr(); }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO);
+                string AUTONO = data[9].retStr() == "" ? "" : data[9].retStr().retSqlformat();
+
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO, AUTONO);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -3793,7 +3795,7 @@ namespace Improvar.Controllers
                     double itamt = 0;
                     if (blactpost == true)
                     {
-                        if (VE.MENU_PARA == "SB" || VE.MENU_PARA == "SD" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBPOS" || VE.MENU_PARA == "SRPOS") salpur = "S";
+                        if (VE.MENU_PARA == "SBPCK" || VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR" || VE.MENU_PARA == "SR" || VE.MENU_PARA == "SBEXP") salpur = "S";
                         else salpur = "P";
                         string prodrem = strrem; expglcd = "";
                         if (VE.TTXNDTL != null)
@@ -3981,7 +3983,14 @@ namespace Improvar.Controllers
                                 if (VE.TTXNDTL[i].SLNO != 0 && VE.TTXNDTL[i].ITCD != null)
                                 {
                                     gs = gs + 1;
-                                    if (VE.TTXNDTL[i].GSTPER.retDbl() == 0) exemptype = "N";
+                                    if ((VE.TTXNDTL[i].IGSTPER.retDbl() + VE.TTXNDTL[i].CGSTPER.retDbl() + VE.TTXNDTL[i].SGSTPER.retDbl()) == 0)
+                                    {
+                                        exemptype = "N";
+                                    }
+                                    else
+                                    {
+                                        exemptype = "";
+                                    }
                                     string SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT.retStr() == "" ? "" : VE.T_VCH_GST.SHIPDOCDT.retDateStr();
 
                                     T_VCH_GST TVCHGST = new T_VCH_GST();
@@ -4021,8 +4030,6 @@ namespace Improvar.Controllers
                                     TVCHGST.DNCNCD = TTXNOTH.DNCNCD;
                                     TVCHGST.EXPCD = VE.T_VCH_GST.EXPCD;
                                     TVCHGST.GSTSLNM = VE.GSTSLNM;
-                                    TVCHGST.GSTNO = VE.GSTNO;
-                                    TVCHGST.POS = VE.POS;
                                     TVCHGST.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                                     TVCHGST.PORTCD = VE.T_VCH_GST.PORTCD;
@@ -4085,7 +4092,14 @@ namespace Improvar.Controllers
                                                         }).OrderByDescending(a => a.AMOUNT).FirstOrDefault()?.HSNSACCD;
                                         VE.TTXNAMT[i].HSNCODE = HSNforAmount;
                                     }
-
+                                    if ((VE.TTXNAMT[i].IGSTPER.retDbl() + VE.TTXNAMT[i].CGSTPER.retDbl() + VE.TTXNAMT[i].SGSTPER.retDbl()) == 0)
+                                    {
+                                        exemptype = "N";
+                                    }
+                                    else
+                                    {
+                                        exemptype = "";
+                                    }
                                     gs = gs + 1;
                                     T_VCH_GST TVCHGST1 = new T_VCH_GST();
                                     TVCHGST1.EMD_NO = TTXN.EMD_NO;
@@ -4128,8 +4142,6 @@ namespace Improvar.Controllers
                                     TVCHGST1.DNCNCD = TTXNOTH.DNCNCD;
                                     TVCHGST1.EXPCD = VE.T_VCH_GST.EXPCD;
                                     TVCHGST1.GSTSLNM = VE.GSTSLNM;
-                                    TVCHGST1.GSTNO = VE.GSTNO;
-                                    TVCHGST1.POS = VE.POS;
                                     TVCHGST1.SHIPDOCNO = VE.T_VCH_GST.SHIPDOCNO;
                                     TVCHGST1.SHIPDOCDT = VE.T_VCH_GST.SHIPDOCDT;
                                     TVCHGST1.PORTCD = VE.T_VCH_GST.PORTCD;
