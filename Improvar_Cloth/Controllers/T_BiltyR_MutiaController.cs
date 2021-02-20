@@ -919,7 +919,7 @@ namespace Improvar.Controllers
                     HC.GetPrintHeader(IR, "qnty", "double", "c,15,3", "Qnty");
                     HC.GetPrintHeader(IR, "uomcd", "string", "c,15", "Uom");
                     HC.GetPrintHeader(IR, "lrno", "string", "c,12", "Lrno");
-                    HC.GetPrintHeader(IR, "pageno", "string", "c,12", "Page");
+                    HC.GetPrintHeader(IR, "pageno", "string", "c,12", "PageNo/PageSlNo.");
 
                     Int32 rNo = 0; Int32 i = 0; Int32 maxR = 0;
                     i = 0; maxR = tbl.Rows.Count - 1;

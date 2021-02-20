@@ -292,12 +292,34 @@ namespace Improvar.Controllers
         {
             try
             {
-                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT,"","","", MUTSLCD.retSqlformat());
-                  DataView dv = new DataView(GetPendig_Data);
-                    string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM" };
-                    GetPendig_Data = dv.ToTable(true, COL);
-                    VE.TBILTY_POPUP = (from DataRow dr in GetPendig_Data.Rows
-                                        select new TBILTY_POPUP
+                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, "", "", "", MUTSLCD.retSqlformat());
+                DataView dv = new DataView(GetPendig_Data);
+                string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM" };
+                GetPendig_Data = dv.ToTable(true, COL);
+                List<string> blautonos = new List<string>();
+
+                //List<TBILTY> MLocIFSC1 = new List<TBILTY>();
+                //for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                //{
+                //    TBILTY MLI = new TBILTY();
+                //    MLI = VE.TBILTY[i];
+                //    MLocIFSC1.Add(MLI);
+                //}
+                //TBILTY MLI1 = new TBILTY();
+                //MLocIFSC1.Add(MLI1);
+                //VE.TBILTY = MLocIFSC1;
+                //if (VE.TBILTY != null)
+                //{
+                //    foreach (var i in VE.TBILTY)
+                //    {
+                //        blautonos.Add(i.BLAUTONO);
+
+                //    }
+                //} 
+                  
+                var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
+                VE.TBILTY_POPUP = (from DataRow dr in GetPendig_Data.Rows
+                                   select new TBILTY_POPUP
                                         {
                                             BLAUTONO = dr["autono"].retStr(),
                                             LRNO = dr["lrno"].retStr(),
@@ -310,8 +332,12 @@ namespace Improvar.Controllers
                     for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
                     {
                         VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
-                    }
-                    if (VE.TBILTY_POPUP.Count != 0)
+                    //if (VE.TBILTY_POPUP[p].BLAUTONO.Contains(sqlbillautonos))
+                    //{ VE.TBILTY_POPUP[p].Checked = true; }
+
+                }
+
+                if (VE.TBILTY_POPUP.Count != 0)
                     {
                         VE.DefaultView = true;
                         return PartialView("_T_BiltyG_Mutia_PopUp", VE);

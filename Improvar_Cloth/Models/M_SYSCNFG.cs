@@ -102,5 +102,7 @@ namespace Improvar.Models
         public string MNTNPCSTYPE { get; set; }
         [StringLength(1)]
         public string MNTNBARNO { get; set; }
+        [StringLength(1)]
+        public string COMMONUIQBAR { get; set; }
     }
 }
