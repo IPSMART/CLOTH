@@ -160,10 +160,44 @@ namespace Improvar.Controllers
                                     TXNOTH.PRCCD = syscnfgdt.Rows[0]["prccd"].retStr();
                                     //VE.PRCNM = syscnfgdt.Rows[0]["prcnm"].retStr();
                                     //VE.EFFDT = syscnfgdt.Rows[0]["effdt"].retDateStr();
-                                    GetOutstInvoice(VE, VE.RETDEBSLCD);
+                                    VE = GetOutstInvoice(VE, VE.RETDEBSLCD);
                                 }
                                 VE.T_TXNPYMT_HDR = TXNMEMO;
-                                //VE.T_TXNOTH = TXNOTH;
+
+                                if (VE.TTXNSLSMN == null || VE.TTXNSLSMN.Count == 0)
+                                {
+                                    List<TTXNSLSMN> TTXNSLSMN = new List<TTXNSLSMN>();
+                                    for (int i = 0; i <= 2; i++)
+                                    {
+                                        TTXNSLSMN TTXNSLM = new TTXNSLSMN();
+                                        TTXNSLM.SLNO = Convert.ToInt16(i + 1);
+                                        if (i == 0) TTXNSLM.PER = 100;
+                                        TTXNSLSMN.Add(TTXNSLM);
+                                        VE.TTXNSLSMN = TTXNSLSMN;
+                                    }
+                                    VE.TTXNSLSMN = TTXNSLSMN;
+                                }
+                                if (VE.TTXNPYMT == null || VE.TTXNPYMT.Count == 0)
+                                {
+                                    var MPAYMENT = (from i in DB.M_PAYMENT join j in DB.M_CNTRL_HDR on i.M_AUTONO equals j.M_AUTONO where j.INACTIVE_TAG == "N" select new { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD, PYMTTYPE = i.PYMTTYPE }).OrderBy(a => a.PYMTCD).ToList();
+                                    if (MPAYMENT.Count > 0)
+                                    {
+                                        VE.TTXNPYMT = (from i in MPAYMENT select new TTXNPYMT { PYMTCD = i.PYMTCD, PYMTNM = i.PYMTNM, GLCD = i.GLCD, PYMTTYPE = i.PYMTTYPE }).ToList();
+                                        for (int p = 0; p <= VE.TTXNPYMT.Count - 1; p++)
+                                        {
+                                            VE.TTXNPYMT[p].SLNO = Convert.ToInt16(p + 1);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int slno = 0;
+                                        List<TTXNPYMT> TTXNPYMNT = new List<TTXNPYMT>();
+                                        TTXNPYMT TXNPYMT = new TTXNPYMT();
+                                        TXNPYMT.SLNO = Convert.ToInt16(slno + 1);
+                                        TTXNPYMNT.Add(TXNPYMT);
+                                        VE.TTXNPYMT = TTXNPYMNT;
+                                    }
+                                }
                             }
                             else
                             {
@@ -366,16 +400,19 @@ namespace Improvar.Controllers
                               where (customer.Field<string>("VCHTYPE") == "BL")
                               select new SLPYMTADJ
                               {
-                                  VCHTYPE = customer.Field<string>("VCHTYPE"),
-                                  VAUTONO = customer.Field<string>("AUTONO"),
-                                  VSLNO = customer.Field<Int16>("SLNO"),
-                                  VBLREM = customer.Field<string>("BLREM"),
-                                  VDOCNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
-                                  VDOCDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
-                                  VAMOUNT = customer.Field<decimal>("AMT") * -1,
-                                  VPRVADJAMT = customer.Field<decimal>("PRV_ADJ") * -1,
-                                  VBALAMT = customer.Field<decimal>("bal_amt") * -1,
+                                  DOCNO = customer.Field<string>("VCHTYPE"),
+                                  DOCDT = customer.Field<DateTime>("docdt").retDateStr(),
+                                  BILLNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
+                                  BILLDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
+                                  I_AUTONO = customer.Field<string>("AUTONO"),
+                                  I_SLNO = customer.Field<Int16>("SLNO"),
+                                  //re = customer.Field<string>("BLREM"),                       
+                                  I_AMT = (customer.Field<decimal>("AMT") * -1).retDbl(),
+                                  PRE_ADJ_AMT = (customer.Field<decimal>("PRV_ADJ") * -1).retDbl(),
+                                  BAL_AMT = (customer.Field<decimal>("bal_amt") * -1).retDbl(),
+                                  //DUE_DT = (customer.Field<decimal>("bal_amt") * -1).retDbl(),
                               }).ToList();
+                VE.SLPYMTADJ = OSList;
             }
             catch
             {
@@ -412,7 +449,7 @@ namespace Improvar.Controllers
             //}
             VE.DefaultView = true;
             ModelState.Clear();
-            return PartialView("_T_SALE_PYMT_Main", VE);
+            return PartialView("_T_SALE_PYMT_Adjustment", VE);
 
         }
         public SalePymtEntry GetOutstInvoice(SalePymtEntry VE, string slcd)
@@ -430,16 +467,19 @@ namespace Improvar.Controllers
                               where (customer.Field<string>("VCHTYPE") == "BL")
                               select new SLPYMTADJ
                               {
-                                  VCHTYPE = customer.Field<string>("VCHTYPE"),
-                                  VAUTONO = customer.Field<string>("AUTONO"),
-                                  VSLNO = customer.Field<Int16>("SLNO"),
-                                  VBLREM = customer.Field<string>("BLREM"),
-                                  VDOCNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
-                                  VDOCDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
-                                  VAMOUNT = customer.Field<decimal>("AMT") * -1,
-                                  VPRVADJAMT = customer.Field<decimal>("PRV_ADJ") * -1,
-                                  VBALAMT = customer.Field<decimal>("bal_amt") * -1,
+                                  DOCNO = customer.Field<string>("VCHTYPE"),
+                                  DOCDT = customer.Field<DateTime>("docdt").retDateStr(),
+                                  BILLNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
+                                  BILLDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
+                                  I_AUTONO = customer.Field<string>("AUTONO"),
+                                  I_SLNO = customer.Field<Int16>("SLNO"),
+                                  //re = customer.Field<string>("BLREM"),                       
+                                  AMT = (customer.Field<decimal>("AMT")).retDbl(),
+                                  PRE_ADJ_AMT = (customer.Field<decimal>("PRV_ADJ")).retDbl(),
+                                  BAL_AMT = (customer.Field<decimal>("bal_amt")).retDbl(),
+                                  DUE_DT = (customer.Field<string>("DUEDT")),
                               }).ToList();
+                VE.SLPYMTADJ = OSList;
 
             }
             catch
@@ -477,7 +517,7 @@ namespace Improvar.Controllers
             //}
             VE.DefaultView = true;
             ModelState.Clear();
-            //return PartialView("_T_SALE_PYMT_Main", VE);
+            //return PartialView("_T_SALE_PYMT_Adjustment", VE);
             return VE;
         }
 

@@ -30,6 +30,14 @@
             ViewBag.Title = "Purchase Return (PRM)"; ViewBag.Partycaption = "Supplier"; break;
         case "OP":
             ViewBag.Title = "Opening Stock"; ViewBag.Partycaption = "Party"; break;
+        case "SCN":
+            ViewBag.Title = "Sales C/N (w/o Qty)"; ViewBag.Partycaption = "Buyer"; break;
+        case "SDN":
+            ViewBag.Title = "Sales D/N (w/o Qty)"; ViewBag.Partycaption = "Buyer"; break;
+        case "PCN":
+            ViewBag.Title = "Purchase C/N (w/o Qty)"; ViewBag.Partycaption = "Supplier"; break;
+        case "PDN":
+            ViewBag.Title = "Purchase D/N (w/o Qty)"; ViewBag.Partycaption = "Supplier"; break;
         default: ViewBag.Title = ""; ViewBag.Partycaption = "Party"; break;
     }
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -157,7 +165,26 @@
                 return false;
             }
         }
-
+        //AMT TAB HSN CHECK
+        if ("@Model.MENU_PARA" == "SCN" || "@Model.MENU_PARA" == "SDN" || "@Model.MENU_PARA" == "PCN" || "@Model.MENU_PARA" == "PDN") {
+            var GridRowAmt = $("#AMOUNT_GRID > tbody > tr").length;
+            if (GridRowAmt != 0) {
+                for (var i = 0; i <= GridRowAmt - 1; i++) {
+                    if ($("#HSNCODE_" + i).val() == "" && retFloat($("#A_AMT_" + i).val()) != 0) {
+                        msgInfo("Please enter HSN Code at Sl No. (" + $("#ASLNO_" + i).val() + ")  in Amount Tab!!");
+                        $("li").removeClass("active").addClass("");
+                        $(".nav-tabs li:nth-child(4)").addClass('active');
+                        //below set the  child sequence
+                        $(".tab-content div").removeClass("active");
+                        $(".tab-content div:nth-child(4)").removeClass("tab-pane fade").addClass("tab-pane fade in active");
+                        message_value = "HSNCODE_" + i;
+                        return false;
+                    }
+                }
+            }
+        }
+       
+        //
         var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         var rateblank = false;
         if (GridRow != 0) {
@@ -180,7 +207,7 @@
             }
         }
         //start of finalise
-        if ($("#bardatachng").val() == "Y") {
+        if ($("#bardatachng").val() == "Y" && GridRow >0) {
             debugger;
             var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
             var mtrlcdblank = false; var slnoblank = false; var glcdblank = false; var qntyblank = false;
@@ -506,6 +533,7 @@
         @Html.HiddenFor(a => a.T_TXN.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
         @Html.HiddenFor(a => a.T_CNTRL_HDR.EMD_NO)
+        @Html.HiddenFor(a => a.T_CNTRL_HDR.DOCNO)
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNSIZE, new { id = "MNTNSIZE" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNCOLOR, new { id = "MNTNCOLOR" })
         @Html.HiddenFor(a => a.M_SYSCNFG.MNTNPART, new { id = "MNTNPART" })
@@ -606,11 +634,11 @@
                 <div class="row">
                     <div class="col-md-5">
                         <div class="editor-label" style="margin-top: 6px;">
-                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR")
+                            @if (Model.MENU_PARA == "PB" || Model.MENU_PARA == "PR" || Model.MENU_PARA == "PCN" || Model.MENU_PARA == "PDN")
                             {
                                 @Html.Label("", "Supplier Code")
                             }
-                            else if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP")
+                            else if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "SCN" || Model.MENU_PARA == "SDN")
                             {
                                 @Html.Label("", "Buyer Code")
                             }
