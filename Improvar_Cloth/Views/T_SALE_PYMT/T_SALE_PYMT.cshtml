@@ -20,7 +20,7 @@
 <script type="text/javascript">
     $("#WaitingMode").show();
     $(document).ready(function () {
-        if ("@Model.DefaultAction" == "I_" || "@Model.DefaultAction" == "D") {
+        if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
             //$(".sl_bom_grid").prop("disabled", false);
         }
@@ -65,7 +65,7 @@
     function requiredFieldValidator() {
         debugger;
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-      
+
         if ("@Model.MENU_PARA" == "TRWB") {
             if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
         }
@@ -182,7 +182,7 @@
     }
 </script>
 <script>
-    function AllCheckAdjDNCN(obj, tablename, RowCheckID) {
+    function AllCheckAdjustInvoice(obj, tablename) {
         debugger;
         var filter = document.getElementById("I_FilterSearch").value;
         var rows = document.querySelector("#" + tablename + " tbody").rows;
@@ -195,7 +195,7 @@
                 }
             }
             if (flag == 1) {
-                var chkbox = document.getElementById(RowCheckID + i);
+                var chkbox = document.getElementById('I_Checked_' + i);
                 chkbox.checked = obj.checked;
             }
             CalculateAdjRow(tablename, i)
@@ -207,57 +207,127 @@
         var rows = document.querySelector("#" + tablename + " tbody").rows;
         for (var i = 0; i <= rows.length - 1; i++) {
             if (i != rowindex) {
-                coladj += retFloat(document.getElementById("I_ADJAMT_" + i).value);
+                coladj += retFloat(document.getElementById("I_ADJ_AMT_" + i).value);
             }
-            prvadj += retFloat(document.getElementById("I_PRVADJAMT_" + i).value);
-            colbal += retFloat(document.getElementById("I_BALAMT_" + i).value);
+            prvadj += retFloat(document.getElementById("I_PRE_ADJ_AMT_" + i).value);
+            //colbal += retFloat(document.getElementById("I_BAL_AMT_" + i).value);
         }
-        document.getElementById("TOT_VBALAMT").value = colbal.toFixed(2);
-        document.getElementById("TOT_VADJAMT").value = coladj.toFixed(2);
-        var PAMT = retFloat(document.getElementById("PARENT_FORADJAMT").value);
+        //document.getElementById("TOT_VBALAMT").value = colbal.toFixed(2);
+        document.getElementById("TOT_ADJ").value = coladj.toFixed(2);
+        var PAMT = retFloat(document.getElementById("T_PYMT_AMT").value);
         var balForAdj = (PAMT - coladj).toFixed(2);
-        document.getElementById('I_BALADJAMT').value = balForAdj;
+        document.getElementById('AVLBALFORADJ').value = balForAdj;
         balForAdj = retFloat(balForAdj);
         return balForAdj;
     }
 
     function CalculateAdjRow(tablename, rowindex, callfrom) {
+        debugger;
         var checkbox = document.getElementById('I_Checked_' + rowindex);
-        var AMOUNT = retFloat(document.getElementById("I_AMOUNT_" + rowindex).value);
-        var PREAMT = retFloat(document.getElementById("I_PRVADJAMT_" + rowindex).value);
-        var ADJAMT = retFloat(document.getElementById("I_ADJAMT_" + rowindex).value);
-        var PAMT = 9990999990999;// retFloat(document.getElementById("PARENT_FORADJAMT").value);
+        var AMOUNT = retFloat(document.getElementById("I_AMT_" + rowindex).value);
+        var PREAMT = retFloat(document.getElementById("I_PRE_ADJ_AMT_" + rowindex).value);
+        var ADJAMT = retFloat(document.getElementById("I_ADJ_AMT_" + rowindex).value);
+        var PAMT = retFloat(document.getElementById("T_PYMT_AMT").value);
         if (AMOUNT == PREAMT) {
-            document.getElementById('I_ADJAMT_' + rowindex).value = 0;
+            document.getElementById('I_ADJ_AMT_' + rowindex).value = 0;
             checkbox.checked = false; return false;
         }
+        var BALADJAMT = CalculateAvlAdjBal(tablename, rowindex);
 
+        if (checkbox.checked == true || callfrom == "I_ADJ_AMT") {
+            if (BALADJAMT == 0 || (ADJAMT == 0 && callfrom == "I_ADJ_AMT")) checkbox.checked = false; else checkbox.checked = true;
 
-        if (checkbox.checked == true || callfrom == "I_ADJAMT") {
-            var BALADJAMT = CalculateAvlAdjBal(tablename, rowindex);
-            if (BALADJAMT == 0 || (ADJAMT == 0 && callfrom == "I_ADJAMT")) checkbox.checked = false; else checkbox.checked = true;
-
-            if (BALADJAMT >= ADJAMT && callfrom == "I_ADJAMT") {
-                document.getElementById('I_BALAMT_' + rowindex).value = (AMOUNT - PREAMT - ADJAMT).toFixed(2);;;
+            if (BALADJAMT >= ADJAMT && callfrom == "I_ADJ_AMT") {
+                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - ADJAMT).toFixed(2);;;
             }
-            else if (BALADJAMT <= ADJAMT && callfrom == "I_ADJAMT") {
-                document.getElementById('I_ADJAMT_' + rowindex).value = BALADJAMT;
-                document.getElementById('I_BALAMT_' + rowindex).value = (AMOUNT - PREAMT - BALADJAMT).toFixed(2);;
+            else if (BALADJAMT <= ADJAMT && callfrom == "I_ADJ_AMT") {
+                document.getElementById('I_ADJ_AMT_' + rowindex).value = BALADJAMT;
+                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - BALADJAMT).toFixed(2);;
             }
             else if (BALADJAMT >= (AMOUNT - PREAMT)) {
-                document.getElementById('I_ADJAMT_' + rowindex).value = (AMOUNT - PREAMT).toFixed(2);;;
-                document.getElementById('I_BALAMT_' + rowindex).value = 0;
+                document.getElementById('I_ADJ_AMT_' + rowindex).value = (AMOUNT - PREAMT).toFixed(2);;;
+                document.getElementById('I_BAL_AMT_' + rowindex).value = 0;
             }
             else {
-                document.getElementById('I_ADJAMT_' + rowindex).value = BALADJAMT.toFixed(2);;//AMOUNT - PREAMT -
-                document.getElementById('I_BALAMT_' + rowindex).value = (AMOUNT - PREAMT - BALADJAMT).toFixed(2);//(AMOUNT - PREAMT - BALADJAMT);
+                document.getElementById('I_ADJ_AMT_' + rowindex).value = BALADJAMT.toFixed(2);;//AMOUNT - PREAMT -
+                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - BALADJAMT).toFixed(2);//(AMOUNT - PREAMT - BALADJAMT);
             }
         }
         else {
-            document.getElementById("I_ADJAMT_" + rowindex).value = "0.00";
-            document.getElementById("I_BALAMT_" + rowindex).value = (AMOUNT - PREAMT).toFixed(2);
+            document.getElementById("I_ADJ_AMT_" + rowindex).value = "0.00";
+            document.getElementById("I_BAL_AMT_" + rowindex).value = (AMOUNT - PREAMT).toFixed(2);
         }
         CalculateAvlAdjBal(tablename, -1);
+    }
+</script>
+<script>
+    function SalesmanPerChk() {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var GridRow = $("#_T_SALE_POS_SALESMAN_GRID > tbody > tr").length;
+        var T_PER = 0;
+        for (var j = 0; j <= GridRow - 1; j++) {
+            T_PER += retFloat($("#S_PER_" + j).val());
+            if (T_PER > 100) { msgWarning("Total of Percentage(%) Should be 100 !!"); $("#S_PER_" + j).val(""); $("#S_PER_" + j).focus(); return false; }
+        }
+        CalculateTotal();
+    }
+</script>
+<script>
+    function AddRowPYMT(ID) {
+        debugger;
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        var TAG = ""; var COUNT = document.getElementById(ID).value; if (COUNT != "") { COUNT = parseInt(COUNT); } else { COUNT = parseInt(0); } if (COUNT > 0) { TAG = "Y"; }
+        $.ajax({
+            type: 'POST',
+            url: $("#UrlAddRowPYMT").val(),//"@Url.Action("AddRowPYMT", PageControllerName)",
+            beforesend: $("#WaitingMode").show(),
+            data: $('form').serialize() + "&COUNT=" + COUNT + "&TAG=" + TAG,
+            success: function (result) {
+                $("#WaitingMode").hide();
+                $("#partialdivPayment").animate({ marginTop: '-10px' }, 50);
+                $("#partialdivPayment").html(result);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+    function DeleteRowPYMT() {
+        var DefaultAction = $("#DefaultAction").val();
+        if (DefaultAction == "V") return true;
+        $.ajax({
+            type: 'POST',
+            url: $("#UrlDeleteRowPYMT").val(),//"@Url.Action("DeleteRowPYMT", PageControllerName)",
+            data: $('form').serialize(),
+            success: function (result) {
+                $("#partialdivPayment").animate({ marginTop: '0px' }, 50);
+                $("#partialdivPayment").html(result);
+                CalculateTotal();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
+</script>
+<script>
+    function CalculateTotal() {
+        var T_PYMT_AMT = 0;
+        var GridRow = $("#_T_SALE_PAYMENT > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            T_PYMT_AMT += retFloat($("#P_AMT_" + i).val());
+        }
+        $("#T_PYMT_AMT").val(T_PYMT_AMT.toFixed(2));
+        var TOT_ADJ = retFloat(document.getElementById('TOT_ADJ').value);
+        var balForAdj = (T_PYMT_AMT - TOT_ADJ).toFixed(2);
+        document.getElementById('AVLBALFORADJ').value = balForAdj;
     }
 </script>
 @using (Html.BeginForm())
@@ -271,7 +341,13 @@
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
         <input type="hidden" id="partylinkcd" value="O" />
+        <input type="hidden" id="salesmanlinkcd" value="E" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
+        <input type="hidden" id="UrlAddRowPYMT" value="@Url.Action("AddRowPYMT", PageControllerName)" />
+        <input type="hidden" id="UrlAddRow" value="@Url.Action("AddRow", PageControllerName)" />
+        <input type="hidden" id="UrlDeleteRowSlsman" value="@Url.Action("DeleteRow", PageControllerName)" />
+        <input type="hidden" id="UrlDeleteRowPYMT" value="@Url.Action("DeleteRowPYMT", PageControllerName)" />
+
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_TXNPYMT_HDR.AUTONO, new { id = "AUTONO" })
         @Html.HiddenFor(a => a.T_CNTRL_HDR.MNTHCD)
@@ -293,11 +369,11 @@
                     <div class="editor-field">
                         @if (Model.DefaultAction == "A")
                         {
-                            @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "I_alue", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
+                            @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", @onchange = "ChangeDoctype();" })
                         }
                         else
                         {
-                            @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "I_alue", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
+                            @Html.DropDownListFor(model => model.T_CNTRL_HDR.DOCCD, new SelectList(Model.DocumentType, "Value", "Text"), new { @class = "form-control", id = "DOCCD", style = "pointer-events:none;background-color:#eee" })
                         }
                     </div>
                 </div>
@@ -371,7 +447,7 @@
                 </div>
                 <div class="col-md-7">
                     <div class="editor-field">
-                        @Html.EditorFor(model => model.NM, new { htmlAttributes = new { @class = "form-control", id = "NM", maxlength = 15, @placeholder = "Name",onblur= "GetInvoice()" } })
+                        @Html.EditorFor(model => model.NM, new { htmlAttributes = new { @class = "form-control", id = "NM", maxlength = 15, @placeholder = "Name", onblur = "" } })@*GetInvoice1()*@
                     </div>
                 </div>
                 <div class="col-md-5">
@@ -390,17 +466,29 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Curr. Amt.")
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.CUROSAMT, new { htmlAttributes = new { @class = "form-control", id = "CUROSAMT", maxlength = 15, @readonly = "readonly" } })
+                    </div>
+                </div>
+            </div>
             <div class="row" style="margin-top:5px;">
                 <ul class="nav nav-tabs">
-                    <li id="Payment_LI" class=""><a data-toggle="tab" href="#Payment" accesskey="T">Payment(T)</a></li>
-                    <li id="Main_LI4" class="active"><a data-toggle="tab" href="#Adjustment" accesskey="M">Adjustment(M)</a></li>
+                    <li id="Payment_LI" class="active"><a data-toggle="tab" href="#Payment" accesskey="T">Payment(T)</a></li>
+                    <li id="Main_LI4" class=""><a data-toggle="tab" href="#Adjustment" accesskey="M">Adjustment(M)</a></li>
                     <li id="Remarks_LI4" class=""><a data-toggle="tab" href="#Remarks" accesskey="R">Remarks(R)</a></li>
                     <li id="Documents_LI4" class=""><a data-toggle="tab" href="#Documents" accesskey="U">Documents(U)</a></li>
                 </ul>
                 <div id="popup" class="row" style="margin-top: 11px;top:15%;left:2%;right:2%;position:absolute;width:750px;">
                 </div>
                 <div class="tab-content">
-                    <div id="Payment" class="tab-pane fade" style="margin-top: 10px;margin-left: 11px;">
+                    <div id="Payment" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div id="partialdivSalesman" style="margin-top:0px;">
                                 @Html.Partial("_T_SALE_PYMT_SALESMAN")
@@ -412,10 +500,22 @@
                             </div>
                         </div>
                     </div>
-                    <div id="Adjustment" class="tab-pane fade in active" style="margin-top: 10px;margin-left: 11px;">
+                    <div id="Adjustment" class="tab-pane fade " style="margin-top: 10px;margin-left: 11px;">
                         <div class="row" style="margin-top: 11px;background-color:#c4b9b9;border:5px groove;width:fit-content;">
                             <div id="partialdivMain">
                                 @Html.Partial("_T_SALE_PYMT_Adjustment")
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="editor-label" style="margin-top: 6px;">
+                                    @Html.Label("", "Available bal for Adj.")
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="editor-field">
+                                    @Html.EditorFor(model => model.AVLBALFORADJ, new { htmlAttributes = new { @class = "form-control", id = "AVLBALFORADJ", @readonly = "readonly" } })
+                                </div>
                             </div>
                         </div>
                     </div>

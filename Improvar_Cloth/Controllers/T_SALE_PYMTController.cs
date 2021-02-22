@@ -467,7 +467,7 @@ namespace Improvar.Controllers
                               where (customer.Field<string>("VCHTYPE") == "BL")
                               select new SLPYMTADJ
                               {
-                                  DOCNO = customer.Field<string>("VCHTYPE"),
+                                  DOCNO = customer.Field<string>("docno"),
                                   DOCDT = customer.Field<DateTime>("docdt").retDateStr(),
                                   BILLNO = customer.Field<string>("BLNO").retStr() == "" ? customer.Field<string>("doccd") + customer.Field<string>("docno") : customer.Field<string>("BLNO"),
                                   BILLDT = customer.Field<string>("BLDT").retStr() == "" ? customer.Field<DateTime>("docdt").retDateStr() : customer.Field<string>("BLDT"),
@@ -520,7 +520,202 @@ namespace Improvar.Controllers
             //return PartialView("_T_SALE_PYMT_Adjustment", VE);
             return VE;
         }
+        public ActionResult GetPaymentDetails(string val)
+        {
+            try
+            {
+                var str = masterHelp.PAYMTCD_help(val);
+                if (str.IndexOf("='helpmnu'") >= 0)
+                {
+                    return PartialView("_Help2", str);
+                }
+                else
+                {
+                    return Content(str);
+                }
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult AddRowPYMT(SalePymtEntry VE, int COUNT, string TAG)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Cn.getQueryString(VE);
+            if (VE.TTXNPYMT == null)
+            {
+                List<TTXNPYMT> TPROGDTL1 = new List<TTXNPYMT>();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = 0;
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TTXNPYMT MBILLDET = new TTXNPYMT();
+                        MBILLDET.SLNO = SERIAL.retShort();
+                        TPROGDTL1.Add(MBILLDET);
+                    }
+                }
+                else
+                {
+                    TTXNPYMT MBILLDET = new TTXNPYMT();
+                    MBILLDET.SLNO = 1;
+                    TPROGDTL1.Add(MBILLDET);
+                }
+                VE.TTXNPYMT = TPROGDTL1;
+            }
+            else
+            {
+                List<TTXNPYMT> TPROGDTL = new List<TTXNPYMT>();
+                for (int i = 0; i <= VE.TTXNPYMT.Count - 1; i++)
+                {
+                    TTXNPYMT MBILLDET = new TTXNPYMT();
+                    MBILLDET = VE.TTXNPYMT[i];
+                    TPROGDTL.Add(MBILLDET);
+                }
+                TTXNPYMT MBILLDET1 = new TTXNPYMT();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = Convert.ToInt32(VE.TTXNPYMT.Max(a => Convert.ToInt32(a.SLNO)));
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TTXNPYMT OPENING_BL = new TTXNPYMT();
+                        OPENING_BL.SLNO = SERIAL.retShort();
+                        TPROGDTL.Add(OPENING_BL);
+                    }
+                }
+                else
+                {
+                    MBILLDET1.SLNO = Convert.ToInt16(Convert.ToByte(VE.TTXNPYMT.Max(a => Convert.ToInt32(a.SLNO))) + 1);
+                    TPROGDTL.Add(MBILLDET1);
+                }
+                VE.TTXNPYMT = TPROGDTL;
+            }
+            //VE.TPROGDTL.ForEach(a => a.DRCRTA = masterHelp.DR_CR().OrderByDescending(s => s.text).ToList());
+            VE.DefaultView = true;
+            return PartialView("_T_SALE_PYMT_PAYMENT", VE);
+        }
+        public ActionResult DeleteRowPYMT(SalePymtEntry VE)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                List<TTXNPYMT> ITEMSIZE = new List<TTXNPYMT>();
+                int count = 0;
+                for (int i = 0; i <= VE.TTXNPYMT.Count - 1; i++)
+                {
+                    if (VE.TTXNPYMT[i].Checked == false)
+                    {
+                        count += 1;
+                        TTXNPYMT item = new TTXNPYMT();
+                        item = VE.TTXNPYMT[i];
+                        item.SLNO = count.retShort();
+                        ITEMSIZE.Add(item);
+                    }
 
+                }
+                VE.TTXNPYMT = ITEMSIZE;
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_SALE_PYMT_PAYMENT", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult DeleteRow(SalePymtEntry VE)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                List<TTXNSLSMN> ITEMSIZE = new List<TTXNSLSMN>();
+                int count = 0;
+                for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
+                {
+                    if (VE.TTXNSLSMN[i].Checked == false)
+                    {
+                        count += 1;
+                        TTXNSLSMN item = new TTXNSLSMN();
+                        item = VE.TTXNSLSMN[i];
+                        item.SLNO = count.retShort();
+                        ITEMSIZE.Add(item);
+                    }
+
+                }
+                VE.TTXNSLSMN = ITEMSIZE;
+                ModelState.Clear();
+                VE.DefaultView = true;
+                return PartialView("_T_SALE_PYMT_SALESMAN", VE);
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult AddRow(SalePymtEntry VE, int COUNT, string TAG)
+        {
+            ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+            Cn.getQueryString(VE);
+            if (VE.TTXNSLSMN == null)
+            {
+                List<TTXNSLSMN> TPROGDTL1 = new List<TTXNSLSMN>();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = 0;
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TTXNSLSMN MBILLDET = new TTXNSLSMN();
+                        MBILLDET.SLNO = SERIAL.retShort();
+                        TPROGDTL1.Add(MBILLDET);
+                    }
+                }
+                else
+                {
+                    TTXNSLSMN MBILLDET = new TTXNSLSMN();
+                    MBILLDET.SLNO = 1;
+                    TPROGDTL1.Add(MBILLDET);
+                }
+                VE.TTXNSLSMN = TPROGDTL1;
+            }
+            else
+            {
+                List<TTXNSLSMN> TPROGDTL = new List<TTXNSLSMN>();
+                for (int i = 0; i <= VE.TTXNSLSMN.Count - 1; i++)
+                {
+                    TTXNSLSMN MBILLDET = new TTXNSLSMN();
+                    MBILLDET = VE.TTXNSLSMN[i];
+                    TPROGDTL.Add(MBILLDET);
+                }
+                TTXNSLSMN MBILLDET1 = new TTXNSLSMN();
+                if (COUNT > 0 && TAG == "Y")
+                {
+                    int SERIAL = Convert.ToInt32(VE.TTXNSLSMN.Max(a => Convert.ToInt32(a.SLNO)));
+                    for (int j = 0; j <= COUNT - 1; j++)
+                    {
+                        SERIAL = SERIAL + 1;
+                        TTXNSLSMN OPENING_BL = new TTXNSLSMN();
+                        OPENING_BL.SLNO = SERIAL.retShort();
+                        TPROGDTL.Add(OPENING_BL);
+                    }
+                }
+                else
+                {
+                    MBILLDET1.SLNO = Convert.ToInt16(Convert.ToByte(VE.TTXNSLSMN.Max(a => Convert.ToInt32(a.SLNO))) + 1);
+                    TPROGDTL.Add(MBILLDET1);
+                }
+                VE.TTXNSLSMN = TPROGDTL;
+            }
+            //VE.TPROGDTL.ForEach(a => a.DRCRTA = masterHelp.DR_CR().OrderByDescending(s => s.text).ToList());
+            VE.DefaultView = true;
+            return PartialView("_T_SALE_PYMT_SALESMAN", VE);
+        }
         public ActionResult AddDOCRow(SalePymtEntry VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);
@@ -557,6 +752,7 @@ namespace Improvar.Controllers
             return PartialView("_UPLOADDOCUMENTS", VE);
 
         }
+
         public ActionResult DeleteDOCRow(SalePymtEntry VE)
         {
             ImprovarDB DB1 = new ImprovarDB(Cn.GetConnectionString(), Cn.Getschema);

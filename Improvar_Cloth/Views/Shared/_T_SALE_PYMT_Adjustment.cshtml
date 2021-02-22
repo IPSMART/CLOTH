@@ -5,7 +5,7 @@
     });
 </script>
 <script type="text/javascript">
-    $(document).ready(function () {
+    @*$(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             $("#BALCLASS1CD").attr("readonly", "readonly");
             modeView();
@@ -20,14 +20,14 @@
         $("#viewbagAMT").html(viewbagAmt);
         document.getElementById("main_amount").value = viewbagAmt;
         //$("#main_amount").html(viewbagAmt);
-    });
+    });*@
 </script>
-<script>
+@*<script>
     if ("@Model.DefaultAction" == "A" || "@Model.DefaultAction" == "E") {
         $("#STARTDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         $("#ENDDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
     }
-</script>
+</script>*@
 @if (Model.DefaultView == true)
 {
     <div class="table-responsive">
@@ -45,7 +45,7 @@
                         <tr class="sticky-header" style="height:30px;">
                             <th class="sticky-cell" style="width:30px;">
                                 All
-                                <input type="checkbox" id="ALLINVOICE" name="Test" onclick="AllCheckAdjustInvoice(this, 'tblBILLADJ_GRID', 'I_chkid_')" />
+                                <input type="checkbox" id="ALLINVOICE" name="Test" onclick="AllCheckAdjustInvoice(this, 'tblBILLADJ_GRID')" />
                             </th>
                             <th class="" style="width:90px;">DOC No.</th>
                             <th class="" style="width:80px;">Date</th>
@@ -69,17 +69,17 @@
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
                                             {
-                                                @Html.CheckBoxFor(model => model.SLPYMTADJ[i].Checked, new { id = "I_Checked_" + i, onclick = "AllCheckAdjDNCN(this, 'tblBILLADJ_GRID', RowCheckID)" })
+                                                @Html.CheckBoxFor(model => model.SLPYMTADJ[i].Checked, new { id = "I_Checked_" + i, onclick = "AllCheckAdjDNCN(this, 'tblBILLADJ_GRID')" })
                                             }
                                             else
                                             {
                                                 @Html.CheckBoxFor(model => model.SLPYMTADJ[i].Checked, new { id = "I_Checked_" + i })
                                             }
-                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].AUTONO, new { id = "I_AUTONO_" + i })
-                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].SLNO, new { id = "I_SLNO_" + i })
+                                            @*@Html.HiddenFor(model => Model.SLPYMTADJ[i].AUTONO, new { id = "I_AUTONO_" + i })*@
+                                            @*@Html.HiddenFor(model => Model.SLPYMTADJ[i].SLNO, new { id = "I_SLNO_" + i })*@
                                             @Html.HiddenFor(model => Model.SLPYMTADJ[i].I_AUTONO, new { id = "I_AUTONO_" + i })
                                             @Html.HiddenFor(model => Model.SLPYMTADJ[i].I_SLNO, new { id = "I_SLNO_" + i })
-                                            @Html.HiddenFor(model => Model.SLPYMTADJ[i].I_AMT, new { id = "I_AMT_" + i })
+                                            @*@Html.HiddenFor(model => Model.SLPYMTADJ[i].I_AMT, new { id = "I_AMT_" + i })*@
                                             @Html.HiddenFor(model => model.SLPYMTADJ[i].ParentSerialNo, new { id = "I_ParentSerialNo_" + i })
                                             @Html.HiddenFor(model => model.SLPYMTADJ[i].ParentAMT, new { id = "I_ParentAMT_" + i })
                                             @Html.HiddenFor(model => model.SLPYMTADJ[i].MainParentAMT, new { id = "MainParentAMT_" + i })
@@ -104,7 +104,7 @@
                                             @Html.EditorFor(model => Model.SLPYMTADJ[i].PRE_ADJ_AMT, new { htmlAttributes = new { id = "I_PRE_ADJ_AMT_" + i, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })
                                         </td>
                                         <td class="">
-                                           @Html.EditorFor(model => Model.SLPYMTADJ[i].ADJ_AMT, new { htmlAttributes = new { id = "I_ADJ_AMT_" + i, onchange = "CalculateAdjRow(tablename, rowindex, callfrom)", @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);" } })
+                                           @Html.EditorFor(model => Model.SLPYMTADJ[i].ADJ_AMT, new { htmlAttributes = new { id = "I_ADJ_AMT_" + i, onchange = "CalculateAdjRow('tblBILLADJ_GRID', "+i+ ",'I_ADJ_AMT')", @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.SLPYMTADJ[i].BAL_AMT, new { htmlAttributes = new { id = "I_BAL_AMT_" + i, @class = " atextBoxFor", @style = "text-align: right;", maxlength = 12, @onkeypress = "return numericOnly(this,2);", @readonly = "readonly" } })

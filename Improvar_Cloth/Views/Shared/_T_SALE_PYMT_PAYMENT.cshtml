@@ -1,7 +1,7 @@
 ﻿@model Improvar.ViewModels.SalePymtEntry
 <script type="text/javascript">
     $(document).ready(function () {
-        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_POS_PAYMENT'));
+        resizableTables[resizableTables.length] = new ColumnResize(document.getElementById('_T_SALE_PAYMENT'));
         $("td").on("mouseover", function (e) { var titlee = $(this).find("input").val(); $(this).attr('title', titlee); });
     });
 </script>
@@ -27,7 +27,7 @@
                     <img src="~/Image/Minus.png" id="btnDelete" title="Delete Row" class="Help_image_buttonAddRemove" onclick="DeleteRowPYMT()" />
                 }
                 <div class="col-md-8">
-                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_POS_PAYMENT');" />
+                    <input type="text" name="search" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, '_T_SALE_PAYMENT');" />
                     <img src="~/Image/search.png" title="Help" />
                 </div>
                 <center style="font-size:11px;color:darkmagenta;border:1px inset;height: 21px;padding: 4px;">
@@ -36,7 +36,7 @@
             </div>
             <div class="sticky-table sticky-ltr-cells">
                 <div style="height:auto;overflow-y:scroll;OVERFLOW-X: hidden;max-height:291px;">
-                    <table id="_T_SALE_POS_PAYMENT" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
+                    <table id="_T_SALE_PAYMENT" class="resizable table-striped" cellpadding="0px" cellspacing="0px">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
                                 <th class="sticky-cell" style="width: 27px;"></th>
@@ -64,8 +64,8 @@
                                             @Html.TextBoxFor(model => Model.TTXNPYMT[i].SLNO, new { id = "P_SLNO_" + i, @class = " atextBoxFor ", @style = "text-align:center;", maxlength = 2, @TabIndex = -1, @readonly = "readonly" })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => model.TTXNPYMT[i].PYMTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PYMTCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "P_PYMTNM_" + i + "=PYMTNM=0/" + "P_GLCD_" + i + "=GLCD/" + "P_PYMTTYPE_" + i + "=PYMTTYPE')", onblur = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_POS") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "P_PYMTNM_" + i + "=PYMTNM=0 /" + "P_GLCD_" + i + "=GLCD/" + "P_PYMTTYPE_" + i + "=PYMTTYPE');", @placeholder = "Code", maxlength = 6 } })
-                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPaymentDetails", "T_SALE_POS")','Payment Details','PYMTCD_@i','PYMTCD_@i=PYMTCD=1/P_PYMTNM_@i=PYMTNM=0/P_GLCD_@i=GLCD/P_PYMTTYPE_@i=PYMTTYPE')" />
+                                            @Html.EditorFor(model => model.TTXNPYMT[i].PYMTCD, new { htmlAttributes = new { @class = "atextBoxFor textbox_image", id = "PYMTCD_" + i, onkeydown = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_PYMT") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "P_PYMTNM_" + i + "=PYMTNM=0/" + "P_GLCD_" + i + "=GLCD/" + "P_PYMTTYPE_" + i + "=PYMTTYPE')", onblur = "GetHelpBlur('" + @Url.Action("GetPaymentDetails", "T_SALE_PYMT") + "','Payment Details','" + "PYMTCD_" + i + "','" + "PYMTCD_" + i + "=PYMTCD=1/" + "P_PYMTNM_" + i + "=PYMTNM=0 /" + "P_GLCD_" + i + "=GLCD/" + "P_PYMTTYPE_" + i + "=PYMTTYPE');", @placeholder = "Code", maxlength = 6 } })
+                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button_grid" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetPaymentDetails", "T_SALE_PYMT")','Payment Details','PYMTCD_@i','PYMTCD_@i=PYMTCD=1/P_PYMTNM_@i=PYMTNM=0/P_GLCD_@i=GLCD/P_PYMTTYPE_@i=PYMTTYPE')" />
 
                                         </td>
                                         <td class="">
