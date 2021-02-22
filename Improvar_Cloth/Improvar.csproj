@@ -317,6 +317,7 @@
     <Compile Include="Controllers\T_DataUploadController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_OUTRECPROCESSController.cs" />
+    <Compile Include="Controllers\T_PBillUploadController.cs" />
     <Compile Include="Controllers\T_PhyStockController.cs" />
     <Compile Include="Controllers\T_SALEController.cs" />
     <Compile Include="Controllers\T_SALE_POSController.cs" />
@@ -1296,6 +1297,7 @@
     <Content Include="Views\Shared\_T_SALE_PYMT_SALESMAN.cshtml" />
     <Content Include="Views\Shared\_T_SALE_PYMT_Adjustment.cshtml" />
     <Content Include="Views\Rep_Agent\Rep_Agent.cshtml" />
+    <Content Include="Views\T_PBillUpload\T_PBillUpload.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

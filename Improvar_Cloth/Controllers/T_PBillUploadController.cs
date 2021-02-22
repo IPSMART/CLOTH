@@ -8,12 +8,10 @@ using Improvar.ViewModels;
 using System.Data;
 using System.Globalization;
 using Oracle.ManagedDataAccess.Client;
-using System.IO;
-using OfficeOpenXml;
 //using NDbfReader;
 namespace Improvar.Controllers
 {
-    public class T_DataUploadController : Controller
+    public class T_PBillUploadController : Controller
     {
         string CS = null; string sql = ""; string dbsql = ""; string[] dbsql1;
         string dberrmsg = "";
@@ -22,13 +20,13 @@ namespace Improvar.Controllers
         string UNQSNO = CommVar.getQueryStringUNQSNO();
         Salesfunc Salesfunc = new Salesfunc();
         private ImprovarDB DB, DBF;
-        public T_DataUploadController()
+        public T_PBillUploadController()
         {
             DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             DBF = new ImprovarDB(Cn.GetConnectionString(), CommVar.FinSchema(UNQSNO));
         }
-        // GET: T_DataUpload
-        public ActionResult T_DataUpload()
+        // GET: T_PBillUpload
+        public ActionResult T_PBillUpload()
         {
             if (Session["UR_ID"] == null)
             {
@@ -37,122 +35,78 @@ namespace Improvar.Controllers
             else
             {
                 ViewBag.formname = "Data Upload";
-                ReportViewinHtml VE = new ReportViewinHtml();
-                List<DropDown_list1> drplist1 = new List<DropDown_list1>();
-                drplist1.Add(new DropDown_list1() { value = "OP", text = "Opening Stock" });
-                VE.DropDown_list1 = drplist1;
+                DataUploadVM VE = new DataUploadVM();
                 return View(VE);
             }
         }
         [HttpPost]
-        public ActionResult T_DataUpload(ReportViewinHtml VE, FormCollection FC, String Command)
+        public ActionResult T_PBillUpload(DataUploadVM VE, FormCollection FC, String Command)
         {
             if (Session["UR_ID"] == null)
             {
                 return RedirectToAction("Login", "Login");
             }
             if (Request.Files.Count == 0) return Content("No File Selected");
-            HttpPostedFileBase file = Request.Files["UploadedFile"];
-            if (System.IO.Path.GetExtension(file.FileName) != ".xlsx") return Content(".xlsx file need to choose");
-            string resp = ReadOpstockExcel(VE, file.InputStream);
-            return Content(resp);
+            VE = ReadRaymondPurchaseDBF(VE);
+            return View(VE);
         }
-        public string ReadOpstockExcel(ReportViewinHtml VE, Stream stream)
+        public DataUploadVM ReadRaymondPurchaseDBF(DataUploadVM VE)
         {
-            string msg = "";
+            List<DUpGrid> DUGridlist = new List<DUpGrid>();
             try
             {
-                //DOCDT	PBLNO	SLNM	SLCD	ITGRPNM	FABITGRPNM	FABITNM	ITNM	PRODGRPCD	STYLENO	UOMCD	BARNO	NOS	QNTY	RATE	AMT	GOCD	LRNO	LRDT	BALENO	COMMONUNIQBAR	PAGENO	PAGESLNO	WPRATE	RPRATE	MAKERATE	SHADE	COLRCD	SIZECD	PDESIGN	PCSCTG	HSNCODE	GSTPER	GSTABOVEPER
-                DataTable dbfdt = new DataTable();
-                dbfdt.Columns.Add("DOCDT", typeof(string));
-                dbfdt.Columns.Add("PBLNO", typeof(string));
-                dbfdt.Columns.Add("SLNM", typeof(string));
-                dbfdt.Columns.Add("SLCD", typeof(string));
-                dbfdt.Columns.Add("ITGRPNM", typeof(string));
-                dbfdt.Columns.Add("FABITGRPNM", typeof(string));
-                dbfdt.Columns.Add("FABITNM", typeof(string));
-                dbfdt.Columns.Add("ITNM", typeof(string));
-                dbfdt.Columns.Add("PRODGRPCD", typeof(string));
-                dbfdt.Columns.Add("STYLENO", typeof(string));
-                dbfdt.Columns.Add("UOMCD", typeof(string));
-                dbfdt.Columns.Add("BARNO", typeof(string));
-                dbfdt.Columns.Add("NOS", typeof(string));
-                dbfdt.Columns.Add("QNTY", typeof(string));
-                dbfdt.Columns.Add("RATE", typeof(string));
-                dbfdt.Columns.Add("AMT", typeof(string));
-                dbfdt.Columns.Add("GOCD", typeof(string));
-                dbfdt.Columns.Add("LRNO", typeof(string));
-                dbfdt.Columns.Add("LRDT", typeof(string));
-                dbfdt.Columns.Add("BALENO", typeof(string));
-                dbfdt.Columns.Add("COMMONUNIQBAR", typeof(string));
-                dbfdt.Columns.Add("PAGENO", typeof(string));
-                dbfdt.Columns.Add("PAGESLNO", typeof(string));
-                dbfdt.Columns.Add("WPRATE", typeof(string));
-                dbfdt.Columns.Add("RPRATE", typeof(string));
-                dbfdt.Columns.Add("MAKERATE", typeof(string));
-                dbfdt.Columns.Add("SHADE", typeof(string));
-                dbfdt.Columns.Add("COLRCD", typeof(string));
-                dbfdt.Columns.Add("SIZECD", typeof(string));
-                dbfdt.Columns.Add("PDESIGN", typeof(string));
-                dbfdt.Columns.Add("PCSCTG", typeof(string));
-                dbfdt.Columns.Add("HSNCODE", typeof(string));
-                dbfdt.Columns.Add("GSTPER", typeof(string));
-                dbfdt.Columns.Add("GSTABOVEPER", typeof(string));
+                string Path = "C:\\IPSMART\\Temp";
+                if (!System.IO.Directory.Exists(Path)) { System.IO.Directory.CreateDirectory(Path); }
+                Path = "C:\\IPSMART\\Temp\\Raymond.dbf";
+                if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
+                GC.Collect();
+                Request.Files["RaymondPurchaseDBF"].SaveAs(Path);
 
-                using (var package = new ExcelPackage(stream))
-                {
-                    var currentSheet = package.Workbook.Worksheets;
-                    var workSheet = currentSheet.First();
-                    var noOfCol = workSheet.Dimension.End.Column;
-                    var noOfRow = workSheet.Dimension.End.Row;
-                    int rowNum = 2;
-                    for (rowNum = 2; rowNum <= noOfRow; rowNum++)
-                    {
-                        if (workSheet.Cells[rowNum, 1].Value.retStr() != "")
-                        {
-                            DataRow dr = dbfdt.NewRow();
-                            var wsRow = workSheet.Cells[rowNum, 1, rowNum, noOfCol];
-                            for (int colnum = 1; colnum <= noOfCol; colnum++)
-                            {
-                                string colname = workSheet.Cells[1, colnum].Value.retStr();
-                                string colValue = workSheet.Cells[rowNum, colnum].Value.retStr();
-                                try
-                                {
-                                    dr[colname] = colValue;
-                                }
-                                catch (ArgumentException aex)
-                                {
-                                    return "Wrong ColumnName:" + colname;
-                                }
-                            }
-                            dbfdt.Rows.Add(dr);
-                        }
-                    }
-                }
+                System.Data.Odbc.OdbcConnection obdcconn = new System.Data.Odbc.OdbcConnection();
+                obdcconn.ConnectionString = "Driver={Microsoft dBase Driver (*.dbf)};SourceType=DBF;SourceDB=" + Path + ";Exclusive=No; NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
+                obdcconn.Open();
+                System.Data.Odbc.OdbcCommand oCmd = obdcconn.CreateCommand();
+                oCmd.CommandText = "SELECT * FROM " + Path;
+                DataTable dbfdt = new DataTable();
+                dbfdt.Load(oCmd.ExecuteReader());
+                obdcconn.Close();
+                if (System.IO.File.Exists(Path)) { System.IO.File.Delete(Path); }
+
                 TransactionSaleEntry TMPVE = new TransactionSaleEntry();
                 T_SALEController TSCntlr = new T_SALEController();
                 T_TXN TTXN = new T_TXN();
                 T_TXNTRANS TXNTRANS = new T_TXNTRANS();
                 T_TXNOTH TTXNOTH = new T_TXNOTH();
                 TMPVE.DefaultAction = "A";
-                TMPVE.MENU_PARA = "OP";
+                TMPVE.MENU_PARA = "PB";
                 var outerDT = dbfdt.AsEnumerable()
-               .GroupBy(g => new { DOCDT = g["DOCDT"], PBLNO = g["PBLNO"], SLNM = g["SLNM"], SLCD = g["SLCD"], LRNO = g["LRNO"], LRDT = g["LRDT"], GOCD = g["GOCD"] })
+               .GroupBy(g => new { CUSTOMERNO = g["CUSTOMERNO"], INV_NO = g["INV_NO"], INVDATE = g["INVDATE"], LR_NO = g["LR_NO"], LR_DATE = g["LR_DATE"], CARR_NO = g["CARR_NO"], CARR_NAME = g["CARR_NAME"] })
                .Select(g =>
                {
                    var row = dbfdt.NewRow();
-                   row["DOCDT"] = g.Key.DOCDT;
-                   row["PBLNO"] = g.Key.PBLNO;
-                   row["SLNM"] = g.Key.SLNM;
-                   row["SLCD"] = g.Key.SLCD;
-                   row["LRNO"] = g.Key.LRNO;
-                   row["LRDT"] = g.Key.LRDT;
-                   row["GOCD"] = g.Key.GOCD;
+                   row["CUSTOMERNO"] = g.Key.CUSTOMERNO;
+                   row["INV_NO"] = g.Key.INV_NO;
+                   row["INVDATE"] = g.Key.INVDATE;
+                   row["LR_NO"] = g.Key.LR_NO;
+                   row["LR_DATE"] = g.Key.LR_DATE;
+                   row["CARR_NO"] = g.Key.CARR_NO;
+                   row["CARR_NAME"] = g.Key.CARR_NAME;
+                   row["FREIGHT"] = g.Sum(r => r.Field<double>("FREIGHT"));
+                   row["INSURANCE"] = g.Sum(r => r.Field<double>("INSURANCE"));
+                   row["INV_VALUE"] = g.Sum(r => r.Field<double>("INV_VALUE"));
+                   row["NET_AMT"] = g.Sum(r => r.Field<double>("NET_AMT"));
+                   row["TAX_AMT"] = g.Sum(r => r.Field<double>("TAX_AMT"));
+                   row["INTEGR_TAX"] = g.Average(r => r.Field<double>("INTEGR_TAX"));
+                   row["INTEGR_AMT"] = g.Sum(r => r.Field<double>("INTEGR_AMT"));
+                   row["CENT_TAX"] = g.Average(r => r.Field<double>("CENT_TAX"));
+                   row["CENT_AMT"] = g.Sum(r => r.Field<double>("CENT_AMT"));
+                   row["STATE_TAX"] = g.Average(r => r.Field<double>("STATE_TAX"));
+                   row["STATE_AMT"] = g.Sum(r => r.Field<double>("STATE_AMT"));
                    return row;
                }).CopyToDataTable();
 
                 TTXN.EMD_NO = 0;
-                TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "OP").FirstOrDefault()?.DOCCD;
+                TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "SPBL").FirstOrDefault()?.DOCCD;
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
 
                 foreach (DataRow oudr in outerDT.Rows)
@@ -161,18 +115,24 @@ namespace Improvar.Controllers
                     List<TBATCHDTL> TBATCHDTLlist = new List<Models.TBATCHDTL>();
                     List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
                     List<TTXNAMT> TTXNAMTlist = new List<Models.TTXNAMT>();
-                    TTXN.GOCD = oudr["GOCD"].ToString();
-                    TTXN.DOCTAG = "OP";
-                    TTXN.PREFNO = oudr["PBLNO"].ToString();
+                    DUpGrid dupgrid = new DUpGrid();
+                    TTXN.GOCD = "TR";
+                    TTXN.DOCTAG = "PB";
+                    TTXN.PREFNO = oudr["INV_NO"].ToString();
                     TTXN.TCSPER = 0.075;
-                    string Ddate = DateTime.ParseExact(oudr["DOCDT"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                    dupgrid.BLNO = TTXN.PREFNO;
+                    string Ddate = DateTime.ParseExact(oudr["INVDATE"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
                     TTXN.DOCDT = Convert.ToDateTime(Ddate);
+                    dupgrid.BLDT = Ddate;
                     TTXN.PREFDT = TTXN.DOCDT;
-                    string CUSTOMERNO = oudr["SLCD"].ToString();
-                    TTXN.SLCD = getSLCD(CUSTOMERNO);
+                    dupgrid.BLNO = TTXN.PREFNO;
+                    string CUSTOMERNO = oudr["CUSTOMERNO"].ToString();
+                    TTXN.SLCD = getSLCD(CUSTOMERNO); dupgrid.CUSTOMERNO = CUSTOMERNO;
                     if (TTXN.SLCD == "")
                     {
-                       return "Please add Customer No:(" + CUSTOMERNO + ") in Customer master.";
+                        dupgrid.MESSAGE = "Please add Customer No:(" + CUSTOMERNO + ") in the SAPCODE from [Tax code link up With Party].";
+                        DUGridlist.Add(dupgrid);
+                        break;
                     }
                     double igstper = oudr["INTEGR_TAX"].retDbl();
                     if (igstper == 0) { TTXNOTH.TAXGRPCD = "C001"; } else { TTXNOTH.TAXGRPCD = "I001"; }
@@ -190,25 +150,26 @@ namespace Improvar.Controllers
                     TTXN.TDSCODE = "X";
                     TTXN.ROYN = "Y";
                     TTXN.TCSON = calcultednet;
-                    TTXN.TCSAMT = tcsamt; //dupgrid.TCSAMT = tcsamt.ToString();
+                    TTXN.TCSAMT = tcsamt; dupgrid.TCSAMT = tcsamt.ToString();
                     sql = "";
                     sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
                     sql += " where   a.autono=b.autono and a.PREFNO='" + TTXN.PREFNO + "' and a.slcd='" + TTXN.SLCD + "' ";
                     var dt = masterHelp.SQLquery(sql);
-                    //if (dt.Rows.Count > 0)
-                    //{
-                    //    dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
-                    //    dupgrid.BLNO = TTXN.PREFNO;
-                    //    dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
-                    //    dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
-                    //    dupgrid.ROAMT = dt.Rows[0]["ROAMT"].ToString();
-                    //    continue;
-                    //}
-                    //else
-                    //{
-                    //    dupgrid.TCSAMT = TTXN.TCSAMT.retStr();
-                    //    dupgrid.BLAMT = TTXN.BLAMT.retStr();
-                    //}
+                    if (dt.Rows.Count > 0)
+                    {
+                        dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
+                        dupgrid.BLNO = TTXN.PREFNO;
+                        dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
+                        dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
+                        dupgrid.ROAMT = dt.Rows[0]["ROAMT"].ToString();
+                        DUGridlist.Add(dupgrid);
+                        continue;
+                    }
+                    else
+                    {
+                        dupgrid.TCSAMT = TTXN.TCSAMT.retStr();
+                        dupgrid.BLAMT = TTXN.BLAMT.retStr();
+                    }
 
                     //-------------------------Transport--------------------------//
 
@@ -217,8 +178,8 @@ namespace Improvar.Controllers
                         TXNTRANS.TRANSLCD = getSLCD(oudr["CARR_NO"].ToString());
                         if (TXNTRANS.TRANSLCD == "")
                         {
-                       //     dupgrid.MESSAGE = "Please add  CARR_NO:(" + oudr["CARR_NO"].ToString() + ")/ Transporter,CARR_NAME:(" + oudr["CARR_NAME"].ToString() + ") in the SAPCODE from [Tax code link up With Party].";
-                            break;
+                            dupgrid.MESSAGE = "Please add  CARR_NO:(" + oudr["CARR_NO"].ToString() + ")/ Transporter,CARR_NAME:(" + oudr["CARR_NAME"].ToString() + ") in the SAPCODE from [Tax code link up With Party].";
+                            DUGridlist.Add(dupgrid); break;
                         }
                     }
 
@@ -434,7 +395,7 @@ namespace Improvar.Controllers
                     }
                     //           //Amount tab end
                     TTXN.ROAMT = (TTXN.BLAMT.retDbl() - (txable + gstamt + tcsamt)).toRound(2);
-                //    dupgrid.ROAMT = TTXN.ROAMT.retStr();
+                    dupgrid.ROAMT = TTXN.ROAMT.retStr();
                     TMPVE.T_TXN = TTXN;
                     TMPVE.T_TXNTRANS = TXNTRANS;
                     TMPVE.T_TXNOTH = TTXNOTH;
@@ -444,17 +405,20 @@ namespace Improvar.Controllers
                     TMPVE.T_VCH_GST = new T_VCH_GST();
                     string tslCont = (string)TSCntlr.SAVE(TMPVE, "PosPurchase");
                     tslCont = tslCont.retStr().Split('~')[0];
-                 //   if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
-                  //  else dupgrid.MESSAGE = tslCont;
+                    if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") dupgrid.MESSAGE = "Success " + tslCont.Substring(1);
+                    else dupgrid.MESSAGE = tslCont;
+                    DUGridlist.Add(dupgrid);
                 }//outer
+                VE.STATUS = "Data Uploaded Successfully";
 
             }//try
             catch (Exception ex)
             {
                 Cn.SaveException(ex, "");
-                return ex.Message;
+                VE.STATUS = ex.Message + ex.StackTrace;
             }
-            return "Successfully Uploaded !!!";
+            VE.DUpGrid = DUGridlist;
+            return VE;
         }
         public string PCSTYPE(string grade, string foc)
         {
@@ -505,11 +469,6 @@ namespace Improvar.Controllers
                 return dt.Rows[0]["slcd"].ToString();
             }
             return "";
-        }
-        public Int32 ToOneBasedIndex(String name)
-        {
-            return name.ToUpper().
-               Aggregate(0, (column, letter) => 26 * column + letter - 'A' + 1);
         }
     }
 }
