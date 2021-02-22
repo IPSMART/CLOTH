@@ -36,5 +36,8 @@ namespace Improvar.ViewModels
         public bool MNTNDISC1 { get; set; }
 
         public bool MNTNDISC2 { get; set; }
+        public bool MNTNBARNO { get; set; }
+        public bool COMMONUIQBAR { get; set; }
     }
+
 }

@@ -41,7 +41,8 @@ function GetBarnoDetails(id, HelpFrom) {
         var prccd = $("#PRCCD").val();
         var allmtrljobcd = $("#ALLMTRLJOBCD").val();
         var BARCODE = $("#BARCODE").val();
-        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE;
+        var AUTONO = $("#AUTONO").val();
+        var code = MTRLJOBCD + String.fromCharCode(181) + PARTCD + String.fromCharCode(181) + docdt + String.fromCharCode(181) + taxgrpcd + String.fromCharCode(181) + gocd + String.fromCharCode(181) + prccd + String.fromCharCode(181) + allmtrljobcd + String.fromCharCode(181) + HelpFrom + String.fromCharCode(181) + BARCODE + String.fromCharCode(181) + AUTONO;
 
         var hlpfieldid = "", hlpfieldindex = "", ReferanceFieldID = "", ReferanceFieldIndex = "";
         if (HelpFrom == "Bar") {
@@ -1315,47 +1316,51 @@ function UpdateTaxPer() {
     debugger;
     var DefaultAction = $("#DefaultAction").val();
     if (DefaultAction == "V") return true;
-    var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0; var DUTY_PER = 0;
     var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
-    for (i = 0; i <= GridRowMain - 1; i++) {
-        var rate = retFloat($("#B_RATE_" + i).val());
-        var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
-        var allgst = retGstPerstr(prodgrpgstper, rate);
-        var tax = null;
-        if (allgst != "") {
-            tax = allgst.split(',');
-        }
-        var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
-        if (tax.length > 0) {
-            IGST = parseFloat(tax[0]).toFixed(2);
-            CGST = parseFloat(tax[1]).toFixed(2);
-            SGST = parseFloat(tax[2]).toFixed(2);
-        }
 
-        if (IGST > IGST_PER) {
-            IGST_PER = IGST;
+    if (GridRowMain != 0) {
+        var IGST_PER = 0; var CGST_PER = 0; var SGST_PER = 0; var CESS_PER = 0; var DUTY_PER = 0;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            var rate = retFloat($("#B_RATE_" + i).val());
+            var prodgrpgstper = $("#B_PRODGRPGSTPER_" + i).val();
+            var allgst = retGstPerstr(prodgrpgstper, rate);
+            var tax = null;
+            if (allgst != "") {
+                tax = allgst.split(',');
+            }
+            var IGST = 0, CGST = 0, SGST = 0, CESS = 0, DUTY = 0;
+            if (tax.length > 0) {
+                IGST = parseFloat(tax[0]).toFixed(2);
+                CGST = parseFloat(tax[1]).toFixed(2);
+                SGST = parseFloat(tax[2]).toFixed(2);
+            }
+
+            if (IGST > IGST_PER) {
+                IGST_PER = IGST;
+            }
+            if (CGST > CGST_PER) {
+                CGST_PER = CGST;
+            }
+            if (SGST > SGST_PER) {
+                SGST_PER = SGST;
+            }
+            if (CESS > CESS_PER) {
+                CESS_PER = CESS;
+            }
+            if (DUTY > DUTY_PER) {
+                DUTY_PER = DUTY;
+            }
         }
-        if (CGST > CGST_PER) {
-            CGST_PER = CGST;
-        }
-        if (SGST > SGST_PER) {
-            SGST_PER = SGST;
-        }
-        if (CESS > CESS_PER) {
-            CESS_PER = CESS;
-        }
-        if (DUTY > DUTY_PER) {
-            DUTY_PER = DUTY;
+        var GridRowMain = $("#AMOUNT_GRID > tbody > tr").length;
+        for (i = 0; i <= GridRowMain - 1; i++) {
+            document.getElementById("AIGSTPER_" + i).value = IGST_PER;
+            document.getElementById("ACGSTPER_" + i).value = CGST_PER;
+            document.getElementById("ASGSTPER_" + i).value = SGST_PER;
+            document.getElementById("ACESSPER_" + i).value = CESS_PER;
+            document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
         }
     }
-    var GridRowMain = $("#AMOUNT_GRID > tbody > tr").length;
-    for (i = 0; i <= GridRowMain - 1; i++) {
-        document.getElementById("AIGSTPER_" + i).value = IGST_PER;
-        document.getElementById("ACGSTPER_" + i).value = CGST_PER;
-        document.getElementById("ASGSTPER_" + i).value = SGST_PER;
-        document.getElementById("ACESSPER_" + i).value = CESS_PER;
-        document.getElementById("ADUTYPER_" + i).value = DUTY_PER;
-    }
+
 
 }
 
@@ -3520,6 +3525,42 @@ function Update_Pageno_slno() {
 }
 function RemoveStyleBarno(RemoveFldId) {
     $("#" + RemoveFldId).val("");
+}
+
+function SelectUOMCode(id, i) {
+    if (id == "") {
+        $("#D_BLUOMCD_" + i).val("");
+    }
+    else {
+        $.ajax({
+            type: 'GET',
+            url: $("#UrlGetUOMDetails").val(),//"@Url.Action("GetUOMDetails", PageControllerName)",
+            data: {
+                val: id
+            },
+            success: function (result) {
+                var MSG = result.indexOf(String.fromCharCode(181));
+                if (MSG < 0) {
+                    $("#Msgdiv1").show();
+                    $("#info").show();
+                    $("#msgbody_info").html(" Invalid  UOM Code !! ");
+                    $("#D_BLUOMCD_" + i).val("");
+                    $("#btnok").focus();
+                    message_value = "D_BLUOMCD_" + i;
+                }
+                else {
+                    $("#tempHDD").val(result);
+                    var str = $("#tempHDD").val().split(String.fromCharCode(181));
+                    $("#D_BLUOMCD_" +i).val(str[0]);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#WaitingMode").hide();
+                msgError(XMLHttpRequest.responseText);
+                $("body span h1").remove(); $("#msgbody_error style").remove();
+            }
+        });
+    }
 }
 
 
