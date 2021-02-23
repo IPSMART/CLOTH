@@ -18,7 +18,7 @@ namespace Improvar.Controllers
         MasterHelp masterHelp = new MasterHelp();
         Salesfunc Salesfunc = new Salesfunc();
         MasterHelpFa MasterHelpFa = new MasterHelpFa();
-
+        DropDownHelp DropDownHelp = new DropDownHelp();
         string UNQSNO = CommVar.getQueryStringUNQSNO();
 
         public ActionResult SaleBill_Print()
@@ -64,6 +64,9 @@ namespace Improvar.Controllers
                         List<DropDown_list1> drplst = new List<DropDown_list1>();
                         VE.DropDown_list1 = drplst;
                     }
+                    VE.DropDown_list_SLCD = DropDownHelp.GetSlcdforSelection("");
+                    VE.Slnm = masterHelp.ComboFill("slcd", VE.DropDown_list_SLCD, 0, 1);
+
                     VE.DefaultView = true;
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
@@ -132,7 +135,9 @@ namespace Improvar.Controllers
                 string tdocno = FC["TDOCNO"].ToString();
                 string doccd = FC["doccd"].ToString();
                 string docnm = DB.M_DOCTYPE.Find(doccd).DOCNM;
-                string slcd = VE.TEXTBOX3;
+                //string slcd = VE.TEXTBOX3;
+                string slcd = "";
+                if (FC.AllKeys.Contains("slcdvalue")) slcd = CommFunc.retSqlformat(FC["slcdvalue"].ToString());
 
                 string[] copyno = new string[6];
                 if (VE.Checkbox1 == true) copyno[0] = "Y"; else copyno[0] = "N";
@@ -1397,7 +1402,7 @@ namespace Improvar.Controllers
                 if (fdocno != "") sqlc += "c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
                 if (fdate != "") sqlc += "c.docdt >= to_date('" + fdate + "','dd/mm/yyyy') and ";
                 if (tdate != "") sqlc += "c.docdt <= to_date('" + tdate + "','dd/mm/yyyy') and ";
-                if (slcd != null) sqlc += "b.slcd='" + slcd + "' and ";
+                if (slcd.retStr() != "") sqlc += "b.slcd in (" + slcd + ") and ";
                 sqlc += "c.doccd = '" + doccd + "' and ";
 
                 //sql += "select a.autono, b.itgrpcd, b.doctag, h.doccd, h.docno, h.docdt, b.areacd, b.invisstime, b.duedays,d.ADVRECDREM,d.ADVRECDAMT, h.canc_rem, h.cancel, ";
@@ -1539,7 +1544,7 @@ namespace Improvar.Controllers
                 sql += " where a.autono = z.autono(+) and a.slno = z.slno(+) and a.autono = b.autono and a.autono = c.autono(+) and a.autono = d.autono(+) and  ";
                 sql += " b.slcd = e.slcd and nvl(b.conslcd, b.slcd) = f.slcd(+) and c.translcd = g.slcd(+) and a.autono = h.autono and a.itcd = l.itcd(+) and l.itgrpcd = j.itgrpcd(+) and a.uomcd = i.uomcd(+) and  ";
                 sql += " b.gocd = k.gocd(+) and d.agslcd = m.slcd(+)  and b.autono = n.autono and n.RTDEBCD=o.RTDEBCD and b.autono=p.autono and ";
-                if (slcd != null) sql += " b.slcd ='" + slcd + "' and ";
+                if (slcd.retStr() != "") sql += " b.slcd in (" + slcd + ") and ";
                 sql += " a.autono not in (select a.autono from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c  ";
                 sql += " where a.autono = b.autono(+) and a.autono = c.autono(+)  and c.autono is null and b.doccd = '" + doccd + "' )   ";
                 sql += " order by docno,autono,slno  ";
@@ -2899,7 +2904,7 @@ namespace Improvar.Controllers
                 if (fdocno != "") sqlc += "c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
                 if (fdate != "") sqlc += "c.docdt >= to_date('" + fdate + "','dd/mm/yyyy') and ";
                 if (tdate != "") sqlc += "c.docdt <= to_date('" + tdate + "','dd/mm/yyyy') and ";
-                if (slcd != null) sqlc += "b.slcd='" + slcd + "' and ";
+                if (slcd.retStr() != "") sqlc += "b.slcd in (" + slcd + ") and ";
                 sqlc += "c.doccd = '" + doccd + "' and ";
 
                 sql += " select a.autono, b.doctag, h.doccd, h.docno, h.docdt, b.duedays, h.canc_rem,0 invisstime,'N' batchdlprint,  ";
@@ -2970,7 +2975,7 @@ namespace Improvar.Controllers
                 sql += " b.slcd = e.slcd and nvl(b.conslcd, b.slcd) = f.slcd(+) and c.translcd = g.slcd(+) and a.autono = h.autono and a.itcd = l.itcd(+) and l.itgrpcd = j.itgrpcd(+) and a.uomcd = i.uomcd(+) and  ";
                 sql += " b.gocd = k.gocd(+) and d.agslcd = m.slcd(+) and  ";
                 sql += "a.autono=r.autono(+) and a.autono=s.autono(+) and a.autono=p.autono(+) and ";
-                if (slcd != null) sql += " b.slcd ='" + slcd + "' and ";
+                if (slcd.retStr() != "") sql += " b.slcd in (" + slcd + ") and ";
                 sql += " a.autono not in (select a.autono from " + Scm1 + ".t_cntrl_doc_pass a, " + Scm1 + ".t_cntrl_hdr b, " + Scm1 + ".t_cntrl_auth c  ";
                 sql += " where a.autono = b.autono(+) and a.autono = c.autono(+) and c.autono is null and b.doccd = '" + doccd + "' )   ";
                 if (VE.Checkbox11 == true && printemail == "Print")
