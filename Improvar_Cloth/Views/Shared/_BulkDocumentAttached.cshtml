@@ -103,10 +103,10 @@
                             <th class="" style="width:104px;">Document No</th>
                             <th class="" style="width:87px;">Date</th>
                             <th class="" style="width:94px;">Party Code</th>
-                            <th class="" style="width:336px;">Party Name</th>
-                            <th class="" style="width:97px;">Voucher No</th>
+                            <th class="" style="width:147px;">Party Name</th>
+                            @*<th class="" style="width:97px;">Voucher No</th>*@
                             <th class="" style="width:107px;">Amount</th>
-                            <th class="" style="width:300px;">Category</th>
+                            <th class="" style="width:146px;">Category</th>
                             @{
                                 foreach (var i in Model.GridData)
                                 {
@@ -174,9 +174,9 @@
                                 <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
                                     @Html.TextBoxFor(model => model.GridData[i].slnm, new { id = "SLNM_" + i, @class = " atextBoxFor ", maxlength = 45, @TabIndex = -1, @readonly = "readonly" })
                                 </td>
-                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                @*<td class="" onclick="gotoentry('@Model.GridData[i].autono')">
                                     @Html.TextBoxFor(model => model.GridData[i].refno, new { id = "VOUNO_" + i, @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly" })
-                                </td>
+                                </td>*@
                                 <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
                                     @Html.TextBoxFor(model => model.GridData[i].amount, new { id = "AMT_" + i, @class = " atextBoxFor ", maxlength = 10, @TabIndex = -1, @readonly = "readonly", style = "text-align: right" })
                                 </td>

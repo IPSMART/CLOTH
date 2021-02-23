@@ -3,6 +3,9 @@
     ViewBag.Title = "Document Attached";
     Layout = "~/Views/Shared/_ReportLayout.cshtml";
 }
+@{
+    var PageControllerName = "M_Doc_Attached";
+}
 <script src="~/Scripts/jquery.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="~/Content/bootstrap-select.css" />
 @Scripts.Render("~/Scripts/Multiple-Select-min.js")
@@ -11,6 +14,7 @@
 <script>
     function gotoentry(autono)
     {
+        debugger;
         var url = $("#urlpopup1").val();
         $.ajax({
             type: 'post',
@@ -74,7 +78,7 @@
         }
     }
     function GetTransaction() {
-        var docct = $("#DOCCT").val();        
+        var docct = $("#DOCCT").val();
         if (docct == null) {
             msgInfo(" Select Document Category !! ");
             message_value = "DOCCT";
@@ -127,7 +131,7 @@
             },
             success: function (result) {
                 $("#WaitingMode").hide();
-                $("#pertialgrid").html(result);               
+                $("#pertialgrid").html(result);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 $("#WaitingMode").hide();
@@ -136,11 +140,29 @@
             }
         });
     }
+   
 </script>
-<script></script>
-@{
-    var PageControllerName = "M_Doc_Attached";
-}
+<script>
+    function SaveAttachment() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            beforesend: $("#WaitingMode").show(),
+            url: "@Url.Action("M_Doc_AttachedSave", PageControllerName)",
+            data: $('form').serialize(),
+        success: function (result) {
+            $("#WaitingMode").hide();
+            msgSuccess1(result);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+    }
+</script>
+
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -177,8 +199,8 @@
             </div>
             <div class="col-lg-1" style="margin-left:4px">
                 <div class="editor-field">
-                    @Html.EditorFor(model => model.docTypeID, new { htmlAttributes = new { @class = "form-control textbox_image", id = "docTypeID", onkeyup = "GetHelp('" + @Url.Action("GetDOCUhelp", PageControllerName) + "','docTypeID/docTypeName','0/1','Select Document Type','docTypeName');", onblur = "SelectDOCUMENTCode(this.value,docTypeID,docTypeName);", @placeholder = "Code", maxlength = 8, autocomplete = "off" } })
-                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("GetDOCUhelp", PageControllerName)','docTypeID/docTypeName','0/1','Select Document Type','docTypeName')" />
+                    @Html.EditorFor(model => model.docTypeID, new { htmlAttributes = new { @class = "form-control textbox_image", id = "docTypeID", onkeyup = "GetHelp('" + @Url.Action("GetDOCUhelp", PageControllerName) + "','docTypeID/docTypeName','0/1','Select Document Type','docTypeID')", @placeholder = "Code", maxlength = 8, onblur = "SelectDOCUMENTCode(this.value,docTypeID,docTypeName);" } })
+                    <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" on onclick="GetHelp('@Url.Action("GetDOCUhelp", PageControllerName)','docTypeID/docTypeName','0/1','Select Document Type','docTypeID')" />
                 </div>
             </div>
             <div class="col-lg-3">
