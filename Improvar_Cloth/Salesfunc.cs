@@ -2511,6 +2511,45 @@ namespace Improvar
                 return ItemDet;
             }
         }
+        public string CreatePricelist(string BARNO, string EFFDT, double CPRate, double WPRate, double RPRate)
+        {
+            try
+            {
+                M_ITEMPLISTDTL MIP = new M_ITEMPLISTDTL();
+                MIP.EMD_NO = 0;
+                MIP.CLCD = CommVar.ClientCode(UNQSNO);
+                MIP.EFFDT = Convert.ToDateTime(EFFDT);
+                MIP.BARNO = BARNO;
+                OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+                OraCon.Open();
+                OracleCommand OraCmd = OraCon.CreateCommand();
+                using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+                {
+                    MIP.PRCCD = "CP";
+                    MIP.RATE = CPRate;
+                    var dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                    var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    MIP.PRCCD = "WP";
+                    MIP.RATE = WPRate;
+                    dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    MIP.PRCCD = "RP";
+                    MIP.RATE = RPRate;
+                    dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    OraTrans.Commit();
+                }
+                OraCon.Dispose();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, BARNO);
+                return ex.Message;
+            }
+        }
         public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string itgrpcd = "", string brgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string schema = "")
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));

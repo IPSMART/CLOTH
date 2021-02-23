@@ -3378,7 +3378,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
@@ -3614,62 +3614,60 @@ namespace Improvar.Controllers
 
                                 if (VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP")
                                 {
-                                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") && ((VE.T_TXN.BARGENTYPE == "E") || (VE.T_TXN.BARGENTYPE == "C" && VE.TBATCHDTL[i].BARGENTYPE == "E")))
+                                    if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                     {
-                                        if (VE.WPPER.retDbl() != 0 || VE.RPPER.retDbl() != 0)
+                                        //if (VE.CPPER.retDbl() != 0 || VE.RPPER.retDbl() != 0)
+                                        //{
+                                        //RATE
+                                        T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+                                        TBATCHMSTPRICE.EMD_NO = TTXN.EMD_NO;
+                                        TBATCHMSTPRICE.CLCD = TTXN.CLCD;
+                                        TBATCHMSTPRICE.DTAG = TTXN.DTAG;
+                                        TBATCHMSTPRICE.TTAG = TTXN.TTAG;
+                                        TBATCHMSTPRICE.BARNO = barno;
+                                        TBATCHMSTPRICE.PRCCD = "CP";
+                                        TBATCHMSTPRICE.EFFDT = TTXN.DOCDT;
+                                        TBATCHMSTPRICE.AUTONO = TTXN.AUTONO;
+                                        TBATCHMSTPRICE.RATE = VE.TBATCHDTL[i].RATE;
+
+                                        dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE);
+                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        //}
+                                        if (VE.WPPER.retDbl() != 0)
                                         {
-                                            //RATE
-                                            T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
-                                            TBATCHMSTPRICE.EMD_NO = TTXN.EMD_NO;
-                                            TBATCHMSTPRICE.CLCD = TTXN.CLCD;
-                                            TBATCHMSTPRICE.DTAG = TTXN.DTAG;
-                                            TBATCHMSTPRICE.TTAG = TTXN.TTAG;
-                                            TBATCHMSTPRICE.BARNO = barno;
-                                            TBATCHMSTPRICE.PRCCD = "CP";
-                                            TBATCHMSTPRICE.EFFDT = TTXN.DOCDT;
-                                            TBATCHMSTPRICE.AUTONO = TTXN.AUTONO;
-                                            TBATCHMSTPRICE.RATE = VE.TBATCHDTL[i].RATE;
+                                            //WPRATE
+                                            T_BATCHMST_PRICE TBATCHMSTPRICE1 = new T_BATCHMST_PRICE();
+                                            TBATCHMSTPRICE1.EMD_NO = TTXN.EMD_NO;
+                                            TBATCHMSTPRICE1.CLCD = TTXN.CLCD;
+                                            TBATCHMSTPRICE1.DTAG = TTXN.DTAG;
+                                            TBATCHMSTPRICE1.TTAG = TTXN.TTAG;
+                                            TBATCHMSTPRICE1.BARNO = barno;
+                                            TBATCHMSTPRICE1.PRCCD = "WP";
+                                            TBATCHMSTPRICE1.EFFDT = TTXN.DOCDT;
+                                            TBATCHMSTPRICE1.AUTONO = TTXN.AUTONO;
+                                            TBATCHMSTPRICE1.RATE = VE.TBATCHDTL[i].WPRATE;
 
-                                            dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE);
+                                            dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE1);
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                                            if (VE.WPPER.retDbl() != 0)
-                                            {
-                                                //WPRATE
-                                                T_BATCHMST_PRICE TBATCHMSTPRICE1 = new T_BATCHMST_PRICE();
-                                                TBATCHMSTPRICE1.EMD_NO = TTXN.EMD_NO;
-                                                TBATCHMSTPRICE1.CLCD = TTXN.CLCD;
-                                                TBATCHMSTPRICE1.DTAG = TTXN.DTAG;
-                                                TBATCHMSTPRICE1.TTAG = TTXN.TTAG;
-                                                TBATCHMSTPRICE1.BARNO = barno;
-                                                TBATCHMSTPRICE1.PRCCD = "WP";
-                                                TBATCHMSTPRICE1.EFFDT = TTXN.DOCDT;
-                                                TBATCHMSTPRICE1.AUTONO = TTXN.AUTONO;
-                                                TBATCHMSTPRICE1.RATE = VE.TBATCHDTL[i].WPRATE;
-
-                                                dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE1);
-                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                            }
-
-                                            if (VE.RPPER.retDbl() != 0)
-                                            {
-                                                //RPRATE
-                                                T_BATCHMST_PRICE TBATCHMSTPRICE2 = new T_BATCHMST_PRICE();
-                                                TBATCHMSTPRICE2.EMD_NO = TTXN.EMD_NO;
-                                                TBATCHMSTPRICE2.CLCD = TTXN.CLCD;
-                                                TBATCHMSTPRICE2.DTAG = TTXN.DTAG;
-                                                TBATCHMSTPRICE2.TTAG = TTXN.TTAG;
-                                                TBATCHMSTPRICE2.BARNO = barno;
-                                                TBATCHMSTPRICE2.PRCCD = "RP";
-                                                TBATCHMSTPRICE2.EFFDT = TTXN.DOCDT;
-                                                TBATCHMSTPRICE2.AUTONO = TTXN.AUTONO;
-                                                TBATCHMSTPRICE2.RATE = VE.TBATCHDTL[i].RPRATE;
-
-                                                dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE2);
-                                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                            }
                                         }
 
+                                        if (VE.RPPER.retDbl() != 0)
+                                        {
+                                            //RPRATE
+                                            T_BATCHMST_PRICE TBATCHMSTPRICE2 = new T_BATCHMST_PRICE();
+                                            TBATCHMSTPRICE2.EMD_NO = TTXN.EMD_NO;
+                                            TBATCHMSTPRICE2.CLCD = TTXN.CLCD;
+                                            TBATCHMSTPRICE2.DTAG = TTXN.DTAG;
+                                            TBATCHMSTPRICE2.TTAG = TTXN.TTAG;
+                                            TBATCHMSTPRICE2.BARNO = barno;
+                                            TBATCHMSTPRICE2.PRCCD = "RP";
+                                            TBATCHMSTPRICE2.EFFDT = TTXN.DOCDT;
+                                            TBATCHMSTPRICE2.AUTONO = TTXN.AUTONO;
+                                            TBATCHMSTPRICE2.RATE = VE.TBATCHDTL[i].RPRATE;
+
+                                            dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE2);
+                                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                        }
                                     }
                                 }
                                 i++;
@@ -4353,7 +4351,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -4361,7 +4359,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

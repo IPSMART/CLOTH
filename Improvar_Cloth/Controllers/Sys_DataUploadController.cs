@@ -193,8 +193,6 @@ namespace Improvar.Controllers
                     {
                         return "Please add  SLCD:(" + TTXN.SLCD + ") from [Tax code link up With Party]." + msg;
                     }
-
-
                     TTXNOTH.PRCCD = "CP";
                     if (oudr["LRDT"].ToString() != "")
                     {
@@ -223,16 +221,14 @@ namespace Improvar.Controllers
                         string HSNCODE = inrdr["HSNCODE"].ToString();
                         string BARGENTYPE = inrdr["COMMONUNIQBAR"].ToString();
                         TTXNDTL.UOM = inrdr["UOMCD"].ToString();
-                        string FABITNM = inrdr["FABITNM"].ToString();string fabitcd = "";
+                        string FABITNM = inrdr["FABITNM"].ToString(); string fabitcd = "";
                         if (FABITNM != "")
                         {
                             ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "", "C", BARGENTYPE);
                             fabitcd = FABITDet.ITCD;
                         }
-
                         ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, "F", BARGENTYPE);
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
-
                         TTXNDTL.BARNO = inrdr["BARNO"].ToString();
                         TTXNDTL.ITNM = style;
                         TTXNDTL.MTRLJOBCD = "FS";
@@ -240,10 +236,18 @@ namespace Improvar.Controllers
                         TTXNDTL.STKTYPE = "F";
                         TTXNDTL.HSNCODE = HSNCODE;
                         TTXNDTL.BALENO = inrdr["BALENO"].ToString();
-                        TTXNDTL.GOCD = "TR";
+                        TTXNDTL.PAGENO = inrdr["BALENO"].retInt();
+                        TTXNDTL.PAGESLNO = inrdr["PAGESLNO"].retInt();
+
+                        dbfdt.Columns.Add("", typeof(string));
+                        dbfdt.Columns.Add("", typeof(string));
+
+                        TTXNDTL.GOCD = TTXN.GOCD == "" ? "TR" : TTXN.GOCD;
                         TTXNDTL.NOS = inrdr["NOS"].retDbl();
                         TTXNDTL.QNTY = inrdr["QNTY"].retDbl();
                         TTXNDTL.RATE = inrdr["RATE"].retDbl();
+                        TTXNDTL.WPRATE = inrdr["WPRATE"].retDbl();
+                        TTXNDTL.RPRATE = inrdr["RPRATE"].retDbl();
                         TTXNDTL.AMT = inrdr["amt"].retDbl();
                         if (TTXNDTL.AMT == 0) TTXNDTL.AMT = TTXNDTL.QNTY * TTXNDTL.RATE;
                         gstper = inrdr["GSTPER"].retDbl();
@@ -312,34 +316,21 @@ namespace Improvar.Controllers
                         TBATCHDTL.ITREM = TTXNDTL.ITREM;
                         TBATCHDTL.UOM = TTXNDTL.UOM;
                         TBATCHDTL.RATE = TTXNDTL.RATE;
+                        TBATCHDTL.WPRATE = TTXNDTL.WPRATE;
+                        TBATCHDTL.RPRATE = TTXNDTL.RPRATE;
                         TBATCHDTL.DISCRATE = TTXNDTL.DISCRATE;
                         TBATCHDTL.DISCTYPE = TTXNDTL.DISCTYPE;
                         TBATCHDTL.SCMDISCRATE = TTXNDTL.SCMDISCRATE;
                         TBATCHDTL.SCMDISCTYPE = TTXNDTL.SCMDISCTYPE;
                         TBATCHDTL.TDDISCRATE = TTXNDTL.TDDISCRATE;
                         TBATCHDTL.TDDISCTYPE = TTXNDTL.TDDISCTYPE;
-                        //TBATCHDTL.DIA = TTXNDTL.DIA;
-                        //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
-                        //TBATCHDTL.LOCABIN = TTXNDTL.LOCABIN;
-                        //TBATCHDTL.SHADE = TTXNDTL.SHADE;
-                        //TBATCHDTL.MILLNM = TTXNDTL.MILLNM;
-                        //TBATCHDTL.BATCHNO = inrdr["BATCH"].ToString();
+                        TBATCHDTL.SHADE = inrdr["SHADE"].retStr();
                         TBATCHDTL.BALEYR = TTXNDTL.BALENO.retStr() == "" ? "" : TTXNDTL.BALEYR;
                         TBATCHDTL.BALENO = TTXNDTL.BALENO;
-                        //if (VE.MENU_PARA == "SBPCK")
-                        //{
-                        //    TBATCHDTL.ORDAUTONO = TTXNDTL.ORDAUTONO;
-                        //    TBATCHDTL.ORDSLNO = TTXNDTL.ORDSLNO;
-                        //}
                         TBATCHDTL.LISTPRICE = TTXNDTL.LISTPRICE;
                         TBATCHDTL.LISTDISCPER = TTXNDTL.LISTDISCPER;
-                        //TBATCHDTL.CUTLENGTH = TTXNDTL.CUTLENGTH;
                         TBATCHDTL.STKTYPE = TTXNDTL.STKTYPE;
-
-                        //if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "PR" || VE.MENU_PARA == "OP") && VE.M_SYSCNFG.MNTNPCSTYPE == "Y")
-                        //{
-                        //    TBATCHDTL.PCSTYPE = TTXNDTL.PCSTYPE;
-                        //}
+                        TBATCHDTL.PCSTYPE = inrdr["PCSCTG"].retStr();
                         TBATCHDTLlist.Add(TBATCHDTL);
                     }// inner loop of TTXNDTL
 
@@ -356,7 +347,10 @@ namespace Improvar.Controllers
                     TMPVE.T_VCH_GST = new T_VCH_GST();
                     string tslCont = (string)TSCntlr.SAVE(TMPVE, "OpStock");
                     tslCont = tslCont.retStr().Split('~')[0];
-                    if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") { }// msg += "Success " + tslCont.Substring(1);
+                    if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1")
+                    {
+
+                    }// msg += "Success " + tslCont.Substring(1);
                     else return tslCont + " at " + msg;
                 }//outer
 
