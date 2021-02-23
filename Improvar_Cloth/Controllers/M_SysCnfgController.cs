@@ -407,6 +407,7 @@ namespace Improvar.Controllers
                         MSYSCNFG.WPPER = VE.M_SYSCNFG.WPPER;
                         MSYSCNFG.RPPER = VE.M_SYSCNFG.RPPER;
                         MSYSCNFG.PRICEINCODE = VE.M_SYSCNFG.PRICEINCODE;
+                        MSYSCNFG.PRICEINCODECOST = VE.M_SYSCNFG.PRICEINCODECOST;
                         MSYSCNFG.RTDEBCD = VE.M_SYSCNFG.RTDEBCD;
                         MSYSCNFG.DESIGNPATH = VE.M_SYSCNFG.DESIGNPATH;
                         if (VE.INC_RATE == true) { MSYSCNFG.INC_RATE = "Y"; } else { MSYSCNFG.INC_RATE = "N"; }

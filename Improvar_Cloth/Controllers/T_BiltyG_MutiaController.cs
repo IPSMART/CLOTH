@@ -294,7 +294,7 @@ namespace Improvar.Controllers
             {
                 var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, "", "", "", MUTSLCD.retSqlformat());
                 DataView dv = new DataView(GetPendig_Data);
-                string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM" };
+                string[] COL = new string[] { "autono", "lrno", "lrdt", "baleno", "prefno", "prefdt", "TRANSLNM", "BALEYR" };
                 GetPendig_Data = dv.ToTable(true, COL);
                 List<string> blautonos = new List<string>();
 
@@ -328,7 +328,8 @@ namespace Improvar.Controllers
                                             PREFNO = dr["prefno"].retStr(),
                                             PREFDT = dr["prefdt"].retDateStr(),
                                             TRANSLNM = dr["TRANSLNM"].retStr(),
-                                        }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                                            BALEYR = dr["BALEYR"].retStr(),
+                                   }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
                     for (int p = 0; p <= VE.TBILTY_POPUP.Count - 1; p++)
                     {
                         VE.TBILTY_POPUP[p].SLNO = Convert.ToInt16(p + 1);
@@ -355,106 +356,104 @@ namespace Improvar.Controllers
         }
         public ActionResult SelectPendingLRNO(TransactionBiltyGMutiaEntry VE, string DOCDT, string MUTSLCD)
         {
-            Cn.getQueryString(VE);
             try
-            {
-                string GC = Cn.GCS();
-                List<string> blautonos = new List<string>();
+            { var gcs = Cn.GCS();var flag = false;
+                List<TBILTY> TBILTY1 = new List<TBILTY>();
+                if (VE.TBILTY!=null)
+                {
+                    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                    {
+                        TBILTY TBL = new TBILTY();
+                        TBL = VE.TBILTY[i];
+                        TBILTY1.Add(TBL);
+                    }
+                }
+             
+                //List<string> blautonos = new List<string>();
                 foreach (var i in VE.TBILTY_POPUP)
                 {
                     if (i.Checked == true)
                     {
-                        blautonos.Add(i.BLAUTONO);
+                        var chkduplicate = TBILTY1.Where(a => a.BLAUTONO + gcs + a.BALENO == i.BLAUTONO + gcs + i.BALENO).ToList();
+                       
+                        int SERIAL = 0;
+                        if (TBILTY1.Count != 0) SERIAL = Convert.ToInt32(TBILTY1.Max(a => Convert.ToInt32(a.SLNO)));
+                       
+                        TBILTY TBL1 = new TBILTY();
+                        TBL1.Checked = true;
+                        TBL1.SLNO = (SERIAL + 1).retShort();
+                        TBL1.BLAUTONO = i.BLAUTONO;
+                        TBL1.BALENO = i.BALENO;
+                        TBL1.LRNO = i.LRNO;
+                        TBL1.LRDT = i.LRDT;
+                        TBL1.PREFNO = i.PREFNO;
+                        TBL1.PREFDT = i.PREFDT;
+                        TBL1.BALEYR = i.BALEYR;
+                        TBILTY1.Add(TBL1);
                     }
                 }
-                var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
-                var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos,"","", MUTSLCD.retSqlformat());
-                if (VE.TBILTY == null)
-                {
-                    VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
-                                 select new TBILTY
-                                 {
-                                     BLAUTONO = dr["autono"].retStr(),
-                                     BALENO = dr["baleno"].retStr(),
-                                     LRNO = dr["lrno"].retStr(),
-                                     LRDT = dr["lrdt"].retDateStr(),
-                                     PREFNO = dr["prefno"].retStr(),
-                                     PREFDT = dr["prefdt"].retDateStr(),
-                                     BALEYR = dr["baleyr"].retStr()
-                                 }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
-                    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                    {
-                        VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
-                    }
-                }
-                else
-                {
-                    var tbily = (from DataRow dr in GetPendig_Data.Rows
-                                 select new TBILTY
-                                 {
-                                     BLAUTONO = dr["autono"].retStr(),
-                                     BALENO = dr["baleno"].retStr(),
-                                     LRNO = dr["lrno"].retStr(),
-                                     LRDT = dr["lrdt"].retDateStr(),
-                                     PREFNO = dr["prefno"].retStr(),
-                                     PREFDT = dr["prefdt"].retDateStr(),
-                                     BALEYR = dr["baleyr"].retStr(),
-                                 }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
-                 
-                    List<TBILTY> MLocIFSC1 = new List<TBILTY>();
-                    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
-                    {
-                        TBILTY MLI = new TBILTY();
-                        MLI = VE.TBILTY[i];
-                        MLocIFSC1.Add(MLI);
-                    }
-                  
-                 
-                    foreach(var j in tbily)
-                    {
-                      TBILTY MLI1 = new TBILTY();
-                      int SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
-                      MLI1.BLAUTONO =j.BLAUTONO;
-                      MLI1.BALENO = j.BALENO;
-                      MLI1.LRNO = j.LRNO;
-                      MLI1.LRDT = j.LRDT;
-                      MLI1.PREFNO = j.PREFNO;
-                      MLI1.PREFDT = j.PREFDT;
-                      MLI1.BALEYR = j.BALEYR;
-                      MLI1.SLNO = (SERIAL + 1).retShort();
-                      MLocIFSC1.Add(MLI1);
-                    }
-                   
-                    VE.TBILTY = MLocIFSC1;
-                }
+              
+                VE.TBILTY = TBILTY1;
+                //var sqlbillautonos = string.Join(",", blautonos).retSqlformat();
+                //var GetPendig_Data = salesfunc.getPendBiltytoIssue(DOCDT, sqlbillautonos,"","", MUTSLCD.retSqlformat());
+                //if (VE.TBILTY == null)
+                //{
+                //    VE.TBILTY = (from DataRow dr in GetPendig_Data.Rows
+                //                 select new TBILTY
+                //                 {
+                //                     BLAUTONO = dr["autono"].retStr(),
+                //                     BALENO = dr["baleno"].retStr(),
+                //                     LRNO = dr["lrno"].retStr(),
+                //                     LRDT = dr["lrdt"].retDateStr(),
+                //                     PREFNO = dr["prefno"].retStr(),
+                //                     PREFDT = dr["prefdt"].retDateStr(),
+                //                     BALEYR = dr["baleyr"].retStr()
+                //                 }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+                //    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                //    {
+                //        VE.TBILTY[i].SLNO = Convert.ToInt16(i + 1);
+                //    }
+                //}
+                //else
+                //{
+                //    var tbily = (from DataRow dr in GetPendig_Data.Rows
+                //                 select new TBILTY
+                //                 {
+                //                     BLAUTONO = dr["autono"].retStr(),
+                //                     BALENO = dr["baleno"].retStr(),
+                //                     LRNO = dr["lrno"].retStr(),
+                //                     LRDT = dr["lrdt"].retDateStr(),
+                //                     PREFNO = dr["prefno"].retStr(),
+                //                     PREFDT = dr["prefdt"].retDateStr(),
+                //                     BALEYR = dr["baleyr"].retStr(),
+                //                 }).Distinct().OrderBy(a => a.BALENO).ThenBy(a => a.PREFNO).ToList();
+
+                //    for (int i = 0; i <= VE.TBILTY.Count - 1; i++)
+                //    {
+                //        TBILTY MLI = new TBILTY();
+                //        MLI = VE.TBILTY[i];
+                //        MLocIFSC1.Add(MLI);
+                //    }
+
+
+                //    foreach(var j in tbily)
+                //    {
+
+                //    }
+
+                //    VE.TBILTY = MLocIFSC1;
+                //}
                 ModelState.Clear();
                 VE.DefaultView = true;
-                var GRN_MAIN = RenderRazorViewToString(ControllerContext, "_T_BiltyG_Mutia_Main", VE);
-                return Content(GRN_MAIN);
+                return PartialView("_T_BiltyG_Mutia_Main", VE);
             }
             catch (Exception ex)
             {
-                VE.DefaultView = false;
-                VE.DefaultDay = 0;
-                ViewBag.ErrorMessage = ex.Message + ex.InnerException;
                 Cn.SaveException(ex, "");
-                return View(VE);
+                return Content(ex.Message);
             }
         }
-
-        public static string RenderRazorViewToString(ControllerContext controllerContext, string viewName, object model)
-        {
-            controllerContext.Controller.ViewData.Model = model;
-            using (var stringWriter = new StringWriter())
-            {
-                var viewResult = ViewEngines.Engines.FindPartialView(controllerContext, viewName);
-                var viewContext = new ViewContext(controllerContext, viewResult.View, controllerContext.Controller.ViewData, controllerContext.Controller.TempData, stringWriter);
-                viewResult.View.Render(viewContext, stringWriter);
-                viewResult.ViewEngine.ReleaseView(controllerContext, viewResult.View);
-                return stringWriter.GetStringBuilder().ToString();
-            }
-        }
-        public ActionResult DeleteRow(TransactionBiltyGMutiaEntry VE)
+   public ActionResult DeleteRow(TransactionBiltyGMutiaEntry VE)
         {
             try
             {

@@ -4216,7 +4216,7 @@ namespace Improvar.Controllers
                         }
                         else
                         {
-                            ContentFlg = "Please add tax % from 'Tax Rates linkup (Prod.Grp)' master";
+                            ContentFlg = "TAX amount not found. Please add tax with item.";
                         }
                         goto dbnotsave;
                     }
