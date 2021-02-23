@@ -450,7 +450,7 @@ namespace Improvar.Controllers
                     {
                         TBILTYR MLI1 = new TBILTYR();
                         int SERIAL = Convert.ToInt32(MLocIFSC1.Max(a => Convert.ToInt32(a.SLNO)));
-
+                        MLI1.Checked = true;
                         MLI1.BLAUTONO = j.BLAUTONO.retStr();
                         MLI1.ITCD = j.ITCD.retStr();
                         MLI1.ITNM = j.ITNM.retStr();

@@ -241,6 +241,8 @@ namespace Improvar.Models
         public string TCSAPPL { get; set; }
         [StringLength(4)]
         public string PARTYCD { get; set; }
+        [StringLength(15)]
+        public string CENNO { get; set; }
 
     }
 }

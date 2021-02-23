@@ -104,5 +104,8 @@ namespace Improvar.Models
         public string MNTNBARNO { get; set; }
         [StringLength(1)]
         public string COMMONUIQBAR { get; set; }
+        [StringLength(11)]
+        public string PRICEINCODECOST { get; set; }
+        
     }
 }

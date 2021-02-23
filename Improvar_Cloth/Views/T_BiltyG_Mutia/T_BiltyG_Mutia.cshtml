@@ -85,8 +85,31 @@
                 data: "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
                     if (result == 0) { return msgWarning("Record not Found! Please enter valid Document date."); }
-                    $("#popup").animate({ marginTop: '-10px' }, 50);
-                    $("#popup").html(result);
+                    else {
+                        $("#popup").animate({ marginTop: '-10px' }, 50);
+                        $("#popup").html(result);
+                        //var arr = new Array();
+                        //var arr1 = new Array();
+                        //var GridRowMain = $("#T_BiltyG_Mutia_Main > tbody > tr").length;
+                        //for (i = 0; i <= GridRowMain - 1; i++) {
+                        //    var blautono = document.getElementById("BLAUTONO_" + i).value;
+                        //    var baleno = document.getElementById("BALENO_" + i).value;
+                        //    arr.push(blautono);
+                        //    arr1.push(baleno);
+
+                        //}
+                        //var GridRowPopUp = $("#T_BiltyG_Mutia_PopUp > tbody > tr").length;
+                        //for (i = 0; i <= GridRowPopUp - 1; i++) {
+                        //    var MainGrideblautono = arr[i];
+                        //    var MainGridebaleno = arr1[i];
+                        //    var PopUpGrideblautono = document.getElementById("BLAUTONO_POPUP_" + i).value;
+                        //    var PopUpGridebaleno = document.getElementById("BALENO_POPUP" + i).value;
+                        //    if (MainGrideblautono == PopUpGrideblautono && MainGridebaleno == PopUpGridebaleno) {
+                        //        document.getElementById("chkid_POPUP_" + i).checked = true;
+                        //    }
+                        //}
+                      
+                    }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
@@ -170,23 +193,6 @@
     }
 </script>
 <script>
-    //function SelectMatchingCheckBoxes() {
-    //    debugger;;
-    //    var arr = new Array();
-    //    var GridRowMain = $("#T_BiltyG_Mutia_PopUp > tbody > tr").length;
-    //    for (i = 0; i <= GridRowMain - 1; i++) {
-    //        var chkbox = document.getElementById("chkid_POPUP_" + i);
-    //        if (chkbox.checked) { arr.push(document.getElementById("BLAUTONO_POPUP_" + i)); }
-
-    //    }
-    //    for (i = 0; i <= GridRowMain - 1; i++) {
-    //        if (arr.indexOf(document.getElementById("BLAUTONO_POPUP_" + i)) != -1) {
-    //            document.getElementById("chkid_POPUP_" + i).checked = true;
-    //        }
-    //    }
-
-    //} 
-
     function SelectMatchingCheckBoxes(i) {
         debugger;
         var id = $("#chkid_POPUP_" + i).attr("id");
@@ -209,19 +215,6 @@
             }
         }
         }
-        //else
-        //{
-        //    var Table_name = "#T_BiltyG_Mutia_PopUp > tbody > tr";
-        //    var lngth = $(Table_name).length;
-        //    for (var i = 0; i <= lngth - 1; i++) {
-        //        //check with lrno                 
-        //        var lrno = $("#LRNO_POPUP" + i).val();
-        //        if (LRNO == lrno) {
-        //            //$("#chkid_POPUP_" + i).checked = true;
-        //            document.getElementById("chkid_POPUP_" + i).checked = false;
-        //        }
-        //    }
-        //}
         if (chkbox == false) {
             document.getElementById("chkid_POPUP_" + i).checked = false;
         }
@@ -247,15 +240,10 @@
                 beforesend: $("#WaitingMode").show(),
                 data: $('form').serialize() + "&DOCDT=" + docdt + "&MUTSLCD=" + mutslcd,
                 success: function (result) {
-                    //var res = result.split("^^^^^^^^^^^^~~~~~~^^^^^^^^^^");
-
+                   
                     $("#partialdivMain").animate({ marginTop: '0px' }, 50);
                     $("#partialdivMain").html(result);
                     $("#WaitingMode").hide();
-                    @*$('#partialdivMain').html(res[0]);
-                    if ("@Session["CLIENT_CODE"]" == "ADHU") {
-                        $("#OTHREFNO").val(res[1]);
-                    }*@
                     $('#popup').html("");
                     $('.PopUp_Backround').fadeOut();
                 },

@@ -1487,6 +1487,7 @@ namespace Improvar.Controllers
                             MSUBLEG.GSTNO = VE.M_SUBLEG.GSTNO.retStr().ToUpper();
                             MSUBLEG.REGNTYPE = VE.M_SUBLEG.REGNTYPE;
                             MSUBLEG.PANNO = VE.M_SUBLEG.PANNO;
+                            MSUBLEG.CENNO = VE.M_SUBLEG.CENNO;
                             MSUBLEG.TANNO = VE.M_SUBLEG.TANNO;
                             MSUBLEG.CINNO = VE.M_SUBLEG.CINNO;
                             MSUBLEG.GSTDT = VE.M_SUBLEG.GSTDT;
