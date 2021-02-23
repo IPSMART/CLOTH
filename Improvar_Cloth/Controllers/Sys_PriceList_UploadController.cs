@@ -78,7 +78,7 @@ namespace Improvar.Controllers
                         double CP = workSheet.Cells[row, 5].Value.retDbl();
                         double WP = workSheet.Cells[row, 5].Value.retDbl();
                         double RP = workSheet.Cells[row, 5].Value.retDbl();
-                        msg = CreatePricelist(ItemDet.BARNO, VE.TDT, CP, WP, RP);
+                        msg = Salesfunc.CreatePricelist(ItemDet.BARNO, VE.TDT, CP, WP, RP);
                         if (msg != "ok")
                         {
                             return "Failed because of row:" + row + ",  " + msg;
@@ -95,44 +95,6 @@ namespace Improvar.Controllers
             }
             return "Failed because of row:" + msg;
         }
-        private string CreatePricelist(string BARNO, string EFFDT, double CPRate, double WPRate, double RPRate)
-        {
-            try
-            {
-                M_ITEMPLISTDTL MIP = new M_ITEMPLISTDTL();
-                MIP.EMD_NO = 0;
-                MIP.CLCD = CommVar.ClientCode(UNQSNO);
-                MIP.EFFDT = Convert.ToDateTime(EFFDT);
-                MIP.BARNO = BARNO;
-                OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
-                OraCon.Open();
-                OracleCommand OraCmd = OraCon.CreateCommand();
-                using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
-                {
-                    MIP.PRCCD = "CP";
-                    MIP.RATE = CPRate;
-                    var dbsql = masterHelp.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
-                    var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                    MIP.PRCCD = "WP";
-                    MIP.RATE = WPRate;
-                    dbsql = masterHelp.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
-                    MIP.PRCCD = "RP";
-                    MIP.RATE = RPRate;
-                    dbsql = masterHelp.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                    OraTrans.Commit();
-                }
-                OraCon.Dispose();
-                return "ok";
-            }
-            catch (Exception ex)
-            {
-                Cn.SaveException(ex, BARNO);
-                return ex.Message;
-            }
-        }
+  
     }
 }
