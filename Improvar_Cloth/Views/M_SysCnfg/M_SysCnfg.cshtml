@@ -66,26 +66,52 @@
     }
 </script>
 <script>
-    function ChkPriceInCode() {
+    function ChkPriceInCode(tag) {
         debugger;
-        var FstPricecode = $('#PRICEINCODE').val();
-        if (FstPricecode == "") return;
-        if (FstPricecode.length < 10) {
-            msgWarning('First ten character is mandatory !');
-            $('#PRICEINCODE').val("");
-            message_value = "PRICEINCODE";
-            return false;
-        }
         var all = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        for (var i = 0; i < all.length; i++) {
-            var char = all.charAt(i);
-            if (FstPricecode.split(char).length > 2) {
-                msgWarning('We cant use duplicate charecter !');
+        if (tag != "y")
+        {
+            var FstPricecode = $('#PRICEINCODE').val();
+            if (FstPricecode == "") return;
+            if (FstPricecode.length < 10) {
+                msgWarning('First ten character is mandatory !');
                 $('#PRICEINCODE').val("");
                 message_value = "PRICEINCODE";
-                return true;
+                return false;
+            }
+          
+            for (var i = 0; i < all.length; i++) {
+                var char = all.charAt(i);
+                if (FstPricecode.split(char).length > 2) {
+                    msgWarning('We cant use duplicate charecter !');
+                    $('#PRICEINCODE').val("");
+                    message_value = "PRICEINCODE";
+                    return true;
+                }
             }
         }
+        else {
+            var FstPricecode = $('#PRICEINCODECOST').val();
+            if (FstPricecode == "") return;
+            if (FstPricecode.length < 11) {
+                msgWarning('First eleven character is mandatory !');
+                $('#PRICEINCODECOST').val("");
+                message_value = "PRICEINCODECOST";
+                return false;
+            }
+            //var all = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for (var i = 0; i < all.length; i++) {
+                var char = all.charAt(i);
+                if (FstPricecode.split(char).length > 2) {
+                    msgWarning('We cant use duplicate charecter !');
+                    $('#PRICEINCODECOST').val("");
+                    message_value = "PRICEINCODECOST";
+                    return true;
+                }
+            }
+        }
+      
+     
     }
 </script>
 
@@ -118,7 +144,7 @@
             <div class="row">
                 <div class="col-lg-9">
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Effective Date")
                                 <b style="color:Red;">*</b>
@@ -150,7 +176,7 @@
                         }
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Debtors")
                                 <b style="color:Red;">*</b>
@@ -169,7 +195,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Creditors")
                                 <b style="color:Red;">*</b>
@@ -189,7 +215,7 @@
                         </div>
                     </div>
                     <div id="CLASS1" class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Class 1")
                             </div>
@@ -207,7 +233,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Retail Debtor")
                             </div>
@@ -225,7 +251,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", " WP Price Type")
                             </div>
@@ -248,7 +274,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", " RP Price Type")
                             </div>
@@ -309,7 +335,7 @@
                         </div>
                     </div>*@
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Due Date Calc on")
 
@@ -335,7 +361,7 @@
                         </div>
                     </div>*@
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "WP %")
 
@@ -348,7 +374,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "RP %")
 
@@ -361,7 +387,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-field" style="margin-top: 4px;">
                                 @Html.Label("", "Price Code")
 
@@ -369,12 +395,25 @@
                         </div>
                         <div class="col-md-6">
                             <div class="editor-field">
-                                @Html.EditorFor(model => Model.M_SYSCNFG.PRICEINCODE, new { htmlAttributes = new { id = "PRICEINCODE", @class = "form-control", @onkeyup = "toUpper(this);", onblur = "ChkPriceInCode();", maxlength = 11, @onkeypress = "return event.charCode >= 65 && event.charCode <= 90;", title = "Upper Case only" } })
+                                @Html.EditorFor(model => Model.M_SYSCNFG.PRICEINCODE, new { htmlAttributes = new { id = "PRICEINCODE", @class = "form-control", @onkeyup = "toUpper(this);", onblur = "ChkPriceInCode('');", maxlength = 11, @onkeypress = "return event.charCode >= 65 && event.charCode <= 90;", title = "Upper Case only" } })
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
+                            <div class="editor-field" style="margin-top: 4px;">
+                                @Html.Label("", "Price In Code Cost")
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="editor-field">
+                                @Html.EditorFor(model => Model.M_SYSCNFG.PRICEINCODECOST, new { htmlAttributes = new { id = "PRICEINCODECOST", @class = "form-control", @onkeyup = "toUpper(this);", onblur = "ChkPriceInCode('y');", maxlength = 11, @onkeypress = "return event.charCode >= 65 && event.charCode <= 90;", title = "Upper Case only" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Retail")
                                 @*<b style="color:Red;">*</b>*@
@@ -393,7 +432,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "Design Path")
                                 @*<b style="color:Red;">*</b>*@
@@ -518,7 +557,7 @@
                     </div>
                 </div>*@
                     <div class="row">
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "De - Activate")
                             </div>
