@@ -4085,7 +4085,7 @@ namespace Improvar.Controllers
                     }
                 }
                 string compaddress; string stremail = "";
-                compaddress = Salesfunc.retCompAddress(gocd, grpemailid);
+                compaddress = Salesfunc.retCompAddress("", grpemailid);
                 stremail = compaddress.retCompValue("email");
 
                 string ccemail = grpemailid;
