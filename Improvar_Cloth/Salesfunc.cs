@@ -2340,8 +2340,7 @@ namespace Improvar
             DataTable tbl = masterHelpFa.SQLquery(sql);
             return tbl;
         }
-
-        public M_GROUP CreateGroup(string grpnm)
+        public M_GROUP CreateGroup(string grpnm, string ITGRPTYPE, string BARGENTYPE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             M_GROUP MGROUP = new M_GROUP();
@@ -2380,12 +2379,14 @@ namespace Improvar
                 {
                     MGROUP.GRPBARCODE = (100).ToString("D3");
                 }
-                MGROUP.SALGLCD = "10000001";
-                MGROUP.PURGLCD = "25999991";
-                MGROUP.ITGRPTYPE = "F";
-                MGROUP.PRODGRPCD = "G001";
-                MGROUP.BARGENTYPE = "C";
-                MGROUP.NEGSTOCK = "Y";
+                var fMGROU = DB.M_GROUP.FirstOrDefault();
+                if (fMGROU == null) Cn.SaveTextFile("Add a row in the Group master");
+                MGROUP.SALGLCD = fMGROU.SALGLCD;
+                MGROUP.PURGLCD = fMGROU.PURGLCD; 
+                MGROUP.ITGRPTYPE = ITGRPTYPE == "" ? "F" : ITGRPTYPE;
+                MGROUP.PRODGRPCD = "G001";             
+                MGROUP.BARGENTYPE = BARGENTYPE == "" ? "C" : BARGENTYPE;//c=common,e=entry
+                MGROUP.NEGSTOCK = fMGROU.NEGSTOCK; ;
                 OraCon.Open();
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -2406,10 +2407,9 @@ namespace Improvar
             OraCon.Dispose();
             return MGROUP;
         }
-        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE)
+        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string ITGRPTYPE, string BARGENTYPE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
-
             string DefaultAction = "A";
             ItemDet ItemDet = new ItemDet();
             M_SITEM MSITEM = new M_SITEM(); M_GROUP MGROUP = new M_GROUP();
@@ -2435,7 +2435,7 @@ namespace Improvar
                     ItemDet.BARNO = STYLEdt.BARNO;
                     return ItemDet;
                 }
-                MGROUP = CreateGroup(grpnm);
+                MGROUP = CreateGroup(grpnm, ITGRPTYPE, BARGENTYPE);
                 MSITEM.EMD_NO = 0;
                 MSITEM.M_AUTONO = Cn.M_AUTONO(CommVar.CurSchema(UNQSNO).ToString());
                 string sql = "select max(itcd)itcd from " + CommVar.CurSchema(UNQSNO) + ".m_sitem where itcd like('" + MGROUP.ITGRPTYPE + MGROUP.GRPBARCODE + "%') ";
@@ -2461,7 +2461,8 @@ namespace Improvar
                 MSITEM.STYLENO = style.Trim();
                 MSITEM.UOMCD = UOM;
                 MSITEM.HSNCODE = HSNCODE;
-                MSITEM.NEGSTOCK = "Y";
+                MSITEM.FABITCD = FABITCD;
+                MSITEM.NEGSTOCK = MGROUP.NEGSTOCK;
                 var MPRODGRP = DB.M_PRODGRP.FirstOrDefault();
                 MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;
 
@@ -2478,7 +2479,6 @@ namespace Improvar
                 TBATCHMST.TTAG = MSITEM.TTAG;
                 TBATCHMST.BARNO = MSITEMBARCODE1.BARNO;
                 TBATCHMST.ITCD = MSITEM.ITCD;
-
 
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -2509,6 +2509,45 @@ namespace Improvar
                 Cn.SaveException(ex, "");
                 OraCon.Dispose();
                 return ItemDet;
+            }
+        }
+        public string CreatePricelist(string BARNO, string EFFDT, double CPRate, double WPRate, double RPRate)
+        {
+            try
+            {
+                M_ITEMPLISTDTL MIP = new M_ITEMPLISTDTL();
+                MIP.EMD_NO = 0;
+                MIP.CLCD = CommVar.ClientCode(UNQSNO);
+                MIP.EFFDT = Convert.ToDateTime(EFFDT);
+                MIP.BARNO = BARNO;
+                OracleConnection OraCon = new OracleConnection(Cn.GetConnectionString());
+                OraCon.Open();
+                OracleCommand OraCmd = OraCon.CreateCommand();
+                using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
+                {
+                    MIP.PRCCD = "CP";
+                    MIP.RATE = CPRate;
+                    var dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                    var dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    MIP.PRCCD = "WP";
+                    MIP.RATE = WPRate;
+                    dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+
+                    MIP.PRCCD = "RP";
+                    MIP.RATE = RPRate;
+                    dbsql = masterHelpFa.RetModeltoSql(MIP, "A", CommVar.CurSchema(UNQSNO));
+                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    OraTrans.Commit();
+                }
+                OraCon.Dispose();
+                return "ok";
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, BARNO);
+                return ex.Message;
             }
         }
         public DataTable GenStocktblwithVal(string calctype = "FIFO", string tdt = "", string itgrpcd = "", string brgrpcd = "", string selitcd = "", string gocd = "", bool skipStkTrnf = true, string skipautono = "", bool summary = false, string unselitcd = "", string schema = "")
