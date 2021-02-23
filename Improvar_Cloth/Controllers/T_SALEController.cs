@@ -3371,7 +3371,7 @@ namespace Improvar.Controllers
                             }
                         }
                     }
-                    COUNTER = 0; int COUNTERBATCH = 0; bool recoexist = false; bool newbarnogen = false;
+                    COUNTER = 0; int COUNTERBATCH = 0; bool recoexist = false; bool flagbatch = false;
 
                     _baldistq_b = 0; _baldist_b = 0; _baldisttxblval_b = 0;
                     if (VE.TBATCHDTL != null && VE.TBATCHDTL.Count > 0)
@@ -3419,14 +3419,21 @@ namespace Improvar.Controllers
                                 }
 
                                 double mtrlcost = (((TTXNDTLmp.TXBLVAL + _amtdist) / TTXNDTLmp.QNTY) * VE.TBATCHDTL[i].QNTY).retDbl().toRound(2);
-                                bool flagbatch = false;
+                                flagbatch = false;
                                 string barno = "";
                                 if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
-                                    //barno = TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (COUNTERBATCH + 1));
-                                    barno = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL[i].SLNO));
-                                    flagbatch = true;
-                                    newbarnogen = true;
+                                    sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST where barno='" + barno + "'";
+                                    dt = masterHelp.SQLquery(sql);
+                                    if (dt.Rows.Count == 0)
+                                    {
+                                        barno = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL[i].SLNO));
+                                        flagbatch = true;                                        
+                                    }
+                                    else
+                                    {
+                                        barno = VE.TBATCHDTL[i].BARNO;
+                                    }                        
                                 }
                                 else
                                 {
@@ -3616,9 +3623,6 @@ namespace Improvar.Controllers
                                 {
                                     if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                     {
-                                        //if (VE.CPPER.retDbl() != 0 || VE.RPPER.retDbl() != 0)
-                                        //{
-                                        //RATE
                                         T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
                                         TBATCHMSTPRICE.EMD_NO = TTXN.EMD_NO;
                                         TBATCHMSTPRICE.CLCD = TTXN.CLCD;
@@ -3632,8 +3636,8 @@ namespace Improvar.Controllers
 
                                         dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                                        //}
-                                        if (VE.WPPER.retDbl() != 0)
+
+                                        if (VE.TBATCHDTL[i].WPRATE.retDbl() != 0)
                                         {
                                             //WPRATE
                                             T_BATCHMST_PRICE TBATCHMSTPRICE1 = new T_BATCHMST_PRICE();
@@ -3651,7 +3655,7 @@ namespace Improvar.Controllers
                                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                         }
 
-                                        if (VE.RPPER.retDbl() != 0)
+                                        if (VE.TBATCHDTL[i].RPRATE.retDbl() != 0)
                                         {
                                             //RPRATE
                                             T_BATCHMST_PRICE TBATCHMSTPRICE2 = new T_BATCHMST_PRICE();
@@ -3677,9 +3681,9 @@ namespace Improvar.Controllers
                             if (i > VE.TBATCHDTL.Count - 1) break;
                         }
                     }
-                    if (newbarnogen == true && docbarcode.retStr() == "")
+                    if (flagbatch == true && docbarcode.retStr() == "")
                     {
-                        ContentFlg = "Please add doccd in M_DOCTYPE_BAR table"; goto dbnotsave;
+                        ContentFlg = "Please add doccd[" + TTXN.DOCCD + "]  in M_DOCTYPE_BAR table"; goto dbnotsave;
                     }
                     if (dbqty == 0 && (VE.MENU_PARA != "SCN" && VE.MENU_PARA != "SDN" && VE.MENU_PARA != "PCN" && VE.MENU_PARA != "PDN"))
                     {

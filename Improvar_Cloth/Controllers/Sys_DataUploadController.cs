@@ -236,7 +236,7 @@ namespace Improvar.Controllers
                         TTXNDTL.STKTYPE = "F";
                         TTXNDTL.HSNCODE = HSNCODE;
                         TTXNDTL.BALENO = inrdr["BALENO"].ToString();
-                        TTXNDTL.PAGENO = inrdr["BALENO"].retInt();
+                        TTXNDTL.PAGENO = inrdr["PAGENO"].retInt();
                         TTXNDTL.PAGESLNO = inrdr["PAGESLNO"].retInt();
 
                         dbfdt.Columns.Add("", typeof(string));
@@ -306,6 +306,7 @@ namespace Improvar.Controllers
                         TBATCHDTL.BARNO = TTXNDTL.BARNO;
                         TBATCHDTL.ITCD = TTXNDTL.ITCD;
                         TBATCHDTL.MTRLJOBCD = TTXNDTL.MTRLJOBCD;
+                        TBATCHDTL.BARGENTYPE = BARGENTYPE;
                         TBATCHDTL.PARTCD = TTXNDTL.PARTCD;
                         TBATCHDTL.HSNCODE = TTXNDTL.HSNCODE;
                         TBATCHDTL.STKDRCR = TTXNDTL.STKDRCR;
