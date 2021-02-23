@@ -62,8 +62,9 @@ namespace Improvar.Controllers
             string msg = "";
             try
             {
-                //DOCDT	PBLNO	SLNM	SLCD	ITGRPNM	FABITGRPNM	FABITNM	ITNM	PRODGRPCD	STYLENO	UOMCD	BARNO	NOS	QNTY	RATE	AMT	GOCD	LRNO	LRDT	BALENO	COMMONUNIQBAR	PAGENO	PAGESLNO	WPRATE	RPRATE	MAKERATE	SHADE	COLRCD	SIZECD	PDESIGN	PCSCTG	HSNCODE	GSTPER	GSTABOVEPER
+                // Excel Columns: DOCDT	PBLNO	SLNM	SLCD	ITGRPNM	FABITGRPNM	FABITNM	ITNM	PRODGRPCD	STYLENO	UOMCD	BARNO	NOS	QNTY	RATE	AMT	GOCD	LRNO	LRDT	BALENO	COMMONUNIQBAR	PAGENO	PAGESLNO	WPRATE	RPRATE	MAKERATE	SHADE	COLRCD	SIZECD	PDESIGN	PCSCTG	HSNCODE	GSTPER	GSTABOVEPER
                 DataTable dbfdt = new DataTable();
+                dbfdt.Columns.Add("EXCELROWNUM", typeof(int));
                 dbfdt.Columns.Add("DOCDT", typeof(string));
                 dbfdt.Columns.Add("PBLNO", typeof(string));
                 dbfdt.Columns.Add("SLNM", typeof(string));
@@ -111,6 +112,7 @@ namespace Improvar.Controllers
                         if (workSheet.Cells[rowNum, 1].Value.retStr() != "")
                         {
                             DataRow dr = dbfdt.NewRow();
+                            dr["EXCELROWNUM"] = rowNum;
                             var wsRow = workSheet.Cells[rowNum, 1, rowNum, noOfCol];
                             for (int colnum = 1; colnum <= noOfCol; colnum++)
                             {
@@ -118,11 +120,12 @@ namespace Improvar.Controllers
                                 string colValue = workSheet.Cells[rowNum, colnum].Value.retStr();
                                 try
                                 {
+                                    if (colname == "DOCDT" || colname == "LRDT") { colValue = colValue.retDateStr(); }
                                     dr[colname] = colValue;
                                 }
-                                catch (ArgumentException aex)
+                                catch (ArgumentException ex)
                                 {
-                                    return "Wrong ColumnName:" + colname;
+                                    return "Wrong ColumnName:" + colname + " Error:" + ex.Message;
                                 }
                             }
                             dbfdt.Rows.Add(dr);
@@ -165,8 +168,10 @@ namespace Improvar.Controllers
                 {
                     FABgrpnm = dt.Rows[0]["ITGRPNM"].retStr();
                 }
+                int excelrow = 1;
                 foreach (DataRow oudr in outerDT.Rows)
                 {
+                    ++excelrow; msg = " Excelrow:" + excelrow;
                     short txnslno = 0;
                     List<TBATCHDTL> TBATCHDTLlist = new List<Models.TBATCHDTL>();
                     List<TTXNDTL> TTXNDTLlist = new List<Models.TTXNDTL>();
@@ -186,7 +191,7 @@ namespace Improvar.Controllers
                     TTXNOTH.TAXGRPCD = getTAXGRPCD(TTXN.SLCD);
                     if (TTXNOTH.TAXGRPCD == "")
                     {
-                        return "Please add  SLCD:(" + TTXN.SLCD + ") from [Tax code link up With Party].";
+                        return "Please add  SLCD:(" + TTXN.SLCD + ") from [Tax code link up With Party]." + msg;
                     }
 
 
@@ -197,42 +202,36 @@ namespace Improvar.Controllers
                         TXNTRANS.LRNO = oudr["LRNO"].ToString();
                         TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
                     }
-
+                    var tepb = TTXN.PREFNO == "" ? " " : TTXN.PREFNO;
                     sql = "";
-                    sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.tcsamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
-                    sql += " where   a.autono=b.autono and b.docdt=to_date('" + Ddate + "','dd/mm/yyyy') and a.slcd='" + TTXN.SLCD + "' and a.PREFNO='" + TTXN.PREFNO + "' ";//  and a.LRNO='" + TTXN.LRNO + "' ";
+                    sql = "select a.autono,b.docno,a.SLCD,a.blamt,a.ROAMT  from  " + CommVar.CurSchema(UNQSNO) + ".t_txn a, " + CommVar.CurSchema(UNQSNO) + ".t_cntrl_hdr b ";
+                    sql += " where   a.autono=b.autono and b.docdt=to_date('" + Ddate + "','dd/mm/yyyy') and a.slcd='" + TTXN.SLCD + "' and nvl(a.PREFNO,' ')='" + tepb + "' ";//  and a.LRNO='" + TTXN.LRNO + "' ";
                     var dt = masterHelp.SQLquery(sql);
                     if (dt.Rows.Count > 0) continue;
-                    //{12/02/2013		KASIM SAREES	DS00385
-
-                    //    dupgrid.MESSAGE = "Allready Added at docno:" + dt.Rows[0]["docno"].ToString();
-                    //    dupgrid.BLNO = TTXN.PREFNO;
-                    //    dupgrid.TCSAMT = dt.Rows[0]["tcsamt"].ToString();
-                    //    dupgrid.BLAMT = dt.Rows[0]["blamt"].ToString();
-                    //    dupgrid.ROAMT = dt.Rows[0]["ROAMT"].ToString();
-                    //    continue;
-                    //}
-                    //else
-                    //{
-                    //    dupgrid.TCSAMT = TTXN.TCSAMT.retStr();
-                    //    dupgrid.BLAMT = TTXN.BLAMT.retStr();
-                    //}
-
                     string PURGLCD = "";
                     DataTable innerDt = dbfdt.Select("docdt = '" + Ddate + "' and slcd = '" + TTXN.SLCD + "' and PBLNO = '" + TTXN.PREFNO + "'").CopyToDataTable();
+
                     double txable = 0, gstamt = 0; short batchslno = 0;
                     foreach (DataRow inrdr in innerDt.Rows)
                     {
+                        excelrow = inrdr["EXCELROWNUM"].retInt();
+                        msg = " Excelrow:" + excelrow;
                         //detail tab start
                         TTXNDTL TTXNDTL = new TTXNDTL();
                         string style = inrdr["STYLENO"].ToString();
                         string grpnm = inrdr["ITGRPNM"].ToString();
                         string HSNCODE = inrdr["HSNCODE"].ToString();
+                        string BARGENTYPE = inrdr["COMMONUNIQBAR"].ToString();
                         TTXNDTL.UOM = inrdr["UOMCD"].ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE);
+                        string FABITNM = inrdr["FABITNM"].ToString();string fabitcd = "";
+                        if (FABITNM != "")
+                        {
+                            ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "", "C", BARGENTYPE);
+                            fabitcd = FABITDet.ITCD;
+                        }
+
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, "F", BARGENTYPE);
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
-                        string FABITNM = inrdr["FABITNM"].ToString();
-                        ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE);
 
                         TTXNDTL.BARNO = inrdr["BARNO"].ToString();
                         TTXNDTL.ITNM = style;
@@ -247,7 +246,7 @@ namespace Improvar.Controllers
                         TTXNDTL.RATE = inrdr["RATE"].retDbl();
                         TTXNDTL.AMT = inrdr["amt"].retDbl();
                         if (TTXNDTL.AMT == 0) TTXNDTL.AMT = TTXNDTL.QNTY * TTXNDTL.RATE;
-                         gstper = inrdr["GSTPER"].retDbl();
+                        gstper = inrdr["GSTPER"].retDbl();
                         if (TTXNOTH.TAXGRPCD == "I001")
                         {
                             igstper = gstper;
@@ -258,7 +257,7 @@ namespace Improvar.Controllers
                             sgstper = cgstper;
                         }
                         TTXNDTL.GLCD = PURGLCD;
-                        TTXNDTL.TXBLVAL = TTXNDTL.AMT.retDbl();
+                        TTXNDTL.TXBLVAL = TTXNDTL.AMT.retDbl(); txable += TTXNDTL.TXBLVAL.retDbl();
                         TTXNDTL.IGSTPER = igstper;
                         TTXNDTL.CGSTPER = cgstper;
                         TTXNDTL.SGSTPER = sgstper;
@@ -344,27 +343,10 @@ namespace Improvar.Controllers
                         TBATCHDTLlist.Add(TBATCHDTL);
                     }// inner loop of TTXNDTL
 
-                    //double gstper = oudr["GSTPER"].retDbl();// igstper == 0 ? (cgstper * 2) : igstper;
-                    //double cgstper = oudr["GSTPER"].retDbl();
-                    double blINV_VALUE = 0;// oudr["INV_VALUE"].retDbl();
-                    double bltaxable = 0;// oudr["TAX_AMT"].retDbl();
-                    double calculatedTax = Math.Round(((bltaxable * gstper) / 100), 2);
-                    double calcultednet = (bltaxable + calculatedTax);//.toRound(2);
-                    var roffamt = (blINV_VALUE - calcultednet).toRound(2);
-                    double blTAX_AMT = 0;// oudr["TAX_AMT"].retDbl();
-                    double tcsamt = (blINV_VALUE * TTXN.TCSPER.retDbl() / 100).toRound(2);
-                    TTXN.BLAMT = blINV_VALUE + tcsamt;
-                    TTXN.TDSCODE = "X";
-                    TTXN.ROYN = "Y";
-                    TTXN.TCSON = calcultednet;
-                    TTXN.TCSAMT = tcsamt; //dupgrid.TCSAMT = tcsamt.ToString();
-
-
-
-
-                    //           //Amount tab end
-                    TTXN.ROAMT = (TTXN.BLAMT.retDbl() - (txable + gstamt + tcsamt)).toRound(2);
-                    //    dupgrid.ROAMT = TTXN.ROAMT.retStr();
+                    TTXN.BLAMT = (txable + gstamt).toRound(2);
+                    //TTXN.TDSCODE = "X";
+                    //TTXN.ROYN = "Y";               
+                    TTXN.ROAMT = (0.0).toRound(2);
                     TMPVE.T_TXN = TTXN;
                     TMPVE.T_TXNTRANS = TXNTRANS;
                     TMPVE.T_TXNOTH = TTXNOTH;
@@ -375,16 +357,16 @@ namespace Improvar.Controllers
                     string tslCont = (string)TSCntlr.SAVE(TMPVE, "OpStock");
                     tslCont = tslCont.retStr().Split('~')[0];
                     if (tslCont.Length > 0 && tslCont.Substring(0, 1) == "1") { }// msg += "Success " + tslCont.Substring(1);
-                    else return tslCont;
+                    else return tslCont + " at " + msg;
                 }//outer
 
             }//try
             catch (Exception ex)
             {
-                Cn.SaveException(ex, "");
+                Cn.SaveException(ex, msg);
                 return ex.Message;
             }
-            return "Successfully Uploaded !!!";
+            return "Excel Uploaded Successfully !!";
         }
         public string PCSTYPE(string grade, string foc)
         {

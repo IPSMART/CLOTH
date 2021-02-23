@@ -71,7 +71,7 @@ namespace Improvar.Controllers
                         string grpnm = workSheet.Cells[row, 2].Value.ToString();
                         string style = workSheet.Cells[row, 3].Value.ToString() + workSheet.Cells[row, 4].Value.ToString();
                         string HSNCODE = workSheet.Cells[row, 5].Value.ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE);
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, "MTR", grpnm, HSNCODE, "", "F", "C");
                         sql = "SELECT * FROM " + CommVar.CurSchema(UNQSNO) + ".M_ITEMPLISTDTL where barno='" + ItemDet.BARNO + "' and EFFDT=to_date('" + VE.TDT + "','dd/mm/yyyy') ";
                         var dt = masterHelp.SQLquery(sql);
                         if (dt.Rows.Count > 0) continue;
