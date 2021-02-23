@@ -305,6 +305,7 @@
     <Compile Include="Controllers\Rep_Stk_StmtController.cs" />
     <Compile Include="Controllers\Rep_SubledgerPrintController.cs" />
     <Compile Include="Controllers\RPTViewerController.cs" />
+    <Compile Include="Controllers\Sys_DataUploadController.cs" />
     <Compile Include="Controllers\Sys_PriceList_UploadController.cs" />
     <Compile Include="Controllers\Sys_StkTrnfController.cs" />
     <Compile Include="Controllers\TS_DOCAUTHController.cs" />
@@ -314,7 +315,6 @@
     <Compile Include="Controllers\T_BiltyG_MutiaController.cs" />
     <Compile Include="Controllers\T_BiltyR_MutiaController.cs" />
     <Compile Include="Controllers\T_Bilty_KhasraController.cs" />
-    <Compile Include="Controllers\T_DataUploadController.cs" />
     <Compile Include="Controllers\T_OUTISSPROCESSController.cs" />
     <Compile Include="Controllers\T_OUTRECPROCESSController.cs" />
     <Compile Include="Controllers\T_PBillUploadController.cs" />
@@ -1287,7 +1287,6 @@
     <Content Include="Views\Shared\_T_SALE_RateHistoryGrid.cshtml" />
     <Content Include="Views\T_PhyStock\T_PhyStock.cshtml" />
     <Content Include="Views\Shared\_T_PhyStock_BarTab.cshtml" />
-    <Content Include="Views\T_DataUpload\T_DataUpload.cshtml" />
     <Content Include="Views\Rep_Misc_Qry_Updt\Rep_Misc_Qry_Updt.cshtml" />
     <Content Include="Views\Shared\_T_SALE_POPUP.cshtml" />
     <Content Include="Views\Sys_PriceList_Upload\Sys_PriceList_Upload.cshtml" />
@@ -1298,6 +1297,7 @@
     <Content Include="Views\Shared\_T_SALE_PYMT_Adjustment.cshtml" />
     <Content Include="Views\Rep_Agent\Rep_Agent.cshtml" />
     <Content Include="Views\T_PBillUpload\T_PBillUpload.cshtml" />
+    <Content Include="Views\Sys_DataUpload\Sys_DataUpload.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

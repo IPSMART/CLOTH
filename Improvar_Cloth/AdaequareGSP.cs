@@ -428,11 +428,11 @@ namespace Improvar
                     Cn.SaveTextFile(hdrString);
                     if (jsonStr == "")
                     {
-                        response = client.GetAsync(url).Result; //Make sure it is synchonrous        
+                        response = client.PostAsync(url, data).GetAwaiter().GetResult(); //Make sure it is synchonrous  //   response = client.GetAsync(url).Result;
                     }
                     else
                     {
-                        response = client.PostAsync(url, data).Result; //Make sure it is synchonrous
+                        response = client.PostAsync(url, data).GetAwaiter().GetResult(); //Make sure it is synchonrous
                     }
                     resp = response.Content.ReadAsStringAsync().Result;//Make sure it is synchonrous
                     int StatusCode = (int)response.StatusCode;
