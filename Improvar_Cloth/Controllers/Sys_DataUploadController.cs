@@ -221,15 +221,16 @@ namespace Improvar.Controllers
                         string HSNCODE = inrdr["HSNCODE"].ToString();
                         string BARGENTYPE = inrdr["COMMONUNIQBAR"].ToString();
                         TTXNDTL.UOM = inrdr["UOMCD"].ToString();
+                        TTXNDTL.BARNO = inrdr["BARNO"].ToString();
                         string FABITNM = inrdr["FABITNM"].ToString(); string fabitcd = "";
                         if (FABITNM != "")
                         {
                             ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "","", "C", BARGENTYPE);
                             fabitcd = FABITDet.ITCD;
                         }
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, "F", BARGENTYPE," ");
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE);
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
-                        TTXNDTL.BARNO = inrdr["BARNO"].ToString();
+                   
                         TTXNDTL.ITNM = style;
                         TTXNDTL.MTRLJOBCD = "FS";
                         TTXNDTL.STKDRCR = "D";
