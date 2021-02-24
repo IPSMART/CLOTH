@@ -93,21 +93,20 @@ namespace Improvar.Controllers
                     VE.Gender = G;
                     //=================For Gender================//
                     //=================For ProductType================//
-                    List<ProductType> P = new List<ProductType>();
+                    List<ProductType> ptlist = new List<ProductType>();
                     ProductType P1 = new ProductType();
                     P1.text = "Inner Wear";
                     P1.value = "IW";
-                    P.Add(P1);
+                    ptlist.Add(P1);
                     ProductType P2 = new ProductType();
                     P2.text = "Outer Wear";
                     P2.value = "OW";
-                    P.Add(P2);
-                    VE.ProductType = P;
+                    ptlist.Add(P2);
                     ProductType P3 = new ProductType();
                     P3.text = "Accessories";
                     P3.value = "AC";
-                    P.Add(P3);
-                    VE.ProductType = P;
+                    ptlist.Add(P3);
+                    VE.ProductType = ptlist;
                     //=================For ProductType================//
                     List<DropDown_list1> PRICES_EFFDTDROP = new List<DropDown_list1>();
                     VE.DropDown_list1 = PRICES_EFFDTDROP;
