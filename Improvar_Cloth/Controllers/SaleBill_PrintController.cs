@@ -71,7 +71,7 @@ namespace Improvar.Controllers
                     VE.ExitMode = 1;
                     VE.DefaultDay = 0;
                     VE.Checkbox1 = true;
-                    VE.Checkbox10 = true;
+                    //VE.Checkbox10 = true;
                     //VE.Checkbox11 = true;
                     return View(VE);
                 }
@@ -3309,6 +3309,8 @@ namespace Improvar.Controllers
                         blhead = "STOCK TRANSFER"; break;
                     case "PB":
                         blhead = "PURCHASE INVOICE"; break;
+                    case "OP":
+                        blhead = "OPENING STOCK"; break;
                     default: blhead = ""; break;
                 }
 
