@@ -30,7 +30,7 @@
         if (grptyp == "0") { msgInfo("Select Group Type"); message_value = "grptype"; return false; }
         //if (!emptyFieldCheck("Enter Group Name", "GRPNM")) { return false; }
         if (!emptyFieldCheck("Enter Product group", "PRODGRPCD")) { return false; }
-        if (!emptyFieldCheck("Enter HSNCODE", "HSNCODE")) { return false; }
+        //if (!emptyFieldCheck("Enter HSNCODE", "HSNCODE")) { return false; }
         if (!emptyFieldCheck("Enter Sales General Ledger Code", "SALGLCD")) { return false; }
         if (!emptyFieldCheck("Enter Purchase General Ledger Code", "PURGLCD")) { return false; }
       
@@ -344,7 +344,6 @@
                         <div class="col-md-7">
                             <div class="editor-label" style="margin-top: 6px;">
                                 @Html.Label("", "HSNCODE")
-                                <b style="color:Red;">*</b>
                             </div>
                         </div>
                         <div class="col-md-8">

@@ -2895,15 +2895,27 @@ namespace Improvar.Controllers
                 string str1 = "";
                 DataTable rsTmp;
                 string doctype = "";
+                string docnos = VE.TEXTBOX8.retStr() == "" ? "" : VE.TEXTBOX8.retStr().Split(',').retSqlfromStrarray();
+
+
                 str1 = "select doctype from " + Scm1 + ".m_doctype where doccd='" + VE.DOCCD + "'";
                 rsTmp = masterHelp.SQLquery(str1);
                 doctype = rsTmp.Rows[0]["doctype"].ToString();
                 string sql = "";
                 string sqlc = "";
                 sqlc += "c.compcd='" + COM + "' and c.loccd='" + LOC + "' and c.yr_cd='" + yr_cd + "' and ";
-                if (fdocno != "") sqlc += "c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
-                if (fdate != "") sqlc += "c.docdt >= to_date('" + fdate + "','dd/mm/yyyy') and ";
-                if (tdate != "") sqlc += "c.docdt <= to_date('" + tdate + "','dd/mm/yyyy') and ";
+                if (docnos.retStr() == "")
+                {
+                    if (fdocno != "") sqlc += "c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
+                    if (fdate != "") sqlc += "c.docdt >= to_date('" + fdate + "','dd/mm/yyyy') and ";
+                    if (tdate != "") sqlc += "c.docdt <= to_date('" + tdate + "','dd/mm/yyyy') and ";
+
+                }
+                else
+                {
+                    sqlc += "c.doconlyno in ( " + docnos + ") and ";
+                }
+
                 if (slcd.retStr() != "") sqlc += "b.slcd in (" + slcd + ") and ";
                 sqlc += "c.doccd = '" + doccd + "' and ";
 
@@ -2936,9 +2948,17 @@ namespace Improvar.Controllers
                 sql += " from " + Scm1 + ".t_txndtl a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_sitem d, " + Scm1 + ".m_group f, " + Scm1 + ".t_batchdtl  n, " + Scm1 + ".t_batchmst o  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono and a.itcd = d.itcd and a.autono = n.autono(+) and a.slno = n.txnslno(+) and n.barno = o.barno(+) and  ";
                 sql += " c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and  ";
-                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
-                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
+                if (docnos.retStr() == "")
+                {
+                    if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and  ";
+                    if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
+                    if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
+                }
+                else
+                {
+                    sql += "c.doconlyno in ( " + docnos + ") and ";
+                }
+
                 sql += " c.doccd = '" + doccd + "' and d.itgrpcd = f.itgrpcd(+)  ";
                 sql += " group by a.autono, a.autono || a.slno, a.slno, a.itcd, d.itnm,o.pdesign, d.styleno, nvl(a.bluomcd,d.uomcd), nvl(a.hsncode, nvl(d.hsncode, f.hsncode)),  ";
                 //sql += " a.itrem, a.baleno, a.nos, nvl(a.blqnty, a.qnty), a.flagmtr, a.rate, a.amt, a.agdocno, to_char(a.agdocdt, 'dd/mm/yyyy'),  ";
@@ -2951,9 +2971,16 @@ namespace Improvar.Controllers
                 sql += " a.igstper, a.igstamt, a.cgstper, a.cgstamt, a.sgstper, a.sgstamt, a.dutyper, a.dutyamt, a.cessper, a.cessamt,0 listprice,0 listdiscper  ";
                 sql += " from " + Scm1 + ".t_txnamt a, " + Scm1 + ".t_txn b, " + Scm1 + ".t_cntrl_hdr c, " + Scm1 + ".m_amttype d  ";
                 sql += " where a.autono = b.autono and a.autono = c.autono and c.compcd = '" + COM + "' and c.loccd = '" + LOC + "' and c.yr_cd = '" + yr_cd + "' and  ";
-                if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
-                if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
-                if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
+                if (docnos.retStr() == "")
+                {
+                    if (fdocno != "") sql += " c.doconlyno >= " + fdocno + " and c.doconlyno <= " + tdocno + " and ";
+                    if (fdate != "") sql += " c.docdt >= to_date('" + fdate + "', 'dd/mm/yyyy') and  ";
+                    if (tdate != "") sql += " c.docdt <= to_date('" + tdate + "', 'dd/mm/yyyy') and  ";
+                }
+                else
+                {
+                    sql += "c.doconlyno in ( " + docnos + ") and ";
+                }
                 sql += "c.doccd = '" + doccd + "'  ";
                 sql += "and a.amtcd = d.amtcd(+)  ";
                 sql += " ) a,  ";
@@ -4267,8 +4294,8 @@ namespace Improvar.Controllers
 
                     if (printemail == "Excel")
                     {
-                        string path_Save = @"C:\improvar\" + doccd + VE.FDOCNO + ".xls";
-                        string exlfile = doccd + VE.FDOCNO + ".xls";
+                        string path_Save = @"C:\improvar\" + doccd + (VE.TEXTBOX8.retStr() == "" ? VE.FDOCNO : VE.TEXTBOX8.retStr()) + ".xls";
+                        string exlfile = doccd + (VE.TEXTBOX8.retStr() == "" ? VE.FDOCNO : VE.TEXTBOX8.retStr()) + ".xls";
                         if (System.IO.File.Exists(path_Save))
                         {
                             System.IO.File.Delete(path_Save);

@@ -41,6 +41,16 @@
                             @*<img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onclick="GetHelp('@Url.Action("Getdocno", PageControllerName)','DOCCD/TEXTBOX2','1/0','Select Docno and Docdt Details','DOCCD')" />*@
                         </div>
                     </div>
+                    <div class="col-lg-2">
+                        <div class="editor-label" style="margin-top: 6px;">
+                            @Html.Label("", "Doc No.s (1,2,3..)")
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.TEXTBOX8, new { htmlAttributes = new { @class = "form-control", id = "MULTIPLEDOCNO" } })
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-2">
@@ -101,18 +111,18 @@
                         @(new HtmlString(Model.Slnm))
                     </div>
                 </div>
-                @*<div class="row">
-                    <div class="col-lg-2">
-                        <div class="editor-label" style="margin-top: 6px;">
-                            @Html.Label("", "Print Current O/S in Bill")
+                <div class="row">
+                    @*<div class="col-lg-2">
+                            <div class="editor-label" style="margin-top: 6px;">
+                                @Html.Label("", "Print Current O/S in Bill")
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="editor-field" style="margin-top: 5px;">
-                            @Html.CheckBoxFor(model => model.Checkbox7)
-                        </div>
-                    </div>
-                    @if (Model.MENU_PARA != "SBCM" && Model.MENU_PARA != "SBCMR")
+                        <div class="col-md-1">
+                            <div class="editor-field" style="margin-top: 5px;">
+                                @Html.CheckBoxFor(model => model.Checkbox7)
+                            </div>
+                        </div>*@
+                    @if (Model.MENU_PARA != "SBCM" && Model.MENU_PARA != "SBCMR" && CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") == -1)
                     {
                         <div class="col-lg-2" style="width:auto;">
                             <div class="editor-label" style="margin-top: 6px;">
@@ -139,7 +149,7 @@
                             </div>
                         </div>
                     }
-                </div>*@
+                </div>
                 <div class="row">
                     <div class="col-lg-2">
                         <div class="editor-label" style="margin-top: 6px;">
