@@ -144,14 +144,14 @@ namespace Improvar.Controllers
                 sql += "(select a.barno, a.prccd, a.effdt, ";
                 sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
                 sql += "from " + scm + ".m_itemplistdtl a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ";
-                sql += ") a, " + scm + ".m_itemplistdtl b, " + scm + ".m_sitem_barcode c ";
+                sql += ") a, " + scm + ".m_itemplistdtl b, " + scm + ".T_BATCHmst c ";
                 sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 and a.prccd='" + prccd + "' ";
                 sql += "union ";
                 sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
                 sql += "(select a.barno, a.prccd, a.effdt, ";
                 sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
                 sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + docdt + "','dd/mm/yyyy') ) ";
-                sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".m_sitem_barcode d ";
+                sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".T_BATCHmst d ";
                 sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.prccd='" + prccd + "' and ";
                 sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
                 sql += ") a where prccd='" + prccd + "') " + sqlals + ", ";

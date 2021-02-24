@@ -61,89 +61,6 @@ namespace Improvar
 
             return tbl;
         }
-        public DataTable GetPendDO(string slcd = "", string doupto = "", string doautono = "", string ordautono = "", string txnupto = "", string skipautono = "", string brandcd = "", bool OnlyBal = true)
-        {
-            string UNQSNO = CommVar.getQueryStringUNQSNO();
-            DataTable tbl = new DataTable();
-            string scm = CommVar.CurSchema(UNQSNO), scmf = CommVar.FinSchema(UNQSNO), COM = CommVar.Compcd(UNQSNO), LOC = CommVar.Loccd(UNQSNO);
-
-            string doctype = "SDO";
-            //string prccd = "EXFI", effdt = "23/05/2019";
-            if (doupto == "") doupto = txnupto;
-
-            string sqlc = "";
-            sqlc += "b.compcd='" + COM + "' and b.loccd='" + LOC + "' and ";
-            if (slcd != null && slcd != "") sqlc += "c.slcd='" + slcd + "' and ";
-            if (skipautono.retStr() != "") sqlc += "a.autono <> '" + skipautono + "' and ";
-            sqlc += "nvl(b.cancel,'N')='N' ";
-
-            string sql = "";
-
-            sql += "select a.autono, a.ordautono, a.doccd, a.docno, a.docdt, a.ordno, a.orddt, nvl(a.stktype,'') stktype, nvl(a.freestk,'') freestk, ";
-            //sql += "nvl(z.addper,0) addper, nvl(nvl(z.rate,y.rate),0) rate, nvl(y.rate,0) plistrate, ";
-            sql += "nvl(a.addper,0) addper, nvl(y.rate,0) plistrate, ";
-            sql += "(case when nvl(z.rate,0)=0 and nvl(a.addper,0) <> 0 then nvl(y.rate,0)+round((nvl(y.rate,0)*nvl(a.addper,0))/100,2) when nvl(z.rate,0)=0 and nvl(a.addper,0) = 0 then nvl(y.rate,0)+round((nvl(y.rate,0)*nvl(a.addper,0))/100,2) else nvl(nvl(z.rate,y.rate),0) end) rate, ";
-            sql += "d.styleno, a.itcd, a.sizecd, a.colrcd, d.itnm, nvl(d.pcsperbox,0) pcsperbox, nvl(d.pcsperset,0) pcsperset, nvl(d.colrperset,0) colrperset, ";
-            sql += "d.uomcd, g.uomnm, g.decimals, d.itgrpcd, h.itgrpnm, h.brandcd, i.brandnm, a.prccd, a.prceffdt, ";
-            sql += "e.sizenm, e.print_seq, f.colrnm, nvl(a.doqnty,0) doqnty, ";
-            sql += "nvl(a.doqnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) balqnty from ";
-            sql += "( select a.autono, a.ordautono, b.doccd, b.docno, b.docdt, e.docno ordno, e.docdt orddt, a.stktype, a.freestk, a.rate, f.prccd, f.prceffdt, ";
-            sql += "nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, ";
-            sql += "f.prccd||f.prceffdt||nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') plistitcolsize, ";
-            sql += "a.itcd, a.sizecd, a.colrcd, nvl(g.addper,0) addper, sum(a.qnty) doqnty ";
-            sql += "from " + scm + ".t_dodtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_do c, " + scm + ".m_doctype d, ";
-            sql += scm + ".t_cntrl_hdr e, " + scm + ".t_sord f, " + scm + ".t_sorddtl_app g ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and b.doccd=d.doccd and d.doctype = '" + doctype + "' and ";
-            sql += "a.ordautono=e.autono(+) and a.ordautono=f.autono(+) and a.ordautono=g.autono(+) and ";
-            if (doautono != "") sql += "a.autono in (" + doautono + ") and ";
-            if (ordautono != "") sql += "a.ordautono in (" + ordautono + ") and ";
-            if (doupto != "") sql += "b.docdt <= to_date('" + doupto + "','dd/mm/yyyy') and ";
-            sql += sqlc;
-            sql += "group by a.autono, a.ordautono, b.doccd, b.docno, b.docdt, e.docno, e.docdt, a.stktype, a.freestk, a.rate, f.prccd, f.prceffdt, ";
-            sql += "nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,''), ";
-            sql += "f.prccd||f.prceffdt||nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,''), ";
-            sql += "a.itcd, a.sizecd, a.colrcd, nvl(g.addper,0) ) a, ";
-
-            sql += "( select a.doautono, a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, ";
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
-            sql += "from " + scm + ".t_dodtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_do_canc c, " + scm + ".m_doctype d ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and b.doccd=d.doccd and d.doctype <> '" + doctype + "' and ";
-            if (OnlyBal == false) sql += "a.autono='xx' and ";
-            if (txnupto != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
-            sql += sqlc;
-            sql += "group by a.doautono, a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') ) b, ";
-
-            sql += "( select a.doautono, a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, ";
-            sql += "sum(case a.stkdrcr when 'C' then a.qnty when 'D' then a.qnty*-1 end) qnty ";
-            sql += "from " + scm + ".t_pslipdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_pslip c ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and ";
-            if (OnlyBal == false) sql += "a.autono='xx' and ";
-            if (txnupto != "") sql += "b.docdt <= to_date('" + txnupto + "','dd/mm/yyyy') and ";
-            sql += sqlc;
-            sql += "group by a.doautono, a.ordautono, nvl(a.stktype,'F')||nvl(a.freestk,'N')||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') ) c, ";
-
-            sql += "(select a.autono ordautono, nvl(a.stktype,'F')||'N'||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') itcolsize, a.rate ";
-            sql += "from " + scm + ".t_sorddtl_appdtl a, " + scm + ".t_cntrl_hdr b, " + scm + ".t_sord c, " + scm + ".t_sorddtl_app d ";
-            sql += "where a.autono=b.autono and a.autono=c.autono and a.autono=d.autono(+) and ";
-            sql += sqlc;
-            sql += " ) z, ";
-
-            sql += "(select a.prccd, a.effdt, a.itcd, a.sizecd, a.colrcd, a.rate, ";
-            sql += "a.prccd||a.effdt||'F'||'N'||a.itcd||nvl(a.colrcd,'')||nvl(a.sizecd,'') plistitcolsize ";
-            sql += "from " + scm + ".m_itemplistdtl a ) y, "; // where a.prccd = '" +prccd + " and a.effdt = to_date('" + effdt + "', 'dd/mm/yyyy') ) y, ";
-
-            sql += scm + ".m_sitem d, " + scm + ".m_size e, " + scm + ".m_color f, " + scmf + ".m_uom g, " + scm + ".m_group h, " + scm + ".m_brand i ";
-            sql += "where a.autono=b.doautono(+) and a.autono=c.doautono(+) and a.plistitcolsize=y.plistitcolsize(+) and ";
-            sql += "a.ordautono=b.ordautono(+) and a.ordautono=c.ordautono(+) and a.ordautono=z.ordautono(+) and ";
-            sql += "a.itcolsize=b.itcolsize(+) and a.itcolsize=c.itcolsize(+) and a.itcolsize=z.itcolsize(+) and ";
-            sql += "a.itcd=d.itcd(+) and a.sizecd=e.sizecd(+) and a.colrcd=f.colrcd(+) and d.uomcd=g.uomcd(+) and d.itgrpcd=h.itgrpcd(+) and h.brandcd=i.brandcd(+) and ";
-            if (brandcd != "") sql += "h.brandcd in (" + brandcd + ") and ";
-            sql += "nvl(a.doqnty,0) - nvl(b.qnty,0) -nvl(c.qnty,0) <> 0 ";
-            sql += "order by styleno, print_seq, sizenm";
-            tbl = SQLquery(sql);
-
-            return tbl;
-        }
         public List<DropDown_list_DelvType> GetforDelvTypeSelection(string delvtype = "")
         {
             List<DropDown_list_DelvType> DropDown_list_desType = new List<DropDown_list_DelvType>();
@@ -304,34 +221,6 @@ namespace Improvar
             else if (TYPE == "F") { DISC_AMT = RATE; }
             else { DISC_AMT = 0; }
             return DISC_AMT;
-        }
-        public DataTable getSizeData(string itcd, string prccd = "", string prceffdt = "")
-        {
-            string UNQSNO = CommVar.getQueryStringUNQSNO();
-            string scm1 = CommVar.CurSchema(UNQSNO);
-            string sql = "";
-            sql += "select a.itcd, a.styleno, a.pcsperbox, a.pcsperset, a.sizecd, a.sizenm, a.mixsize, a.print_seq, a.colrcd, a.colrnm, a.slno, ";
-            if (prccd.retStr() != "") sql += "nvl(b.rate,0) rate "; else sql += "0 rate ";
-            sql += "from ";
-            sql += "( select a.itcd, a.styleno, a.pcsperbox, a.pcsperset, b.sizecd, d.sizenm, a.mixsize, d.print_seq, c.colrcd, c.slno, e.colrnm ";
-            sql += "from " + scm1 + ".m_sitem a, " + scm1 + ".m_sitem_size b, " + scm1 + ".m_sitem_color c, ";
-            sql += scm1 + ".m_size d, " + scm1 + ".m_color e, " + scm1 + ".m_cntrl_hdr f ";
-            sql += "where a.itcd = '" + itcd + "' and a.itcd = b.itcd(+) and a.itcd = c.itcd(+) and a.m_autono=f.m_autono(+) and nvl(f.inactive_tag,'N')='N' and ";
-            sql += "b.sizecd = d.sizecd(+) and c.colrcd = e.colrcd(+) and ";
-            sql += "nvl(b.inactive_tag, 'N')= 'N' and nvl(c.inactive_tag, 'N')= 'N' ) a ";
-            sql += "where a.sizecd is not null ";
-            if (prccd.retStr() != "")
-            {
-                sql += ", ( select a.itcd, a.sizecd, a.rate ";
-                sql += "from " + scm1 + ".m_itemplistdtl a ";
-                sql += "where a.prccd='" + prccd + "' and ";
-                if (prceffdt.retStr() != "") sql += "a.effdt=to_date('" + prceffdt + "','dd/mm/yyyy') and ";
-                sql += "a.itcd='" + itcd + "' ) b ";
-                sql += "and a.itcd=b.itcd(+) and a.sizecd=b.sizecd(+) ";
-            }
-            sql += "order by print_seq, slno ";
-            DataTable tbl = SQLquery(sql);
-            return tbl;
         }
         public DataTable getPendProg(string tdt, string txnupto = "", string slcd = "", string itcd = "", string jobcd = "", string skipautono = "", string progfromdt = "", string linecd = "", string curschema = "")
         {
@@ -945,17 +834,9 @@ namespace Improvar
             sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
             sql += "(select a.barno, a.prccd, a.effdt, ";
             sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-            sql += "from " + scm + ".m_itemplistdtl a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-            sql += ") a, " + scm + ".m_itemplistdtl b, " + scm + ".m_sitem_barcode c ";
-            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 ";
-            sql += "union all ";
-            sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
-            sql += "(select a.barno, a.prccd, a.effdt, ";
-            sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
             sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) ";
-            sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".m_sitem_barcode d ";
-            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and ";
-            sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
+            sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c ";
+            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) ";
             sql += ") a where prccd='" + prccd + "') b, ";
 
             sql += "(select a.barno, count(*) barimagecount,";
@@ -1145,8 +1026,17 @@ namespace Improvar
                 sql += "c.docdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
                 sql += "union ";
             }
+            //sql += "select '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, '' partcd, a.colrcd, a.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
+            //sql += "from " + scm + ".T_BATCHmst a, " + scm + ".m_sitem b, " + scm + ".m_cntrl_hdr c, " + scm + ".m_cntrl_loca d ";
+            //sql += "where a.itcd=b.itcd(+) and b.m_autono=c.m_autono(+) and b.m_autono=d.m_autono(+) and ";
+            //sql += "nvl(a.inactive_tag,'N')='N' and nvl(c.inactive_tag,'N')='N' and ";
+            //if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
+            //if (itcd.retStr() != "") sql += "a.itcd in (" + itcd + ") and ";
+            //sql += "(d.compcd = '" + COM + "' or d.compcd is null) and (d.loccd='" + LOC + "' or d.loccd is null) ";
+            //sql += ") a, ";
+
             sql += "select '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, '' partcd, a.colrcd, a.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
-            sql += "from " + scm + ".m_sitem_barcode a, " + scm + ".m_sitem b, " + scm + ".m_cntrl_hdr c, " + scm + ".m_cntrl_loca d ";
+            sql += "from " + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".m_cntrl_hdr c, " + scm + ".m_cntrl_loca d ";
             sql += "where a.itcd=b.itcd(+) and b.m_autono=c.m_autono(+) and b.m_autono=d.m_autono(+) and ";
             sql += "nvl(a.inactive_tag,'N')='N' and nvl(c.inactive_tag,'N')='N' and ";
             if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
@@ -1154,22 +1044,16 @@ namespace Improvar
             sql += "(d.compcd = '" + COM + "' or d.compcd is null) and (d.loccd='" + LOC + "' or d.loccd is null) ";
             sql += ") a, ";
 
+
             sql += "(select a.barno, a.itcd, a.colrcd, a.sizecd, a.prccd, a.effdt, a.rate from ";
             sql += "(select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
             sql += "(select a.barno, a.prccd, a.effdt, ";
             sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
-            sql += "from " + scm + ".m_itemplistdtl a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ";
-            sql += ") a, " + scm + ".m_itemplistdtl b, " + scm + ".m_sitem_barcode c ";
-            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.barno=c.barno(+) and a.rn=1 ";
-            sql += "union all ";
-            sql += "select a.barno, c.itcd, c.colrcd, c.sizecd, a.prccd, a.effdt, b.rate from ";
-            sql += "(select a.barno, a.prccd, a.effdt, ";
-            sql += "row_number() over (partition by a.barno, a.prccd order by a.effdt desc) as rn ";
             sql += "from " + scm + ".t_batchmst_price a where nvl(a.rate,0) <> 0 and a.effdt <= to_date('" + tdt + "','dd/mm/yyyy') ) ";
-            sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c,  " + scm + ".m_sitem_barcode d ";
-            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and ";
-            sql += "a.barno=c.barno(+) and a.barno=d.barno(+) and d.barno is null ";
+            sql += "a, " + scm + ".t_batchmst_price b, " + scm + ".t_batchmst c ";
+            sql += "where a.barno=b.barno(+) and a.prccd=b.prccd(+) and a.effdt=b.effdt(+) and a.rn=1 and a.barno=c.barno(+) ";
             sql += ") a where prccd='" + prccd + "') b, ";
+
 
             sql += "(select a.barno, count(*) barimagecount, ";
             sql += "listagg(a.doc_flname||'~'||a.doc_desc,chr(179)) ";
@@ -2196,7 +2080,7 @@ namespace Improvar
         {
             try
             {
-                M_ITEMPLISTDTL MIP = new M_ITEMPLISTDTL();
+                T_BATCHMST_PRICE MIP = new T_BATCHMST_PRICE();
                 MIP.EMD_NO = 0;
                 MIP.CLCD = CommVar.ClientCode(UNQSNO);
                 MIP.EFFDT = Convert.ToDateTime(EFFDT);
