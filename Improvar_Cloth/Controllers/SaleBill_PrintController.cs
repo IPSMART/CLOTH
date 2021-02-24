@@ -2895,7 +2895,7 @@ namespace Improvar.Controllers
                 string str1 = "";
                 DataTable rsTmp;
                 string doctype = "";
-                string docnos = VE.TEXTBOX8.retStr() == "" ? "" : VE.TEXTBOX8.retStr().Split(',').retSqlfromStrarray();
+                string docnos = VE.TEXTBOX8.retStr();
 
 
                 str1 = "select doctype from " + Scm1 + ".m_doctype where doccd='" + VE.DOCCD + "'";

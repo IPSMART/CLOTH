@@ -684,8 +684,11 @@ namespace Improvar.Controllers
                 //calculation
                 double opqty = 0, opval = 0, netpur = 0, purval = 0, karqty = 0, karval = 0, netsale = 0, salevalue = 0, approval = 0, netstktrans = 0, netadj = 0, balqty = 0, balval = 0;
 
-                opqty = tbl1.Rows[i]["doctag"].retStr() == "OP" ? tbl1.Rows[i]["qnty"].retDbl() : 0;
-                opval = (opqty.retDbl() * (tbl1.Rows[i]["oprate"].retDbl() + tbl1.Rows[i]["othrate"].retDbl())).toRound(2);
+                if (tbl1.Rows[i]["doctag"].retStr() == "OP")
+                {
+                    opqty = tbl1.Rows[i]["doctag"].retStr() == "OP" ? tbl1.Rows[i]["qnty"].retDbl() : 0;
+                    opval = (tbl1.Rows[i]["txblval"].retDbl() == 0 ? (opqty.retDbl() * (tbl1.Rows[i]["oprate"].retDbl() + tbl1.Rows[i]["othrate"].retDbl())).toRound(2) : (tbl1.Rows[i]["txblval"].retDbl()));
+                }
 
                 netpur = (tbl1.Rows[i]["doctag"].retStr() == "PR") || (tbl1.Rows[i]["doctag"].retStr() == "PB") ? tbl1.Rows[i]["qnty"].retDbl() : 0;
                 purval = (tbl1.Rows[i]["doctag"].retStr() == "PR") || (tbl1.Rows[i]["doctag"].retStr() == "PB") ? tbl1.Rows[i]["txblval"].retDbl() + tbl1.Rows[i]["othramt"].retDbl() : 0;
@@ -710,7 +713,6 @@ namespace Improvar.Controllers
                 if (summarybarcode != null && summarybarcode.Rows.Count > 0)
                 {
                     existdr = summarybarcode.Select("key ='" + keyval + "'").FirstOrDefault();
-
                 }
                 if (existdr != null)//if exist then update
                 {
@@ -848,23 +850,10 @@ namespace Improvar.Controllers
                 }
                 IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
                 IR.Rows[rNo]["itnm"] = "Total of " + summarybarcode.Rows[i - 1]["itgrpnm"].ToString();
-                IR.Rows[rNo]["flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;;border-top: 3px solid;";
-                int start = 6;
-                if (VE.Checkbox4 == true) start++;
-                if (VE.Checkbox3 == true) start++;
-                for (int j = start; j < IR.Columns.Count - 1; j++)
-                {
-                    IR.Rows[rNo][IR.Columns[j].ColumnName] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == strbrgrpcd).Sum(b => b.Field<double>(IR.Columns[j].ColumnName));
-                }
+                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
 
-                if (i > maxR) break;
-            }
-
-            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
-            IR.Rows[rNo]["itnm"] = "Grand Total";
-            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
-
-            var grptbl = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "")
+                string itgrpcd = summarybarcode.Rows[i - 1]["itgrpcd"].ToString();
+                var unitwisegrptotal = IR.AsEnumerable().Where(g => g.Field<string>("uomnm").retStr() != "" && g.Field<string>("itgrpcd").retStr() == itgrpcd)
                             .GroupBy(g => g.Field<string>("uomnm"))
                             .Select(g =>
                             {
@@ -885,13 +874,93 @@ namespace Improvar.Controllers
                                 row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
                                 return row;
                             }).CopyToDataTable();
+                int cnt = 0;
+                for (int k = 0; k <= unitwisegrptotal.Rows.Count - 1; k++)
+                {
+                    if (unitwisegrptotal.Rows[k]["opqty"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netpur"].retDbl() != 0 || unitwisegrptotal.Rows[k]["karqty"].retDbl() != 0 || unitwisegrptotal.Rows[k]["approval"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netstktrans"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netadj"].retDbl() != 0 || unitwisegrptotal.Rows[k]["netsale"].retDbl() != 0 || unitwisegrptotal.Rows[k]["balqty"].retDbl() != 0)
+                    {
+                        cnt++;
+                        if (k == 0) { }
+                        else { IR.Rows.Add(""); rNo = IR.Rows.Count - 1; }
+                        IR.Rows[rNo]["uomnm"] = unitwisegrptotal.Rows[k]["uomnm"];
+                        IR.Rows[rNo]["opqty"] = unitwisegrptotal.Rows[k]["opqty"];
+                        IR.Rows[rNo]["opval"] = unitwisegrptotal.Rows[k]["opval"];
+                        IR.Rows[rNo]["netpur"] = unitwisegrptotal.Rows[k]["netpur"];
+                        IR.Rows[rNo]["purval"] = unitwisegrptotal.Rows[k]["purval"];
+                        IR.Rows[rNo]["karqty"] = unitwisegrptotal.Rows[k]["karqty"];
+                        IR.Rows[rNo]["karval"] = unitwisegrptotal.Rows[k]["karval"];
+                        IR.Rows[rNo]["approval"] = unitwisegrptotal.Rows[k]["approval"];
+                        IR.Rows[rNo]["netstktrans"] = unitwisegrptotal.Rows[k]["netstktrans"];
+                        IR.Rows[rNo]["netadj"] = unitwisegrptotal.Rows[k]["netadj"];
+                        IR.Rows[rNo]["netsale"] = unitwisegrptotal.Rows[k]["netsale"];
+                        IR.Rows[rNo]["salevalue"] = unitwisegrptotal.Rows[k]["salevalue"];
+                        IR.Rows[rNo]["balqty"] = unitwisegrptotal.Rows[k]["balqty"];
+                        IR.Rows[rNo]["balval"] = unitwisegrptotal.Rows[k]["balval"];
 
+                    }
+                }
+                if (cnt > 1)
+                {
+                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
+                }
+                else
+                {
+                    IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;border-top: 3px solid;";
+                }
+                //int start = 6;
+                //if (VE.Checkbox4 == true) start++;
+                //if (VE.Checkbox3 == true) start++;
+                //for (int j = start; j < IR.Columns.Count - 1; j++)
+                //{
+                //    IR.Rows[rNo][IR.Columns[j].ColumnName] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == strbrgrpcd).Sum(b => b.Field<double>(IR.Columns[j].ColumnName));
+                //}
+
+                if (i > maxR) break;
+            }
+            // Create Blank line
+            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+            IR.Rows[rNo]["dammy"] = " ";
+            IR.Rows[rNo]["flag"] = " height:8px; ";
+
+            IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+            IR.Rows[rNo]["itnm"] = "Grand Total";
+            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;";
+
+            var grptbl = IR.AsEnumerable().Where(g => g.Field<string>("itgrpcd").retStr() != "")
+                            .GroupBy(g => g.Field<string>("uomnm"))
+                            .Select(g =>
+                            {
+                                var row = IR.NewRow();
+                                row["uomnm"] = g.Key;
+                                row["opqty"] = g.Sum(r => r.Field<double?>("opqty") == null ? 0 : r.Field<double>("opqty"));
+                                row["opval"] = g.Sum(r => r.Field<double?>("opval") == null ? 0 : r.Field<double>("opval"));
+                                row["netpur"] = g.Sum(r => r.Field<double?>("netpur").retDbl());
+                                row["purval"] = g.Sum(r => r.Field<double?>("purval").retDbl());
+                                row["karqty"] = g.Sum(r => r.Field<double?>("karqty").retDbl());
+                                row["karval"] = g.Sum(r => r.Field<double?>("karval").retDbl());
+                                row["approval"] = g.Sum(r => r.Field<double?>("approval").retDbl());
+                                row["netstktrans"] = g.Sum(r => r.Field<double?>("netstktrans").retDbl());
+                                row["netadj"] = g.Sum(r => r.Field<double?>("netadj").retDbl());
+                                row["netsale"] = g.Sum(r => r.Field<double?>("netsale").retDbl());
+                                row["salevalue"] = g.Sum(r => r.Field<double?>("salevalue").retDbl());
+                                row["balqty"] = g.Sum(r => r.Field<double?>("balqty").retDbl());
+                                row["balval"] = g.Sum(r => r.Field<double?>("balval").retDbl());
+                                return row;
+                            }).CopyToDataTable();
+            int cnt1 = 0;
             for (int k = 0; k <= grptbl.Rows.Count - 1; k++)
             {
                 if (grptbl.Rows[k]["opqty"].retDbl() != 0 || grptbl.Rows[k]["netpur"].retDbl() != 0 || grptbl.Rows[k]["karqty"].retDbl() != 0 || grptbl.Rows[k]["approval"].retDbl() != 0 || grptbl.Rows[k]["netstktrans"].retDbl() != 0 || grptbl.Rows[k]["netadj"].retDbl() != 0 || grptbl.Rows[k]["netsale"].retDbl() != 0 || grptbl.Rows[k]["balqty"].retDbl() != 0)
                 {
-                    if (k == 0) { }
-                    else { IR.Rows.Add(""); rNo = IR.Rows.Count - 1; }
+                    cnt1++;
+                    if (k != 0)
+                    {
+                        IR.Rows.Add("");
+                        rNo = IR.Rows.Count - 1;
+                        IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;";
+                    }
+
+                    IR.Rows[rNo]["itgrpcd"] = "grandtotal";
                     IR.Rows[rNo]["uomnm"] = grptbl.Rows[k]["uomnm"];
                     IR.Rows[rNo]["opqty"] = grptbl.Rows[k]["opqty"];
                     IR.Rows[rNo]["opval"] = grptbl.Rows[k]["opval"];
@@ -910,8 +979,18 @@ namespace Improvar.Controllers
                 }
             }
 
-            IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-bottom: 3px solid;";
 
+            if (cnt1 > 1)
+            {
+                IR.Rows.Add(""); rNo = IR.Rows.Count - 1;
+                IR.Rows[rNo]["itnm"] = "Total Value";
+                IR.Rows[rNo]["Flag"] = "font-weight:bold;font-size:13px;border-top: 2px solid;";
+                IR.Rows[rNo]["opval"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("opval"));
+                IR.Rows[rNo]["purval"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("purval"));
+                IR.Rows[rNo]["karval"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("karval"));
+                IR.Rows[rNo]["salevalue"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("salevalue"));
+                IR.Rows[rNo]["balval"] = IR.AsEnumerable().Where(a => a.Field<string>("itgrpcd") == "grandtotal").Sum(b => b.Field<double>("balval"));
+            }
             IR.Columns.Remove("itgrpcd");
             string pghdr1 = "";
             string repname = "Stock_Val" + System.DateTime.Now;
