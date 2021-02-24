@@ -29,7 +29,7 @@ namespace Improvar.Models
         [StringLength(60)]
         public string ITNM { get; set; }
 
-        [StringLength(8)]
+        [StringLength(10)]
         public string FABITCD { get; set; }
 
         [StringLength(40)]
