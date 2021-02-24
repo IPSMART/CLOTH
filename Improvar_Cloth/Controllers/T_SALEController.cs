@@ -2930,7 +2930,6 @@ namespace Improvar.Controllers
                         TTXN.EMD_NO = 0;
                         TTXN.DOCCD = VE.T_TXN.DOCCD;
                         TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
-                        //TTXN.DOCNO = Cn.MaxDocNumber(TTXN.DOCCD, Ddate);
                         DOCPATTERN = Cn.DocPattern(Convert.ToInt32(TTXN.DOCNO), TTXN.DOCCD, CommVar.CurSchema(UNQSNO).ToString(), CommVar.FinSchema(UNQSNO), Ddate);
                         if (DOCPATTERN.retStr().Length > 16 && (VE.MENU_PARA == "SB" || VE.MENU_PARA == "SBDIR"))
                         {
@@ -3683,7 +3682,7 @@ namespace Improvar.Controllers
                     }
                     if (flagbatch == true && docbarcode.retStr() == "")
                     {
-                        ContentFlg = "Please add doccd[" + TTXN.DOCCD + "]  in M_DOCTYPE_BAR table"; goto dbnotsave;
+                        //ContentFlg = "Please add doccd[" + TTXN.DOCCD + "]  in M_DOCTYPE_BAR table"; goto dbnotsave;
                     }
                     if (dbqty == 0 && (VE.MENU_PARA != "SCN" && VE.MENU_PARA != "SDN" && VE.MENU_PARA != "PCN" && VE.MENU_PARA != "PDN"))
                     {

@@ -156,6 +156,7 @@ namespace Improvar.Controllers
 
                 TTXN.EMD_NO = 0;
                 TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "FOSTK").FirstOrDefault()?.DOCCD;
+                if(string.IsNullOrEmpty(TTXN.DOCCD)) return "Please add Document code. ";
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
                 string FABgrpnm = "";
                 sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".m_group where itgrptype='C' ";

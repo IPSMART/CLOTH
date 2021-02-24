@@ -1932,17 +1932,17 @@ namespace Improvar.Controllers
                                 DB.T_BATCHMST_PRICE.Add(MIP);
 
                                 //RATE
-                                T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
-                                TBATCHMSTPRICE.EMD_NO = MSITEM.EMD_NO;
-                                TBATCHMSTPRICE.CLCD = MSITEM.CLCD;
-                                TBATCHMSTPRICE.DTAG = MSITEM.DTAG;
-                                TBATCHMSTPRICE.TTAG = MSITEM.TTAG;
-                                TBATCHMSTPRICE.BARNO = MIP.BARNO;
-                                TBATCHMSTPRICE.PRCCD = MIP.PRCCD;
-                                TBATCHMSTPRICE.EFFDT = MIP.EFFDT;
-                                TBATCHMSTPRICE.RATE = MIP.RATE;
+                                //T_BATCHMST_PRICE TBATCHMSTPRICE = new T_BATCHMST_PRICE();
+                                //TBATCHMSTPRICE.EMD_NO = MSITEM.EMD_NO;
+                                //TBATCHMSTPRICE.CLCD = MSITEM.CLCD;
+                                //TBATCHMSTPRICE.DTAG = MSITEM.DTAG;
+                                //TBATCHMSTPRICE.TTAG = MSITEM.TTAG;
+                                //TBATCHMSTPRICE.BARNO = MIP.BARNO;
+                                //TBATCHMSTPRICE.PRCCD = MIP.PRCCD;
+                                //TBATCHMSTPRICE.EFFDT = MIP.EFFDT;
+                                //TBATCHMSTPRICE.RATE = MIP.RATE;
 
-                                DB.T_BATCHMST_PRICE.Add(TBATCHMSTPRICE);
+                                //DB.T_BATCHMST_PRICE.Add(TBATCHMSTPRICE);
                             }
                         }
                         #endregion
