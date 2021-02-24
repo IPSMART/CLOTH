@@ -3433,7 +3433,7 @@ namespace Improvar.Controllers
                                     else
                                     {
                                         barno = VE.TBATCHDTL[i].BARNO;
-                                    }                        
+                                    }                       
                                 }
                                 else
                                 {
