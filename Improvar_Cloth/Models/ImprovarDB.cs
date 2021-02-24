@@ -45,7 +45,6 @@ namespace Improvar.Models
         public virtual DbSet<M_MTRLJOBMST> M_MTRLJOBMST { get; set; }
         public virtual DbSet<M_RETDEB> M_RETDEB { get; set; }
         public virtual DbSet<M_ITEMPLIST_ADD> M_ITEMPLIST_ADD { get; set; }
-        public virtual DbSet<M_ITEMPLISTDTL> M_ITEMPLISTDTL { get; set; }
         public virtual DbSet<M_SITEMBOM> M_SITEMBOM { get; set; }
         public virtual DbSet<M_SITEMBOMAPPRVL> M_SITEMBOMAPPRVL { get; set; }
         public virtual DbSet<M_SITEMBOMMTRL> M_SITEMBOMMTRL { get; set; }

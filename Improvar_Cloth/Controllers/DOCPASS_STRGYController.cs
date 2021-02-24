@@ -16,7 +16,6 @@ namespace Improvar.Controllers
         ImprovarDB DB, DBI, DBINV, DBFIN;
         M_DOC_AUTH sl;
         M_CNTRL_HDR sll;
-
         // GET: DOCPASS_STRGY
 
         public ActionResult DOCPASS_STRGY(string op = "", string key = "", int Nindex = 0, string searchValue = "")

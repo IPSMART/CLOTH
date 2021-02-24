@@ -460,7 +460,6 @@
     <Compile Include="Models\M_GROUP.cs" />
     <Compile Include="Models\M_HSNCODE.cs" />
     <Compile Include="Models\M_ITEMPLIST.cs" />
-    <Compile Include="Models\M_ITEMPLISTDTL.cs" />
     <Compile Include="Models\M_ITEMPLIST_ADD.cs" />
     <Compile Include="Models\M_ITEM_UN_CNV.cs" />
     <Compile Include="Models\M_JOBMST.cs" />
