@@ -1665,9 +1665,9 @@ namespace Improvar.Controllers
                                     DB.T_BATCHMST.RemoveRange(DB.T_BATCHMST.Where(x => x.BARNO == v.BARNO));
                                     DB.SaveChanges();
 
-                                    DB.M_SITEM_BARCODE.Where(x => x.BARNO == v.BARNO).ToList().ForEach(x => { x.DTAG = "E"; });
-                                    DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.BARNO == v.BARNO));
-                                    DB.SaveChanges();
+                                    //DB.M_SITEM_BARCODE.Where(x => x.BARNO == v.BARNO).ToList().ForEach(x => { x.DTAG = "E"; });
+                                    //DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.BARNO == v.BARNO));
+                                    //DB.SaveChanges();
                                 }
                             }
 
@@ -1798,23 +1798,15 @@ namespace Improvar.Controllers
                                 recoexist = masterHelp.SQLquery(sql1);
                                 if (recoexist.Rows.Count == 0)
                                 {
-                                    M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
-                                    MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
-                                    MSITEMBARCODE1.CLCD = MSITEM.CLCD;
-                                    MSITEMBARCODE1.ITCD = MSITEM.ITCD;
-                                    MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
-                                    MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
-                                    MSITEMBARCODE1.BARNO = barno.retStr();
-                                    //if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
-                                    //{
-                                    //    MSITEMBARCODE1.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
-                                    //}
-                                    //else
-                                    //{
-                                    //    MSITEMBARCODE1.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
-                                    //}
-                                    DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
-                                    barnos.Add(MSITEMBARCODE1.BARNO);
+                                    //M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
+                                    //MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
+                                    //MSITEMBARCODE1.CLCD = MSITEM.CLCD;
+                                    //MSITEMBARCODE1.ITCD = MSITEM.ITCD;
+                                    //MSITEMBARCODE1.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
+                                    //MSITEMBARCODE1.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
+                                    //MSITEMBARCODE1.BARNO = barno.retStr();
+                               
+                                    //DB.M_SITEM_BARCODE.Add(MSITEMBARCODE1);
                                     //if (i == 0) BARNO = MSITEMBARCODE1.BARNO;
 
                                     T_BATCHMST TBATCHMST = new T_BATCHMST();
@@ -1822,11 +1814,19 @@ namespace Improvar.Controllers
                                     TBATCHMST.CLCD = MSITEM.CLCD;
                                     TBATCHMST.DTAG = MSITEM.DTAG;
                                     TBATCHMST.TTAG = MSITEM.TTAG;
-                                    TBATCHMST.BARNO = MSITEMBARCODE1.BARNO;
+                                    if (VE.MSITEMBARCODE[i].BARNO.retStr() != "")
+                                    {
+                                        TBATCHMST.BARNO = VE.MSITEMBARCODE[i].BARNO.retStr();
+                                    }
+                                    else
+                                    {
+                                        TBATCHMST.BARNO = salesfunc.GenerateBARNO(MSITEM.ITCD, VE.MSITEMBARCODE[i].CLRBARCODE.retStr(), VE.MSITEMBARCODE[i].SZBARCODE);
+                                    }
                                     TBATCHMST.ITCD = MSITEM.ITCD;
                                     TBATCHMST.SIZECD = VE.MSITEMBARCODE[i].SIZECD;
                                     TBATCHMST.COLRCD = VE.MSITEMBARCODE[i].COLRCD;
                                     TBATCHMST.COMMONUIQBAR = "C";
+                                    barnos.Add(TBATCHMST.BARNO);
                                     DB.T_BATCHMST.Add(TBATCHMST);
                                 }
                             }
@@ -1970,7 +1970,7 @@ namespace Improvar.Controllers
                         DB.M_CNTRL_HDR.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM_SLCD.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM_PARTS.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
-                        DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
+                        //DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_ITEMPLISTDTL.Where(x => arrbarno.Contains(x.BARNO)).ToList().ForEach(x => { x.DTAG = "D"; });
                         DB.M_CNTRL_HDR_DOC.Where(x => x.M_AUTONO == VE.M_SITEM.M_AUTONO).ToList().ForEach(x => { x.DTAG = "D"; });
@@ -2005,7 +2005,7 @@ namespace Improvar.Controllers
                         DB.SaveChanges();
                         DB.M_ITEMPLISTDTL.RemoveRange(DB.M_ITEMPLISTDTL.Where(x => arrbarno.Contains(x.BARNO)));
                         DB.SaveChanges();
-                        DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
+                        //DB.M_SITEM_BARCODE.RemoveRange(DB.M_SITEM_BARCODE.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.M_SITEM_PARTS.RemoveRange(DB.M_SITEM_PARTS.Where(x => x.ITCD == VE.M_SITEM.ITCD));
                         DB.SaveChanges();
                         DB.M_SITEM_MEASURE.RemoveRange(DB.M_SITEM_MEASURE.Where(x => x.ITCD == VE.M_SITEM.ITCD));

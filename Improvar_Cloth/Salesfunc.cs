@@ -1765,7 +1765,7 @@ namespace Improvar
                 string szbarcode = SZBARCODE.retStr();
                 SIZECD = DB.M_SIZE.Where(a => a.SZBARCODE == szbarcode).Select(b => b.SIZECD).SingleOrDefault();
             }
-            string barno = DB.M_SITEM_BARCODE.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD).Select(b => b.BARNO).SingleOrDefault();
+            string barno = DB.T_BATCHMST.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD).Select(b => b.BARNO).SingleOrDefault();
             if (barno == null)
             {
                 //barno = ITCD.retStr().Substring(1, 8) + CLRBARCODE.retStr() + SZBARCODE.retStr();
@@ -2407,7 +2407,7 @@ namespace Improvar
             OraCon.Dispose();
             return MGROUP;
         }
-        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string ITGRPTYPE, string BARGENTYPE)
+        public ItemDet CreateItem(string style, string UOM, string grpnm, string HSNCODE, string FABITCD, string BARNO, string ITGRPTYPE, string BARGENTYPE)
         {
             ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
             string DefaultAction = "A";
@@ -2420,8 +2420,8 @@ namespace Improvar
                 MSITEM.CLCD = CommVar.ClientCode(UNQSNO);
                 var STYLEdt = (from g in DB.M_SITEM
                                join h in DB.M_GROUP on g.ITGRPCD equals h.ITGRPCD
-                               join i in DB.M_SITEM_BARCODE on g.ITCD equals i.ITCD
-                               where g.STYLENO == style
+                               join i in DB.T_BATCHMST on g.ITCD equals i.ITCD
+                               where g.STYLENO == style || i.BARNO == BARNO
                                select new
                                {
                                    ITCD = g.ITCD,
@@ -2466,18 +2466,25 @@ namespace Improvar
                 var MPRODGRP = DB.M_PRODGRP.FirstOrDefault();
                 MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;
 
-                M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
-                MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
-                MSITEMBARCODE1.CLCD = MSITEM.CLCD;
-                MSITEMBARCODE1.ITCD = MSITEM.ITCD;
-                MSITEMBARCODE1.BARNO = GenerateBARNO(MSITEM.ITCD, "", "");
+                //M_SITEM_BARCODE MSITEMBARCODE1 = new M_SITEM_BARCODE();
+                //MSITEMBARCODE1.EMD_NO = MSITEM.EMD_NO;
+                //MSITEMBARCODE1.CLCD = MSITEM.CLCD;
+                //MSITEMBARCODE1.ITCD = MSITEM.ITCD;
+             
 
                 T_BATCHMST TBATCHMST = new T_BATCHMST();
                 TBATCHMST.EMD_NO = MSITEM.EMD_NO;
                 TBATCHMST.CLCD = MSITEM.CLCD;
                 TBATCHMST.DTAG = MSITEM.DTAG;
                 TBATCHMST.TTAG = MSITEM.TTAG;
-                TBATCHMST.BARNO = MSITEMBARCODE1.BARNO;
+                if (string.IsNullOrEmpty(BARNO))
+                {
+                    TBATCHMST.BARNO = GenerateBARNO(MSITEM.ITCD, "", "");
+                }
+                else
+                {
+                    TBATCHMST.BARNO = BARNO;
+                }
                 TBATCHMST.ITCD = MSITEM.ITCD;
 
                 OracleCommand OraCmd = OraCon.CreateCommand();
@@ -2490,8 +2497,8 @@ namespace Improvar
                     dbsql = masterHelpFa.RetModeltoSql(MSITEM, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
-                    dbsql = masterHelpFa.RetModeltoSql(MSITEMBARCODE1, "A", CommVar.CurSchema(UNQSNO));
-                    dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                    //dbsql = masterHelpFa.RetModeltoSql(TBATCHMST, "A", CommVar.CurSchema(UNQSNO));
+                    //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
 
                     dbsql = masterHelpFa.RetModeltoSql(TBATCHMST, "A", CommVar.CurSchema(UNQSNO));
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
@@ -2499,7 +2506,7 @@ namespace Improvar
                     OraTrans.Commit();
                 }
                 ItemDet.ITCD = MSITEM.ITCD;
-                ItemDet.BARNO = MSITEMBARCODE1.BARNO;
+                ItemDet.BARNO = TBATCHMST.BARNO;
                 ItemDet.PURGLCD = MGROUP.PURGLCD;
                 OraCon.Dispose();
                 return ItemDet;

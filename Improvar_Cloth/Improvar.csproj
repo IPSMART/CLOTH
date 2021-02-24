@@ -494,7 +494,6 @@
     <Compile Include="Models\M_SITEMBOMPART.cs" />
     <Compile Include="Models\M_SITEMBOMSJOB.cs" />
     <Compile Include="Models\M_SITEMBOMSUPLR.cs" />
-    <Compile Include="Models\M_SITEM_BARCODE.cs" />
     <Compile Include="Models\M_SITEM_MEASURE.cs" />
     <Compile Include="Models\M_SITEM_PARTS.cs" />
     <Compile Include="Models\M_SITEM_SLCD.cs" />
