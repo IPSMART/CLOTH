@@ -681,10 +681,10 @@
       <DependentUpon>SaleBill_Cloth.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Report\SaleBill_Cloth_Snc.cs">
+    <Compile Include="Report\SaleBill_SNFP.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>SaleBill_Cloth_Snc.rpt</DependentUpon>
+      <DependentUpon>SaleBill_SNFP.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Salesfunc.cs" />
@@ -1359,10 +1359,10 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Khasra_BaleTrnf.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Report\SaleBill_Cloth_Snc.rpt">
+    <Content Include="Report\SaleBill_SNFP.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
-      <LastGenOutput>SaleBill_Cloth_Snc.cs</LastGenOutput>
-    </EmbeddedResource>
+      <LastGenOutput>SaleBill_SNFP.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

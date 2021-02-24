@@ -16,14 +16,14 @@ namespace Improvar.Report {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class SaleBill_Cloth_Snc : ReportClass {
+    public class SaleBill_SNFP : ReportClass {
         
-        public SaleBill_Cloth_Snc() {
+        public SaleBill_SNFP() {
         }
         
         public override string ResourceName {
             get {
-                return "SaleBill_Cloth_Snc.rpt";
+                return "SaleBill_SNFP.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace Improvar.Report {
         
         public override string FullResourceName {
             get {
-                return "Improvar.Report.SaleBill_Cloth_Snc.rpt";
+                return "Improvar.Report.SaleBill_SNFP.rpt";
             }
             set {
                 // Do nothing
@@ -426,9 +426,9 @@ namespace Improvar.Report {
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedSaleBill_Cloth_Snc : Component, ICachedReport {
+    public class CachedSaleBill_SNFP : Component, ICachedReport {
         
-        public CachedSaleBill_Cloth_Snc() {
+        public CachedSaleBill_SNFP() {
         }
         
         [Browsable(false)]
@@ -465,7 +465,7 @@ namespace Improvar.Report {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            SaleBill_Cloth_Snc rpt = new SaleBill_Cloth_Snc();
+            SaleBill_SNFP rpt = new SaleBill_SNFP();
             rpt.Site = this.Site;
             return rpt;
         }
