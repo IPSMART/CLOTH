@@ -136,7 +136,9 @@ namespace Improvar.Controllers
         {
             try
             {
+                Trans_document_Attach VE = new Trans_document_Attach();
                 ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO));
+                Cn.getQueryString(VE); Cn.ValidateMenuPermission(VE);
                 var DOCD = DB.T_CNTRL_HDR.Find(autono);
                 var Doctp = DB.M_DOCTYPE.Find(DOCD.DOCCD);
                 var DCD = DB.M_DTYPE.Find(Doctp.DOCTYPE);
@@ -149,9 +151,46 @@ namespace Improvar.Controllers
                 //    DCD.MENU_PARA = "MAIN";
                 //    DCD.DCD = "JOURNAL";
                 //}
+
+
+                //
+                //string sql = "select * from appl_menu where MENU_PROGCALL='" + DCD.MENU_PROGCALL + "' and MENU_PARA='" + DCD.MENU_PARA + "' and MENU_DOCCD='" + Doctp.DOCTYPE + "'";
+                //DataTable tbl = masterHelp.SQLquery(sql);
+                //string MNUDET = tbl.Rows[0]["MENU_ID"].ToString() + "~"
+                //                 + tbl.Rows[0]["MENU_INDEX"].ToString() + "~"
+                //                 + tbl.Rows[0]["MENU_PROGCALL"].ToString() + "~"
+                //                 + tbl.Rows[0]["menu_date_option"].ToString() + "~"
+                //                 + tbl.Rows[0]["menu_type"].ToString() + "~"
+                //                 + "0" + "~"
+                //                 + "0" + "~"
+                //                 + "AEV";
+                //string US = VE.UNQSNO_ENCRYPTED;
+                //string DC = tbl.Rows[0]["MENU_DOCCD"].ToString();
+                //string MP = tbl.Rows[0]["MENU_PARA"].ToString();
+
+                //string MyURL = tbl.Rows[0]["MENU_PROGCALL"].ToString() + "/" + tbl.Rows[0]["MENU_PROGCALL"].ToString() + "?op=V" + "&MNUDET="
+                //    + Cn.Encrypt_URL(MNUDET) + "&US=" + US
+                //    + "&DC=" + Cn.Encrypt_URL(DC)
+                //    + "&MP=" + Cn.Encrypt_URL(MP) + "&searchValue=" + AUTONO
+                //    + "&ThirdParty=yes~" + Doctp.DOCCD + "~" + Doctp.DOCNM.Replace("&", "$$$$$$$$") + "~" + Doctp.PRO + "~" + autoEntryWork;
+                //
+
                 string sql = "select * from appl_menu where MENU_PROGCALL='" + DCD.MENU_PROGCALL + "' and MENU_PARA='" + DCD.MENU_PARA + "' and MENU_DOCCD='" + DCD.DCD + "'";
                 DataTable tbl = masterHelp.SQLquery(sql);
-                string MyURL = tbl.Rows[0]["MENU_PROGCALL"].ToString() + "/" + tbl.Rows[0]["MENU_PROGCALL"].ToString() + "?op=V" + "&Id=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_ID"].ToString()) + "&Index=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_INDEX"].ToString()) + "&PId=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_ID"].ToString() + "~" + tbl.Rows[0]["MENU_INDEX"].ToString() + "~" + tbl.Rows[0]["MENU_PROGCALL"].ToString()) + "&DC=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_DOCCD"].ToString()) + "&MP=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_PARA"].ToString() + "~" + tbl.Rows[0]["MENU_DATE_OPTION"].ToString() + "~" + tbl.Rows[0]["MENU_TYPE"].ToString()) + "&searchValue=" + autono + "&ThirdParty=yes~" + Doctp.DOCCD + "~" + Doctp.DOCNM.Replace("&", "$$$$$$$$") + "~" + Doctp.PRO + "~" + autoEntryWork;
+                string MNUDET = tbl.Rows[0]["MENU_ID"].ToString() + "~"
+                                 + tbl.Rows[0]["MENU_INDEX"].ToString() + "~"
+                                 + tbl.Rows[0]["MENU_PROGCALL"].ToString() + "~"
+                                 + tbl.Rows[0]["menu_date_option"].ToString() + "~"
+                                 + tbl.Rows[0]["menu_type"].ToString() + "~"
+                                 + "0" + "~"
+                                 + "0" + "~"
+                                 + "AEV";
+                string US = VE.UNQSNO_ENCRYPTED;
+                //string MyURL = tbl.Rows[0]["MENU_PROGCALL"].ToString() + "/" + tbl.Rows[0]["MENU_PROGCALL"].ToString() + "?op=V" + "&MNUDET="
+                //    + Cn.Encrypt_URL(MNUDET) + "&US=" + US + "&Id=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_ID"].ToString()) + "&Index=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_INDEX"].ToString()) + "&PId=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_ID"].ToString() + "~" + tbl.Rows[0]["MENU_INDEX"].ToString() + "~" + tbl.Rows[0]["MENU_PROGCALL"].ToString()) + "&DC=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_DOCCD"].ToString()) + "&MP=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_PARA"].ToString() + "~" + tbl.Rows[0]["MENU_DATE_OPTION"].ToString() + "~" + tbl.Rows[0]["MENU_TYPE"].ToString()) + "&searchValue=" + autono + "&ThirdParty=yes~" + Doctp.DOCCD + "~" + Doctp.DOCNM.Replace("&", "$$$$$$$$") + "~" + Doctp.PRO + "~" + autoEntryWork;
+
+                string MyURL = tbl.Rows[0]["MENU_PROGCALL"].ToString() + "/" + tbl.Rows[0]["MENU_PROGCALL"].ToString() + "?op=V" + "&MNUDET="
+                   + Cn.Encrypt_URL(MNUDET) + "&US=" + US + "&Id=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_ID"].ToString()) + "&Index=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_INDEX"].ToString()) + "&PId=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_ID"].ToString() + "~" + tbl.Rows[0]["MENU_INDEX"].ToString() + "~" + tbl.Rows[0]["MENU_PROGCALL"].ToString()) + "&DC=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_DOCCD"].ToString()) + "&MP=" + Cn.Encrypt_URL(tbl.Rows[0]["MENU_PARA"].ToString()) + "&searchValue=" + autono + "&ThirdParty=yes~" + Doctp.DOCCD + "~" + Doctp.DOCNM.Replace("&", "$$$$$$$$") + "~" + Doctp.PRO + "~" + autoEntryWork;
                 return Content(MyURL);
             }
             catch (Exception ex)
@@ -321,10 +360,22 @@ namespace Improvar.Controllers
                                 var img = Cn.SaveUploadImageTransaction(UploadDOC1, i.autono, 0);
                                 if (img.Item1.Count != 0)
                                 {
+                                    int maxslno = (from ii in DB.T_CNTRL_HDR_DOC where (ii.AUTONO == i.autono) select ii.SLNO).DefaultIfEmpty().Max();
                                     int maxsl = (from ii in DB.T_CNTRL_HDR_DOC where (ii.AUTONO == i.autono) select ii.SLNO).DefaultIfEmpty().Max();
-                                    maxsl += 1;
-                                    img.Item1.ForEach(a => a.SLNO = Convert.ToByte(maxsl));
-                                    img.Item2.ForEach(a => a.SLNO = Convert.ToByte(maxsl));
+                                    //maxsl += 1;
+                                    //img.Item1.ForEach(a => a.SLNO = Convert.ToByte(maxsl));
+                                     //maxslno = maxsl + 1;
+                                    foreach (var j in img.Item1)
+                                    {
+                                        maxsl += 1;
+                                        j.SLNO = Convert.ToByte(maxsl);
+                                    }
+                                    //img.Item2.ForEach(a => a.SLNO = Convert.ToByte(maxsl));
+                                    foreach (var j in img.Item2)
+                                    {
+                                        maxslno += 1;
+                                        j.SLNO = Convert.ToByte(maxslno);
+                                    }
                                     DB.T_CNTRL_HDR_DOC.AddRange(img.Item1);
                                     DB.T_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
                                 }
