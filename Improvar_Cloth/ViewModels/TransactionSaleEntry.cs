@@ -241,5 +241,6 @@ namespace Improvar.ViewModels
         public double? DISPTCSAMT { get; set; }
         public string SHOWMTRLJOBCD { get; set; }
         public string SHOWBLTYPE { get; set; }
+        public string MUTSLNM { get; set; }
     }
 }

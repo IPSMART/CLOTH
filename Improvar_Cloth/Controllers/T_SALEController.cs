@@ -394,6 +394,7 @@ namespace Improvar.Controllers
                 VE.PRCNM = TXNOTH.PRCCD.retStr() == "" ? "" : DBF.M_PRCLST.Where(a => a.PRCCD == TXNOTH.PRCCD).Select(b => b.PRCNM).FirstOrDefault();
 
                 VE.TRANSLNM = TXNTRN.TRANSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNTRN.TRANSLCD).Select(b => b.SLNM).FirstOrDefault();
+                VE.MUTSLNM = TXNOTH.MUTSLCD.retStr() == "" ? "" : DBF.M_SUBLEG.Where(a => a.SLCD == TXNOTH.MUTSLCD).Select(b => b.SLNM).FirstOrDefault();
                 SLR = Cn.GetTransactionReamrks(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
                 VE.UploadDOC = Cn.GetUploadImageTransaction(CommVar.CurSchema(UNQSNO).ToString(), TXN.AUTONO);
 
@@ -3117,6 +3118,7 @@ namespace Improvar.Controllers
                     TTXNOTH.TDSAMT = VE.T_TXNOTH.TDSAMT;
                     TTXNOTH.POREFNO = VE.T_TXNOTH.POREFNO;
                     TTXNOTH.POREFDT = VE.T_TXNOTH.POREFDT;
+                    TTXNOTH.MUTSLCD = VE.T_TXNOTH.MUTSLCD;
                     //----------------------------------------------------------//
                     if (VE.MENU_PARA == "SB")
                     {
@@ -3377,7 +3379,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                        batchdtlstart:
+                    batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
@@ -3427,12 +3429,12 @@ namespace Improvar.Controllers
                                     if (dt.Rows.Count == 0)
                                     {
                                         barno = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL[i].SLNO));
-                                        flagbatch = true;                                        
+                                        flagbatch = true;
                                     }
                                     else
                                     {
                                         barno = VE.TBATCHDTL[i].BARNO;
-                                    }                       
+                                    }
                                 }
                                 else
                                 {
@@ -4354,7 +4356,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-            dbsave:
+        dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -4362,7 +4364,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-            dbnotsave:
+        dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();

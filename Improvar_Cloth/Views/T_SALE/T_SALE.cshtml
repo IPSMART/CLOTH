@@ -183,7 +183,7 @@
                 }
             }
         }
-       
+
         //
         var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         var rateblank = false;
@@ -207,7 +207,7 @@
             }
         }
         //start of finalise
-        if ($("#bardatachng").val() == "Y" && GridRow >0) {
+        if ($("#bardatachng").val() == "Y" && GridRow > 0) {
             debugger;
             var GridRow = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
             var mtrlcdblank = false; var slnoblank = false; var glcdblank = false; var qntyblank = false;
@@ -613,7 +613,7 @@
                             </div>
                         </div>
                     }
-                    
+
                     <div class="col-md-1 divbltype">
                         <div class="editor-label" style="margin-top: 6px;">
                             @Html.Label("", "Bill Type")
@@ -1238,7 +1238,7 @@
                                                 <div class="editor-label" style="margin-top: 6px;">
                                                     @if (Model.MENU_PARA == "SR")
                                                     {
-                                                    @Html.Label("", "Doc No.")
+                                                        @Html.Label("", "Doc No.")
                                                     }
                                                     else {
                                                         @Html.Label("", "P.Bill no.")
@@ -1266,7 +1266,7 @@
                                                 <input type="button" class="btn btn-success" style="margin-top: 2px;padding: 2px 7px 1px 7px;" id="Ret_Search" value="Search" title="Click to Get Barno" onclick="Sale_GetTTXNDTLDetails()" />
                                             </div>
                                         </div>
-                                       
+
                                         <div class="row">
                                             <div id="popup_agdocno" class="row" style="margin-top: 11px;top:15%;left:15%;position:absolute;">
                                             </div>
@@ -1928,11 +1928,30 @@
                                     <img src="~/Image/search.png" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Transporter Details','TRANSLCD','TRANSLCD=slcd=1/TRANSLNM=slnm=0','trnsportlinkcd')" />
                                 </div>
                             </div>
-                            <div class="col-md-10">
+                            <div class="col-md-9">
                                 <div class="editor-field">
                                     @Html.EditorFor(model => model.TRANSLNM, new { htmlAttributes = new { @class = "form-control", id = "TRANSLNM", maxlength = 45, @TabIndex = -1, @placeholder = "Transporter Name", @readonly = "readonly" } })
                                 </div>
                             </div>
+                            @if (Model.MENU_PARA == "SBPCK" || Model.MENU_PARA == "SB" || Model.MENU_PARA == "SBDIR" || Model.MENU_PARA == "SR" || Model.MENU_PARA == "SBEXP" || Model.MENU_PARA == "PR")
+                            {
+                                <div class="col-md-1">
+                                    <div class="editor-label" style="margin-top: 6px;">
+                                        @Html.Label("", "Porter")
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.T_TXNOTH.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Porter Details','MUTSLCD','MUTSLCD=MUTSLCD=1/MUTSLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Porter Details','MUTSLCD','MUTSLCD=SLCD=1/MUTSLNM=slnm=0','trnsportlinkcd');", @placeholder = "Code", maxlength = 8 } })
+                                        <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Porter Details','MUTSLCD','MUTSLCD=slcd=1/MUTSLNM=slnm=0','trnsportlinkcd')" />
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="editor-field">
+                                        @Html.EditorFor(model => model.MUTSLNM, new { htmlAttributes = new { @class = "form-control", id = "MUTSLNM", maxlength = 45, @title = "Only for View", @placeholder = "Porter Name", @readonly = "readonly", tabindex = "-1" } })
+                                    </div>
+                                </div>
+                            }
                             <div class="col-md-4">
                                 <div class="editor-label" style="margin-top: 6px;">
                                     @Html.Label("", "Transport Mode")
