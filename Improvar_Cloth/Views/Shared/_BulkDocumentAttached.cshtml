@@ -99,8 +99,8 @@
                 <table id="DOC_MAIN_GRID" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="@GetWidth">
                     <thead>
                         <tr class="sticky-header" style="height:30px;">
-                            <th class="" style="width:10px;"></th>
-                            <th class="" style="width:104px;">Document No</th>
+                            <th class="sticky-cell" style="width:10px;"></th>
+                            <th class="sticky-cell" style="width:104px;left:10px;">Document No</th>
                             <th class="" style="width:87px;">Date</th>
                             <th class="" style="width:94px;">Party Code</th>
                             <th class="" style="width:147px;">Party Name</th>
@@ -159,10 +159,10 @@
                         @for (int i = 0; i <= Model.GridData.Count - 1; i++)
                         {
                             <tr style="cursor:pointer">
-                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                <td class="sticky-cell" onclick="gotoentry('@Model.GridData[i].autono')">
                                     @Html.HiddenFor(model => model.GridData[i].autono, new { id = "AUTO_" + i, Value = Model.GridData[i].autono })
                                 </td>
-                                <td class="" onclick="gotoentry('@Model.GridData[i].autono')">
+                                <td class="sticky-cell" style="left:10px;" onclick="gotoentry('@Model.GridData[i].autono')">
                                     @Html.TextBoxFor(model => model.GridData[i].Docno, new { id = "DOCNO_" + i, @class = " atextBoxFor ", maxlength = 9, @TabIndex = -1, @readonly = "readonly" })
                                 </td>
                                 <td class="" onclick="gotoentry('@Model.GridData[i].autono')">

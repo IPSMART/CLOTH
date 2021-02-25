@@ -364,17 +364,30 @@ namespace Improvar.Controllers
                                     int maxsl = (from ii in DB.T_CNTRL_HDR_DOC where (ii.AUTONO == i.autono) select ii.SLNO).DefaultIfEmpty().Max();
                                     //maxsl += 1;
                                     //img.Item1.ForEach(a => a.SLNO = Convert.ToByte(maxsl));
-                                     //maxslno = maxsl + 1;
+                                    //maxslno = maxsl + 1;
                                     foreach (var j in img.Item1)
                                     {
                                         maxsl += 1;
                                         j.SLNO = Convert.ToByte(maxsl);
                                     }
                                     //img.Item2.ForEach(a => a.SLNO = Convert.ToByte(maxsl));
-                                    foreach (var j in img.Item2)
+                                    //foreach (var j in img.Item2)
+                                    //{
+                                    //    maxslno += 1;
+                                    //    j.SLNO = Convert.ToByte(maxslno);
+                                    //}
+                                    int a = 0;
+                                    while (a < img.Item2.Count - 1)
                                     {
+                                        string slno = img.Item2[a].SLNO.retStr();
                                         maxslno += 1;
-                                        j.SLNO = Convert.ToByte(maxslno);
+                                        while (img.Item2[a].SLNO.retStr() == slno)
+                                        {
+                                            img.Item2[a].SLNO = Convert.ToByte(maxslno);
+                                            a++;
+                                            if (a > img.Item2.Count - 1) break;
+                                        }
+                                        if (a > img.Item2.Count - 1) break;
                                     }
                                     DB.T_CNTRL_HDR_DOC.AddRange(img.Item1);
                                     DB.T_CNTRL_HDR_DOC_DTL.AddRange(img.Item2);
