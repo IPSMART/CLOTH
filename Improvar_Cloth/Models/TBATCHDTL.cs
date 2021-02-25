@@ -192,5 +192,7 @@ namespace Improvar.Models
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? OTHRAMT { get; set; }
         public double? TXBLVAL { get; set; }
+        [StringLength(3)]
+        public string BLUOMCD { get; set; }
     }
 }

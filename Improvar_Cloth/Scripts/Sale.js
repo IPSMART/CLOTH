@@ -861,6 +861,7 @@ function UpdateBarCodeRow_FrmDet(i) {
                 $("#B_PAGENO_" + j).val($("#D_PAGENO_" + i).val());
                 $("#B_PAGESLNO_" + j).val($("#D_PAGESLNO_" + i).val());
             }
+            $("#B_BLUOMCD_" + j).val($("#D_BLUOMCD_" + i).val());
 
         }
     }
@@ -1900,6 +1901,7 @@ function AddBarCodeGrid() {
     var TXNSLNO = "";
     var PAGENO = "";
     var PAGESLNO = "";
+    var BLUOMCD = "";
     if ($("#TXNSLNO").val() == "" || $("#TXNSLNO").val() == "0") {
         var GridRowMain = $("#_T_SALE_PRODUCT_GRID > tbody > tr").length;
         if (GridRowMain == 0) {
@@ -1909,6 +1911,7 @@ function AddBarCodeGrid() {
             var allslno = [];
             var matchslno = [];
             var pageno = [];
+            var bluom = [];
             countmatchslno = 0;
             for (j = 0; j <= GridRowMain - 1; j++) {
                 var flag = true;
@@ -1943,6 +1946,10 @@ function AddBarCodeGrid() {
                             str1 += "^PAGESLNO=^" + retInt($("#B_PAGESLNO_" + j).val()) + String.fromCharCode(181);
                             pageno[countmatchslno] = str1;
                         }
+                        var str1 = "^TXNSLNO=^" + retInt($("#B_TXNSLNO_" + j).val()) + String.fromCharCode(181);
+                        str1 += "^BLUOMCD=^" + retStr($("#B_BLUOMCD_" + j).val()) + String.fromCharCode(181);
+                        bluom[countmatchslno] = str1;
+
                         countmatchslno++;
                     }
                 }
@@ -1961,6 +1968,9 @@ function AddBarCodeGrid() {
                         PAGENO = returncolvalue(strpageno, "PAGENO");
                         PAGESLNO = returncolvalue(strpageno, "PAGESLNO");
                     }
+
+                    var strbluom = bluom.find(element => element.indexOf("^TXNSLNO=^" + TXNSLNO + String.fromCharCode(181)) != -1);
+                    BLUOMCD = returncolvalue(strbluom, "BLUOMCD");
                 }
             }
             else {
@@ -2025,7 +2035,7 @@ function AddBarCodeGrid() {
         tr += '        <input id="B_MTRLJOBNM_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTRLJOBNM" type="hidden" value="' + MTRLJOBNM + '">';
         tr += '        <input id="B_MTBARCODE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].MTBARCODE" type="hidden" value="' + MTBARCODE + '">';
     }
-
+    tr += '        <input id="B_BLUOMCD_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BLUOMCD" type="hidden" value="' + BLUOMCD + '">';
     tr += '    </td>';
     tr += '    <td class="sticky-cell" style="left:20px;" title="' + SLNO + '">';
     tr += '        <input tabindex="-1" class=" atextBoxFor " data-val="true" data-val-number="The field SLNO must be a number." data-val-required="The SLNO field is required." id="B_SLNO_' + rowindex + '" maxlength="2" name="TBATCHDTL[' + rowindex + '].SLNO" readonly="readonly" style="text-align:center;" type="text" value="' + SLNO + '">';
@@ -3554,7 +3564,8 @@ function SelectUOMCode(id, i) {
                 else {
                     $("#tempHDD").val(result);
                     var str = $("#tempHDD").val().split(String.fromCharCode(181));
-                    $("#D_BLUOMCD_" +i).val(str[0]);
+                    $("#D_BLUOMCD_" + i).val(str[0]);
+                    UpdateBarCodeRow_FrmDet(i);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
