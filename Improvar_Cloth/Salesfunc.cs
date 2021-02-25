@@ -1038,7 +1038,7 @@ namespace Improvar
             sql += "select '' gocd, '' mtrljobcd, '' stktype, a.barno, b.itcd, '' partcd, a.colrcd, a.sizecd, '' shade, 0 cutlength, 0 dia, 0 balqnty, 0 balnos ";
             sql += "from " + scm + ".t_batchmst a, " + scm + ".m_sitem b, " + scm + ".m_cntrl_hdr c, " + scm + ".m_cntrl_loca d ";
             sql += "where a.itcd=b.itcd(+) and b.m_autono=c.m_autono(+) and b.m_autono=d.m_autono(+) and ";
-            sql += "nvl(a.inactive_tag,'N')='N' and nvl(c.inactive_tag,'N')='N' and ";
+            sql += "nvl(c.inactive_tag,'N')='N' and ";
             if (barno.retStr() != "") sql += "upper(a.barno) in (" + barno + ") and ";
             if (itcd.retStr() != "") sql += "a.itcd in (" + itcd + ") and ";
             sql += "(d.compcd = '" + COM + "' or d.compcd is null) and (d.loccd='" + LOC + "' or d.loccd is null) ";
