@@ -224,7 +224,7 @@ namespace Improvar.Controllers
                     if (sl.MNTNOURDESIGN == "Y"){VE.MNTNOURDESIGN = true;}else{VE.MNTNOURDESIGN = false;}
                     if (sl.MNTNPCSTYPE == "Y"){VE.MNTNPCSTYPE = true;}else{VE.MNTNPCSTYPE = false;}
                     if (sl.MNTNBARNO == "Y") { VE.MNTNBARNO = true; } else { VE.MNTNBARNO = false; }
-                    if (sl.COMMONUIQBAR == "Y") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
+                    if (sl.COMMONUNIQBAR == "Y") { VE.COMMONUIQBAR = true; } else { VE.COMMONUIQBAR = false; }
                     if (sl.WPPRICEGEN.retStr() != "")
                     {
                         VE.WPPRICEGENCD = sl.WPPRICEGEN.Substring(0, 2);
@@ -424,7 +424,7 @@ namespace Improvar.Controllers
                         if (VE.MNTNOURDESIGN == true) { MSYSCNFG.MNTNOURDESIGN = "Y"; } else { MSYSCNFG.MNTNOURDESIGN = "N"; }
                         if (VE.MNTNPCSTYPE == true) { MSYSCNFG.MNTNPCSTYPE = "Y"; } else { MSYSCNFG.MNTNPCSTYPE = "N"; }
                         if (VE.MNTNBARNO == true) { MSYSCNFG.MNTNBARNO = "Y"; } else { MSYSCNFG.MNTNBARNO = "N"; }
-                        if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUIQBAR = "Y"; } else { MSYSCNFG.COMMONUIQBAR = "N"; }
+                        if (VE.COMMONUIQBAR == true) { MSYSCNFG.COMMONUNIQBAR = "Y"; } else { MSYSCNFG.COMMONUNIQBAR = "N"; }
                         M_CNTRL_HDR MCH = Cn.M_CONTROL_HDR(VE.Checked, "M_SYSCNFG", MSYSCNFG.M_AUTONO, VE.DefaultAction, CommVar.CurSchema(UNQSNO).ToString());
                         if (VE.DefaultAction == "A")
                         {

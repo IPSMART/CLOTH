@@ -20,7 +20,6 @@ namespace Improvar.Controllers
         MasterHelpFa MasterHelpFa = new MasterHelpFa();
 
         string UNQSNO = CommVar.getQueryStringUNQSNO();
-
         public ActionResult Khasra_BaleTrnf_Print()
         {
             try
