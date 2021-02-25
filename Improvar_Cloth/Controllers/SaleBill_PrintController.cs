@@ -3867,6 +3867,10 @@ namespace Improvar.Controllers
                                     {
                                         pcsdesc += batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr();
                                     }
+                                    else if (batch_data[a]["nos"].retDbl() == 0 || batch_data[a]["cutlength"].retDbl() == 0)
+                                    {
+                                        pcsdesc += (batch_data[a]["nos"].retDbl() == 0 ? "" : batch_data[a]["nos"].retStr()) + (batch_data[a]["cutlength"].retDbl() == 0 ? "" : batch_data[a]["cutlength"].retStr());
+                                    }
                                     else {
                                         if (VE.Checkbox9 == true)
                                         {
