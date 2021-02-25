@@ -1387,15 +1387,15 @@ namespace Improvar
             if (CLRBARCODE.retStr() != "")
             {
                 string clrbarcode = CLRBARCODE.retStr();
-                COLRCD = DB.M_COLOR.Where(a => a.CLRBARCODE == clrbarcode).Select(b => b.COLRCD).SingleOrDefault();
+                COLRCD = DB.M_COLOR.Where(a => a.CLRBARCODE == clrbarcode).Select(b => b.COLRCD).FirstOrDefault();
             }
 
             if (SZBARCODE.retStr() != "")
             {
                 string szbarcode = SZBARCODE.retStr();
-                SIZECD = DB.M_SIZE.Where(a => a.SZBARCODE == szbarcode).Select(b => b.SIZECD).SingleOrDefault();
+                SIZECD = DB.M_SIZE.Where(a => a.SZBARCODE == szbarcode).Select(b => b.SIZECD).FirstOrDefault();
             }
-            string barno = DB.T_BATCHMST.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD).Select(b => b.BARNO).SingleOrDefault();
+            string barno = DB.T_BATCHMST.Where(a => a.COLRCD == COLRCD && a.SIZECD == SIZECD && a.ITCD == ITCD).Select(b => b.BARNO).FirstOrDefault();
             if (barno == null)
             {
                 //barno = ITCD.retStr().Substring(1, 8) + CLRBARCODE.retStr() + SZBARCODE.retStr();
@@ -1426,7 +1426,7 @@ namespace Improvar
             string sql = "", COM = CommVar.Compcd(UNQSNO), scmf = CommVar.FinSchema(UNQSNO);
             string trcd = "'SB','SD'";
             string salpur = "S";
-            if (menupara == "PB" || menupara == "PD" || menupara == "OP") { trcd = "'PB','PD'"; salpur = "P"; }
+            if (menupara == "PB" || menupara == "PD" || menupara == "OP" || menupara == "OTH") { trcd = "'PB','PD'"; salpur = "P"; }
 
             sql = "select sum(nvl(amt,0)) amt from (";
 
