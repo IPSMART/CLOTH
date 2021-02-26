@@ -315,7 +315,7 @@ function AddMainRow(hlpstr) {
     tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field NOS must be a number." id="B_NOS_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].NOS" onchange = "CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');", onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="' + NOS + '">';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + QNTY + '" >';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TsalePos_TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" value="" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" value="' + QNTY + '" >';
     tr += ' </td>';
     tr += ' <td class="" title="">';
     tr += '     <input tabindex="-1" class=" atextBoxFor" id="B_UOM_' + rowindex + '" name="TsalePos_TBATCHDTL[' + rowindex + '].UOM" readonly="readonly" type="text" value="' + UOM + '">';
@@ -1541,7 +1541,51 @@ function UpdateBarCodeRow(hlpstr,slno) {
    
    
 }
-
+function GetData() {
+    var DOCDT = $("#DOCDT").val();
+    $.ajax({
+        type: 'POST',
+        url: $("#urlGetData").val(),//"@Url.Action("GetTTXNDTLDetails", PageControllerName )"
+        beforesend: $("#WaitingMode").show(),
+        data: { EFFDT: DOCDT },
+        success: function (result) {
+            var MSG = result.indexOf(String.fromCharCode(181));
+            if (MSG >= 0) {
+                $("#RTDEBCD").val(returncolvalue(result, "RTDEBCD"));
+                $("#RTDEBNM").val(returncolvalue(result, "RTDEBNM"));
+                var addr = returncolvalue(result, "add1") + returncolvalue(result, "add2") + returncolvalue(result, "add3") + "/" + returncolvalue(result, "city")
+                $("#ADDR").val(addr);
+                $("#MOBILE").val(returncolvalue(result, "MOBILE"));
+                if (returncolvalue(result, "INC_RATE") == "Y") {
+                    document.getElementById("INC_RATE").checked = true;
+                }
+                else {
+                    document.getElementById("INC_RATE").checked = false;
+                }
+                $("#INCLRATEASK").val(returncolvalue(result, "INC_RATE"));
+                $("#RETDEBSLCD").val(returncolvalue(result, "RETDEBSLCD"));
+                $("#TAXGRPCD").val(returncolvalue(result, "TAXGRPCD"));
+                $("#PRCCD").val(returncolvalue(result, "PRCCD"));
+                $("#PRCNM").val(returncolvalue(result, "PRCNM"));
+                $("#EFFDT").val(returncolvalue(result, "EFFDT"));
+                $("#WaitingMode").hide();
+            }
+            else {
+                $("#WaitingMode").hide();
+                msgInfo("" + result + " !");
+                ClearAllTextBoxes("RTDEBCD,RTDEBNM,ADDR,MOBILE,INCLRATEASK,RETDEBSLCD,TAXGRPCD,PRCCD,PRCNM,EFFDT");
+                document.getElementById("INC_RATE").checked = false;
+                $("#EFFDT").html("");
+                message_value = "DOCDT";
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
 
 //function CheckInclusivRateNetAmt(GridId, i) {
 //    debugger;
