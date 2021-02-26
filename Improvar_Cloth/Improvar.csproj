@@ -1354,10 +1354,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Report\Khasra_BaleTrnf.rpt">
+    <Content Include="Report\Khasra_BaleTrnf.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>Khasra_BaleTrnf.cs</LastGenOutput>
-    </EmbeddedResource>
+    </Content>
     <Content Include="Report\SaleBill_SNFP.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>SaleBill_SNFP.cs</LastGenOutput>
