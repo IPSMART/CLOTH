@@ -229,6 +229,7 @@
         <input type="hidden" id="UrlTTXNDTLDetails" value="@Url.Action("GetTTXNDTLDetails", PageControllerName )" />
         <input type="hidden" id="UrlSelectTTXNDTLDetails" value="@Url.Action("SelectTTXNDTLDetails", PageControllerName )" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
+        <input type="hidden" id="urlGetData" value="@Url.Action("GetData", PageControllerName)" />
         <input type="hidden" id="salesmanlinkcd" value="E" />
         <input type="hidden" id="agentlinkcd" value="A" />
         <input type="hidden" id="courierlinkcd" value="U" />
@@ -285,7 +286,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="editor-field">
-                                @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10 } })
+                                @Html.EditorFor(model => model.T_TXN.DOCDT, new { htmlAttributes = new { @class = "form-control", id = "DOCDT", onblur = "DocumentDateCHK(this);", autocomplete = "off", @placeholder = "dd/mm/yyyy", maxlength = 10, onchange = "GetData();" } })
                             </div>
                         </div>
                         <div class="col-md-3">

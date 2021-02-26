@@ -186,14 +186,14 @@ namespace Improvar.Controllers
                                     VE.GONM = DBF.M_GODOWN.Where(a => a.GOCD == gocd).Select(b => b.GONM).FirstOrDefault();
                                 }
                                 T_TXNOTH TXNOTH = new T_TXNOTH(); T_TXNMEMO TXNMEMO = new T_TXNMEMO();
-                                string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
-                                string sql = "";
-                                sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm ";
-                                sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
-                                sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG  where effdt<=to_date('"++"','dd/mm/yyyy') ) and a.retdebslcd=d.slcd(+) and ";
-                                sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
+                                //string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+                                //string sql = "";
+                                //sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm ";
+                                //sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
+                                //sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG  where effdt<=to_date('"++"','dd/mm/yyyy') ) and a.retdebslcd=d.slcd(+) and ";
+                                //sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
 
-                                DataTable syscnfgdt = masterHelp.SQLquery(sql);
+                                DataTable syscnfgdt = salesfunc.GetSyscnfgData(TTXN.DOCDT.retDateStr());
                                 if (syscnfgdt != null && syscnfgdt.Rows.Count > 0)
                                 {
                                     TXNMEMO.RTDEBCD = syscnfgdt.Rows[0]["RTDEBCD"].retStr();
@@ -828,6 +828,25 @@ namespace Improvar.Controllers
                     SB.Append("<tr><td><b>" + tbl.Rows[j]["docno"] + "</b> [" + tbl.Rows[j]["doccd"] + "]" + " </td><td>" + tbl.Rows[j]["docdt"] + " </td><td><b>" + tbl.Rows[j]["RTDEBNM"] + "</b> (" + tbl.Rows[j]["RTDEBCD"] + ") </td><td>" + tbl.Rows[j]["nm"] + " </td><td class='text-right'>" + Convert.ToDouble(tbl.Rows[j]["blamt"]).ToINRFormat() + " </td><td>" + tbl.Rows[j]["autono"] + " </td></tr>");
                 }
                 return PartialView("_SearchPannel2", masterHelp.Generate_SearchPannel(hdr, SB.ToString(), "5", "5"));
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
+        }
+        public ActionResult GetData(string EFFDT)
+        {
+            try
+            {
+                DataTable dt = salesfunc.GetSyscnfgData(EFFDT.retStr().Remove(10));
+                if (dt != null && dt.Rows.Count == 1)
+                {
+                    return Content(masterHelp.ToReturnFieldValues("", dt));
+                }
+                else {
+                    return Content("No Data Found");
+                }
             }
             catch (Exception ex)
             {
@@ -3658,11 +3677,11 @@ namespace Improvar.Controllers
                     return Content("");
                 }
                 goto dbok;
-                dbnotsave:;
+            dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);
-                dbok:;
+            dbok:;
             }
             catch (Exception ex)
             {
