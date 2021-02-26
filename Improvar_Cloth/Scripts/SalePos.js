@@ -1541,7 +1541,51 @@ function UpdateBarCodeRow(hlpstr,slno) {
    
    
 }
-
+function GetData() {
+    var DOCDT = $("#DOCDT").val();
+    $.ajax({
+        type: 'POST',
+        url: $("#urlGetData").val(),//"@Url.Action("GetTTXNDTLDetails", PageControllerName )"
+        beforesend: $("#WaitingMode").show(),
+        data: { EFFDT: DOCDT },
+        success: function (result) {
+            var MSG = result.indexOf(String.fromCharCode(181));
+            if (MSG >= 0) {
+                $("#RTDEBCD").val(returncolvalue(result, "RTDEBCD"));
+                $("#RTDEBNM").val(returncolvalue(result, "RTDEBNM"));
+                var addr = returncolvalue(result, "add1") + returncolvalue(result, "add2") + returncolvalue(result, "add3") + "/" + returncolvalue(result, "city")
+                $("#ADDR").val(addr);
+                $("#MOBILE").val(returncolvalue(result, "MOBILE"));
+                if (returncolvalue(result, "INC_RATE") == "Y") {
+                    document.getElementById("INC_RATE").checked = true;
+                }
+                else {
+                    document.getElementById("INC_RATE").checked = false;
+                }
+                $("#INCLRATEASK").val(returncolvalue(result, "INC_RATE"));
+                $("#RETDEBSLCD").val(returncolvalue(result, "RETDEBSLCD"));
+                $("#TAXGRPCD").val(returncolvalue(result, "TAXGRPCD"));
+                $("#PRCCD").val(returncolvalue(result, "PRCCD"));
+                $("#PRCNM").val(returncolvalue(result, "PRCNM"));
+                $("#EFFDT").val(returncolvalue(result, "EFFDT"));
+                $("#WaitingMode").hide();
+            }
+            else {
+                $("#WaitingMode").hide();
+                msgInfo("" + result + " !");
+                ClearAllTextBoxes("RTDEBCD,RTDEBNM,ADDR,MOBILE,INCLRATEASK,RETDEBSLCD,TAXGRPCD,PRCCD,PRCNM,EFFDT");
+                document.getElementById("INC_RATE").checked = false;
+                $("#EFFDT").html("");
+                message_value = "DOCDT";
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#WaitingMode").hide();
+            msgError(XMLHttpRequest.responseText);
+            $("body span h1").remove(); $("#msgbody_error style").remove();
+        }
+    });
+}
 
 //function CheckInclusivRateNetAmt(GridId, i) {
 //    debugger;

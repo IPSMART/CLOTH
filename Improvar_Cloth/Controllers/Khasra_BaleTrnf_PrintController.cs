@@ -250,27 +250,29 @@ namespace Improvar.Controllers
                         dr1["docno"] = restbl.Rows[i]["docno"].ToString();
                         dr1["docdt"] = restbl.Rows[i]["docdt"].retStr().Remove(10);
 
-                        if (rm1 != null && rm1.Count() > 0)
+                        if (VE.MENU_PARA == "TRFB")
                         {
-                            for (int a = 0; a <= rm1.Count() - 1; a++)
+                            if (rm1 != null && rm1.Count() > 0)
                             {
-                                //dr1["hdrgocd"] = rm1[a]["hdrgocd"].ToString();
-                                //dr1["hdrgonm"] = rm1[a]["hdrgonm"].ToString();
-                                //dr1["hdrgoadd1"] = rm1[a]["hdrgoadd1"].ToString();
-                                //dr1["hdrgoadd2"] = rm1[a]["hdrgoadd2"].ToString();
-                                //dr1["hdrgoadd3"] = rm1[a]["hdrgoadd3"].ToString();
-                                //dr1["hdrgophno"] = rm1[a]["hdrgophno"].ToString();
-                                //dr1["hdrgoemail"] = rm1[a]["hdrgoemail"].ToString();
+                                for (int a = 0; a <= rm1.Count() - 1; a++)
+                                {
+                                    //dr1["hdrgocd"] = rm1[a]["hdrgocd"].ToString();
+                                    //dr1["hdrgonm"] = rm1[a]["hdrgonm"].ToString();
+                                    //dr1["hdrgoadd1"] = rm1[a]["hdrgoadd1"].ToString();
+                                    //dr1["hdrgoadd2"] = rm1[a]["hdrgoadd2"].ToString();
+                                    //dr1["hdrgoadd3"] = rm1[a]["hdrgoadd3"].ToString();
+                                    //dr1["hdrgophno"] = rm1[a]["hdrgophno"].ToString();
+                                    //dr1["hdrgoemail"] = rm1[a]["hdrgoemail"].ToString();
 
-                                string goadd = rm1[a]["hdrgoadd1"].ToString() + " " + rm1[a]["hdrgoadd2"].ToString() + " " + rm1[a]["hdrgoadd3"].ToString();
-                                goadd = goadd.Trim();
-                                if (rm1[a]["hdrgophno"].ToString() != "") goadd = goadd + " Phone : " + rm1[a]["hdrgophno"].ToString();
+                                    string goadd = rm1[a]["hdrgoadd1"].ToString() + " " + rm1[a]["hdrgoadd2"].ToString() + " " + rm1[a]["hdrgoadd3"].ToString();
+                                    goadd = goadd.Trim();
+                                    if (rm1[a]["hdrgophno"].ToString() != "") goadd = goadd + " Phone : " + rm1[a]["hdrgophno"].ToString();
 
-                                if (goadd.retStr() != "") dr1["hdrgonm"] = "Godown : " + rm1[a]["hdrgonm"].ToString();
-                                dr1["hdrgoadd1"] = goadd;
+                                    if (goadd.retStr() != "") dr1["hdrgonm"] = "Godown : " + rm1[a]["hdrgonm"].ToString();
+                                    dr1["hdrgoadd1"] = goadd;
+                                }
                             }
                         }
-
                         dr1["slcd"] = restbl.Rows[i]["slcd"].ToString();
                         dr1["slnm"] = restbl.Rows[i]["slnm"].ToString();
                         dr1["regemailid"] = restbl.Rows[i]["regemailid"].ToString();
