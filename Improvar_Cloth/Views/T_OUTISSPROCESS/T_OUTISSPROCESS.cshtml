@@ -1134,7 +1134,7 @@
         tr += '        <input id="B_NEGSTOCK_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].NEGSTOCK" type="hidden" value="' + NEGSTOCK + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + QNTY + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="CalculateTotal_Barno();HasChangeBarSale();IssueQntyChk(\'B_BALSTOCK_' + rowindex + '\', \'B_BOMQNTY_' + rowindex + '\', \'B_NEGSTOCK_' + rowindex + '\', \'B_QNTY_' + rowindex + '\', \'B_ITCD_' + rowindex + '\', \'B_SLNO_' + rowindex + '\');" value="' + QNTY + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field QNTY must be a number." id="B_QNTY_' + rowindex + '" maxlength="12" name="TBATCHDTL[' + rowindex + '].QNTY" onkeypress="return numericOnly(this,3);" style="text-align: right;" type="text" onblur="IssueQntyChk(\'B_BALSTOCK_' + rowindex + '\', \'B_BOMQNTY_' + rowindex + '\', \'B_NEGSTOCK_' + rowindex + '\', \'B_QNTY_' + rowindex + '\', \'B_ITCD_' + rowindex + '\', \'B_SLNO_' + rowindex + '\',\'GRID\');" value="' + QNTY + '">';
         tr += '        <input id="B_BOMQNTY_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].BOMQNTY" type="hidden" value="' + BOMQNTY + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + UOM + '">';
@@ -1479,7 +1479,7 @@
         }
 
     }
-    function IssueQntyChk(STOCKQNTY_Id, BOMQNTY_Id, NEGSTOCK_Id, QNTY_Id, ITCD_Id, SLNO_Id) {
+    function IssueQntyChk(STOCKQNTY_Id, BOMQNTY_Id, NEGSTOCK_Id, QNTY_Id, ITCD_Id, SLNO_Id,CALLFRM) {
         debugger;
         if ("@Model.DefaultAction" == "V") return true;
         var STOCKQNTY = retFloat($("#" + STOCKQNTY_Id).val());
@@ -1530,7 +1530,10 @@
                 }
             }
         }
-
+        if (CALLFRM == "GRID") {
+            CalculateTotal_Barno();
+            HasChangeBarSale();
+        }
     }
 </script>
 @using (Html.BeginForm())
