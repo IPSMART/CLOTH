@@ -1403,23 +1403,23 @@ namespace Improvar
             }
             return barno;
         }
-        public DataTable GetSyscnfgData(string EFFDT)
-        {
-            string Scm = CommVar.CurSchema(UNQSNO);
-            string compcd = CommVar.Compcd(UNQSNO);
-            string str = "";
-            str += "select a.effdt, b.wppricegen, b.rppricegen, b.wpper, b.rpper, b.priceincode from ";
-            str += "(select a.m_autono, a.effdt, row_number() over(order by a.effdt desc) as rn ";
-            str += "from " + Scm + ".m_syscnfg a ";
-            str += "where (a.compcd = '" + compcd + "' or a.compcd is null) and ";
-            str += "a.effdt <= to_date('" + EFFDT + "', 'dd/mm/yyyy') ) a, ";
-            str += Scm + ".m_syscnfg b ";
-            str += "where a.m_autono = b.m_autono(+) and a.rn = 1 ";
+        //public DataTable GetSyscnfgData(string EFFDT)
+        //{
+        //    string Scm = CommVar.CurSchema(UNQSNO);
+        //    string compcd = CommVar.Compcd(UNQSNO);
+        //    string str = "";
+        //    str += "select a.effdt, b.wppricegen, b.rppricegen, b.wpper, b.rpper, b.priceincode from ";
+        //    str += "(select a.m_autono, a.effdt, row_number() over(order by a.effdt desc) as rn ";
+        //    str += "from " + Scm + ".m_syscnfg a ";
+        //    str += "where (a.compcd = '" + compcd + "' or a.compcd is null) and ";
+        //    str += "a.effdt <= to_date('" + EFFDT + "', 'dd/mm/yyyy') ) a, ";
+        //    str += Scm + ".m_syscnfg b ";
+        //    str += "where a.m_autono = b.m_autono(+) and a.rn = 1 ";
 
-            DataTable dt = masterHelpFa.SQLquery(str);
-            return dt;
+        //    DataTable dt = masterHelpFa.SQLquery(str);
+        //    return dt;
 
-        }
+        //}
         public double getSlcdTCSonCalc(string slcdpanno, string docdt, string menupara = "SB", string autono = "")
         {
             double rtval = 0;
@@ -1946,9 +1946,9 @@ namespace Improvar
                 var fMGROU = DB.M_GROUP.FirstOrDefault();
                 if (fMGROU == null) Cn.SaveTextFile("Add a row in the Group master");
                 MGROUP.SALGLCD = fMGROU.SALGLCD;
-                MGROUP.PURGLCD = fMGROU.PURGLCD; 
+                MGROUP.PURGLCD = fMGROU.PURGLCD;
                 MGROUP.ITGRPTYPE = ITGRPTYPE == "" ? "F" : ITGRPTYPE;
-                MGROUP.PRODGRPCD = "G001";             
+                MGROUP.PRODGRPCD = "G001";
                 MGROUP.BARGENTYPE = BARGENTYPE == "" ? "C" : BARGENTYPE;//c=common,e=entry
                 MGROUP.NEGSTOCK = fMGROU.NEGSTOCK; ;
                 OraCon.Open();
@@ -2028,7 +2028,7 @@ namespace Improvar
                 MSITEM.FABITCD = FABITCD;
                 MSITEM.NEGSTOCK = MGROUP.NEGSTOCK;
                 var MPRODGRP = DB.M_PRODGRP.FirstOrDefault();
-                MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;             
+                MSITEM.PRODGRPCD = MPRODGRP?.PRODGRPCD;
 
                 T_BATCHMST TBATCHMST = new T_BATCHMST();
                 TBATCHMST.EMD_NO = MSITEM.EMD_NO;
@@ -2405,6 +2405,21 @@ namespace Improvar
             {
                 return new M_SYSCNFG();
             }
+        }
+
+        public DataTable GetSyscnfgData(string EFFDT)
+        {
+            string scmf = CommVar.FinSchema(UNQSNO); string scm = CommVar.CurSchema(UNQSNO);
+            string LOC = CommVar.Loccd(UNQSNO), COM = CommVar.Compcd(UNQSNO);
+            string sql = "";
+            sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm,a.wppricegen,a.rppricegen,a.wpper, a.rpper, a.priceincode ";
+            sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
+            sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG  where effdt<=to_date('"+ EFFDT + "','dd/mm/yyyy') ) and a.retdebslcd=d.slcd(+) and ";
+            sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
+
+            DataTable syscnfgdt = masterHelpFa.SQLquery(sql);
+            return syscnfgdt;
+
         }
     }
 }
