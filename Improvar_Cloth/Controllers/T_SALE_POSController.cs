@@ -1251,7 +1251,7 @@ namespace Improvar.Controllers
                 {
                     return Content("Please fill Godown");
                 }
-                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno,"", BARNO);
+                string str = masterHelp.T_TXN_BARNO_help(barnoOrStyle, VE.MENU_PARA, DOCDT, TAXGRPCD, GOCD, PRCCD, MTRLJOBCD, "", exactbarno, "", BARNO);
                 if (str.IndexOf("='helpmnu'") >= 0)
                 {
                     return PartialView("_Help2", str);
@@ -2036,9 +2036,13 @@ namespace Improvar.Controllers
                     /* string parglcd = "saldebglcd"*/
                     string parglcd = "", parclass1cd = "", class2cd = "", tcsgl = "", prodglcd = "", prodrglcd = "", rogl = "", glcd = "", rglcd = "", slmslcd = "";
                     string strblno = "", strbldt = "", strduedt = "", strrefno = "", strvtype = "BL";
-
                     dr = "D"; cr = "C";
 
+                    TTXN.SLCD = VE.RETDEBSLCD;
+                    if (TTXN.SLCD.retStr() == "")
+                    {
+                        dberrmsg = "Debtor/Creditor code not setup"; goto dbnotsave;
+                    }
                     string sslcd = TTXN.SLCD;
                     if (VE.PSLCD.retStr() != "") sslcd = VE.PSLCD.ToString();
                     if (VE.TTXNSLSMN != null)
@@ -2057,13 +2061,13 @@ namespace Improvar.Controllers
                     string slcdlink = "", slcdpara = VE.MENU_PARA;
                     //if (VE.MENU_PARA == "PR") slcdpara = "PB";
                     string sql = "";
-                    sql = "select class1cd, retdebslcd, saldebglcd glcd from " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg ";
-                    DataTable tblsys = masterHelp.SQLquery(sql);
-                    if (tblsys.Rows.Count == 0)
-                    {
-                        dberrmsg = "Debtor/Creditor code not setup"; goto dbnotsave;
-                    }
-                    sslcd = tblsys.Rows[0]["retdebslcd"].retStr();
+                    //sql = "select class1cd, retdebslcd, saldebglcd glcd from " + CommVar.CurSchema(UNQSNO) + ".m_syscnfg ";
+                    //DataTable tblsys = masterHelp.SQLquery(sql);
+                    //if (tblsys.Rows.Count == 0)
+                    //{
+                    //    dberrmsg = "Debtor/Creditor code not setup"; goto dbnotsave;
+                    //}
+                    //sslcd = tblsys.Rows[0]["retdebslcd"].retStr();
 
                     sql = "select b.rogl, b.tcsgl, a.class1cd, null class2cd, ";
                     sql += "'" + glcd + "' prodglcd,'" + rglcd + "' prodrglcd, ";
@@ -2152,7 +2156,7 @@ namespace Improvar.Controllers
                         TTXN.DTAG = "E";
                     }
                     TTXN.DOCTAG = VE.MENU_PARA.retStr().Length > 2 ? VE.MENU_PARA.retStr().Remove(2) : VE.MENU_PARA.retStr();
-                    TTXN.SLCD = VE.RETDEBSLCD;
+
                     TTXN.GOCD = VE.T_TXN.GOCD;
                     TTXN.DUEDAYS = VE.T_TXN.DUEDAYS;
                     TTXN.PARGLCD = parglcd;
@@ -2175,7 +2179,7 @@ namespace Improvar.Controllers
                         {
                             if (!VE.TsalePos_TBATCHDTL.Where(s => s.BARNO == v.BARNO && s.SLNO == v.SLNO).Any())
                             {
-                              
+
                                 dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E", "S", "BARNO = '" + v.BARNO + "' and SLNO = '" + v.SLNO + "' ");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                                 dbsql = masterHelp.TblUpdt("t_batchmst_price", TTXN.AUTONO, "E", "S", "BARNO = '" + v.BARNO + "'");
@@ -2183,7 +2187,7 @@ namespace Improvar.Controllers
                             }
                             if (!VE.TsalePos_TBATCHDTL_RETURN.Where(s => s.BARNO == v.BARNO && s.SLNO == v.SLNO).Any())
                             {
-                               
+
                                 dbsql = masterHelp.TblUpdt("t_batchmst", TTXN.AUTONO, "E", "S", "BARNO = '" + v.BARNO + "' and SLNO = '" + v.SLNO + "' ");
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                                 dbsql = masterHelp.TblUpdt("t_batchmst_price", TTXN.AUTONO, "E", "S", "BARNO = '" + v.BARNO + "'");
@@ -2500,7 +2504,7 @@ namespace Improvar.Controllers
 
                                 }
                                 T_BATCHDTL TsalePos_TBATCHDTL = new T_BATCHDTL();
-                              
+
                                 TsalePos_TBATCHDTL.EMD_NO = TTXN.EMD_NO;
                                 TsalePos_TBATCHDTL.CLCD = TTXN.CLCD;
                                 TsalePos_TBATCHDTL.DTAG = TTXN.DTAG;
@@ -2541,10 +2545,10 @@ namespace Improvar.Controllers
                                 TsalePos_TBATCHDTL.STKTYPE = VE.TsalePos_TBATCHDTL[i].STKTYPE.retStr();
                                 TsalePos_TBATCHDTL.OTHRAMT = _rpldist + _rpldistq;
                                 TsalePos_TBATCHDTL.TXBLVAL = VE.TsalePos_TBATCHDTL[i].TXBLVAL;
-                             
+
                                 dbsql = masterHelp.RetModeltoSql(TsalePos_TBATCHDTL);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                              
+
                                 #endregion
 
                                 dbqty = dbqty + VE.TsalePos_TBATCHDTL[i].QNTY.retDbl();
@@ -2736,7 +2740,7 @@ namespace Improvar.Controllers
                                     TBATCHMSTPRICE.RATE = VE.TsalePos_TBATCHDTL_RETURN[i].RATE;
                                     TBATCHMSTPRICE.EFFDT = TTXN.DOCDT;
                                     //end
-                                    
+
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMST, Action, "", SqlCondition);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                     dbsql = masterHelp.RetModeltoSql(TBATCHMSTPRICE, Action, "", SqlCondition);
@@ -2744,7 +2748,7 @@ namespace Improvar.Controllers
 
                                 }
                                 T_BATCHDTL TsalePos_TBATCHDTL_RETURN = new T_BATCHDTL();
-                               
+
                                 TsalePos_TBATCHDTL_RETURN.EMD_NO = TTXN.EMD_NO;
                                 TsalePos_TBATCHDTL_RETURN.CLCD = TTXN.CLCD;
                                 TsalePos_TBATCHDTL_RETURN.DTAG = TTXN.DTAG;
@@ -2785,10 +2789,10 @@ namespace Improvar.Controllers
                                 TsalePos_TBATCHDTL_RETURN.STKTYPE = VE.TsalePos_TBATCHDTL_RETURN[i].STKTYPE.retStr();
                                 TsalePos_TBATCHDTL_RETURN.OTHRAMT = _Rrpldist + _Rrpldistq;
                                 TsalePos_TBATCHDTL_RETURN.TXBLVAL = VE.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL;
-                             
+
                                 dbsql = masterHelp.RetModeltoSql(TsalePos_TBATCHDTL_RETURN);
                                 dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-                              
+
                                 #endregion
 
                                 dbqty = dbqty - VE.TsalePos_TBATCHDTL_RETURN[i].QNTY.retDbl();
@@ -2801,7 +2805,7 @@ namespace Improvar.Controllers
                         }
                     }
                     #endregion
-                    
+
                     if (dbqty == 0)
                     {
                         dberrmsg = "Quantity not entered"; goto dbnotsave;
@@ -3588,17 +3592,17 @@ namespace Improvar.Controllers
                     }
                     dbsql = masterHelp.TblUpdt("t_txnoth", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                   
+
                     dbsql = masterHelp.TblUpdt("T_TXNPYMT_HDR", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("T_TXNMEMO", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                     dbsql = masterHelp.TblUpdt("T_TXNTRANS", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                  
+
                     dbsql = masterHelp.TblUpdt("T_CNTRL_HDR_UNIQNO", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-                
+
 
                     dbsql = masterHelp.TblUpdt("t_txnslsmn", VE.T_TXN.AUTONO, "D");
                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -3654,11 +3658,11 @@ namespace Improvar.Controllers
                     return Content("");
                 }
                 goto dbok;
-            dbnotsave:;
+                dbnotsave:;
                 OraTrans.Rollback();
                 OraCon.Dispose();
                 return Content(dberrmsg);
-            dbok:;
+                dbok:;
             }
             catch (Exception ex)
             {

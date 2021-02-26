@@ -198,6 +198,7 @@ namespace Improvar.Controllers
                                         VE.TTXNPYMT = TTXNPYMNT;
                                     }
                                 }
+                                GetInvoice(VE);
                             }
                             else
                             {
@@ -461,7 +462,7 @@ namespace Improvar.Controllers
                 //VE.PARENT_SLNO = slno.retInt();
                 string glcd = "";// VE.T_PYTHDR.GLCD;
                 string autono = "";// VE.T_PYTHDR?.AUTONO;
-                var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.ToString(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
+                var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
                 var RTR = OSDATA.Rows[0]["slno"].GetType();
                 var OSList = (from customer in OSDATA.AsEnumerable()
                               where (customer.Field<string>("VCHTYPE") == "BL")
