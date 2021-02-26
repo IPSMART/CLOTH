@@ -142,7 +142,7 @@ namespace Improvar.Controllers
                                 string sql = "";
                                 sql += " select a.rtdebcd,b.rtdebnm,b.mobile,a.inc_rate,C.TAXGRPCD,a.retdebslcd,b.city,b.add1,b.add2,b.add3, a.effdt, d.prccd, e.prcnm ";
                                 sql += "  from  " + scm + ".M_SYSCNFG a, " + scmf + ".M_RETDEB b, " + scm + ".M_SUBLEG_SDDTL c, " + scm + ".m_subleg_com d, " + scmf + ".m_prclst e ";
-                                sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG) and a.retdebslcd=d.slcd(+) and ";
+                              //  sql += " where a.RTDEBCD=b.RTDEBCD and a.effdt in(select max(effdt) effdt from  " + scm + ".M_SYSCNFG where effdt<=to_date('"++"','dd/mm/yyyy') and a.retdebslcd=d.slcd(+) and ";
                                 sql += "a.retdebslcd=C.SLCD(+) and c.compcd='" + COM + "' and c.loccd='" + LOC + "' and d.prccd=e.prccd(+) ";
 
                                 DataTable syscnfgdt = masterHelp.SQLquery(sql);
@@ -198,6 +198,7 @@ namespace Improvar.Controllers
                                         VE.TTXNPYMT = TTXNPYMNT;
                                     }
                                 }
+                                GetInvoice(VE);
                             }
                             else
                             {
@@ -461,7 +462,7 @@ namespace Improvar.Controllers
                 //VE.PARENT_SLNO = slno.retInt();
                 string glcd = "";// VE.T_PYTHDR.GLCD;
                 string autono = "";// VE.T_PYTHDR?.AUTONO;
-                var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.ToString(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
+                var OSDATA = masterHelp.GenOSTbl(glcd, slcd, VE.T_CNTRL_HDR.DOCDT.retDateStr(), "", "", "", "", "", "Y", "", "", "", "", "", false, false, "", "", false, "", autono, "");
                 var RTR = OSDATA.Rows[0]["slno"].GetType();
                 var OSList = (from customer in OSDATA.AsEnumerable()
                               where (customer.Field<string>("VCHTYPE") == "BL")
