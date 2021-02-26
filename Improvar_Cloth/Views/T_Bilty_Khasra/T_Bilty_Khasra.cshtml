@@ -260,14 +260,15 @@
     }
     function SelectPendingLRNO() {
         debugger;
-        var mutslcd = "";
+        var mutslcd = ""; var CheckAll = false;
         var docdt = $("#DOCDT").val();
         if ($("#MUTSLCD").val() != "") mutslcd = $("#MUTSLCD").val();
         var Count = 0;
         var GridPendingPO = $("#T_Bilty_Khasra_PopUp > tbody > tr").length;
         for (var i = 0; i <= GridPendingPO - 1; i++) {
             var Check = document.getElementById("chkid_K_POPUP_" + i).checked;
-            if (Check == true) {
+            if ("@Model.MENU_PARA" == "KHSR") CheckAll = document.getElementById("CheckedAll_" + i).checked;
+            if (Check == true || CheckAll == true) {
                 Count = Count + 1;
             }
         }
@@ -290,10 +291,10 @@
                     $('#popup').html("");
                     $('.PopUp_Backround').fadeOut();
                     if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
-                    $("#GOCD").attr('readonly', 'readonly');
-                    $("#gocdhlp").hide();
-                         }
-                     },
+                        $("#GOCD").attr('readonly', 'readonly');
+                        $("#gocdhlp").hide();
+                    }
+                },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     $("#WaitingMode").hide();
                     msgError(XMLHttpRequest.responseText);
@@ -424,6 +425,42 @@
         }
     }
 </script>
+<script>
+    function GetLastGodown(id) {
+        if ("@Model.DefaultAction" != "V") {
+            debugger;
+            if (id == "") { $("#BALENO").val(""); $("#GONM1").val(""); return false; }
+            if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
+            $.ajax({
+                type: 'POST',
+                beforesend: $("#WaitingMode").show(),
+                url: "@Url.Action("GetLastGodown", PageControllerName)",
+                data: $('form').serialize(),
+                success: function (result) {
+
+                    var MSG = result.indexOf(String.fromCharCode(181));
+                    if (MSG >= 0) {
+                        $("#GONM1").val(returncolvalue(result, "GONM"));
+                    }
+                    else {
+                        msgInfo("Invalid Bale No.!");
+                        $("#BALENO").val(""); $("#GONM1").val("");
+                        message_value="BALENO";
+                    }
+                    $("#WaitingMode").hide();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#WaitingMode").hide();
+                    msgError(XMLHttpRequest.responseText);
+                    $("body span h1").remove(); $("#msgbody_error style").remove();
+                }
+            });
+
+        }
+    }
+
+
+</script>
 @using (Html.BeginForm())
 {
     if (Model.DefaultView == true)
@@ -434,7 +471,7 @@
         <input type="hidden" id="btnSave" value="@Url.Action("SAVE", PageControllerName)" />
         <input type="hidden" id="srhpnl" value="@Url.Action("SearchPannelData", PageControllerName)" />
         <input type="hidden" id="urlcancelrecord" value="@Url.Action("cancelRecords", PageControllerName)" />
-        <input type="hidden" id="partylinkcd" value="O" />
+        <input type="hidden" id="partylinkcd" value="S" />
         <input type="hidden" id="trnsportlinkcd" value="T" />
         @Html.HiddenFor(s => s.DefaultAction)
         @Html.HiddenFor(a => a.T_BALE_HDR.AUTONO, new { id = "AUTONO" })
@@ -522,6 +559,25 @@
                 else
                 {
                     @Html.HiddenFor(a => a.T_TXN.GOCD)
+                    if (Model.DefaultAction != "V")
+                    {  <div class="col-md-5">
+                    <div class="editor-label" style="margin-top: 6px;">
+                        @Html.Label("", "Bale No.")
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="editor-field" style="margin-top:6px;">
+                        @Html.EditorFor(model => model.BALENO, new { htmlAttributes = new { @class = "form-control", id = "BALENO", @placeholder = "Bale No.", maxlength = 30, onblur = "GetLastGodown(this.value);" } })
+                    </div>
+                </div>
+                        <div class="col-md-7">
+                            <div class="editor-field" style="margin-top:6px;">
+                                @Html.EditorFor(model => model.GONM1, new { htmlAttributes = new { @class = "form-control", id = "GONM1", @placeholder = "Godown Name", @TabIndex = -1, @readonly = "readonly" } })
+                            </div>
+                        </div>}
+
+
+
                 }
                 @*<div class="col-md-3">
                         <div class="editor-label" style="margin-top: 6px;">
@@ -539,17 +595,35 @@
                             <b style="color:Red;">*</b>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.T_BALE_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Mutia Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Mutia Details','MUTSLCD','MUTSLCD=SLCD=1/SLNM=slnm=0','partylinkcd');", @placeholder = "MUTSLCD", maxlength = 8 } })
-                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Mutia Details','MUTSLCD','MUTSLCD=slcd=1/SLNM=slnm=0','partylinkcd')" />
-                        </div>
-                    </div>
-                    <div class="col-md-9">
-                        <div class="editor-field">
-                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Mutia Name", @readonly = "readonly", tabindex = "-1" } })
-                        </div>
-                    </div>
+                                    <div class="col-md-3">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.T_BALE_HDR.MUTSLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "MUTSLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Mutia Details','MUTSLCD','MUTSLCD=MUTSLCD=1/SLNM=slnm=0','trnsportlinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Mutia Details','MUTSLCD','MUTSLCD=SLCD=1/SLNM=slnm=0','trnsportlinkcd');", @placeholder = "MUTSLCD", maxlength = 8 } })
+                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Mutia Details','MUTSLCD','MUTSLCD=slcd=1/SLNM=slnm=0','trnsportlinkcd')" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SLNM, new { htmlAttributes = new { @class = "form-control", id = "SLNM", maxlength = 45, @title = "Only for View", @placeholder = "Mutia Name", @readonly = "readonly", tabindex = "-1" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4" style="width:auto">
+                                        <div class="editor-label" style="margin-top: 6px;">
+                                            @Html.Label("", "Subledger")
+                                            @*<b style="color:Red;">*</b>*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.T_TXN.SLCD, new { htmlAttributes = new { @class = "form-control textbox_image", id = "SLCD", onkeydown = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Subledger Details','SLCD','SLCD=slcd=1/SLNM1=slnm=0','partylinkcd')", onblur = "GetHelpBlur('" + @Url.Action("GetSubLedgerDetails", PageControllerName) + "','Subledger Details','SLCD','SLCD=SLCD=1/SLNM1=slnm=0','partylinkcd');", @placeholder = "SLCD", maxlength = 8 } })
+                                            <img src="~/Image/search.png" id="PARTY_HELP" width="20px" height="20px" class="Help_image_button" title="Help" onmousedown="GetHelpBlur('@Url.Action("GetSubLedgerDetails", PageControllerName)','Subledger Details','SLCD','SLCD=slcd=1/SLNM1=slnm=0','partylinkcd')" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9" style="width:auto">
+                                        <div class="editor-field">
+                                            @Html.EditorFor(model => model.SLNM1, new { htmlAttributes = new { @class = "form-control", id = "SLNM1", maxlength = 45, @title = "Only for View", @placeholder = "Subledger Name", @readonly = "readonly", tabindex = "-1" } })
+                                        </div>
+                                    </div>
+
                 }
             </div>
             <div class="row" style="margin-top:5px;">

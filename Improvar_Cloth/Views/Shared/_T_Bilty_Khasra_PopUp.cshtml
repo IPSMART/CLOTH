@@ -32,6 +32,12 @@
                     <table id="T_Bilty_Khasra_PopUp" class="resizable table-striped" cellpadding="0px" cellspacing="0px" style="width:700px;">
                         <thead>
                             <tr class="sticky-header" style="height:30px;">
+                                @if (Model.MENU_PARA == "KHSR")
+                                {
+                                    <th class="sticky-cell" style="width: 27px;">
+                                        <input type="checkbox" name="AllCheck" style="margin-top:0px;" onclick="SetAllCheckBoxesFilter(this, 'T_Bilty_Khasra_PopUp', 'CheckedAll_', 'search')" />
+                                    </th>
+                                }
                                 <th class="sticky-cell" style="width: 27px;">Bale No</th>
                                 @if (Model.MENU_PARA == "KHSR")
                                 {
@@ -52,6 +58,11 @@
                                 for (int i = 0; i <= Model.TBILTYKHASRA_POPUP.Count - 1; i++)
                                 {
                                     <tr style="font-size:12px; font-weight:bold;">
+                                        @if (Model.MENU_PARA == "KHSR")
+                                        {
+                                            <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
+                                                @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].CheckedAll, new { id = "CheckedAll_" + i, @TabIndex = -1 })
+                                            </td>}
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @Html.CheckBoxFor(model => model.TBILTYKHASRA_POPUP[i].Checked, new { id = "chkid_K_POPUP_" + i, Onclick = "SelectMatchingCheckBoxes(" + i + ",'chkid_K_POPUP_', 'BLAUTONO_K_POPUP_/BALENO_POPUP_', 'T_Bilty_Khasra_PopUp');" })
                                             @Html.HiddenFor(model => model.TBILTYKHASRA_POPUP[i].BLAUTONO, new { id = "BLAUTONO_K_POPUP_" + i })

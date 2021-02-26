@@ -202,8 +202,17 @@ namespace Improvar.Controllers
                 if (VE.MENU_PARA == "TRWB")
                 {
                     string slcd = TBH.MUTSLCD;
+                    string slcd1 = TXN.SLCD;
                     var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM }).FirstOrDefault();
+                    if (slcd1 != null)
+                    {var subleg1 = (from a in DBF.M_SUBLEG where a.SLCD == slcd1 select new { a.SLNM }).FirstOrDefault(); VE.SLNM1 = subleg1.SLNM; }
+                    
                     VE.SLNM = subleg.SLNM;
+                   
+                }
+                if(TXNTRN.TRANSLCD!=null)
+                { var trnslcd = TXNTRN.TRANSLCD;
+                    var subleg2 = (from a in DBF.M_SUBLEG where a.SLCD == trnslcd select new { a.SLNM }).FirstOrDefault(); VE.TRANSLNM = subleg2.SLNM;
                 }
                 var TBALE = DB.T_BALE.Where(t => t.AUTONO == TBH.AUTONO).FirstOrDefault();
 
@@ -407,7 +416,7 @@ namespace Improvar.Controllers
                 List<string> existingbale = new List<string>();
                 foreach (var i in VE.TBILTYKHASRA_POPUP)
                 {
-                    if (i.Checked == true)
+                    if (i.Checked == true ||i.CheckedAll==true)
                     {
                         blautonos.Add(i.BLAUTONO);
                         baleno.Add(i.BALENO);
@@ -735,6 +744,7 @@ namespace Improvar.Controllers
                         T_TXN TTXN = new T_TXN();
                         T_BALE_HDR TBHDR = new T_BALE_HDR();
                         T_TXNTRANS TXNTRANS = new T_TXNTRANS();
+                        T_TXNOTH TTXNOTH = new T_TXNOTH();
                         T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                         string DOCPATTERN = "";
                         TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
@@ -778,7 +788,8 @@ namespace Improvar.Controllers
                         TTXN.EMD_NO = TBHDR.EMD_NO;
                         TTXN.DTAG = "E";
                         TTXN.DOCTAG = doctag;
-                        TTXN.SLCD = VE.T_BALE_HDR.MUTSLCD;
+                        //TTXN.SLCD = VE.T_BALE_HDR.MUTSLCD;
+                        TTXN.SLCD = VE.T_TXN.SLCD;
                         TTXN.CONSLCD = VE.T_TXN.CONSLCD;
                         TTXN.BLAMT = VE.T_TXN.BLAMT;
                         TTXN.PREFDT = VE.T_TXN.PREFDT;
@@ -795,6 +806,7 @@ namespace Improvar.Controllers
                         TTXN.MENU_PARA = VE.T_TXN.MENU_PARA;
                         TTXN.BLAMT = BLAMT;
                         TTXN.ROAMT = ROAMT;
+
                         if (VE.DefaultAction == "E")
                         {
                             dbsql = MasterHelpFa.TblUpdt("T_BALE", TBHDR.AUTONO, "E");
@@ -815,6 +827,12 @@ namespace Improvar.Controllers
 
                             dbsql = MasterHelpFa.TblUpdt("T_TXNTRANS", VE.T_BALE_HDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            if (VE.MENU_PARA == "TRWB")
+                            {
+                                dbsql = masterHelp.TblUpdt("t_txnoth", TTXN.AUTONO, "E");
+                                dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                            }
+                               
 
                             dbsql = MasterHelpFa.TblUpdt("T_txn", VE.T_BALE_HDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
@@ -943,7 +961,8 @@ namespace Improvar.Controllers
                                         TVCHGST.DSLNO = isl.retShort();
                                         TVCHGST.SLNO = gs.retShort();
                                         TVCHGST.DSLNO = 1;
-                                        TVCHGST.PCODE = VE.T_BALE_HDR.MUTSLCD;
+                                        //TVCHGST.PCODE = VE.T_BALE_HDR.MUTSLCD;
+                                        TVCHGST.PCODE = VE.T_TXN.SLCD;
                                         TVCHGST.BLNO = strblno;
                                         if (strbldt.retStr() != "")
                                         {
@@ -1004,9 +1023,26 @@ namespace Improvar.Controllers
                         TXNTRANS.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
                         TXNTRANS.GATEENTNO = VE.T_TXNTRANS.GATEENTNO;
                         //----------------------------------------------------------//
+                        //-------------------------Other Info--------------------------//
+                        if (VE.MENU_PARA == "TRWB")
+                        {
+                            TTXNOTH.AUTONO = TTXN.AUTONO;
+                            TTXNOTH.EMD_NO = TTXN.EMD_NO;
+                            TTXNOTH.CLCD = TTXN.CLCD;
+                            TTXNOTH.DTAG = TTXN.DTAG;
+                            TTXNOTH.DNSALPUR = "S";
+                            TTXNOTH.MUTSLCD = VE.T_BALE_HDR.MUTSLCD;
+                        }
+                      
+                        //----------------------------------------------------------//
                         dbsql = masterHelp.RetModeltoSql(TXNTRANS);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
-
+                        if (VE.MENU_PARA == "TRWB")
+                        {
+                            dbsql = masterHelp.RetModeltoSql(TTXNOTH);
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        }
+                           
 
                         if (VE.UploadDOC != null)// add
                         {
@@ -1072,7 +1108,12 @@ namespace Improvar.Controllers
 
                         dbsql = MasterHelpFa.TblUpdt("T_txndtl", VE.T_BALE_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
-
+                        if (VE.MENU_PARA == "TRWB")
+                        {
+                            dbsql = MasterHelpFa.TblUpdt("t_txnoth", VE.T_BALE_HDR.AUTONO, "D");
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+                        }
+                       
                         dbsql = MasterHelpFa.TblUpdt("T_TXNTRANS", VE.T_BALE_HDR.AUTONO, "D");
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
 
@@ -1162,6 +1203,42 @@ namespace Improvar.Controllers
             DT.Columns.Add("SGSTPER", typeof(double));
             DT.Columns.Add("SGSTAMT", typeof(double));
             DT.Columns.Add("NETAMT", typeof(double));
+        }
+        public ActionResult GetLastGodown(TransactionKhasraEntry VE)
+        {
+            try
+            {
+                ImprovarDB DB = new ImprovarDB(Cn.GetConnectionString(), CommVar.CurSchema(UNQSNO).ToString());
+                string str = "",yr="";
+                List<string> gocd = new List<string>();
+                DataTable dt = new DataTable();
+                var baleyr = (from i in DB.T_BALE where i.BALENO == VE.BALENO select new { i.BALEYR,i.GOCD }).Distinct().ToList();
+                foreach(var v in baleyr)
+                { yr = v.BALEYR;
+                    gocd.Add(v.GOCD);
+                }
+                var sqlgocds = string.Join(",", gocd).retSqlformat();
+                var balenoyr = VE.BALENO + yr;
+                dt = salesfunc.GetBaleStock(VE.T_CNTRL_HDR.DOCDT.retDateStr(),sqlgocds,balenoyr.retSqlformat(), "", "", VE.T_BALE_HDR.AUTONO.retStr());
+            if(dt.Rows.Count>0)
+                {
+                    var data = (from DataRow dr in dt.Rows
+                                select new
+                                {
+                                    gonm = dr["gonm"].retStr()
+                                }).Distinct().OrderByDescending(a => a.gonm).ToList().FirstOrDefault();
+                    var gonm = data.gonm;
+                    if (data != null) str = str += "^GONM=^" + gonm + Cn.GCS();
+                    return Content(str);
+                }
+               else return Content(str);
+
+            }
+            catch (Exception ex)
+            {
+                Cn.SaveException(ex, "");
+                return Content(ex.Message + ex.InnerException);
+            }
         }
     }
 }
