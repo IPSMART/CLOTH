@@ -426,7 +426,7 @@ function UpdateBarCodeRow() {
         message_value = "QNTY";
         return false;
     }
-    if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && MENU_PARA != "OP" && MENU_PARA != "OTH" && $("#BALSTOCK").val() != "") {
+    if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && MENU_PARA != "OP" && MENU_PARA != "OTH" && retFloat($("#QNTY").val()) != 0) {
         var NEGSTOCK = $("#NEGSTOCK").val();
         var BALSTOCK = $("#BALSTOCK").val();
         if (BALSTOCK == "") { BALSTOCK = parseFloat(0); } else { BALSTOCK = parseFloat(BALSTOCK); }
@@ -879,7 +879,7 @@ function CalculateTotal_Barno() {
         var NOS = $("#B_NOS_" + i).val();
         if (NOS != "") { T_NOS = T_NOS + parseFloat(NOS); } else { T_NOS = T_NOS + parseFloat(0); }
 
-        if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && MENU_PARA != "OP" && MENU_PARA != "OTH" && $("#B_BALSTOCK_" + i).val() != "") {
+        if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && MENU_PARA != "OP" && MENU_PARA != "OTH" && retFloat($("#B_QNTY_" + i).val()) != 0) {
             var NEGSTOCK = $("#B_NEGSTOCK_" + i).val();
             var BALSTOCK = $("#B_BALSTOCK_" + i).val();
             if (BALSTOCK == "") { BALSTOCK = parseFloat(0); } else { BALSTOCK = parseFloat(BALSTOCK); }
@@ -1775,7 +1775,7 @@ function AddBarCodeGrid() {
         message_value = "QNTY";
         return false;
     }
-    if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && MENU_PARA != "OP" && MENU_PARA != "OTH" && $("#BALSTOCK").val() != "") {
+    if (MENU_PARA != "SR" && MENU_PARA != "SBCMR" && MENU_PARA != "PB" && MENU_PARA != "OP" && MENU_PARA != "OTH" && retFloat($("#QNTY").val()) != 0) {
         var NEGSTOCK = $("#NEGSTOCK").val();
         var BALSTOCK = $("#BALSTOCK").val();
         if (BALSTOCK == "") { BALSTOCK = parseFloat(0); } else { BALSTOCK = parseFloat(BALSTOCK); }
