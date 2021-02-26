@@ -106,14 +106,15 @@ namespace Improvar.Controllers
                 sql += "g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
                 sql += "g.nos, g.qnty, h.styleno||' '||h.itnm  itstyle, listagg(j.shade,',') within group (order by j.autono, j.txnslno) as shade, ";
                 sql += "g.pageno, g.pageslno, g.rate, f.prefno, f.prefdt,a.autono,f.gocd hdrgocd,l.gonm hdrgonm,l.goadd1 hdrgoadd1,l.goadd2 hdrgoadd2,l.goadd3 hdrgoadd3,l.gophno hdrgophno,l.goemail hdrgoemail,a.slno,a.docno,a.docdt,a.baleopen, nvl(m.decimals, 0) qdecimal, ";
-                sql += " f.slcd,nvl(n.fullname, n.slnm) slnm,n.regemailid, n.add1 sladd1, n.add2 sladd2, n.add3 sladd3, n.add4 sladd4, n.add5 sladd5, n.add6 sladd6, n.add7 sladd7,  ";
-                sql += " n.gstno, n.panno, trim(n.regmobile || decode(n.regmobile, null, '', ',') || n.slphno || decode(n.phno1, null, '', ',' || n.phno1)) phno, n.state, n.country, n.statecd, n.actnameof slactnameof  ";
+                sql += " a.slcd,nvl(a.fullname, a.slnm) slnm,a.regemailid, a.add1 sladd1, a.add2 sladd2, a.add3 sladd3, a.add4 sladd4, a.add5 sladd5, a.add6 sladd6, a.add7 sladd7,  ";
+                sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)) phno, a.state, a.country, a.statecd, a.actnameof slactnameof  ";
 
                 sql += "from  ( ";
                 sql += "select c.gocd, a.blautono, a.blslno, a.baleno, a.baleyr, a.baleyr || a.baleno balenoyr, ";
-                sql += "c.qnty,a.autono,decode(a.baleopen,'Y',a.slno-1000,a.slno)slno,d.docno,d.docdt,a.baleopen ";
-                sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d ";
-                sql += "where a.autono = b.autono(+) and a.autono = d.autono(+) and ";
+                sql += "c.qnty,a.autono,decode(a.baleopen,'Y',a.slno-1000,a.slno)slno,d.docno,d.docdt,a.baleopen,e.slcd,f.slnm,f.fullname,f.regemailid,f.add1,f.add2, f.add3,f.add4,f.add5,f.add6,f.add7,f.gstno, f.panno,f.regmobile, ";
+                sql += "f.slphno,f.phno1,f.state,f.country, f.statecd, f.actnameof ";
+                sql += "from " + scm + ".t_bale a, " + scm + ".t_bale_hdr b, " + scm + ".t_txndtl c, " + scm + ".t_cntrl_hdr d ," + scm + ".t_txn e," + scmf + ".m_subleg f ";
+                sql += "where a.autono = b.autono(+) and a.autono = d.autono(+)and c.autono = e.autono(+) and e.slcd=f.slcd(+) and ";
                 sql += "a.autono=c.autono(+) and decode(a.baleopen,'Y',a.slno-1000,a.slno)=c.slno(+) and c.stkdrcr in ('D','C') and ";
                 sql += "d.compcd = '" + COM + "' and nvl(d.cancel, 'N') = 'N' and ";
                 sql += "d.loccd='" + LOC + "' and d.yr_cd = '" + yr_cd + "'  ";
@@ -133,8 +134,8 @@ namespace Improvar.Controllers
                 sql += "and h.uomcd=m.uomcd(+) and h.itgrpcd = i.itgrpcd(+) and a.gocd=k.gocd(+)  and a.slno <1000 ";
                 sql += "group by a.gocd, k.gonm, a.blautono, a.blslno, a.baleno, a.baleyr, e.lrno, e.lrdt, g.itcd, h.styleno, h.itnm, h.uomcd, h.itgrpcd, i.itgrpnm, ";
                 sql += "g.nos, g.qnty, h.styleno||' '||h.itnm, g.pageno, g.pageslno,g.rate, f.prefno, f.prefdt,a.autono,f.gocd,l.gonm,l.goadd1,l.goadd2,l.goadd3,l.gophno,l.goemail,a.slno,a.docno,a.docdt,a.baleopen,m.decimals ";
-                sql += ",f.slcd,nvl(n.fullname, n.slnm),n.regemailid, n.add1, n.add2, n.add3, n.add4, n.add5, n.add6, n.add7,  ";
-                sql += " n.gstno, n.panno, trim(n.regmobile || decode(n.regmobile, null, '', ',') || n.slphno || decode(n.phno1, null, '', ',' || n.phno1)), n.state, n.country, n.statecd, n.actnameof  ";
+                sql += ",a.slcd,nvl(a.fullname, a.slnm),a.regemailid, a.add1, a.add2, a.add3, a.add4, a.add5, a.add6, a.add7,  ";
+                sql += " a.gstno, a.panno, trim(a.regmobile || decode(a.regmobile, null, '', ',') || a.slphno || decode(a.phno1, null, '', ',' || a.phno1)), a.state, a.country, a.statecd, a.actnameof  ";
 
                 sql += "order by a.autono, f.prefno, a.baleno ";
 
