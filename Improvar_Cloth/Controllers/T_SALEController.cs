@@ -283,7 +283,7 @@ namespace Improvar.Controllers
                             else
                             {
                                 VE.MTRLJOBCD = "FS";
-                                VE.MTRLJOBNM = mtrljobcd.Where(a=>a.MTRLJOBCD == "FS").Select(b=>b.MTRLJOBNM).FirstOrDefault();
+                                VE.MTRLJOBNM = mtrljobcd.Where(a => a.MTRLJOBCD == "FS").Select(b => b.MTRLJOBNM).FirstOrDefault();
                                 VE.MTBARCODE = mtrljobcd.Where(a => a.MTRLJOBCD == "FS").Select(b => b.MTBARCODE).FirstOrDefault();
                             }
                         }
@@ -3228,7 +3228,7 @@ namespace Improvar.Controllers
 
 
                     VE.BALEYR = Convert.ToDateTime(CommVar.FinStartDate(UNQSNO)).Year.retStr();
-                    if (VE.MENU_PARA == "OP"|| VE.MENU_PARA == "OTH")
+                    if (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH")
                     {
                         VE.BALEYR = (VE.BALEYR.retInt() - 1).retStr();
                     }
@@ -4197,7 +4197,8 @@ namespace Improvar.Controllers
                                     TVCHGST1.APPLTAXRATE = 0;
                                     TVCHGST1.EXEMPTEDTYPE = exemptype;
                                     TVCHGST1.GOOD_SERV = good_serv;
-                                    TVCHGST1.EXPGLCD = ((VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") && (VE.TBATCHDTL == null && VE.TTXNDTL == null)) ? VE.TTXNAMT[0].GLCD : expglcd;
+                                    //TVCHGST1.EXPGLCD = ((VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN") && (VE.TBATCHDTL == null && VE.TTXNDTL == null)) ? VE.TTXNAMT[0].GLCD : expglcd;
+                                    TVCHGST1.EXPGLCD = VE.TTXNAMT[i].GLCD.retStr() == "" ? expglcd : VE.TTXNAMT[i].GLCD.retStr();
                                     TVCHGST1.INPTCLAIM = "Y";
                                     TVCHGST1.LUTNO = VE.T_VCH_GST.LUTNO;
                                     TVCHGST1.LUTDT = VE.T_VCH_GST.LUTDT;

@@ -3382,6 +3382,7 @@ namespace Improvar.Controllers
                         }
 
                         #endregion
+
                         if (VE.TTXNAMT != null)
                         {
                             proddrcr = negamt == "Y" ? dr : cr;
@@ -3483,7 +3484,8 @@ namespace Improvar.Controllers
                                     TVCHGST1.APPLTAXRATE = 0;
                                     TVCHGST1.EXEMPTEDTYPE = exemptype;
                                     TVCHGST1.GOOD_SERV = good_serv;
-                                    TVCHGST1.EXPGLCD = VE.TTXNAMT[i].GLCD;
+                                    //TVCHGST1.EXPGLCD = VE.TTXNAMT[i].GLCD;
+                                    TVCHGST1.EXPGLCD = VE.TTXNAMT[i].GLCD.retStr() == "" ? expglcd : VE.TTXNAMT[i].GLCD.retStr();
                                     TVCHGST1.INPTCLAIM = "Y";
                                     TVCHGST1.LUTNO = VE.T_VCH_GST.LUTNO;
                                     TVCHGST1.LUTDT = VE.T_VCH_GST.LUTDT;
