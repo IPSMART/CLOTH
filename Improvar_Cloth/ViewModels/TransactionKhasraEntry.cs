@@ -23,5 +23,10 @@ namespace Improvar.ViewModels
         public string TRANSLNM { get; set; }
         public List<VECHLTYPE> VECHLTYPE { get; set; }
         public List<TRANSMODE> TRANSMODE { get; set; }
+        public string SLNM1 { get; set; }
+        public string BALENO { get; set; }
+        public string GONM1 { get; set; }
+
+
     }
 }

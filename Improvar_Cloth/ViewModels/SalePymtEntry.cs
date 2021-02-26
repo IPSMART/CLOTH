@@ -11,11 +11,8 @@ namespace Improvar.ViewModels
     {
         public List<TTXNSLSMN> TTXNSLSMN { get; set; }
         public T_TXNPYMT_HDR T_TXNPYMT_HDR { get; set; }
-        public T_TXNTRANS T_TXNTRANS { get; set; }
-        public T_TXN T_TXN { get; set; }
         public T_CNTRL_HDR T_CNTRL_HDR { get; set; }
         public List<TTXNPYMT> TTXNPYMT { get; set; }
-        public List<TBILTYKHASRA> TBILTYKHASRA { get; set; }
         public List<SLPYMTADJ> SLPYMTADJ { get; set; }
         public List<DocumentType> DocumentType { get; set; }
         public string SLNM { get; set; }

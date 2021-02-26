@@ -21,5 +21,7 @@ namespace Improvar.Models
         public string PREFDT { get; set; }
         public string BALEYR { get; set; }
         public bool Checked_LRNO { get; set; }
+        public bool CheckedAll { get; set; }
+        
     }
 }

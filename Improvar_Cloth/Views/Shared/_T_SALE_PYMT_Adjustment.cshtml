@@ -34,7 +34,7 @@
         @Html.ValidationSummary(true)
         <div class="grid_title" style=" ">
             <div class="col-md-8">
-                <input type="text" id="FilterSearch" name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'VOUCHER_BILLADJ_GRID');" />
+                <input type="text" id="I_FilterSearch" name="FilterSearch" class="grid_title_box textbox_image" value="" placeholder="Filter" onkeyup="filterTable(event, 'tblBILLADJ_GRID');" />
                 <img src="~/Image/search.png" title="Help" />
             </div>
         </div>
@@ -69,7 +69,7 @@
                                         <td class="sticky-cell" style="padding-left:7px;padding-right:7px;">
                                             @if (Model.DefaultAction == "A" || Model.DefaultAction == "E")
                                             {
-                                                @Html.CheckBoxFor(model => model.SLPYMTADJ[i].Checked, new { id = "I_Checked_" + i, onclick = "AllCheckAdjDNCN(this, 'tblBILLADJ_GRID')" })
+                                                @Html.CheckBoxFor(model => model.SLPYMTADJ[i].Checked, new { id = "I_Checked_" + i, onclick = "CalculateAdjRow('tblBILLADJ_GRID', " + i + ",'I_Checked')" })
                                             }
                                             else
                                             {

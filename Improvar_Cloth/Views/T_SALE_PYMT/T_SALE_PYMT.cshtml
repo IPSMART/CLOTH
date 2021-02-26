@@ -22,13 +22,8 @@
     $(document).ready(function () {
         if ("@Model.DefaultAction" == "V" || "@Model.DefaultAction" == "D") {
             modeView();
-            //$(".sl_bom_grid").prop("disabled", false);
         }
         else if ("@Model.DefaultAction" == "E") {
-            @*if ("@Model.MENU_PARA" == "TRFB" || "@Model.MENU_PARA" == "TRWB") {
-                $("#GOCD").attr('readonly', 'readonly');
-                $("#gocdhlp").hide();
-            }*@
         }
         else if ("@Model.DefaultAction" == "A") {
             $('form :input:enabled:visible:not([readonly]):first').focus();
@@ -56,27 +51,22 @@
         }
     }
     function ModifyLogDetails() {
-        if ("@Model.DefaultAction" == "I_") {
+        if ("@Model.DefaultAction" == "V") {
             ModifyLogDtl('@mldauto');
         }
     }
 </script>
 <script>
     function requiredFieldValidator() {
-        debugger;
         if (!emptyFieldCheck("Please Select / Enter Document Date", "DOCDT")) { return false; }
-
-        if ("@Model.MENU_PARA" == "TRWB") {
-            if (!emptyFieldCheck("Please Select / Enter Mutia", "MUTSLCD")) { return false; }
-        }
+        if (!emptyFieldCheck("Please Select / Enter Retail", "RTDEBCD")) { return false; }
         return true;
     }
 </script>
 <script>
     $(function () {
-        if ("@Model.DefaultAction" != "I_") {
+        if ("@Model.DefaultAction" != "V") {
             $("#DOCDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate', minDate: '@Model.mindate' });
-            $("#LRDT").datepicker({ dateFormat: "dd/mm/yy", changeMonth: true, changeYear: true, maxDate: '@Model.maxdate' });
         }
     });
 </script>
@@ -198,7 +188,7 @@
                 var chkbox = document.getElementById('I_Checked_' + i);
                 chkbox.checked = obj.checked;
             }
-            CalculateAdjRow(tablename, i)
+            CalculateAdjRow(tablename, i, 'I_Checked')
         }
     }
 
@@ -227,31 +217,41 @@
         var AMOUNT = retFloat(document.getElementById("I_AMT_" + rowindex).value);
         var PREAMT = retFloat(document.getElementById("I_PRE_ADJ_AMT_" + rowindex).value);
         var ADJAMT = retFloat(document.getElementById("I_ADJ_AMT_" + rowindex).value);
-        var PAMT = retFloat(document.getElementById("T_PYMT_AMT").value);
+        //var PAMT = retFloat(document.getElementById("T_PYMT_AMT").value);
         if (AMOUNT == PREAMT) {
             document.getElementById('I_ADJ_AMT_' + rowindex).value = 0;
             checkbox.checked = false; return false;
         }
         var BALADJAMT = CalculateAvlAdjBal(tablename, rowindex);
-
         if (checkbox.checked == true || callfrom == "I_ADJ_AMT") {
             if (BALADJAMT == 0 || (ADJAMT == 0 && callfrom == "I_ADJ_AMT")) checkbox.checked = false; else checkbox.checked = true;
-
-            if (BALADJAMT >= ADJAMT && callfrom == "I_ADJ_AMT") {
-                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - ADJAMT).toFixed(2);;;
+            if (BALADJAMT >= ADJAMT && AMOUNT >= (PREAMT + ADJAMT) && callfrom == "I_ADJ_AMT") {
+                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - ADJAMT).toFixed(2);
+            }
+            else if (BALADJAMT >= AMOUNT && AMOUNT >= (PREAMT + ADJAMT) && callfrom == "I_Checked") {
+                document.getElementById('I_ADJ_AMT_' + rowindex).value = (AMOUNT - PREAMT).toFixed(2);
+                document.getElementById('I_BAL_AMT_' + rowindex).value = (0).toFixed(2);
+            }
+            else if (BALADJAMT <= AMOUNT && AMOUNT >= (PREAMT + ADJAMT) && callfrom == "I_Checked") {
+                document.getElementById('I_ADJ_AMT_' + rowindex).value = (BALADJAMT).toFixed(2);
+                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - BALADJAMT).toFixed(2);
+            }
+            else if (BALADJAMT >= ADJAMT && AMOUNT < (PREAMT + ADJAMT) && callfrom == "I_ADJ_AMT") {
+                document.getElementById('I_ADJ_AMT_' + rowindex).value = (AMOUNT - PREAMT).toFixed(2);
+                document.getElementById('I_BAL_AMT_' + rowindex).value = (0).toFixed(2);
             }
             else if (BALADJAMT <= ADJAMT && callfrom == "I_ADJ_AMT") {
                 document.getElementById('I_ADJ_AMT_' + rowindex).value = BALADJAMT;
-                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - BALADJAMT).toFixed(2);;
+                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - BALADJAMT).toFixed(2);
             }
-            else if (BALADJAMT >= (AMOUNT - PREAMT)) {
-                document.getElementById('I_ADJ_AMT_' + rowindex).value = (AMOUNT - PREAMT).toFixed(2);;;
-                document.getElementById('I_BAL_AMT_' + rowindex).value = 0;
-            }
-            else {
-                document.getElementById('I_ADJ_AMT_' + rowindex).value = BALADJAMT.toFixed(2);;//AMOUNT - PREAMT -
-                document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - BALADJAMT).toFixed(2);//(AMOUNT - PREAMT - BALADJAMT);
-            }
+            //else if (BALADJAMT >= (AMOUNT - PREAMT)) {
+            //    document.getElementById('I_ADJ_AMT_' + rowindex).value = (AMOUNT - PREAMT).toFixed(2);
+            //    document.getElementById('I_BAL_AMT_' + rowindex).value = 0;
+            //}
+            //else {
+            //    document.getElementById('I_ADJ_AMT_' + rowindex).value = BALADJAMT.toFixed(2);
+            //    document.getElementById('I_BAL_AMT_' + rowindex).value = (AMOUNT - PREAMT - BALADJAMT).toFixed(2);//(AMOUNT - PREAMT - BALADJAMT);
+            //}
         }
         else {
             document.getElementById("I_ADJ_AMT_" + rowindex).value = "0.00";
