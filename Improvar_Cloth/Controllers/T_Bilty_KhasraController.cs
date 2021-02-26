@@ -199,18 +199,19 @@ namespace Improvar.Controllers
                 TXNTRN = DB.T_TXNTRANS.Find(aa[0].Trim());
                 TCH = DB.T_CNTRL_HDR.Find(TBH.AUTONO);
                 TXN = DB.T_TXN.Find(TBH.AUTONO);
-                if (VE.MENU_PARA == "TRWB")
+                if (VE.MENU_PARA == "TRWB" || VE.MENU_PARA == "TRFB")
                 {
                     string slcd = TBH.MUTSLCD;
                     string slcd1 = TXN.SLCD;
-                    var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM }).FirstOrDefault();
+                    if (slcd != null) { var subleg = (from a in DBF.M_SUBLEG where a.SLCD == slcd select new { a.SLNM }).FirstOrDefault(); VE.SLNM = subleg.SLNM; }
+                      
                     if (slcd1 != null)
                     {var subleg1 = (from a in DBF.M_SUBLEG where a.SLCD == slcd1 select new { a.SLNM }).FirstOrDefault(); VE.SLNM1 = subleg1.SLNM; }
                     
-                    VE.SLNM = subleg.SLNM;
+                   
                    
                 }
-                if(TXNTRN.TRANSLCD!=null)
+                if (TXNTRN.TRANSLCD!=null)
                 { var trnslcd = TXNTRN.TRANSLCD;
                     var subleg2 = (from a in DBF.M_SUBLEG where a.SLCD == trnslcd select new { a.SLNM }).FirstOrDefault(); VE.TRANSLNM = subleg2.SLNM;
                 }
@@ -1030,7 +1031,6 @@ namespace Improvar.Controllers
                             TTXNOTH.EMD_NO = TTXN.EMD_NO;
                             TTXNOTH.CLCD = TTXN.CLCD;
                             TTXNOTH.DTAG = TTXN.DTAG;
-                            TTXNOTH.DNSALPUR = "S";
                             TTXNOTH.MUTSLCD = VE.T_BALE_HDR.MUTSLCD;
                         }
                       
