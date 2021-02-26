@@ -839,7 +839,7 @@ namespace Improvar.Controllers
         {
             try
             {
-                DataTable dt = salesfunc.GetSyscnfgData(EFFDT.retStr().Remove(10));
+                DataTable dt = salesfunc.GetSyscnfgData(EFFDT.retStr());
                 if (dt != null && dt.Rows.Count == 1)
                 {
                     return Content(masterHelp.ToReturnFieldValues("", dt));
