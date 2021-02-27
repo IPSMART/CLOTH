@@ -158,17 +158,12 @@ namespace Improvar.Controllers
                 TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "FOSTK").FirstOrDefault()?.DOCCD;
                 if(string.IsNullOrEmpty(TTXN.DOCCD)) return "Please add Document code. ";
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
-                //string FABgrpnm = "";
-                //sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".m_group where itgrptype='C' ";
-                //dt = masterHelp.SQLquery(sql);
-                //if (dt.Rows.Count == 0)
-                //{
-                //    return "Please create Fabric group";
-                //}
-                //else
-                //{
-                //    FABgrpnm = dt.Rows[0]["ITGRPNM"].retStr();
-                //}
+                sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".m_group ";
+                dt = masterHelp.SQLquery(sql);
+                if (dt.Rows.Count == 0)
+                {
+                    return "Please create a group Master";
+                }
                 int excelrow = 1;
                 foreach (DataRow oudr in outerDT.Rows)
                 {

@@ -47,6 +47,12 @@ namespace Improvar.Controllers
                 return RedirectToAction("Login", "Login");
             }
             if (Request.Files.Count == 0) return Content("No File Selected");
+            sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".m_group ";
+            var dt = masterHelp.SQLquery(sql);
+            if (dt.Rows.Count == 0)
+            {
+                return Content("Please create a group Master");
+            }
             VE = ReadRaymondPurchaseDBF(VE);
             return View(VE);
         }
@@ -224,7 +230,7 @@ namespace Improvar.Controllers
                         string style = inrdr["MAT_GRP"].ToString() + inrdr["MATERIAL"].ToString().Split('-')[0];
                         string grpnm = inrdr["MAT_DESCRI"].ToString();
                         string HSNCODE = inrdr["HSN_CODE"].ToString();
-                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE,"", "", "F","C");
+                        ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "F", "C");
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
                         TTXNDTL.ITNM = style;
                         TTXNDTL.MTRLJOBCD = "FS";

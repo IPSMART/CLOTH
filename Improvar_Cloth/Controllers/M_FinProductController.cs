@@ -692,7 +692,7 @@ namespace Improvar.Controllers
             try
             {
                 string sql = "";
-                sql += " select rate,prccd,SIZECD,COLRCD from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE a," + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst b ";
+                sql += " select a.rate,prccd,SIZECD,COLRCD from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST_PRICE a," + CommVar.CurSchema(UNQSNO) + ".T_BATCHmst b ";
                 sql += "where a.barno=b.barno and b.itcd='" + VE.M_SITEM.ITCD + "' and a.effdt = to_date('" + VE.PRICES_EFFDT + "','dd/mm/yyyy')  ";
                 sql += "order by EFFDT desc ";
                 DataTable dt_prcrt = masterHelp.SQLquery(sql);

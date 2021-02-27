@@ -2915,8 +2915,7 @@ namespace Improvar.Controllers
                     double titamt = 0, titqty = 0;
                     int lastitemno = 0;
 
-                    double _baldist_b = 0, _baldistq_b = 0, _rpldist_b = 0, _rpldistq_b = 0, _baldisttxblval_b = 0, _rpldisttxblval_b = 0, _amtdisttxblval = 0, othamt = 0;
-                    int lastitemno_b = 0;
+                    double _baldist_b = 0, _baldistq_b = 0, _rpldist_b = 0, _rpldistq_b = 0, _baldisttxblval_b = 0, _rpldisttxblval_b = 0;
                     if (VE.TTXNAMT != null)
                     {
                         for (int i = 0; i <= VE.TTXNAMT.Count - 1; i++)
@@ -3398,7 +3397,7 @@ namespace Improvar.Controllers
                     {
                         VE.TBATCHDTL.OrderBy(a => a.TXNSLNO);
                         int i = 0;
-                    batchdtlstart:
+                        batchdtlstart:
                         while (i <= VE.TBATCHDTL.Count - 1)
                         {
                             if (VE.TBATCHDTL[i].ITCD.retStr() == "" || VE.TBATCHDTL[i].QNTY.retDbl() == 0) { i++; goto batchdtlstart; }
@@ -3443,16 +3442,19 @@ namespace Improvar.Controllers
                                 string barno = "";
                                 if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
-                                    sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST where barno='" + VE.TBATCHDTL[i].BARNO + "'";
-                                    dt = masterHelp.SQLquery(sql);
-                                    if (dt.Rows.Count == 0)
+                                    if (string.IsNullOrEmpty(VE.TBATCHDTL[i].BARNO))
                                     {
                                         barno = salesfunc.TranBarcodeGenerate(TTXN.DOCCD, lbatchini, docbarcode, UNIQNO, (VE.TBATCHDTL[i].SLNO));
-                                        flagbatch = true;
                                     }
                                     else
                                     {
                                         barno = VE.TBATCHDTL[i].BARNO;
+                                    }
+                                    sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST where barno='" + barno + "'";
+                                    dt = masterHelp.SQLquery(sql);
+                                    if (dt.Rows.Count == 0)
+                                    {
+                                        flagbatch = true;
                                     }
                                 }
                                 else
@@ -4008,8 +4010,6 @@ namespace Improvar.Controllers
                                 VE.T_TXNTRANS.LRNO, VE.T_TXNTRANS.LRDT == null ? "" : VE.T_TXNTRANS.LRDT.ToString().retDateStr(), VE.TransporterName);
                         OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
                     }
-
-
                     if (blgstpost == true)
                     {
                         #region TVCHGST Table update    
@@ -4225,13 +4225,12 @@ namespace Improvar.Controllers
 
                         #endregion
                     }
-
                     if (igst != 0 && (cgst + sgst) != 0)
                     {
                         ContentFlg = "We can't add igst+cgst+sgst for the same party.";
                         goto dbnotsave;
                     }
-                    else if (igst + cgst + sgst == 0)
+                    else if (igst + cgst + sgst == 0 && (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH"))
                     {
                         if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
                         {
@@ -4376,7 +4375,7 @@ namespace Improvar.Controllers
                 Cn.SaveException(ex, ""); ContentFlg = ex.Message + ex.InnerException;
                 goto dbnotsave;
             }
-        dbsave:
+            dbsave:
             {
                 OraCon.Dispose();
                 if (othr_para == "")
@@ -4384,7 +4383,7 @@ namespace Improvar.Controllers
                 else
                     return ContentFlg;
             }
-        dbnotsave:
+            dbnotsave:
             {
                 OraTrans.Rollback();
                 OraCon.Dispose();
