@@ -235,10 +235,6 @@ namespace Improvar.Controllers
                         TTXNDTL.BALENO = inrdr["BALENO"].ToString();
                         TTXNDTL.PAGENO = inrdr["PAGENO"].retInt();
                         TTXNDTL.PAGESLNO = inrdr["PAGESLNO"].retInt();
-
-                        dbfdt.Columns.Add("", typeof(string));
-                        dbfdt.Columns.Add("", typeof(string));
-
                         TTXNDTL.GOCD = TTXN.GOCD == "" ? "TR" : TTXN.GOCD;
                         TTXNDTL.NOS = inrdr["NOS"].retDbl();
                         TTXNDTL.QNTY = inrdr["QNTY"].retDbl();
@@ -259,6 +255,10 @@ namespace Improvar.Controllers
                         }
                         TTXNDTL.GLCD = PURGLCD;
                         TTXNDTL.TXBLVAL = TTXNDTL.AMT.retDbl(); txable += TTXNDTL.TXBLVAL.retDbl();
+                        if (TTXNDTL.TXBLVAL == 0)
+                        {
+                            return "TXBLVAL/RATE/QNTY should not Zeor(0) at " + msg;
+                        }
                         TTXNDTL.IGSTPER = igstper;
                         TTXNDTL.CGSTPER = cgstper;
                         TTXNDTL.SGSTPER = sgstper;
