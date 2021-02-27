@@ -4225,22 +4225,25 @@ namespace Improvar.Controllers
 
                         #endregion
                     }
-                    if (igst != 0 && (cgst + sgst) != 0)
+                    if (VE.MENU_PARA != "OP" && VE.MENU_PARA != "OTH")
                     {
-                        ContentFlg = "We can't add igst+cgst+sgst for the same party.";
-                        goto dbnotsave;
-                    }
-                    else if (igst + cgst + sgst == 0 && (VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH"))
-                    {
-                        if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                        if (igst != 0 && (cgst + sgst) != 0)
                         {
-                            ContentFlg = "Please enter tax % in Amount tab";
+                            ContentFlg = "We can't add igst+cgst+sgst for the same party.";
+                            goto dbnotsave;
                         }
-                        else
+                        else if (igst + cgst + sgst == 0)
                         {
-                            ContentFlg = "TAX amount not found. Please add tax with item.";
+                            if (VE.MENU_PARA == "SCN" || VE.MENU_PARA == "SDN" || VE.MENU_PARA == "PCN" || VE.MENU_PARA == "PDN")
+                            {
+                                ContentFlg = "Please enter tax % in Amount tab";
+                            }
+                            else
+                            {
+                                ContentFlg = "TAX amount not found. Please add tax with item.";
+                            }
+                            goto dbnotsave;
                         }
-                        goto dbnotsave;
                     }
                     if (Math.Round(dbDrAmt, 2) != Math.Round(dbCrAmt, 2))
                     {
