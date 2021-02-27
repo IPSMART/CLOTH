@@ -922,17 +922,26 @@ namespace Improvar.Controllers
                                     TTXNDTL.SLNO = (VE.TBILTYKHASRA[i].SLNO.retInt() + (lp == 0 ? 0 : 1000)).retShort();
                                     TTXNDTL.STKDRCR = stkdrcr;
                                     TTXNDTL.GOCD = gocd;
-                                    if (VE.TBILTYKHASRA[i].CheckedBALEOPEN == false)
-                                    {
-                                        TTXNDTL.BALENO = VE.TBILTYKHASRA[i].BALENO;
-                                    }
+                                    TTXNDTL.BALENO = VE.TBILTYKHASRA[i].BALENO;
+                                    if (VE.TBILTYKHASRA[i].CheckedBALEOPEN == true && lp == 0) TTXNDTL.BALENO = null;
 
                                     dbsql = MasterHelpFa.RetModeltoSql(TTXNDTL);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                    ModelState.Clear();
 
-                                    //var TBATCHDTlst = DBb.T_BATCHDTL.Where(r => r.AUTONO == TBILTYKHASRA.BLAUTONO && r.TXNSLNO == TBILTYKHASRA.BLSLNO).ToList();
-                                    var TBATCHDTlst = DBb.T_BATCHDTL.Where(r => r.AUTONO == BLAUTONO && r.TXNSLNO == BLSLNO).ToList();
-                                    for (var dtl = 0; dtl < TBATCHDTlst.Count; dtl++)
+                                    List<T_BATCHDTL> TBATCHDTlst = new List<T_BATCHDTL>();
+                                    var TBATCHDTlsttemp = (from r in DBb.T_BATCHDTL where r.AUTONO == BLAUTONO && r.TXNSLNO == BLSLNO select r).ToList();
+                                    foreach(var v in TBATCHDTlsttemp)
+                                    {
+                                       T_BATCHDTL TBATCHDTobj = new T_BATCHDTL();
+                                        foreach (PropertyInfo propA in v.GetType().GetProperties())
+                                        {
+                                            PropertyInfo propB = v.GetType().GetProperty(propA.Name);
+                                            propB.SetValue(TBATCHDTobj, propA.GetValue(v, null), null);
+                                        }
+                                        TBATCHDTlst.Add(TBATCHDTobj);
+                                    }                                 
+                                    for (int dtl = 0; dtl < TBATCHDTlst.Count; dtl++)
                                     {
                                         bslno++;
                                         TBATCHDTlst[dtl].AUTONO = TBHDR.AUTONO;
@@ -943,7 +952,9 @@ namespace Improvar.Controllers
                                         if (VE.TBILTYKHASRA[i].CheckedBALEOPEN == true && lp == 0) TBATCHDTlst[dtl].BALENO = null;
                                         dbsql = masterHelp.RetModeltoSql(TBATCHDTlst[dtl]);
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                                      
                                     }
+                                    DBb.Entry(TBATCHDTlst).State = System.Data.Entity.EntityState.Detached;
 
                                     #region finance data posting
                                     if (VE.MENU_PARA.retStr() == "TRWB" && VE.TBILTYKHASRA[i].ITCD.retStr() != "" && lp == 1)
@@ -1090,9 +1101,7 @@ namespace Improvar.Controllers
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
-                        }
-
-
+                        }   
                         if (VE.DefaultAction == "A")
                         {
                             ContentFlg = "1" + " (Doc No.: " + DOCPATTERN + ")~" + TBHDR.AUTONO;
