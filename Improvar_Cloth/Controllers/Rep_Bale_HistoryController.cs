@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using Improvar.Models;
@@ -90,11 +91,11 @@ namespace Improvar.Controllers
                 string sql = "";
                 if (rep_type == "BH")
                 {
-                    sql += "select a.autono, a.blautono, a.txnslno, a.gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, a.itcd, b.shade, a.nos, a.qnty, c.usr_entdt, ";
+                    sql += "select a.autono, a.baleopen, a.blautono, a.txnslno, a.gocd, a.stkdrcr, a.baleno, a.baleyr,a.baleno || a.baleyr BaleNoBaleYrcd, a.itcd, b.shade, a.nos, a.qnty, c.usr_entdt, ";
                     sql += "c.docno, c.docdt, b.prefno, a.slcd, h.slnm, g.gonm, f.styleno, f.itnm, f.itgrpcd, f.uomcd, c.doccd, e.docnm, e.doctype, ";
                     sql += "b.pageno, b.pageslno, b.lrno from ";
 
-                    sql += "( select e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd slcd, ";
+                    sql += "( select '' baleopen, e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd slcd, ";
                     sql += "sum(a.nos) nos, sum(a.qnty) qnty ";
                     sql += "from " + scm + ".t_bilty e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bilty_hdr f, " + scm + ".m_doctype g ";
                     sql += "where e.blautono = a.autono(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and ";
@@ -102,18 +103,29 @@ namespace Improvar.Controllers
                     if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
                     sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
                     sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) "; // g.doctype not in ('KHSR') ";
-                    sql += "group by e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd ";
+                    sql += "group by '',  e.autono, e.blautono, a.txnslno, e.blautono||a.txnslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, f.mutslcd ";
                     sql += "union all ";
-                    sql += "select e.autono, e.blautono, a.txnslno, e.blautono||e.blslno autoslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) slcd, ";
+                    sql += "select e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno autoslno, a.gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) slcd, ";
                     sql += "sum(a.nos) nos, sum(a.qnty) qnty ";
                     sql += "from " + scm + ".t_bale e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bale_hdr f, " + scm + ".m_doctype g ";
                     sql += "where e.autono = a.autono(+) and e.slno=a.txnslno(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and ";
-                    sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) and ";
+                    sql += "not (g.doctype in ('KHSR') and a.gocd='TR') and ";
                     if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
                     sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
-                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and a.baleno is not null and e.autono = f.autono(+) and ";
-                    sql += "not (g.doctype in ('KHSR') and a.gocd='TR') "; // g.doctype not in ('KHSR') ";
-                    sql += "group by e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, a.gocd, b.stkdrcr, b.baleno, b.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ) a, ";
+                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and ";
+                    sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) ";
+                    sql += "group by e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, a.gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ";
+                    sql += "union all ";
+                    sql += "select e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno autoslno, nvl(h.gocd,a.gocd) gocd, b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) slcd, ";
+                    sql += "sum(a.nos) nos, sum(a.qnty) qnty ";
+                    sql += "from " + scm + ".t_bale e, " + scm + ".t_batchdtl a, " + scm + ".t_txndtl b, " + scm + ".t_txn c, " + scm + ".t_cntrl_hdr d, " + scm + ".t_bale_hdr f, " + scm + ".m_doctype g, " + scm + ".t_batchdtl h ";
+                    sql += "where e.autono = a.autono(+) and e.slno=a.txnslno(+) and e.baleno = a.baleno(+) and e.baleyr = a.baleyr(+) and ";
+                    sql += "nvl(e.baleopen,'N')='Y' and e.autono=h.autono(+) and e.slno-1000 = h.slno(+) and ";
+                    if (fdt.retStr() != "") sql += "d.docdt >= to_date('" + fdt + "', 'dd/mm/yyyy') and ";
+                    sql += "d.docdt <= to_date('" + tdt + "', 'dd/mm/yyyy') and d.doccd=g.doccd(+) and ";
+                    sql += "d.compcd = '" + COM + "' and d.loccd = '" + LOC + "' and nvl(d.cancel, 'N') = 'N' and e.baleno is not null and e.autono = f.autono(+) and ";
+                    sql += "a.autono = b.autono(+) and a.txnslno = b.slno(+) and a.autono = c.autono(+) and a.autono = d.autono(+) ";
+                    sql += "group by e.baleopen, e.autono, e.blautono, a.txnslno, e.blautono||e.blslno, nvl(h.gocd,a.gocd), b.stkdrcr, e.baleno, e.baleyr, b.itcd, nvl(c.slcd,f.mutslcd) ) a, ";
 
                     sql += "(select a.autono, a.slno, b.slcd, a.autono||a.slno autoslno, b.prefno, c.lrno, a.pageno, a.pageslno, ";
                     sql += "listagg(d.shade,',') within group (order by d.autono, d.txnslno) as shade ";
@@ -200,7 +212,7 @@ namespace Improvar.Controllers
                                 IR.Rows[rNo]["docdt"] = Convert.ToString(tbl.Rows[i]["docdt"]).Substring(0, 10);
                                 IR.Rows[rNo]["docno"] = tbl.Rows[i]["docno"].ToString();
                                 IR.Rows[rNo]["gonm"] = tbl.Rows[i]["gonm"].ToString();
-                                IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString();
+                                IR.Rows[rNo]["slnm"] = tbl.Rows[i]["slnm"].ToString() + (tbl.Rows[i]["baleopen"].retStr()=="Y"?" (Open)":"");
                                 IR.Rows[rNo]["nos"] = tbl.Rows[i]["nos"].retDbl();
                                 IR.Rows[rNo]["qnty"] = tbl.Rows[i]["qnty"].retDbl();
                                 itemfirst = false; balefirst = false;
@@ -233,7 +245,8 @@ namespace Improvar.Controllers
                     TempData[repname + "xxx"] = IR;
                     return RedirectToAction("ResponsivePrintViewer", "RPTViewer", new { ReportName = repname });
                 }
-                else {
+                else
+                {
                     sql += "select a.gocd, c.gonm, a.doccd, b.docnm, a.dttag, ";
                     sql += "sum((case a.drcr when 'D' then 1 when 'C' then - 1 end)) qty from ";
                     sql += " (select distinct b.doccd, a.drcr, a.gocd, a.baleno, a.baleyr,c.itcd,d.itgrpcd, ";
