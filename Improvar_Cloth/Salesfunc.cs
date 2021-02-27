@@ -1459,7 +1459,7 @@ namespace Improvar
             string sql = "";
 
             sql += "select distinct a.slcd, a.autono, d.docno, d.docdt, b.qnty, b.rate, e.slnm, e.district city, ";
-            sql += "nvl(b.scmdiscrate,0) scmdiscrate, scmdisctype ";
+            sql += "(case when nvl(b.listdiscper,0)=0 then nvl(b.scmdiscrate,0) else nvl(b.listdiscper,0) end) scmdiscrate, scmdisctype ";
             sql += "from " + scm + ".t_txn a," + scm + ".t_txndtl b," + scm + ".m_doctype c," + scm + ".t_cntrl_hdr d ," + scmf + ".m_subleg e  ";
             sql += "where a.autono=b.autono and a.autono=d.autono and a.doccd=c.doccd(+) and a.slcd=e.slcd  and d.compcd='" + COM + "' and ";
             sql += "itcd ='" + itcd + "' and (e.slcd = '" + slcd + "' ";
