@@ -954,7 +954,7 @@ namespace Improvar.Controllers
                                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                       
                                     }
-                                    DBb.Entry(TBATCHDTlst).State = System.Data.Entity.EntityState.Detached;
+                                    //DBb.Entry(TBATCHDTlst).State = System.Data.Entity.EntityState.Detached;
 
                                     #region finance data posting
                                     if (VE.MENU_PARA.retStr() == "TRWB" && VE.TBILTYKHASRA[i].ITCD.retStr() != "" && lp == 1)
