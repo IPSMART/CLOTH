@@ -1945,12 +1945,16 @@ namespace Improvar
                 }
                 var fMGROU = DB.M_GROUP.FirstOrDefault();
                 if (fMGROU == null) Cn.SaveTextFile("Add a row in the Group master");
-                MGROUP.SALGLCD = fMGROU.SALGLCD;
-                MGROUP.PURGLCD = fMGROU.PURGLCD;
+                else
+                {
+                    MGROUP.SALGLCD = fMGROU.SALGLCD;
+                    MGROUP.PURGLCD = fMGROU.PURGLCD;
+                    MGROUP.NEGSTOCK = fMGROU.NEGSTOCK;
+                }
                 MGROUP.ITGRPTYPE = ITGRPTYPE == "" ? "F" : ITGRPTYPE;
                 MGROUP.PRODGRPCD = "G001";
                 MGROUP.BARGENTYPE = BARGENTYPE == "" ? "C" : BARGENTYPE;//c=common,e=entry
-                MGROUP.NEGSTOCK = fMGROU.NEGSTOCK; ;
+        
                 OraCon.Open();
                 OracleCommand OraCmd = OraCon.CreateCommand();
                 using (OracleTransaction OraTrans = OraCon.BeginTransaction(IsolationLevel.ReadCommitted))
