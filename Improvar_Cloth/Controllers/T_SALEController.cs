@@ -3443,7 +3443,7 @@ namespace Improvar.Controllers
                                 string barno = "";
                                 if ((VE.MENU_PARA == "PB" || VE.MENU_PARA == "OP" || VE.MENU_PARA == "OTH") && (VE.T_TXN.BARGENTYPE == "E" || VE.TBATCHDTL[i].BARGENTYPE == "E"))
                                 {
-                                    sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST where barno='" + barno + "'";
+                                    sql = "  select ITCD,BARNO from " + CommVar.CurSchema(UNQSNO) + ".T_BATCHMST where barno='" + VE.TBATCHDTL[i].BARNO + "'";
                                     dt = masterHelp.SQLquery(sql);
                                     if (dt.Rows.Count == 0)
                                     {
