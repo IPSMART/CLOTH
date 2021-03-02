@@ -345,7 +345,7 @@ function AddMainRow(hlpstr) {
     tr += '     </select>';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onchange="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL[' + rowindex + '].DISCRATE" onblur="CalculateRowAmt(\'_T_SALE_POS_PRODUCT_GRID\',' + rowindex + ');" onkeydown="CopyLastDiscData(this.value,B_DISCTYPE_' + rowindex + '.value,\'B_DISCRATE_\',\'B_DISCTYPE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');RemoveLastDiscData(\'B_DISCRATE_\',\'B_ITCD_\',\'_T_SALE_POS_PRODUCT_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += ' ';
     tr += ' <td class="" title="">';
@@ -572,7 +572,7 @@ function AddReturnRow(hlpstr) {
     tr += '     </select>';
     tr += ' </td>';
     tr += ' <td class="" title="">';
-    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="R_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCRATE" onchange="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
+    tr += '     <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="R_DISCRATE_' + rowindex + '" maxlength="10" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].DISCRATE" onblur="CalculateRowAmt(\'_T_SALE_POS_RETURN_GRID\',' + rowindex + ');" onkeydown="CopyLastDiscData(this.value,R_DISCTYPE_' + rowindex + '.value,\'R_DISCRATE_\',\'R_DISCTYPE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');RemoveLastDiscData(\'R_DISCRATE_\',\'R_ITCD_\',\'_T_SALE_POS_RETURN_GRID\');"  onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" value="">';
     tr += ' </td>';
     tr += ' ';
     tr += ' <td class="" title="">';

@@ -218,7 +218,7 @@
                                         </td>
 
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].DISCRATE, new { htmlAttributes = new { id = "R_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "CalculateRowAmt('_T_SALE_POS_RETURN_GRID'," + i + ");" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].DISCRATE, new { htmlAttributes = new { id = "R_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, onblur = "CalculateRowAmt('_T_SALE_POS_RETURN_GRID'," + i + ");", onkeydown = "CopyLastDiscData(this.value,R_DISCTYPE_" + i + ".value,'R_DISCRATE_','R_DISCTYPE_','R_ITCD_','_T_SALE_POS_RETURN_GRID');RemoveLastDiscData('R_DISCRATE_','R_ITCD_','_T_SALE_POS_RETURN_GRID');" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL_RETURN[i].TXBLVAL, new { htmlAttributes = new { id = "R_TXBLVAL_" + i, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @class = " atextBoxFor" } })

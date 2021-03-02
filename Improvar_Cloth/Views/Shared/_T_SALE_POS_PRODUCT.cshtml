@@ -201,7 +201,7 @@
                                         </td>
 
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");" } })
+                                            @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, onblur = "CalculateRowAmt('_T_SALE_POS_PRODUCT_GRID'," + i + ");", onkeydown = "CopyLastDiscData(this.value,B_DISCTYPE_" + i + ".value,'B_DISCRATE_','B_DISCTYPE_','B_ITCD_','_T_SALE_POS_PRODUCT_GRID');RemoveLastDiscData('B_DISCRATE_','B_ITCD_','_T_SALE_POS_PRODUCT_GRID');" } })
                                         </td>
                                         <td class="">
                                             @Html.EditorFor(model => Model.TsalePos_TBATCHDTL[i].TXBLVAL, new { htmlAttributes = new { id = "B_TXBLVAL_" + i, @style = "text-align: right;", @TabIndex = -1, @readonly = "readonly", @class = " atextBoxFor" } })

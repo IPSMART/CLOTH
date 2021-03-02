@@ -2166,7 +2166,7 @@ function AddBarCodeGrid() {
     tr += '        <input data-val="true" data-val-length="The field SCMDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_SCMDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].SCMDISCTYPE" type="hidden" value="' + SCMDISCTYPE + '">';
     tr += '    </td>';
     tr += '    <td class="" title="' + SCMDISCRATE + '">';
-    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" onkeydown="CopyLastDiscData(this.value,B_SCMDISCTYPE_' + rowindex + '.value,\'B_SCMDISCRATE_\',\'B_SCMDISCTYPE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_SCMDISCRATE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + SCMDISCRATE + '">';
+    tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field SCMDISCRATE must be a number." id="B_SCMDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].SCMDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="HasChangeBarSale();" onkeydown="CopyLastDiscData(this.value,B_SCMDISCTYPE_' + rowindex + '.value,\'B_SCMDISCRATE_\',\'B_SCMDISCTYPE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_SCMDISCRATE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + SCMDISCRATE + '">';
     tr += '    </td>';
     if (MNTNDISC1 == "Y") {
         tr += '     <td class="" title="' + TDDISCTYPE_DESC + '">';
@@ -2174,7 +2174,7 @@ function AddBarCodeGrid() {
         tr += '        <input data-val="true" data-val-length="The field TDDISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_TDDISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].TDDISCTYPE" type="hidden" value="' + TDDISCTYPE + '">';
         tr += '                              </td>';
         tr += '    <td class="" title="' + TDDISCRATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" onkeydown="CopyLastDiscData(this.value,B_TDDISCTYPE_' + rowindex + '.value,\'B_TDDISCRATE_\',\'B_TDDISCTYPE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_TDDISCRATE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + TDDISCRATE + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field TDDISCRATE must be a number." id="B_TDDISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].TDDISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="HasChangeBarSale();" onkeydown="CopyLastDiscData(this.value,B_TDDISCTYPE_' + rowindex + '.value,\'B_TDDISCRATE_\',\'B_TDDISCTYPE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_TDDISCRATE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + TDDISCRATE + '">';
         tr += '    </td>';
     }
 
@@ -2184,7 +2184,7 @@ function AddBarCodeGrid() {
         tr += '        <input data-val="true" data-val-length="The field DISCTYPE must be a string with a maximum length of 1." data-val-length-max="1" id="B_DISCTYPE_' + rowindex + '" name="TBATCHDTL[' + rowindex + '].DISCTYPE" type="hidden" value="' + DISCTYPE + '">';
         tr += '    </td>';
         tr += '    <td class="" title="' + DISCRATE + '">';
-        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onchange="HasChangeBarSale();" onkeydown="CopyLastDiscData(this.value,B_DISCTYPE_' + rowindex + '.value,\'B_DISCRATE_\',\'B_DISCTYPE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_DISCRATE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + DISCRATE + '">';
+        tr += '        <input class=" atextBoxFor text-box single-line" data-val="true" data-val-number="The field DISCRATE must be a number." id="B_DISCRATE_' + rowindex + '" maxlength="10" name="TBATCHDTL[' + rowindex + '].DISCRATE" onkeypress="return numericOnly(this,2);" style="text-align: right;" type="text" onblur="HasChangeBarSale();" onkeydown="CopyLastDiscData(this.value,B_DISCTYPE_' + rowindex + '.value,\'B_DISCRATE_\',\'B_DISCTYPE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');RemoveLastDiscData(\'B_DISCRATE_\',\'B_ITCD_\',\'_T_SALE_PRODUCT_GRID\');" value="' + DISCRATE + '">';
         tr += '    </td>';
     }
 
@@ -3575,49 +3575,7 @@ function SelectUOMCode(id, i) {
         });
     }
 }
-function CopyLastDiscData(RATE, TYPE, RATE_ID, TYPE_ID, ITCD_ID, TABLENM) {
-    const keyName = event.key;
-    if (keyName == "F4") {
-        var DISCTYPE_DESC = TYPE == "P" ? "%" : TYPE == "N" ? "Nos" : TYPE == "Q" ? "Qnty" : TYPE == "A" ? "AftDsc%" : TYPE == "F" ? "Fixed" : "";
-        var GridRow = $("#" + TABLENM + " > tbody > tr").length;
-        for (var i = 0; i <= GridRow - 1; i++) {
-            if (retStr($("#" + ITCD_ID + i).val()) != "") {
-                var RA_TE = retFloat($("#" + RATE_ID + i).val());
-                if (RA_TE == 0) {
-                    $("#" + RATE_ID + i).val(RATE);
-                    $("#" + TYPE_ID + i).val(TYPE);
-                    $("#" + TYPE_ID + "DESC_" + i).val(DISCTYPE_DESC);
-                }
-                if (TABLENM == "_T_SALE_DETAIL_GRID") {
-                    UpdateBarCodeRow_FrmDet(i);
-                    CalculateAmt_Details(i);
-                }
-            }
-        }
-        if (TABLENM == "_T_SALE_PRODUCT_GRID") {
-            HasChangeBarSale();
-        }
 
-    }
-}
-function RemoveLastDiscData(RATEID, ITCD_ID, TABLENM) {
-    const keyName = event.key;
-    if (keyName == "F9") {
-        var GridRow = $("#" + TABLENM + " > tbody > tr").length;
-        for (var i = 0; i <= GridRow - 1; i++) {
-            if (retStr($("#" + ITCD_ID + i).val()) != "") {
-                $("#" + RATEID + i).val(parseFloat(0).toFixed(2));
-                if (TABLENM == "_T_SALE_DETAIL_GRID") {
-                    UpdateBarCodeRow_FrmDet(i);
-                    CalculateAmt_Details(i);
-                }
-            }
-        }
-        if (TABLENM == "_T_SALE_PRODUCT_GRID") {
-            HasChangeBarSale();
-        }
-    }
-}
 
 
 
