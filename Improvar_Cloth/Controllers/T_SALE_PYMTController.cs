@@ -800,8 +800,9 @@ namespace Improvar.Controllers
                         T_TXNPYMT_HDR TBHDR = new T_TXNPYMT_HDR();
                         T_CNTRL_HDR TCH = new T_CNTRL_HDR();
                         T_VCH_HDR TVCHHDR = new T_VCH_HDR();
-                        string DOCPATTERN = "";
+                        string DOCPATTERN = ""; string trcd = "TR";
                         TCH.DOCDT = VE.T_CNTRL_HDR.DOCDT;
+                        TCH.SLCD = VE.RETDEBSLCD;
                         string Ddate = Convert.ToString(TCH.DOCDT);
                         TBHDR.CLCD = CommVar.ClientCode(UNQSNO);
                         TBHDR.RTDEBCD = VE.T_TXNPYMT_HDR.RTDEBCD;
@@ -841,6 +842,20 @@ namespace Improvar.Controllers
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
                             dbsql = masterHelp.TblUpdt("t_cntrl_hdr_doc_dtl", TBHDR.AUTONO, "E");
                             dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); if (dbsql1.Count() > 1) { OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery(); }
+
+
+                            //finance
+                            //dbsql = masterHelp.finTblUpdt("t_vch_gst", TBHDR.AUTONO, "E");
+                            //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                            //dbsql = masterHelp.finTblUpdt("t_vch_bl", TBHDR.AUTONO, "E");
+                            //dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                            dbsql = masterHelp.finTblUpdt("T_VCH_BL_ADJ", TBHDR.AUTONO, "E");
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                            dbsql = masterHelp.finTblUpdt("t_vch_det", TBHDR.AUTONO, "E");
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+                            dbsql = masterHelp.finTblUpdt("t_vch_hdr", TBHDR.AUTONO, "E");
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery(); OraCmd.CommandText = dbsql1[1]; OraCmd.ExecuteNonQuery();
+
                         }
 
                         //----------------------------------------------------------//
@@ -871,7 +886,7 @@ namespace Improvar.Controllers
                                     }
                                     TTXNPYMNT.PYMTREM = VE.TTXNPYMT[i].PYMTREM;
                                     TTXNPYMNT.GLCD = VE.TTXNPYMT[i].GLCD;
-                                    dbsql = masterHelp.RetModeltoSql(TTXNPYMNT,"A", fscm);
+                                    dbsql = masterHelp.RetModeltoSql(TTXNPYMNT);
                                     dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                                 }
                             }
@@ -912,8 +927,14 @@ namespace Improvar.Controllers
                         TVCHHDR.REVCHG = "N";
                         TVCHHDR.INPTCLAIM = "N";
 
-                        dbsql = masterHelp.TblUpdt("T_VCH_DET", TBHDR.AUTONO, "E");
+                        Cn.Create_DOCCD(UNQSNO, "F", TCH.DOCCD);
+                        dbsql = masterHelp.T_Cntrl_Hdr_Updt_Ins(TBHDR.AUTONO, VE.DefaultAction, "F", Month, TCH.DOCCD, DOCPATTERN, TCH.DOCDT.retStr(), TCH.EMD_NO.retShort(), TCH.DOCNO, Convert.ToDouble(TCH.DOCNO), null, null, null, TCH.SLCD);
                         dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                        double currrt = 0;
+                        //if (TTXN.CURRRT != null) currrt = Convert.ToDouble(TTXN.CURRRT);
+                        dbsql = masterHelp.InsVch_Hdr(TBHDR.AUTONO, TCH.DOCCD, TCH.DOCNO, TCH.DOCDT.ToString(), TCH.EMD_NO.retShort(), TCH.DTAG, null, null, "Y", null, trcd, "", "", "", currrt, "", "");
+                        OraCmd.CommandText = dbsql; OraCmd.ExecuteNonQuery();
+
 
                         T_VCH_DET TVCHDET = new T_VCH_DET();
                         TVCHDET.AUTONO = TBHDR.AUTONO;

@@ -632,6 +632,7 @@
     <Compile Include="Models\T_VCH_CLASS.cs" />
     <Compile Include="Models\T_VCH_DET.cs" />
     <Compile Include="Models\T_VCH_GST.cs" />
+    <Compile Include="Models\T_VCH_HDR.cs" />
     <Compile Include="Models\UploadDOC.cs" />
     <Compile Include="Models\USERGUIDE.cs" />
     <Compile Include="Models\USER_ACTIVITY.cs" />
