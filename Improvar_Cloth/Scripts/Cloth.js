@@ -88,3 +88,33 @@ function CalculateDiscount(DiscTypeId, DiscRateId, QntyId, NosId, GrossAmtId, Di
     DISCAMT = parseFloat(DISCAMT).toFixed(2);
     return parseFloat(DISCAMT);
 }
+function CopyLastDiscData(RATE, TYPE, RATE_ID, TYPE_ID, ITCD_ID, TABLENM) {
+    const keyName = event.key;
+    if (keyName == "F4") {
+        var DISCTYPE_DESC = TYPE == "P" ? "%" : TYPE == "N" ? "Nos" : TYPE == "Q" ? "Qnty" : TYPE == "A" ? "AftDsc%" : TYPE == "F" ? "Fixed" : "";
+        var GridRow = $("#" + TABLENM + " > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            if (retStr($("#" + ITCD_ID + i).val()) != "") {
+                var RA_TE = retFloat($("#" + RATE_ID + i).val());
+                if (RA_TE == 0) {
+                    $("#" + RATE_ID + i).val(RATE);
+                    $("#" + TYPE_ID + i).val(TYPE);
+                    $("#" + TYPE_ID + "DESC_" + i).val(DISCTYPE_DESC);
+                }
+                $("#" + RATE_ID + i).blur();
+            }
+        }
+    }
+}
+function RemoveLastDiscData(RATEID, ITCD_ID, TABLENM) {
+    const keyName = event.key;
+    if (keyName == "F9") {
+        var GridRow = $("#" + TABLENM + " > tbody > tr").length;
+        for (var i = 0; i <= GridRow - 1; i++) {
+            if (retStr($("#" + ITCD_ID + i).val()) != "") {
+                $("#" + RATEID + i).val(parseFloat(0).toFixed(2));
+                $("#" + RATEID + i).blur();
+            }
+        }
+    }
+}
