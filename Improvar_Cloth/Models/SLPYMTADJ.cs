@@ -8,49 +8,10 @@ using System.Web;
 namespace Improvar.Models
 {
     public class SLPYMTADJ
-    {
-        //public string VCHTYPE { get; set; }
-        //public bool VChecked { get; set; }
-        //public string VAUTONO { get; set; }
-        //public int VSLNO { get; set; }
-        //public int POPUPSL { get; set; }
-        //public string VDOCNO { get; set; }
-        //public string VDOCDT { get; set; }
-        //public decimal VAMOUNT { get; set; }
-        //public decimal VPRVADJAMT { get; set; }
-        //public double VADJAMT { get; set; }
-        //public decimal VBALAMT { get; set; }
-        //public string VPYTREM { get; set; }
-        //public string VBLREM { get; set; }
-        public int? EMD_NO { get; set; }
-
-        [Required]
-        [StringLength(4)]
-        public string CLCD { get; set; }
-
-        [StringLength(1)]
-        public string DTAG { get; set; }
-
-        [StringLength(1)]
-        public string TTAG { get; set; }
-
-        [Key]
-        [Column(Order = 0)]
-        [StringLength(30)]
-        public string AUTONO { get; set; }
-
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int SLNO { get; set; }
-
+    {    
         [StringLength(30)]
         public string I_AUTONO { get; set; }
-        public int? I_SLNO { get; set; }
-
-        [StringLength(30)]
-        public string R_AUTONO { get; set; }
-        public int? R_SLNO { get; set; }
+        public int? I_SLNO { get; set; }        
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? I_AMT { get; set; }
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
@@ -81,7 +42,7 @@ namespace Improvar.Models
 
         [DisplayFormat(DataFormatString = "{0:0.00}", ApplyFormatInEditMode = true)]
         public double? MainParentAMT { get; set; }
-        public string LOCCD { get; set; }
+
         public string CLASS1CD { get; set; }
         public string CLASS1NM { get; set; }
  
