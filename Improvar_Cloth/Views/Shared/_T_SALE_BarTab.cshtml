@@ -343,7 +343,7 @@
                                             @Html.HiddenFor(model => model.TBATCHDTL[i].SCMDISCTYPE, new { id = "B_SCMDISCTYPE_" + i })
                                         </td>
                                         <td class="">
-                                            @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
+                                            @Html.EditorFor(model => Model.TBATCHDTL[i].SCMDISCRATE, new { htmlAttributes = new { id = "B_SCMDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();", onkeydown = "CopyLastDiscData(this.value,B_SCMDISCTYPE_" + i + ".value,'B_SCMDISCRATE_','B_SCMDISCTYPE_','B_ITCD_','_T_SALE_PRODUCT_GRID');RemoveLastDiscData('B_SCMDISCRATE_','B_ITCD_','_T_SALE_PRODUCT_GRID');" } })
                                         </td>
                                         @if (Model.M_SYSCNFG.MNTNDISC1 == "Y")
                                         {
@@ -352,7 +352,7 @@
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].TDDISCTYPE, new { id = "B_TDDISCTYPE_" + i })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].TDDISCRATE, new { htmlAttributes = new { id = "B_TDDISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();", onkeydown = "CopyLastDiscData(this.value,B_TDDISCTYPE_" + i + ".value,'B_TDDISCRATE_','B_TDDISCTYPE_','B_ITCD_','_T_SALE_PRODUCT_GRID');RemoveLastDiscData('B_TDDISCRATE_','B_ITCD_','_T_SALE_PRODUCT_GRID');" } })
                                             </td>
                                         }
 
@@ -363,7 +363,7 @@
                                                 @Html.HiddenFor(model => model.TBATCHDTL[i].DISCTYPE, new { id = "B_DISCTYPE_" + i })
                                             </td>
                                             <td class="">
-                                                @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();" } })
+                                                @Html.EditorFor(model => Model.TBATCHDTL[i].DISCRATE, new { htmlAttributes = new { id = "B_DISCRATE_" + i, @style = "text-align: right;", @onkeypress = "return numericOnly(this,2);", @class = " atextBoxFor", maxlength = 10, @onchange = "HasChangeBarSale();", onkeydown = "CopyLastDiscData(this.value,B_DISCTYPE_" + i + ".value,'B_DISCRATE_','B_DISCTYPE_','B_ITCD_','_T_SALE_PRODUCT_GRID');RemoveLastDiscData('B_DISCRATE_','B_ITCD_','_T_SALE_PRODUCT_GRID');" } })
                                             </td>
                                         }
 
