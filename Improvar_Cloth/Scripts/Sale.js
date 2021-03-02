@@ -3576,9 +3576,8 @@ function SelectUOMCode(id, i) {
     }
 }
 function CopyLastDiscData(RATE, TYPE, RATE_ID, TYPE_ID, ITCD_ID, TABLENM) {
-    debugger;
     const keyName = event.key;
-    if (keyName == "F8") {
+    if (keyName == "F4") {
         var DISCTYPE_DESC = TYPE == "P" ? "%" : TYPE == "N" ? "Nos" : TYPE == "Q" ? "Qnty" : TYPE == "A" ? "AftDsc%" : TYPE == "F" ? "Fixed" : "";
         var GridRow = $("#" + TABLENM + " > tbody > tr").length;
         for (var i = 0; i <= GridRow - 1; i++) {
@@ -3608,7 +3607,10 @@ function RemoveLastDiscData(RATEID, ITCD_ID, TABLENM) {
         for (var i = 0; i <= GridRow - 1; i++) {
             if (retStr($("#" + ITCD_ID + i).val()) != "") {
                 $("#" + RATEID + i).val(parseFloat(0).toFixed(2));
-                $("#" + RATEID + i).blur();
+                if (TABLENM == "_T_SALE_DETAIL_GRID") {
+                    UpdateBarCodeRow_FrmDet(i);
+                    CalculateAmt_Details(i);
+                }
             }
         }
         if (TABLENM == "_T_SALE_PRODUCT_GRID") {
