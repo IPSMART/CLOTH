@@ -1011,21 +1011,7 @@ namespace Improvar.Controllers
 
                                         BLAMT = 0; ROAMT = 0;
 
-                                        T_TXNEWB TTXNEWB = new T_TXNEWB();
-                                        TTXNEWB.EMD_NO = TTXN.EMD_NO;
-                                        TTXNEWB.CLCD = TTXN.CLCD;
-                                        TTXNEWB.DTAG = TTXN.DTAG;
-                                        TTXNEWB.AUTONO= TTXN.AUTONO;
-                                        TTXNEWB.TRANSLCD= VE.T_TXNTRANS.TRANSLCD;
-                                        TTXNEWB.LRNO = VE.T_TXNTRANS.LRNO;
-                                        TTXNEWB.LRDT = VE.T_TXNTRANS.LRDT;
-                                        TTXNEWB.LORRYNO = VE.T_TXNTRANS.LORRYNO;
-                                        TTXNEWB.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
-                                        TTXNEWB.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
-                                        TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
-                                        TTXNEWB.GOCD = VE.T_TXN.GOCD;
-                                        dbsql = masterHelp.RetModeltoSql(TTXNEWB, "A", CommVar.FinSchema(UNQSNO));
-                                        dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
+                      
                                     }
                                     #endregion
                                 }
@@ -1061,6 +1047,22 @@ namespace Improvar.Controllers
                             TTXNOTH.CLCD = TTXN.CLCD;
                             TTXNOTH.DTAG = TTXN.DTAG;
                             TTXNOTH.MUTSLCD = VE.T_BALE_HDR.MUTSLCD;
+
+                            T_TXNEWB TTXNEWB = new T_TXNEWB();
+                            TTXNEWB.EMD_NO = TTXN.EMD_NO;
+                            TTXNEWB.CLCD = TTXN.CLCD;
+                            TTXNEWB.DTAG = TTXN.DTAG;
+                            TTXNEWB.AUTONO = TTXN.AUTONO;
+                            TTXNEWB.TRANSLCD = VE.T_TXNTRANS.TRANSLCD;
+                            TTXNEWB.LRNO = VE.T_TXNTRANS.LRNO;
+                            TTXNEWB.LRDT = VE.T_TXNTRANS.LRDT;
+                            TTXNEWB.LORRYNO = VE.T_TXNTRANS.LORRYNO;
+                            TTXNEWB.TRANSMODE = VE.T_TXNTRANS.TRANSMODE;
+                            TTXNEWB.VECHLTYPE = VE.T_TXNTRANS.VECHLTYPE;
+                            TTXNEWB.EWAYBILLNO = VE.T_TXNTRANS.EWAYBILLNO;
+                            TTXNEWB.GOCD = VE.T_TXN.GOCD;
+                            dbsql = masterHelp.RetModeltoSql(TTXNEWB, "A", CommVar.FinSchema(UNQSNO));
+                            dbsql1 = dbsql.Split('~'); OraCmd.CommandText = dbsql1[0]; OraCmd.ExecuteNonQuery();
                         }
                       
                         //----------------------------------------------------------//
