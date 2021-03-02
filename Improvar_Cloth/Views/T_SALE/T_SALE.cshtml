@@ -1782,8 +1782,8 @@
                                                 <p class="text-info">* Press <b>F8</b> in Bill Sl./Item Group/Item Code/Bar Code/Design No (Bar code area) to copy last row of Bar Code Grid</p>
                                             }
                                             <p class="text-info" style="margin-top:-10px;">
-                                                * Press <b>F8</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
-                                                ** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
+                                                ** Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
+                                                *** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
                                             </p>
                                         </div>
                                         <div class="row">
@@ -1812,6 +1812,15 @@
                                 </div>
                             </div>
                         </div>
+                        @if (Model.DefaultAction != "V" && Model.MENU_PARA != "SB")
+                        {
+                            <div class="row">
+                                <p class="text-info">
+                                    * Press <b>F4</b> on Disc Rate column to <b>Copy</b> respective Disc Type & Disc Rate in all rows<br />
+                                    ** Press <b>F9</b> on Disc Rate column to <b>Remove</b> respective Disc Type & Disc Rate in all rows
+                                </p>
+                            </div>
+                        }
                         @if (Model.DefaultAction == "V")
                         {
                             if (CommVar.ModuleCode().retStr().IndexOf("SALESCLOTH") != -1)
