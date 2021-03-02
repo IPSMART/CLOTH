@@ -550,7 +550,7 @@ namespace Improvar.Controllers
                 query += "decode(d.othaddpin,null,d.add1||' '||d.add2, d.othadd1||' '||d.othadd2) , decode(d.othaddpin,null,d.add3||' '||d.add4,d.othadd3||' '||d.othadd4) , nvl(d.othaddpin,d.pin) , ";
                 query += "translate(nvl(p.fullname,p.slnm),'+[#./()]^',' '), p.gstno, p.add1||' '||p.add2, ";
                 query += "p.add3||' '||p.add4, p.district, p.pin, p.statecd, upper(q.statenm), ";
-                query += "e.slnm, e.gstno, replace(translate(c.lorryno,'/-',' '),' ',''), c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
+                query += "e.slnm, e.gstno, e.cenno, replace(translate(c.lorryno,'/-',' '),' ',''), c.lrno, c.lrdt, a.igstper, a.cgstper, a.sgstper, a.cessper, ";
                 if (VE.Checkbox2 == true) query += "translate(a.itnm,'+[#/()]^',' '), a.slno, "; else query += "'', 1, ";
                 query += "a.hsncode,l.guomcd, l.guomnm, nvl(m.distance,0), ";
                 query += "o.goadd1||' '||o.goadd2, o.goadd3, o.district, o.pin ";
@@ -628,7 +628,7 @@ namespace Improvar.Controllers
                     prejson.invamt = tbl.Rows[i]["blamt"].retDbl();
                     prejson.distance = tbl.Rows[i]["distance"].retInt();
                     prejson.trslnm = tbl.Rows[i]["trslnm"].ToString();//am
-                    if (tbl.Rows[i]["trcen"].retStr() == "")
+                    if (tbl.Rows[i]["trcen"].retStr() != "")
                     {
                         prejson.trgst = tbl.Rows[i]["trcen"].ToString();//an
                     }

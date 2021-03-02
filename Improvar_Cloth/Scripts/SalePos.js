@@ -221,6 +221,8 @@ function AddMainRow(hlpstr) {
     var SIZECD = returncolvalue(hlpstr, "SIZECD");
     var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");
     var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
+    var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
+
     var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOMCD");
     var NOS = returncolvalue(hlpstr, "NOS");
@@ -438,6 +440,7 @@ function AddReturnRow(hlpstr) {
     var SIZECD = returncolvalue(hlpstr, "SIZECD");
     var BALSTOCK = returncolvalue(hlpstr, "BALQNTY");
     var NEGSTOCK = returncolvalue(hlpstr, "NEGSTOCK");
+    var HSNCODE = returncolvalue(hlpstr, "HSNCODE");
     var QNTY = returncolvalue(hlpstr, "QNTY");
     var UOM = returncolvalue(hlpstr, "UOMCD");
     var NOS = returncolvalue(hlpstr, "NOS");
@@ -470,7 +473,7 @@ function AddReturnRow(hlpstr) {
     tr += '   <input data-val="true" data-val-length="The field MTRLJOBCD must be a string with a maximum length of 2." data-val-length-max="2" id="R_MTRLJOBCD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].MTRLJOBCD" type="hidden" value="' + MTRLJOBCD + '">';
     tr += '   <input data-val="true" data-val-number="The field FLAGMTR must be a number." id="R_FLAGMTR_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].FLAGMTR" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-number="The field BLQNTY must be a number." id="R_BLQNTY_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BLQNTY" type="hidden" value="">';
-    tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" type="hidden" value="">';
+    tr += '   <input data-val="true" data-val-length="The field HSNCODE must be a string with a maximum length of 8." data-val-length-max="8" id="R_HSNCODE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].HSNCODE" type="hidden" value="' + HSNCODE + '">';
     tr += '   <input data-val="true" data-val-length="The field LOCABIN must be a string with a maximum length of 10." data-val-length-max="10" id="R_LOCABIN_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].LOCABIN" type="hidden" value="">';
     tr += '   <input id="R_BARGENTYPE_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].BARGENTYPE" type="hidden" value="">';
     tr += '   <input data-val="true" data-val-length="The field GLCD must be a string with a maximum length of 8." data-val-length-max="8" id="R_GLCD_' + rowindex + '" name="TsalePos_TBATCHDTL_RETURN[' + rowindex + '].GLCD" type="hidden" value="' + GLCD + '">';

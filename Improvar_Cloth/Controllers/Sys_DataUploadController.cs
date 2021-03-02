@@ -120,7 +120,7 @@ namespace Improvar.Controllers
                                 string colValue = workSheet.Cells[rowNum, colnum].Value.retStr();
                                 try
                                 {
-                                    if (colname == "DOCDT" || colname == "LRDT") { colValue = colValue.retDateStr(); }
+                                    if (colname == "DOCDT") { colValue = colValue.retDateStr(); }
                                     dr[colname] = colValue;
                                 }
                                 catch (ArgumentException ex)
@@ -137,6 +137,7 @@ namespace Improvar.Controllers
                 T_TXN TTXN = new T_TXN();
                 T_TXNTRANS TXNTRANS = new T_TXNTRANS();
                 T_TXNOTH TTXNOTH = new T_TXNOTH();
+                CultureInfo culture = CultureInfo.CreateSpecificCulture("en-GB");
                 TMPVE.DefaultAction = "A";
                 TMPVE.MENU_PARA = "OP";
                 var outerDT = dbfdt.AsEnumerable()
@@ -156,7 +157,7 @@ namespace Improvar.Controllers
 
                 TTXN.EMD_NO = 0;
                 TTXN.DOCCD = DB.M_DOCTYPE.Where(d => d.DOCTYPE == "FOSTK").FirstOrDefault()?.DOCCD;
-                if(string.IsNullOrEmpty(TTXN.DOCCD)) return "Please add Document code. ";
+                if (string.IsNullOrEmpty(TTXN.DOCCD)) return "Please add Document code. ";
                 TTXN.CLCD = CommVar.ClientCode(UNQSNO);
                 sql = "select * from " + CommVar.CurSchema(UNQSNO) + ".m_group ";
                 dt = masterHelp.SQLquery(sql);
@@ -176,7 +177,16 @@ namespace Improvar.Controllers
                     TTXN.DOCTAG = "OP";
                     TTXN.PREFNO = oudr["PBLNO"].ToString();
                     TTXN.TCSPER = 0.075;
-                    string Ddate = DateTime.ParseExact(oudr["DOCDT"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                    DateTime dateValue;
+                    string Ddate = oudr["DOCDT"].retStr();
+                    if (DateTime.TryParse(Ddate, culture, DateTimeStyles.None, out dateValue))
+                    {
+                        Ddate = dateValue.ToString("dd/MM/yyyy");
+                    }
+                    else
+                    {
+                        Ddate = CommVar.FinStartDate(UNQSNO);
+                    }
                     TTXN.DOCDT = Convert.ToDateTime(Ddate);
                     TTXN.PREFDT = TTXN.DOCDT;
                     TTXN.SLCD = oudr["SLCD"].ToString();
@@ -192,9 +202,16 @@ namespace Improvar.Controllers
                     TTXNOTH.PRCCD = "CP";
                     if (oudr["LRDT"].ToString() != "")
                     {
-                        string LR_DATE = DateTime.ParseExact(oudr["LRDT"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
-                        TXNTRANS.LRNO = oudr["LRNO"].ToString();
-                        TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
+                        try
+                        {
+                            string LR_DATE = DateTime.ParseExact(oudr["LRDT"].retDateStr(), "dd/MM/yyyy", CultureInfo.InvariantCulture).ToString("dd/MM/yyyy");
+                            TXNTRANS.LRNO = oudr["LRNO"].ToString();
+                            TXNTRANS.LRDT = Convert.ToDateTime(LR_DATE);
+                        }
+                        catch
+                        {
+
+                        }
                     }
                     var tepb = TTXN.PREFNO == "" ? " " : TTXN.PREFNO;
                     sql = "";
@@ -221,12 +238,12 @@ namespace Improvar.Controllers
                         string FABITNM = inrdr["FABITNM"].ToString(); string fabitcd = "";
                         if (FABITNM != "")
                         {
-                            ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "","", "C", BARGENTYPE);
+                            ItemDet FABITDet = Salesfunc.CreateItem(FABITNM, TTXNDTL.UOM, grpnm, HSNCODE, "", "", "C", BARGENTYPE);
                             fabitcd = FABITDet.ITCD;
                         }
                         ItemDet ItemDet = Salesfunc.CreateItem(style, TTXNDTL.UOM, grpnm, HSNCODE, fabitcd, TTXNDTL.BARNO, "F", BARGENTYPE);
                         TTXNDTL.ITCD = ItemDet.ITCD; PURGLCD = ItemDet.PURGLCD;
-                   
+
                         TTXNDTL.ITNM = style;
                         TTXNDTL.MTRLJOBCD = "FS";
                         TTXNDTL.STKDRCR = "D";
@@ -356,7 +373,7 @@ namespace Improvar.Controllers
             catch (Exception ex)
             {
                 Cn.SaveException(ex, msg);
-                return ex.Message;
+                return ex.Message + " at " + msg;
             }
             return "Excel Uploaded Successfully !!";
         }
